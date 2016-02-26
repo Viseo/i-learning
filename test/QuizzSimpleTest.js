@@ -10,6 +10,17 @@ describe('answer', function() {
         expect(answer.label).toEqual("My first answer is...");
         expect(answer.imageSrc).toEqual(null);
         expect(answer.rgbBordure).toEqual("rgb(155, 222, 17)");
+        expect(answer.bgColor).toEqual("rgb(125, 122, 117)");
+    });
+
+    it('should instantiate correctly my answer with imageSrc & no label', function() {
+        var answer = new Answer(null, "mypic.jpg", false, {r: 125, g: 122, b: 117}, {r: 155, g: 222, b: 17});
+
+        expect(answer.correct).toEqual(false);
+        expect(answer.label).toEqual(null);
+        expect(answer.imageSrc).toEqual("mypic.jpg");
+        expect(answer.rgbBordure).toEqual("rgb(125, 122, 117)");
+        expect(answer.bgColor).toEqual("rgb(155, 222, 17)");
     });
 
     it('should set bordure & bgColor to "none" with NaN parameters', function () {
@@ -24,15 +35,6 @@ describe('answer', function() {
 
         expect(answer.rgbBordure).toEqual("none");
         expect(answer.bgColor).toEqual("none");
-    });
-
-    it('should instantiate correctly my answer with imageSrc & no label', function() {
-        var answer = new Answer(null, "mypic.jpg", false, {r: 125, g: 122, b: 117}, {r: 155, g: 222, b: 17});
-
-        expect(answer.correct).toEqual(false);
-        expect(answer.label).toEqual(null);
-        expect(answer.imageSrc).toEqual("mypic.jpg");
-        expect(answer.rgbBordure).toEqual("rgb(125, 122, 117)");
     });
 
     it('should throw an error when display is used with NaN parameters', function () {
