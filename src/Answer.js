@@ -8,14 +8,29 @@
  * @param imageSrc : lien relatif vers l'image. Peut-être vide/null/indéfini si aucune image
  * @param bCorrect : booléen qui indique si la réponse est correcte
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
+ * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
  * @constructor
  */
-var Reponse = function (label, imageSrc, bCorrect, colorBordure) {
+var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
     var self = this;
     self.label = label;
     self.imageSrc = imageSrc;
     self.correct = bCorrect;
-    self.rgbBordure = {r: colorBordure.r, g: colorBordure.g, b:colorBordure.b };
+
+    if(colorBordure && !isNaN(parseInt(colorBordure.r)) && !isNaN(parseInt(colorBordure.g)) && !isNaN(parseInt(colorBordure.b))) {
+        self.rgbBordure = "rgb("+colorBordure.r+", "+colorBordure.g+", "+colorBordure.b+")";
+    }
+    else {
+        self.rgbBordure = "none";
+    }
+
+    if(bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
+        self.bgColor = "rgb("+bgColor.r+", "+bgColor.g+", "+bgColor.b+")";
+    }
+    else {
+        self.bgColor = "none";
+    }
+    self.bordure = null;
 
     /**
      *
@@ -23,9 +38,12 @@ var Reponse = function (label, imageSrc, bCorrect, colorBordure) {
      * @param y : position en Y
      * @param w : largeur
      * @param h : hauteur
-     * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
      */
-    self.display = function (x, y, w, h, bgColor) {
+    self.display = function (x, y, w, h) {
+        if(isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
+            throw new Error(NaN);
+        }
+
         // SVG
         var g = document.createElementNS(svgNS, "g");
         svg.appendChild(g);
@@ -44,8 +62,7 @@ var Reponse = function (label, imageSrc, bCorrect, colorBordure) {
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            var bordure = createRect(g, x, y, w, h, "rgb("+self.rgbBordure.r+","+self.rgbBordure.g+","+self.rgbBordure.r+")",
-                5, "rgb("+bgColor.r+","+bgColor.g+","+bgColor.b+")");
+            self.bordure = createRect(g, x, y, w, h, self.rgbBordure, 5, self.bgColor);
         }
 
     };
