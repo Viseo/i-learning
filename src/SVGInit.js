@@ -3,28 +3,10 @@
  */
 
 
-var paper = Raphael("content", 1500, 1500);
+var paper = Raphael(0, 0, 1500, 1500);
 
-// Init SVG
-/*var svgNS = "http://www.w3.org/2000/svg";
-var svg = document.createElementNS(svgNS, "svg");
-svg.setAttribute("width", "1500");
-svg.setAttribute("height", "1500");
-document.getElementById("content").appendChild(svg);
+var answer = new Answer("This is an example of speech... And here comes MORE TEXT. BwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahahaBwahaha!", null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
+answer.display(200, 200, 500, 200);
 
-// créer un rectangle
-var createRect = function(parent, x, y, width, height, stroke, strokeWidth, fill) {
-    var rect = document.createElementNS(svgNS, "rect");
-    rect.setAttribute("x", x);
-    rect.setAttribute("y", y);
-    rect.setAttribute("width", width);
-    rect.setAttribute("height", height);
-    rect.setAttribute("stroke", stroke);
-    rect.setAttribute("stroke-width", strokeWidth);
-    rect.setAttribute("fill", fill);
-    parent.appendChild(rect);
-    return rect;
-};*/
-
-var answer = new Answer(null, null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
-answer.display(20, 20, 100, 100);
+var answer2 = new Answer(null, null, false, {r: 125, g: 122, b: 117}, {r: 155, g: 222, b: 17});
+answer2.display(10, 10, 150, 150);

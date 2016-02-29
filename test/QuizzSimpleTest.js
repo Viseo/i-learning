@@ -41,5 +41,28 @@ describe('answer', function() {
         var answer = new Answer(null, null, false, {r: 155, g: 222, b: 17});
 
         expect(function () { answer.display(true, 3, "zz", null); }).toThrow(new Error(NaN));
-    })
+    });
+
+    it('should display a basic text', function () {
+        var answer = new Answer("Texte", null, false, {r: 200, g:0, b:0});
+        answer.display(20, 20, 100, 100);
+        expect(answer.content.attr("text")).toEqual(answer.label);
+        expect(answer.bordure).toBeDefined();
+    });
+
+    it('should display a long text in multiple lines', function () {
+        var answer = new Answer("Texte. There is a lot of text. It's so long. It's close to be boring.", null, false, {r: 200, g:0, b:0});
+        answer.display(20, 20, 100, 100);
+        expect(answer.content.attr("text")).toEqual(answer.label);
+        expect(true).toBe(answer.label.indexOf("\n") !== -1);
+        expect(answer.bordure).toBeDefined();
+    });
+
+    it('should display a very complex text in multiple lines with word-breaker ("-")', function () {
+        var answer = new Answer("Texte. INFINITE TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEXTE. DUDUDUDUDUDUDUDUDUDDUDUDUDUDUDDUDUDUDUDUDUDUDUDUDUDUDUDUDUDU", null, false, {r: 200, g:0, b:0});
+        answer.display(20, 20, 100, 100);
+        expect(answer.content.attr("text")).toEqual(answer.label);
+        expect(true).toBe   (answer.label.indexOf("-\n") !== -1);
+        expect(answer.bordure).toBeDefined();
+    });
 });

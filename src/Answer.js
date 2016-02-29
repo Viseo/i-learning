@@ -50,7 +50,10 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            self.bordure = object.bordure;
+            self.content = object.content;
+            self.label = self.content.attr("text");
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
@@ -58,7 +61,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
+            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5});
         }
 
     };
