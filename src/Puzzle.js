@@ -7,19 +7,18 @@ function Puzzle(lines, rows,questionsTab)
     var self=this;
     self.lines=lines;
     self.rows=rows;
-    self.paper = Raphael("puzzle", 200, 75);
     self.margin=15;
     self.tileWidth;
     self.tileHeight;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
-    self.display=function()
+    self.display=function(x,y,width,height)
     {
-        initTiles();
-        
+        self.paper=Raphael(x,y,width,height);
+        self.initTiles();
     };
 
-    function initTiles()
+    self.initTiles=function()
     {
         self.tileWidth=(self.paper.width-(self.rows+1)*self.margin)/self.rows;
         self.tileHeight=(self.paper.height-(self.lines+1)*self.margin)/self.lines;
