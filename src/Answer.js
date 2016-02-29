@@ -44,10 +44,6 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
             throw new Error(NaN);
         }
 
-        // SVG
-        var g = document.createElementNS(svgNS, "g");
-        svg.appendChild(g);
-
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
 
@@ -62,7 +58,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            self.bordure = createRect(g, x, y, w, h, self.rgbBordure, 5, self.bgColor);
+            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
         }
 
     };

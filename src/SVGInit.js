@@ -2,8 +2,11 @@
  * Created by qde3485 on 25/02/16.
  */
 
+
+var paper = Raphael("content", 1500, 1500);
+
 // Init SVG
-var svgNS = "http://www.w3.org/2000/svg";
+/*var svgNS = "http://www.w3.org/2000/svg";
 var svg = document.createElementNS(svgNS, "svg");
 svg.setAttribute("width", "1500");
 svg.setAttribute("height", "1500");
@@ -21,4 +24,7 @@ var createRect = function(parent, x, y, width, height, stroke, strokeWidth, fill
     rect.setAttribute("fill", fill);
     parent.appendChild(rect);
     return rect;
-};
+};*/
+
+var answer = new Answer(null, null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
+answer.display(20, 20, 100, 100);
