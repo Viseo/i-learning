@@ -1,0 +1,15 @@
+{
+  "name": "I-learning",
+  "description": "Intern project @ Viseo",
+  "version": "0.0.1",
+  "author": {
+    "name": "Viseo I-learning",
+    "website": "github.com/anacho/i-learning"
+  },
+  "website": "i-learning.com",
+  "dependencies": {
+    },
+  "devDependencies": {
+    "test-module": "*"
+  }
+}
