@@ -24,7 +24,7 @@ function Puzzle(lines, rows,questionsTab)
         self.tileHeight=(self.paper.height-(self.lines+1)*self.margin)/self.lines;
         for(var i=0; i<questionsTab.length;i++)
         {
-            var newTile;
+            var newTile=[];
             var posx,posy;
             posx=self.margin+i*(self.tileWidth+self.margin);
             posy=self.margin+i*(self.tileHeight+self.margin);
