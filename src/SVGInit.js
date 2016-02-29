@@ -26,5 +26,7 @@ var createRect = function(parent, x, y, width, height, stroke, strokeWidth, fill
     return rect;
 };*/
 
-var answer = new Answer(null, null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
-answer.display(20, 20, 100, 100);
+var question = new Question(null, null, [{label: null, imageSrc:null, bCorrect:false, rgbBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 125, g: 122, b: 117}}], {r: 100,g: 149,b: 237},{r: 240,g: 128,b: 128});
+question.display(200, 200, 100, 100);
+
+question.tabAnswer[0].display(20,20,100,100);
