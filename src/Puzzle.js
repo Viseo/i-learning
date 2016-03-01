@@ -2,9 +2,10 @@
  * Created by ABL3483 on 29/02/2016.
  */
 
-function Puzzle(lines, rows,questionsTab)
+function Puzzle(paper,lines, rows,questionsTab)
 {
     var self=this;
+    self.paper=paper;
     self.lines=lines;
     self.rows=rows;
     self.margin=15;
@@ -14,7 +15,6 @@ function Puzzle(lines, rows,questionsTab)
     self.questionsTab=questionsTab;
     self.display=function(x,y,width,height)
     {
-        self.paper=Raphael(x,y,width,height);
         self.initTiles();
     };
 
