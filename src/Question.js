@@ -14,11 +14,13 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
     self.label = label;
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
+    self.diplaySet=paper.set();
 
     if (tabAnswer !== null) {
         tabAnswer.forEach(function (it) {
             var tmp = new Answer(it.label, it.imageSrc, it.bCorrect, it.rgbBordure, it.bgColor);
             self.tabAnswer.push(tmp);
+            self.displaySet.push(tmp.displaySet);
         });
     }
 
@@ -56,7 +58,12 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            self.bordure = object.cadre;
+            self.content = object.content;
+            self.diplaySet.push(bordure);
+            self.diplaySet.push(content);
+            self.label = self.content.attr("text");
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {

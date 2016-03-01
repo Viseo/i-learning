@@ -17,6 +17,8 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
     self.imageSrc = imageSrc;
     self.correct = bCorrect;
 
+    self.displaySet=paper.set();
+
     if(colorBordure && !isNaN(parseInt(colorBordure.r)) && !isNaN(parseInt(colorBordure.g)) && !isNaN(parseInt(colorBordure.b))) {
         self.rgbBordure = "rgb("+colorBordure.r+", "+colorBordure.g+", "+colorBordure.b+")";
     }
@@ -54,6 +56,8 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
             var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
             self.bordure = object.cadre;
             self.content = object.content;
+            self.displaySet.push(self.bordure);
+            self.displaySet.push(self.content);
             self.label = self.content.attr("text");
         }
         // Question avec Image uniquement

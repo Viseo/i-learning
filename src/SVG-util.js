@@ -28,7 +28,8 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
 
     var cadre = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbCadre, 'stroke-width': 5});
     content.toFront();
-    return {content, cadre};
+
+    return {content:content, cadre:cadre};
 };
 /**
  *
@@ -88,3 +89,4 @@ var autoAdjustText = function (content, x, y, w, h) {
     t.attr("text", tempText.substring(1));
     return t;
 };
+
