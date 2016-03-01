@@ -4,6 +4,36 @@
 
 var paper = Raphael(0, 0, 1500, 1500);
 
+
+/**
+ *
+ * @param imageSrc
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ */
+var displayImage = function (imageSrc, x, y, w, h) {
+    var img = new Image();
+    img.src = imageSrc;
+    img.onload = function () {
+        var width = img.width;
+        var height = img.height;
+        if(width > w) {
+            height *= w/width;
+            width = w;
+        }
+        if(height > h) {
+            width *= h/height;
+            height = h;
+        }
+
+        var image = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+        paper.rect(x, y, w, h);
+    };
+};
+
+
 /**
  *
  * @param label : text to print

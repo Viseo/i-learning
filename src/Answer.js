@@ -54,11 +54,10 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
             var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.label = self.content.attr("text");
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-
+            displayImage(self.imageSrc, x, y, w, h);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {

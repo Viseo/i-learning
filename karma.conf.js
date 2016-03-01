@@ -18,6 +18,8 @@ module.exports = function(config) {
       'lib/*.js',
       'src/SVG-util.js',
       'src/Answer.js',
+      'src/Question.js',
+      'src/Puzzle.js',
       'test/*.js'
     ],
 
