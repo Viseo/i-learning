@@ -2,7 +2,7 @@
  * Created by qde3485 on 29/02/16.
  */
 
-var paper = Raphael(0,0, 1500, 1500);
+var paper = Raphael(0, 0, 1500, 1500);
 
 /**
  *
@@ -11,11 +11,11 @@ var paper = Raphael(0,0, 1500, 1500);
  * @param y : Y position
  * @param w : width
  * @param h : height
- * @param rgbBordure : rgb color for rectangle
+ * @param rgbCadre : rgb color for rectangle
  * @param bgColor : background color for rectangle
- * @returns {{content, bordure}} : SVG/Raphael items for text & bordure
+ * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
  */
-var displayText = function (label, x, y, w, h, rgbBordure, bgColor) {
+var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
     var content = autoAdjustText(label, x, y, w, h);
 
     var diffH = (content.getBBox().height - h)/2;
@@ -26,9 +26,9 @@ var displayText = function (label, x, y, w, h, rgbBordure, bgColor) {
         diffH = 0;
     }
 
-    var bordure = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbBordure, 'stroke-width': 5});
+    var cadre = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbCadre, 'stroke-width': 5});
     content.toFront();
-    return {content, bordure};
+    return {content, cadre};
 };
 /**
  *
@@ -42,18 +42,19 @@ var autoAdjustText = function (content, x, y, w, h) {
     var t = paper.text(x+w/2, y+h/2).attr("font-size", 20);
     var words = content.split(" ");
     var tempText = "";
+    var margin = 10;
 
     // add text word by word
     for (var i=0; i<words.length; i++) {
         // set text to test the BBox.width
         t.attr("text", tempText + " " + words[i]);
         // test if DOESN'T fit in the line
-        if (t.getBBox().width > w-10) {
+        if (t.getBBox().width > w-margin) {
             // temporary string to store the word in a new line
             var tmpStr = tempText + "\n" + words[i];
             t.attr("text", tmpStr);
             // test if the whole word can fit in a line
-            if(t.getBBox().width > w-10) {
+            if(t.getBBox().width > w-margin) {
                 // we don't need the tmpStr anymore
                 // add a space before the problematic word
                 tempText += " ";
@@ -64,7 +65,7 @@ var autoAdjustText = function (content, x, y, w, h) {
                     // set text to test the BBox.width
                     t.attr("text", tempText + " " + longWord.charAt(j));
                     // check if we can add an additional character in this line
-                    if (t.getBBox().width > w-10) {
+                    if (t.getBBox().width > w-margin) {
                         // we can't: break line, add the character
                         tempText += "-\n" + longWord.charAt(j);
                     } else {

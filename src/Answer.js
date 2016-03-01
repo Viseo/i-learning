@@ -31,13 +31,14 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         self.bgColor = "none";
     }
     self.bordure = null;
+    self.content = null;
 
     /**
      *
      * @param x : position en X
      * @param y : position en Y
-     * @param w : largeur
-     * @param h : hauteur
+     * @param w : width
+     * @param h : height
      */
     self.display = function (x, y, w, h) {
         if(isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
@@ -51,7 +52,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
             var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
-            self.bordure = object.bordure;
+            self.bordure = object.cadre;
             self.content = object.content;
             self.label = self.content.attr("text");
         }
