@@ -8,8 +8,8 @@ function RaphaelSpy(x,y,width,height){
         get width() {
             return paper.raphael.width;
         },
-    set width(width) {
-        paper.raphael.width=width;
+        set width(width) {
+            paper.raphael.width=width;
     },
         get height() {
             return paper.raphael.height;
@@ -20,16 +20,27 @@ function RaphaelSpy(x,y,width,height){
     };
     paper.raphael=Raphael(x,y,width,height);
     paper.mock=RaphaelMock(x,y,width,height);
+
     paper.rect=function (x,y,width,height){
-        paper.raphael.rect(x,y,width,height);
+        var r = paper.raphael.rect(x,y,width,height);
         paper.mock.rect(x,y,width,height);
         paper.mock.writeTest();
+        return r;
     };
+
     paper.text=function (x,y,text){
-        paper.raphael.text(x,y,text);
+        var t = paper.raphael.text(x,y,text);
         paper.mock.text(x,y,text);
         paper.mock.writeTest();
+        return t;
 
+    };
+
+    paper.image = function(imgSrc, x, y, w, h) {
+        var i = paper.raphael.image(imgSrc, x, y, w, h);
+        paper.mock.image(imgSrc, x, y, w, h);
+        paper.mock.writeTest();
+        return i;
     };
 
     return paper;
@@ -64,10 +75,11 @@ function RaphaelMock(x,y,width,height)
         paper.children.push(element);
         return element;
     };
+
     paper.text=function(x,y,text) {
-        console.log("TEXT");
         var element={type:"text",
             id:paper.index++};
+        element.svgAttr = [];
         element.x=x;
         element.y=y;
         element.text=text;
@@ -79,7 +91,40 @@ function RaphaelMock(x,y,width,height)
             expect(element.y).toEqual(y);
             expect(element.text).toEqual(text);
         };
+        element.attr = function (param, value) {
+            if(typeof param !== 'object' && !value) {
+                // Get
+                return element.svgAttr[param];
+            } else {
+                // Set
+                var newAttrTab = attr(param, value);
+                element.svgAttr.push.apply(element.svgAttr, newAttrTab);
+            }
+            return element;
+        };
+
         paper['t'+element.id]=element;
+        paper.children.push(element);
+        return element;
+    };
+    paper.image = function(imageSrc, x, y, w, h) {
+        var element={type:"image", id:paper.index++};
+        element.imageSrc = imageSrc;
+        element.x = x;
+        element.y = y;
+        element.w = w;
+        element.h = h;
+        element.writeTest = function () {
+            console.log('paper.i'+element.id+'.test("'+element.imageSrc+'",'+element.x+','+element.y+','+element.w+','+element.h+');')
+        };
+        element.test = function () {
+            expect(element.imageSrc).toEqual(imageSrc);
+            expect(element.x).toEqual(x);
+            expect(element.y).toEqual(y);
+            expect(element.w).toEqual(w);
+            expect(element.h).toEqual(h);
+        };
+        paper['i'+element.id]=element;
         paper.children.push(element);
         return element;
     };
@@ -92,3 +137,16 @@ function RaphaelMock(x,y,width,height)
 
     return paper;
 }
+
+var attr = function (param, value) {
+    var tab = [];
+
+    if(param !== null && typeof param === 'object') {
+        param.forEach(function (it) {
+            tab.push(it);
+        });
+    } else if(value) {
+        tab.push({param: value});
+    }
+    return tab;
+};

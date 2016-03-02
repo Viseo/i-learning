@@ -21,7 +21,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         self.rgbBordure = "rgb("+colorBordure.r+", "+colorBordure.g+", "+colorBordure.b+")";
     }
     else {
-        self.rgbBordure = "none";
+        self.rgbBordure = "black";
     }
 
     if(bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
@@ -47,7 +47,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, x, y, w, h, self.rgbBordure, self.bgColor);
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {

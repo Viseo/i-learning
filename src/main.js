@@ -2,7 +2,7 @@
  * Created by qde3485 on 25/02/16.
  */
 
-//var paper=new RaphaelSpy(0,0,1500,1200);
+var paper=new RaphaelSpy(0,0,1500,1200);
 
 function main()
 {
@@ -10,11 +10,15 @@ function main()
     puzzle.display(0,0,800,700);*/
     //puzzle.paper.canvas.style.backgroundColor='green';
 
-    //var src = "http://svg.dabbles.info/tux.png";
     var src = "../resource/statue.jpg";
-    var answer = new Answer(null, src, false);
-    answer.display(20, 20, 350, 92);
-    answer.display(150, 150, 250, 75);
-    answer.display(250, 250, 800, 800);
+    //var src = "../resource/spectre.png";
+    /*var answer = new Answer(null, src, false);
+    answer.display(20, 20, 350, 92);*/
+
+    var answer2 = new Answer("My Text. This is an example of text. It will ajust and adapt to fit into the rectangle. Bla bla bla bla bla bla bla ", src, true);
+    answer2.display(50, 200, 350, 500);
+
+    /*var question = new Question(null, "../resource/folder.png", []);
+    question.display(50, 400, 200, 200);*/
 
 }

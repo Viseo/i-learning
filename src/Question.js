@@ -55,12 +55,14 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
 
         }
         // Question avec Texte uniquement
-        else if (self.label && !self.imageSrc) {
-
+        else if(self.label && !self.imageSrc) {
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            self.bordure = object.cadre;
+            self.content = object.content;
         }
         // Question avec Image uniquement
-        else if (self.imageSrc && !self.label) {
-
+        else if(self.imageSrc && !self.label) {
+            displayImage(self.imageSrc, x, y, w, h);
         }
         else if (!self.imageSrc && !self.label){
             self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
