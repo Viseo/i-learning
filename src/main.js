@@ -2,6 +2,8 @@
  * Created by qde3485 on 25/02/16.
  */
 
+//var paper=Raphael(0,0,1500,1500);
+
 paper=RaphaelSpy(0,0,1500,1500);
 function main()
 {

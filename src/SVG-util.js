@@ -7,11 +7,11 @@
 
 var displayImageWithTitle = function (label, imageSrc, x, y, w, h, rgbCadre, bgColor) {
     var margin = 5;
-    var fontSize = 20;
     var image = displayImage(imageSrc, x+margin, y+margin, w-2*margin, h*0.85-2*margin);
-    var text = autoAdjustText(label, x, y+ h*0.85, w, h*0.15);
-    var cadre = paper.rect(x, y, w, h);
+    var text = autoAdjustText(label, x, y+h*0.85, w, h*0.15);
+    var cadre = paper.rect(x, y, w, h, rgbCadre, bgColor);
     text.toFront();
+    return {cadre: cadre, image: image,  text: text};
 };
 
 /**
@@ -69,6 +69,7 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
 
     return {content:content, cadre:cadre};
 };
+
 /**
  *
  * @param content: text to print
@@ -131,6 +132,7 @@ var autoAdjustText = function (content, x, y, w, h) {
         }
         fontSize --;
     } while(t.getBBox().height > h);
+
     t.attr("text", tempText.substring(1));
     return t;
 };
