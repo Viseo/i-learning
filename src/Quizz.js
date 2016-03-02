@@ -2,11 +2,24 @@
  * Created by ABL3483 on 01/03/2016.
  */
 
-
+/**
+ *
+ * @param paper
+ * @param title
+ * @param tabQuestions
+ * @constructor
+ */
 
 function Quizz(paper,title,tabQuestions)
 {
     var self=this;
+    self.tabQuestions=[];
+    if (tabQuestions !== null) {
+        tabQuestions.forEach(function (it) {
+            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer, it.colorBordure, it.bgColor);
+            self.tabQuestions.push(tmp);
+        });
+    }
 
 
     var cadreResult={
@@ -14,7 +27,6 @@ function Quizz(paper,title,tabQuestions)
         y:0,
         w:paper.width,
         h:200
-
     };
 
     var cadreQuestion={
@@ -22,10 +34,8 @@ function Quizz(paper,title,tabQuestions)
         y:300,
         w:paper.width,
         h:200
-
     };
 
-    self.tabQuestions=tabQuestions;
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.paper=paper;
@@ -33,11 +43,16 @@ function Quizz(paper,title,tabQuestions)
     self.title=title;
 
 
-
-
     self.currentQuestionIndex=0;
 
     self.finalMessage="";
+
+    /**
+     *
+     * @param paper
+     * @param cadre
+     */
+
     var displayScore=function(paper,cadre){
         switch(self.score){
             case self.score===0:
@@ -61,7 +76,6 @@ function Quizz(paper,title,tabQuestions)
                 nom=" dont "+self.score+" sont justes";
                 break;
 
-
         }
 
         var nom;
@@ -71,19 +85,16 @@ function Quizz(paper,title,tabQuestions)
         self.resultBox=self.paper.rect(cadre.x,cadre.y,cadre.w,cadre.h);
         self.resultText=self.paper.text(cadre.x+cadre.w/2,cadre.y+cadre.h/2,self.finalMessage);
 
-
     };
 
-
     self.display=function(){
+        // Quizz title
         self.titleBox=self.paper.rect(0,0,self.paper.width,200);
-        self.titleText=self.paper.text(0+self.titleBox.width/2,0+self.titleBox.height/2,self.title);
+        self.titleText=self.paper.text(self.titleBox.attr('width')/2,self.titleBox.attr('height')/2,self.title);
 
         self.tabQuestions[self.currentQuestionIndex].display(cadreQuestion.x,cadreQuestion.y,cadreQuestion.w,cadreQuestion.h);
         self.displaySet=self.paper.set();
         self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);//à regarder quand on aura plusieurs quizz
 
-        /*self.displaySet.push(self.titleBox);
-        self.displaySet.push(self.titleText);*/
     };
 }

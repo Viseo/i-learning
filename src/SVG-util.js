@@ -2,8 +2,6 @@
  * Created by qde3485 on 29/02/16.
  */
 
-var paper = Raphael(0, 0, 1500, 1500);
-
 /**
  *
  * @param label : text to print

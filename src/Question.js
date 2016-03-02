@@ -14,7 +14,7 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
     self.label = label;
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
-    self.diplaySet=paper.set();
+    self.displaySet=paper.set();
 
     if (tabAnswer !== null) {
         tabAnswer.forEach(function (it) {
@@ -61,8 +61,8 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
             var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.diplaySet.push(bordure);
-            self.diplaySet.push(content);
+            self.displaySet.push(self.bordure);
+            self.displaySet.push(self.content);
             self.label = self.content.attr("text");
         }
         // Question avec Image uniquement
