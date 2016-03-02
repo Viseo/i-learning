@@ -1,16 +1,17 @@
 /**
  * Created by ABL3483 on 01/03/2016.
  */
+window.paper=null;
 describe('Main test', function() {
-    var paper;
+
     var puzzle;
     beforeEach(function(){
-        paper=RaphaelMock(0,0,600,800);
+        paper=RaphaelMock(0,0,1500,1500);
         puzzle= new Puzzle(0,0,500,500,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
-        puzzle.display(0,0,800,700);
+        puzzle.display();
         //puzzle.paper.canvas.style.backgroundColor='green';
     });
-    it('',function() {
+    it('first auto-written graphic test',function() {
        // puzzle.paper.writeTest();
         paper.r0.test(15,15,131.25,377.5);
         paper.t1.test(80.625,203.75,'Q1');

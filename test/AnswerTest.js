@@ -2,8 +2,12 @@
  * Created by qde3485 on 25/02/16.
  */
 
+paper=null;
 describe('answer', function() {
 
+    beforeEach(function (){
+        paper=RaphaelMock(0,0,1500,1500);
+    });
     it('should instantiate correctly my answer with label & no imageSrc', function() {
         var answer = new Answer("My first answer is...", null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
 

@@ -18,6 +18,7 @@ function RaphaelSpy(x,y,width,height){
             paper.raphael.height=height;
         }
     };
+
     paper.raphael=Raphael(x,y,width,height);
     paper.mock=RaphaelMock(x,y,width,height);
     paper.rect=function (x,y,width,height){
@@ -31,6 +32,18 @@ function RaphaelSpy(x,y,width,height){
         paper.mock.text(x,y,text);
         paper.mock.writeTest();
         return t;
+    };
+
+    paper.set=function(){
+        var s=[];
+        var rset=paper.raphael.set();
+        var mset=paper.mock.set();
+        s.push=function(element){
+            rset.push(element);
+            mset.push(element);
+        };
+        //pas compris, à priori il faut faire des getter/setter ici aussi...
+        return rset;
     };
 
     return paper;
@@ -84,6 +97,13 @@ function RaphaelMock(x,y,width,height)
         paper.children.push(element);
         return element;
     };
+
+    paper.set=function(){
+
+        var s=[];
+        return s;
+    };
+
     paper.writeTest=function() {
         paper.children.forEach(function (e) {
             e.writeTest();
