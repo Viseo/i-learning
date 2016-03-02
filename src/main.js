@@ -16,9 +16,9 @@ function main()
     answer.display(20, 20, 350, 92);*/
 
     var answer2 = new Answer("My Text. This is an example of text. It will ajust and adapt to fit into the rectangle. Bla bla bla bla bla bla bla ", src, true);
-    answer2.display(50, 200, 350, 500);
+    answer2.display(500, 50, 500, 200);
 
-    /*var question = new Question(null, "../resource/folder.png", []);
-    question.display(50, 400, 200, 200);*/
+    var question = new Question("Is this a folder?", "../resource/folder.png", []);
+    question.display(50, 400, 200, 80);
 
 }

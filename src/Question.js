@@ -36,6 +36,8 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
         self.bgColor = "none";
     }
     self.bordure = null;
+    self.content = null;
+    self.image = null;
 
     /**
      *
@@ -52,7 +54,10 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, x, y, w, h, self.rgbBordure, self.bgColor);
+            self.bordure = objectTotal.cadre;
+            self.content = objectTotal.text;
+            self.image = objectTotal.image;
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
@@ -62,10 +67,10 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            displayImage(self.imageSrc, x, y, w, h);
+            self.image = displayImage(self.imageSrc, x, y, w, h);
         }
         else if (!self.imageSrc && !self.label){
-            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
+            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure})
         }
     };
 };
