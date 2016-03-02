@@ -4,16 +4,19 @@
  * @param label : texte à afficher pour la question
  * @param imageSrc : lien relatif vers l'image. Peut-être vide/null/indéfini si aucune image
  * @param tabAnswer : Tableau réponses
+ * @param rows : Nombre de colonnes pour afficher les réponses.
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
  * @constructor
  */
 
-var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
+var Question = function (label,imageSrc,tabAnswer,rows,colorBordure, bgColor) {
     var self = this;
     self.label = label;
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
+    self.rows=rows;
+
     self.displaySet=paper.set();
 
     if (tabAnswer !== null) {
@@ -28,7 +31,7 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
         self.rgbBordure = "rgb(" + colorBordure.r + ", " + colorBordure.g + ", " + colorBordure.b + ")";
     }
     else {
-        self.rgbBordure = "none";
+        self.rgbBordure = "black";
     }
 
     if (bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
@@ -68,8 +71,29 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
         else if(self.imageSrc && !self.label) {
             displayImage(self.imageSrc, x, y, w, h);
         }
-        else if (!self.imageSrc && !self.label){
+        else if (!self.imageSrc && !self.label) {
             self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
         }
-    };
+
+        if (self.rows !== 0) {
+            var margin = 15;
+            var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
+            var tileHeight = h;
+            var posx = x;
+            var posy = y + h + margin * 2;
+            var count = 0;
+            for (var i = 0; i < self.tabAnswer.length; i++) {
+                if (i !== 0) {
+                    posx += (tileWidth + margin);
+                }
+                if (count > (self.rows - 1)) {
+                    count = 0;
+                    posy += (tileHeight + margin);
+                    posx = x;
+                }
+                self.tabAnswer[i].display(posx, posy, tileWidth, tileHeight);
+                count++;
+            }
+        }
+    }
 };
