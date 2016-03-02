@@ -2,12 +2,10 @@
  * Created by qde3485 on 25/02/16.
  */
 
-//var paper=Raphael(0,0,1500,1500);
+var paper=new RaphaelSpy(0,0,1500,1200);
 
-paper=RaphaelSpy(0,0,1500,1500);
 function main()
 {
-
     //var paper=Raphael(0,0,600,800);
     /*
     var puzzle= new Puzzle(0,0,1500,1500,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
