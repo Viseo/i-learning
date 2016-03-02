@@ -2,10 +2,13 @@
  * Created by ABL3483 on 29/02/2016.
  */
 
-function Puzzle(paper,lines, rows,questionsTab)
+function Puzzle(x,y,w,h,lines, rows,questionsTab)
 {
     var self=this;
-    self.paper=paper;
+    self.x=x;
+    self.y=y;
+    self.w=w;
+    self.h=h;
     self.lines=lines;
     self.rows=rows;
     self.margin=15;
@@ -13,15 +16,16 @@ function Puzzle(paper,lines, rows,questionsTab)
     self.tileHeight;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
-    self.display=function(x,y,width,height)
+    self.display=function()
     {
         self.initTiles();
     };
 
+
     self.initTiles=function()
     {
-        self.tileWidth=(self.paper.width-(self.rows+1)*self.margin)/self.rows;
-        self.tileHeight=(self.paper.height-(self.lines+1)*self.margin)/self.lines;
+        self.tileWidth=(self.w-(self.rows+1)*self.margin)/self.rows;
+        self.tileHeight=(self.h-(self.lines+1)*self.margin)/self.lines;
 
         posy=self.margin;
         posx=self.margin;
@@ -42,8 +46,8 @@ function Puzzle(paper,lines, rows,questionsTab)
             }
             count++;
 
-            R=self.paper.rect(posx,posy,self.tileWidth,self.tileHeight);
-            T=self.paper.text(posx+self.tileWidth/2,posy+self.tileHeight/2,questionsTab[i].label);
+            R=paper.rect(posx,posy,self.tileWidth,self.tileHeight);
+            T=paper.text(posx+self.tileWidth/2,posy+self.tileHeight/2,questionsTab[i].label);
             newTile={rect:R,text:T};
             self.tilesTab.push(newTile);
         }

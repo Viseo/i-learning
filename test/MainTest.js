@@ -6,7 +6,7 @@ describe('Main test', function() {
     var puzzle;
     beforeEach(function(){
         paper=RaphaelMock(0,0,600,800);
-        puzzle= new Puzzle(paper,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
+        puzzle= new Puzzle(0,0,500,500,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
         puzzle.display(0,0,800,700);
         //puzzle.paper.canvas.style.backgroundColor='green';
     });

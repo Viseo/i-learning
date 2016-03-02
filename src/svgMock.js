@@ -21,15 +21,16 @@ function RaphaelSpy(x,y,width,height){
     paper.raphael=Raphael(x,y,width,height);
     paper.mock=RaphaelMock(x,y,width,height);
     paper.rect=function (x,y,width,height){
-        paper.raphael.rect(x,y,width,height);
+       var r= paper.raphael.rect(x,y,width,height);
         paper.mock.rect(x,y,width,height);
         paper.mock.writeTest();
+        return r;
     };
     paper.text=function (x,y,text){
-        paper.raphael.text(x,y,text);
+        var t=paper.raphael.text(x,y,text);
         paper.mock.text(x,y,text);
         paper.mock.writeTest();
-
+        return t;
     };
 
     return paper;
