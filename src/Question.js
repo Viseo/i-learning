@@ -10,7 +10,7 @@
  * @constructor
  */
 
-var Question = function (label,imageSrc,tabAnswer,rows,colorBordure, bgColor) {
+var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) {
     var self = this;
     self.label = label;
     self.imageSrc = imageSrc;
