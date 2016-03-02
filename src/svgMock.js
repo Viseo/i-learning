@@ -37,14 +37,14 @@ function RaphaelSpy(x,y,width,height){
 
     paper.set=function(){
         var s=[];
-        var rset=paper.raphael.set();
-        var mset=paper.mock.set();
+        s.rset=paper.raphael.set();
+        s.mset=paper.mock.set();
         s.push=function(element){
-            rset.push(element);
-            mset.push(element);
+            s.rset.push(element);
+            s.mset.push(element);
+            s[s.length]=element;
         };
-        //pas compris, à priori il faut faire des getter/setter ici aussi...
-        return rset;
+        return s;
     };
 
     paper.image = function(imgSrc, x, y, w, h) {
@@ -76,6 +76,7 @@ function RaphaelMock(x,y,width,height)
         element.writeTest= function () {
             console.log('paper.r'+element.id+'.test('+element.x+','+element.y+','+element.width+','+element.height+');');
         };
+        element.attr=attrMock;
         element.test=function(x,y,width,height){
             expect(element.x).toEqual(x);
             expect(element.y).toEqual(y);
@@ -103,6 +104,8 @@ function RaphaelMock(x,y,width,height)
             expect(element.y).toEqual(y);
             expect(element.text).toEqual(text);
         };
+        element.attr=attrMock;
+        /*
         element.attr = function (param, value) {
             if(typeof param !== 'object' && !value) {
                 // Get
@@ -113,7 +116,7 @@ function RaphaelMock(x,y,width,height)
                 element.svgAttr.push.apply(element.svgAttr, newAttrTab);
             }
             return element;
-        };
+        };*/
 
         paper['t'+element.id]=element;
         paper.children.push(element);
@@ -168,4 +171,32 @@ var attr = function (param, value) {
         tab.push({param: value});
     }
     return tab;
+};
+
+function attrMock (param, value) {
+    var resultOfGet=null;
+    console.log("Attr called by: "+this.type+"\n");
+    if(typeof param === 'object'&& !value){
+        //set object
+        tabAttributes=Object.keys(param);
+        tabAttributes.forEach(function(e){
+            this[e]=param[e];
+
+        });
+        console.log("Set object--->"+tabAttributes);
+    }else if(typeof param !== 'object'&& value){
+        //pas d'objet et une value -> set normal
+        this[param]=value;
+        console.log("Set normal--->"+tabAttributes);
+    }else if(typeof param !== 'object' && !value){
+        //pas d'objet et pas de value -> get
+        var tabAttributes=Object.keys(this);
+        console.log("Get--->"+tabAttributes);
+        if(tabAttributes.indexOf(param)>-1)
+        {
+            resultOfGet=this[param];
+        }
+        return resultOfGet;
+    }
+
 };

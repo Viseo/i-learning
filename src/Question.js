@@ -14,7 +14,7 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
     self.label = label;
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
-    self.displaySet=paper.raphael.set();
+    self.displaySet=paper.set();
 
     if (tabAnswer !== null) {
         tabAnswer.forEach(function (it) {

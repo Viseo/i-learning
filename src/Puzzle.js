@@ -16,6 +16,7 @@ function Puzzle(x,y,w,h,lines, rows,questionsTab)
     self.tileHeight;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
+    self.displaySet=paper.set();
     self.display=function()
     {
         self.initTiles();
@@ -48,6 +49,8 @@ function Puzzle(x,y,w,h,lines, rows,questionsTab)
 
             R=paper.rect(posx,posy,self.tileWidth,self.tileHeight);
             T=paper.text(posx+self.tileWidth/2,posy+self.tileHeight/2,questionsTab[i].label);
+            self.displaySet.push(R);
+            self.displaySet.push(T);
             newTile={rect:R,text:T};
             self.tilesTab.push(newTile);
         }
