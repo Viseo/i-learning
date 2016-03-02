@@ -13,7 +13,7 @@ describe('Puzzle test suite', function() {
     ];
     beforeEach(function(){
 
-        puzzle=new Puzzle(2,3,questions);
+        puzzle=new Puzzle(0,0,1500,1500,2,3,questions);
 
     });
 
@@ -45,13 +45,6 @@ describe('Puzzle test suite', function() {
 
     });
 
-    it('should initialize the main svg element/tag',function(){
-        puzzle.display(120,150,800,600);
 
-        expect(puzzle.paper).toBeDefined();
-        expect (puzzle.paper.height).toEqual(600);
-        expect (puzzle.paper.width).toEqual(800);
-
-    });
 
 });

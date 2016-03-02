@@ -15,10 +15,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'lib/*.js',
-      'src/SVG-util.js',
-      'src/Answer.js',
-      'test/*.js'
+        'lib/*.js',
+        'src/svgMock.js',
+        'src/main.js',
+        'src/*.js',
+        'test/*.js'
     ],
 
 
