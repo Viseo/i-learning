@@ -10,7 +10,7 @@ describe('Main test', function() {
         puzzle.display(0,0,800,700);
         //puzzle.paper.canvas.style.backgroundColor='green';
     });
-    it('',function() {
+    it('Test written',function() {
        // puzzle.paper.writeTest();
         paper.r0.test(15,15,131.25,377.5);
         paper.t1.test(80.625,203.75,'Q1');

@@ -18,6 +18,7 @@ module.exports = function(config) {
       'lib/*.js',
       'src/SVG-util.js',
       'src/Answer.js',
+      'src/*.js',
       'test/*.js'
     ],
 
@@ -58,7 +59,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox'],
+    browsers: ['Firefox'],
 
 
     // Continuous Integration mode

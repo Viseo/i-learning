@@ -3,9 +3,9 @@
  */
 
 
+paper=RaphaelSpy(0,0,1500,1500);
 function main()
 {
-    paper=RaphaelSpy(0,0,1500,1500);
     //var paper=Raphael(0,0,600,800);
     /*var puzzle= new Puzzle(paper,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
     puzzle.display(0,0,800,700);
@@ -22,7 +22,7 @@ function main()
         {label:'Q3',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'},
         {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'}
     ];
-    var quizz=new Quizz(paper,"Ceci est le titre du Quizz n°1",tabQuestions);
+    var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
     quizz.display();
 
 

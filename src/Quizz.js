@@ -10,7 +10,7 @@
  * @constructor
  */
 
-function Quizz(paper,title,tabQuestions)
+function Quizz(title,tabQuestions)
 {
     var self=this;
     self.tabQuestions=[];

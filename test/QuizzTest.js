@@ -2,7 +2,7 @@
  * Created by ABL3483 on 02/03/2016.
  */
 
-describe('answer', function() {
+describe('Quizz Test', function() {
     beforeEach(function(){
 
     });
