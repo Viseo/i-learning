@@ -63,11 +63,10 @@ var Question = function (label,imageSrc,tabAnswer,colorBordure, bgColor) {
             self.content = object.content;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
-            self.label = self.content.attr("text");
         }
         // Question avec Image uniquement
-        else if (self.imageSrc && !self.label) {
-
+        else if(self.imageSrc && !self.label) {
+            displayImage(self.imageSrc, x, y, w, h);
         }
         else if (!self.imageSrc && !self.label){
             self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure, 'stroke-width': 5})
