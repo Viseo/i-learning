@@ -21,7 +21,6 @@ function Quizz(title,tabQuestions)
         });
     }
 
-
     var cadreResult={
         x:0,
         y:0,
