@@ -41,10 +41,8 @@ function main()
         {label:'Q14',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
 
-    var puzzle = new Puzzle(3, 1, tabQuestions);
+    var puzzle = new Puzzle(3, 4, tabQuestions);
     puzzle.initVirtualTab();
-    var startPosition = 0;
-    var countInterval = 0;
     puzzle.display(20, 20, 600, 600, 0);
 
     //var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);

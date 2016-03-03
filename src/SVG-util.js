@@ -24,6 +24,7 @@ var displayImageWithTitle = function (label, imageSrc, x, y, w, h, rgbCadre, bgC
  */
 var displayImage = function (imageSrc, x, y, w, h) {
     var img = new Image();
+    var i = {};
     img.src = imageSrc;
     img.onload = function () {
         var width = img.width;
@@ -36,13 +37,16 @@ var displayImage = function (imageSrc, x, y, w, h) {
             width *= h/height;
             height = h;
         }
-
-        return paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+        i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
     };
+    return function () {
+        return i;
+    }
 };
 
 var displayImageWithEvent = function (imageSrc, x, y, w, h, onclickEvent) {
     var img = new Image();
+    var i = {};
     img.src = imageSrc;
     img.onload = function () {
         var width = img.width;
@@ -55,10 +59,12 @@ var displayImageWithEvent = function (imageSrc, x, y, w, h, onclickEvent) {
             width *= h/height;
             height = h;
         }
-        var i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+        i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
         i.node.onclick = onclickEvent;
-        return i;
     };
+    return function () {
+        return i;
+    }
 };
 
 /**
