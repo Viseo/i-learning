@@ -4,7 +4,7 @@
 
 //var paper=Raphael(0,0,1500,1500);
 
-paper=RaphaelSpy(0,0,1500,1500);
+paper=Raphael(0,0,1500,1500);
 function main()
 {
 
@@ -28,10 +28,30 @@ function main()
         {label:'Q1',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
         {label:'Q2',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
         {label:'Q3',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
-        {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
+        {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q5',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q6',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q7',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q8',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q9',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q10',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q11',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q12',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q13',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q14',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
     var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions,{r: 194, g: 46, b: 83});
     quizz.display();
+
+    // Navigation puzzle
+    /*var puzzle = new Puzzle(3, 1, tabQuestions);
+    puzzle.initVirtualTab();
+    var startPosition = 0;
+    var countInterval = 0;
+    puzzle.display(20, 20, 600, 600, 0);*/
+
+    //var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
+    //quizz.display();
 
     // Display in rows
     /*var nbRows = 3;
