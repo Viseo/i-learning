@@ -11,9 +11,10 @@ describe('Main test', function() {
         puzzle.display();
         //puzzle.paper.canvas.style.backgroundColor='green';
     });
-    it('first auto-written graphic test',function() {
+    it('should check the right values for this example',function() {
        // puzzle.paper.writeTest();
         //
+
         paper.r0.test(15,15,356.25,727.5);
         paper.t1.test(193.125,378.75,"Q1");
         paper.r2.test(386.25,15,356.25,727.5);
