@@ -54,7 +54,7 @@ function Quizz(title,tabQuestions,color)
      * @param cadre
      */
 
-    var displayScore=function(paper,cadre){
+    var displayScore = function(paper,cadre){
         switch(self.score){
             case self.score===0:
                 self.finalMessage="T'es naze!";

@@ -56,15 +56,7 @@ var displayImage = function (imageSrc, x, y, w, h) {
 var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
     var content = autoAdjustText(label, x, y, w, h);
 
-    var diffH = (content.getBBox().height - h)/2;
-    if(diffH > 0) {
-        h = content.getBBox().height;
-    }
-    else {
-        diffH = 0;
-    }
-
-    var cadre = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbCadre});
+    var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
     content.toFront();
 
     return {content:content, cadre:cadre};
@@ -76,7 +68,7 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
  * @param x : X position
  * @param y : Y position
  * @param w : width
- * @param h : MINIMUM height (the final height can be higher)
+ * @param h : height
  */
 var autoAdjustText = function (content, x, y, w, h) {
     var t = paper.text(x+w/2, y+h/2, "");
