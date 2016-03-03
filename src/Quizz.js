@@ -16,7 +16,7 @@ function Quizz(title,tabQuestions,color)
     self.tabQuestions=[];
     if (tabQuestions !== null) {
         tabQuestions.forEach(function (it) {
-            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor);
+            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor,self);
             self.tabQuestions.push(tmp);
         });
     }
@@ -49,7 +49,7 @@ function Quizz(title,tabQuestions,color)
     self.title=title;
 
 
-    self.currentQuestionIndex=0;
+    self.currentQuestionIndex=-1;
 
     self.finalMessage="";
 
@@ -98,11 +98,13 @@ function Quizz(title,tabQuestions,color)
         cadreQuestion.w=w;
         cadreResult.w=w;
         cadreTitle.w=w;
+        self.quizzMarginX=x;
+        self.quizzMarginY=y;
 
         self.titleBox=self.paper.rect(x,y,cadreTitle.w-x,cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
         self.titleText=self.paper.text(x+self.titleBox.attr('width')/2,y+self.titleBox.attr('height')/2,self.title);
 
-        self.tabQuestions[self.currentQuestionIndex].display(x+cadreQuestion.x,y+cadreQuestion.y,cadreQuestion.w-x,cadreQuestion.h);
+
         self.displaySet=self.paper.set();
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
         /*var titleObject=displayText(self.title,0,0,self.paper.width,200,'black','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
@@ -111,7 +113,25 @@ function Quizz(title,tabQuestions,color)
 
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
-        self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);//à regarder quand on aura plusieurs quizz
+        self.nextQuestion();
 
     };
+    self.nextQuestion=function(){
+        var type=self.displaySet[self.displaySet.length-1].type;
+        if(type === 'set')
+        {
+            self.displaySet[self.displaySet.length-1].forEach(function(e){
+                e.remove();
+            });
+        }
+        if(self.currentQuestionIndex+1<self.tabQuestions.length)
+        {
+            self.currentQuestionIndex++;
+        }///else --> fin du tableau, dernière question
+
+        self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX+cadreQuestion.x,self.quizzMarginY+cadreQuestion.y,
+            cadreQuestion.w-self.quizzMarginX,cadreQuestion.h);
+        self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+    };
+
 }

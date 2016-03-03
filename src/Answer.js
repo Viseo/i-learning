@@ -54,20 +54,27 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
+            self.displaySet.push(self.bordure);
+            self.displaySet.push(self.content);
+            self.displaySet.push(self.image);
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
             var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
             self.bordure = object.cadre;
             self.content = object.content;
+            self.displaySet.push(self.bordure);
+            self.displaySet.push(self.content);
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
             self.image = displayImage(self.imageSrc, x, y, w, h);
+            self.displaySet.push(self.image);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
             self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure});
+            self.displaySet.push(self.bordure);
         }
 
     };

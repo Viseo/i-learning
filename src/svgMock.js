@@ -41,6 +41,7 @@ function RaphaelSpy(x,y,width,height){
 
     paper.set=function(){
         var s=[];
+        s.type='set';
         s.rset=paper.raphael.set();
         s.mset=paper.mock.set();
         s.push=function(element){

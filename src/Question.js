@@ -10,8 +10,9 @@
  * @constructor
  */
 
-var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) {
+var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,quizz) {
     var self = this;
+    self.parentQuizz=quizz;
     self.label = label;
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
@@ -104,12 +105,12 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) 
 
                     element.bordure.node.onclick=function()
                     {
-                        element.bordure.attr('fill','black');
+                        elementClicked(element,'bordure');
                     };
 
                     element.content.node.onclick=function()
                     {
-                        element.content.attr('fill','white');
+                        elementClicked(element,'content');
                     };
 
                 })(self.tabAnswer[i]);
@@ -119,4 +120,32 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) 
         }
 
     }
+    function elementClicked(sourceElement,type){
+        var partClicked;
+        switch(type)
+        {
+            case 'bordure':
+                partClicked=sourceElement.bordure;
+                break;
+            case 'content':
+                partClicked=sourceElement.content;
+                break;
+
+        }
+
+        if(sourceElement.bCorrect)
+        {
+            self.parentQuizz.score++;
+        }else
+        {
+            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+        }
+
+        self.parentQuizz.nextQuestion();
+
+       // console.log("score: "+self.parentQuizz.score);
+    }
+
 };
+
+
