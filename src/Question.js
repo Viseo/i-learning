@@ -21,8 +21,9 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) 
 
     if (tabAnswer !== null) {
         tabAnswer.forEach(function (it) {
-            var tmp = new Answer(it.label, it.imageSrc, it.bCorrect, it.rgbBordure, it.bgColor);
+            var tmp = new Answer(it.label, it.imageSrc, it.bCorrect, it.colorBordure, it.bgColor);
             self.tabAnswer.push(tmp);
+
             self.displaySet.push(tmp.displaySet);
         });
     }
@@ -96,9 +97,26 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor) 
                     posy += (tileHeight + margin);
                     posx = x;
                 }
+
                 self.tabAnswer[i].display(posx, posy, tileWidth, tileHeight);
+               // self.temp=self.tabAnswer[i];
+                (function(element){
+
+                    element.bordure.node.onclick=function()
+                    {
+                        element.bordure.attr('fill','black');
+                    };
+
+                    element.content.node.onclick=function()
+                    {
+                        element.content.attr('fill','white');
+                    };
+
+                })(self.tabAnswer[i]);
+
                 count++;
             }
         }
+
     }
 };
