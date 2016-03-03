@@ -16,7 +16,7 @@ function Quizz(title,tabQuestions)
     self.tabQuestions=[];
     if (tabQuestions !== null) {
         tabQuestions.forEach(function (it) {
-            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer, it.colorBordure, it.bgColor);
+            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor);
             self.tabQuestions.push(tmp);
         });
     }

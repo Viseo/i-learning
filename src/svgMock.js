@@ -8,9 +8,9 @@ function RaphaelSpy(x,y,width,height){
         get width() {
             return paper.raphael.width;
         },
-    set width(width) {
-        paper.raphael.width=width;
-    },
+        set width(width) {
+            paper.raphael.width=width;
+        },
         get height() {
             return paper.raphael.height;
         },

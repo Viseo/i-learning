@@ -64,7 +64,7 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor) {
         diffH = 0;
     }
 
-    var cadre = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbCadre, 'stroke-width': 5});
+    var cadre = paper.rect(x, y-diffH, w, h).attr({fill: bgColor, stroke: rgbCadre});
     content.toFront();
 
     return {content:content, cadre:cadre};

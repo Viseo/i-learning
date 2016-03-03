@@ -25,10 +25,10 @@ function main()
         {label:"Fourth answer is...", imageSrc:null, bCorrect:true, colorBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 230, g: 122, b: 25}}
     ];
     var tabQuestions=[
-        {label:'Q1',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'},
-        {label:'Q2',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'},
-        {label:'Q3',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'},
-        {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,colorBordure:'blue', bgColor:'purple'}
+        {label:'Q1',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q2',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q3',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
+        {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
     var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
     quizz.display();
