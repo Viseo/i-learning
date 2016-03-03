@@ -15,9 +15,15 @@
     <script src="svgMock.js"></script>
     <script src="Quizz.js"></script>
     <script src="main.js"></script>
-
+    <script src="ExampleTimeout.js"></script>
     <script>
-        main();
+        /*myFunctionTimeout(runtimeMock);
+        runtimeMock.next();*/
+        var getScore = myFunctionTimeout();
+        console.log(getScore());
+        runtimeMock.imageLoaded("../resource/spectre.png", 350, 92);
+        runtimeMock.imageClicked("../resource/spectre.png", 100, 42);
+        console.log(getScore());
     </script>
 </body>
 </html>

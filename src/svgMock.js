@@ -21,6 +21,10 @@ function RaphaelSpy(x,y,width,height){
     paper.raphael=Raphael(x,y,width,height);
     paper.mock=RaphaelMock(x,y,width,height);
 
+    paper.path = function (string) {
+        return paper.raphael.path(string);
+    };
+
     paper.rect=function (x,y,width,height){
         var r = paper.raphael.rect(x,y,width,height);
         paper.mock.rect(x,y,width,height);

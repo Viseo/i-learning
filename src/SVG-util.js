@@ -41,6 +41,25 @@ var displayImage = function (imageSrc, x, y, w, h) {
     };
 };
 
+var displayImageWithEvent = function (imageSrc, x, y, w, h, onclickEvent) {
+    var img = new Image();
+    img.src = imageSrc;
+    img.onload = function () {
+        var width = img.width;
+        var height = img.height;
+        if(width > w) {
+            height *= w/width;
+            width = w;
+        }
+        if(height > h) {
+            width *= h/height;
+            height = h;
+        }
+        var i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+        i.node.onclick = onclickEvent;
+        return i;
+    };
+};
 
 /**
  *
