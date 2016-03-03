@@ -10,7 +10,7 @@
  * @constructor
  */
 
-function Quizz(title,tabQuestions)
+function Quizz(title,tabQuestions,color)
 {
     var self=this;
     self.tabQuestions=[];
@@ -20,6 +20,8 @@ function Quizz(title,tabQuestions)
             self.tabQuestions.push(tmp);
         });
     }
+
+    self.bgColor=color;
 
     var cadreResult={
         x:0,
@@ -88,11 +90,17 @@ function Quizz(title,tabQuestions)
 
     self.display=function(){
         // Quizz title
+        /*
         self.titleBox=self.paper.rect(0,0,self.paper.width,200);
         self.titleText=self.paper.text(self.titleBox.attr('width')/2,self.titleBox.attr('height')/2,self.title);
+        */
+        var titleObject=displayText(self.title,0,0,self.paper.width,200,'black','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
 
         self.tabQuestions[self.currentQuestionIndex].display(cadreQuestion.x,cadreQuestion.y,cadreQuestion.w,cadreQuestion.h);
         self.displaySet=self.paper.set();
+        self.displaySet.push(titleObject.cadre);// à priori pas d'image dans le cadre du quizz
+        self.displaySet.push(titleObject.content);
+
         self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);//à regarder quand on aura plusieurs quizz
 
     };

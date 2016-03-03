@@ -30,7 +30,7 @@ function main()
         {label:'Q3',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'},
         {label:'Q4',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
-    var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
+    var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions,{r: 194, g: 46, b: 83});
     quizz.display();
 
     // Display in rows
