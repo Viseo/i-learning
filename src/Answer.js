@@ -56,7 +56,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
             self.image = objectTotal.image;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
-            self.displaySet.push(self.image);
+            //self.displaySet.push(self.image);
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
@@ -69,7 +69,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
             self.image = displayImage(self.imageSrc, x, y, w, h);
-            self.displaySet.push(self.image);
+            //self.displaySet.push(self.image);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {

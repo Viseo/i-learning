@@ -121,9 +121,8 @@ function Quizz(title,tabQuestions,color)
     };
     self.nextQuestion=function(){
         var type=self.displaySet[self.displaySet.length-1].type;
-        if(type === 'set')
-        {
-            self.displaySet[self.displaySet.length-1].forEach(function(e){
+        if(type === 'set') {
+            self.displaySet[self.displaySet.length-1].forEach(function(e) {
                 e.remove();
             });
         }

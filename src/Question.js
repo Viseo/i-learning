@@ -102,16 +102,29 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
                 self.tabAnswer[i].display(posx, posy, tileWidth, tileHeight);
                // self.temp=self.tabAnswer[i];
                 (function(element){
+                    if(element.bordure) {
+                        element.bordure.node.onclick=function()
+                        {
+                            elementClicked(element,'bordure');
+                        };
+                    }
 
-                    element.bordure.node.onclick=function()
-                    {
-                        elementClicked(element,'bordure');
-                    };
+                    if(element.content) {
+                        element.content.node.onclick=function()
+                        {
+                            elementClicked(element,'content');
+                        };
+                    }
 
-                    element.content.node.onclick=function()
-                    {
-                        elementClicked(element,'content');
-                    };
+                    setTimeout(function() {
+                        if (element.image) {
+                            element.image = element.image();
+                            element.displaySet.push(element.image);
+                            element.image.node.onclick = function () {
+                                elementClicked(element, 'image');
+                            };
+                        }
+                    }, 200);
 
                 })(self.tabAnswer[i]);
 
@@ -119,25 +132,25 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
             }
         }
 
-    }
-    function elementClicked(sourceElement,type){
+    };
+
+    function elementClicked(sourceElement,type) {
         var partClicked;
-        switch(type)
-        {
+        switch(type) {
             case 'bordure':
                 partClicked=sourceElement.bordure;
                 break;
             case 'content':
                 partClicked=sourceElement.content;
                 break;
-
+            case 'image':
+                partClicked=sourceElement.image;
+                break;
         }
 
-        if(sourceElement.correct)
-        {
+        if(sourceElement.correct) {
             self.parentQuizz.score++;
-        }else
-        {
+        } else {
             self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
         }
 
