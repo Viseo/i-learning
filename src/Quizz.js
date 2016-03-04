@@ -59,9 +59,10 @@ function Quizz(title,tabQuestions,color)
      * @param y
      * @param w
      * @param h
+     * @param color
      */
 
-    var displayScore = function(x,y,w,h){
+    var displayScore = function(color){
         switch(self.score){
             case self.score===0:
                 self.finalMessage="T'es naze!";
@@ -85,13 +86,13 @@ function Quizz(title,tabQuestions,color)
                 break;
 
         }
-
+        self.bgColor=color;
         var nom;
 
         self.finalMessage+="\nVous avez répondu à "+tabQuestions.length+" questions, "+nom+" !";
 
-        self.resultBox=paper.rect(x,y,w,h);
-        self.resultText=paper.text(x+w/2,y+h/2,self.finalMessage);
+        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
+        self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
 
     };
 
@@ -141,10 +142,14 @@ function Quizz(title,tabQuestions,color)
     };
 
 
-    self.displayResult=function(x, y, w, h){
-        self.titleBox=self.paper.rect(x,y,self.paper.width,200);
+    self.displayResult=function(x, y, w, h, color){
+        cadreQuestion.w=w;
+        cadreResult.w=w-x;
+        cadreResult.x=x;
+        cadreTitle.w=w;
+        self.titleBox=self.paper.rect(x,y,cadreTitle.w-x,cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
         self.titleText=self.paper.text(x+self.titleBox.attr('width')/2,y+self.titleBox.attr('height')/2,self.title);
 
-        displayScore(x, y+200+15, paper.width, 200);
+        displayScore(color);
     };
 }
