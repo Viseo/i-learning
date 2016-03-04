@@ -28,34 +28,34 @@ function main() {
         {
             label: "Second answer is...",
             imageSrc: null,
-            bCorrect: true,
+            bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 125, g: 122, b: 117}
         },
         {
             label: "Third answer is...",
             imageSrc: null,
-            bCorrect: false,
+            bCorrect: true,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 25, g: 122, b: 230}
         },
         {
             label: "Fourth answer is...",
             imageSrc: null,
-            bCorrect: true,
+            bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 230, g: 122, b: 25}
         },
         {
             label: "Fifth answer is...",
             imageSrc: null,
-            bCorrect: true,
+            bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 230, g: 122, b: 25}
         }
     ];
     var tabQuestions = [
-        {label: 'Q1', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
+        {label: 'Q1', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
         {label: 'Q2', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
         {label: 'Q3', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
         {label: 'Q4', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},

@@ -66,7 +66,10 @@ function RaphaelSpy(x,y,width,height){
         paper.mock.writeTest();
         return i;
     };
-
+    paper.attr=function(param,value){
+        self.raphael.attr(param,value);
+        self.mock.attr(param,value);
+    };
     return paper;
 }
 

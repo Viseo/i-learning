@@ -94,7 +94,7 @@ function Puzzle(lines, rows,questionsTab) {
         for(var i = startPosition; i<(startPosition+self.rows); i++) {
             for(var j = 0; j<self.lines; j++) {
                 if(count < self.questionsTab.length) {
-                    var R = paper.rect(posX,posY,tileWidth,tileHeight);
+                    var R = paper.rect(posX,posY,tileWidth,tileHeight).attr('fill',self.virtualTab[i][j].bgColor);
                     var T = paper.text(posX+tileWidth/2,posY+tileHeight/2,self.virtualTab[i][j].label);
                     self.displaySet.push(R);
                     self.displaySet.push(T);
