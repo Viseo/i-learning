@@ -48,14 +48,14 @@ function main() {
         },
         {
             label: "Fifth answer is...",
-            imageSrc: null,
+            imageSrc: "../resource/spectre.png",
             bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 230, g: 122, b: 25}
         }
     ];
     var tabQuestions = [
-        {label: 'Q1', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
+        {label: 'Q1', imageSrc: "../resource/folder.png", tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
         {label: 'Q2', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
         {label: 'Q3', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
         {label: 'Q4', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},

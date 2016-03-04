@@ -65,6 +65,8 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
+            self.displaySet.push(self.bordure);
+            self.displaySet.push(self.content);
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
@@ -83,6 +85,16 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         }
 
         if (self.rows !== 0) {
+            setTimeout(function() {
+                if (self.image) {
+                    self.image = self.image();
+                    self.displaySet.push(self.image);
+                    self.image.node.onclick = function () {
+                        elementClicked(self, 'image');
+                    };
+                }
+            }, 200);
+
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             var tileHeight = h;
@@ -124,7 +136,7 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
                                 elementClicked(element, 'image');
                             };
                         }
-                    }, 200);
+                    }, 300);
 
                 })(self.tabAnswer[i]);
 
