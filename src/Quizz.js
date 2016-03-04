@@ -129,11 +129,15 @@ function Quizz(title,tabQuestions,color)
         if(self.currentQuestionIndex+1<self.tabQuestions.length)
         {
             self.currentQuestionIndex++;
-        }///else --> fin du tableau, dernière question
+            self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX+cadreQuestion.x,self.quizzMarginY+cadreQuestion.y,
+                cadreQuestion.w-self.quizzMarginX,cadreQuestion.h);
+            self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
 
-        self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX+cadreQuestion.x,self.quizzMarginY+cadreQuestion.y,
-            cadreQuestion.w-self.quizzMarginX,cadreQuestion.h);
-        self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+        }else //--> fin du tableau, dernière question
+        {
+            console.log("score: "+self.score);
+        }
+
     };
 
 

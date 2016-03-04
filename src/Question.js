@@ -133,7 +133,7 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
 
         }
 
-        if(sourceElement.bCorrect)
+        if(sourceElement.correct)
         {
             self.parentQuizz.score++;
         }else

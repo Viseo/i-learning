@@ -49,6 +49,14 @@ function RaphaelSpy(x,y,width,height){
             s.mset.push(element);
             s[s.length]=element;
         };
+        s.remove=function(){
+            s.rset.remove();
+            s.mset.remove();
+            while(s.length>0)
+            {
+                s.pop();
+            }
+        };
         return s;
     };
 
@@ -131,6 +139,9 @@ function RaphaelMock(x,y,width,height)
     paper.set=function(){
 
         var s=[];
+        s.remove=function(){
+            s=[];
+        };
         return s;
     };
 
