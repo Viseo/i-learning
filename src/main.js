@@ -41,7 +41,7 @@ function main()
         {label:'Q14',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
 
-    var puzzle = new Puzzle(3, 4, tabQuestions);
+    var puzzle = new Puzzle(2, 2, tabQuestions);
     puzzle.initVirtualTab();
     puzzle.display(20, 20, 600, 600, 0);
 
