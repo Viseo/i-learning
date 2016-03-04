@@ -73,12 +73,9 @@ function main() {
     var quizz = new Quizz("Ceci est le titre du Quizz n°1", tabQuestions, {r: 194, g: 46, b: 83});
      quizz.display(50,10,1200,1200);
 
-    // Navigation puzzle
-    /*var puzzle = new Puzzle(3, 1, tabQuestions);
-     puzzle.initVirtualTab();
-     var startPosition = 0;
-     var countInterval = 0;
-     puzzle.display(20, 20, 600, 600, 0);*/
+    // Navigation Puzzle
+    /*var puzzle = new Puzzle(3, 3, tabQuestions);
+    puzzle.display(20, 20, 600, 600, 0);*/
 
     //var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
     //quizz.display();
