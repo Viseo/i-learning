@@ -17,6 +17,7 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
     self.imageSrc = imageSrc;
     self.tabAnswer = [];
     self.rows=rows;
+    self.rightAnswers=[];
 
     self.displaySet=paper.set();
 
@@ -24,7 +25,10 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         tabAnswer.forEach(function (it) {
             var tmp = new Answer(it.label, it.imageSrc, it.bCorrect, it.colorBordure, it.bgColor);
             self.tabAnswer.push(tmp);
-
+            if(tmp.correct)
+            {
+               self.rightAnswers.push(tmp);
+            }
             self.displaySet.push(tmp.displaySet);
         });
     }
@@ -162,8 +166,14 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
 
         if(sourceElement.correct) {
             self.parentQuizz.score++;
+            console.log("Bonne réponse!\n");
         } else {
             self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+            var reponseD="";
+            self.rightAnswers.forEach(function(e){
+               reponseD+= e.label+"\n";
+            });
+            console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
         }
 
         self.parentQuizz.nextQuestion();
