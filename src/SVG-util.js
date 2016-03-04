@@ -9,7 +9,7 @@ var displayImageWithTitle = function (label, imageSrc, x, y, w, h, rgbCadre, bgC
     var margin = 5;
     var image = displayImage(imageSrc, x+margin, y+margin, w-2*margin, h*0.85-2*margin);
     var text = autoAdjustText(label, x, y+h*0.85, w, h*0.15);
-    var cadre = paper.rect(x, y, w, h, rgbCadre, bgColor);
+    var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
     text.toFront();
     return {cadre: cadre, image: image,  text: text};
 };
