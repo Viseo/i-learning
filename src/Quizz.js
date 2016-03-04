@@ -63,35 +63,47 @@ function Quizz(title,tabQuestions,color)
      */
 
     var displayScore = function(color){
+        var autoColor;
         switch(self.score){
-            case self.score===0:
+            case 0:
                 self.finalMessage="T'es naze!";
                 nom="dont aucune n'est juste";
+                autoColor={r:255,g:17,b:0};
                 break;
-            case self.score===1:
+            case 1:
                 self.finalMessage="Pas terrible!";
                 nom="dont une seule est juste";
+                autoColor={r:255,g:100,b:0};
                 break;
-            case self.score===self.tabQuestions.length:
+            case self.tabQuestions.length:
                 self.finalMessage="Génial !";
                 nom=" et toutes sont justes";
+                autoColor={r:100,g:255,b:100};
                 break;
-            case self.score===(self.tabQuestions.length-1):
+            case (self.tabQuestions.length-1):
                 self.finalMessage="Presque parfait !";
                 nom=" et toutes sont justes (sauf une!)";
+                autoColor={r:200,g:255,b:0};
                 break;
             default:
                 self.finalMessage="Pas mal !";
                 nom=" dont "+self.score+" sont justes";
+                autoColor={r:220,g:255,b:0};
                 break;
 
         }
-        self.bgColor=color;
+        //self.bgColor=color;
         var nom;
 
         self.finalMessage+="\nVous avez répondu à "+tabQuestions.length+" questions, "+nom+" !";
-
-        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
+        if(!color)
+        {
+            var usedColor=autoColor;
+        }else
+        {
+            usedColor=color;
+        }
+        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
         self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
 
     };
@@ -99,7 +111,8 @@ function Quizz(title,tabQuestions,color)
     self.display=function(x,y,w,h){
         // Quizz title
         cadreQuestion.w=w;
-        cadreResult.w=w;
+        cadreResult.w=w-x;
+        cadreResult.x=x;
         cadreTitle.w=w;
         self.quizzMarginX=x;
         self.quizzMarginY=y;
@@ -136,23 +149,21 @@ function Quizz(title,tabQuestions,color)
         }else //--> fin du tableau, dernière question
         {
             console.log("score: "+self.score);
+            self.displayResult();
         }
 
     };
 
 
-    self.displayResult=function(x, y, w, h, color){
-        cadreQuestion.w=w;
-        cadreResult.w=w-x;
-        cadreResult.x=x;
-        cadreTitle.w=w;
-        self.titleBox=self.paper.rect(x,y,cadreTitle.w-x,cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
-        self.titleText=self.paper.text(x+self.titleBox.attr('width')/2,y+self.titleBox.attr('height')/2,self.title);
-
+    self.displayResult=function(color){
         displayScore(color);
         /*
         gérer la couleur des réponses avec un éventuel dégradé/gradient de couleurs
         getGradientColors(rgb1, rgb2, nb_de_couleurs);
         */
+
+        //le puzzle qui prend en compte le tableau de questions ratées
+        self.puzzle=new Puzzle(4,4,self.questionsWithBadAnswers);
+        self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }
