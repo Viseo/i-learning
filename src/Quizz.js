@@ -53,6 +53,20 @@ function Quizz(title,tabQuestions,color)
 
     self.finalMessage="";
 
+    var intervalToken = setInterval(function () {
+        var loaded = true;
+        self.tabQuestions.forEach(function (e) {
+            loaded = loaded && e.imageLoaded;
+            e.tabAnswer.forEach(function (el) {
+                loaded = loaded && el.imageLoaded;
+            })
+        });
+        if(loaded) {
+            clearInterval(intervalToken);
+            self.display(50,10,1200,1200);
+        }
+    }, 100);
+
     /**
      *
      * @param x
@@ -163,7 +177,7 @@ function Quizz(title,tabQuestions,color)
         */
 
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(4,4,self.questionsWithBadAnswers);
-        self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
+        self.puzzle=new Puzzle(2,4,self.questionsWithBadAnswers, cadreResult);
+        //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }

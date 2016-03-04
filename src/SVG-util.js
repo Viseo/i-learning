@@ -5,27 +5,43 @@
 //var paper = Raphael(0, 0, 1500, 1500);
 
 
-var displayImageWithTitle = function (label, imageSrc, x, y, w, h, rgbCadre, bgColor) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor) {
     var margin = 5;
-    var image = displayImage(imageSrc, x+margin, y+margin, w-2*margin, h*0.85-2*margin);
+
+    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h*0.85-2*margin);
     var text = autoAdjustText(label, x, y+h*0.85, w, h*0.15);
     var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
     text.toFront();
+    image.toFront();
     return {cadre: cadre, image: image,  text: text};
 };
 
 /**
  *
  * @param imageSrc
+ * @param image
  * @param x
  * @param y
  * @param w
  * @param h
  */
-var displayImage = function (imageSrc, x, y, w, h) {
-    var img = new Image();
+var displayImage = function (imageSrc, image, x, y, w, h) {
+    var width = image.width;
+    var height = image.height;
+    if(width > w) {
+        height *= w/width;
+        width = w;
+    }
+    if(height > h) {
+        width *= h/height;
+        height = h;
+    }
+    return paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+
+    /*var img = new Image();
     var i = {};
     img.src = imageSrc;
+    console.log(img.width);
     img.onload = function () {
         var width = img.width;
         var height = img.height;
@@ -41,14 +57,34 @@ var displayImage = function (imageSrc, x, y, w, h) {
     };
     return function () {
         return i;
-    }
+    }*/
 };
+/**
+ *
+ * @param imageSrc
+ * @param image
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @param onclickEvent
+ */
+var displayImageWithEvent = function (imageSrc, image, x, y, w, h, onclickEvent) {
+    var width = image.width;
+    var height = image.height;
+    if(width > w) {
+        height *= w/width;
+        width = w;
+    }
+    if(height > h) {
+        width *= h/height;
+        height = h;
+    }
+    var i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
+    i.node.onclick = onclickEvent;
+    return i;
 
-var displayImageWithEvent = function (imageSrc, x, y, w, h, onclickEvent) {
-    var img = new Image();
-    var i = {};
-    img.src = imageSrc;
-    img.onload = function () {
+    /*img.onload = function () {
         var width = img.width;
         var height = img.height;
         if(width > w) {
@@ -64,7 +100,7 @@ var displayImageWithEvent = function (imageSrc, x, y, w, h, onclickEvent) {
     };
     return function () {
         return i;
-    }
+    }*/
 };
 
 /**
