@@ -101,6 +101,7 @@ function RaphaelMock(x,y,width,height)
         };
         paper['r'+element.id]=element;
         paper.children.push(element);
+        element.writeTest();
         return element;
     };
 
@@ -203,10 +204,14 @@ function attrMock (param, value) {
 
         });
         console.log("Set object--->"+tabAttributes);
+        return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object'&& value){
         //pas d'objet et une value -> set normal
+
         this[param]=value;
-        console.log("Set normal--->"+tabAttributes);
+
+        console.log("Set normal--->"+param+":"+value+" on "+this.type);
+        return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object' && !value){
         //pas d'objet et pas de value -> get
         var tabAttributes=Object.keys(this);

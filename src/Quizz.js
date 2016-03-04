@@ -117,9 +117,9 @@ function Quizz(title,tabQuestions,color)
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-        self.titleBox=self.paper.rect(x,y,cadreTitle.w-x,cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
-        self.titleText=self.paper.text(x+self.titleBox.attr('width')/2,y+self.titleBox.attr('height')/2,self.title);
+        self.titleBox=self.paper.rect(x,y,(cadreTitle.w-x),cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
 
+        self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
 
         self.displaySet=self.paper.set();
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
