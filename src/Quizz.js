@@ -63,26 +63,32 @@ function Quizz(title,tabQuestions,color)
      */
 
     var displayScore = function(color){
+        var autoColor;
         switch(self.score){
             case 0:
                 self.finalMessage="T'es naze!";
                 nom="dont aucune n'est juste";
+                autoColor={r:255,g:17,b:0};
                 break;
             case 1:
                 self.finalMessage="Pas terrible!";
                 nom="dont une seule est juste";
+                autoColor={r:255,g:100,b:0};
                 break;
             case self.tabQuestions.length:
                 self.finalMessage="Génial !";
                 nom=" et toutes sont justes";
+                autoColor={r:100,g:255,b:100};
                 break;
             case (self.tabQuestions.length-1):
                 self.finalMessage="Presque parfait !";
                 nom=" et toutes sont justes (sauf une!)";
+                autoColor={r:200,g:255,b:0};
                 break;
             default:
                 self.finalMessage="Pas mal !";
                 nom=" dont "+self.score+" sont justes";
+                autoColor={r:220,g:255,b:0};
                 break;
 
         }
@@ -90,8 +96,14 @@ function Quizz(title,tabQuestions,color)
         var nom;
 
         self.finalMessage+="\nVous avez répondu à "+tabQuestions.length+" questions, "+nom+" !";
-
-        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+color.r+','+color.g+','+color.b+')');
+        if(!color)
+        {
+            var usedColor=autoColor;
+        }else
+        {
+            usedColor=color;
+        }
+        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
         self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
 
     };
@@ -138,7 +150,7 @@ function Quizz(title,tabQuestions,color)
         }else //--> fin du tableau, dernière question
         {
             console.log("Final score: "+self.score);
-            self.displayResult({r:210,g:56,b:33});
+            self.displayResult();//{r:210,g:56,b:33}
         }
 
     };
@@ -148,6 +160,7 @@ function Quizz(title,tabQuestions,color)
         //le cadre du score (avec le score et le message)
         displayScore(color);
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(2,3,self.questionsWithBadAnswers);
+        self.puzzle=new Puzzle(4,4,self.questionsWithBadAnswers);
+        self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }
