@@ -151,5 +151,9 @@ function Quizz(title,tabQuestions,color)
         self.titleText=self.paper.text(x+self.titleBox.attr('width')/2,y+self.titleBox.attr('height')/2,self.title);
 
         displayScore(color);
+        /*
+        gérer la couleur des réponses avec un éventuel dégradé/gradient de couleurs
+        getGradientColors(rgb1, rgb2, nb_de_couleurs);
+        */
     };
 }
