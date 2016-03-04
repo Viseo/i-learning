@@ -67,7 +67,7 @@ function Puzzle(lines, rows,questionsTab) {
             if(startPosition + self.rows>= self.totalRows) {
                 self.rightArrow = displayImage("../resource/arrow right_grey.png", x+w+self.margin+25, y+h/2-25, 50, 50);
             } else {
-                self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w+self.margin+25, y+h/2-25, 50, 50, function() {
+                self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w-50, y+h/2-25, 50, 50, function() {
                     if(self.rows === 1 && startPosition !== self.totalRows -1) {
                         self.display(x, y, w, h, startPosition+1);
                     } else {
@@ -76,17 +76,19 @@ function Puzzle(lines, rows,questionsTab) {
                     }
                 });
             }
+            self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
+        } else {
+            self.initTiles(x, y, w, h, startPosition);
         }
-        self.initTiles(x, y, w, h, startPosition);
     };
 
 
     self.initTiles=function(x, y, w, h, startPosition) {
-        var tileWidth=(w-(self.rows+1)*self.margin)/self.rows;
-        var tileHeight=(h-(self.lines+1)*self.margin)/self.lines;
+        var tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
+        var tileHeight=(h-(self.lines-1)*self.margin)/self.lines;
 
-        var posX=self.margin*4+x;
-        var posY=self.margin+y;
+        var posX=x;
+        var posY=y;
 
         var newTile = {};
 
@@ -108,7 +110,7 @@ function Puzzle(lines, rows,questionsTab) {
                 }
             }
             posX += tileWidth+self.margin;
-            posY = self.margin+y;
+            posY = y;
         }
     }
 }
