@@ -7,6 +7,7 @@
  * @param rows : Nombre de colonnes pour afficher les réponses.
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
+ * @param quizz
  * @constructor
  */
 
@@ -18,6 +19,17 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
     self.tabAnswer = [];
     self.rows=rows;
     self.rightAnswers=[];
+
+    if(imageSrc) {
+        self.image = new Image();
+        self.image.src = imageSrc;
+        self.imageLoaded = false;
+        self.image.onload = function () {
+            self.imageLoaded = true;
+        };
+    } else {
+        self.imageLoaded = true;
+    }
 
     self.displaySet=paper.set();
 
@@ -48,7 +60,6 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
     }
     self.bordure = null;
     self.content = null;
-    self.image = null;
 
     /**
      *
@@ -65,12 +76,13 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, x, y, w, h, self.rgbBordure, self.bgColor);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
+            self.displaySet.push(self.image);
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
@@ -82,23 +94,14 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, x, y, w, h);
+            self.image = displayImage(self.imageSrc, self.image, x, y, w, h);
+            self.displaySet.push(self.image);
         }
         else if (!self.imageSrc && !self.label){
             self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure})
         }
 
         if (self.rows !== 0) {
-            setTimeout(function() {
-                if (self.image) {
-                    self.image = self.image();
-                    self.displaySet.push(self.image);
-                    self.image.node.onclick = function () {
-                        elementClicked(self, 'image');
-                    };
-                }
-            }, 200);
-
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             var tileHeight = h;
@@ -132,15 +135,11 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
                         };
                     }
 
-                    setTimeout(function() {
-                        if (element.image) {
-                            element.image = element.image();
-                            element.displaySet.push(element.image);
-                            element.image.node.onclick = function () {
-                                elementClicked(element, 'image');
-                            };
-                        }
-                    }, 300);
+                    if (element.image) {
+                        element.image.node.onclick = function () {
+                            elementClicked(element, 'image');
+                        };
+                    }
 
                 })(self.tabAnswer[i]);
 
