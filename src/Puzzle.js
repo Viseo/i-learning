@@ -35,42 +35,48 @@ function Puzzle(lines, rows,questionsTab) {
         }
     };
 
+    self.initVirtualTab();
+
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
+        if(self.rightArrow && self.leftArrow) {
+            self.displaySet.push(self.rightArrow());
+            self.displaySet.push(self.leftArrow());
+            self.rightArrow = {};
+            self.leftArrow = {};
+        }
         self.displaySet.forEach(function (it) {
             it.remove();
         });
 
-        var v = y+(self.margin*2)+(h/2);
-        console.log(v);
-
-        self.leftArrow = displayImageWithEvent("../resource/arrow left.png", x, y+h/2-25, 50, 50, function() {
-            console.log("Start position :" + 0);
-            if(self.rows === 1 && startPosition !== 0) {
-                self.display(x, y, w, h, startPosition--);
-            } else if(startPosition- self.rows +1 <= 0) {
-                self.display(x, y, w, h, 0);
-            }
-            else {
-                var newStartPosition = startPosition - self.rows + 1;
-                self.display(x, y, w, h, newStartPosition);
-            }
-
-        });
-
-        self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w+self.margin+25, y+h/2-25, 50, 50, function() {
-            console.log(self.totalRows + " " + self.rows);
-            if(self.rows === 1) {
-                self.display(x, y, w, h, startPosition++);
-            } else if(startPosition + self.rows - 1 >= self.totalRows - self.rows) {
-                console.log("Start position :" + (self.totalRows-self.rows));
-                self.display(x, y, w, h, self.totalRows-self.rows);
+        if (self.rows < self.totalRows) {
+            if(startPosition === 0) {
+                self.leftArrow = displayImage("../resource/arrow left_grey.png", x, y + h / 2 - 25, 50, 50);
             } else {
-                var newStartPosition = startPosition + self.rows - 1;
-                self.display(x, y, w, h, newStartPosition);
+                self.leftArrow = displayImageWithEvent("../resource/arrow left.png", x, y + h / 2 - 25, 50, 50, function () {
+                    if (self.rows === 1 && startPosition !== 0) {
+                        self.display(x, y, w, h, startPosition - 1);
+                    } else if (startPosition - self.rows + 1 <= 0) {
+                        self.display(x, y, w, h, 0);
+                    } else {
+                        self.display(x, y, w, h, startPosition - self.rows + 1);
+                    }
+                });
             }
-        });
 
+            if(startPosition + self.rows>= self.totalRows) {
+                self.rightArrow = displayImage("../resource/arrow right_grey.png", x+w+self.margin+25, y+h/2-25, 50, 50);
+            } else {
+                self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w+self.margin+25, y+h/2-25, 50, 50, function() {
+                    if(self.rows === 1 && startPosition !== self.totalRows -1) {
+                        self.display(x, y, w, h, startPosition+1);
+                    } else {
+                        var newStartPosition = startPosition + self.rows - 1;
+                        self.display(x, y, w, h, newStartPosition);
+                    }
+                });
+            }
+        }
         self.initTiles(x, y, w, h, startPosition);
     };
 
