@@ -4,7 +4,7 @@
 
 //var paper=Raphael(0,0,1500,1500);
 
-paper=Raphael(0,0,1500,1500);
+paper=RaphaelSpy(0,0,1500,1500);
 function main()
 {
 
@@ -41,8 +41,7 @@ function main()
         {label:'Q14',imageSrc:null,tabAnswer:tabAnswer,nbrows:2,colorBordure:'blue', bgColor:'purple'}
     ];
 
-    var puzzle = new Puzzle(2, 2, tabQuestions);
-    puzzle.initVirtualTab();
+    var puzzle = new Puzzle(3, 3, tabQuestions);
     puzzle.display(20, 20, 600, 600, 0);
 
     //var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);

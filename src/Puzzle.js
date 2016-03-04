@@ -35,6 +35,8 @@ function Puzzle(lines, rows,questionsTab) {
         }
     };
 
+    self.initVirtualTab();
+
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
         if(self.rightArrow && self.leftArrow) {
@@ -47,43 +49,35 @@ function Puzzle(lines, rows,questionsTab) {
             it.remove();
         });
 
-            if (self.rows < self.totalRows) {
-                if(startPosition === 0) {
-                    self.leftArrow = displayImageWithEvent("../resource/arrow left_grey.png", x, y + h / 2 - 25, 50, 50);
-                } else {
-                    self.leftArrow = displayImageWithEvent("../resource/arrow left.png", x, y + h / 2 - 25, 50, 50, function () {
-                        console.log("Start position :" + 0);
-                        if (self.rows === 1 && startPosition !== 0) {
-                            self.display(x, y, w, h, startPosition - 1);
-                        } else if (startPosition - self.rows + 1 <= 0) {
-                            self.display(x, y, w, h, 0);
-                        }
-                        else {
-                            var newStartPosition = startPosition - self.rows + 1;
-                            self.display(x, y, w, h, newStartPosition);
-                        }
-                    });
-                }
+        if (self.rows < self.totalRows) {
+            if(startPosition === 0) {
+                self.leftArrow = displayImage("../resource/arrow left_grey.png", x, y + h / 2 - 25, 50, 50);
+            } else {
+                self.leftArrow = displayImageWithEvent("../resource/arrow left.png", x, y + h / 2 - 25, 50, 50, function () {
+                    if (self.rows === 1 && startPosition !== 0) {
+                        self.display(x, y, w, h, startPosition - 1);
+                    } else if (startPosition - self.rows + 1 <= 0) {
+                        self.display(x, y, w, h, 0);
+                    } else {
+                        self.display(x, y, w, h, startPosition - self.rows + 1);
+                    }
+                });
+            }
 
-                if(startPosition + self.rows>= self.totalRows) {
-                    self.rightArrow = displayImage("../resource/arrow right_grey.png", x+w+self.margin+25, y+h/2-25, 50, 50);
-                } else {
-                    self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w+self.margin+25, y+h/2-25, 50, 50, function() {
-                        console.log(self.totalRows + " " + self.rows);
-                        if(self.rows === 1 && startPosition !== self.totalRows -1) {
-                            self.display(x, y, w, h, startPosition+1);
-                        } else {
-                            var newStartPosition = startPosition + self.rows - 1;
-                            self.display(x, y, w, h, newStartPosition);
-                        }
-                    });
-                }
-
-                self.initTiles(x, y, w, h, startPosition);
+            if(startPosition + self.rows>= self.totalRows) {
+                self.rightArrow = displayImage("../resource/arrow right_grey.png", x+w+self.margin+25, y+h/2-25, 50, 50);
+            } else {
+                self.rightArrow = displayImageWithEvent("../resource/arrow right.png", x+w+self.margin+25, y+h/2-25, 50, 50, function() {
+                    if(self.rows === 1 && startPosition !== self.totalRows -1) {
+                        self.display(x, y, w, h, startPosition+1);
+                    } else {
+                        var newStartPosition = startPosition + self.rows - 1;
+                        self.display(x, y, w, h, newStartPosition);
+                    }
+                });
+            }
         }
-        else {
-            self.initTiles(x, y, w, h, startPosition);
-        }
+        self.initTiles(x, y, w, h, startPosition);
     };
 
 
