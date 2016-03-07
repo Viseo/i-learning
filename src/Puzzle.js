@@ -91,7 +91,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
             self.displaySet.push(self.leftArrow);
 
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w+self.margin+25, y+h/2-25, 50, 50);
+                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w-50, y+h/2-25, 50, 50);
             } else {
                 self.rightArrow = displayImageWithEvent("../resource/arrow right.png", rightArrowBlack, x+w-50, y+h/2-25, 50, 50, function() {
                     if(self.rows === 1 && startPosition !== self.totalRows -1) {

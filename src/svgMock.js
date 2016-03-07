@@ -4,6 +4,7 @@
 
 function RaphaelSpy(x,y,width,height){
     var self=this;
+
     var paper={
         get width() {
             return paper.raphael.width;
@@ -89,6 +90,8 @@ function RaphaelMock(x,y,width,height)
         element.y=y;
         element.width=width;
         element.height=height;
+        element.node={};
+        element.node.onclick={};
         element.writeTest= function () {
             console.log('paper.r'+element.id+'.test('+element.x+','+element.y+','+element.width+','+element.height+');');
         };
@@ -113,6 +116,8 @@ function RaphaelMock(x,y,width,height)
         element.x=x;
         element.y=y;
         element.text=text;
+        element.node={};
+        element.node.onclick={};
         element.writeTest= function () {
             console.log('paper.t'+element.id+'.test('+element.x+','+element.y+',"'+element.text+'");');
         };
@@ -135,6 +140,9 @@ function RaphaelMock(x,y,width,height)
             return element;
         };*/
 
+        element.getBBox=getBBoxMock;
+        element.toFront=toFrontMock;
+
         paper['t'+element.id]=element;
         paper.children.push(element);
         return element;
@@ -156,6 +164,8 @@ function RaphaelMock(x,y,width,height)
         element.y = y;
         element.w = w;
         element.h = h;
+        element.node={};
+        element.node.onclick={};
         element.writeTest = function () {
             console.log('paper.i'+element.id+'.test("'+element.imageSrc+'",'+element.x+','+element.y+','+element.w+','+element.h+');')
         };
@@ -166,6 +176,9 @@ function RaphaelMock(x,y,width,height)
             expect(element.w).toEqual(w);
             expect(element.h).toEqual(h);
         };
+
+        element.toFront=toFrontMock;
+
         paper['i'+element.id]=element;
         paper.children.push(element);
         return element;
@@ -224,3 +237,28 @@ function attrMock (param, value) {
     }
 
 };
+
+
+
+function getBBoxMock(){
+    //console.log("not implemented yet!");
+    var test=document.createElement('div');
+    test.innerHTML=this.text;
+    document.body.appendChild(test);
+    console.log("Last child: "+document.body.lastElementChild.innerHTML);
+    var box={
+        width:test.clientWidth + 1,
+        height:test.clientHeight + 1
+    };
+    test.style.display='none';
+    document.body.removeChild(test);
+    console.log("Last child After remove: "+document.body.lastElementChild);
+    console.log("Box: %o",box);
+
+    return box;
+}
+
+function toFrontMock(){
+    console.log("toFront: not implemented yet!");
+    return null;
+}
