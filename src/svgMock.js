@@ -135,6 +135,8 @@ function RaphaelMock(x,y,width,height)
             return element;
         };*/
 
+        element.getBBox=getBBoxMock;
+
         paper['t'+element.id]=element;
         paper.children.push(element);
         return element;
@@ -166,6 +168,8 @@ function RaphaelMock(x,y,width,height)
             expect(element.w).toEqual(w);
             expect(element.h).toEqual(h);
         };
+
+
         paper['i'+element.id]=element;
         paper.children.push(element);
         return element;
@@ -224,3 +228,8 @@ function attrMock (param, value) {
     }
 
 };
+
+function getBBoxMock(){
+
+    return ;
+}
