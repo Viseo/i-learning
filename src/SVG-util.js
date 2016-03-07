@@ -16,12 +16,12 @@
  * @param policeSize
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor, policeSize) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor, policeSize, font) {
     var margin = 10;
 
-    var text = autoAdjustText(label, x, y+h-3*margin, w, null, policeSize).text;
+    var text = autoAdjustText(label, x, y+h-2*margin, w, null, policeSize, font).text;
     var textHeight = text.getBBox().height;
-    text.animate({y:y+h-2*margin-textHeight/2}, 0);
+    text.animate({y:y+h-margin-textHeight/2}, 0);
 
     var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-textHeight-3*margin);
     var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
@@ -92,10 +92,11 @@ var displayImageWithEvent = function (imageSrc, image, x, y, w, h, onclickEvent)
  * @param rgbCadre : rgb color for rectangle
  * @param bgColor : background color for rectangle
  * @param textHeight : number, taille de la police
+ * @param font
  * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
  */
-var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight) {
-    var content = autoAdjustText(label, x, y, w, h, textHeight).text;
+var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight, font) {
+    var content = autoAdjustText(label, x, y, w, h, textHeight, font).text;
 
     var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
     content.toFront();
@@ -110,15 +111,20 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight) {
  * @param y : Y position
  * @param w : width
  * @param h : height
- * @param textHeight : number, taille de la police
+ * @param policeSize : number, taille de la police
+ * @param font
  */
-var autoAdjustText = function (content, x, y, w, h, textHeight) {
+var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
     var t = paper.text(x+w/2, y+h/2, "");
-    var fontSize = textHeight;
+    var fontSize = policeSize;
 
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;
+
+    if(font) {
+        t.attr("font-family", font);
+    }
 
     t.attr("font-size", fontSize);
     // add text word by word
@@ -167,15 +173,15 @@ var autoAdjustText = function (content, x, y, w, h, textHeight) {
     return {finalHeight: finalHeight, text:t};
 };
 
-var getHeight = function (text, imageSrc, x, y, w, textHeight, image) {
+var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
     var formatedText;
     var margin = 10;
     if (text && imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, textHeight);
+        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 3*margin + displayImage(imageSrc, image, x, y, w);
     } else if(text && !imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, textHeight);
+        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 2*margin;
     } else if(!text && imageSrc) {

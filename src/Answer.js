@@ -18,10 +18,14 @@ var Answer = function (answer) {
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
 
-    if(answer.textHeight) {
-        self.textHeight = answer.textHeight;
+    if(answer.fontSize) {
+        self.fontSize = answer.fontSize;
     } else {
-        self.textHeight = 20;
+        self.fontSize = 20;
+    }
+
+    if(answer.font) {
+        self.font = answer.font;
     }
 
     self.imageLoaded = false;
@@ -68,7 +72,7 @@ var Answer = function (answer) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor, self.textHeight);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -78,7 +82,7 @@ var Answer = function (answer) {
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor, self.textHeight);
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);

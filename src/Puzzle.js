@@ -119,6 +119,8 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
         var newTile = {};
 
+        paper.setSize(paper.width, (self.margin + tileHeight)*self.lines + y + 2*self.margin);
+
         var count = startPosition*self.lines;
         for(var i = startPosition; i<(startPosition+self.rows); i++) {
             for(var j = 0; j<self.lines; j++) {

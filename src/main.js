@@ -20,10 +20,10 @@ function main() {
     {
             title: "Ceci est le titre du Quizz n°1",
             tabQuestions:[
-                {label:"Q1",imageSrc:"../resource/folder.png",
+                {label:"Q1",imageSrc:"../resource/folder.png", font:"Times New Roman", fontSize: 44,
                 tabAnswer: [
                     {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}, font:"Times New Roman", fontSize:36},
                     {label:"Second answer is...",imageSrc:null,bCorrect:false,
                         colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
                     {label:"Third answer is...",imageSrc:null,bCorrect:true,
@@ -216,7 +216,7 @@ function main() {
                             colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
                     nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
             ],
-            color:{r: 194, g: 46, b: 83}
+            bgColor:{r: 194, g: 46, b: 83}
     };
 
     var quizz = new Quizz(myQuizz);

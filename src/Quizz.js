@@ -4,10 +4,8 @@
 
 /**
  *
- * @param paper
- * @param title
- * @param tabQuestions
  * @constructor
+ * @param quizz
  */
 
 
@@ -17,12 +15,36 @@ function Quizz(quizz)
     self.tabQuestions=[];
     if (quizz.tabQuestions !== null) {
         quizz.tabQuestions.forEach(function (it) {
-            var tmp = new Question(/*it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor*/it,self);
+            var tmp = new Question(it, self);
             self.tabQuestions.push(tmp);
         });
     }
 
-    self.bgColor=quizz.color;
+    if(quizz.font) {
+        self.font = quizz.font;
+    }
+
+    if(quizz.fontSize) {
+        self.fontSize = quizz.fontSize;
+    } else {
+        self.fontSize = 20;
+    }
+
+    if (quizz.colorBordure && !isNaN(parseInt(quizz.colorBordure.r)) && !isNaN(parseInt(quizz.colorBordure.g)) && !isNaN(parseInt(quizz.colorBordure.b))) {
+        self.rgbBordure = "rgb(" + quizz.colorBordure.r + ", " + quizz.colorBordure.g + ", " + quizz.colorBordure.b + ")";
+    }
+    else {
+        self.rgbBordure = "black";
+    }
+
+    if (quizz.bgColor && !isNaN(parseInt(quizz.bgColor.r)) && !isNaN(parseInt(quizz.bgColor.g)) && !isNaN(parseInt(quizz.bgColor.b))) {
+        self.bgColor = "rgb(" + quizz.bgColor.r + ", " + quizz.bgColor.g + ", " + quizz.bgColor.b + ")";
+    }
+    else {
+        self.bgColor = "none";
+    }
+
+    //self.bgColor=quizz.color;
 
     var cadreResult={
         x:0,
@@ -118,8 +140,17 @@ function Quizz(quizz)
         {
             usedColor=color;
         }
-        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
-        self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
+
+
+        var object = displayText(self.finalMessage, cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
+
+        self.resultBox = object.cadre;
+        self.resultText = object.content;
+        self.displaySet.push(self.resultBox);
+        self.displaySet.push(self.resultText);
+
+        //self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
+        //self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
 
     };
 
@@ -132,9 +163,12 @@ function Quizz(quizz)
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-        self.titleBox=self.paper.rect(x,y,(cadreTitle.w-x),cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
+        var object = displayText(self.title, x,y,(cadreTitle.w-x),cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        self.titleBox = object.cadre;
+        self.titleText = object.content;
 
-        self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
+        //self.titleBox=self.paper.rect(x,y,(cadreTitle.w-x),cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
+        //self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
 
         self.displaySet=self.paper.set();
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
@@ -178,7 +212,7 @@ function Quizz(quizz)
         */
 
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(2,4,self.questionsWithBadAnswers, cadreResult);
+        self.puzzle=new Puzzle(2, 4, self.questionsWithBadAnswers, cadreResult);
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }
