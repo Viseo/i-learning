@@ -9,13 +9,19 @@
  * @param bCorrect : booléen qui indique si la réponse est correcte
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
+ * @param textHeight
  * @constructor
  */
-var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
+var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor, textHeight) {
     var self = this;
     self.label = label;
     self.imageSrc = imageSrc;
     self.correct = bCorrect;
+    if(textHeight) {
+        self.textHeight = textHeight;
+    } else {
+        self.textHeight = 20;
+    }
 
     self.imageLoaded = false;
 
@@ -61,7 +67,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor, self.textHeight);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -71,7 +77,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor, self.textHeight);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
@@ -79,7 +85,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image, x, y, w, h);
+            self.image = displayImage(self.imageSrc, self.image, x, y, w, h).image;
             self.displaySet.push(self.image);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure

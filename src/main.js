@@ -40,15 +40,16 @@ function main() {
             bgColor: {r: 25, g: 122, b: 230}
         },
         {
-            label: "Fourth answer is...",
+            label: "Fourth answer is... ! Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose. Well, I just need a long answer for test purpose.",
             imageSrc: null,
             bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 230, g: 122, b: 25}
         },
         {
-            label: "Fifth answer is...",
+            label: "Fifth answer is... Also a very long answer. Just for fun :3 Just for fun :3 Just for fun :3 Just for fun :3 Just for fun :3 Just for fun :3 Just for fun :3 Just for fun :3",
             imageSrc: "../resource/spectre.png",
+            //imageSrc: "../resource/statue.jpg",
             bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
             bgColor: {r: 230, g: 122, b: 25}

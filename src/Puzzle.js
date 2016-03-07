@@ -76,7 +76,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                self.leftArrow = displayImage("../resource/arrow left_grey.png", leftArrowGrey, x, y + h / 2 - 25, 50, 50);
+                self.leftArrow = displayImage("../resource/arrow left_grey.png", leftArrowGrey, x, y + h / 2 - 25, 50, 50).image;
             } else {
                 self.leftArrow = displayImageWithEvent("../resource/arrow left.png", leftArrowBlack, x, y + h / 2 - 25, 50, 50, function () {
                     if (self.rows === 1 && startPosition !== 0) {
@@ -91,7 +91,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
             self.displaySet.push(self.leftArrow);
 
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w-50, y+h/2-25, 50, 50);
+                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w-50, y+h/2-25, 50, 50).image;
             } else {
                 self.rightArrow = displayImageWithEvent("../resource/arrow right.png", rightArrowBlack, x+w-50, y+h/2-25, 50, 50, function() {
                     if(self.rows === 1 && startPosition !== self.totalRows -1) {

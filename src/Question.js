@@ -74,9 +74,11 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
             throw new Error(NaN);
         }
 
+        var height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
+
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, height, self.rgbBordure, self.bgColor);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -86,7 +88,7 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            var object = displayText(self.label, x, y, w, height, self.rgbBordure, self.bgColor);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
@@ -94,19 +96,31 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image, x, y, w, h);
+            self.image = displayImage(self.imageSrc, self.image, x, y, w, height).image;
             self.displaySet.push(self.image);
         }
         else if (!self.imageSrc && !self.label){
-            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure})
+            self.bordure = paper.rect(x, y, w, height).attr({fill: self.bgColor, stroke: self.rgbBordure})
         }
 
         if (self.rows !== 0) {
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
-            var tileHeight = h;
+            var tileHeight = 0;
+
+            var tmpTileHeight;
+
+            for(var answer of self.tabAnswer) {
+                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
+                if(tmpTileHeight > tileHeight) {
+                    tileHeight = tmpTileHeight;
+                }
+            }
+
+            paper.setSize(paper.width, (margin + tileHeight)*Math.round(self.tabAnswer.length/self.rows) + height + y + 2*margin);
+
             var posx = x;
-            var posy = y + h + margin * 2;
+            var posy = y + height + margin * 2;
             var count = 0;
             for (var i = 0; i < self.tabAnswer.length; i++) {
                 if (i !== 0) {
