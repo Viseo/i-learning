@@ -56,19 +56,19 @@ function main() {
     ];
     var tabQuestions = [
         {label: 'Q1', imageSrc: "../resource/folder.png", tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
-        {label: 'Q2', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q3', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q4', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q5', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q6', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q7', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q8', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q9', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q10', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q11', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q12', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q13', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'},
-        {label: 'Q14', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: 'purple'}
+        {label: 'Q2', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q3', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q4', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q5', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q6', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q7', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q8', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q9', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q10', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q11', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q12', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q13', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
+        {label: 'Q14', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'}
     ];
     var quizz = new Quizz("Ceci est le titre du Quizz n°1", tabQuestions, {r: 194, g: 46, b: 83});
 
