@@ -10,18 +10,19 @@
  * @constructor
  */
 
-function Quizz(title,tabQuestions,color)
+
+function Quizz(quizz)
 {
     var self=this;
     self.tabQuestions=[];
-    if (tabQuestions !== null) {
-        tabQuestions.forEach(function (it) {
-            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor,self);
+    if (quizz.tabQuestions !== null) {
+        quizz.tabQuestions.forEach(function (it) {
+            var tmp = new Question(/*it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor*/it,self);
             self.tabQuestions.push(tmp);
         });
     }
 
-    self.bgColor=color;
+    self.bgColor=quizz.color;
 
     var cadreResult={
         x:0,
@@ -46,7 +47,7 @@ function Quizz(title,tabQuestions,color)
     self.score=0;
     self.paper=paper;
     //self.puzzle;  //plus tard !
-    self.title=title;
+    self.title=quizz.title;
 
 
     self.currentQuestionIndex=-1;
@@ -109,7 +110,7 @@ function Quizz(title,tabQuestions,color)
         //self.bgColor=color;
         var nom;
 
-        self.finalMessage+="\nVous avez répondu à "+tabQuestions.length+" questions, "+nom+" !";
+        self.finalMessage+="\nVous avez répondu à "+quizz.tabQuestions.length+" questions, "+nom+" !";
         if(!color)
         {
             var usedColor=autoColor;

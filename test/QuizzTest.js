@@ -72,7 +72,15 @@ describe('Quizz Test', function() {
     ];
 
         quizz=new Quizz("Ceci est le titre du Quizz n°1", tabQuestions, {r: 194, g: 46, b: 83});
-        quizz.display(0,0,1200,1200);
+        quizz.displaySet=paper.set();
+        quizz.displaySet.push(paper.rect(50,50,1000,200));
+        quizz.displaySet.push(paper.rect(50,300,1000,200));
+        var set=paper.set();
+        set.push(paper.rect(50,500,1000,200));
+        set.push(paper.rect(50,500,1000,200));
+        set.push(paper.rect(50,500,1000,200));
+        set.push(paper.rect(50,500,1000,200));
+        quizz.displaySet.push(set);
         var tmp=quizz.currentQuestionIndex;
         quizz.nextQuestion();
         expect(quizz.currentQuestionIndex).toEqual(tmp+1);

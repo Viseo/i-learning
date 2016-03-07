@@ -9,25 +9,26 @@
  * @param bCorrect : booléen qui indique si la réponse est correcte
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
- * @param textHeight
  * @constructor
  */
-var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor, textHeight) {
+/*label, imageSrc, bCorrect, colorBordure, bgColor*/
+var Answer = function (answer) {
     var self = this;
-    self.label = label;
-    self.imageSrc = imageSrc;
-    self.correct = bCorrect;
-    if(textHeight) {
-        self.textHeight = textHeight;
+    self.label = answer.label;
+    self.imageSrc = answer.imageSrc;
+    self.correct = answer.bCorrect;
+
+    if(answer.textHeight) {
+        self.textHeight = answer.textHeight;
     } else {
         self.textHeight = 20;
     }
 
     self.imageLoaded = false;
 
-    if(imageSrc) {
+    if(answer.imageSrc) {
         self.image = new Image();
-        self.image.src = imageSrc;
+        self.image.src = answer.imageSrc;
         self.image.onload = function () {
             self.imageLoaded = true;
         };
@@ -37,15 +38,15 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor, textHei
 
     self.displaySet=paper.set();
 
-    if(colorBordure && !isNaN(parseInt(colorBordure.r)) && !isNaN(parseInt(colorBordure.g)) && !isNaN(parseInt(colorBordure.b))) {
-        self.rgbBordure = "rgb("+colorBordure.r+", "+colorBordure.g+", "+colorBordure.b+")";
+    if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
+        self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
     }
     else {
         self.rgbBordure = "black";
     }
 
-    if(bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
-        self.bgColor = "rgb("+bgColor.r+", "+bgColor.g+", "+bgColor.b+")";
+    if(answer.bgColor && !isNaN(parseInt(answer.bgColor.r)) && !isNaN(parseInt(answer.bgColor.g)) && !isNaN(parseInt(answer.bgColor.b))) {
+        self.bgColor = "rgb("+answer.bgColor.r+", "+answer.bgColor.g+", "+answer.bgColor.b+")";
     }
     else {
         self.bgColor = "none";
