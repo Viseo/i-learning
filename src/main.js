@@ -14,64 +14,213 @@ function main() {
 
     puzzle.displaySet.forEach(function(e){
         e.remove();
-    });
+    });*/
 
-     */
-    var tabAnswer = [
-        {
-            label: "My first answer is...",
-            imageSrc: null,
-            bCorrect: false,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 125, g: 122, b: 117}
-        },
-        {
-            label: "Second answer is...",
-            imageSrc: null,
-            bCorrect: false,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 125, g: 122, b: 117}
-        },
-        {
-            label: "Third answer is...",
-            imageSrc: null,
-            bCorrect: true,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 25, g: 122, b: 230}
-        },
-        {
-            label: "Fourth answer is...",
-            imageSrc: null,
-            bCorrect: false,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 230, g: 122, b: 25}
-        },
-        {
-            label: "Fifth answer is...",
-            imageSrc: "../resource/spectre.png",
-            bCorrect: false,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 230, g: 122, b: 25}
-        }
-    ];
-    var tabQuestions = [
-        {label: 'Q1', imageSrc: "../resource/folder.png", tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
-        {label: 'Q2', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q3', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q4', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q5', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q6', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q7', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q8', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q9', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q10', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q11', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q12', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q13', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'},
-        {label: 'Q14', imageSrc: null, tabAnswer: tabAnswer, nbrows: 2, colorBordure: 'blue', bgColor: '{r: 230, g: 122, b: 25}'}
-    ];
-    var quizz = new Quizz("Ceci est le titre du Quizz n°1", tabQuestions, {r: 194, g: 46, b: 83});
-   // quizz.display(10,10,1200,1200);
+    var myQuizz=
+    {
+            title: "Ceci est le titre du Quizz n°1",
+            tabQuestions:[
+                {label:"Q1",imageSrc:"../resource/folder.png",
+                tabAnswer: [
+                    {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                    {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                    {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                    {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                    {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q2",imageSrc:null,
+                tabAnswer: [
+                    {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                    {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                    {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                    {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                    {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q3",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q4",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q5",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q6",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q7",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q8",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q9",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q10",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q11",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q12",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q13",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+
+                {label:"Q14",imageSrc:null,
+                    tabAnswer: [
+                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
+                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
+                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            ],
+            color:{r: 194, g: 46, b: 83}
+    };
+
+    var quizz = new Quizz(myQuizz);
+
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
     puzzle.display(20, 20, 600, 600, 0);*/

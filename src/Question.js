@@ -1,28 +1,23 @@
 /** Created by ABO3476 on 29/02/2016. */
 
 /**
- * @param label : texte à afficher pour la question
- * @param imageSrc : lien relatif vers l'image. Peut-être vide/null/indéfini si aucune image
- * @param tabAnswer : Tableau réponses
- * @param rows : Nombre de colonnes pour afficher les réponses.
- * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
- * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
+ * @param question
  * @param quizz
  * @constructor
  */
-
-var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,quizz) {
+/*label,imageSrc,tabAnswer, rows, colorBordure, bgColor*/
+var Question = function (question,quizz) {
     var self = this;
     self.parentQuizz=quizz;
-    self.label = label;
-    self.imageSrc = imageSrc;
+    self.label = question.label;
+    self.imageSrc = question.imageSrc;
     self.tabAnswer = [];
-    self.rows=rows;
+    self.rows=question.nbrows;
     self.rightAnswers=[];
 
-    if(imageSrc) {
+    if(question.imageSrc) {
         self.image = new Image();
-        self.image.src = imageSrc;
+        self.image.src = question.imageSrc;
         self.imageLoaded = false;
         self.image.onload = function () {
             self.imageLoaded = true;
@@ -33,9 +28,9 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
 
     self.displaySet=paper.set();
 
-    if (tabAnswer !== null) {
-        tabAnswer.forEach(function (it) {
-            var tmp = new Answer(it.label, it.imageSrc, it.bCorrect, it.colorBordure, it.bgColor);
+    if (question.tabAnswer !== null) {
+        question.tabAnswer.forEach(function (it) {
+            var tmp = new Answer(/*it.label, it.imageSrc, it.bCorrect, it.colorBordure, it.bgColor*/it);
             self.tabAnswer.push(tmp);
             if(tmp.correct)
             {
@@ -45,15 +40,15 @@ var Question = function (label,imageSrc,tabAnswer, rows, colorBordure, bgColor,q
         });
     }
 
-    if (colorBordure && !isNaN(parseInt(colorBordure.r)) && !isNaN(parseInt(colorBordure.g)) && !isNaN(parseInt(colorBordure.b))) {
-        self.rgbBordure = "rgb(" + colorBordure.r + ", " + colorBordure.g + ", " + colorBordure.b + ")";
+    if (question.colorBordure && !isNaN(parseInt(question.colorBordure.r)) && !isNaN(parseInt(question.colorBordure.g)) && !isNaN(parseInt(question.colorBordure.b))) {
+        self.rgbBordure = "rgb(" + question.colorBordure.r + ", " + question.colorBordure.g + ", " + question.colorBordure.b + ")";
     }
     else {
         self.rgbBordure = "black";
     }
 
-    if (bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
-        self.bgColor = "rgb(" + bgColor.r + ", " + bgColor.g + ", " + bgColor.b + ")";
+    if (question.bgColor && !isNaN(parseInt(question.bgColor.r)) && !isNaN(parseInt(question.bgColor.g)) && !isNaN(parseInt(question.bgColor.b))) {
+        self.bgColor = "rgb(" + question.bgColor.r + ", " + question.bgColor.g + ", " + question.bgColor.b + ")";
     }
     else {
         self.bgColor = "none";
