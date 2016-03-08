@@ -123,7 +123,11 @@ var Question = function (question,quizz) {
                 }
             }
 
-            paper.setSize(paper.width, (margin + tileHeight)*Math.round(self.tabAnswer.length/self.rows) + height + y + 2*margin);
+            if(self.tabAnswer.length%self.rows === 0) {
+                paper.setSize(paper.width, (margin + tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + height + y + 2*margin);
+            } else {
+                paper.setSize(paper.width, (margin + tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + height + y + 2*margin);
+            }
 
             var posx = x;
             var posy = y + height + margin * 2;
