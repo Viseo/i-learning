@@ -20,6 +20,18 @@ function Quizz(quizz)
         });
     }
 
+    if(quizz.puzzleRows) {
+        self.puzzleRows = quizz.puzzleRows;
+    } else {
+        self.puzzleRows = 2;
+    }
+
+    if(quizz.puzzleLines) {
+        self.puzzleLines = quizz.puzzleLines;
+    } else {
+        self.puzzleLines = 2;
+    }
+
     if(quizz.font) {
         self.font = quizz.font;
     }
@@ -91,53 +103,45 @@ function Quizz(quizz)
     }, 100);
 
     /**
-     *
-     * @param x
-     * @param y
-     * @param w
-     * @param h
+     *  
      * @param color
      */
-
     var displayScore = function(color){
         var autoColor;
-        switch(self.score){
+        switch(self.score) {
             case 0:
-                self.finalMessage="T'es naze!";
-                nom="dont aucune n'est juste";
+                self.finalMessage="Votre niveau est désolant... Mais gardez espoir !";
+                nom="dont aucune n'est juste !";
                 autoColor={r:255,g:17,b:0};
                 break;
             case 1:
-                self.finalMessage="Pas terrible!";
-                nom="dont une seule est juste";
+                self.finalMessage="Vous avez encore de nombreux progrès à faire.";
+                nom="dont une seule est juste.";
                 autoColor={r:255,g:100,b:0};
                 break;
             case self.tabQuestions.length:
-                self.finalMessage="Génial !";
-                nom=" et toutes sont justes";
+                self.finalMessage="Impressionant !";
+                nom=" et toutes sont justes !";
                 autoColor={r:100,g:255,b:100};
                 break;
             case (self.tabQuestions.length-1):
-                self.finalMessage="Presque parfait !";
-                nom=" et toutes sont justes (sauf une!)";
+                self.finalMessage="Pas mal du tout !";
+                nom=" et toutes (sauf une...) sont justes !";
                 autoColor={r:200,g:255,b:0};
                 break;
             default:
-                self.finalMessage="Pas mal !";
-                nom=" dont "+self.score+" sont justes";
+                self.finalMessage="Correct, mais ne relachez pas vos efforts !";
+                nom=" dont "+self.score+" sont justes !";
                 autoColor={r:220,g:255,b:0};
                 break;
 
         }
-        //self.bgColor=color;
         var nom;
 
-        self.finalMessage+="\nVous avez répondu à "+quizz.tabQuestions.length+" questions, "+nom+" !";
-        if(!color)
-        {
+        self.finalMessage+="\nVous avez répondu à "+quizz.tabQuestions.length+" questions, "+nom;
+        if(!color) {
             var usedColor=autoColor;
-        }else
-        {
+        } else {
             usedColor=color;
         }
 
@@ -212,7 +216,7 @@ function Quizz(quizz)
         */
 
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(2, 4, self.questionsWithBadAnswers, cadreResult);
+        self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, cadreResult);
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }

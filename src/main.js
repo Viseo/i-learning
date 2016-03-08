@@ -204,19 +204,19 @@ function main() {
 
                 {label:"Q14",imageSrc:null,
                     tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+                        {label:"My first answer is...",imageSrc: null, bCorrect: false,
+                            colorBordure: {r: 155, g: 222, b: 17}, bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Second answer is...",imageSrc: null, bCorrect: false,
+                            colorBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 125, g: 122, b: 117}},
+                        {label:"Third answer is...",imageSrc: null, bCorrect: true,
+                            colorBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 25, g: 122, b: 230}},
+                        {label:"Fourth answer is...",imageSrc: null, bCorrect: false,
+                            colorBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 230, g: 122, b: 25}},
+                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png", bCorrect: false,
+                            colorBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 230, g: 122, b: 25}}],
+                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255}, bgColor:{r: 128, g: 0, b: 128}}
             ],
-            bgColor:{r: 194, g: 46, b: 83}
+            bgColor:{r: 94, g: 46, b: 183}
     };
 
     var quizz = new Quizz(myQuizz);
