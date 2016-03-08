@@ -113,11 +113,11 @@ var myQuizz=
                 tabAnswer: [
                     {label:"Un flandrois",imageSrc: null,bCorrect:false,
                         colorBordure: myColors.green,bgColor:myColors.grey},
-                    {label:"Un flamby",imageSrc:null,bCorrect:false,
+                    {label:"Un flamby",imageSrc: "../resource/hollandeContent.jpg",bCorrect:false,
                         colorBordure:myColors.green,bgColor:myColors.grey},
-                    {label:"Un flamand",imageSrc:null,bCorrect:true,
+                    {label:"Un flamand",imageSrc:"../resource/flamantRose.jpg",bCorrect:true,
                         colorBordure:myColors.green,bgColor:myColors.blue},
-                    {label:"Un flanders", imageSrc:null, bCorrect:false,
+                    {label:"Un flanders", imageSrc: "../resource/flanders.png", bCorrect:false,
                         colorBordure:myColors.green, bgColor:myColors.grey}
                 ],
                 nbrows: 3, colorBordure:myColors.primaryBlue, bgColor:myColors.purple},
