@@ -86,10 +86,10 @@ var Question = function (question,quizz) {
             var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
-            self.image = objectTotal.image;
+            self.raphImage = objectTotal.image;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
-            self.displaySet.push(self.image);
+            self.displaySet.push(self.raphImage);
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
@@ -101,8 +101,8 @@ var Question = function (question,quizz) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image, x, y, w, height).image;
-            self.displaySet.push(self.image);
+            self.raphImage = displayImage(self.imageSrc, self.image, x, y, w, height).image;
+            self.displaySet.push(self.raphImage);
         }
         else if (!self.imageSrc && !self.label){
             self.bordure = paper.rect(x, y, w, height).attr({fill: self.bgColor, stroke: self.rgbBordure})

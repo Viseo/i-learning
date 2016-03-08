@@ -60,7 +60,7 @@ function Quizz(quizz)
 
     var cadreResult={
         x:0,
-        y:300,
+        y:220,
         w:paper.width,
         h:200
     };
@@ -103,7 +103,7 @@ function Quizz(quizz)
     }, 100);
 
     /**
-     *  
+     *
      * @param color
      */
     var displayScore = function(color){
@@ -145,17 +145,12 @@ function Quizz(quizz)
             usedColor=color;
         }
 
-
         var object = displayText(self.finalMessage, cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
 
         self.resultBox = object.cadre;
         self.resultText = object.content;
         self.displaySet.push(self.resultBox);
         self.displaySet.push(self.resultText);
-
-        //self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
-        //self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
-
     };
 
     self.display=function(x,y,w,h){
@@ -170,9 +165,6 @@ function Quizz(quizz)
         var object = displayText(self.title, x,y,(cadreTitle.w-x),cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
-
-        //self.titleBox=self.paper.rect(x,y,(cadreTitle.w-x),cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
-        //self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
 
         self.displaySet=self.paper.set();
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
