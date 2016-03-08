@@ -1,59 +1,71 @@
-/**
- * Created by qde3485 on 25/02/16.
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>(3,3)</title>
+</head>
+<body>
+<script src="../lib/raphael-min.js"></script>
+<script src="../lib/d3.min.js"></script>
+<script src="SVG-util.js"></script>
+<script src="Answer.js"></script>
+<script src="Question.js"></script>
+<script src="Puzzle.js"></script>
+<script src="svgMock.js"></script>
+<script src="Quizz.js"></script>
+<script src="main.js"></script>
+<script src="ExampleTimeout.js"></script>
+<script>
+    paper=Raphael(0,0,document.body.clientWidth,1500);
+    var myColors={
+        blue:{r: 25, g: 122, b: 230},
+        primaryBlue:{r: 0, g: 0, b: 255},
+        grey:{r: 125, g: 122, b: 117},
+        orange:{r: 230, g: 122, b: 25},
+        purple:{r: 170, g: 100, b: 170},
+        green:{r: 155, g: 222, b: 17},
+        raspberry:{r: 194, g: 46, b: 83}
+    };
+    var myQuizz=
+    {
+        title: "Qui veut gagner des millions ? Quizz n°1",
+        tabQuestions:[
+            {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", font:"Times New Roman", fontSize: 44,
+                tabAnswer: [
+                    {label:"Comtesse",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Déesse",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Bougresse",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Diablesse",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
 
-paper=Raphael(0,0,document.body.clientWidth,1500);
-function main() {
+            {label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
+                tabAnswer: [
+                    {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"La poire",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"L'orange",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-var myColors={
-    blue:{r: 25, g: 122, b: 230},
-    primaryBlue:{r: 0, g: 0, b: 255},
-    grey:{r: 125, g: 122, b: 117},
-    orange:{r: 230, g: 122, b: 25},
-    purple:{r: 170, g: 100, b: 170},
-    green:{r: 155, g: 222, b: 17},
-    raspberry:{r: 194, g: 46, b: 83}
-};
-var myQuizz=
-{
-    title: "Qui veut gagner des millions ? Quizz n°1",
-    tabQuestions:[
-        {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", font:"Times New Roman", fontSize: 44,
-            tabAnswer: [
-                {label:"Comtesse",imageSrc: null,bCorrect:false,
-                    colorBordure: myColors.green,bgColor:myColors.grey},
-                {label:"Déesse",imageSrc:null,bCorrect:true,
-                    colorBordure:myColors.green,bgColor:myColors.blue},
-                {label:"Bougresse",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey},
-                {label:"Diablesse",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey}
-            ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
-
-        {label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
-            tabAnswer: [
-                {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
-                    colorBordure: myColors.green,bgColor:myColors.grey},
-                {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
-                    colorBordure:myColors.green,bgColor:myColors.blue},
-                {label:"La poire",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey},
-                {label:"L'orange",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey}
-            ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
-
-        {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null,
-            tabAnswer: [
-                {label:"Les danseuses",imageSrc: null,bCorrect:true,
-                    colorBordure: myColors.green,bgColor:myColors.blue},
-                {label:"Les boxeurs",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.blue,bgColor:myColors.grey},
-                {label:"Les rugbymen",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.grey,bgColor:myColors.grey},
-                {label:"Les sumos",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.orange, bgColor:myColors.grey}
+            {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Les danseuses",imageSrc: null,bCorrect:true,
+                        colorBordure: myColors.green,bgColor:myColors.blue},
+                    {label:"Les boxeurs",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.blue,bgColor:myColors.grey},
+                    {label:"Les rugbymen",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.grey,bgColor:myColors.grey},
+                    {label:"Les sumos",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.orange, bgColor:myColors.grey}
 
                 ],
                 nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
@@ -107,20 +119,20 @@ var myQuizz=
                         colorBordure:myColors.green,bgColor:myColors.grey}
 
                 ],
-                nbrows: 2, colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
+                nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
             {label:"Comment appelle-t-on un habitant de Flandre?",imageSrc:null,
                 tabAnswer: [
                     {label:"Un flandrois",imageSrc: null,bCorrect:false,
                         colorBordure: myColors.green,bgColor:myColors.grey},
-                    {label:"Un flamby",imageSrc: "../resource/hollandeContent.jpg",bCorrect:false,
+                    {label:"Un flamby",imageSrc:null,bCorrect:false,
                         colorBordure:myColors.green,bgColor:myColors.grey},
-                    {label:"Un flamand",imageSrc:"../resource/flamantRose.jpg",bCorrect:true,
+                    {label:"Un flamand",imageSrc:null,bCorrect:true,
                         colorBordure:myColors.green,bgColor:myColors.blue},
-                    {label:"Un flanders", imageSrc: "../resource/flanders.png", bCorrect:false,
-                        colorBordure:myColors.green, bgColor:myColors.grey}
+                    {label:"Un flanders",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
                 ],
-                nbrows: 3, colorBordure:myColors.primaryBlue, bgColor:myColors.purple},
+                nbrows: 3,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
             {label:"Formentera est une île des...",imageSrc:null,
                 tabAnswer: [
@@ -201,7 +213,7 @@ var myQuizz=
                 nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
         ],
-        bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
+        bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:3
     };
 
     var quizz = new Quizz(myQuizz);
@@ -221,4 +233,6 @@ var myQuizz=
 
     //Display Resultat Puzzle
     //quizz.displayResult(50, 10, 1200, 1200, myColors.grey);
-}
+</script>
+</body>
+</html>
