@@ -125,13 +125,24 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
         for(var i = startPosition; i<(startPosition+self.rows); i++) {
             for(var j = 0; j<self.lines; j++) {
                 if(count < self.questionsTab.length) {
-                    var R = paper.rect(posX,posY,tileWidth,tileHeight).attr('fill',self.virtualTab[i][j].bgColor);
-                    var T = paper.text(posX+tileWidth/2,posY+tileHeight/2,self.virtualTab[i][j].label);
-                    self.displaySet.push(R);
-                    self.displaySet.push(T);
+                    if(self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
+                        var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.image);
+                        self.displaySet.push(object.text);
+                    } else if(self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
+                        var object = displayText(self.virtualTab[i][j].label, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.content);
+                    } else if(!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
+                        var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.image);
+                    } else {
+                        self.displaySet.push(paper.rect(posX, posY, tileWidth, tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
+                    }
+
                     posY += tileHeight+self.margin;
-                    newTile={rect:R,text:T};
-                    self.tilesTab.push(newTile);
                     count++;
                 }
                 else {
