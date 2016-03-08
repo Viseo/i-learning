@@ -2,228 +2,212 @@
  * Created by qde3485 on 25/02/16.
  */
 
-//var paper=Raphael(0,0,1500,1500);
-
 paper=Raphael(0,0,document.body.clientWidth,1500);
 function main() {
-
-    //var paper=Raphael(0,0,600,800);
-    /*
-    var puzzle= new Puzzle(0,0,1500,1500,2,4,[{label:'Q1'},{label:'Q2'},{label:'Q3'},{label:'Q4'},{label:'Q5'},{label:'Q6'},{label:'Q7'},{label:'Q8'}]);
-    puzzle.display();
-
-    puzzle.displaySet.forEach(function(e){
-        e.remove();
-    });*/
-
+    var myColors={
+        blue:{r: 25, g: 122, b: 230},
+        primaryBlue:{r: 0, g: 0, b: 255},
+        grey:{r: 125, g: 122, b: 117},
+        orange:{r: 230, g: 122, b: 25},
+        purple:{r: 128, g: 0, b: 128},
+        green:{r: 155, g: 222, b: 17},
+        raspberry:{r: 194, g: 46, b: 83}
+    };
     var myQuizz=
     {
-            title: "Ceci est le titre du Quizz n°1",
-            tabQuestions:[
-                {label:"Q1",imageSrc:"../resource/folder.png", font:"Times New Roman", fontSize: 44,
+        title: "Qui veut gagner des millions ? Quizz n°1",
+        tabQuestions:[
+            {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", font:"Times New Roman", fontSize: 44,
                 tabAnswer: [
-                    {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}, font:"Times New Roman", fontSize:36},
-                    {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                    {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                    {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                    {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+                    {label:"Comtesse",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey, font:"Times New Roman", fontSize:36},
+                    {label:"Déesse",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Bougresse",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Diablesse",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
 
-                {label:"Q2",imageSrc:null,
+            {label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
                 tabAnswer: [
-                    {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                        colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                    {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                    {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                    {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                    {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                        colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+                    {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"La poire",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"L'orange",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q3",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Les danseuses",imageSrc: null,bCorrect:true,
+                        colorBordure: myColors.green,bgColor:myColors.blue},
+                    {label:"Les boxeurs",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Les rugbymen",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Les sumos",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
 
-                {label:"Q4",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q5",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Quelle est la capitale de la Libye?",imageSrc:null,
+                tabAnswer: [
+                    {label:"Malpoli",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Papoli",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Tropoli",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Tripoli",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q6",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Stupide",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Inculte",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Idiote",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Ignare",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q7",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Un galurin est un...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Manteau",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Chapeau",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Gâteau",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Château",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q8",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Quelle est l'orthographe correcte de ce verbe?",imageSrc:null,
+                tabAnswer: [
+                    {label:"Boïcotter",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Boycotter",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Boycoter",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
 
-                {label:"Q9",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q10",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Comment appelle-t-on un habitant de Flandre?",imageSrc:null,
+                tabAnswer: [
+                    {label:"Un flandrois",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Un flamby",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Un flamand",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Un flanders",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q11",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Formentera est une île des...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Cyclades",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Antilles",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Baléares",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Canaries",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q12",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Quel musée doit son nom à un dessinateur?",imageSrc:null,
+                tabAnswer: [
+                    {label:"Musée d'Orsay",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Musée Guimet",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Musée Grévin",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Le Louvre",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q13",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
+            {label:"Comment s'appelle le meilleur ami de Bob l'éponge?",imageSrc:null,
+                tabAnswer: [
+                    {label:"Luc",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Paul",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Patrick",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Albert",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-                {label:"Q14",imageSrc:null,
-                    tabAnswer: [
-                        {label:"My first answer is...",imageSrc: null,bCorrect:false,
-                            colorBordure: {r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Second answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 125, g: 122, b: 117}},
-                        {label:"Third answer is...",imageSrc:null,bCorrect:true,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 25, g: 122, b: 230}},
-                        {label:"Fourth answer is...",imageSrc:null,bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}},
-                        {label:"Fifth answer is...",imageSrc:"../resource/spectre.png",bCorrect:false,
-                            colorBordure:{r: 155, g: 222, b: 17},bgColor:{r: 230, g: 122, b: 25}}],
-                    nbrows:2,colorBordure:{r: 0, g: 0, b: 255},bgColor:{r: 128, g: 0, b: 128}},
-            ],
-            bgColor:{r: 194, g: 46, b: 83}
+            {label:"Le style 'rococo' était un style artistique en vogue au...",imageSrc:null,
+                tabAnswer: [
+                    {label:"XVIe siècle",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"XVIIe siècle",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"XVIIIe siècle",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"XIXe siècle",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+
+            {label:"L'aspic est une variété de...",imageSrc:null,
+                tabAnswer: [
+                    {label:"Magnolias",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"Lilas",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"Lavandes",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"Roses",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+
+            {label:"En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple?",imageSrc:null,
+                tabAnswer: [
+                    {label:"1996",imageSrc: null,bCorrect:false,
+                        colorBordure: myColors.green,bgColor:myColors.grey},
+                    {label:"1998",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey},
+                    {label:"1994",imageSrc:null,bCorrect:true,
+                        colorBordure:myColors.green,bgColor:myColors.blue},
+                    {label:"1999",imageSrc:null,bCorrect:false,
+                        colorBordure:myColors.green,bgColor:myColors.grey}
+                ],
+                nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+
+        ],
+        bgColor:myColors.raspberry
     };
 
     var quizz = new Quizz(myQuizz);
 
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
-    puzzle.display(20, 20, 600, 600, 0);*/
+     puzzle.display(20, 20, 600, 600, 0);*/
 
     //var quizz=new Quizz("Ceci est le titre du Quizz n°1",tabQuestions);
     //quizz.display();
@@ -235,5 +219,5 @@ function main() {
      question.display(50, 50, 1000, 200);*/
 
     //Display Resultat Puzzle
-    //quizz.displayResult(50, 10, 1200, 1200, {r: 125, g: 122, b: 117});
+    //quizz.displayResult(50, 10, 1200, 1200, myColors.grey);
 }

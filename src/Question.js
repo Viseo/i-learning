@@ -5,6 +5,7 @@
  * @param quizz
  * @constructor
  */
+
 /*label,imageSrc,tabAnswer, rows, colorBordure, bgColor*/
 var Question = function (question,quizz) {
     var self = this;
