@@ -11,33 +11,23 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
     self.questionsTab=questionsTab;
     self.displaySet=paper.set();
 
-    var leftArrowBlack = new Image();
-    leftArrowBlack.src = "../resource/arrow left.png";
+    var leftArrowBlack = imageController.getImage("../resource/arrow left.png", function () {
+        leftArrowBlackLoaded = true;});
     var leftArrowBlackLoaded = false;
-    leftArrowBlack.onload = function () {
-        leftArrowBlackLoaded = true;
-    };
 
-    var rightArrowBlack = new Image();
-    rightArrowBlack.src = "../resource/arrow right.png";
-    var rightArrowBlackLoaded = false;
-    rightArrowBlack.onload = function () {
-        rightArrowBlackLoaded = true;
-    };
-
-    var leftArrowGrey = new Image();
-    leftArrowGrey.src = "../resource/arrow left_grey.png";
+    var leftArrowGrey = imageController.getImage("../resource/arrow left_grey.png", function () {
+        leftArrowGreyLoaded = true;});
     var leftArrowGreyLoaded = false;
-    leftArrowGrey.onload = function () {
-        leftArrowGreyLoaded = true;
-    };
 
-    var rightArrowGrey = new Image();
-    rightArrowGrey.src = "../resource/arrow right_grey.png";
+    var rightArrowBlack = imageController.getImage("../resource/arrow right.png", function () {
+        rightArrowBlackLoaded = true;});
+    var rightArrowBlackLoaded = false;
+
+
+    var rightArrowGrey = imageController.getImage("../resource/arrow right_grey.png", function () {
+        rightArrowGreyLoaded = true;});
     var rightArrowGreyLoaded = false;
-    rightArrowGrey.onload = function () {
-        rightArrowGreyLoaded = true;
-    };
+
 
     var intervalToken = setInterval(function () {
         if(rightArrowBlackLoaded && rightArrowGreyLoaded && leftArrowBlackLoaded && leftArrowGreyLoaded) {

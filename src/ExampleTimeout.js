@@ -2,7 +2,7 @@
  * Created by qde3485 on 03/03/16.
  */
 
-var runtimeMock = {
+/*var runtimeMock = {
     images: {},
     handlers: [],
     timeout: function (handler, delay) {
@@ -60,4 +60,4 @@ var myFunctionTimeout = function(runtime){
     }
 
 
-};
+};*/

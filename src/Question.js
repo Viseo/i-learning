@@ -27,12 +27,10 @@ var Question = function (question,quizz) {
     }
 
     if(question.imageSrc) {
-        self.image = new Image();
-        self.image.src = question.imageSrc;
-        self.imageLoaded = false;
-        self.image.onload = function () {
+        self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
-        };
+        });
+        self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
     }

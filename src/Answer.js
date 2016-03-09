@@ -31,11 +31,10 @@ var Answer = function (answer) {
     self.imageLoaded = false;
 
     if(answer.imageSrc) {
-        self.image = new Image();
-        self.image.src = answer.imageSrc;
-        self.image.onload = function () {
+        self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
-        };
+        });
+        self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
     }
