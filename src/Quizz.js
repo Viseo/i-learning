@@ -134,7 +134,6 @@ function Quizz(quizz)
                 nom=" dont "+self.score+" sont justes !";
                 autoColor={r:220,g:255,b:0};
                 break;
-
         }
         var nom;
 

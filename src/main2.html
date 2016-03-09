@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>(3,3)</title>
+    <title>Puzzle (3,3)</title>
 </head>
 <body>
 <script src="../lib/raphael-min.js"></script>
@@ -30,7 +30,7 @@
     {
         title: "Qui veut gagner des millions ? Quizz n°1",
         tabQuestions:[
-            {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", font:"Times New Roman", fontSize: 44,
+            {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
                 tabAnswer: [
                     {label:"Comtesse",imageSrc: null,bCorrect:false,
                         colorBordure: myColors.green,bgColor:myColors.grey},
@@ -137,13 +137,13 @@
             {label:"Formentera est une île des...",imageSrc:null,
                 tabAnswer: [
                     {label:"Cyclades",imageSrc: null,bCorrect:false,
-                        colorBordure: myColors.green,bgColor:myColors.grey},
+                        colorBordure: myColors.green,bgColor:myColors.orange},
                     {label:"Antilles",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey},
+                        colorBordure:myColors.green,bgColor:myColors.purple},
                     {label:"Baléares",imageSrc:null,bCorrect:true,
                         colorBordure:myColors.green,bgColor:myColors.blue},
                     {label:"Canaries",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey}
+                        colorBordure:myColors.green,bgColor:myColors.green}
                 ],
                 nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
@@ -213,7 +213,7 @@
                 nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
         ],
-        bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:3
+        bgColor:myColors.raspberry, puzzleLines:2, puzzleRows:3
     };
 
     var quizz = new Quizz(myQuizz);
