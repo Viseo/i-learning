@@ -18,7 +18,7 @@ var myQuizz=
 {
     title: "Qui veut gagner des millions ? Quizz n°1",
     tabQuestions:[
-        {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", font:"Times New Roman", fontSize: 44,
+        {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
             tabAnswer: [
                 {label:"Comtesse",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -125,13 +125,13 @@ var myQuizz=
             {label:"Formentera est une île des...",imageSrc:null,
                 tabAnswer: [
                     {label:"Cyclades",imageSrc: null,bCorrect:false,
-                        colorBordure: myColors.green,bgColor:myColors.grey},
+                        colorBordure: myColors.green,bgColor:myColors.orange},
                     {label:"Antilles",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey},
+                        colorBordure:myColors.green,bgColor:myColors.purple},
                     {label:"Baléares",imageSrc:null,bCorrect:true,
                         colorBordure:myColors.green,bgColor:myColors.blue},
                     {label:"Canaries",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey}
+                        colorBordure:myColors.green,bgColor:myColors.green}
                 ],
                 nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
@@ -188,16 +188,16 @@ var myQuizz=
                 nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
 
             {label:"En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple?",imageSrc:null,
-                tabAnswer: [
-                    {label:"1996",imageSrc: null,bCorrect:false,
-                        colorBordure: myColors.green,bgColor:myColors.grey},
-                    {label:"1998",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey},
-                    {label:"1994",imageSrc:null,bCorrect:true,
-                        colorBordure:myColors.green,bgColor:myColors.blue},
-                    {label:"1999",imageSrc:null,bCorrect:false,
-                        colorBordure:myColors.green,bgColor:myColors.grey}
-                ],
+            tabAnswer: [
+                {label:"1996",imageSrc: null,bCorrect:false,
+                    colorBordure: myColors.green,bgColor:myColors.grey},
+                {label:"1998",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey},
+                {label:"1994",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue},
+                {label:"1999",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey}
+            ],
                 nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
         ],
