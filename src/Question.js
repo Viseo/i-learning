@@ -41,7 +41,7 @@ var Question = function (question,quizz) {
 
     if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
-            var tmp = new Answer(/*it.label, it.imageSrc, it.bCorrect, it.colorBordure, it.bgColor*/it);
+            var tmp = new Answer(it);
             self.tabAnswer.push(tmp);
             if(tmp.correct)
             {

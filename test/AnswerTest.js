@@ -9,7 +9,15 @@ describe('answer', function() {
         paper=RaphaelMock(0,0,1500,1500);
     });
     it('should instantiate correctly my answer with label & no imageSrc', function() {
-        var answer = new Answer("My first answer is...", null, false, {r: 155, g: 222, b: 17}, {r: 125, g: 122, b: 117});
+
+        var a={
+            label:"My first answer is...",
+            imageSrc: null,
+            bCorrect: false,
+            colorBordure: {r: 155, g: 222, b: 17},
+            bgColor: {r: 125, g: 122, b: 117}
+        };
+        var answer = new Answer(a);
 
         expect(answer.correct).toEqual(false);
         expect(answer.label).toEqual("My first answer is...");
