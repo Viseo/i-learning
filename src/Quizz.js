@@ -4,28 +4,63 @@
 
 /**
  *
- * @param paper
- * @param title
- * @param tabQuestions
  * @constructor
+ * @param quizz
  */
 
-function Quizz(title,tabQuestions,color)
+
+function Quizz(quizz)
 {
     var self=this;
     self.tabQuestions=[];
-    if (tabQuestions !== null) {
-        tabQuestions.forEach(function (it) {
-            var tmp = new Question(it.label, it.imageSrc, it.tabAnswer,it.nbrows, it.colorBordure, it.bgColor,self);
+    if (quizz.tabQuestions !== null) {
+        quizz.tabQuestions.forEach(function (it) {
+            var tmp = new Question(it, self);
             self.tabQuestions.push(tmp);
         });
     }
 
-    self.bgColor=color;
+    if(quizz.puzzleRows) {
+        self.puzzleRows = quizz.puzzleRows;
+    } else {
+        self.puzzleRows = 2;
+    }
+
+    if(quizz.puzzleLines) {
+        self.puzzleLines = quizz.puzzleLines;
+    } else {
+        self.puzzleLines = 2;
+    }
+
+    if(quizz.font) {
+        self.font = quizz.font;
+    }
+
+    if(quizz.fontSize) {
+        self.fontSize = quizz.fontSize;
+    } else {
+        self.fontSize = 20;
+    }
+
+    if (quizz.colorBordure && !isNaN(parseInt(quizz.colorBordure.r)) && !isNaN(parseInt(quizz.colorBordure.g)) && !isNaN(parseInt(quizz.colorBordure.b))) {
+        self.rgbBordure = "rgb(" + quizz.colorBordure.r + ", " + quizz.colorBordure.g + ", " + quizz.colorBordure.b + ")";
+    }
+    else {
+        self.rgbBordure = "black";
+    }
+
+    if (quizz.bgColor && !isNaN(parseInt(quizz.bgColor.r)) && !isNaN(parseInt(quizz.bgColor.g)) && !isNaN(parseInt(quizz.bgColor.b))) {
+        self.bgColor = "rgb(" + quizz.bgColor.r + ", " + quizz.bgColor.g + ", " + quizz.bgColor.b + ")";
+    }
+    else {
+        self.bgColor = "none";
+    }
+
+    //self.bgColor=quizz.color;
 
     self.cadreResult={
         x:0,
-        y:300,
+        y:220,
         w:paper.width,
         h:200
     };
@@ -46,7 +81,7 @@ function Quizz(title,tabQuestions,color)
     self.score=0;
     self.paper=paper;
     //self.puzzle;  //plus tard !
-    self.title=title;
+    self.title=quizz.title;
 
 
     self.currentQuestionIndex=-1;
@@ -69,57 +104,54 @@ function Quizz(title,tabQuestions,color)
 
     /**
      *
-     * @param x
-     * @param y
-     * @param w
-     * @param h
      * @param color
      */
-
     var displayScore = function(color){
         var autoColor;
-        switch(self.score){
+        switch(self.score) {
             case 0:
-                self.finalMessage="T'es naze!";
-                nom="dont aucune n'est juste";
+                self.finalMessage="Votre niveau est désolant... Mais gardez espoir !";
+                nom="dont aucune n'est juste !";
                 autoColor={r:255,g:17,b:0};
                 break;
             case 1:
-                self.finalMessage="Pas terrible!";
-                nom="dont une seule est juste";
+                self.finalMessage="Vous avez encore de nombreux progrès à faire.";
+                nom="dont une seule est juste.";
                 autoColor={r:255,g:100,b:0};
                 break;
             case self.tabQuestions.length:
-                self.finalMessage="Génial !";
-                nom=" et toutes sont justes";
+                self.finalMessage="Impressionant !";
+                nom=" et toutes sont justes !";
                 autoColor={r:100,g:255,b:100};
                 break;
             case (self.tabQuestions.length-1):
-                self.finalMessage="Presque parfait !";
-                nom=" et toutes sont justes (sauf une!)";
+                self.finalMessage="Pas mal du tout !";
+                nom=" et toutes (sauf une...) sont justes !";
                 autoColor={r:200,g:255,b:0};
                 break;
             default:
-                self.finalMessage="Pas mal !";
-                nom=" dont "+self.score+" sont justes";
+                self.finalMessage="Correct, mais ne relachez pas vos efforts !";
+                nom=" dont "+self.score+" sont justes !";
                 autoColor={r:220,g:255,b:0};
                 break;
-
         }
-        //self.bgColor=color;
         var nom;
 
-        self.finalMessage+="\nVous avez répondu à "+tabQuestions.length+" questions, "+nom+" !";
-        if(!color)
-        {
+        self.finalMessage+="\nVous avez répondu à "+quizz.tabQuestions.length+" questions, "+nom;
+        if(!color) {
             var usedColor=autoColor;
-        }else
-        {
+        } else {
             usedColor=color;
         }
         self.resultBox=paper.rect(self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
         self.resultText=paper.text(self.cadreResult.x+self.cadreResult.w/2,self.cadreResult.y+self.cadreResult.h/2,self.finalMessage);
 
+        var object = displayText(self.finalMessage, cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
+
+        self.resultBox = object.cadre;
+        self.resultText = object.content;
+        self.displaySet.push(self.resultBox);
+        self.displaySet.push(self.resultText);
     };
 
     self.display=function(x,y,w,h){
@@ -131,9 +163,9 @@ function Quizz(title,tabQuestions,color)
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-        self.titleBox=self.paper.rect(x,y,(self.cadreTitle.w-x),self.cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
-
-        self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
+        var object = displayText(self.title, x,y,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        self.titleBox = object.cadre;
+        self.titleText = object.content;
 
         self.displaySet=self.paper.set();
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
@@ -180,7 +212,7 @@ function Quizz(title,tabQuestions,color)
         */
 
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(2,4,self.questionsWithBadAnswers, self.cadreResult);
-        //self.puzzle.display(self.cadreResult.x,self.cadreResult.y+self.cadreResult.h+15,self.cadreResult.w,600,0);
+        self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
+        //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }

@@ -11,17 +11,28 @@
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
  * @constructor
  */
-var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
+/*label, imageSrc, bCorrect, colorBordure, bgColor*/
+var Answer = function (answer) {
     var self = this;
-    self.label = label;
-    self.imageSrc = imageSrc;
-    self.correct = bCorrect;
+    self.label = answer.label;
+    self.imageSrc = answer.imageSrc;
+    self.correct = answer.bCorrect;
+
+    if(answer.fontSize) {
+        self.fontSize = answer.fontSize;
+    } else {
+        self.fontSize = 20;
+    }
+
+    if(answer.font) {
+        self.font = answer.font;
+    }
 
     self.imageLoaded = false;
 
-    if(imageSrc) {
+    if(answer.imageSrc) {
         self.image = new Image();
-        self.image.src = imageSrc;
+        self.image.src = answer.imageSrc;
         self.image.onload = function () {
             self.imageLoaded = true;
         };
@@ -31,15 +42,15 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
 
     self.displaySet=paper.set();
 
-    if(colorBordure && !isNaN(parseInt(colorBordure.r)) && !isNaN(parseInt(colorBordure.g)) && !isNaN(parseInt(colorBordure.b))) {
-        self.rgbBordure = "rgb("+colorBordure.r+", "+colorBordure.g+", "+colorBordure.b+")";
+    if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
+        self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
     }
     else {
         self.rgbBordure = "black";
     }
 
-    if(bgColor && !isNaN(parseInt(bgColor.r)) && !isNaN(parseInt(bgColor.g)) && !isNaN(parseInt(bgColor.b))) {
-        self.bgColor = "rgb("+bgColor.r+", "+bgColor.g+", "+bgColor.b+")";
+    if(answer.bgColor && !isNaN(parseInt(answer.bgColor.r)) && !isNaN(parseInt(answer.bgColor.g)) && !isNaN(parseInt(answer.bgColor.b))) {
+        self.bgColor = "rgb("+answer.bgColor.r+", "+answer.bgColor.g+", "+answer.bgColor.b+")";
     }
     else {
         self.bgColor = "none";
@@ -61,7 +72,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -71,7 +82,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor);
+            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
@@ -79,7 +90,7 @@ var Answer = function (label, imageSrc, bCorrect, colorBordure, bgColor) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image, x, y, w, h);
+            self.image = displayImage(self.imageSrc, self.image, x, y, w, h).image;
             self.displaySet.push(self.image);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure

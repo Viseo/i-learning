@@ -76,7 +76,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                self.leftArrow = displayImage("../resource/arrow left_grey.png", leftArrowGrey, x, y + h / 2 - 25, 50, 50);
+                self.leftArrow = displayImage("../resource/arrow left_grey.png", leftArrowGrey, x, y + h / 2 - 25, 50, 50).image;
             } else {
                 self.leftArrow = displayImageWithEvent("../resource/arrow left.png", leftArrowBlack, x, y + h / 2 - 25, 50, 50, function () {
                     if (self.rows === 1 && startPosition !== 0) {
@@ -91,7 +91,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
             self.displaySet.push(self.leftArrow);
 
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w-50, y+h/2-25, 50, 50);
+                self.rightArrow = displayImage("../resource/arrow right_grey.png", rightArrowGrey, x+w-50, y+h/2-25, 50, 50).image;
             } else {
                 self.rightArrow = displayImageWithEvent("../resource/arrow right.png", rightArrowBlack, x+w-50, y+h/2-25, 50, 50, function() {
                     if(self.rows === 1 && startPosition !== self.totalRows -1) {
@@ -119,17 +119,30 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
         var newTile = {};
 
+        paper.setSize(paper.width, (self.margin + tileHeight)*self.lines + y + 2*self.margin);
+
         var count = startPosition*self.lines;
         for(var i = startPosition; i<(startPosition+self.rows); i++) {
             for(var j = 0; j<self.lines; j++) {
                 if(count < self.questionsTab.length) {
-                    var R = paper.rect(posX,posY,tileWidth,tileHeight).attr('fill',self.virtualTab[i][j].bgColor);
-                    var T = paper.text(posX+tileWidth/2,posY+tileHeight/2,self.virtualTab[i][j].label);
-                    self.displaySet.push(R);
-                    self.displaySet.push(T);
+                    if(self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
+                        var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.image);
+                        self.displaySet.push(object.text);
+                    } else if(self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
+                        var object = displayText(self.virtualTab[i][j].label, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.content);
+                    } else if(!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
+                        var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight);
+                        self.displaySet.push(object.cadre);
+                        self.displaySet.push(object.image);
+                    } else {
+                        self.displaySet.push(paper.rect(posX, posY, tileWidth, tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
+                    }
+
                     posY += tileHeight+self.margin;
-                    newTile={rect:R,text:T};
-                    self.tilesTab.push(newTile);
                     count++;
                 }
                 else {
