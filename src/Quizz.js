@@ -23,19 +23,19 @@ function Quizz(title,tabQuestions,color)
 
     self.bgColor=color;
 
-    var cadreResult={
+    self.cadreResult={
         x:0,
         y:300,
         w:paper.width,
         h:200
     };
-    var cadreTitle={
+    self.cadreTitle={
         x:0,
         y:0,
         w:paper.width,
         h:200
     };
-    var cadreQuestion={
+    self.cadreQuestion={
         x:0,
         y:210,
         w:paper.width,
@@ -117,21 +117,21 @@ function Quizz(title,tabQuestions,color)
         {
             usedColor=color;
         }
-        self.resultBox=paper.rect(cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
-        self.resultText=paper.text(cadreResult.x+cadreResult.w/2,cadreResult.y+cadreResult.h/2,self.finalMessage);
+        self.resultBox=paper.rect(self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
+        self.resultText=paper.text(self.cadreResult.x+self.cadreResult.w/2,self.cadreResult.y+self.cadreResult.h/2,self.finalMessage);
 
     };
 
     self.display=function(x,y,w,h){
         // Quizz title
-        cadreQuestion.w=w;
-        cadreResult.w=w-x;
-        cadreResult.x=x;
-        cadreTitle.w=w;
+        self.cadreQuestion.w=w;
+        self.cadreResult.w=w-x;
+        self.cadreResult.x=x;
+        self.cadreTitle.w=w;
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-        self.titleBox=self.paper.rect(x,y,(cadreTitle.w-x),cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
+        self.titleBox=self.paper.rect(x,y,(self.cadreTitle.w-x),self.cadreTitle.h).attr('fill','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');
 
         self.titleText=self.paper.text((x+(self.titleBox.attr('width')/2)),(y+(self.titleBox.attr('height')/2)),self.title);
 
@@ -147,25 +147,28 @@ function Quizz(title,tabQuestions,color)
 
     };
     self.nextQuestion=function(){
-        var type=self.displaySet[self.displaySet.length-1].type;
-        if(type === 'set') {
-            self.displaySet[self.displaySet.length-1].forEach(function(e) {
-                e.remove();
-            });
-        }
-        if(self.currentQuestionIndex+1<self.tabQuestions.length)
-        {
-            self.currentQuestionIndex++;
-            self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX+cadreQuestion.x,self.quizzMarginY+cadreQuestion.y,
-                cadreQuestion.w-self.quizzMarginX,cadreQuestion.h);
-            self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+        if(self.displaySet[self.displaySet.length-1]) {
+            var type = self.displaySet[self.displaySet.length - 1].type;
+            if (type === 'set') {
+                self.displaySet[self.displaySet.length - 1].forEach(function (e) {
+                    e.remove();
+                });
+            }
+            if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
+                self.currentQuestionIndex++;
+                self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                    self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
 
-        }else //--> fin du tableau, dernière question
-        {
-            console.log("score: "+self.score);
-            self.displayResult();
-        }
+            } else //--> fin du tableau, dernière question
+            {
+                console.log("score: " + self.score);
+                self.displayResult();
+            }
 
+        }else{
+            console.log("No next question, end of the array\n");
+        }
     };
 
 
@@ -177,7 +180,7 @@ function Quizz(title,tabQuestions,color)
         */
 
         //le puzzle qui prend en compte le tableau de questions ratées
-        self.puzzle=new Puzzle(2,4,self.questionsWithBadAnswers, cadreResult);
-        //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
+        self.puzzle=new Puzzle(2,4,self.questionsWithBadAnswers, self.cadreResult);
+        //self.puzzle.display(self.cadreResult.x,self.cadreResult.y+self.cadreResult.h+15,self.cadreResult.w,600,0);
     };
 }

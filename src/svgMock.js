@@ -208,7 +208,7 @@ var attr = function (param, value) {
 
 function attrMock (param, value) {
     var resultOfGet=null;
-    console.log("Attr called by: "+this.type+"\n");
+    //console.log("Attr called by: "+this.type+"\n");
     if(typeof param === 'object'&& !value){
         //set object
         tabAttributes=Object.keys(param);
@@ -216,19 +216,19 @@ function attrMock (param, value) {
             this[e]=param[e];
 
         });
-        console.log("Set object--->"+tabAttributes);
+      //  console.log("Set object--->"+tabAttributes);
         return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object'&& value){
         //pas d'objet et une value -> set normal
 
         this[param]=value;
 
-        console.log("Set normal--->"+param+":"+value+" on "+this.type);
+      //  console.log("Set normal--->"+param+":"+value+" on "+this.type);
         return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object' && !value){
         //pas d'objet et pas de value -> get
         var tabAttributes=Object.keys(this);
-        console.log("Get--->"+tabAttributes);
+       // console.log("Get--->"+tabAttributes);
         if(tabAttributes.indexOf(param)>-1)
         {
             resultOfGet=this[param];
@@ -241,21 +241,36 @@ function attrMock (param, value) {
 
 
 function getBBoxMock(){
-    //console.log("not implemented yet!");
-    var test=document.createElement('div');
-    test.innerHTML=this.text;
-    document.body.appendChild(test);
-    console.log("Last child: "+document.body.lastElementChild.innerHTML);
-    var box={
-        width:test.clientWidth + 1,
-        height:test.clientHeight + 1
-    };
-    test.style.display='none';
-    document.body.removeChild(test);
-    console.log("Last child After remove: "+document.body.lastElementChild);
-    console.log("Box: %o",box);
 
-    return box;
+    var chaine=this.text;
+    var h=0;
+    var w=0;
+
+    var characterSize=10;
+    var lineHeight=18;
+
+    var tableau=[];
+
+    var reg=new RegExp('\n', "g");
+    //document.write("Chaîne d'origine : " + chaine + "<BR>");
+
+    tableau=chaine.split(reg);
+
+    for (var i=0; i<tableau.length-1; i++) {
+        console.log('Tab '+tableau[i].length);
+
+        var tmp=(tableau[i].length)*characterSize;
+        w+=tmp;//nombre de caractères * taille d'un caractère
+
+        h+=lineHeight; //hauteur d'une ligne (dépend de la police et de sa taille)
+    }
+
+    var box={
+        width:w,
+        height:h
+    };
+
+   return box;
 }
 
 function toFrontMock(){
