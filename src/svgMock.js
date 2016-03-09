@@ -256,14 +256,19 @@ function getBBoxMock(){
 
     tableau=chaine.split(reg);
 
+    console.log("---------DEBUT----------");
     for (var i=0; i<tableau.length-1; i++) {
-        console.log('Tab '+tableau[i].length);
+        console.log("tab["+i+"]:"+tableau[i]);
+        console.log('length: '+tableau[i].length);
 
         var tmp=(tableau[i].length)*characterSize;
         w+=tmp;//nombre de caractères * taille d'un caractère
 
         h+=lineHeight; //hauteur d'une ligne (dépend de la police et de sa taille)
     }
+    // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
+
+    console.log("---------FIN----------");
 
     var box={
         width:w,
