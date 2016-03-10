@@ -2,6 +2,7 @@
  * Created by qde3485 on 25/02/16.
  */
 
+var imageController = ImageController(ImageRuntime);
 paper=null;
 describe('answer', function() {
 
@@ -47,8 +48,40 @@ describe('answer', function() {
         };
         var answer = new Answer(answerJSON);
 
+        expect(answer.imageLoaded).toEqual(true);
         answer.display(10, 10, 200, 50);
         fail();
+    });
 
+    it('should display a tittled image', function () {
+        var answerJSON={
+            label:"My first is...",
+            imageSrc: "../resource/cerise.jpg",
+            bCorrect: false,
+            colorBordure: null,
+            bgColor: null
+        };
+        var answer = new Answer(answerJSON);
+
+        expect(answer.imageLoaded).toEqual(false);
+        imageController.imageLoaded(answer.image.id, 200, 5);
+        answer.display(10, 10, 200, 50);
+        expect(answer.imageLoaded).toEqual(true);
+    });
+
+    it('should display an image', function () {
+        var answerJSON={
+            label: null,
+            imageSrc: "../resource/cerise.jpg",
+            bCorrect: false,
+            colorBordure: null,
+            bgColor: null
+        };
+        var answer = new Answer(answerJSON);
+
+        expect(answer.imageLoaded).toEqual(false);
+        imageController.imageLoaded(answer.image.id, 200, 5);
+        answer.display(10, 10, 200, 50);
+        expect(answer.imageLoaded).toEqual(true);
     });
 });

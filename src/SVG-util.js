@@ -13,13 +13,14 @@
  * @param h
  * @param rgbCadre
  * @param bgColor
- * @param policeSize
+ * @param fontSize
+ * @param font
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor, policeSize, font) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor, fontSize, font) {
     var margin = 10;
 
-    var text = autoAdjustText(label, x, y+h-2*margin, w, null, policeSize, font).text;
+    var text = autoAdjustText(label, x, y+h-2*margin, w, null, fontSize, font).text;
     var textHeight = text.getBBox().height;
     text.animate({y:y+h-margin-textHeight/2}, 0);
 

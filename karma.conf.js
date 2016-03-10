@@ -16,6 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'lib/*.js',
+      'test/Test-util.js',
       'src/Bdd.js',
       'src/svgMock.js',
       'src/SVG-util.js',

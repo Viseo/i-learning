@@ -34,6 +34,7 @@ var Answer = function (answer) {
         self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
         });
+        console.log(self.image);
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;

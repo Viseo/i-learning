@@ -112,6 +112,7 @@ function RaphaelMock(x,y,width,height)
             expect(element.width).toEqual(width);
             expect(element.height).toEqual(height);
         };
+        element.animate = animate;
         paper['r'+element.id]=element;
         paper.children.push(element);
         element.writeTest();
@@ -144,6 +145,8 @@ function RaphaelMock(x,y,width,height)
             expect(element.text).toEqual(text);
         };
         element.attr=attrMock;
+        element.animate = animate;
+
         element.remove=removeMock;
         element.getBBox=getBBoxMock;
         element.toFront=toFrontMock;
@@ -181,6 +184,8 @@ function RaphaelMock(x,y,width,height)
             expect(element.w).toEqual(w);
             expect(element.h).toEqual(h);
         };
+
+        element.animate = animate;
         element.remove=removeMock;
         element.toFront=toFrontMock;
 
@@ -216,6 +221,16 @@ var attr = function (param, value) {
     }
     return tab;
 };
+
+function animate (objectCoord, time) {
+    if(objectCoord.x) {
+        this.x = objectCoord.x;
+    }
+    if(objectCoord.y) {
+        this.y = objectCoord.y;
+    }
+    return this;
+}
 
 function attrMock (param, value) {
     var resultOfGet=null;

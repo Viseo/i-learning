@@ -18,7 +18,10 @@ var ImageRuntime = {
         return image;
     },
 
-    imageLoaded(id, w, h) {
+    imageLoaded: function(id, w, h) {
+        console.log(this.images);
+        console.log(id);
+
         this.images[id].width = w;
         this.images[id].height = h;
         this.images[id].onload();
