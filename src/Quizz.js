@@ -146,7 +146,7 @@ function Quizz(quizz)
         self.resultBox=paper.rect(self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
         self.resultText=paper.text(self.cadreResult.x+self.cadreResult.w/2,self.cadreResult.y+self.cadreResult.h/2,self.finalMessage);
 
-        var object = displayText(self.finalMessage, cadreResult.x,cadreResult.y,cadreResult.w,cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
+        var object = displayText(self.finalMessage, self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
 
         self.resultBox = object.cadre;
         self.resultText = object.content;

@@ -70,7 +70,8 @@ describe('Quizz Test', function() {
     it('should increment the current question index',function() {
         //on se trouve au début,puis à la fin du tableau
         var tabQuestionsQuizz = [
-            {label: 'Q1 23456', imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}}
+            {label: 'Q1 23456', imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
+            {label: 'Q2 789', imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}}
     ];
         var q={
             title:"Quizz test ",
