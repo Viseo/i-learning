@@ -67,7 +67,7 @@ describe('Quizz Test', function() {
         //console.log("before each quizztest");
        // quizz.display(50,10,1200,1200);
     });
-    it('should increment the current question index',function() {
+        it('should increment the current question index',function() {
         //on se trouve au début,puis à la fin du tableau
         var tabQuestionsQuizz = [
             {label: 'Q1 23456', imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}},
