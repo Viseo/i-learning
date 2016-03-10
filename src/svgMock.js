@@ -242,7 +242,7 @@ function getBBoxMock(){
     var lineHeight=18;
 
     var h=lineHeight;
-    var w;
+    var w=0;
 
     var tableau=[];
 
@@ -252,7 +252,7 @@ function getBBoxMock(){
     tableau=chaine.split(reg);
     var tableauLengths=[];
     console.log("---------DEBUT----------");
-    for (var i=0; i<tableau.length-1; i++) {
+    for (var i=0; i<tableau.length; i++) {
         console.log("tab["+i+"]:"+tableau[i]);
         console.log('length: '+tableau[i].length);
         tableauLengths.push(tableau[i].length);
