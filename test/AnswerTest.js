@@ -16,7 +16,9 @@ describe('answer', function() {
             imageSrc: "../resource/pomme.jpg",
             bCorrect: false,
             colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 125, g: 122, b: 117}
+            bgColor: {r: 125, g: 122, b: 117},
+            fontSize:20,
+            font:"Courier New"
         };
         var answer = new Answer(answerJSON);
 
@@ -25,6 +27,8 @@ describe('answer', function() {
         expect(answer.imageSrc).toEqual("../resource/pomme.jpg");
         expect(answer.rgbBordure).toEqual("rgb(155, 222, 17)");
         expect(answer.bgColor).toEqual("rgb(125, 122, 117)");
+        expect(answer.fontSize).toEqual(20);
+        expect(answer.font).toEqual("Courier New");
     });
 
     it('should throw an error when display is used with NaN parameters', function () {
