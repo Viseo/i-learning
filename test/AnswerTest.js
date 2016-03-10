@@ -48,6 +48,7 @@ describe('answer', function() {
         var answer = new Answer(answerJSON);
 
         answer.display(10, 10, 200, 50);
-        expect(function () {answer.display(10, 10, 50, 50); }).toBeCalled();
+        fail();
+
     });
 });

@@ -243,11 +243,11 @@ function attrMock (param, value) {
 function getBBoxMock(){
 
     var chaine=this.text;
-    var h=0;
-    var w=0;
-
     var characterSize=10;
     var lineHeight=18;
+
+    var h=lineHeight;
+    var w;
 
     var tableau=[];
 
@@ -255,23 +255,27 @@ function getBBoxMock(){
     //document.write("Chaîne d'origine : " + chaine + "<BR>");
 
     tableau=chaine.split(reg);
-
+    var tableauLengths=[];
     console.log("---------DEBUT----------");
     for (var i=0; i<tableau.length-1; i++) {
         console.log("tab["+i+"]:"+tableau[i]);
         console.log('length: '+tableau[i].length);
-
-        var tmp=(tableau[i].length)*characterSize;
-        w+=tmp;//nombre de caractères * taille d'un caractère
+        tableauLengths.push(tableau[i].length);
+       // var tmp=(tableau[i].length)*characterSize;
+       // w+=tmp;//nombre de caractères * taille d'un caractère
 
         h+=lineHeight; //hauteur d'une ligne (dépend de la police et de sa taille)
     }
     // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
 
     console.log("---------FIN----------");
-
+    w=Math.max.apply(null,tableauLengths);
+    console.log("Max length: "+w);
+    var tt=w*characterSize;
+    console.log("Final width: "+tt);
+    console.log("Final height: "+h);
     var box={
-        width:w,
+        width:tt,
         height:h
     };
 
