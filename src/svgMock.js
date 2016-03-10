@@ -21,7 +21,11 @@ function RaphaelSpy(x,y,width,height){
     };
     paper.raphael=Raphael(x,y,width,height);
     paper.mock=RaphaelMock(x,y,width,height);
-
+    paper.setSize=function(w,h)
+    {
+        paper.raphael.setSize(w,h);
+        paper.mock.setSize(w,h);
+    };
     paper.path = function (string) {
         return paper.raphael.path(string);
     };
@@ -83,6 +87,11 @@ function RaphaelMock(x,y,width,height)
     paper.width=width;
     paper.height=height;
     paper.children=[];
+    paper.setSize=function(w,h)
+    {
+        self.width=w;
+        self.height=h;
+    };
     paper.rect=function(x,y,width,height) {
         var element={type:"rect",
             id:paper.index++};
@@ -120,7 +129,14 @@ function RaphaelMock(x,y,width,height)
         element.node={};
         element.node.onclick={};
         element.writeTest= function () {
-            console.log('paper.t'+element.id+'.test('+element.x+','+element.y+',"'+element.text+'");');
+            if(element.text!=="")
+            {
+                console.log('paper.t'+element.id+'.test('+element.x+','+element.y+',"'+element.text+'");');
+            }
+            else
+            {
+              // For Debug  console.log('Chaîne vide');
+            }
         };
         element.test=function(x,y,text){
             expect(element.x).toEqual(x);
@@ -211,12 +227,16 @@ function attrMock (param, value) {
             this[e]=param[e];
 
         });
+        console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
+        this.writeTest();
       //  console.log("Set object--->"+tabAttributes);
         return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object'&& value){
         //pas d'objet et une value -> set normal
 
         this[param]=value;
+        console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
+        this.writeTest();
 
       //  console.log("Set normal--->"+param+":"+value+" on "+this.type);
         return this;// permet de faire des appels en cascade!
