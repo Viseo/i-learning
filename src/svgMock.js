@@ -33,14 +33,14 @@ function RaphaelSpy(x,y,width,height){
     paper.rect=function (x,y,width,height){
         var r = paper.raphael.rect(x,y,width,height);
         paper.mock.rect(x,y,width,height);
-        paper.mock.writeTest();
+       // paper.mock.writeTest();
         return r;
     };
 
     paper.text=function (x,y,text){
         var t = paper.raphael.text(x,y,text);
         paper.mock.text(x,y,text);
-        paper.mock.writeTest();
+        //paper.mock.writeTest();
         return t;
     };
 
@@ -68,7 +68,7 @@ function RaphaelSpy(x,y,width,height){
     paper.image = function(imgSrc, x, y, w, h) {
         var i = paper.raphael.image(imgSrc, x, y, w, h);
         paper.mock.image(imgSrc, x, y, w, h);
-        paper.mock.writeTest();
+        //paper.mock.writeTest();
         return i;
     };
     paper.attr=function(param,value){
@@ -115,12 +115,12 @@ function RaphaelMock(x,y,width,height)
         element.animate = animate;
         paper['r'+element.id]=element;
         paper.children.push(element);
-        element.writeTest();
+        //element.writeTest();
         return element;
     };
 
     paper.text=function(x,y,text) {
-        console.log("TEXT");
+       // console.log("TEXT");
         var element={type:"text",
             id:paper.index++};
         element.svgAttr = [];
@@ -194,14 +194,18 @@ function RaphaelMock(x,y,width,height)
         return element;
     };
     paper.writeTest=function() {
+        console.log("\n----------BEGIN----------\n")
+        console.log(paper.children.length);
         paper.children.forEach(function (e) {
+           // console.log("WRITE TEST");
             e.writeTest();
         });
+        console.log("\n----------END----------\n")
     };
 
     function removeMock()
     {
-        console.log(paper[this.type.charAt(0)+this.id.toString()]);
+       // console.log(paper[this.type.charAt(0)+this.id.toString()]);
         delete paper[this.type.charAt(0)+this.id.toString()];
         paper.children.splice(paper.children.indexOf(this),1);
     }
@@ -242,16 +246,16 @@ function attrMock (param, value) {
             this[e]=param[e];
 
         });
-        console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
-        this.writeTest();
+       // console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
+       // this.writeTest();
       //  console.log("Set object--->"+tabAttributes);
         return this;// permet de faire des appels en cascade!
     }else if(typeof param !== 'object'&& value){
         //pas d'objet et une value -> set normal
 
         this[param]=value;
-        console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
-        this.writeTest();
+       // console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
+       // this.writeTest();
 
       //  console.log("Set normal--->"+param+":"+value+" on "+this.type);
         return this;// permet de faire des appels en cascade!
@@ -286,10 +290,10 @@ function getBBoxMock(){
 
     tableau=chaine.split(reg);
     var tableauLengths=[];
-    console.log("---------DEBUT----------");
+    //console.log("---------DEBUT----------");
     for (var i=0; i<tableau.length; i++) {
-        console.log("tab["+i+"]:"+tableau[i]);
-        console.log('length: '+tableau[i].length);
+      //  console.log("tab["+i+"]:"+tableau[i]);
+      //  console.log('length: '+tableau[i].length);
         tableauLengths.push(tableau[i].length);
        // var tmp=(tableau[i].length)*characterSize;
        // w+=tmp;//nombre de caractères * taille d'un caractère
@@ -298,12 +302,12 @@ function getBBoxMock(){
     }
     // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
 
-    console.log("---------FIN----------");
+   // console.log("---------FIN----------");
     w=Math.max.apply(null,tableauLengths);
-    console.log("Max length: "+w);
+   // console.log("Max length: "+w);
     var tt=w*characterSize;
-    console.log("Final width: "+tt);
-    console.log("Final height: "+h);
+  //  console.log("Final width: "+tt);
+   // console.log("Final height: "+h);
     var box={
         width:tt,
         height:h
@@ -313,7 +317,7 @@ function getBBoxMock(){
 }
 
 function toFrontMock(){
-    console.log("toFront: not implemented yet!");
+   // console.log("toFront: not implemented yet!");
     return null;
 }
 

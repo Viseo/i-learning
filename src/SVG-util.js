@@ -23,11 +23,11 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
     var text = autoAdjustText(label, x, y+h-2*margin, w, null, fontSize, font).text;
     var textHeight = text.getBBox().height;
     text.animate({y:y+h-margin-textHeight/2}, 0);
-
     var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-textHeight-3*margin);
     var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
     image.image.toFront();
     text.toFront();
+
     return {cadre: cadre, image: image.image,  text: text};
 };
 
@@ -41,6 +41,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
  * @param h
  */
 var displayImage = function (imageSrc, image, x, y, w, h) {
+
     var width = image.width;
     var height = image.height;
     if(width > w) {
@@ -54,7 +55,8 @@ var displayImage = function (imageSrc, image, x, y, w, h) {
         width *= h/height;
         height = h;
     }
-    return {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
+    var obj = {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
+    return obj;
 };
 
 /**

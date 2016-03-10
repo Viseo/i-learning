@@ -98,7 +98,7 @@ function Quizz(quizz)
         });
         if(loaded) {
             clearInterval(intervalToken);
-            self.display(50,10,1200,1200);
+            //self.display(50,10,1200,1200);
         }
     }, 100);
 

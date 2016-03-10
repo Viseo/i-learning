@@ -4,7 +4,7 @@
 
 //var paper=Raphael(0,0,1500,1500);
 var imageController = ImageController();
-paper=RaphaelSpy(0,0,document.body.clientWidth,1500);
+paper=Raphael(0,0,document.body.clientWidth,1500);
 
 function main() {
 
