@@ -96,6 +96,7 @@ function RaphaelMock(x,y,width,height)
             console.log('paper.r'+element.id+'.test('+element.x+','+element.y+','+element.width+','+element.height+');');
         };
         element.attr=attrMock;
+        element.remove=removeMock;
         element.test=function(x,y,width,height){
             expect(element.x).toEqual(x);
             expect(element.y).toEqual(y);
@@ -127,19 +128,7 @@ function RaphaelMock(x,y,width,height)
             expect(element.text).toEqual(text);
         };
         element.attr=attrMock;
-        /*
-        element.attr = function (param, value) {
-            if(typeof param !== 'object' && !value) {
-                // Get
-                return element.svgAttr[param];
-            } else {
-                // Set
-                var newAttrTab = attr(param, value);
-                element.svgAttr.push.apply(element.svgAttr, newAttrTab);
-            }
-            return element;
-        };*/
-
+        element.remove=removeMock;
         element.getBBox=getBBoxMock;
         element.toFront=toFrontMock;
 
@@ -176,7 +165,7 @@ function RaphaelMock(x,y,width,height)
             expect(element.w).toEqual(w);
             expect(element.h).toEqual(h);
         };
-
+        element.remove=removeMock;
         element.toFront=toFrontMock;
 
         paper['i'+element.id]=element;
@@ -189,6 +178,12 @@ function RaphaelMock(x,y,width,height)
         });
     };
 
+    function removeMock()
+    {
+        console.log(paper[this.type.charAt(0)+this.id.toString()]);
+        delete paper[this.type.charAt(0)+this.id.toString()];
+        paper.children.splice(paper.children.indexOf(this),1);
+    }
 
     return paper;
 }
@@ -286,3 +281,4 @@ function toFrontMock(){
     console.log("toFront: not implemented yet!");
     return null;
 }
+

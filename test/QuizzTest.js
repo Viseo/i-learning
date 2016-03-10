@@ -63,17 +63,24 @@ describe('Quizz Test', function() {
     beforeEach(function(){
         paper=RaphaelMock(0,0,1500,1500);
 
-        var quizz = new Quizz("Ceci est le titre du Quizz n°1", tabQuestionsQuizz, {r: 194, g: 46, b: 83});
-        console.log("before each quizztest");
+        //var quizz = new Quizz("Ceci est le titre du Quizz n°1", tabQuestionsQuizz, {r: 194, g: 46, b: 83});
+        //console.log("before each quizztest");
        // quizz.display(50,10,1200,1200);
     });
     it('should increment the current question index',function() {
         //on se trouve au début,puis à la fin du tableau
         var tabQuestionsQuizz = [
-            {label: 'Q1 23456', imageSrc: "../resource/folder.png", tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}}
+            {label: 'Q1 23456', imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}}
     ];
+        var q={
+            title:"Quizz test ",
+            tabQuestions:tabQuestionsQuizz,
+            bgColor:{r: 194, g: 46, b: 83},
+            puzzleLines:3,
+            puzzleRows:1
+        };
+        quizz=new Quizz(q);
 
-        quizz=new Quizz("Ceci est le titre du Quizz n°1", tabQuestionsQuizz, {r: 194, g: 46, b: 83});
         quizz.display(0,0,1200,1200);
         var tmp=quizz.currentQuestionIndex;
         quizz.nextQuestion();
@@ -87,7 +94,14 @@ describe('Quizz Test', function() {
             {label: 'Q1 Cet ex-détenu de Guantanamo a fait convoquer l’ancien commandant américain du camp devant la justice française, mardi. Engagé dans la prévention de la radicalisation, son espace de parole s’est réduit depuis le 13 novembre.'
                 , imageSrc: null, tabAnswer: tabAnswerQuizz, nbrows: 2, colorBordure: 'blue', bgColor: {r: 155, g: 222, b: 17}}
         ];
-        quizz=new Quizz("Ceci est le titre du Quizz n°1", tabQuestionsQuizz, {r: 194, g: 46, b: 83});
+        var q={
+            title:"Quizz test ",
+            tabQuestions:tabQuestionsQuizz,
+            bgColor:{r: 194, g: 46, b: 83},
+            puzzleLines:3,
+            puzzleRows:1
+        };
+        quizz=new Quizz(q);
        /* quizz.displaySet=paper.set();
         quizz.displaySet.push(paper.text("youhou!"));*/
         //quizz.display(10,10,1200,1200);
