@@ -66,7 +66,7 @@ var myQuizz=
                 {label:"Tripoli",imageSrc:null,bCorrect:true,
                     colorBordure:myColors.green,bgColor:myColors.blue, font:"Times New Roman", fontSize:36}
             ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
+            nbrows:4,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
 
         {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null,
             tabAnswer: [
@@ -79,7 +79,7 @@ var myQuizz=
                 {label:"Ignare",imageSrc:null,bCorrect:false,
                     colorBordure:myColors.green,bgColor:myColors.grey}
             ],
-            nbrows:4,colorBordure:myColors.primaryBlue,bgColor:myColors.blue},
+            nbrows: 3,colorBordure:myColors.primaryBlue,bgColor:myColors.blue},
 
         {label:"Un galurin est un...",imageSrc:null,
             tabAnswer: [
@@ -92,7 +92,7 @@ var myQuizz=
                 {label:"Château",imageSrc:null,bCorrect:false,
                     colorBordure:myColors.green,bgColor:myColors.grey}
             ],
-            nbrows:1,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+            nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
         {label:"Quelle est l'orthographe correcte de ce verbe?",imageSrc:null,
             tabAnswer: [
@@ -104,7 +104,7 @@ var myQuizz=
                     colorBordure:myColors.green,bgColor:myColors.grey}
 
             ],
-            nbrows: 2, colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
+            nbrows: 1, colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
         {label:"Comment appelle-t-on un habitant de Flandre?",imageSrc:null,
             tabAnswer: [
