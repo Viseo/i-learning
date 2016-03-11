@@ -21,11 +21,13 @@
     var imageController= ImageController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
-    var myQuest = myQuizz.tabQuestions[1];
-    var tmpQuizz = myQuizz;
-    tmpQuizz.tabQuestions = [];
-    tmpQuizz.tabQuestions.push(myQuest);
-    var quizz = new Quizz(tmpQuizz);
+
+    var quizz = new Quizz(myQuizz);
+    quizz.tabQuestions.shift();
+    quizz.tabQuestions.shift();
+    while (quizz.tabQuestions.length>4) {
+        quizz.tabQuestions.pop();
+    }
     quizz.run(50,10,1200,1200);
 
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[0].image.id,925,1000 );

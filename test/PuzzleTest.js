@@ -4,32 +4,28 @@
 window.paper=null;
 describe('Puzzle test suite', function() {
     var puzzle;
-    var questions=[{label:"Q1"},
-        {label:"Q2"},
-        {label:"Q3"},
-        {label:"Q4"},
-        {label:"Q5"},
-        {label:"Q6"}
-    ];
+
     beforeEach(function(){
         paper=RaphaelMock(0,0,1500,1500);
-        puzzle=new Puzzle(0,0,1500,1500,2,3,questions);
+        //puzzle=new Puzzle(0,0,1500,1500,2,3,questions);
 
     });
 
-    it('should initiate values passed with parameters',function(){
-
-        expect(puzzle.lines).toEqual(2);
-        expect(puzzle.rows).toEqual(3);
-        expect(puzzle.questionsTab).toEqual(questions);
-
-    });
 
     it('should initialize the array of tiles',function(){
 
+        var questions= JSON.parse(JSON.stringify(myQuizz.tabQuestions));// clone de myQuizz.tabQuestions
+        var quizz=new Quizz(myQuizz);
+
+        questions.shift();
+        questions.shift();
+        while(questions.length>4){
+            questions.pop();
+        }
+
+        var puzzle=new Puzzle(2,3,questions,quizz.cadreResult);
+
         expect(puzzle).toBeDefined();
-
-
 
         expect(puzzle.tileWidth).toBeUndefined();
         expect(puzzle.tileHeight).toBeUndefined();
@@ -38,10 +34,12 @@ describe('Puzzle test suite', function() {
 
         expect(puzzle.tileWidth).toBeDefined();
         expect(puzzle.tileHeight).toBeDefined();
-        expect(puzzle.tilesTab.length).toEqual(questions.length);
-        var truc=puzzle.tilesTab[4].text.attr('text');
-        console.log(truc);
-        expect(puzzle.tilesTab[4].text.attr('text')).toEqual(questions[4].label);
+
+        puzzle.display(quizz.cadreResult.x, quizz.cadreResult.y+quizz.cadreResult.h+15, quizz.cadreResult.w, 600, 0);
+
+        console.log(puzzle.displaySet[2]);
+
+        expect(puzzle.displaySet[2].attr('text')).toEqual(questions[0].label);
 
     });
 
