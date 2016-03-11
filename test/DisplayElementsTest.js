@@ -8,7 +8,7 @@ describe('Display Element of Question and Answer', function () {
     beforeEach(function () {
         paper = new RaphaelMock(0, 0, 1500, 1500);
     });
-
+    /*
     it('should display a basic text', function () {
         var answer = new Answer("Texte", null, false, {r: 200, g:0, b:0});
         answer.display(20, 20, 100, 100);
@@ -35,5 +35,5 @@ describe('Display Element of Question and Answer', function () {
         answer.display(20, 20, 350, 92);
 
         paper.i0.test("../resource/spectre.png", 20, 20, 350, 92);
-    });
+    });*/
 });

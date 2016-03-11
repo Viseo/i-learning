@@ -101,45 +101,45 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
 
     self.initTiles=function(x, y, w, h, startPosition) {
-        var tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
-        var tileHeight=(h-(self.lines-1)*self.margin)/self.lines;
+        self.tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
+        self.tileHeight=(h-(self.lines-1)*self.margin)/self.lines;
 
         var posX=x;
         var posY=y;
 
         var newTile = {};
 
-        paper.setSize(paper.width, (self.margin + tileHeight)*self.lines + y + 2*self.margin);
+        paper.setSize(paper.width, (self.margin + self.tileHeight)*self.lines + y + 2*self.margin);
 
         var count = startPosition*self.lines;
         for(var i = startPosition; i<(startPosition+self.rows); i++) {
             for(var j = 0; j<self.lines; j++) {
                 if(count < self.questionsTab.length) {
                     if(self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                        var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
                         self.displaySet.push(object.cadre);
                         self.displaySet.push(object.image);
                         self.displaySet.push(object.text);
                     } else if(self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
-                        var object = displayText(self.virtualTab[i][j].label, posX, posY, tileWidth, tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
+                        var object = displayText(self.virtualTab[i][j].label, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
                         self.displaySet.push(object.cadre);
                         self.displaySet.push(object.content);
                     } else if(!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                        var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, tileWidth, tileHeight);
+                        var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight);
                         self.displaySet.push(object.cadre);
                         self.displaySet.push(object.image);
                     } else {
-                        self.displaySet.push(paper.rect(posX, posY, tileWidth, tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
+                        self.displaySet.push(paper.rect(posX, posY, self.tileWidth, self.tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
                     }
 
-                    posY += tileHeight+self.margin;
+                    posY += self.tileHeight+self.margin;
                     count++;
                 }
                 else {
                     break;
                 }
             }
-            posX += tileWidth+self.margin;
+            posX += self.tileWidth+self.margin;
             posY = y;
         }
     }

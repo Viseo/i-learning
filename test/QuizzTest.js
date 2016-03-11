@@ -13,7 +13,8 @@ describe('Quizz Test', function() {
 
     it('should NOT increment the current question index',function() {
 
-        var quizz=new Quizz(myQuizz);
+        var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));
+        var quizz=new Quizz(tmpQuizz);
 
         quizz.tabQuestions.shift();
         quizz.tabQuestions.shift();
@@ -47,12 +48,15 @@ describe('Quizz Test', function() {
 
     it("should display the first question (testing interface)",function(){
 
-        var quizz=new Quizz(myQuizz);
+        var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));// clone de myQuizz
+        var quizz=new Quizz(tmpQuizz);
+
+        console.log(quizz.tabQuestions.length);
         while (quizz.tabQuestions.length>1) {
             quizz.tabQuestions.pop();
         }
-        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
 
+        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
 
         quizz.display(50, 10, 1200, 1200);
 

@@ -11,7 +11,7 @@ describe('Main test', function() {
         puzzle.display();
         //puzzle.paper.canvas.style.backgroundColor='green';
     });
-    it('should check the right values for this example',function() {
+    /*it('should check the right values for this example',function() {
        // puzzle.paper.writeTest();
         //
 
@@ -31,5 +31,5 @@ describe('Main test', function() {
         paper.t13.test(935.625,1121.25,"Q7");
         paper.r14.test(1128.75,757.5,356.25,727.5);
         paper.t15.test(1306.875,1121.25,"Q8");
-    });
+    });*/
 });
