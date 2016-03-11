@@ -237,16 +237,20 @@ function animate (objectCoord, time) {
 }
 
 function attrMock (param, value) {
+
     var resultOfGet=null;
     //console.log("Attr called by: "+this.type+"\n");
     if(typeof param === 'object'&& !value){
+       // console.log("Set object");
+
         //set object
         tabAttributes=Object.keys(param);
+        var obj = this;
         tabAttributes.forEach(function(e){
-            this[e]=param[e];
-
+            obj[e]=param[e];
         });
-       // console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
+
+        // console.log("Attr set:\n"+"type: "+this.type+"\nId: "+this.id);
        // this.writeTest();
       //  console.log("Set object--->"+tabAttributes);
         return this;// permet de faire des appels en cascade!
@@ -263,8 +267,7 @@ function attrMock (param, value) {
         //pas d'objet et pas de value -> get
         var tabAttributes=Object.keys(this);
        // console.log("Get--->"+tabAttributes);
-        if(tabAttributes.indexOf(param)>-1)
-        {
+        if(tabAttributes.indexOf(param)>-1) {
             resultOfGet=this[param];
         }
         return resultOfGet;

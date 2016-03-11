@@ -88,19 +88,21 @@ function Quizz(quizz)
 
     self.finalMessage="";
 
-    var intervalToken = setInterval(function () {
-        var loaded = true;
-        self.tabQuestions.forEach(function (e) {
-            loaded = loaded && e.imageLoaded;
-            e.tabAnswer.forEach(function (el) {
-                loaded = loaded && el.imageLoaded;
-            })
-        });
-        if(loaded) {
-            clearInterval(intervalToken);
-            //self.display(50,10,1200,1200);
-        }
-    }, 100);
+    self.run=function(x,y,w,h){
+        var intervalToken = setInterval(function () {
+            var loaded = true;
+            self.tabQuestions.forEach(function (e) {
+                loaded = loaded && e.imageLoaded;
+                e.tabAnswer.forEach(function (el) {
+                    loaded = loaded && el.imageLoaded;
+                })
+            });
+            if(loaded) {
+                clearInterval(intervalToken);
+                self.display(x,y,w,h);
+            }
+        }, 100);
+    };
 
     /**
      *

@@ -26,11 +26,13 @@
     tmpQuizz.tabQuestions = [];
     tmpQuizz.tabQuestions.push(myQuest);
     var quizz = new Quizz(tmpQuizz);
+    quizz.run(50,10,1200,1200);
 
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[0].image.id,925,1000 );
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[1].image.id,2835,2582 );
 
     setTimeout(function () {
+        quizz.nextQuestion();
         paper.writeTest();
     }, 5000);
     // Navigation Puzzle

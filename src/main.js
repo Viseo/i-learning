@@ -9,6 +9,7 @@ paper=Raphael(0,0,document.body.clientWidth,1500);
 function main() {
 
     var quizz = new Quizz(myQuizz);
+    quizz.run(50,10,1200,1200);
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
      puzzle.display(20, 20, 600, 600, 0);*/
