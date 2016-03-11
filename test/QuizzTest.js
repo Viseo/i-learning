@@ -26,9 +26,19 @@ describe('Quizz Test', function() {
         quizz.display(50,10,1200,1200);
         console.log(quizz.tabQuestions.length);
         var tmp=quizz.currentQuestionIndex;
+
+        var setLength=quizz.displaySet.length;
+        var questionSet=quizz.displaySet[setLength-1];
+
+
         quizz.nextQuestion();
         expect(quizz.currentQuestionIndex).toEqual(tmp+1);
         expect(quizz.tabQuestions[quizz.currentQuestionIndex]).toBeDefined();
+
+
+        expect(quizz.displaySet.length).toEqual(setLength);
+        expect(quizz.displaySet[setLength-1]).not.toEqual(questionSet);
+
         quizz.nextQuestion();
         expect(quizz.tabQuestions[(quizz.currentQuestionIndex+1)]).toBeUndefined();
         expect(quizz.currentQuestionIndex).not.toEqual(tmp+2);

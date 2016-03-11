@@ -159,6 +159,7 @@ function RaphaelMock(x,y,width,height)
     paper.set=function(){
 
         var s=[];
+        s.type='set';
         s.remove=function(){
             s=[];
         };

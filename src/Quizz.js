@@ -187,6 +187,7 @@ function Quizz(quizz)
                 self.displaySet[self.displaySet.length - 1].forEach(function (e) {
                     e.remove();
                 });
+                self.displaySet.pop();
             }
             if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                 self.currentQuestionIndex++;
