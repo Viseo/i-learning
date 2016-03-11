@@ -18,29 +18,37 @@
 <script src="main.js"></script>
 <script src="ExampleTimeout.js"></script>
 <script>
+    var imageController=ImageController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
-    var quizz = new Quizz(myQuizz);
+    var quizz=new Quizz(myQuizz);
+    quizz.puzzleLines=3;
+    quizz.puzzleRows=3;
 
-    var startTabQuestionLength=quizz.tabQuestions.length;
-    while(quizz.tabQuestions.length>(startTabQuestionLength-3))
-    {
-        quizz.tabQuestions.shift();
-    }
-    while(quizz.tabQuestions.length>4)
-    {
-        quizz.tabQuestions.pop();
-    }
 
-    quizz.display(50,10,1200,1200);
+    quizz.run(50,10,1200,1200);
 
-    setTimeout(function () {
-        quizz.nextQuestion();
-        quizz.nextQuestion();
-        quizz.nextQuestion();
-        paper.writeTest();
+    setTimeout(function(){
+        for(var i=0;i<9;i++)
+        {
+            quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
+            console.log("quizz.questionsWithBadAnswers["+i+"] :"+quizz.questionsWithBadAnswers[i].label);
+        }
 
-    }, 5000);
+
+        for(var i=0;i<quizz.tabQuestions.length;i++)
+        {
+            console.log("quizz.tabQuestions["+i+"] :"+quizz.tabQuestions[quizz.currentQuestionIndex].label);
+            quizz.nextQuestion();
+        }
+
+        setTimeout(function(){
+            quizz.puzzle.displaySet.forEach(function(e){
+                e.writeTest();
+            });
+        },1500);
+       // paper.writeTest();
+    },3000);
 
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[0].image.id,925,1000 );
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[1].image.id,2835,2582 );

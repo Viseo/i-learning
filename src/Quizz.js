@@ -194,7 +194,6 @@ function Quizz(quizz)
                 self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
-
             } else //--> fin du tableau, dernière question
             {
                 console.log("score: " + self.score);
@@ -213,9 +212,11 @@ function Quizz(quizz)
         gérer la couleur des réponses avec un éventuel dégradé/gradient de couleurs
         getGradientColors(rgb1, rgb2, nb_de_couleurs);
         */
-
+        console.log(self.questionsWithBadAnswers[5].label);
         //le puzzle qui prend en compte le tableau de questions ratées
         self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
+        console.log(self.puzzle);
+
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
 }

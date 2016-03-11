@@ -207,8 +207,9 @@ function RaphaelMock(x,y,width,height)
     function removeMock()
     {
        // console.log(paper[this.type.charAt(0)+this.id.toString()]);
-        delete paper[this.type.charAt(0)+this.id.toString()];
-        paper.children.splice(paper.children.indexOf(this),1);
+        var self=this;
+        delete paper[self.type.charAt(0)+self.id.toString()];
+        paper.children.splice(paper.children.indexOf(self),1);
     }
 
     return paper;
