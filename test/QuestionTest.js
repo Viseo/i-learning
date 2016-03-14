@@ -3,6 +3,11 @@
  */
 
 describe('question', function() {
+    beforeEach(function (){
+        paper=RaphaelMock(0,0,1500,1500);
+    });
+
+
     it('should instantiate correctly my question with answer (label & no imageSrc) & label & no imageSrc', function() {
         var tabAnswer = [];
         tabAnswer.push({label: "My first answer is...", imageSrc: null, bCorrect: false, rgbBordure:{r: 155, g: 222, b: 17}, bgColor:{r: 125, g: 122, b: 117}})
@@ -79,16 +84,31 @@ describe('question', function() {
         expect(function () { question.display(false, 1, "nonNumbre", null); }).toThrow(new Error(NaN));
     });
 
+    it('should click', function() {
+        var quizz = new Quizz(myQuizz);
+
+        var startTabQuestionLength=quizz.tabQuestions.length;
+        while(quizz.tabQuestions.length>(startTabQuestionLength-3)) {
+            quizz.tabQuestions.shift();
+        }
+        while(quizz.tabQuestions.length>4) {
+            quizz.tabQuestions.pop();
+        }
+
+        quizz.display(50,10,1200,1200);
+        onClickMock(paper.t9.node, 0, 0);
+        expect(quizz.currentQuestionIndex).toEqual(1);
+
+    });
+
     it('should display answers in 4 to 1 row',function(){
         var quizz = new Quizz(myQuizz);
 
         var startTabQuestionLength=quizz.tabQuestions.length;
-        while(quizz.tabQuestions.length>(startTabQuestionLength-3))
-        {
+        while(quizz.tabQuestions.length>(startTabQuestionLength-3)) {
             quizz.tabQuestions.shift();
         }
-        while(quizz.tabQuestions.length>4)
-        {
+        while(quizz.tabQuestions.length>4) {
             quizz.tabQuestions.pop();
         }
         expect(quizz.tabQuestions.length).toEqual(4);
@@ -208,5 +228,4 @@ describe('question', function() {
         paper.t57.test(625,476,"Boycoter");
         paper.r58.test(50,448,1150,56);
     });
-
 });

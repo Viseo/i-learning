@@ -275,9 +275,7 @@ function attrMock (param, value) {
         return resultOfGet;
     }
 
-};
-
-
+}
 
 function getBBoxMock(){
 
