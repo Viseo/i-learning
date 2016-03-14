@@ -145,8 +145,6 @@ function Quizz(quizz)
         } else {
             usedColor=color;
         }
-        self.resultBox=paper.rect(self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h).attr('fill','rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')');
-        self.resultText=paper.text(self.cadreResult.x+self.cadreResult.w/2,self.cadreResult.y+self.cadreResult.h/2,self.finalMessage);
 
         var object = displayText(self.finalMessage, self.cadreResult.x,self.cadreResult.y,self.cadreResult.w,self.cadreResult.h, "black", 'rgb('+usedColor.r+','+usedColor.g+','+usedColor.b+')', self.fontSize, self.font);
 
@@ -196,7 +194,7 @@ function Quizz(quizz)
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
             } else //--> fin du tableau, dernière question
             {
-                console.log("score: " + self.score);
+                console.log("Final score: " + self.score);
                 self.displayResult();
             }
 
@@ -212,7 +210,6 @@ function Quizz(quizz)
         gérer la couleur des réponses avec un éventuel dégradé/gradient de couleurs
         getGradientColors(rgb1, rgb2, nb_de_couleurs);
         */
-        console.log(self.questionsWithBadAnswers[5].label);
         //le puzzle qui prend en compte le tableau de questions ratées
         self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
         console.log(self.puzzle);

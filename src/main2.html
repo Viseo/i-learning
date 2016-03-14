@@ -21,33 +21,49 @@
     var imageController=ImageController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
-    var quizz=new Quizz(myQuizz);
+    var quizz = new Quizz(myQuizz);
+
+    var startTabQuestionLength=quizz.tabQuestions.length;
+    while(quizz.tabQuestions.length>(startTabQuestionLength-3))
+    {
+        quizz.tabQuestions.shift();
+    }
+    while(quizz.tabQuestions.length>4)
+    {
+        quizz.tabQuestions.pop();
+    }
+
+    //quizz.display(50,10,1200,1200);
     quizz.puzzleLines=3;
     quizz.puzzleRows=3;
 
+    console.log('length: '+quizz.tabQuestions.length);
+    for(var i=0;i<quizz.tabQuestions.length;i++)
+    {
+        quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
+    }
 
     quizz.run(50,10,1200,1200);
 
     setTimeout(function(){
-        for(var i=0;i<9;i++)
-        {
-            quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
-            console.log("quizz.questionsWithBadAnswers["+i+"] :"+quizz.questionsWithBadAnswers[i].label);
-        }
-
 
         for(var i=0;i<quizz.tabQuestions.length;i++)
         {
-            console.log("quizz.tabQuestions["+i+"] :"+quizz.tabQuestions[quizz.currentQuestionIndex].label);
+          //  console.log("quizz.tabQuestions["+i+"] :"+quizz.tabQuestions[quizz.currentQuestionIndex].label);
+            console.log('Question '+i);
             quizz.nextQuestion();
+
         }
 
-        setTimeout(function(){
+        /*setTimeout(function(){
             quizz.puzzle.displaySet.forEach(function(e){
                 e.writeTest();
             });
+        },1500);*/
+        setTimeout(function(){
+            paper.writeTest();
         },1500);
-       // paper.writeTest();
+
     },3000);
 
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[0].image.id,925,1000 );

@@ -95,7 +95,7 @@ describe('question', function() {
         quizz.display(50,10,1200,1200);
 
         // Question : 4 rows
-
+        //console.log(paper);
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].rows).toEqual(4);
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
