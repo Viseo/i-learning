@@ -58,11 +58,11 @@ describe('Puzzle test suite', function() {
         }
 
         imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
-        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000);
+       /* imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000);
         imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[1].image.id,2835,2582);
         imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[1].image.id,166,200);
         imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[2].image.id,183,262);
-        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[3].image.id,225,225);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[3].image.id,225,225);*/
 
         quizz.display(50,10,1200,1200);
 

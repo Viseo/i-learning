@@ -41,7 +41,6 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
  * @param h
  */
 var displayImage = function (imageSrc, image, x, y, w, h) {
-
     var width = image.width;
     var height = image.height;
     if(width > w) {

@@ -160,9 +160,7 @@ function RaphaelMock(x,y,width,height)
 
         var s=[];
         s.type='set';
-        s.remove=function(){
-            s=[];
-        };
+        s.remove=removeMock;
         return s;
     };
 
@@ -208,8 +206,16 @@ function RaphaelMock(x,y,width,height)
     {
        // console.log(paper[this.type.charAt(0)+this.id.toString()]);
         var self=this;
-        delete paper[self.type.charAt(0)+self.id.toString()];
-        paper.children.splice(paper.children.indexOf(self),1);
+        if(self.type==="set"){
+            self.forEach(function(e){
+               e.remove();
+            });
+        }else{
+
+            delete paper[self.type.charAt(0)+self.id.toString()];
+            paper.children.splice(paper.children.indexOf(self),1);
+        }
+
     }
 
     return paper;
@@ -275,9 +281,7 @@ function attrMock (param, value) {
         return resultOfGet;
     }
 
-};
-
-
+}
 
 function getBBoxMock(){
 

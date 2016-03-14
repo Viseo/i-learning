@@ -144,15 +144,13 @@ var Question = function (question,quizz) {
                // self.temp=self.tabAnswer[i];
                 (function(element){
                     if(element.bordure) {
-                        element.bordure.node.onclick=function()
-                        {
+                        element.bordure.node.onclick=function() {
                             elementClicked(element,'bordure');
                         };
                     }
 
                     if(element.content) {
-                        element.content.node.onclick=function()
-                        {
+                        element.content.node.onclick=function() {
                             elementClicked(element,'content');
                         };
                     }
