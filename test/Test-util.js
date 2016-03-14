@@ -36,7 +36,7 @@ var ImageController = function (imageRuntime) {
 };
 
 var onClickMock = function (obj, x, y) {
-    obj.onclick({clientX:x, clientY:y});
+    obj.node.onclick({clientX:x, clientY:y});
 };
 
 var AsyncTimerRuntime = {
