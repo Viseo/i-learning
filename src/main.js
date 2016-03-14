@@ -8,21 +8,13 @@ paper=Raphael(0,0,document.body.clientWidth,1500);
 
 function main() {
 
+
     var quizz=new Quizz(myQuizz);
     quizz.puzzleLines=3;
     quizz.puzzleRows=3;
-    for(var i=0;i<9;i++)
-    {
-        quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
-    }
-    quizz.run(50,10,1200,1200);
-    setTimeout(function(){
-        for(var i=0;i<quizz.tabQuestions.length;i++)
-        {
-            quizz.nextQuestion();
-        }
 
-    },5000);
+    quizz.run(50,10,1200,1200);
+
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
      puzzle.display(20, 20, 600, 600, 0);*/
