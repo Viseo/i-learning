@@ -9,6 +9,7 @@ describe('answer', function() {
     beforeEach(function (){
         paper=RaphaelMock(0,0,1500,1500);
     });
+
     it('should instantiate correctly my answer', function() {
 
         var answerJSON={
