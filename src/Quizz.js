@@ -88,8 +88,8 @@ function Quizz(quizz)
 
     self.finalMessage="";
 
-    self.run=function(x,y,w,h){
-        var intervalToken = setInterval(function () {
+    self.run = function(x,y,w,h) {
+        var intervalToken = asyncTimerController.interval(function () {
             var loaded = true;
             self.tabQuestions.forEach(function (e) {
                 loaded = loaded && e.imageLoaded;
@@ -98,7 +98,7 @@ function Quizz(quizz)
                 })
             });
             if(loaded) {
-                clearInterval(intervalToken);
+                asyncTimerController.clearInterval(intervalToken);
                 self.display(x,y,w,h);
             }
         }, 100);
