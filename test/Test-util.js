@@ -38,3 +38,48 @@ var ImageController = function (imageRuntime) {
 var onClickMock = function (obj, x, y) {
     obj.onclick({clientX:x, clientY:y});
 };
+
+var AsyncTimerRuntime = {
+    timers: {},
+    count: 0,
+    interval: function (handler, timer) {
+        var interval = {
+            id:"interval"+count,
+            next: handler,
+            timer: timer
+        };
+        count++;
+        this.timers[interval.id] = interval;
+        return interval;
+    },
+    clearInterval: function (id) {
+        delete this.timers[id];
+    },
+    timeout: function (handler, timer) {
+        var timeout = {
+            id:"timeout"+count,
+            next: function () {
+                handler();
+                delete this;
+            },
+            timer:timer
+        };
+        count++;
+        this.timers[timeout.id] = timeout;
+        return timeout;
+    }
+};
+
+var AsyncTimerController = function (asyncTimerRuntime) {
+    return asyncTimerRuntime || {
+        interval: function (handler, timer) {
+            return setInterval(handler, timer);
+        },
+        clearInterval: function (id) {
+            clearInterval(id);
+        },
+        timeout: function (handler, timer) {
+            return setTimeout(handler, timer);
+        }
+    };
+};

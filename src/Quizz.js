@@ -88,8 +88,8 @@ function Quizz(quizz)
 
     self.finalMessage="";
 
-    self.run=function(x,y,w,h){
-        var intervalToken = setInterval(function () {
+    self.run = function(x,y,w,h) {
+        var intervalToken = asyncTimerController.interval(function () {
             var loaded = true;
             self.tabQuestions.forEach(function (e) {
                 loaded = loaded && e.imageLoaded;
@@ -98,7 +98,7 @@ function Quizz(quizz)
                 })
             });
             if(loaded) {
-                clearInterval(intervalToken);
+                asyncTimerController.clearInterval(intervalToken);
                 self.display(x,y,w,h);
             }
         }, 100);
@@ -212,7 +212,6 @@ function Quizz(quizz)
         gérer la couleur des réponses avec un éventuel dégradé/gradient de couleurs
         getGradientColors(rgb1, rgb2, nb_de_couleurs);
         */
-        console.log(self.questionsWithBadAnswers[5].label);
         //le puzzle qui prend en compte le tableau de questions ratées
         self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
         console.log(self.puzzle);
