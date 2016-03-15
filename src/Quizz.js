@@ -212,7 +212,7 @@ function Quizz(quizz)
         */
         //le puzzle qui prend en compte le tableau de questions ratées
         self.puzzle=new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
-        console.log(self.puzzle);
+        self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
 
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Administrator area</title>
 </head>
-<body>
+<body id="body">
     <script src="../lib/raphael-min.js"></script>
     <script src="../lib/d3.min.js"></script>
     <script src="../test/Test-util.js"></script>
@@ -17,8 +17,12 @@
     <script src="Quizz.js"></script>
     <script src="QuestionCreator.js"></script>
     <script>
+        var imageController = ImageController();
+        var asyncTimerController = AsyncTimerController();
         paper=Raphael(0,0,document.body.clientWidth,970);
-        var questionCreator = new QuestionCreator();
+        var quizz = new Quizz(myQuizz);
+        //quizz.tabQuestions[13].tabAnswer.push.apply(quizz.tabQuestions[13].tabAnswer, quizz.tabQuestions[12].tabAnswer);
+        var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);
         questionCreator.displayQuestionCreator(20, 20, document.body.clientWidth-50, 950);
     </script>
 </body>
