@@ -192,7 +192,7 @@ var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
     return 0
 };
 
-var drawArrow = function(x,y,w,h,side,event){
+var drawArrow = function(x,y,w,h,side,handler){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
@@ -200,46 +200,26 @@ var drawArrow = function(x,y,w,h,side,event){
     var tempWidth=0,tempHeight=0;
     tempWidth=baseWidth;
     tempHeight=baseHeight;
-    var path = "M "+(145+x-(baseWidth/2))+","+(140+y-(baseHeight/2))+" "+
-        "L "+(45+x-(baseWidth/2))+","+(240+y-(baseHeight/2))+" "+
-        "C "+(5+x-(baseWidth/2))+","+(280+y-(baseHeight/2))+" "+(60+x-(baseWidth/2))+","+(325+y-(baseHeight/2))+" "+(95+x-(baseWidth/2))+","+(290+y-(baseHeight/2))+" "+
-        "L "+(205+x-(baseWidth/2))+","+(180+y-(baseHeight/2))+" "+
-        "C "+(240+x-(baseWidth/2))+","+(145+y-(baseHeight/2))+" "+(240+x-(baseWidth/2))+","+(135+y-(baseHeight/2))+" "+(205+x-(baseWidth/2))+","+(100+y-(baseHeight/2))+" "+
-        "L "+(95+x-(baseWidth/2))+","+(-10+y-(baseHeight/2))+" "+
-        "C "+(60+x-(baseWidth/2))+","+(-50+y-(baseHeight/2))+" "+(0+x-(baseWidth/2))+","+(0+y-(baseHeight/2))+" "+(45+x-(baseWidth/2))+","+(40+y-(baseHeight/2))+" "+
-        "L "+(145+x-(baseWidth/2))+","+(140+y-(baseHeight/2))+" ";
-
+    var path = "M "+(x)+","+(y)+" "+
+        "L "+(-100+x)+","+(100+y)+" "+
+        "C "+(-140+x)+","+(140+y)+" "+(-85+x)+","+(185+y)+" "+(-50+x)+","+(150+y)+" "+
+        "L "+(60+x)+","+(40+y)+" "+
+        "C "+(95+x)+","+(5+y)+" "+(95+x)+","+(-5+y)+" "+(60+x)+","+(-40+y)+" "+
+        "L "+(-50+x)+","+(-150+y)+" "+
+        "C "+(-85+x)+","+(-190+y)+" "+(-145+x)+","+(-140+y)+" "+(-100+x)+","+(-100+y)+" "+
+        "L "+(x)+","+(y)+" ";
 
     var chevron=paper.path(path);
-    /*
-     "M "+(200+x-(baseWidth/2))+","+(200+y-(baseHeight/2))+" "+
-     "L "+(100+x-(baseWidth/2))+","+(300+y-(baseHeight/2))+" "+
-     "C "+(60+x-(baseWidth/2))+","+(340+y-(baseHeight/2))+" "+(115+x-(baseWidth/2))+","+(385+y-(baseHeight/2))+" "+(150+x-(baseWidth/2))+","+(350+y-(baseHeight/2))+" "+
-     "L "+(260+x-(baseWidth/2))+","+(240+y-(baseHeight/2))+" "+
-     "C "+(295+x-(baseWidth/2))+","+(205+y-(baseHeight/2))+" "+(295+x-(baseWidth/2))+","+(195+y-(baseHeight/2))+" "+(260+x-(baseWidth/2))+","+(160+y-(baseHeight/2))+" "+
-     "L "+(150+x-(baseWidth/2))+","+(50+y-(baseHeight/2))+" "+
-     "C "+(115+x-(baseWidth/2))+","+(10+y-(baseHeight/2))+" "+(55+x-(baseWidth/2))+","+(60+y-(baseHeight/2))+" "+(100+x-(baseWidth/2))+","+(100+y-(baseHeight/2))+" "+
-     "L "+(200+x-(baseWidth/2))+","+(200+y-(baseHeight/2))+" ";
-     */
-    /*
-     "M "+(145+x-(baseWidth/2))+","+(140+y-(baseHeight/2))+" "+
-     "L "+(45+x-(baseWidth/2))+","+(240+y-(baseHeight/2))+" "+
-     "C "+(5+x-(baseWidth/2))+","+(280+y-(baseHeight/2))+" "+(60+x-(baseWidth/2))+","+(325+y-(baseHeight/2))+" "+(95+x-(baseWidth/2))+","+(290+y-(baseHeight/2))+" "+
-     "L "+(205+x-(baseWidth/2))+","+(180+y-(baseHeight/2))+" "+
-     "C "+(240+x-(baseWidth/2))+","+(145+y-(baseHeight/2))+" "+(240+x-(baseWidth/2))+","+(135+y-(baseHeight/2))+" "+(205+x-(baseWidth/2))+","+(100+y-(baseHeight/2))+" "+
-     "L "+(95+x-(baseWidth/2))+","+(-10+y-(baseHeight/2))+" "+
-     "C "+(60+x-(baseWidth/2))+","+(-50+y-(baseHeight/2))+" "+(0+x-(baseWidth/2))+","+(0+y-(baseHeight/2))+" "+(45+x-(baseWidth/2))+","+(40+y-(baseHeight/2))+" "+
-     "L "+(145+x-(baseWidth/2))+","+(140+y-(baseHeight/2))+" ";
-     */
-    if(event)
+
+    if(handler)
     {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
-        chevron.onclick=event;
+        chevron.node.onclick=handler;
     }else{
         chevron.attr({"type":"path","stroke":"none","fill":"grey"});
     }
     if(side==="left") {
-       //chevron.transform("r" + 180 + " "+(baseHeight/2+x-(baseWidth/2))+" "+(baseWidth/2+y-(baseHeight/2)));
+       chevron.transform("r" + 180 + " "+x+" "+y);
     }
     while((w<tempWidth)||(h<tempHeight)) {
         scale-=0.1;
@@ -247,5 +227,4 @@ var drawArrow = function(x,y,w,h,side,event){
         tempHeight=(baseHeight*scale);
     }
     chevron.scale(scale);
-    //paper.path(path);
 };
