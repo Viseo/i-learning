@@ -88,12 +88,14 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
                 self.rightArrow = drawArrow(x+w-self.margin, y+h/2, 75, 75,"right");
             } else {
                 self.rightArrow = drawArrow(x+w-self.margin, y+h/2, 75, 75,"right",function (){
-                    if (s elf.rows === 1 && startPosition !== 0) {
-                        self.display(x, y, w, h, startPosition - 1);
-                    } else if (startPosition - self.rows + 1 <= 0) {
-                        self.display(x, y, w, h, 0);
+                    if(self.rows === 1 && startPosition !== self.totalRows -1) {
+                        self.display(x, y, w, h, startPosition+1);
+                    } else if(2*self.rows + startPosition >= self.totalRows) {
+                        var newStartPosition = self.totalRows - self.rows;
+                        self.display(x, y, w, h, newStartPosition);
                     } else {
-                        self.display(x, y, w, h, startPosition - self.rows + 1);
+                        var newStartPosition = startPosition + self.rows - 1;
+                        self.display(x, y, w, h, newStartPosition);
                     }
                 });
             }
