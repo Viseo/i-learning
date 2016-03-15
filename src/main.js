@@ -11,7 +11,7 @@ function main() {
 
 
     var quizz=new Quizz(myQuizz);
-    quizz.puzzleLines=3;
+    quizz.puzzleLines=1;
     quizz.puzzleRows=3;
 
     quizz.run(50,10,1200,1200);

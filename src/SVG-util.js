@@ -226,4 +226,5 @@ var drawArrow = function(x,y,w,h,side,handler){
         chevron.tempHeight=(baseHeight*scale);
     }
     chevron.scale(scale);
+    return chevron;
 };

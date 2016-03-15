@@ -211,12 +211,12 @@ function RaphaelMock(x,y,width,height)
         element.y= parseInt(secondSplit[1]);
 
         element.writeTest = function () {
-            console.log('paper.p'+element.id+'.test('+element.x+','+element.y+','+element.tempHeigth+','+element.tempWidth+','+element.fill+');');
+            console.log('paper.p'+element.id+'.test('+element.x+','+element.y+','+element.tempHeight+','+element.tempWidth+',"'+element.fill+'");');
         };
         element.test = function (x,y,w,h,color) {
             expect(element.x).toEqual(x);
             expect(element.y).toEqual(y);
-            expect(element.tempHeigth).toEqual(w);
+            expect(element.tempHeight).toEqual(w);
             expect(element.tempWidth).toEqual(h);
             expect(element.fill).toEqual(color);
         };
@@ -226,6 +226,7 @@ function RaphaelMock(x,y,width,height)
         element.toFront=toFrontMock;
         element.attr=attrMock;
         element.transform=function(str){};
+        element.scale=function(str){};
 
         paper['p'+element.id]=element;
         paper.children.push(element);
@@ -260,7 +261,7 @@ function RaphaelMock(x,y,width,height)
     return paper;
 }
 
-var attr = function (param, value) {
+/*var attr = function (param, value) {
     var tab = [];
 
     if(param !== null && typeof param === 'object') {
@@ -271,7 +272,7 @@ var attr = function (param, value) {
         tab.push({param: value});
     }
     return tab;
-};
+};*/
 
 function animate (objectCoord, time) {
     if(objectCoord.x) {

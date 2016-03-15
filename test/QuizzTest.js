@@ -274,6 +274,155 @@ describe('Quizz Test', function() {
 
 
     });
+
+    it('should display navigation arrows',function(){
+        var quizz = new Quizz(myQuizz);
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
+        }
+
+        console.log('Length: '+quizz.tabQuestions.length);
+        quizz.puzzleLines=2;
+        quizz.puzzleRows=3;
+
+        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[1].image.id,2835,2582);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[1].image.id,166,200);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[2].image.id,183,262);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[3].image.id,225,225);
+
+        quizz.display(50,10,1200,1200);
+
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            onClickMock(quizz.tabQuestions[i].tabAnswer[2].bordure);
+
+        }
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r213.test(50,220,1150,200);
+        paper.p214.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p215.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t216.test(280,690.5,"Une divinité féminine est\nune...");
+        paper.i217.test("../resource/millions.png",175.75,445,208.5,208.5);
+        paper.r218.test(115,435,330,292.5);
+        paper.t219.test(280,888.75,"Parmi ces fruits, lequel\npossède un noyau?");
+            paper.r220.test(115,742.5,330,292.5);
+        paper.t221.test(625,581.25,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r222.test(460,435,330,292.5);
+        paper.t223.test(625,888.75,"Quelle est la capitale de la\nLibye?");
+            paper.r224.test(460,742.5,330,292.5);
+        paper.t225.test(970,581.25,"Un terrain où on n'a rien\nplanté est une terre...");
+        paper.r226.test(805,435,330,292.5);
+        paper.t227.test(970,888.75,"Un galurin est un...");
+        paper.r228.test(805,742.5,330,292.5);
+
+    });
+
+    it('should shift wrong answers columns by blocks of 2(3 colums,1 line)',function(){
+        var quizz = new Quizz(myQuizz);
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
+        }
+
+        console.log('Length: '+quizz.tabQuestions.length);
+        quizz.puzzleLines=1;
+        quizz.puzzleRows=3;
+
+        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[1].image.id,2835,2582);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[1].image.id,166,200);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[2].image.id,183,262);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[3].image.id,225,225);
+
+        quizz.display(50,10,1200,1200);
+
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            onClickMock(quizz.tabQuestions[i].tabAnswer[2].bordure);
+
+        }
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r213.test(50,220,1150,200);
+        paper.p214.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p215.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t216.test(280,998,"Une divinité féminine est\nune...");
+        paper.i217.test("../resource/millions.png",125,548,310,310);
+        paper.r218.test(115,435,330,600);
+        paper.t219.test(625,735,"Parmi ces fruits, lequel\npossède un noyau?");
+            paper.r220.test(460,435,330,600);
+        paper.t221.test(970,735,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r222.test(805,435,330,600);
+
+        onClickMock(paper.p215);
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r213.test(50,220,1150,200);
+        paper.p223.test(65,735,60.00000000000004,32.00000000000002,"black");
+        paper.p224.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t225.test(280,735,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r226.test(115,435,330,600);
+        paper.t227.test(625,735,"Quelle est la capitale de la\nLibye?");
+            paper.r228.test(460,435,330,600);
+        paper.t229.test(970,735,"Un terrain où on n'a rien\nplanté est une terre...");
+        paper.r230.test(805,435,330,600);
+
+    });
+
+    it('should shift wrong answers columns one by one (1 colum,1 line)',function(){
+        var quizz = new Quizz(myQuizz);
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
+        }
+
+        console.log('Length: '+quizz.tabQuestions.length);
+        quizz.puzzleLines=1;
+        quizz.puzzleRows=1;
+
+        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000);
+        imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[1].image.id,2835,2582);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[1].image.id,166,200);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[2].image.id,183,262);
+        imageController.imageLoaded(quizz.tabQuestions[7].tabAnswer[3].image.id,225,225);
+
+        quizz.display(50,10,1200,1200);
+
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            onClickMock(quizz.tabQuestions[i].tabAnswer[2].bordure);
+
+        }
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r213.test(50,220,1150,200);
+        paper.p214.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p215.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t216.test(625,1007,"Une divinité féminine est une...");
+        paper.i217.test("../resource/millions.png",358,445,534,534);
+        paper.r218.test(115,435,1020,600);
+
+        onClickMock(paper.p215);
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r213.test(50,220,1150,200);
+        paper.p219.test(65,735,60.00000000000004,32.00000000000002,"black");
+        paper.p220.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t221.test(625,735,"Parmi ces fruits, lequel possède un noyau?");
+        paper.r222.test(115,435,1020,600);
+
+    });
+
 });
 
 /*quizz.tabQuestions.forEach(function (e) {
