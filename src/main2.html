@@ -19,14 +19,22 @@
 <script src="ExampleTimeout.js"></script>
 <script>
     var imageController=ImageController();
+    var asyncTimerController=AsyncTimerController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
     var quizz = new Quizz(myQuizz);
+    var startTabQuestionLength=quizz.tabQuestions.length;
 
-    for(var i=0;i<9;i++){
+    while(quizz.tabQuestions.length>(startTabQuestionLength-3)){
+        quizz.tabQuestions.shift();
+    }
+    while(quizz.tabQuestions.length>4){
+        quizz.tabQuestions.pop();
+    }
+    for(var i=0;i<quizz.tabQuestions.length-4;i++){
         quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
     }
-
+    quizz.score=4
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=3;
     quizz.puzzleRows=3;

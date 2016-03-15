@@ -139,7 +139,7 @@ function Quizz(quizz)
         }
         var nom;
 
-        self.finalMessage+="\nVous avez répondu à "+quizz.tabQuestions.length+" questions, "+nom;
+        self.finalMessage+="\nVous avez répondu à "+self.tabQuestions.length+" questions, "+nom;
         if(!color) {
             var usedColor=autoColor;
         } else {

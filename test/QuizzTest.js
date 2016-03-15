@@ -142,7 +142,7 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t59.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.t59.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 4 questions, dont aucune n'est juste !");
         paper.r60.test(50,220,1150,200);
         paper.t61.test(236.66666666666666,530,"Quelle est la capitale de la Libye?");
         paper.r62.test(50,435,373.3333333333333,190);
@@ -188,16 +188,10 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t59.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.t59.test(625,320,"Vous avez encore de nombreux progrès à faire.\nVous avez répondu à 4 questions, dont une seule est juste.");
         paper.r60.test(50,220,1150,200);
         paper.t61.test(236.66666666666666,530,"Quelle est la capitale de la Libye?");
         paper.r62.test(50,435,373.3333333333333,190);
-        paper.t63.test(236.66666666666666,735,"Un terrain où on n'a rien planté\nest une terre...");
-        paper.r64.test(50,640,373.3333333333333,190);
-        paper.t65.test(236.66666666666666,940,"Un galurin est un...");
-        paper.r66.test(50,845,373.3333333333333,190);
-        paper.t67.test(625,530,"Quelle est l'orthographe correcte\nde ce verbe?");
-        paper.r68.test(438.3333333333333,435,373.3333333333333,190);
 
 
     });
@@ -222,7 +216,7 @@ describe('Quizz Test', function() {
         console.log("lines&rows");
 
         console.log('length: '+quizz.tabQuestions.length);
-        for(var i=0;i<quizz.tabQuestions.length-2;i++) {
+        for(var i=0;i<quizz.tabQuestions.length-3;i++) {
             quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
         }
         quizz.score=3;
@@ -234,16 +228,11 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t59.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.t59.test(625,320,"Pas mal du tout !\nVous avez répondu à 4 questions,  et toutes (sauf une...) sont justes !");
         paper.r60.test(50,220,1150,200);
         paper.t61.test(236.66666666666666,530,"Quelle est la capitale de la Libye?");
         paper.r62.test(50,435,373.3333333333333,190);
-        paper.t63.test(236.66666666666666,735,"Un terrain où on n'a rien planté\nest une terre...");
-        paper.r64.test(50,640,373.3333333333333,190);
-        paper.t65.test(236.66666666666666,940,"Un galurin est un...");
-        paper.r66.test(50,845,373.3333333333333,190);
-        paper.t67.test(625,530,"Quelle est l'orthographe correcte\nde ce verbe?");
-        paper.r68.test(438.3333333333333,435,373.3333333333333,190);
+
 
 
     });
@@ -280,16 +269,8 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t59.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.t59.test(625,320,"Impressionant !\nVous avez répondu à 4 questions,  et toutes sont justes !");
         paper.r60.test(50,220,1150,200);
-        paper.t61.test(236.66666666666666,530,"Quelle est la capitale de la Libye?");
-        paper.r62.test(50,435,373.3333333333333,190);
-        paper.t63.test(236.66666666666666,735,"Un terrain où on n'a rien planté\nest une terre...");
-        paper.r64.test(50,640,373.3333333333333,190);
-        paper.t65.test(236.66666666666666,940,"Un galurin est un...");
-        paper.r66.test(50,845,373.3333333333333,190);
-        paper.t67.test(625,530,"Quelle est l'orthographe correcte\nde ce verbe?");
-        paper.r68.test(438.3333333333333,435,373.3333333333333,190);
 
 
     });

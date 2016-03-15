@@ -3,7 +3,7 @@
  */
 window.paper=null;
 var imageController = new ImageController(ImageRuntime);
-
+var asyncTimerController=AsyncTimerController(AsyncTimerRuntime);
 describe('Puzzle test suite', function() {
     var puzzle;
 
@@ -28,11 +28,6 @@ describe('Puzzle test suite', function() {
         var puzzle=new Puzzle(2,2,questions,quizz.cadreResult);
 
         expect(puzzle).toBeDefined();
-
-        expect(puzzle.tileWidth).toBeUndefined();
-        expect(puzzle.tileHeight).toBeUndefined();
-
-        puzzle.initTiles();
 
         expect(puzzle.tileWidth).toBeDefined();
         expect(puzzle.tileHeight).toBeDefined();
