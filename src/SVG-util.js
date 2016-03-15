@@ -197,9 +197,7 @@ var drawArrow = function(x,y,w,h,side,handler){
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
     var scale=1;
-    var tempWidth=0,tempHeight=0;
-    tempWidth=baseWidth;
-    tempHeight=baseHeight;
+
     var path = "M "+(x)+","+(y)+" "+
         "L "+(-100+x)+","+(100+y)+" "+
         "C "+(-140+x)+","+(140+y)+" "+(-85+x)+","+(185+y)+" "+(-50+x)+","+(150+y)+" "+
@@ -210,7 +208,8 @@ var drawArrow = function(x,y,w,h,side,handler){
         "L "+(x)+","+(y)+" ";
 
     var chevron=paper.path(path);
-
+    chevron.tempWidth=baseWidth;
+    chevron.tempHeight=baseHeight;
     if(handler)
     {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
@@ -221,10 +220,10 @@ var drawArrow = function(x,y,w,h,side,handler){
     if(side==="left") {
        chevron.transform("r" + 180 + " "+x+" "+y);
     }
-    while((w<tempWidth)||(h<tempHeight)) {
+    while((w<chevron.tempWidth)||(h<chevron.tempHeight)) {
         scale-=0.1;
-        tempWidth=(baseWidth*scale);
-        tempHeight=(baseHeight*scale);
+        chevron.tempWidth=(baseWidth*scale);
+        chevron.tempHeight=(baseHeight*scale);
     }
     chevron.scale(scale);
 };
