@@ -121,22 +121,10 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             for(var i = startPosition; i<(startPosition+self.lines); i++) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
-                        if(self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                            var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.image);
-                            self.displaySet.push(object.text);
-                        } else if(self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
-                            var object = displayText(self.virtualTab[i][j].label, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.content);
-                        } else if(!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                            var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.image);
-                        } else {
-                            self.displaySet.push(paper.rect(posX, posY, self.tileWidth, self.tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
-                        }
+
+                        self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                        self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+
                         posX += self.tileWidth+self.margin;
                         count++;
                     }
@@ -151,28 +139,12 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             for (var i = startPosition; i < (startPosition + self.rows); i++) {
                 for (var j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
-                        if (self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                            var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.image);
-                            self.displaySet.push(object.text);
-                        } else if (self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
-                            var object = displayText(self.virtualTab[i][j].label, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.content);
-                        } else if (!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                            var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight);
-                            self.displaySet.push(object.cadre);
-                            self.displaySet.push(object.image);
-                        } else {
-                            self.displaySet.push(paper.rect(posX, posY, self.tileWidth, self.tileHeight).attr({
-                                fill: self.virtualTab[i][j].bgColor,
-                                stroke: self.virtualTab[i][j].rgbBordure
-                            }));
-                        }
 
-                        posY += self.tileHeight + self.margin;
-                        count++;
+                    self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                    self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+                        
+                    posY += self.tileHeight + self.margin;
+                    count++;
                     }
                     else {
                         break;

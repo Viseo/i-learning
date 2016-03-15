@@ -78,11 +78,15 @@ var Question = function (question,quizz) {
             throw new Error(NaN);
         }
 
-        var height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
+        if(!h) {
+            self.height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
+        } else {
+            self.height=h;
+        }
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
@@ -92,21 +96,23 @@ var Question = function (question,quizz) {
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, x, y, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
         }
         // Question avec Image uniquement
-        else if(self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, x, y, w, height).image;
+        else if (self.imageSrc && !self.label) {
+            self.raphImage = displayImage(self.imageSrc, self.image, x, y, w, self.height).image;
             self.displaySet.push(self.raphImage);
         }
-        else if (!self.imageSrc && !self.label){
-            self.bordure = paper.rect(x, y, w, height).attr({fill: self.bgColor, stroke: self.rgbBordure})
+        else if (!self.imageSrc && !self.label) {
+            self.bordure = paper.rect(x, y, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure})
         }
+    };
 
+    self.displayAnswers = function (x, y, w, h) {
         if (self.rows !== 0) {
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
@@ -122,13 +128,13 @@ var Question = function (question,quizz) {
             }
 
             if(self.tabAnswer.length%self.rows === 0) {
-                paper.setSize(paper.width, (margin + tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + height + y + 2*margin);
+                paper.setSize(paper.width, (margin + tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin);
             } else {
-                paper.setSize(paper.width, (margin + tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + height + y + 2*margin);
+                paper.setSize(paper.width, (margin + tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin);
             }
 
             var posx = x;
-            var posy = y + height + margin * 2;
+            var posy = y + self.height + margin * 2;
             var count = 0;
             for (var i = 0; i < self.tabAnswer.length; i++) {
                 if (i !== 0) {

@@ -191,6 +191,8 @@ function Quizz(quizz)
                 self.currentQuestionIndex++;
                 self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                    self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
             } else //--> fin du tableau, dernière question
             {
