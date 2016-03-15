@@ -5,6 +5,7 @@
 //var paper=Raphael(0,0,1500,1500);
 var imageController = ImageController();
 paper=Raphael(0,0,document.body.clientWidth,1500);
+var asyncTimerController=AsyncTimerController();
 
 function main() {
 
