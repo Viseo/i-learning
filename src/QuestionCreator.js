@@ -7,7 +7,7 @@ var QuestionCreator = function (question) {
     var self = this;
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = [{}, {}];
+        self.tabAnswer = [new EmptyElement(), new EmptyElement()];
         self.quizzName = "Ecrire ici le nom du quiz";
         self.label = "Cliquer deux fois pour ajouter la question";
         self.rightAnswers = [];

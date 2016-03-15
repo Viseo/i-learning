@@ -142,7 +142,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
                     self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
                     self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
-                        
+
                     posY += self.tileHeight + self.margin;
                     count++;
                     }
