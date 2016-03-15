@@ -48,7 +48,7 @@ describe('Puzzle test suite', function() {
 
     });
     it('should display a puzzle with no navigation arrows', function () {
-
+        // TODO: pareil que les autres tests dans QuizzTest, devrait passer quand il n'y aura plus de chargement dans puzzle.display
         var quizz=new Quizz(myQuizz);
         quizz.puzzleLines=3;
         quizz.puzzleRows=3;
@@ -70,29 +70,30 @@ describe('Puzzle test suite', function() {
         {
             quizz.nextQuestion();
         }
-        quizz.puzzle.display(quizz.cadreResult.x, quizz.cadreResult.y+quizz.cadreResult.h+15, quizz.cadreResult.w, 600, 0);
 
-       // quizz.puzzle=new Puzzle(quizz.puzzleLines, quizz.puzzleRows, quizz.questionsWithBadAnswers, quizz.cadreResult);
-
-        paper.t216.test(236.66666666666666,597,"Une divinité féminine est une...");
-        paper.i217.test("../resource/millions.png",174.66666666666666,445,124,124);
-        paper.r218.test(50,435,373.3333333333333,190);
-        paper.r220.test(50,640,373.3333333333333,190);
-        paper.t219.test(236.66666666666666,735,"Parmi ces fruits, lequel possède un\nnoyau?");
-        paper.r222.test(50,845,373.3333333333333,190);
-        paper.t221.test(236.66666666666666,940,"Traditionnellement, le justaucorps\nest porté par...");
-        paper.r224.test(438.3333333333333,435,373.3333333333333,190);
-        paper.t223.test(625,530,"Quelle est la capitale de la Libye?");
-        paper.r226.test(438.3333333333333,640,373.3333333333333,190);
-        paper.t225.test(625,735,"Un terrain où on n'a rien planté\nest une terre...");
-        paper.r228.test(438.3333333333333,845,373.3333333333333,190);
-        paper.t227.test(625,940,"Un galurin est un...");
-        paper.r230.test(826.6666666666666,435,373.3333333333333,190);
-        paper.t229.test(1013.3333333333333,530,"Quelle est l'orthographe correcte\nde ce verbe?");
-        paper.r232.test(826.6666666666666,640,373.3333333333333,190);
-        paper.t231.test(1013.3333333333333,735,"Comment appelle-t-on un habitant de\nFlandre?");
-        paper.r234.test(826.6666666666666,845,373.3333333333333,190);
-        paper.t233.test(1013.3333333333333,940,"Formentera est une île des...");
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t212.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.r213.test(50,220,1150,200);
+        paper.t214.test(236.66666666666666,597,"Une divinité féminine est une...");
+        paper.i215.test("../resource/millions.png",174.66666666666666,445,124,124);
+        paper.r216.test(50,435,373.3333333333333,190);
+        paper.t217.test(236.66666666666666,735,"Parmi ces fruits, lequel possède un\nnoyau?");
+        paper.r218.test(50,640,373.3333333333333,190);
+        paper.t219.test(236.66666666666666,940,"Traditionnellement, le justaucorps\nest porté par...");
+        paper.r220.test(50,845,373.3333333333333,190);
+        paper.t221.test(625,530,"Quelle est la capitale de la Libye?");
+        paper.r222.test(438.3333333333333,435,373.3333333333333,190);
+        paper.t223.test(625,735,"Un terrain où on n'a rien planté\nest une terre...");
+        paper.r224.test(438.3333333333333,640,373.3333333333333,190);
+        paper.t225.test(625,940,"Un galurin est un...");
+        paper.r226.test(438.3333333333333,845,373.3333333333333,190);
+        paper.t227.test(1013.3333333333333,530,"Quelle est l'orthographe correcte\nde ce verbe?");
+            paper.r228.test(826.6666666666666,435,373.3333333333333,190);
+        paper.t229.test(1013.3333333333333,735,"Comment appelle-t-on un habitant de\nFlandre?");
+            paper.r230.test(826.6666666666666,640,373.3333333333333,190);
+        paper.t231.test(1013.3333333333333,940,"Formentera est une île des...");
+        paper.r232.test(826.6666666666666,845,373.3333333333333,190);
 
     });
 });
