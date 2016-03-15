@@ -25,26 +25,21 @@
     var quizz = new Quizz(myQuizz);
     var startTabQuestionLength=quizz.tabQuestions.length;
 
-    while(quizz.tabQuestions.length>(startTabQuestionLength-3)){
-        quizz.tabQuestions.shift();
-    }
-    while(quizz.tabQuestions.length>4){
-        quizz.tabQuestions.pop();
-    }
-    for(var i=0;i<quizz.tabQuestions.length-4;i++){
+
+    for(var i=0;i<quizz.tabQuestions.length;i++){
         quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
     }
-    quizz.score=4
+
     console.log('Length: '+quizz.tabQuestions.length);
-    quizz.puzzleLines=3;
-    quizz.puzzleRows=3;
+    quizz.puzzleLines=2;
+    quizz.puzzleRows=2;
     quizz.run(50,10,1200,1200);
 
     setTimeout(function(){
 
-        for(var i=0;i<quizz.tabQuestions.length;i++)
-        {
-            quizz.nextQuestion();
+        for(var i=0;i<quizz.tabQuestions.length;i++){
+            onClickMock(quizz.tabQuestions[i].tabAnswer[2].bordure);
+
         }
 
         /*setTimeout(function(){
