@@ -192,7 +192,7 @@ var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
     return 0
 };
 
-var drawArrow = function(x,y,w,h,side,event){
+var drawArrow = function(x,y,w,h,side,handler){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
@@ -211,10 +211,10 @@ var drawArrow = function(x,y,w,h,side,event){
 
     var chevron=paper.path(path);
 
-    if(event)
+    if(handler)
     {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
-        chevron.onclick=event;
+        chevron.node.onclick=handler;
     }else{
         chevron.attr({"type":"path","stroke":"none","fill":"grey"});
     }
