@@ -67,7 +67,7 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.content.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin-2)+"px; height:"+(self.h*0.25-2-6*self.margin)+"px; text-align:center; resize: none; border: none;");
+            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin)+"px; height:"+(self.h*0.25-4*self.margin)+"px; text-align:center; resize: none; border: red;");
             var body = document.getElementById("body");
             body.appendChild(textarea).focus();
             textarea.onblur = function () {
