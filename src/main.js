@@ -10,13 +10,9 @@ var asyncTimerController=AsyncTimerController();
 function main() {
 
 
-    var quizz=new Quizz(myQuizz);
-    quizz.puzzleLines=1;
-    quizz.puzzleRows=3;
-
-    quizz.run(50,10,1200,1200);
-
-    // Navigation Puzzle
+    var bib=new BibImage(myBib);
+    bib.run(10,10,500,500);
+     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
      puzzle.display(20, 20, 600, 600, 0);*/
 

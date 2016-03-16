@@ -77,6 +77,13 @@ function Quizz(quizz)
         h:200
     };
 
+    self.cadreBibImages={
+        x:0,
+        y:210,
+        w:paper.width,
+        h:600
+    };
+
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.paper=paper;

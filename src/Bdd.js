@@ -11,9 +11,21 @@ var myColors={
     raspberry:{r: 194, g: 46, b: 83}
 };
 
-var myQuizz=
-{
-    title: "Qui veut gagner des millions ? Quizz n°1",
+var myBib= {
+    title: "Bibliotheque",
+            tabSrcImg: [
+                {imgSrc: "../resource/statue.jpg"},
+                {imgSrc: "../resource/pomme.jpg"},
+                {imgSrc: "../resource/cerise.jpg"},
+                {imgSrc: "../resource/cerise.jpg"},
+                {imgSrc: "../resource/cerise.jpg"},
+                {imgSrc: "../resource/cerise.jpg"}
+            ],
+            font:"Courier New", fontSize:40
+        };
+
+
+var myQuizz={
     tabQuestions:[
         {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
             tabAnswer: [
