@@ -194,6 +194,11 @@ function Quizz(quizz)
                 });
                 self.displaySet.pop();
             }
+            if(self.currentQuestionIndex !== -1) {
+                self.tabQuestions[self.currentQuestionIndex].displaySetAnswers.forEach(function (el) {
+                    el.remove();
+                });
+            }
             if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                 self.currentQuestionIndex++;
                 self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,

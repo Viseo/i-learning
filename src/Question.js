@@ -38,6 +38,7 @@ var Question = function (question,quizz) {
     }
 
     self.displaySet=paper.set();
+    self.displaySetAnswers=paper.set();
 
     if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
@@ -47,7 +48,7 @@ var Question = function (question,quizz) {
             {
                self.rightAnswers.push(tmp);
             }
-            self.displaySet.push(tmp.displaySet);
+            self.displaySetAnswers.push(tmp.displaySet);
         });
     }
 
@@ -85,6 +86,7 @@ var Question = function (question,quizz) {
         if (isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
             throw new Error(NaN);
         }
+
         self.x=x;
         self.y=y;
         if(!h) {
@@ -193,8 +195,8 @@ var Question = function (question,quizz) {
             );
 
 
-            self.displaySet.push(validateButton.cadre);
-            self.displaySet.push(validateButton.content);
+            self.displaySetAnswers.push(validateButton.cadre);
+            self.displaySetAnswers.push(validateButton.content);
 
             //button. onclick
             var oclk=function(){
