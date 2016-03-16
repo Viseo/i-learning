@@ -24,7 +24,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
     var textHeight = text.getBBox().height;
     text.animate({y:y+h-margin-textHeight/2}, 0);
     var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-textHeight-3*margin);
-    var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
+    var cadre = paper.rect(x, y, w, h, 25).attr({fill: bgColor, stroke: rgbCadre});
     image.image.toFront();
     text.toFront();
 
@@ -100,7 +100,7 @@ var displayImageWithEvent = function (imageSrc, image, x, y, w, h, onclickEvent)
 var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight, font) {
     var content = autoAdjustText(label, x, y, w, h, textHeight, font).text;
 
-    var cadre = paper.rect(x, y, w, h).attr({fill: bgColor, stroke: rgbCadre});
+    var cadre = paper.rect(x, y, w, h, 25).attr({fill: bgColor, stroke: rgbCadre});
     content.toFront();
 
     return {content:content, cadre:cadre};
