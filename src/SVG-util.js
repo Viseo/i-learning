@@ -192,6 +192,69 @@ var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
     return 0
 };
 
+/**
+ *
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @param thicknessPercentage
+ */
+
+var drawPlus =function(x,y,w,h,thicknessPercentage) {
+    var baseWidth=500;
+    var baseHeight=500;
+    var tempWidth=baseWidth;
+    var tempHeight=baseHeight;
+    var scale=1;
+    var thickness=0;
+
+    if((!thicknessPercentage)||(thicknessPercentage>=1)){
+        thickness=(((baseHeight+baseWidth)/2)*0.3);
+    }
+    else
+    {
+        thickness=((baseHeight+baseWidth)/2)*thicknessPercentage;
+    }
+
+    var path="M "+(x-(thickness/2))+","+(y+(thickness/2))+" "+
+
+            "L "+(x-(baseWidth/2))+","+(y+(thickness/2))+" "+
+            "L "+(x-(baseWidth/2))+","+(y-(thickness/2))+" "+
+            "L "+(x-(thickness/2))+","+(y-(thickness/2))+" "+
+            "L "+(x-(thickness/2))+","+(y-(baseHeight/2))+" "+
+            "L "+(x+(thickness/2))+","+(y-(baseHeight/2))+" "+
+            "L "+(x+(thickness/2))+","+(y-(thickness/2))+" "+
+
+            "L "+(x+(baseWidth/2))+","+(y-(thickness/2))+" "+
+            "L "+(x+(baseWidth/2))+","+(y+(thickness/2))+" "+
+            "L "+(x+(thickness/2))+","+(y+(thickness/2))+" "+
+            "L "+(x+(thickness/2))+","+(y+(baseHeight/2))+" "+
+            "L "+(x-(thickness/2))+","+(y+(baseHeight/2))+" "+
+            "L "+(x-(thickness/2))+","+(y+(thickness/2))+" ";
+
+    var plus=paper.path(path);
+    while((w<tempHeight)||(h<tempWidth))
+    {
+        scale-=0.1;
+        tempHeight=baseHeight*scale;
+        tempWidth=baseWidth*scale;
+    }
+    plus.scale(scale);
+    plus.attr('fill','black');
+
+};
+
+/**
+ *
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @param side
+ * @param handler
+ */
+
 var drawArrow = function(x,y,w,h,side,handler){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
