@@ -26,6 +26,7 @@ var myBib= {
 
 
 var myQuizz={
+    title:"Qui veut gagner des millions ? Quizz n°1",
     tabQuestions:[
         {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
             tabAnswer: [
