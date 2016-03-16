@@ -2,7 +2,7 @@
  * Created by ABL3483 on 29/02/2016.
  */
 
-function Puzzle(lines, rows,questionsTab, cadreResult) {
+function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
     var self=this;
     self.lines=lines;
     self.rows=rows;
@@ -10,34 +10,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
     self.tilesTab=[];
     self.questionsTab=questionsTab;
     self.displaySet=paper.set();
-
-
-/*
-    var leftArrowBlack = imageController.getImage("../resource/arrow left.png", function () {
-        leftArrowBlackLoaded = true;});
-    var leftArrowBlackLoaded = false;
-
-    var leftArrowGrey = imageController.getImage("../resource/arrow left_grey.png", function () {
-        leftArrowGreyLoaded = true;});
-    var leftArrowGreyLoaded = false;
-
-    var rightArrowBlack = imageController.getImage("../resource/arrow right.png", function () {
-        rightArrowBlackLoaded = true;});
-    var rightArrowBlackLoaded = false;
-
-
-    var rightArrowGrey = imageController.getImage("../resource/arrow right_grey.png", function () {
-        rightArrowGreyLoaded = true;});
-    var rightArrowGreyLoaded = false;
-
-
-    var intervalToken = setInterval(function () {
-        if(rightArrowBlackLoaded && rightArrowGreyLoaded && leftArrowBlackLoaded && leftArrowGreyLoaded) {
-            clearInterval(intervalToken);
-        }
-    }, 100);
-    */
-
+    self.reverseMode = reverseMode;
 
     self.totalRows = 0;
     if(self.questionsTab.length%self.lines === 0) {
@@ -49,19 +22,41 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
 
     var count = 0;
     self.virtualTab = [];
-    for(var i = 0 ; i < self.totalRows ; i++) {
-        self.virtualTab[i] = [];
-        for(var j = 0 ; j < self.lines ; j++) {
-            if(count < self.questionsTab.length) {
-                self.virtualTab[i][j] = self.questionsTab[count];
-                count++;
-            } else {
-                break;
+
+    if(self.reverseMode) {
+        for (var i = 0; i < self.lines; i++) {
+            self.virtualTab[i] = [];
+            for (var j = 0; j < self.rows; j++) {
+                if (count < self.questionsTab.length) {
+                    self.virtualTab[i][j] = self.questionsTab[count];
+                    count++;
+                } else {
+                    break;
+                }
+            }
+        }
+    } else {
+        for (var i = 0; i < self.totalRows; i++) {
+            self.virtualTab[i] = [];
+            for (var j = 0; j < self.lines; j++) {
+                if (count < self.questionsTab.length) {
+                    self.virtualTab[i][j] = self.questionsTab[count];
+                    count++;
+                } else {
+                    break;
+                }
             }
         }
     }
 
-
+    /**
+     *
+     * @param x: X
+     * @param y: Y
+     * @param w: Width
+     * @param h: Height
+     * @param startPosition: Row number to align with
+     */
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
         self.displaySet.forEach(function (it) {
@@ -120,37 +115,44 @@ function Puzzle(lines, rows,questionsTab, cadreResult) {
         paper.setSize(paper.width, (self.margin + self.tileHeight)*self.lines + y + 2*self.margin);
 
         var count = startPosition*self.lines;
-        for(var i = startPosition; i<(startPosition+self.rows); i++) {
-            for(var j = 0; j<self.lines; j++) {
-                if(count < self.questionsTab.length) {
-                    if(self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                        var object = displayImageWithTitle(self.virtualTab[i][j].label, self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                        self.displaySet.push(object.cadre);
-                        self.displaySet.push(object.image);
-                        self.displaySet.push(object.text);
-                    } else if(self.virtualTab[i][j].label && !self.virtualTab[i][j].imageSrc) {
-                        var object = displayText(self.virtualTab[i][j].label, posX, posY, self.tileWidth, self.tileHeight, self.virtualTab[i][j].rgbBordure, self.virtualTab[i][j].bgColor, self.virtualTab[i][j].fontSize, self.virtualTab[i][j].font);
-                        self.displaySet.push(object.cadre);
-                        self.displaySet.push(object.content);
-                    } else if(!self.virtualTab[i][j].label && self.virtualTab[i][j].imageSrc) {
-                        var object = displayImage(self.virtualTab[i][j].imageSrc, self.virtualTab[i][j].image, posX, posY, self.tileWidth, self.tileHeight);
-                        self.displaySet.push(object.cadre);
-                        self.displaySet.push(object.image);
-                    } else {
-                        self.displaySet.push(paper.rect(posX, posY, self.tileWidth, self.tileHeight).attr({fill: self.virtualTab[i][j].bgColor, stroke: self.virtualTab[i][j].rgbBordure}));
-                    }
 
-                    posY += self.tileHeight+self.margin;
-                    count++;
+        if(self.reverseMode) {
+            // Valable pour 2 lignes 4 col
+            for(var i = startPosition; i<(startPosition+self.lines); i++) {
+                for(var j = 0; j<self.rows; j++) {
+                    if(count < self.questionsTab.length) {
+
+                        self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                        self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+
+                        posX += self.tileWidth+self.margin;
+                        count++;
+                    }
+                    else {
+                        break;
+                    }
                 }
-                else {
-                    break;
-                }
+                posY += self.tileHeight+self.margin;
+                posX = x;
             }
-            posX += self.tileWidth+self.margin;
-            posY = y;
+        } else {
+            for (var i = startPosition; i < (startPosition + self.rows); i++) {
+                for (var j = 0; j < self.lines; j++) {
+                    if (count < self.questionsTab.length) {
+
+                    self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                    self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+
+                    posY += self.tileHeight + self.margin;
+                    count++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                posX += self.tileWidth + self.margin;
+                posY = y;
+            }
         }
     };
-    self.display(cadreResult.x, cadreResult.y+cadreResult.h+15, cadreResult.w, 600, 0);
-
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Administrator area</title>
+</head>
+<body id="body">
+    <script src="../lib/raphael-min.js"></script>
+    <script src="../lib/d3.min.js"></script>
+    <script src="../test/Test-util.js"></script>
+    <script src="Bdd.js"></script>
+    <script src="SVG-util.js"></script>
+    <script src="Answer.js"></script>
+    <script src="Question.js"></script>
+    <script src="Puzzle.js"></script>
+    <script src="svgMock.js"></script>
+    <script src="Quizz.js"></script>
+    <script src="EmptyElement.js"></script>
+    <script src="QuestionCreator.js"></script>
+    <script>
+        var imageController = ImageController();
+        var asyncTimerController = AsyncTimerController();
+        paper=Raphael(0,0,document.body.clientWidth,970);
+        var quizz = new Quizz(myQuizz);
+        //quizz.tabQuestions[13].tabAnswer.push.apply(quizz.tabQuestions[13].tabAnswer, quizz.tabQuestions[12].tabAnswer);
+        var questionCreator = new QuestionCreator();
+        questionCreator.displayQuestionCreator(20, 20, document.body.clientWidth-50, 950);
+    </script>
+</body>
+</html>
