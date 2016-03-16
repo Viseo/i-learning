@@ -242,7 +242,7 @@ var drawPlus =function(x,y,w,h,thicknessPercentage) {
     }
     plus.scale(scale);
     plus.attr('fill','black');
-
+    return plus;
 };
 
 /**

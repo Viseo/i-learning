@@ -12,6 +12,9 @@ var AddEmptyElement = function (parent) {
     self.display = function (x, y, w, h) {
         self.margin = 15;
         self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
+        self.plus = drawPlus(x+w/2, y+(h*0.4), w, h*0.3);
+        self.displaySet.push(self.plus);
+
         self.obj.cadre.attr("stroke-dasharray", "--").attr("stroke-width", 3);
         self.obj.cadre.attr("fill-opacity", 0);
         self.displaySet.push(self.obj.cadre);
@@ -27,6 +30,7 @@ var AddEmptyElement = function (parent) {
             self.parent.displayQuestionCreator();
         };
 
+        self.plus.node.ondblclick = dblclickEdition;
         self.obj.content.node.ondblclick = dblclickEdition;
         self.obj.cadre.node.ondblclick = dblclickEdition;
     }
@@ -45,8 +49,21 @@ var EmptyElement = function (parent) {
         self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
         self.obj.cadre.attr("fill-opacity", 0);
         self.displaySet.push(self.obj.cadre);
-
         self.displaySet.push(self.obj.content);
+
+        //self.checkbox = document.createElement("input");
+        //self.checkbox.type = "checkbox";
+        //self.checkbox.name = "name";
+        //self.checkbox.checked = "true";
+        //self.checkbox.id = "id";
+        //var body = document.getElementById("body");
+        //body.appendChild(self.checkbox).focus();
+
+        self.checkbox = paper.CheckBox({x:x+2*self.margin, y:y+h*0.8, dim: 40});
+        self.displaySet.push(self.checkbox);
+
+        self.cBLabel = paper.text(x+3*self.margin+40, y+h*0.8+20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
+        self.displaySet.push(self.cBLabel);
 
         var dblclickEdition = function () {
             self.obj.content.remove();
@@ -65,7 +82,6 @@ var EmptyElement = function (parent) {
                 self.obj.content.node.ondblclick = dblclickEdition;
                 self.obj.cadre.node.ondblclick = dblclickEdition;
             };
-            console.log("double clic");
         };
 
         self.obj.content.node.ondblclick = dblclickEdition;
