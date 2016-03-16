@@ -215,7 +215,7 @@ var Question = function (question,quizz) {
 
             //affichage d'un bouton "valider"
             var margin = 15;
-            
+
             var validateButton=displayText("Valider",self.bordure.width/2+self.x,self.tileHeight*self.lines+3*margin,150,150,
              'green','yellow',20
             );
