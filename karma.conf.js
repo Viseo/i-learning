@@ -18,7 +18,7 @@ module.exports = function(config) {
       'lib/*.js',
       'test/Test-util.js',
       'src/Bdd.js',
-      'src/svgMock.js',
+      'test/svgMock.js',
       'src/SVG-util.js',
       'src/Answer.js',
       'src/Question.js',

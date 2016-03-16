@@ -9,10 +9,9 @@ var asyncTimerController=AsyncTimerController();
 
 function main() {
 
-
+    myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz=new Quizz(myQuizz);
-    quizz.tabQuestions[0].tabAnswer[0].correct=true;
-    quizz.tabQuestions[0].rightAnswers.push(quizz.tabQuestions[0].tabAnswer[0]);
+
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
 
