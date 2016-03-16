@@ -418,7 +418,7 @@ describe('Quizz Test', function() {
         paper.r213.test(50,220,1150,200);
         paper.p219.test(65,735,60.00000000000004,32.00000000000002,"black");
         paper.p220.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t221.test(625,735,"Parmi ces fruits, lequel possède un noyau?"); 
+        paper.t221.test(625,735,"Parmi ces fruits, lequel possède un noyau?");
         paper.r222.test(115,435,1020,600);
 
     });

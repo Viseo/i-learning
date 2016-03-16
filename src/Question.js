@@ -15,6 +15,7 @@ var Question = function (question,quizz) {
     self.tabAnswer = [];
     self.rows=question.nbrows;
     self.rightAnswers=[];
+    self.selectedAnswers=[];
 
     if(question.font) {
         self.font = question.font;
@@ -77,6 +78,7 @@ var Question = function (question,quizz) {
         if (isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
             throw new Error(NaN);
         }
+        self.x=x;
 
         var height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
 
@@ -182,7 +184,7 @@ var Question = function (question,quizz) {
                 partClicked=sourceElement.image;
                 break;
         }
-
+        if(self.rightAnswers.length===1){// question normale, une seule réponse possible
         if(sourceElement.correct) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
@@ -196,6 +198,69 @@ var Question = function (question,quizz) {
         }
 
         self.parentQuizz.nextQuestion();
+        }else{// question à choix multiples
+            if(sourceElement.selected===false){
+                // on sélectionne une réponse
+                sourceElement.selected=true;
+                self.selectedAnswers.push(sourceElement);
+                sourceElement.bordure.attr("stroke-width",5);
+                sourceElement.bordure.attr("stroke",'red');
+
+            }else{
+                sourceElement.selected=false;
+                self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
+                sourceElement.bordure.attr("stroke-width",1);
+                sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
+            }
+
+            //affichage d'un bouton "valider"
+            var margin = 15;
+            
+            var validateButton=displayText("Valider",self.bordure.width/2+self.x,self.tileHeight*self.lines+3*margin,150,150,
+             'green','yellow',20
+            );
+
+
+            self.displaySet.push(validateButton.cadre);
+            self.displaySet.push(validateButton.content);
+
+            //button. onclick
+            validateButton.cadre.node.onclick=function(){
+                // test des valeurs, en gros si selectedAnswers === rigthAnswers
+                var allRigth=false;
+
+                if(self.rightAnswers.length!=self.selectedAnswers.length){
+                    allRigth=false;
+                }else{
+                    var subTotal=0;
+                    self.selectedAnswers.forEach(function(e){
+                       if(e.correct){
+                           subTotal++;
+                       }
+                    });
+
+                    if(subTotal===self.rightAnswers.length){
+                        allRigth=true;
+                    }else{
+                        allRigth=false;
+                    }
+
+                }
+
+                if(allRigth) {
+                    self.parentQuizz.score++;
+                    console.log("Bonne réponse!\n");
+                } else {
+                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    var reponseD="";
+                    self.rightAnswers.forEach(function(e){
+                        reponseD+= e.label+"\n";
+                    });
+                    console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+                }
+            };
+
+        }
 
        // console.log("score: "+self.parentQuizz.score);
     }

@@ -11,6 +11,8 @@ function main() {
 
 
     var quizz=new Quizz(myQuizz);
+    quizz.tabQuestions[0].tabAnswer[0].correct=true;
+    quizz.tabQuestions[0].rightAnswers.push(quizz.tabQuestions[0].tabAnswer[0]);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
 
