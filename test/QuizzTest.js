@@ -458,8 +458,8 @@ describe('Quizz Test', function() {
         paper.r14.test(50,521,567.5,56);
         paper.t15.test(916.25,549,"Diablesse");
         paper.r16.test(632.5,521,567.5,56);
-        paper.t17.test(625,658,"Valider");
-        paper.r18.test(550,633,150,50);
+        paper.t17.test(725,658,"Valider");
+        paper.r18.test(650,633,150,50);
 
         onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
         expect(paper.r10.attr("stroke-width")).not.toEqual(5);
