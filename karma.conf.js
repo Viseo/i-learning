@@ -20,6 +20,7 @@ module.exports = function(config) {
       'src/Bdd.js',
       'test/svgMock.js',
       'src/SVG-util.js',
+      'src/BibImage.js',
       'src/Answer.js',
       'src/Question.js',
       'src/Puzzle.js',

@@ -17,8 +17,8 @@ var BibImage = function (bibimage) {
     for(var i=0;i<self.tabSrcImg.length;i++){
         var img=imageController.getImage(self.tabSrcImg[i].imgSrc, function () {
             this.imageLoaded = true;
-            console.log('Loaded! ');
-            console.log(this);
+           // console.log('Loaded! ');
+           // console.log(this);
         });
         self.tabImgBib[i]=img;
     }
@@ -32,21 +32,21 @@ var BibImage = function (bibimage) {
     if(bibimage.fontSize) {
         self.fontSize = bibimage.fontSize;
     } else {
-        self.fontSize = 40;
+        self.fontSize = 20;
     }
 
 
     self.displaySet=paper.set();
 
     self.run = function(x,y,w,h) {
-        var intervalToken = asyncTimerController.interval(function () {
+        self.intervalToken = asyncTimerController.interval(function () {
             var loaded = true;
             self.tabImgBib.forEach(function (e) {
                 loaded = loaded && e.imageLoaded;
 
             });
             if(loaded) {
-                asyncTimerController.clearInterval(intervalToken);
+                asyncTimerController.clearInterval(self.intervalToken);
                 self.display(x,y,w,h);
             }
         }, 100);

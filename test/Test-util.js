@@ -44,11 +44,11 @@ var AsyncTimerRuntime = {
     count: 0,
     interval: function (handler, timer) {
         var interval = {
-            id:"interval"+count,
+            id:"interval"+this.count,
             next: handler,
             timer: timer
         };
-        count++;
+        this.count++;
         this.timers[interval.id] = interval;
         return interval;
     },
