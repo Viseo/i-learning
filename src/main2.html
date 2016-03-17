@@ -22,13 +22,11 @@
     var asyncTimerController=AsyncTimerController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
-    var quizz = new Quizz(myQuizz);
-    var startTabQuestionLength=quizz.tabQuestions.length;
-
-
-    for(var i=0;i<quizz.tabQuestions.length;i++){
-        quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
-    }
+    var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
+   // console.log(quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect===myQuizz.tabQuestions[0].tabAnswer[0].bCorrect);
+    quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;// es- ce que ça change des trucs pour le reste? oui!!!
+   //console.log(quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect===myQuizz.tabQuestions[0].tabAnswer[0].bCorrect);
+    var quizz = new Quizz(quizzCopy);
 
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
@@ -37,11 +35,8 @@
 
     setTimeout(function(){
 
-        for(var i=0;i<quizz.tabQuestions.length;i++){
-            onClickMock(quizz.tabQuestions[i].tabAnswer[2].bordure);
+       onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
 
-        }
-        onClickMock(paper.p215);
         /*setTimeout(function(){
             quizz.puzzle.displaySet.forEach(function(e){
                 e.writeTest();

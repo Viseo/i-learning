@@ -423,6 +423,53 @@ describe('Quizz Test', function() {
 
     });
 
+    it('should select one answer (multiple answers possible)',function(){
+
+        var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
+        var quizz = new Quizz(quizzCopy);
+
+        for(var i=0;i<quizz.tabQuestions.length-1;i++){
+            quizz.tabQuestions.pop();
+        }
+
+        console.log('Length: '+quizz.tabQuestions.length);
+
+        imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
+
+        quizz.display(50,10,1200,1200);
+
+        onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
+
+        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
+        paper.r1.test(50,10,1150,200);
+        paper.t2.test(625,392,"Une divinité féminine est une...");
+        paper.i3.test("../resource/millions.png",558,230,134,134);
+        paper.r4.test(50,220,1150,200);
+        paper.t9.test(333.75,478,"Comtesse");
+        paper.r10.test(50,450,567.5,56);
+
+        expect(paper.r10.attr("stroke-width")).toEqual(5);
+        expect(paper.r10.attr("stroke")).toEqual('red');
+
+        paper.t11.test(916.25,478,"Déesse");
+        paper.r12.test(632.5,450,567.5,56);
+        paper.t13.test(333.75,549,"Bougresse");
+        paper.r14.test(50,521,567.5,56);
+        paper.t15.test(916.25,549,"Diablesse");
+        paper.r16.test(632.5,521,567.5,56);
+        paper.t17.test(625,658,"Valider");
+        paper.r18.test(550,633,150,50);
+
+        onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
+        expect(paper.r10.attr("stroke-width")).not.toEqual(5);
+        expect(paper.r10.attr("stroke")).not.toEqual('red');
+
+    });
+
+    it('should validate an aswer when clicking on the "Validate" button', function () {
+       fail();
+    });
+
 });
 
 /*quizz.tabQuestions.forEach(function (e) {

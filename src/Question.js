@@ -199,10 +199,10 @@ var Question = function (question,quizz) {
             //button. onclick
             var oclk=function(){
                 // test des valeurs, en gros si selectedAnswers === rigthAnswers
-                var allRigth=false;
+                var allRight=false;
 
                 if(self.rightAnswers.length!=self.selectedAnswers.length){
-                    allRigth=false;
+                    allRight=false;
                 }else{
                     var subTotal=0;
                     self.selectedAnswers.forEach(function(e){
@@ -212,14 +212,14 @@ var Question = function (question,quizz) {
                     });
 
                     if(subTotal===self.rightAnswers.length){
-                        allRigth=true;
+                        allRight=true;
                     }else{
-                        allRigth=false;
+                        allRight=false;
                     }
 
                 }
 
-                if(allRigth) {
+                if(allRight) {
                     self.parentQuizz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
