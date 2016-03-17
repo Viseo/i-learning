@@ -11,7 +11,6 @@ describe('answer', function() {
     });
 
     it('should instantiate correctly my answer', function() {
-
         var answerJSON={
             label:"My first answer is...",
             imageSrc: "../resource/pomme.jpg",
