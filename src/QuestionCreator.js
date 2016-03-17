@@ -63,6 +63,10 @@ var QuestionCreator = function (question) {
         self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
         self.questionBlock.title.cadre.attr("fill-opacity", 0);
 
+        self.displaySet.push(self.questionBlock.rect);
+        self.displaySet.push(self.questionBlock.title.content);
+        self.displaySet.push(self.questionBlock.title.cadre);
+
         var dblclickEdition = function () {
             self.questionBlock.title.content.remove();
             var textarea = document.createElement("TEXTAREA");
@@ -111,13 +115,10 @@ var QuestionCreator = function (question) {
             var incorrectAnswers = 0;
 
             self.tabAnswer.forEach(function (el) {
-                if(el.checkbox) {
-                    if(el.checkbox.isChecked) {
-                        self.displaySet.push(el.checkbox.checked);
-                        correctAnswers++;
-                    } else {
-                        incorrectAnswers++;
-                    }
+                if(el.bCorrect) {
+                    correctAnswers++;
+                } else {
+                    incorrectAnswers++;
                 }
             });
             console.log(correctAnswers);
@@ -128,15 +129,23 @@ var QuestionCreator = function (question) {
                     console.log("preview mode step 2 OK");
                     if(self.label !== "Cliquer deux fois pour ajouter la question") {
                         console.log("Preview Mode ACCEPTED");
-                        self.displaySet.forEach(function (el) {
-                            el.remove();
-                        });
+                        self.questionBlock.rect.remove();
+                        self.questionBlock.title.cadre.remove();
+                        self.questionBlock.title.content.remove();
+
+                        self.displaySet.remove();
+
+                        // TODO Display Preview Answer
+                        var tabAnswer = [];
                         var questionObject = {
                             label: self.label,
-                            tabAnswer: self.tabAnswer
+                            tabAnswer: tabAnswer,
+                            nbrows: 4,
+                            colorBordure: myColors.blue,
+                            bgColor: myColors.grey
                         };
                         var quest = new Question(questionObject, null);
-                        quest.display(20, 20, 1500, 1500);
+                        quest.display(20, 20, 1500, 500);
                     } else {
                         console.log("preview mode REFUSED : il faut donner un nom à la question");
                     }
