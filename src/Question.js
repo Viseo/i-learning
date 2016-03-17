@@ -238,6 +238,29 @@ var Question = function (question,quizz) {
             };
             validateButton.cadre.node.onclick=oclk;
             validateButton.content.node.onclick=oclk;
+
+            //Button reset
+            self.resetButton=displayText("Reset",self.bordure.attr('width')/2+self.x-75 -100
+                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
+                'grey','grey',20
+            );
+            self.displaySet.push(self.resetButton.cadre);
+            self.displaySet.push(self.resetButton.content);
+
+            var reset = function(){
+                if(self.selectedAnswers.length>0){
+                    self.selectedAnswers.forEach(function(e){
+                        e.selected=false;
+                        e.bordure.attr("stroke-width",1);
+                        e.bordure.attr("stroke",e.rgbBordure);
+                    });
+                    self.selectedAnswers.splice(0,self.selectedAnswers.length);
+                    self.resetButton.cadre.attr("fill","grey");
+                    self.resetButton.cadre.attr("stroke","grey");
+                }
+            };
+            self.resetButton.content.node.onclick=reset;
+            self.resetButton.cadre.node.onclick=reset;
         }
 
     };
@@ -276,12 +299,18 @@ var Question = function (question,quizz) {
                 self.selectedAnswers.push(sourceElement);
                 sourceElement.bordure.attr("stroke-width",5);
                 sourceElement.bordure.attr("stroke",'red');
+                self.resetButton.cadre.attr("fill","yellow");
+                self.resetButton.cadre.attr("stroke","green");
 
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
                 sourceElement.bordure.attr("stroke-width",1);
                 sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
+                if(self.selectedAnswers.length==0){
+                    self.resetButton.cadre.attr("fill","grey");
+                    self.resetButton.cadre.attr("stroke","grey");
+                }
             }
 
 
