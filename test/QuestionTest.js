@@ -23,20 +23,20 @@ describe('question', function() {
 
         quizz.display(50,10,1200,1200);
         expect(quizz.currentQuestionIndex).toEqual(0);
-        onClickMock(paper.t9, 0, 0);
+        onClickMock(quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer[1].content, 0, 0); // Click d'une mauvaise réponse
         expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: Tripoli\n");
         expect(quizz.currentQuestionIndex).toEqual(1);
 
         console.log = jasmine.createSpy("log");
-        onClickMock(paper.r27, 0, 0);
+        onClickMock(quizz.tabQuestions[quizz.currentQuestionIndex].rightAnswers[0].content, 0, 0);
         expect(console.log).toHaveBeenCalledWith("Bonne réponse!\n");
         expect(quizz.currentQuestionIndex).toEqual(2);
 
-        onClickMock(paper.t43, 0, 0);
+        onClickMock(quizz.tabQuestions[quizz.currentQuestionIndex].rightAnswers[0].content, 0, 0);
         expect(quizz.currentQuestionIndex).toEqual(3);
         
         console.log = jasmine.createSpy("log");
-        onClickMock(paper.r54, 0, 0);
+        onClickMock(quizz.tabQuestions[quizz.currentQuestionIndex].rightAnswers[0].content, 0, 0);
         expect(quizz.currentQuestionIndex).toEqual(3);
         expect(console.log).toHaveBeenCalledWith("Final score: " + quizz.score);
     });
@@ -57,18 +57,19 @@ describe('question', function() {
         // Question : 4 rows
         //console.log(paper);
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].rows).toEqual(4);
+
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t3.test(625,248,"Quelle est la capitale de la Libye?");
-        paper.r4.test(50,220,1150,56);
-        paper.t9.test(188.125,334,"Malpoli");
-        paper.r10.test(50,306,276.25,56);
-        paper.t11.test(479.375,334,"Papoli");
-        paper.r12.test(341.25,306,276.25,56);
-        paper.t13.test(770.625,334,"Tropoli");
-        paper.r14.test(632.5,306,276.25,56);
-        paper.t15.test(1061.875,334,"Tripoli");
-        paper.r16.test(923.75,306,276.25,56);
+        paper.t2.test(625,320,"Quelle est la capitale de la Libye?");
+        paper.r3.test(50,220,1150,200);
+        paper.t8.test(188.125,478,"Malpoli");
+        paper.r9.test(50,450,276.25,56);
+        paper.t10.test(479.375,478,"Papoli");
+        paper.r11.test(341.25,450,276.25,56);
+        paper.t12.test(770.625,478,"Tropoli");
+        paper.r13.test(632.5,450,276.25,56);
+        paper.t14.test(1061.875,478,"Tripoli");
+        paper.r15.test(923.75,450,276.25,56);
 
         quizz.nextQuestion();
         // Question : 3 rows
@@ -77,16 +78,16 @@ describe('question', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t18.test(625,248,"Un terrain où on n'a rien planté est une terre...");
-        paper.r19.test(50,220,1150,56);
-        paper.t24.test(236.66666666666666,334,"Stupide");
-        paper.r25.test(50,306,373.3333333333333,56);
-        paper.t26.test(625,334,"Inculte");
-        paper.r27.test(438.3333333333333,306,373.3333333333333,56);
-        paper.t28.test(1013.3333333333333,334,"Idiote");
-        paper.r29.test(826.6666666666666,306,373.3333333333333,56);
-        paper.t30.test(236.66666666666666,405,"Ignare");
-        paper.r31.test(50,377,373.3333333333333,56);
+        paper.t16.test(625,320,"Un terrain où on n'a rien planté est une terre...");
+        paper.r17.test(50,220,1150,200);
+        paper.t22.test(236.66666666666666,478,"Stupide");
+        paper.r23.test(50,450,373.3333333333333,56);
+        paper.t24.test(625,478,"Inculte");
+        paper.r25.test(438.3333333333333,450,373.3333333333333,56);
+        paper.t26.test(1013.3333333333333,478,"Idiote");
+        paper.r27.test(826.6666666666666,450,373.3333333333333,56);
+        paper.t28.test(236.66666666666666,549,"Ignare");
+        paper.r29.test(50,521,373.3333333333333,56);
 
         quizz.nextQuestion();
         // Question : 2 rows
@@ -94,30 +95,32 @@ describe('question', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t33.test(625,248,"Un galurin est un...");
-        paper.r34.test(50,220,1150,56);
-        paper.t39.test(333.75,334,"Manteau");
-        paper.r40.test(50,306,567.5,56);
-        paper.t41.test(916.25,334,"Chapeau");
-        paper.r42.test(632.5,306,567.5,56);
-        paper.t43.test(333.75,405,"Gâteau");
-        paper.r44.test(50,377,567.5,56);
-        paper.t45.test(916.25,405,"Château");
-        paper.r46.test(632.5,377,567.5,56);
+        paper.t30.test(625,320,"Un galurin est un...");
+        paper.r31.test(50,220,1150,200);
+        paper.t36.test(333.75,478,"Manteau");
+        paper.r37.test(50,450,567.5,56);
+        paper.t38.test(916.25,478,"Chapeau");
+        paper.r39.test(632.5,450,567.5,56);
+        paper.t40.test(333.75,549,"Gâteau");
+        paper.r41.test(50,521,567.5,56);
+        paper.t42.test(916.25,549,"Château");
+        paper.r43.test(632.5,521,567.5,56);
 
         quizz.nextQuestion();
         // Question : 1 row
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].rows).toEqual(1);
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
-        paper.t48.test(625,248,"Quelle est l'orthographe correcte de ce verbe?");
-        paper.r49.test(50,220,1150,56);
-        paper.t53.test(625,334,"Boïcotter");
-        paper.r54.test(50,306,1150,56);
-        paper.t55.test(625,405,"Boycotter");
-        paper.r56.test(50,377,1150,56);
-        paper.t57.test(625,476,"Boycoter");
-        paper.r58.test(50,448,1150,56);
+        paper.r1.test(50,10,1150,200);
+        paper.t44.test(625,320,"Quelle est l'orthographe correcte de ce verbe?");
+        paper.r45.test(50,220,1150,200);
+        paper.t49.test(625,478,"Boïcotter");
+        paper.r50.test(50,450,1150,56);
+        paper.t51.test(625,549,"Boycotter");
+        paper.r52.test(50,521,1150,56);
+        paper.t53.test(625,620,"Boycoter");
+        paper.r54.test(50,592,1150,56);
+
     });
     it('should reset answers', function(){
         var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));
