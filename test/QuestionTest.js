@@ -119,4 +119,24 @@ describe('question', function() {
         paper.t57.test(625,476,"Boycoter");
         paper.r58.test(50,448,1150,56);
     });
+    it('should reset answers', function(){
+        var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));
+        tmpQuizz.tabQuestions[0].tabAnswer[0].bCorrect = true;
+        var quizz = new Quizz(tmpQuizz);
+        quizz.display(50,10,1200,1200);
+        // Click upon an answer and reset
+        onClickMock(paper.t9, 0, 0);
+        expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(1);
+        onClickMock(paper.t19, 0, 0);
+        expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(0);
+        paper.t19.test(525,658,"Reset");
+        paper.r20.test(450,633,150,50);
+        // Click upon reset with no selected answer
+        onClickMock(paper.t19, 0, 0);
+        expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(0);
+        // Click upon an answer twice
+        onClickMock(paper.t9, 0, 0);
+        onClickMock(paper.t9, 0, 0);
+        expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(0);
+    });
 });
