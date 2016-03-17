@@ -11,7 +11,6 @@ describe('Quizz Test', function() {
     });
 
     it('should NOT increment the current question index',function() {
-
         var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));
         var quizz=new Quizz(tmpQuizz);
 
@@ -21,7 +20,6 @@ describe('Quizz Test', function() {
         while (quizz.tabQuestions.length>2) {
             quizz.tabQuestions.pop();
         }
-
 
         quizz.display(50,10,1200,1200);
         console.log(quizz.tabQuestions.length);
