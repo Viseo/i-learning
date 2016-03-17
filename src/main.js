@@ -9,13 +9,17 @@ var asyncTimerController=AsyncTimerController();
 
 function main() {
 
-    myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
+  /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz=new Quizz(myQuizz);
+   // Navigation Puzzle
+   quizz.puzzleLines=1;
+   quizz.puzzleRows=3;
 
-    quizz.puzzleLines=1;
-    quizz.puzzleRows=3;
+   quizz.run(50,10,1200,1200);*/
 
-    quizz.run(50,10,1200,1200);
+    var bib=new BibImage(myBib);
+    bib.run(10,10,200,500);
+
 
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);

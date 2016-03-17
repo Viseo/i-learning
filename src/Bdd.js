@@ -14,14 +14,12 @@ var myColors={
 var myBib= {
     title: "Bibliotheque",
             tabSrcImg: [
-                {imgSrc: "../resource/statue.jpg"},
+                {imgSrc: "../resource/millions.png"},
                 {imgSrc: "../resource/pomme.jpg"},
                 {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/cerise.jpg"}
+                {imgSrc: "../resource/folder.png"}
             ],
-            font:"Courier New", fontSize:40
+            font:"Courier New", fontSize:20
         };
 
 
