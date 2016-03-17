@@ -499,19 +499,16 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t19.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
-        paper.r20.test(50,220,1150,200);
-        paper.i24.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
-
-        paper.t25.test(916.25,1035.5135135135133,"La cerise");
-        paper.i26.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
-        paper.r27.test(632.5,450,567.5,613.5135135135134);
-
-        paper.t28.test(333.75,1385.27027027027,"La poire");
-        paper.r29.test(50,1078.5135135135133,567.5,613.5135135135134);
-        paper.t30.test(916.25,1385.27027027027,"L'orange");
-        paper.r31.test(632.5,1078.5135135135133,567.5,613.5135135135134);
-
+        paper.t21.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
+        paper.r22.test(50,220,1150,200);
+        paper.i26.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
+        paper.t27.test(916.25,1035.5135135135133,"La cerise");
+        paper.i28.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
+        paper.r29.test(632.5,450,567.5,613.5135135135134);
+        paper.t30.test(333.75,1385.27027027027,"La poire");
+        paper.r31.test(50,1078.5135135135133,567.5,613.5135135135134);
+        paper.t32.test(916.25,1385.27027027027,"L'orange");
+        paper.r33.test(632.5,1078.5135135135133,567.5,613.5135135135134);
 
 
     });
@@ -541,16 +538,16 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t19.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
-        paper.r20.test(50,220,1150,200);
-        paper.i24.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
-        paper.t25.test(916.25,1035.5135135135133,"La cerise");
-        paper.i26.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
-        paper.r27.test(632.5,450,567.5,613.5135135135134);
-        paper.t28.test(333.75,1385.27027027027,"La poire");
-        paper.r29.test(50,1078.5135135135133,567.5,613.5135135135134);
-        paper.t30.test(916.25,1385.27027027027,"L'orange");
-        paper.r31.test(632.5,1078.5135135135133,567.5,613.5135135135134);
+        paper.t21.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
+        paper.r22.test(50,220,1150,200);
+        paper.i26.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
+        paper.t27.test(916.25,1035.5135135135133,"La cerise");
+        paper.i28.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
+        paper.r29.test(632.5,450,567.5,613.5135135135134);
+        paper.t30.test(333.75,1385.27027027027,"La poire");
+        paper.r31.test(50,1078.5135135135133,567.5,613.5135135135134);
+        paper.t32.test(916.25,1385.27027027027,"L'orange");
+        paper.r33.test(632.5,1078.5135135135133,567.5,613.5135135135134);
 
         expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: Comtesse\nDéesse\n");
 
