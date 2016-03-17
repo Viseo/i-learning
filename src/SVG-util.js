@@ -4,6 +4,42 @@
 
 /**
  *
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @param checked
+ */
+var displayCheckbox = function (x, y, w, h, sender) {
+    var obj = {};
+    obj.rectArea = paper.rect(x, y, w, h).attr({fill: "white", stroke:"white"});
+    obj.checkbox = paper.rect(x, y, h, h).attr({fill: "white", stroke:"black", "stroke-width":2});
+
+    var onclickFunction = function () {
+        sender.bCorrect = !sender.bCorrect;
+        obj.rectArea.remove();
+        if(obj.checked) {
+            obj.checked.remove();
+        }
+        obj.checkbox.remove();
+        displayCheckbox(x, y, w, h, sender);
+    };
+
+    if(sender.bCorrect) {
+        obj.checked = paper.path([
+            ["M", x+.2*h,y+.4*h],
+            ["l",.2*h,.3*h],
+            ["l",.4*h,-.5*h]]).attr({"stroke-width":3});
+        obj.checked.node.onclick = onclickFunction;
+    }
+    obj.checkbox.node.onclick = onclickFunction;
+
+    return obj;
+};
+
+
+/**
+ *
  * @param label
  * @param imageSrc
  * @param imageObj

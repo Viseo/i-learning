@@ -26,7 +26,7 @@ var AddEmptyElement = function (parent) {
             self.displaySet.remove();
             self.parent.tabAnswer.pop();
 
-            self.parent.tabAnswer.push(new EmptyElement(self.parent));
+            self.parent.tabAnswer.push(new AnswerElement(null, self.parent));
             self.parent.displayQuestionCreator();
         };
 
@@ -36,11 +36,23 @@ var AddEmptyElement = function (parent) {
     }
 };
 
-var EmptyElement = function (parent) {
+var AnswerElement = function (answer, parent) {
     var self = this;
     self.displaySet = paper.set();
-    self.label = "Double clic pour modifier";
-    self.fontSize = 20;
+
+    if(answer) {
+        self.label = answer.label;
+        if(answer.fontSize) {
+            self.fontSize = answer.fontSize;
+        } else {
+            self.fontSize = 20;
+        }
+        self.bCorrect = answer.bCorrect;
+    }else {
+        self.label = "Double clic pour modifier";
+        self.fontSize = 20;
+        self.bCorrect = false;
+    }
     self.parent = parent;
     self.parent.displaySet.push(self.displaySet);
 
@@ -51,16 +63,11 @@ var EmptyElement = function (parent) {
         self.displaySet.push(self.obj.cadre);
         self.displaySet.push(self.obj.content);
 
-        //self.checkbox = document.createElement("input");
-        //self.checkbox.type = "checkbox";
-        //self.checkbox.name = "name";
-        //self.checkbox.checked = "true";
-        //self.checkbox.id = "id";
-        //var body = document.getElementById("body");
-        //body.appendChild(self.checkbox).focus();
-
-        self.checkbox = paper.CheckBox({x:x+2*self.margin, y:y+h*0.8, dim: 40});
-        self.displaySet.push(self.checkbox);
+        self.checkbox = displayCheckbox(x+2*self.margin, y+h*.8, 40, 40, self);
+        //self.checkbox = paper.CheckBox({x:x+2*self.margin, y:y+h*0.8, dim: 40});
+        self.displaySet.push(self.checkbox.rectArea);
+        self.displaySet.push(self.checkbox.checkbox);
+        self.displaySet.push(self.checkbox.checked);
 
         self.cBLabel = paper.text(x+3*self.margin+40, y+h*0.8+20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
         self.displaySet.push(self.cBLabel);
@@ -69,7 +76,7 @@ var EmptyElement = function (parent) {
             self.obj.content.remove();
             var contentarea = document.createElement("TEXTAREA");
             contentarea.value = self.label;
-            contentarea.setAttribute("style", "position: absolute; top:"+(y+3*self.margin)+"px; left:"+(x+3*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            contentarea.setAttribute("style", "position: absolute; top:"+(y+3*self.margin)+"px; left:"+(x+3*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
             var body = document.getElementById("body");
             body.appendChild(contentarea).focus();
             contentarea.onblur = function () {
@@ -78,9 +85,19 @@ var EmptyElement = function (parent) {
                 contentarea.remove();
                 self.obj.cadre.remove();
                 self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
+
                 self.obj.cadre.attr("fill-opacity", 0);
                 self.obj.content.node.ondblclick = dblclickEdition;
                 self.obj.cadre.node.ondblclick = dblclickEdition;
+                self.obj.cadre.toBack();
+
+                self.cBLabel.toFront();
+                self.checkbox.rectArea.toFront();
+                self.checkbox.checkbox.toFront();
+                if(self.checkbox.checked) {
+                    self.checkbox.checked.toFront();
+                }
+
             };
         };
 
@@ -88,23 +105,3 @@ var EmptyElement = function (parent) {
         self.obj.cadre.node.ondblclick = dblclickEdition;
     }
 };
-
-/*self.obj.content.remove();
- var contentarea = document.createElement("TEXTAREA");
- contentarea.value = self.label;
- contentarea.setAttribute("style", "position: absolute; top:"+(y+3*self.margin)+"px; left:"+(x+3*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*0.25-2-6*self.margin)+"px; content-align:center; resize: none; border: none;");
- var body = document.getElementById("body");
- body.appendChild(contentarea).focus();
- contentarea.onblur = function () {
- self.label = contentarea.value;
- self.obj.content.attr("text", self.label);
- contentarea.remove();
- self.obj.cadre.remove();
- self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
- self.obj.cadre.attr("stroke-dasharray", "--").attr("stroke-width", 3);
- self.obj.cadre.attr("fill-opacity", 0);
- self.obj.content.animate({y:y+h*0.8}, 0);
- self.obj.content.node.ondblclick = dblclickEdition;
- self.obj.cadre.node.ondblclick = dblclickEdition;
- };
- console.log("double clic");*/

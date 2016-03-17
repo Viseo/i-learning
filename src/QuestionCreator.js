@@ -10,7 +10,7 @@ var QuestionCreator = function (question) {
 
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = [new EmptyElement(self), new EmptyElement(self)];
+        self.tabAnswer = [new AnswerElement(myQuizz.tabQuestions[0].tabAnswer[1], self), new AnswerElement(null, self)];
         self.quizzName = "Ecrire ici le nom du quiz";
         self.label = "Cliquer deux fois pour ajouter la question";
         self.rightAnswers = [];
@@ -80,7 +80,6 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title.content.node.ondblclick = dblclickEdition;
                 self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
             };
-            console.log("double clic");
         };
 
         self.questionBlock.title.content.node.ondblclick = dblclickEdition;
@@ -103,6 +102,56 @@ var QuestionCreator = function (question) {
         
     };
     self.displayPreviewButton = function (x, y, w, h) {
+        paper.setSize(x+w+2*self.margin, y+h+2);
+        self.previewButton = displayText("Aperçu", x+w/2-100, y, 200, h, "black", "white", 20);
 
+        var previewFunction = function () {
+            console.log("Aperçu");
+            var correctAnswers = 0;
+            var incorrectAnswers = 0;
+
+            self.tabAnswer.forEach(function (el) {
+                if(el.checkbox) {
+                    if(el.checkbox.isChecked) {
+                        self.displaySet.push(el.checkbox.checked);
+                        correctAnswers++;
+                    } else {
+                        incorrectAnswers++;
+                    }
+                }
+            });
+            console.log(correctAnswers);
+            console.log(incorrectAnswers);
+            if(correctAnswers >= 1 && incorrectAnswers >= 1) {
+                console.log("preview mode step 1 OK");
+                if(self.quizzName === "Ecrire ici le nom du quiz") {
+                    console.log("preview mode step 2 OK");
+                    if(self.label !== "Cliquer deux fois pour ajouter la question") {
+                        console.log("Preview Mode ACCEPTED");
+                        self.displaySet.forEach(function (el) {
+                            el.remove();
+                        });
+                        var questionObject = {
+                            label: self.label,
+                            tabAnswer: self.tabAnswer
+                        };
+                        var quest = new Question(questionObject, null);
+                        quest.display(20, 20, 1500, 1500);
+                    } else {
+                        console.log("preview mode REFUSED : il faut donner un nom à la question");
+                    }
+                } else {
+                    console.log("preview mode REFUSED : il faut donner un nom au Quiz");
+                }
+            } else {
+                console.log("preview mode REFUSED : il faut au moins une bonne et une mauvaise réponse");
+            }
+        };
+
+        self.previewButton.cadre.node.onclick = previewFunction;
+        self.previewButton.content.node.onclick = previewFunction;
+
+        self.displaySet.push(self.previewButton.cadre);
+        self.displaySet.push(self.previewButton.content);
     }
 };
