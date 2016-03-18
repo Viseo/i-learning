@@ -95,4 +95,5 @@ describe('Puzzle test suite', function() {
         paper.r218.test(826.6666666666666,845,373.3333333333333,190);
 
     });
+
 });

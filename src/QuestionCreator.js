@@ -92,7 +92,6 @@ var QuestionCreator = function (question) {
         self.displaySet.push(self.questionBlock.rect, self.questionBlock.title.content, self.questionBlock.title.cadre);
 
         // bloc Answers
-        self.answersBlock = {};
         if(self.tabAnswer.length === 8) {
             self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
             self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);

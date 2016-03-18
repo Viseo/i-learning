@@ -24,10 +24,10 @@ var displayCheckbox = function (x, y, size, sender) {
     };
 
     if(sender.bCorrect) {
-        obj.checked = paper.path([
-            ["M", x+.2*size,y+.4*size],
-            ["l",.2*size,.3*size],
-            ["l",.4*size,-.5*size]]).attr({"stroke-width":3});
+        obj.checked = paper.path(
+            "M "+(x+0.2*size+y+0.4*size)+
+            "l "+(0.2*size+0.3*size)+
+            "l "+(0.4*size-0.5*size)+"z").attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
     }
     obj.checkbox.node.onclick = onclickFunction;

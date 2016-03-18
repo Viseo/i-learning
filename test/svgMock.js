@@ -195,7 +195,7 @@ function RaphaelMock(x,y,width,height)
 
     paper.path=function(pathStr){
         var element={type:"path", id:paper.index++};
-        element.tempHeigth=0;
+        element.tempHeight=0;
         element.tempWidth=0;
         element.x;
         element.y;
@@ -248,7 +248,9 @@ function RaphaelMock(x,y,width,height)
         var self=this;
         if(self.type==="set"){
             self.forEach(function(e){
-               e.remove();
+                if(e){
+                    e.remove();
+                }
             });
         }else{
 
@@ -257,7 +259,6 @@ function RaphaelMock(x,y,width,height)
         }
 
     }
-
     return paper;
 }
 
