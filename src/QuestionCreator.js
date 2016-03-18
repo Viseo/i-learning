@@ -103,7 +103,10 @@ var QuestionCreator = function (question) {
         }
     };
     self.displayQuizzInfo = function (x, y, w, h) {
-        
+        self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
+        var displaySet = paper.set();
+        displaySet.push(self.formationLabel);
+        self.displaySet.push(displaySet);
     };
     self.displayPreviewButton = function (x, y, w, h) {
         paper.setSize(x+w+2*self.margin, y+h+2);

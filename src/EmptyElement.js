@@ -64,9 +64,7 @@ var AnswerElement = function (answer, parent) {
         self.displaySet.push(self.obj.cadre);
         self.displaySet.push(self.obj.content);
 
-        self.checkbox = displayCheckbox(x+2*self.margin, y+h*.8, 40, 40, self);
-        //self.checkbox = paper.CheckBox({x:x+2*self.margin, y:y+h*0.8, dim: 40});
-        self.displaySet.push(self.checkbox.rectArea);
+        self.checkbox = displayCheckbox(x+2*self.margin, y+h*.8, 40, self);
         self.displaySet.push(self.checkbox.checkbox);
         self.displaySet.push(self.checkbox.checked);
 
@@ -93,7 +91,6 @@ var AnswerElement = function (answer, parent) {
                 self.obj.cadre.toBack();
 
                 self.cBLabel.toFront();
-                self.checkbox.rectArea.toFront();
                 self.checkbox.checkbox.toFront();
                 if(self.checkbox.checked) {
                     self.checkbox.checked.toFront();
