@@ -8,7 +8,6 @@ var AddEmptyElement = function (parent) {
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
     self.parent = parent;
-    self.parent.displaySet.push(self.displaySet);
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
@@ -55,7 +54,11 @@ var AnswerElement = function (answer, parent) {
         self.bCorrect = false;
     }
     self.parent = parent;
-    self.parent.displaySet.push(self.displaySet);
+
+    self.toAnswer = function () {
+        var answer = {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
+        return new Answer(answer)
+    };
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
@@ -64,11 +67,11 @@ var AnswerElement = function (answer, parent) {
         self.displaySet.push(self.obj.cadre);
         self.displaySet.push(self.obj.content);
 
-        self.checkbox = displayCheckbox(x+2*self.margin, y+h*.8, 40, self);
+        self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
         self.displaySet.push(self.checkbox.checkbox);
         self.displaySet.push(self.checkbox.checked);
 
-        self.cBLabel = paper.text(x+3*self.margin+40, y+h*0.8+20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
+        self.cBLabel = paper.text(x+3*self.margin+40, y+h-self.margin-20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
         self.displaySet.push(self.cBLabel);
 
         var dblclickEdition = function () {
@@ -80,7 +83,6 @@ var AnswerElement = function (answer, parent) {
             body.appendChild(contentarea).focus();
             contentarea.onblur = function () {
                 self.label = contentarea.value;
-                self.obj.content.attr("text", self.label);
                 contentarea.remove();
                 self.obj.cadre.remove();
                 self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
