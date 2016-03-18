@@ -7,10 +7,11 @@ var QuestionCreator = function (question) {
     var self = this;
 
     self.displaySet = paper.set();
+    self.margin = 15;
 
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = [new EmptyElement(self), new EmptyElement(self)];
+        self.tabAnswer = [new AnswerElement(myQuizz.tabQuestions[0].tabAnswer[1], self), new AnswerElement(null, self)];
         self.quizzName = "Ecrire ici le nom du quiz";
         self.label = "Cliquer deux fois pour ajouter la question";
         self.rightAnswers = [];
@@ -27,14 +28,23 @@ var QuestionCreator = function (question) {
             }
         });
     }
+
+    self.displaySetQuestionCreator = paper.set();
+    self.displaySetQuizzInfo = paper.set();
+    self.displaySetPreviewButton = paper.set();
+    self.displaySet.push(self.displaySetQuestionCreator, self.displaySetQuizzInfo, self.displaySetPreviewButton);
+
     self.coordinatesAnswers = {x:0, y:0, w:0, h:0};
     self.formationName = "Hibernate";
 
+    self.display = function (x, y, w, h) {
+        self.displayQuizzInfo(x, y, w*0.5, 10);
+        self.displayQuestionCreator(x, y+50, w, h-150);
+        self.displayPreviewButton(x, y+50+h-150+self.margin, w, 75);
+    };
+
     self.displayQuestionCreator = function (x, y, w, h) {
-        self.displaySet.forEach(function (el) {
-            el.remove();
-        });
-        self.margin = 15;
+        self.displaySetQuestionCreator.remove();
 
         if(x) {
             self.x = x;
@@ -48,9 +58,6 @@ var QuestionCreator = function (question) {
         if(h){
             self.h = h;
         }
-
-        console.log(x + " " + y + " " + w + " " + h);
-        console.log(self.x + " " + self.y + " " + self.w + " " + self.h);
 
         self.coordinatesAnswers.x = self.x+self.margin;
         self.coordinatesAnswers.y = self.y+2*self.margin+self.h*0.25;
@@ -79,30 +86,126 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title.cadre.attr("fill-opacity", 0);
                 self.questionBlock.title.content.node.ondblclick = dblclickEdition;
                 self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
+                self.displaySetQuestionCreator.push(self.questionBlock.title.content);
+                self.displaySetQuestionCreator.push(self.questionBlock.title.cadre);
             };
-            console.log("double clic");
         };
 
         self.questionBlock.title.content.node.ondblclick = dblclickEdition;
         self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
 
-        self.displaySet.push(self.questionBlock.rect, self.questionBlock.title.content, self.questionBlock.title.cadre);
+        self.displaySetQuestionCreator.push(self.questionBlock.rect);
+        self.displaySetQuestionCreator.push(self.questionBlock.title.content);
+        self.displaySetQuestionCreator.push(self.questionBlock.title.cadre);
 
         // bloc Answers
         self.answersBlock = {};
-        if(self.tabAnswer.length === 8) {
-            self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
-            self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        } else {
+        if(self.tabAnswer.length !== 8) {
             self.tabAnswer.push(new AddEmptyElement(self));
-            self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
-            self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
         }
+        self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
+        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
+        self.displaySetQuestionCreator.push(self.puzzle.displaySet);
     };
     self.displayQuizzInfo = function (x, y, w, h) {
-        
-    };
-    self.displayPreviewButton = function (x, y, w, h) {
+        self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
+        self.displaySetQuizzInfo.push(self.formationLabel);
 
+        var dblclickEdition = function () {
+            console.log("dblclick");
+            self.quizzLabel.remove();
+            var textarea = document.createElement("TEXTAREA");
+            textarea.value = self.quizzName;
+            textarea.setAttribute("style", "position: absolute; top:"+(y+20)+"px; left:"+(x)+"px; width:"+(w/4)+"px; height:"+(h/4)+"px; resize: none; border: red;");
+            var body = document.getElementById("body");
+            body.appendChild(textarea).focus();
+            textarea.onblur = function () {
+                self.quizzName = textarea.value;
+                textarea.remove();
+                self.quizzLabel = paper.text(x, y+30, self.quizzName).attr("font-size", 20).attr("text-anchor", "start");
+                self.quizzLabel.node.ondblclick = dblclickEdition;
+                self.displaySetQuizzInfo.push(self.quizzLabel);
+            };
+        };
+
+        self.quizzLabel = paper.text(x, y+30, self.quizzName).attr("font-size", 20).attr("text-anchor", "start");
+        self.quizzLabel.node.ondblclick = dblclickEdition;
+        self.displaySetQuizzInfo.push(self.quizzLabel);
+
+    };
+
+    self.displayPreviewButton = function (x, y, w, h) {
+        paper.setSize(x+w+2*self.margin, y+h+2);
+        self.previewButton = displayText("Aperçu", x+w/2-100, y, 200, h, "black", "white", 20);
+
+        var previewFunction = function () {
+            console.log("Aperçu");
+            var correctAnswers = 0;
+            var incorrectAnswers = 0;
+
+            self.tabAnswer.forEach(function (el) {
+                if(el instanceof AnswerElement) {
+                    if(el.bCorrect) {
+                        correctAnswers++;
+                    } else {
+                        incorrectAnswers++;
+                    }
+                }
+            });
+            console.log(correctAnswers);
+            console.log(incorrectAnswers);
+            if(correctAnswers >= 1 && incorrectAnswers >= 1) {
+                console.log("preview mode step 1 OK");
+                if(self.quizzName !== "Ecrire ici le nom du quiz") {
+                    console.log("preview mode step 2 OK");
+                    if(self.label !== "Cliquer deux fois pour ajouter la question") {
+                        console.log("Preview Mode ACCEPTED");
+                        self.displaySet.remove();
+
+                        // TODO Display Preview Answer
+                        var tabAnswer = [];
+                        self.tabAnswer.forEach(function (el) {
+                            if(el instanceof AnswerElement) {
+                                tabAnswer.push(el.toAnswer());
+                            }
+                        });
+                        var questionObject = {
+                            label: self.label,
+                            tabAnswer: tabAnswer,
+                            nbrows: 4,
+                            colorBordure: myColors.blue,
+                            bgColor: myColors.grey
+                        };
+                        var quest = new Question(questionObject, null);
+                        quest.display(20, 20, 1500, 200);
+                        quest.displayAnswers(20, 20, 1500, 200);
+                    } else {
+                        if(self.errorMessagePreview) {
+                            self.errorMessagePreview.remove();
+                        }
+                        self.errorMessagePreview = paper.text(x+w/2+100+self.margin, y+h/2, "Vous devez donner un nom à la question.").attr({"font-size":20, "fill":'red', "text-anchor":'start'});
+                        self.displaySetPreviewButton.push(self.errorMessagePreview);
+                    }
+                } else {
+                    if(self.errorMessagePreview) {
+                        self.errorMessagePreview.remove();
+                    }
+                    self.errorMessagePreview = paper.text(x+w/2+100+self.margin, y+h/2, "Vous devez donner un nom au quiz.").attr({"font-size":20, "fill":'red', "text-anchor":'start'});
+                    self.displaySetPreviewButton.push(self.errorMessagePreview);
+                }
+            } else {
+                if(self.errorMessagePreview) {
+                    self.errorMessagePreview.remove();
+                }
+                self.errorMessagePreview = paper.text(x+w/2+100+self.margin, y+h/2, "Vous devez définir au moins une bonne et une mauvaise réponse.").attr({"font-size":20, "fill":'red', "text-anchor":'start'});
+                self.displaySetPreviewButton.push(self.errorMessagePreview);
+            }
+        };
+
+        self.previewButton.cadre.node.onclick = previewFunction;
+        self.previewButton.content.node.onclick = previewFunction;
+
+        self.displaySetPreviewButton.push(self.previewButton.cadre);
+        self.displaySetPreviewButton.push(self.previewButton.content);
     }
 };

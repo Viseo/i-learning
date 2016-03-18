@@ -57,14 +57,14 @@ var AsyncTimerRuntime = {
     },
     timeout: function (handler, timer) {
         var timeout = {
-            id:"timeout"+count,
+            id:"timeout"+this.count,
             next: function () {
                 handler();
                 delete this;
             },
             timer:timer
         };
-        count++;
+        this.count++;
         this.timers[timeout.id] = timeout;
         return timeout;
     }

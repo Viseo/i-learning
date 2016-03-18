@@ -4,6 +4,40 @@
 
 /**
  *
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * @param sender
+ */
+var displayCheckbox = function (x, y, size, sender) {
+    var obj = {};
+    obj.checkbox = paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2});
+
+    var onclickFunction = function () {
+        sender.bCorrect = !sender.bCorrect;
+        if(obj.checked) {
+            obj.checked.remove();
+        }
+        obj.checkbox.remove();
+        displayCheckbox(x, y, size, sender);
+    };
+
+    if(sender.bCorrect) {
+        obj.checked = paper.path([
+            ["M", x+.2*size,y+.4*size],
+            ["l",.2*size,.3*size],
+            ["l",.4*size,-.5*size]]).attr({"stroke-width":3});
+        obj.checked.node.onclick = onclickFunction;
+    }
+    obj.checkbox.node.onclick = onclickFunction;
+
+    return obj;
+};
+
+
+/**
+ *
  * @param label
  * @param imageSrc
  * @param imageObj
@@ -243,7 +277,7 @@ var drawPlus =function(x,y,w,h,thicknessPercentage) {
     }
     plus.scale(scale);
     plus.attr('fill','black');
-
+    return plus;
 };
 
 /**

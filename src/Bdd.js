@@ -8,7 +8,9 @@ var myColors={
     orange:{r: 230, g: 122, b: 25},
     purple:{r: 170, g: 100, b: 170},
     green:{r: 155, g: 222, b: 17},
-    raspberry:{r: 194, g: 46, b: 83}
+    raspberry:{r: 194, g: 46, b: 83},
+    black:{r:0, g:0, b:0},
+    white:{r:255, g:255, b:255}
 };
 
 var myBib= {

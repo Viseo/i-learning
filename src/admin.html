@@ -13,7 +13,7 @@
     <script src="Answer.js"></script>
     <script src="Question.js"></script>
     <script src="Puzzle.js"></script>
-    <script src="svgMock.js"></script>
+    <script src="../test/svgMock.js"></script>
     <script src="Quizz.js"></script>
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
@@ -24,7 +24,10 @@
         var quizz = new Quizz(myQuizz);
         //quizz.tabQuestions[13].tabAnswer.push.apply(quizz.tabQuestions[13].tabAnswer, quizz.tabQuestions[12].tabAnswer);
         var questionCreator = new QuestionCreator();
-        questionCreator.displayQuestionCreator(20, 20, document.body.clientWidth-50, 950);
+        questionCreator.display(20, 20, (document.body.clientWidth-20)/2, 950/2);
+//        questionCreator.displayQuestionCreator(20, 70, document.body.clientWidth-50, 800);
+//        questionCreator.displayPreviewButton(20, 890, document.body.clientWidth-50, 75);
+//        questionCreator.displayQuizzInfo(20, 20, document.body.clientWidth-50, 50);
     </script>
 </body>
 </html>
