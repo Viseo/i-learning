@@ -77,6 +77,13 @@ function Quizz(quizz)
         h:200
     };
 
+    self.cadreBibImages={
+        x:0,
+        y:210,
+        w:paper.width,
+        h:600
+    };
+
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.paper=paper;
@@ -186,6 +193,11 @@ function Quizz(quizz)
                     e.remove();
                 });
                 self.displaySet.pop();
+            }
+            if(self.currentQuestionIndex !== -1) {
+                self.tabQuestions[self.currentQuestionIndex].displaySetAnswers.forEach(function (el) {
+                    el.remove();
+                });
             }
             if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                 self.currentQuestionIndex++;

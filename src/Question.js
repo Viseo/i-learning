@@ -15,6 +15,8 @@ var Question = function (question,quizz) {
     self.tabAnswer = [];
     self.rows=question.nbrows;
     self.rightAnswers=[];
+    self.selectedAnswers=[];
+    self.multipleChoice=false;
 
     if(question.font) {
         self.font = question.font;
@@ -36,6 +38,7 @@ var Question = function (question,quizz) {
     }
 
     self.displaySet=paper.set();
+    self.displaySetAnswers=paper.set();
 
     if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
@@ -45,9 +48,15 @@ var Question = function (question,quizz) {
             {
                self.rightAnswers.push(tmp);
             }
-            self.displaySet.push(tmp.displaySet);
+            self.displaySetAnswers.push(tmp.displaySet);
         });
     }
+
+    if(self.rightAnswers.length!=1){
+        self.multipleChoice=true;
+    }
+
+    self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
 
     if (question.colorBordure && !isNaN(parseInt(question.colorBordure.r)) && !isNaN(parseInt(question.colorBordure.g)) && !isNaN(parseInt(question.colorBordure.b))) {
         self.rgbBordure = "rgb(" + question.colorBordure.r + ", " + question.colorBordure.g + ", " + question.colorBordure.b + ")";
@@ -78,6 +87,8 @@ var Question = function (question,quizz) {
             throw new Error(NaN);
         }
 
+        self.x=x;
+        self.y=y;
         if(!h) {
             self.height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
         } else {
@@ -116,21 +127,22 @@ var Question = function (question,quizz) {
         if (self.rows !== 0) {
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
-            var tileHeight = 0;
+            self.tileHeight = 0;
 
             var tmpTileHeight;
 
             for(var answer of self.tabAnswer) {
                 tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
-                if(tmpTileHeight > tileHeight) {
-                    tileHeight = tmpTileHeight;
+                if(tmpTileHeight > self.tileHeight) {
+                    self.tileHeight = tmpTileHeight;
+
                 }
             }
 
             if(self.tabAnswer.length%self.rows === 0) {
-                paper.setSize(paper.width, (margin + tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin);
+                paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin+100);
             } else {
-                paper.setSize(paper.width, (margin + tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin);
+                paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin+100);
             }
 
             var posx = x;
@@ -142,11 +154,11 @@ var Question = function (question,quizz) {
                 }
                 if (count > (self.rows - 1)) {
                     count = 0;
-                    posy += (tileHeight + margin);
+                    posy += (self.tileHeight + margin);
                     posx = x;
                 }
 
-                self.tabAnswer[i].display(posx, posy, tileWidth, tileHeight);
+                self.tabAnswer[i].display(posx, posy, tileWidth, self.tileHeight);
                // self.temp=self.tabAnswer[i];
                 (function(element){
                     if(element.bordure) {
@@ -173,6 +185,84 @@ var Question = function (question,quizz) {
             }
         }
 
+        if(self.multipleChoice){
+            //affichage d'un bouton "valider"
+            var margin = 15;
+
+            var validateButton=displayText("Valider",self.bordure.attr('width')/2+self.x-75+100
+                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
+                'green','yellow',20
+            );
+
+
+            self.displaySetAnswers.push(validateButton.cadre);
+            self.displaySetAnswers.push(validateButton.content);
+
+            //button. onclick
+            var oclk=function(){
+                // test des valeurs, en gros si selectedAnswers === rigthAnswers
+                var allRight=false;
+
+                if(self.rightAnswers.length!=self.selectedAnswers.length){
+                    allRight=false;
+                }else{
+                    var subTotal=0;
+                    self.selectedAnswers.forEach(function(e){
+                        if(e.correct){
+                            subTotal++;
+                        }
+                    });
+
+                    if(subTotal===self.rightAnswers.length){
+                        allRight=true;
+                    }else{
+                        allRight=false;
+                    }
+
+                }
+
+                if(allRight) {
+                    self.parentQuizz.score++;
+                    console.log("Bonne réponse!\n");
+                } else {
+                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    var reponseD="";
+                    self.rightAnswers.forEach(function(e){
+                        reponseD+= e.label+"\n";
+                    });
+                    console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+                }
+
+                self.parentQuizz.nextQuestion();
+
+            };
+            validateButton.cadre.node.onclick=oclk;
+            validateButton.content.node.onclick=oclk;
+
+            //Button reset
+            self.resetButton=displayText("Reset",self.bordure.attr('width')/2+self.x-75 -100
+                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
+                'grey','grey',20
+            );
+            self.displaySet.push(self.resetButton.cadre);
+            self.displaySet.push(self.resetButton.content);
+
+            var reset = function(){
+                if(self.selectedAnswers.length>0){
+                    self.selectedAnswers.forEach(function(e){
+                        e.selected=false;
+                        e.bordure.attr("stroke-width",1);
+                        e.bordure.attr("stroke",e.rgbBordure);
+                    });
+                    self.selectedAnswers.splice(0,self.selectedAnswers.length);
+                    self.resetButton.cadre.attr("fill","grey");
+                    self.resetButton.cadre.attr("stroke","grey");
+                }
+            };
+            self.resetButton.content.node.onclick=reset;
+            self.resetButton.cadre.node.onclick=reset;
+        }
+
     };
 
     function elementClicked(sourceElement,type) {
@@ -188,7 +278,7 @@ var Question = function (question,quizz) {
                 partClicked=sourceElement.image;
                 break;
         }
-
+        if(self.multipleChoice===false){// question normale, une seule réponse possible
         if(sourceElement.correct) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
@@ -202,6 +292,29 @@ var Question = function (question,quizz) {
         }
 
         self.parentQuizz.nextQuestion();
+        }else{// question à choix multiples
+            if(sourceElement.selected===false){
+                // on sélectionne une réponse
+                sourceElement.selected=true;
+                self.selectedAnswers.push(sourceElement);
+                sourceElement.bordure.attr("stroke-width",5);
+                sourceElement.bordure.attr("stroke",'red');
+                self.resetButton.cadre.attr("fill","yellow");
+                self.resetButton.cadre.attr("stroke","green");
+
+            }else{
+                sourceElement.selected=false;
+                self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
+                sourceElement.bordure.attr("stroke-width",1);
+                sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
+                if(self.selectedAnswers.length==0){
+                    self.resetButton.cadre.attr("fill","grey");
+                    self.resetButton.cadre.attr("stroke","grey");
+                }
+            }
+
+
+        }
 
        // console.log("score: "+self.parentQuizz.score);
     }

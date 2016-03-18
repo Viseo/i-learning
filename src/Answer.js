@@ -17,6 +17,7 @@ var Answer = function (answer) {
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
+    self.selected=false;
 
     if(answer.fontSize) {
         self.fontSize = answer.fontSize;
@@ -67,6 +68,10 @@ var Answer = function (answer) {
     self.display = function (x, y, w, h) {
         if(isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
             throw new Error(NaN);
+        }
+        if(self.selected){// image pré-selectionnée
+            self.bordure.attr("stroke-width",5);
+            self.rgbBordure='red';
         }
 
         // Question avec Texte ET image

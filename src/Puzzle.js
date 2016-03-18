@@ -112,7 +112,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
         var newTile = {};
 
-        paper.setSize(paper.width, (self.margin + self.tileHeight)*self.lines + y + 2*self.margin);
+        paper.setSize(paper.width, (self.margin + self.tileHeight)*self.lines + y + 2*self.margin+100);
 
         var count = startPosition*self.lines;
 

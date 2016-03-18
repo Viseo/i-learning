@@ -3,17 +3,27 @@
  */
 
 //var paper=Raphael(0,0,1500,1500);
+
 var imageController = ImageController();
 paper=Raphael(0,0,document.body.clientWidth,1500);
 var asyncTimerController=AsyncTimerController();
 
 function main() {
 
-
+  /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz=new Quizz(myQuizz);
-    quizz.puzzleLines=3;
-    quizz.puzzleRows=3;
+   // Navigation Puzzle
+   quizz.puzzleLines=1;
+   quizz.puzzleRows=3;
 
+   quizz.run(50,10,1200,1200);*/
+    var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
+    quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
+    var quizz = new Quizz(quizzCopy);
+
+    console.log('Length: '+quizz.tabQuestions.length);
+    quizz.puzzleLines=1;
+    quizz.puzzleRows=3;
     quizz.run(50,10,1200,1200);
 
     // Navigation Puzzle

@@ -8,11 +8,12 @@
 <script src="../lib/raphael-min.js"></script>
 <script src="../lib/d3.min.js"></script>
 <script src="Bdd.js"></script>
+<script src="BibImage.js"></script>
 <script src="SVG-util.js"></script>
 <script src="Answer.js"></script>
 <script src="Question.js"></script>
 <script src="Puzzle.js"></script>
-<script src="svgMock.js"></script>
+<script src="../test/svgMock.js"></script>
 <script src="Quizz.js"></script>
 <script src="../test/Test-util.js"></script>
 <script src="main.js"></script>
@@ -22,30 +23,24 @@
     var asyncTimerController=AsyncTimerController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
-    var quizz = new Quizz(myQuizz);
-    var startTabQuestionLength=quizz.tabQuestions.length;
-
-    while(quizz.tabQuestions.length>(startTabQuestionLength-3)){
-        quizz.tabQuestions.shift();
-    }
-    while(quizz.tabQuestions.length>4){
+    var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
+    quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
+    var quizz = new Quizz(quizzCopy);
+    var tmpLength=quizz.tabQuestions.length-2;
+    for(var i=0;i<tmpLength;i++){
         quizz.tabQuestions.pop();
     }
-    for(var i=0;i<quizz.tabQuestions.length-4;i++){
-        quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
-    }
-    quizz.score=4
+
     console.log('Length: '+quizz.tabQuestions.length);
-    quizz.puzzleLines=3;
-    quizz.puzzleRows=3;
+
+
     quizz.run(50,10,1200,1200);
 
     setTimeout(function(){
-
-        for(var i=0;i<quizz.tabQuestions.length;i++)
-        {
-            quizz.nextQuestion();
-        }
+        onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
+        onClickMock(quizz.tabQuestions[0].tabAnswer[1].bordure);
+        onClickMock(paper.r18);
+       //onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
 
         /*setTimeout(function(){
             quizz.puzzle.displaySet.forEach(function(e){
@@ -56,7 +51,7 @@
             paper.writeTest();
         },2500);
 
-    },6000);
+    },3000);
 
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[0].image.id,925,1000 );
     //imageController.imageLoaded(quizz.tabQuestions[0].tabAnswer[1].image.id,2835,2582 );

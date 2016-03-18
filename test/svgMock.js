@@ -192,6 +192,46 @@ function RaphaelMock(x,y,width,height)
         paper.children.push(element);
         return element;
     };
+
+    paper.path=function(pathStr){
+        var element={type:"path", id:paper.index++};
+        element.tempHeigth=0;
+        element.tempWidth=0;
+        element.x;
+        element.y;
+        element.fill="";
+
+        element.node={};
+        element.node.onclick={};
+
+        var strTab=pathStr.split(' ');
+        var secondSplit=strTab[1].split(',');
+
+        element.x= parseInt(secondSplit[0]);
+        element.y= parseInt(secondSplit[1]);
+
+        element.writeTest = function () {
+            console.log('paper.p'+element.id+'.test('+element.x+','+element.y+','+element.tempHeight+','+element.tempWidth+',"'+element.fill+'");');
+        };
+        element.test = function (x,y,w,h,color) {
+            expect(element.x).toEqual(x);
+            expect(element.y).toEqual(y);
+            expect(element.tempHeight).toEqual(w);
+            expect(element.tempWidth).toEqual(h);
+            expect(element.fill).toEqual(color);
+        };
+
+        element.animate = animate;
+        element.remove=removeMock;
+        element.toFront=toFrontMock;
+        element.attr=attrMock;
+        element.transform=function(str){};
+        element.scale=function(str){};
+
+        paper['p'+element.id]=element;
+        paper.children.push(element);
+        return element;
+    };
     paper.writeTest=function() {
         console.log("\n----------BEGIN----------\n")
         console.log(paper.children.length);
@@ -221,7 +261,7 @@ function RaphaelMock(x,y,width,height)
     return paper;
 }
 
-var attr = function (param, value) {
+/*var attr = function (param, value) {
     var tab = [];
 
     if(param !== null && typeof param === 'object') {
@@ -232,7 +272,7 @@ var attr = function (param, value) {
         tab.push({param: value});
     }
     return tab;
-};
+};*/
 
 function animate (objectCoord, time) {
     if(objectCoord.x) {
@@ -329,4 +369,3 @@ function toFrontMock(){
    // console.log("toFront: not implemented yet!");
     return null;
 }
-
