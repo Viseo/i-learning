@@ -8,7 +8,6 @@ var AddEmptyElement = function (parent) {
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
     self.parent = parent;
-    self.parent.displaySet.push(self.displaySet);
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
@@ -55,7 +54,11 @@ var AnswerElement = function (answer, parent) {
         self.bCorrect = false;
     }
     self.parent = parent;
-    self.parent.displaySet.push(self.displaySet);
+
+    self.toAnswer = function () {
+        var answer = {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
+        return new Answer(answer)
+    };
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
