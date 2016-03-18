@@ -79,7 +79,6 @@ var QuestionCreator = function (question) {
             body.appendChild(textarea).focus();
             textarea.onblur = function () {
                 self.label = textarea.value;
-                self.questionBlock.title.content.attr("text", self.label);
                 textarea.remove();
                 self.questionBlock.title.cadre.remove();
                 self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
@@ -116,7 +115,7 @@ var QuestionCreator = function (question) {
             self.quizzLabel.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
-            textarea.setAttribute("style", "position: absolute; top:"+(y+20)+"px; left:"+(x)+"px; width:"+(w/4)+"px; height:"+(h/4)+"px; resize: none; border: red;");
+            textarea.setAttribute("style", "position: absolute; top:"+(y+20)+"px; left:"+(x)+"px; width:"+(w/4)+"px; height:"+(20)+"px; resize: none; border: red;");
             var body = document.getElementById("body");
             body.appendChild(textarea).focus();
             textarea.onblur = function () {
