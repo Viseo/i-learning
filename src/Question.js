@@ -9,6 +9,24 @@
 /*label,imageSrc,tabAnswer, rows, colorBordure, bgColor*/
 var Question = function (question,quizz) {
     var self = this;
+
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.parentQuizz=quizz;
     self.label = question.label;
     self.imageSrc = question.imageSrc;
@@ -97,26 +115,35 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, -w/2, -self.height/2, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
             self.displaySet.push(self.raphImage);
+
+            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            self.displaySet.transform(t);
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, -w/2, -self.height/2, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
+
+            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            self.displaySet.transform(t);
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, x, y, w, self.height).image;
+            self.raphImage = displayImage(self.imageSrc, self.image, -w/2, -self.height/2, w, self.height).image;
             self.displaySet.push(self.raphImage);
+
+            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            self.displaySet.transform(t);
         }
         else if (!self.imageSrc && !self.label) {
             self.bordure = paper.rect(x, y, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure})
@@ -188,15 +215,21 @@ var Question = function (question,quizz) {
         if(self.multipleChoice){
             //affichage d'un bouton "valider"
             var margin = 15;
-
-            var validateButton=displayText("Valider",self.bordure.attr('width')/2+self.x-75+100
-                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
-                'green','yellow',20
+            var w=150;
+            var h=50;
+            var validateX,validateY;
+            validateX=self.bordure.attr('width')/2+self.x-75+100;
+            validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height;
+            var validateButton=displayText("Valider",-w/2,-h/2,w,h,'green','yellow',20
             );
 
+            self.validatedisplaySet=paper.set();
+            self.validatedisplaySet.push(validateButton.cadre);
+            self.validatedisplaySet.push(validateButton.content);
+            self.displaySetAnswers.push(self.validatedisplaySet);
 
-            self.displaySetAnswers.push(validateButton.cadre);
-            self.displaySetAnswers.push(validateButton.content);
+            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2));
+            self.validatedisplaySet.transform(t);
 
             //button. onclick
             var oclk=function(){
@@ -240,12 +273,20 @@ var Question = function (question,quizz) {
             validateButton.content.node.onclick=oclk;
 
             //Button reset
-            self.resetButton=displayText("Reset",self.bordure.attr('width')/2+self.x-75 -100
-                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
-                'grey','grey',20
+            var w=150;
+            var h=50;
+            var resetX=self.bordure.attr('width')/2+self.x-75 -100;
+            var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height;
+            self.resetButton=displayText("Reset",-w/2,-h/2,w,h,'grey','grey',20
             );
-            self.displaySet.push(self.resetButton.cadre);
-            self.displaySet.push(self.resetButton.content);
+
+            self.resetDisplaySet=paper.set();
+
+            self.resetDisplaySet.push(self.resetButton.cadre);
+            self.resetDisplaySet.push(self.resetButton.content);
+            self.displaySetAnswers.push(self.resetDisplaySet);
+            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2));
+            self.resetDisplaySet.transform(t);
 
             var reset = function(){
                 if(self.selectedAnswers.length>0){

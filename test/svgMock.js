@@ -139,10 +139,10 @@ function RaphaelMock(x,y,width,height)
               // For Debug  console.log('Chaîne vide');
             }
         };
-        element.test=function(x,y,text){
-            expect(element.x).toEqual(x);
-            expect(element.y).toEqual(y);
-            expect(element.text).toEqual(text);
+        element.test=function(testx,testy,testtext){
+            expect(element.x).toEqual(testx);
+            expect(element.y).toEqual(testy);
+            expect(element.text).toEqual(testtext);
         };
         element.attr=attrMock;
         element.animate = animate;
@@ -161,6 +161,7 @@ function RaphaelMock(x,y,width,height)
         var s=[];
         s.type='set';
         s.remove=removeMock;
+        s.transform=transformMock;
         return s;
     };
 
@@ -176,7 +177,7 @@ function RaphaelMock(x,y,width,height)
         element.writeTest = function () {
             console.log('paper.i'+element.id+'.test("'+element.imageSrc+'",'+element.x+','+element.y+','+element.w+','+element.h+');')
         };
-        element.test = function () {
+        element.test = function (imageSrc,x,y,w,h) {
             expect(element.imageSrc).toEqual(imageSrc);
             expect(element.x).toEqual(x);
             expect(element.y).toEqual(y);
@@ -368,4 +369,23 @@ function getBBoxMock(){
 function toFrontMock(){
    // console.log("toFront: not implemented yet!");
     return null;
+}
+
+function transformMock(str){
+    var myStr=str;
+    var firstChar=myStr.charAt(0);
+    myStr=myStr.substring(1);
+
+    var tabParam=myStr.split(',');
+
+    this.forEach(function(e){
+       switch(firstChar){
+
+           case 't':
+               e.x+= parseInt(tabParam[0]);
+               e.y+= parseInt(tabParam[1]);
+               break;
+       }
+    });
+
 }

@@ -4,6 +4,24 @@
 
 function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
     var self=this;
+
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.lines=lines;
     self.rows=rows;
     self.margin=15;
@@ -65,9 +83,9 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                self.leftArrow = drawArrow(x+self.margin, y + h / 2, 75, 75,"left");
+                self.leftArrowSet = drawArrow(-75/2,-75/ 2, 75, 75,"left");
             } else {
-                self.leftArrow = drawArrow(x+self.margin, y + h / 2, 75, 75,"left",function (){
+                self.leftArrowSet = drawArrow(-75/2,-75/ 2, 75, 75,"left",function (){
                     if (self.rows === 1 && startPosition !== 0) {
                         self.display(x, y, w, h, startPosition - 1);
                     } else if (startPosition - self.rows + 1 <= 0) {
@@ -77,12 +95,16 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     }
                 });
             }
-            self.displaySet.push(self.leftArrow);
+
+            self.displaySet.push(self.leftArrowSet);
+            var t=self.transformation('t',''+(x+self.margin+75/2),''+(y + h / 2+75/2));
+            self.leftArrowSet.transform('...'+t);
+
 
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrow = drawArrow(x+w-self.margin, y+h/2, 75, 75,"right");
+                self.rightArrowSet= drawArrow(-75/2, -75/2, 75, 75,"right");
             } else {
-                self.rightArrow = drawArrow(x+w-self.margin, y+h/2, 75, 75,"right",function (){
+                self.rightArrowSet = drawArrow(-75/2, -75/2, 75, 75,"right",function (){
                     if(self.rows === 1 && startPosition !== self.totalRows -1) {
                         self.display(x, y, w, h, startPosition+1);
                     } else if(2*self.rows + startPosition >= self.totalRows) {
@@ -94,7 +116,14 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     }
                 });
             }
-            self.displaySet.push(self.rightArrow);
+            //self.displaySet.push(self.rightArrow);
+            //self.rightArrowSet=paper.set();
+            //self.rightArrowSet.push(self.rightArrow);
+            self.displaySet.push(self.rightArrowSet);
+            var t=self.transformation('t',''+(x+w-self.margin+75/2),''+(y + h / 2+75/2));
+            self.rightArrowSet.transform('...'+t);
+
+
             self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
         } else {
             self.initTiles(x, y, w, h, startPosition);
@@ -122,8 +151,11 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
 
-                        self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                        self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+
+                        var t=self.transformation('t',''+(posX+self.tileWidth/2),''+(posY+self.tileHeight/2));
+                        self.virtualTab[i][j].displaySet.transform(t);
 
                         posX += self.tileWidth+self.margin;
                         count++;
@@ -140,8 +172,11 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                 for (var j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
 
-                    self.virtualTab[i][j].display(posX, posY, self.tileWidth, self.tileHeight);
+                    self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                     self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
+
+                        var t=self.transformation('t',''+(posX+self.tileWidth/2),''+(posY+self.tileHeight/2));
+                        self.virtualTab[i][j].displaySet.transform(t);
 
                     posY += self.tileHeight + self.margin;
                     count++;

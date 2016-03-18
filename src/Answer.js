@@ -14,6 +14,24 @@
 /*label, imageSrc, bCorrect, colorBordure, bgColor*/
 var Answer = function (answer) {
     var self = this;
+
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
@@ -76,31 +94,39 @@ var Answer = function (answer) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, -w/2, -h/2, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
             self.displaySet.push(self.image);
+            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+            self.displaySet.transform(t);
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, x, y, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, -w/2, -h/2, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
+            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+            self.displaySet.transform(t);
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image, x, y, w, h).image;
+            self.image = displayImage(self.imageSrc, self.image,  -w/2, -h/2, w, h).image;
             self.displaySet.push(self.image);
+            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+            self.displaySet.transform(t);
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            self.bordure = paper.rect(x, y, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure});
+            self.bordure = paper.rect( -w/2, -h/2, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure});
             self.displaySet.push(self.bordure);
+            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+            self.displaySet.transform(t);
         }
 
     };

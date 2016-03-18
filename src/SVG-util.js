@@ -54,6 +54,7 @@ var displayImage = function (imageSrc, image, x, y, w, h) {
         width *= h/height;
         height = h;
     }
+    //var obj = {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
     var obj = {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
     return obj;
 };
@@ -260,7 +261,7 @@ var drawArrow = function(x,y,w,h,side,handler){
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
     var scale=1;
-
+    var arrowSet=paper.set();
     var path = "M "+(x)+","+(y)+" "+
         "L "+(-100+x)+","+(100+y)+" "+
         "C "+(-140+x)+","+(140+y)+" "+(-85+x)+","+(185+y)+" "+(-50+x)+","+(150+y)+" "+
@@ -273,6 +274,9 @@ var drawArrow = function(x,y,w,h,side,handler){
     var chevron=paper.path(path);
     chevron.tempWidth=baseWidth;
     chevron.tempHeight=baseHeight;
+    arrowSet.push(chevron);
+
+
     if(handler)
     {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
@@ -281,7 +285,7 @@ var drawArrow = function(x,y,w,h,side,handler){
         chevron.attr({"type":"path","stroke":"none","fill":"grey"});
     }
     if(side==="left") {
-       chevron.transform("r" + 180 + " "+x+" "+y);
+        arrowSet.transform("r" + 180 + " "+x+" "+y);/// coordonnées globales ici!
     }
     while((w<chevron.tempWidth)||(h<chevron.tempHeight)) {
         scale-=0.1;
@@ -289,5 +293,5 @@ var drawArrow = function(x,y,w,h,side,handler){
         chevron.tempHeight=(baseHeight*scale);
     }
     chevron.scale(scale);
-    return chevron;
+    return arrowSet;
 };

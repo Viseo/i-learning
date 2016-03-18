@@ -12,6 +12,23 @@
 function Quizz(quizz)
 {
     var self=this;
+    self._transformation={
+      type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.tabQuestions=[];
     if (quizz.tabQuestions !== null) {
         quizz.tabQuestions.forEach(function (it) {
@@ -170,7 +187,7 @@ function Quizz(quizz)
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-        var object = displayText(self.title, x,y,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        var object = displayText(self.title, -w/2,-h/2,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
 
@@ -182,6 +199,9 @@ function Quizz(quizz)
 
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
+        var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+        self.displaySet.transform(t);
+
         self.nextQuestion();
 
     };
