@@ -70,8 +70,6 @@ var AnswerElement = function (answer, parent) {
         self.displaySet.push(self.obj.content);
 
         self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
-        self.displaySet.push(self.checkbox.checkbox);
-        self.displaySet.push(self.checkbox.checked);
 
         self.cBLabel = paper.text(x+3*self.margin+40, y+h-self.margin-20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
         self.displaySet.push(self.cBLabel);

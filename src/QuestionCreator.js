@@ -15,13 +15,17 @@ var QuestionCreator = function (question) {
 
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = [new AnswerElement(myQuizz.tabQuestions[0].tabAnswer[1], self), new AnswerElement(null, self)];
+        self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
         self.quizzName = "Ecrire ici le nom du quiz";
         self.label = "Cliquer deux fois pour ajouter la question";
         self.rightAnswers = [];
         self.fontSize = 20;
     } else {
-        self.tabAnswer = question.tabAnswer;
+        self.tabAnswer = [];
+        question.tabAnswer.forEach(function (answer) {
+            self.tabAnswer.push(new AnswerElement(answer));
+        });
+        //self.tabAnswer = question.tabAnswer;
         self.quizzName = question.parentQuizz.title;
         self.label = question.label;
         self.rightAnswers = [];

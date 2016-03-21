@@ -247,7 +247,7 @@ var Question = function (question,quizz) {
             self.displaySet.push(self.resetButton.cadre);
             self.displaySet.push(self.resetButton.content);
 
-            var reset = function(){
+            self.reset = function(){
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
                         e.selected=false;
@@ -259,8 +259,8 @@ var Question = function (question,quizz) {
                     self.resetButton.cadre.attr("stroke","grey");
                 }
             };
-            self.resetButton.content.node.onclick=reset;
-            self.resetButton.cadre.node.onclick=reset;
+            self.resetButton.content.node.onclick=self.reset;
+            self.resetButton.cadre.node.onclick=self.reset;
         }
 
     };

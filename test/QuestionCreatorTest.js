@@ -14,8 +14,6 @@ describe('Question Creator', function() {
     });
 
     it('Should add a new Answer to the question creator puzzle (Q10 - T3)', function () {
-
-        var quizz=new Quizz(myQuizz);
         var questionCreator = new QuestionCreator();
         questionCreator.displayQuestionCreator(20, 20, document.body.clientWidth-50, 850);
         questionCreator.displayPreviewButton(20, 890, document.body.clientWidth-50, 75);
@@ -24,10 +22,25 @@ describe('Question Creator', function() {
             tabAddAnswersElements.push(questionCreator.displaySet[questionCreator.displaySet.length-(i+1)]);
         }
         expect(questionCreator.tabAnswer.length).toEqual(3);
-        questionCreator.tabAnswer[(questionCreator.tabAnswer.length-1)];
-        onDblclickMock(paper.t12);
+        onDblclickMock(paper.r12);
         expect(questionCreator.tabAnswer.length).toEqual(4);
         expect(questionCreator.tabAnswer[(questionCreator.tabAnswer.length-1)] instanceof AddEmptyElement).toBeTruthy();
     });
+
+    it('Should add a new Answer to the question creator puzzle (Q10 - T3)', function () {
+        //var quizz = new Quizz(myQuizz);
+        //var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);
+        //questionCreator.display(20, 20, 1500, 800);
+        //
+        //var tabAddAnswersElements=[];
+        //for(var i=0;i<3;i++){
+        //    tabAddAnswersElements.push(questionCreator.displaySet[questionCreator.displaySet.length-(i+1)]);
+        //}
+        //expect(questionCreator.tabAnswer.length).toEqual(5);
+        //onDblclickMock(paper.t12);
+        //expect(questionCreator.tabAnswer.length).toEqual(5);
+        //expect(questionCreator.tabAnswer[(questionCreator.tabAnswer.length-1)] instanceof AddEmptyElement).toBeTruthy();
+    });
+
 
 });

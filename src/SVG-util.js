@@ -29,7 +29,9 @@ var displayCheckbox = function (x, y, size, sender) {
 
         obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
+        sender.displaySet.push(obj.checked);
     }
+    sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
 
     return obj;

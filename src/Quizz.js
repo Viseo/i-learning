@@ -206,12 +206,17 @@ function Quizz(quizz, previewMode) {
                 });
             }
             if(self.previewMode) {
+                if(self.currentQuestionIndex === 0) {
+                    self.tabQuestions[0].reset();
+                }
+
                 self.currentQuestionIndex = 0;
-                    self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
-                        self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
-                        self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                    self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+
+                self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                    self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                    self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                     self.currentQuestionIndex++;
