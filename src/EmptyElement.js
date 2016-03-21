@@ -59,8 +59,7 @@ var AnswerElement = function (answer, parent) {
     self.parent = parent;
 
     self.toAnswer = function () {
-        var answer = {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
-        return new Answer(answer)
+        return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
     };
 
     self.display = function (x, y, w, h) {
@@ -94,6 +93,9 @@ var AnswerElement = function (answer, parent) {
                 self.obj.content.node.ondblclick = dblclickEdition;
                 self.obj.cadre.node.ondblclick = dblclickEdition;
                 self.obj.cadre.toBack();
+
+                self.displaySet.push(self.obj.cadre);
+                self.displaySet.push(self.obj.content);
 
                 self.cBLabel.toFront();
                 self.checkbox.checkbox.toFront();

@@ -208,7 +208,7 @@ var myQuizz={
                 {label:"1999",imageSrc:null,bCorrect:false,
                     colorBordure:myColors.green,bgColor:myColors.grey}
             ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple}
 
     ],
     bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1

@@ -13,7 +13,6 @@ var QuestionCreator = function (question) {
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
 
-
     if(!question) {
         // init default : 2 empty answers
         self.tabAnswer = [new AnswerElement(myQuizz.tabQuestions[0].tabAnswer[1], self), new AnswerElement(null, self)];
@@ -130,7 +129,10 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        self.displaySetQuestionCreator.push(self.puzzle.displaySet);
+        self.tabAnswer.forEach(function (el) {
+            self.displaySetQuestionCreator.push(el.displaySet);
+        });
+        //self.displaySetQuestionCreator.push(self.puzzle.displaySet);
     };
     self.displayQuizzInfo = function (x, y, w, h) {
         self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
@@ -203,23 +205,36 @@ var QuestionCreator = function (question) {
                         if (self.label !== "Cliquer deux fois pour ajouter la question") {
                             self.displaySet.remove();
 
-                            // TODO Display Preview Quizz
                             var tabAnswer = [];
                             self.tabAnswer.forEach(function (el) {
                                 if (el instanceof AnswerElement) {
                                     tabAnswer.push(el.toAnswer());
                                 }
                             });
+
+                            var tabQuestion = [];
                             var questionObject = {
                                 label: self.label,
                                 tabAnswer: tabAnswer,
                                 nbrows: 4,
-                                colorBordure: myColors.blue,
-                                bgColor: myColors.grey
+                                colorBordure: myColors.black,
+                                bgColor: myColors.white
                             };
-                            var quest = new Question(questionObject, null);
-                            quest.display(20, 20, 1500, 200);
-                            quest.displayAnswers(20, 20, 1500, 200);
+                            tabQuestion.push(questionObject);
+
+                            var quizzObject = {
+                                title: self.quizzName,
+                                bgColor: myColors.white,
+                                tabQuestions: tabQuestion,
+                                puzzleLines: 3,
+                                puzzleRows: 3
+                            };
+
+                            var quizz = new Quizz(quizzObject, true);
+                            quizz.run(20, 20, 1500, 800);
+                            //var quest = new Question(questionObject, null);
+                            //quest.display(20, 20, 1500, 200);
+                            //quest.displayAnswers(20, 20, 1500, 200);
                         } else {
                             if (self.errorMessagePreview) {
                                 self.errorMessagePreview.remove();
