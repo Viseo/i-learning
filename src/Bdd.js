@@ -213,3 +213,75 @@ var myQuizz={
     ],
     bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
 };
+
+var myQuizzDemo={
+    title:"Qui veut gagner des millions ? Quizz n°1",
+    tabQuestions:[
+        {label:"Parmi ces divinités, lesquelles sont de sexe féminin?",imageSrc:"../resource/millions.png",
+            tabAnswer: [
+                {label:"Athéna",imageSrc: null,bCorrect:true,
+                    colorBordure: myColors.green,bgColor:myColors.blue},
+                {label:"Isis",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue},
+                {label:"Epona",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue},
+                {label:"Freyja",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue}
+            ],
+            nbrows:4,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
+
+        {label:"Parmi ces fruits, lequel ne possède pas de noyau?",imageSrc:null,
+            tabAnswer: [
+                {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:true,
+                    colorBordure: myColors.green,bgColor:myColors.blue},
+                {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey},
+                {label:"La poire",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue},
+                {label:"L'orange",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue}
+            ],
+            nbrows:3,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
+
+        {label:"Quelle ceinture n'existe pas au judo?",imageSrc:null,
+            tabAnswer: [
+                {label:"Bleue",imageSrc: null,bCorrect:false,
+                    colorBordure: myColors.green,bgColor:myColors.grey},
+                {label:"Violette",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.blue,bgColor:myColors.blue},
+                {label:"Demi-verte (orange et verte)",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.grey,bgColor:myColors.grey},
+                {label:"Demi-marron (bleue et marron)",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.orange, bgColor:myColors.blue}
+
+            ],
+            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
+
+        {label:"Quelle est la capitale de la Libye?",imageSrc:null, font:"Courier New", fontSize:40,
+            tabAnswer: [
+                {label:"Malpoli",imageSrc: null,bCorrect:false,
+                    colorBordure: myColors.green,bgColor:myColors.grey, font:"Courier New", fontSize:36},
+                {label:"Papoli",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey, font:"Lucida Grande", fontSize:30},
+                {label:"Tropoli",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey, font:"Lucida Grande", fontSize:12},
+                {label:"Aïoli",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey, font:"Times New Roman", fontSize:36}
+            ],
+            nbrows:1,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
+
+        {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null,
+            tabAnswer: [
+                {label:"Stupide",imageSrc: null,bCorrect:false,
+                    colorBordure: myColors.green,bgColor:myColors.grey},
+                {label:"Inculte",imageSrc:null,bCorrect:true,
+                    colorBordure:myColors.green,bgColor:myColors.blue},
+                {label:"Idiote",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey},
+                {label:"Ignare",imageSrc:null,bCorrect:false,
+                    colorBordure:myColors.green,bgColor:myColors.grey}
+            ],
+            nbrows: 3,colorBordure:myColors.primaryBlue,bgColor:myColors.blue}
+    ],
+    bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
+};
