@@ -227,9 +227,17 @@ var Question = function (question,quizz) {
                     self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
                     var reponseD="";
                     self.rightAnswers.forEach(function(e){
-                        reponseD+= e.label+"\n";
+                        if(e.label)
+                        {
+                            reponseD+= e.label+"\n";
+                        }
+                        else if(e.imageSrc)
+                        {
+                            var tab=e.imageSrc.split('/');
+                            reponseD+= tab[(tab.length-1)]+"\n";
+                        }
                     });
-                    console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+                    console.log("Mauvaise réponse!\n  Bonnes réponses: \n"+reponseD);
                 }
 
                 self.parentQuizz.nextQuestion();
@@ -285,9 +293,17 @@ var Question = function (question,quizz) {
             self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
             var reponseD="";
             self.rightAnswers.forEach(function(e){
-               reponseD+= e.label+"\n";
+               if(e.label)
+               {
+                   reponseD+= e.label+"\n";
+               }
+                else if(e.imageSrc)
+               {
+                   var tab=e.imageSrc.split('/');
+                   reponseD+= tab[(tab.length-1)]+"\n";
+               }
             });
-            console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+            console.log("Mauvaise réponse!\n  Bonnes réponses: \n"+reponseD);
         }
 
         self.parentQuizz.nextQuestion();
