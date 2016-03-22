@@ -67,6 +67,13 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
     return {cadre: cadre, image: image.image,  text: text};
 };
 
+var displayImageWithBorder = function (imageSrc, imageObj, x, y, w, h) {
+    var margin = 10;
+    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-2*margin);
+    var cadre = paper.rect(x, y, w, h, 25).attr({stroke: "none"});
+    return {image:image.image, height:image.height, cadre:cadre};
+};
+
 /**
  *
  * @param imageSrc

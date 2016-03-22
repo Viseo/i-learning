@@ -56,6 +56,11 @@ var Question = function (question,quizz) {
     }
 
     self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
+    if(self.tabAnswer.length%self.rows === 0) {
+        self.lines=Math.floor(self.tabAnswer.length/self.rows);
+    } else {
+        self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
+    }
 
     if (question.colorBordure && !isNaN(parseInt(question.colorBordure.r)) && !isNaN(parseInt(question.colorBordure.g)) && !isNaN(parseInt(question.colorBordure.b))) {
         self.rgbBordure = "rgb(" + question.colorBordure.r + ", " + question.colorBordure.g + ", " + question.colorBordure.b + ")";
@@ -189,7 +194,7 @@ var Question = function (question,quizz) {
             var margin = 15;
 
             var validateButton=displayText("Valider",self.bordure.attr('width')/2+self.x-75+100
-                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
+                ,self.tileHeight*self.lines+(self.lines+2)*margin+self.y+self.height,150,50,
                 'green','yellow',20
             );
 
@@ -248,7 +253,7 @@ var Question = function (question,quizz) {
 
             //Button reset
             self.resetButton=displayText("Reset",self.bordure.attr('width')/2+self.x-75 -100
-                ,self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height,150,50,
+                ,self.tileHeight*self.lines+(self.lines+2)*margin+self.y+self.height,150,50,
                 'grey','grey',20
             );
             self.displaySet.push(self.resetButton.cadre);
@@ -320,7 +325,7 @@ var Question = function (question,quizz) {
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-                sourceElement.bordure.attr("stroke-width",1);
+                sourceElement.bordure.attr("stroke-width", 1);
                 sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
                 if(self.selectedAnswers.length==0){
                     self.resetButton.cadre.attr("fill","grey");
