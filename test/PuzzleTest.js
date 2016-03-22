@@ -72,27 +72,27 @@ describe('Puzzle test suite', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
-        paper.r199.test(50,220,1150,200);
-        paper.t200.test(236.66666666666666,597,"Une divinité féminine est une...");
-        paper.i201.test("../resource/millions.png",174.66666666666666,445,124,124);
-        paper.r202.test(50,435,373.3333333333333,190);
-        paper.t203.test(236.66666666666666,735,"Parmi ces fruits, lequel possède un\nnoyau?");
-        paper.r204.test(50,640,373.3333333333333,190);
-        paper.t205.test(236.66666666666666,940,"Traditionnellement, le justaucorps\nest porté par...");
-        paper.r206.test(50,845,373.3333333333333,190);
-        paper.t207.test(625,530,"Quelle est la capitale de la Libye?");
-        paper.r208.test(438.3333333333333,435,373.3333333333333,190);
-        paper.t209.test(625,735,"Un terrain où on n'a rien planté\nest une terre...");
-        paper.r210.test(438.3333333333333,640,373.3333333333333,190);
-        paper.t211.test(625,940,"Un galurin est un...");
-        paper.r212.test(438.3333333333333,845,373.3333333333333,190);
-        paper.t213.test(1013.3333333333333,530,"Quelle est l'orthographe correcte\nde ce verbe?");
-        paper.r214.test(826.6666666666666,435,373.3333333333333,190);
-        paper.t215.test(1013.3333333333333,735,"Comment appelle-t-on un habitant de\nFlandre?");
-        paper.r216.test(826.6666666666666,640,373.3333333333333,190);
-        paper.t217.test(1013.3333333333333,940,"Formentera est une île des...");
-        paper.r218.test(826.6666666666666,845,373.3333333333333,190);
+        paper.t199.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");
+        paper.r200.test(50,220,1150,200);
+        paper.t201.test(236.66666666666666,597,"Une divinité féminine est une...");
+        paper.i202.test("../resource/millions.png",174.66666666666666,445,124,124);
+        paper.r203.test(50,435,373.3333333333333,190);
+        paper.t204.test(236.66666666666666,735,"Parmi ces fruits, lequel possède un\nnoyau?");
+        paper.r205.test(50,640,373.3333333333333,190);
+        paper.t206.test(236.66666666666666,940,"Traditionnellement, le justaucorps\nest porté par...");
+        paper.r207.test(50,845,373.3333333333333,190);
+        paper.t208.test(625,530,"Quelle est la capitale de la Libye?");
+        paper.r209.test(438.3333333333333,435,373.3333333333333,190);
+        paper.t210.test(625,735,"Un terrain où on n'a rien planté\nest une terre...");
+        paper.r211.test(438.3333333333333,640,373.3333333333333,190);
+        paper.t212.test(625,940,"Un galurin est un...");
+        paper.r213.test(438.3333333333333,845,373.3333333333333,190);
+        paper.t214.test(1013.3333333333333,530,"Quelle est l'orthographe correcte\nde ce verbe?");
+        paper.r215.test(826.6666666666666,435,373.3333333333333,190);
+        paper.t216.test(1013.3333333333333,735,"Comment appelle-t-on un habitant de\nFlandre?");
+        paper.r217.test(826.6666666666666,640,373.3333333333333,190);
+        paper.t218.test(1013.3333333333333,940,"Formentera est une île des...");
+        paper.r219.test(826.6666666666666,845,373.3333333333333,190);
 
     });
 

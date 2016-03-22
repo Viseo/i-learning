@@ -23,8 +23,9 @@ describe('question', function() {
 
         quizz.display(50,10,1200,1200);
         expect(quizz.currentQuestionIndex).toEqual(0);
+        console.log = jasmine.createSpy("log");
         onClickMock(quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer[1].content, 0, 0); // Click d'une mauvaise réponse
-        expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: Tripoli\n");
+        expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: \nTripoli\n");
         expect(quizz.currentQuestionIndex).toEqual(1);
 
         console.log = jasmine.createSpy("log");
@@ -132,8 +133,8 @@ describe('question', function() {
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(1);
         onClickMock(paper.t19, 0, 0);
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(0);
-        paper.t19.test(525,658,"Reset");
-        paper.r20.test(450,633,150,50);
+        paper.t19.test(525,617,"Reset");
+        paper.r20.test(450,592,150,50);
         // Click upon reset with no selected answer
         onClickMock(paper.t19, 0, 0);
         expect(quizz.tabQuestions[quizz.currentQuestionIndex].selectedAnswers.length).toEqual(0);
