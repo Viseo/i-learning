@@ -44,8 +44,7 @@ var Question = function (question,quizz) {
         question.tabAnswer.forEach(function (it) {
             var tmp = new Answer(it);
             self.tabAnswer.push(tmp);
-            if(tmp.correct)
-            {
+            if(tmp.correct) {
                self.rightAnswers.push(tmp);
             }
             self.displaySetAnswers.push(tmp.displaySet);

@@ -206,7 +206,7 @@ function Quizz(quizz, previewMode) {
                 });
             }
             if(self.previewMode) {
-                if(self.currentQuestionIndex === 0) {
+                if(self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
                     self.tabQuestions[0].reset();
                 }
 
