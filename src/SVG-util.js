@@ -319,13 +319,16 @@ var drawArrow = function(x,y,w,h,side,handler){
         chevron.attr({"type":"path","stroke":"none","fill":"grey"});
     }
     if(side==="left") {
-        arrowSet.transform("r" + 180 + " "+x+" "+y);/// coordonnées globales ici!
+        //arrowSet.transform("...r" + 180 + " "+x+" "+y);/// coordonnées globales ici!
     }
     while((w<chevron.tempWidth)||(h<chevron.tempHeight)) {
         scale-=0.1;
         chevron.tempWidth=(baseWidth*scale);
         chevron.tempHeight=(baseHeight*scale);
     }
-    chevron.scale(scale);
+    var s="s"+scale;
+    //arrowSet.scale(scale);
+    arrowSet._scale=scale;
+    //arrowSet.transform('...'+s)
     return arrowSet;
 };

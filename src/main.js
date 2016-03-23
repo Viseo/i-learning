@@ -24,7 +24,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(50,10,1200,1200);
+    quizz.run(200,200,1200,1200);
 
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);

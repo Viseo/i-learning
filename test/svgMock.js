@@ -160,8 +160,20 @@ function RaphaelMock(x,y,width,height)
 
         var s=[];
         s.type='set';
+        s.id=paper.index++;
         s.remove=removeMock;
         s.transform=transformMock;
+
+        s.writeTest=function(){
+            console.log('paper.s'+s.id+'.test("'+s._transformation.type+s._transformation.param1+','+s._transformation.param2+'");');
+        };
+
+        s.test=function(trans){
+            expect(s._transformation).toEqual(trans);
+        };
+
+        paper['s'+s.id]=s;
+        paper.children.push(s);
         return s;
     };
 
@@ -251,6 +263,8 @@ function RaphaelMock(x,y,width,height)
             self.forEach(function(e){
                e.remove();
             });
+            delete paper[self.type.charAt(0)+self.id.toString()];
+            paper.children.splice(paper.children.indexOf(self),1);
         }else{
 
             delete paper[self.type.charAt(0)+self.id.toString()];

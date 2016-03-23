@@ -19,27 +19,29 @@
 <script src="main.js"></script>
 <script src="ExampleTimeout.js"></script>
 <script>
-    var imageController=ImageController();
+    var imageController=ImageController(ImageRuntime);
     var asyncTimerController=AsyncTimerController();
     paper=RaphaelMock(0,0,document.body.clientWidth,1500);
 
     var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
     quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz = new Quizz(quizzCopy);
-    var tmpLength=quizz.tabQuestions.length-2;
+    var tmpLength=quizz.tabQuestions.length-3;
     for(var i=0;i<tmpLength;i++){
         quizz.tabQuestions.pop();
     }
 
     console.log('Length: '+quizz.tabQuestions.length);
 
+    imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
+    imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[0].image.id,925,1000 );
+    imageController.imageLoaded(quizz.tabQuestions[1].tabAnswer[1].image.id,2835,2582 );
 
-    quizz.run(50,10,1200,1200);
+    quizz.display(50,10,1200,1200);
 
     setTimeout(function(){
-        onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
-        onClickMock(quizz.tabQuestions[0].tabAnswer[1].bordure);
-        onClickMock(paper.r18);
+        quizz.nextQuestion();
+        quizz.nextQuestion();
        //onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
 
         /*setTimeout(function(){
@@ -47,9 +49,9 @@
                 e.writeTest();
             });
         },1500);*/
-        setTimeout(function(){
-            paper.writeTest();
-        },2500);
+
+        paper.writeTest();
+
 
     },3000);
 

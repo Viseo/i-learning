@@ -58,8 +58,6 @@ var Answer = function (answer) {
         self.imageLoaded = true;
     }
 
-    self.displaySet=paper.set();
-
     if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
         self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
     }
@@ -87,6 +85,10 @@ var Answer = function (answer) {
         if(isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
             throw new Error(NaN);
         }
+
+        self.displaySet=paper.set();
+        self.displaySet._transformation=self._transformation;
+
         if(self.selected){// image pré-selectionnée
             self.bordure.attr("stroke-width",5);
             self.rgbBordure='red';

@@ -55,8 +55,8 @@ var Question = function (question,quizz) {
         self.imageLoaded = true;
     }
 
-    self.displaySet=paper.set();
-    self.displaySetAnswers=paper.set();
+
+
 
     if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
@@ -66,7 +66,7 @@ var Question = function (question,quizz) {
             {
                self.rightAnswers.push(tmp);
             }
-            self.displaySetAnswers.push(tmp.displaySet);
+
         });
     }
 
@@ -104,6 +104,8 @@ var Question = function (question,quizz) {
         if (isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
             throw new Error(NaN);
         }
+        self.displaySet=paper.set();
+        self.displaySet._transformation=self._transformation;
 
         self.x=x;
         self.y=y;
@@ -152,6 +154,9 @@ var Question = function (question,quizz) {
 
     self.displayAnswers = function (x, y, w, h) {
         if (self.rows !== 0) {
+            self.displaySetAnswers=paper.set();
+            self.displaySetAnswers._transformation=self._transformation;
+
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
@@ -186,6 +191,7 @@ var Question = function (question,quizz) {
                 }
 
                 self.tabAnswer[i].display(posx, posy, tileWidth, self.tileHeight);
+                self.displaySetAnswers.push(self.tabAnswer[i].displaySet);
                // self.temp=self.tabAnswer[i];
                 (function(element){
                     if(element.bordure) {
@@ -224,6 +230,7 @@ var Question = function (question,quizz) {
             );
 
             self.validatedisplaySet=paper.set();
+            self.validatedisplaySet._transformation=self._transformation;
             self.validatedisplaySet.push(validateButton.cadre);
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
@@ -281,7 +288,7 @@ var Question = function (question,quizz) {
             );
 
             self.resetDisplaySet=paper.set();
-
+            self.resetDisplaySet._transformation=self._transformation;
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);

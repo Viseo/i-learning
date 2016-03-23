@@ -27,7 +27,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
     self.margin=15;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
-    self.displaySet=paper.set();
+
     self.reverseMode = reverseMode;
 
     self.totalRows = 0;
@@ -77,9 +77,13 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
      */
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
+        self.displaySet=paper.set();
+        self.displaySet._transformation=self._transformation;
+
         self.displaySet.forEach(function (it) {
             it.remove();
         });
+
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
@@ -97,9 +101,10 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             }
 
             self.displaySet.push(self.leftArrowSet);
-            var t=self.transformation('t',''+(x+self.margin+75/2),''+(y + h / 2+75/2));
+            var t=self.transformation('t',''+(x+self.margin+75/2),''+(y + (h/2)+75/2));
             self.leftArrowSet.transform('...'+t);
-
+            self.leftArrowSet.transform('...r180 '+(-75/2)+','+(-75/2));
+            self.leftArrowSet.transform('...s'+self.leftArrowSet._scale);
 
             if(startPosition + self.rows>= self.totalRows) {
                 self.rightArrowSet= drawArrow(-75/2, -75/2, 75, 75,"right");
@@ -121,8 +126,9 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             //self.rightArrowSet.push(self.rightArrow);
             self.displaySet.push(self.rightArrowSet);
             var t=self.transformation('t',''+(x+w-self.margin+75/2),''+(y + h / 2+75/2));
-            self.rightArrowSet.transform('...'+t);
 
+            self.rightArrowSet.transform('...'+t);
+            self.rightArrowSet.transform('...s'+self.rightArrowSet._scale);
 
             self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
         } else {
