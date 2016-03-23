@@ -6,8 +6,7 @@
  *
  * @param x
  * @param y
- * @param w
- * @param h
+ * @param size
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
@@ -24,12 +23,15 @@ var displayCheckbox = function (x, y, size, sender) {
     };
 
     if(sender.bCorrect) {
-        obj.checked = paper.path([
-            ["M", x+.2*size,y+.4*size],
-            ["l",.2*size,.3*size],
-            ["l",.4*size,-.5*size]]).attr({"stroke-width":3});
+        var path = "M " + (x+.2*size) + "," + (y+.4*size) +
+            "l " + (.2*size) + "," + (.3*size) +
+            "l " + (.4*size) + "," + (-.5*size);
+
+        obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
+        sender.displaySet.push(obj.checked);
     }
+    sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
 
     return obj;
@@ -63,6 +65,13 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
     text.toFront();
 
     return {cadre: cadre, image: image.image,  text: text};
+};
+
+var displayImageWithBorder = function (imageSrc, imageObj, x, y, w, h) {
+    var margin = 10;
+    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-2*margin);
+    var cadre = paper.rect(x, y, w, h, 25).attr({stroke: "none"});
+    return {image:image.image, height:image.height, cadre:cadre};
 };
 
 /**

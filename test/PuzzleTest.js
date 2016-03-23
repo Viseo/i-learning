@@ -70,8 +70,6 @@ describe('Puzzle test suite', function() {
         }
         console.log(quizz.puzzle);
 
-
-
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
         paper.t198.test(625,320,"Votre niveau est désolant... Mais gardez espoir !\nVous avez répondu à 14 questions, dont aucune n'est juste !");

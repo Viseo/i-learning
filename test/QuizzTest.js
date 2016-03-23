@@ -92,15 +92,15 @@ describe('Quizz Test', function() {
         paper.t2.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
         paper.r3.test(50,220,1150,200);
         paper.i7.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
-        paper.t8.test(916.25,1035.5135135135133,"La cerise");
-        paper.i9.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
-        paper.r10.test(632.5,450,567.5,613.5135135135134);
-        paper.t11.test(333.75,1385.27027027027,"La poire");
-        paper.r12.test(50,1078.5135135135133,567.5,613.5135135135134);
-        paper.t13.test(916.25,1385.27027027027,"L'orange");
-        paper.r14.test(632.5,1078.5135135135133,567.5,613.5135135135134);
+        paper.t9.test(916.25,1035.5135135135133,"La cerise");
+        paper.i10.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
+        paper.r11.test(632.5,450,567.5,613.5135135135134);
+        paper.t12.test(333.75,1385.27027027027,"La poire");
+        paper.r13.test(50,1078.5135135135133,567.5,613.5135135135134);
+        paper.t14.test(916.25,1385.27027027027,"L'orange");
+        paper.r15.test(632.5,1078.5135135135133,567.5,613.5135135135134);
         console.log(paper.r15);
-        expect(paper.r10.fill).not.toEqual(paper.r12.fill);
+        expect(paper.r11.fill).not.toEqual(paper.r13.fill);
 
 
     });
@@ -300,23 +300,23 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
-        paper.r199.test(50,220,1150,200);
-        paper.p200.test(65,735,60.00000000000004,32.00000000000002,"grey");
-        paper.p201.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t202.test(280,690.5,"Une divinité féminine est\nune...");
-        paper.i203.test("../resource/millions.png",175.75,445,208.5,208.5);
-        paper.r204.test(115,435,330,292.5);
-        paper.t205.test(280,888.75,"Parmi ces fruits, lequel\npossède un noyau?");
-            paper.r206.test(115,742.5,330,292.5);
-        paper.t207.test(625,581.25,"Traditionnellement, le\njustaucorps est porté par...");
-        paper.r208.test(460,435,330,292.5);
-        paper.t209.test(625,888.75,"Quelle est la capitale de la\nLibye?");
-            paper.r210.test(460,742.5,330,292.5);
-        paper.t211.test(970,581.25,"Un terrain où on n'a rien\nplanté est une terre...");
-        paper.r212.test(805,435,330,292.5);
-        paper.t213.test(970,888.75,"Un galurin est un...");
-        paper.r214.test(805,742.5,330,292.5);
+        paper.t199.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r200.test(50,220,1150,200);
+        paper.p201.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p202.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t203.test(280,690.5,"Une divinité féminine est\nune...");
+        paper.i204.test("../resource/millions.png",175.75,445,208.5,208.5);
+        paper.r205.test(115,435,330,292.5);
+        paper.t206.test(280,888.75,"Parmi ces fruits, lequel\npossède un noyau?");
+        paper.r207.test(115,742.5,330,292.5);
+        paper.t208.test(625,581.25,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r209.test(460,435,330,292.5);
+        paper.t210.test(625,888.75,"Quelle est la capitale de la\nLibye?");
+        paper.r211.test(460,742.5,330,292.5);
+        paper.t212.test(970,581.25,"Un terrain où on n'a rien\nplanté est une terre...");
+        paper.r213.test(805,435,330,292.5);
+        paper.t214.test(970,888.75,"Un galurin est un...");
+        paper.r215.test(805,742.5,330,292.5);
 
     });
 
@@ -346,32 +346,32 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
-        paper.r199.test(50,220,1150,200);
-        paper.p200.test(65,735,60.00000000000004,32.00000000000002,"grey");
-        paper.p201.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t202.test(280,998,"Une divinité féminine est\nune...");
-        paper.i203.test("../resource/millions.png",125,548,310,310);
-        paper.r204.test(115,435,330,600);
-        paper.t205.test(625,735,"Parmi ces fruits, lequel\npossède un noyau?");
-            paper.r206.test(460,435,330,600);
-        paper.t207.test(970,735,"Traditionnellement, le\njustaucorps est porté par...");
-        paper.r208.test(805,435,330,600);
+        paper.t199.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r200.test(50,220,1150,200);
+        paper.p201.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p202.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t203.test(280,998,"Une divinité féminine est\nune...");
+        paper.i204.test("../resource/millions.png",125,548,310,310);
+        paper.r205.test(115,435,330,600);
+        paper.t206.test(625,735,"Parmi ces fruits, lequel\npossède un noyau?");
+        paper.r207.test(460,435,330,600);
+        paper.t208.test(970,735,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r209.test(805,435,330,600);
 
-        onClickMock(paper.p201);
+        onClickMock(paper.p202);
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
-        paper.r199.test(50,220,1150,200);
-        paper.p209.test(65,735,60.00000000000004,32.00000000000002,"black");
-        paper.p210.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t211.test(280,735,"Traditionnellement, le\njustaucorps est porté par...");
-        paper.r212.test(115,435,330,600);
-        paper.t213.test(625,735,"Quelle est la capitale de la\nLibye?");
-            paper.r214.test(460,435,330,600);
-        paper.t215.test(970,735,"Un terrain où on n'a rien\nplanté est une terre...");
-        paper.r216.test(805,435,330,600);
+        paper.t199.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r200.test(50,220,1150,200);
+        paper.p210.test(65,735,60.00000000000004,32.00000000000002,"black");
+        paper.p211.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t212.test(280,735,"Traditionnellement, le\njustaucorps est porté par...");
+        paper.r213.test(115,435,330,600);
+        paper.t214.test(625,735,"Quelle est la capitale de la\nLibye?");
+        paper.r215.test(460,435,330,600);
+        paper.t216.test(970,735,"Un terrain où on n'a rien\nplanté est une terre...");
+        paper.r217.test(805,435,330,600);
 
     });
 
@@ -401,25 +401,24 @@ describe('Quizz Test', function() {
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
-        paper.r199.test(50,220,1150,200);
-        paper.p200.test(65,735,60.00000000000004,32.00000000000002,"grey");
-        paper.p201.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t202.test(625,1007,"Une divinité féminine est une...");
-        paper.i203.test("../resource/millions.png",358,445,534,534);
-        paper.r204.test(115,435,1020,600);
+        paper.t199.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r200.test(50,220,1150,200);
+        paper.p201.test(65,735,60.00000000000004,32.00000000000002,"grey");
+        paper.p202.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t203.test(625,1007,"Une divinité féminine est une...");
+        paper.i204.test("../resource/millions.png",358,445,534,534);
+        paper.r205.test(115,435,1020,600);
 
-        onClickMock(paper.p201);
+        onClickMock(paper.p202);
 
         paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
         paper.r1.test(50,10,1150,200);
-        paper.t198.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
-        paper.r199.test(50,220,1150,200);
-        paper.t0.test(625,110,"Qui veut gagner des millions ? Quizz n°1");
-        paper.p205.test(65,735,60.00000000000004,32.00000000000002,"black");
-        paper.p206.test(1185,735,60.00000000000004,32.00000000000002,"black");
-        paper.t207.test(625,735,"Parmi ces fruits, lequel possède un noyau?");
-        paper.r208.test(115,435,1020,600);
+        paper.t199.test(625,320,"Correct, mais ne relachez pas vos efforts !\nVous avez répondu à 14 questions,  dont 7 sont justes !");
+        paper.r200.test(50,220,1150,200);
+        paper.p206.test(65,735,60.00000000000004,32.00000000000002,"black");
+        paper.p207.test(1185,735,60.00000000000004,32.00000000000002,"black");
+        paper.t208.test(625,735,"Parmi ces fruits, lequel possède un noyau?");
+        paper.r209.test(115,435,1020,600);
 
     });
 
@@ -458,8 +457,8 @@ describe('Quizz Test', function() {
         paper.r14.test(50,521,567.5,56);
         paper.t15.test(916.25,549,"Diablesse");
         paper.r16.test(632.5,521,567.5,56);
-        paper.t17.test(725,658,"Valider");
-        paper.r18.test(650,633,150,50);
+        paper.t17.test(725,617,"Valider");
+        paper.r18.test(650,592,150,50);
 
         onClickMock(quizz.tabQuestions[0].tabAnswer[0].bordure);
         expect(paper.r10.attr("stroke-width")).not.toEqual(5);
@@ -500,13 +499,13 @@ describe('Quizz Test', function() {
         paper.t21.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
         paper.r22.test(50,220,1150,200);
         paper.i26.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
-        paper.t27.test(916.25,1035.5135135135133,"La cerise");
-        paper.i28.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
-        paper.r29.test(632.5,450,567.5,613.5135135135134);
-        paper.t30.test(333.75,1385.27027027027,"La poire");
-        paper.r31.test(50,1078.5135135135133,567.5,613.5135135135134);
-        paper.t32.test(916.25,1385.27027027027,"L'orange");
-        paper.r33.test(632.5,1078.5135135135133,567.5,613.5135135135134);
+        paper.t28.test(916.25,1035.5135135135133,"La cerise");
+        paper.i29.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
+        paper.r30.test(632.5,450,567.5,613.5135135135134);
+        paper.t31.test(333.75,1385.27027027027,"La poire");
+        paper.r32.test(50,1078.5135135135133,567.5,613.5135135135134);
+        paper.t33.test(916.25,1385.27027027027,"L'orange");
+        paper.r34.test(632.5,1078.5135135135133,567.5,613.5135135135134);
 
 
     });
@@ -539,15 +538,15 @@ describe('Quizz Test', function() {
         paper.t21.test(625,320,"Parmi ces fruits, lequel possède un noyau?");
         paper.r22.test(50,220,1150,200);
         paper.i26.test("../resource/pomme.jpg",50,449.99999999999994,567.5,613.5135135135134);
-        paper.t27.test(916.25,1035.5135135135133,"La cerise");
-        paper.i28.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
-        paper.r29.test(632.5,450,567.5,613.5135135135134);
-        paper.t30.test(333.75,1385.27027027027,"La poire");
-        paper.r31.test(50,1078.5135135135133,567.5,613.5135135135134);
-        paper.t32.test(916.25,1385.27027027027,"L'orange");
-        paper.r33.test(632.5,1078.5135135135133,567.5,613.5135135135134);
+        paper.t28.test(916.25,1035.5135135135133,"La cerise");
+        paper.i29.test("../resource/cerise.jpg",642.5,484.43665093665084,547.5,498.6402116402116);
+        paper.r30.test(632.5,450,567.5,613.5135135135134);
+        paper.t31.test(333.75,1385.27027027027,"La poire");
+        paper.r32.test(50,1078.5135135135133,567.5,613.5135135135134);
+        paper.t33.test(916.25,1385.27027027027,"L'orange");
+        paper.r34.test(632.5,1078.5135135135133,567.5,613.5135135135134);
 
-        expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: Comtesse\nDéesse\n");
+        expect(console.log).toHaveBeenCalledWith("Mauvaise réponse!\n  Bonnes réponses: \nComtesse\nDéesse\n");
 
     });
 });

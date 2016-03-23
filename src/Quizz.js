@@ -6,11 +6,11 @@
  *
  * @constructor
  * @param quizz
+ * @param previewMode
  */
 
 
-function Quizz(quizz)
-{
+function Quizz(quizz, previewMode) {
     var self=this;
 
     self._transformation={
@@ -36,6 +36,12 @@ function Quizz(quizz)
             var tmp = new Question(it, self);
             self.tabQuestions.push(tmp);
         });
+    }
+
+    if(previewMode) {
+        self.previewMode = previewMode;
+    } else {
+        self.previewMode = false;
     }
 
     if(quizz.puzzleRows) {
@@ -136,25 +142,25 @@ function Quizz(quizz)
     var displayScore = function(color){
         var autoColor;
         switch(self.score) {
-            case 0:
-                self.finalMessage="Votre niveau est désolant... Mais gardez espoir !";
-                nom="dont aucune n'est juste !";
-                autoColor={r:255,g:17,b:0};
-                break;
-            case 1:
-                self.finalMessage="Vous avez encore de nombreux progrès à faire.";
-                nom="dont une seule est juste.";
-                autoColor={r:255,g:100,b:0};
-                break;
             case self.tabQuestions.length:
                 self.finalMessage="Impressionant !";
                 nom=" et toutes sont justes !";
                 autoColor={r:100,g:255,b:100};
                 break;
+            case 0:
+                self.finalMessage="Votre niveau est désolant... Mais gardez espoir !";
+                nom="dont aucune n'est juste !";
+                autoColor={r:255,g:17,b:0};
+                break;
             case (self.tabQuestions.length-1):
                 self.finalMessage="Pas mal du tout !";
                 nom=" et toutes (sauf une...) sont justes !";
                 autoColor={r:200,g:255,b:0};
+                break;
+            case 1:
+                self.finalMessage="Vous avez encore de nombreux progrès à faire.";
+                nom="dont une seule est juste.";
+                autoColor={r:255,g:100,b:0};
                 break;
             default:
                 self.finalMessage="Correct, mais ne relachez pas vos efforts !";
@@ -298,23 +304,35 @@ function Quizz(quizz)
                 });*/
                 self.tabQuestions[self.currentQuestionIndex].displaySet.remove();
             }
-            if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
-                self.currentQuestionIndex++;
+            if(self.previewMode) {
+                if(self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
+                    self.tabQuestions[0].reset();
+                }
+
+                self.currentQuestionIndex = 0;
+
                 self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                // self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
-                //  self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
-            } else //--> fin du tableau, dernière question
-            {
-                console.log("Final score: " + self.score);
-                self.displayResult();
+            } else {
+                if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
+                    self.currentQuestionIndex++;
+                    self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                        self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                        self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
+                    self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+                    self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+                } else //--> fin du tableau, dernière question
+                {
+                    console.log("Final score: " + self.score);
+                    self.displayResult();
+                }
             }
-
-        }else{
+        } else {
             console.log("No next question, end of the array\n");
         }
     };
@@ -334,6 +352,4 @@ function Quizz(quizz)
         displayScore(color);
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
-
 }
-
