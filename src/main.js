@@ -5,10 +5,12 @@
 //var paper=Raphael(0,0,1500,1500);
 
 var imageController = ImageController();
-paper=Raphael(0,0,document.body.clientWidth,1500);
+//paper=Raphael(0,0,document.body.clientWidth,1500);
 var asyncTimerController=AsyncTimerController();
-var piste = new Piste(0,0,document.body.clientWidth,1500);
-var glass = new Glass(0,0,document.body.clientWidth,1500);
+//var piste = new Piste(0,0,document.body.clientWidth,1500);
+//var glass = new Glass(0,0,document.body.clientWidth,1500);
+var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+var paper = papers.paper;
 
 function main() {
 
@@ -26,7 +28,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(200,200,1200,1200);
+    quizz.run(50,50,1200,1200);
 
     setTimeout(function(){
         quizz.displaySet.getTarget(0,0);
