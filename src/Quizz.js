@@ -258,39 +258,7 @@ function Quizz(quizz, previewMode) {
         var drag = null;
         var target = null;
         self=this;
-        self.glass = paper.rect(0,0,1200,1200);
-        self.glass.attr({'fill':'white'});
-        self.glass.attr({'opacity':0.001});
-        self.displaySet.push(self.glass);
-        self.glass.node.onmousedown = function(event) {
-            target = getTarget(event.clientX, event.clientY);
-            console.log(target);
-            drag = target;
-            // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (target && target.content.node.onmousedown) {
-                target.content.node.onmousedown(event);
-            }
-        };
-        /*self.glass.node.onmousemove = function(event) {
-            var target = drag||getTarget(event.clientX, event.clientY);
-            if (target && target.component.onmousemove) {
-                target.component.onmousemove(event);
-            }
-        };*/
-        self.glass.node.onmouseup = function(event) {
-            console.log("mouseup");
-            target = drag||getTarget(event.clientX, event.clientY);
-            if (target) {
-                if (target.content.node.onmouseup) {
-                    target.content.node.onmouseup(event);
-                }
-                if (target.content.node.onclick) {
-                    console.log("onclick");
-                    target.content.node.onclick(event);
-                }
-            }
-            drag = null;
-        };
+
 
 
     };

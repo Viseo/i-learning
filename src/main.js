@@ -7,6 +7,8 @@
 var imageController = ImageController();
 paper=Raphael(0,0,document.body.clientWidth,1500);
 var asyncTimerController=AsyncTimerController();
+var piste = new Piste(0,0,document.body.clientWidth,1500);
+var glass = new Glass(0,0,document.body.clientWidth,1500);
 
 function main() {
 
