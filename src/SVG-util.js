@@ -344,27 +344,28 @@ var drawArrow = function(x,y,w,h,side,handler){
 
 function insidePolygon(x, y, element) {
     console.log("inside");
-    return true;
+    var rand = Math.random()*100;
+    return (rand =>90);
+
     var local = element.localPoint(x, y);
     console.log(element.label);
     return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
         && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
 }
 
-var set = Raphael.st;
-set.prototype.getTarget=function(clientX,clientY){
+Raphael.st.getTarget=function(clientX,clientY){
     var self =this;
-    self.forEach(function (el) {
-        var item = el.getTarget(clientX,clientY);
-        if (item){
-            return item;
+    var el = {};
+    for(var i = 0; i<self.items.length; i++) {
+        el = self[i].getTarget(clientX,clientY);
+        if(el) {
+            return el;
         }
-    });
+    }
     return null;
 };
 
-var el = Raphael.el;
-el.prototype.getTarget=function(clientX,clientY){
+Raphael.el.getTarget=function(clientX,clientY){
     var inside = insidePolygon(clientX,clientY,this);
     if (inside){
         return this;
