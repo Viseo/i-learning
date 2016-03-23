@@ -21,8 +21,8 @@
         var imageController = ImageController();
         var asyncTimerController = AsyncTimerController();
         paper=Raphael(0,0,document.body.clientWidth,970);
-        //var quizz = new Quizz(myQuizz);
-        var questionCreator = new QuestionCreator();
+        var quizz = new Quizz(myQuizz);
+        var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);
         questionCreator.displayQuestionCreator(20, 70, document.body.clientWidth-50, 800);
         questionCreator.displayPreviewButton(20, 890, document.body.clientWidth-50, 75);
         questionCreator.displayQuizzInfo(20, 20, document.body.clientWidth-50, 50);
