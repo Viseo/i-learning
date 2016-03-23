@@ -240,7 +240,7 @@ var Question = function (question,quizz) {
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
 
-            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2));
+            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2+2*margin));
             self.validatedisplaySet.transform(t);
 
             //button. onclick
@@ -304,7 +304,7 @@ var Question = function (question,quizz) {
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);
-            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2));
+            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2+2*margin));
             self.resetDisplaySet.transform(t);
 
             self.reset = function(){
