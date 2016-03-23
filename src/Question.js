@@ -61,6 +61,7 @@ var Question = function (question,quizz) {
     if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
             var tmp = new Answer(it);
+            tmp.parent=self;
             self.tabAnswer.push(tmp);
             if(tmp.correct)
             {
@@ -366,6 +367,31 @@ var Question = function (question,quizz) {
 
        // console.log("score: "+self.parentQuizz.score);
     }
+
+    self.localPoint=function(){
+        var point = getPoint(arguments);
+        if (this.parent) {
+            point = this.parent.localPoint(point);
+            return {
+                x:point.x-this.x,
+                y:point.y-this.y
+            };
+        }
+        else {
+            return {
+                x:point.x,//-this._transformation.param1,//-svgr.boundingRect(this.component).left,
+                y:point.y//-this._transformation.param2//-svgr.boundingRect(this.component).top
+            };
+        }
+    };
+    function getPoint(args) {
+        if (args[0]!==undefined && (typeof args[0]==='number')) {
+            return {x:args[0], y:args[1]}
+        }
+        else {
+            return args[0];
+        }
+    };
 
 };
 
