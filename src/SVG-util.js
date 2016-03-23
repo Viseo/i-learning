@@ -341,3 +341,32 @@ var drawArrow = function(x,y,w,h,side,handler){
     //arrowSet.transform('...'+s)
     return arrowSet;
 };
+
+function insidePolygon(x, y, element) {
+    console.log("inside");
+    return true;
+    var local = element.localPoint(x, y);
+    console.log(element.label);
+    return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
+        && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+}
+
+var set = Raphael.st;
+set.prototype.getTarget=function(clientX,clientY){
+    var self =this;
+    self.forEach(function (el) {
+        var item = el.getTarget(clientX,clientY);
+        if (item){
+            return item;
+        }
+    });
+    return null;
+};
+
+var el = Raphael.el;
+el.prototype.getTarget=function(clientX,clientY){
+    var inside = insidePolygon(clientX,clientY,this);
+    if (inside){
+        return this;
+    }
+};

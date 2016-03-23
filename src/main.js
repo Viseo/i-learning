@@ -26,6 +26,11 @@ function main() {
     quizz.puzzleRows=3;
     quizz.run(200,200,1200,1200);
 
+    setTimeout(function(){
+        quizz.displaySet.getTarget(0,0);
+    },2000);
+
+
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
      puzzle.display(20, 20, 600, 600, 0);*/
