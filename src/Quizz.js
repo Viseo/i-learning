@@ -12,6 +12,7 @@
 function Quizz(quizz)
 {
     var self=this;
+
     self._transformation={
       type:'',param1:'',param2:''
     };
@@ -187,6 +188,8 @@ function Quizz(quizz)
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
+
+
         var object = displayText(self.title, -w/2,-h/2,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
@@ -204,7 +207,75 @@ function Quizz(quizz)
 
         self.nextQuestion();
 
+        function getTarget(clientX, clientY){
+            var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            var scrollLeft = (window.pageXOffset !== undefined) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+            var target = null;
+            // si la page du navigateur est trop zoomee et qu'un ascenseur apparait
+            // il faut ajouter le deplacement de l'ascenseur à la position de la souris
+            if (scrollTop>0){
+                clientY+=scrollTop;
+            }
+            if (scrollLeft>0){
+                clientX+=scrollLeft;
+            }
+            var element = self.tabQuestions[self.currentQuestionIndex];
+            element.tabAnswer.forEach(function(reponse){
+                var inside = insidePolygon(clientX,clientY,reponse);
+                if (inside){
+                    target=reponse;
+                }
+            });
+            return target;
+        };
+
+        function insidePolygon(x, y, element) {
+            var local = element.localPoint(x, y);
+            console.log(element.label);
+            return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
+                && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+        };
+
+        var drag = null;
+        var target = null;
+        self=this;
+        self.glass = paper.rect(0,0,1200,1200);
+        self.glass.attr({'fill':'white'});
+        self.glass.attr({'opacity':0.001});
+        self.displaySet.push(self.glass);
+        self.glass.node.onmousedown = function(event) {
+            target = getTarget(event.clientX, event.clientY);
+            console.log(target);
+            drag = target;
+            // Rajouter des lignes pour target.bordure et target.image si existe ?
+            if (target && target.content.node.onmousedown) {
+                target.content.node.onmousedown(event);
+            }
+        };
+        /*self.glass.node.onmousemove = function(event) {
+            var target = drag||getTarget(event.clientX, event.clientY);
+            if (target && target.component.onmousemove) {
+                target.component.onmousemove(event);
+            }
+        };*/
+        self.glass.node.onmouseup = function(event) {
+            console.log("mouseup");
+            target = drag||getTarget(event.clientX, event.clientY);
+            if (target) {
+                if (target.content.node.onmouseup) {
+                    target.content.node.onmouseup(event);
+                }
+                if (target.content.node.onclick) {
+                    console.log("onclick");
+                    target.content.node.onclick(event);
+                }
+            }
+            drag = null;
+        };
+
+
     };
+
     self.nextQuestion=function(){
         if(self.displaySet[self.displaySet.length-1]) {
             var type = self.displaySet[self.displaySet.length - 1].type;
@@ -250,4 +321,6 @@ function Quizz(quizz)
 
         //self.puzzle.display(cadreResult.x,cadreResult.y+cadreResult.h+15,cadreResult.w,600,0);
     };
+
 }
+

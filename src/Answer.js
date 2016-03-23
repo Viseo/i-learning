@@ -130,4 +130,32 @@ var Answer = function (answer) {
         }
 
     };
+
+
+    self.localPoint=function(){
+        var point = getPoint(arguments);
+        if (self.parent) {
+            point = self.parent.localPoint(point);
+            console.log(self);
+            console.log(self._transformation);
+            return {
+                x:point.x-self._transformation.param1,
+                y:point.y-self._transformation.param2
+            };
+        }
+        else {
+            return {
+                //x:point.x-svgr.boundingRect(this.component).left, ??
+                //y:point.y-svgr.boundingRect(this.component).top ??
+            };
+        }
+    };
+    function getPoint(args) {
+        if (args[0]!==undefined && (typeof args[0]==='number')) {
+            return {x:args[0], y:args[1]}
+        }
+        else {
+            return args[0];
+        }
+    };
 };
