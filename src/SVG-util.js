@@ -332,3 +332,122 @@ var drawArrow = function(x,y,w,h,side,handler){
     //arrowSet.transform('...'+s)
     return arrowSet;
 };
+
+Function.prototype.clone = function() {
+    var that = this;
+    var temp = function temporary() { return that.apply(this, arguments); };
+    for(var key in this) {
+        if (this.hasOwnProperty(key)) {
+            temp[key] = this[key];
+        }
+    }
+    return temp;
+};
+
+/// Modifying Raphael.js prototype to add Local/GlobalPoint to various elements
+
+/// Shape, commun à tout le monde
+
+
+
+function getPoint(args) {
+    if (args[0]!==undefined && (typeof args[0]==='number')) {
+        return {x:args[0], y:args[1]}
+    }
+    else {
+        return arguments[0];
+    }
+}
+
+
+paper1.globalToLocal = function() {
+    var point = getPoint(arguments);
+
+        return {
+            x:point.x-this.x,
+            y:point.y-this.y
+        };
+
+};
+paper1.localToGlobal = function() {
+    var point = getPoint(arguments);
+        return {
+            x:point.x+this.x,
+            y:point.y+this.y
+        };
+
+};
+paper1.inside = function(x, y) {
+    var local = this.localToGlobal(x, y);
+    return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
+};
+
+
+Raphael.st.oldPush=function(){};
+Raphael.st.oldPush=Raphael.st.push.clone();
+Raphael.st.parent=paper1;
+Raphael.st.push = function(obj) {
+    var self=this;
+    self.oldPush(obj);
+    obj.parent=self;
+};
+Raphael.st.x=paper1.x;
+Raphael.st.y=paper1.y;
+Raphael.st.oldTransform=Raphael.st.transform.clone();
+Raphael.st.transform=function(str){
+    var pointless=str.split('.');
+  var type=pointless[pointless.length-1].charAt(0);
+  var tmp=  str.split(type);
+    var vals=tmp[1].split(',');
+    this.x=parseInt(vals[0]);
+    this.y=parseInt(vals[1]);
+
+    this.oldTransform(str);
+
+};
+
+Raphael.st.globalToLocal = function() {
+    var point = getPoint(arguments);
+    point = {x:point.x-this.x, y:point.y-this.y};
+    return this.parent ? this.parent.globalToLocal(point.x,point.y) : null;
+};
+
+Raphael.st.localToGlobal = function() {
+    var point = getPoint(arguments);
+    point = this.parent ? this.parent.localToGlobal(point.x,point.y) : null;
+    if (point) {
+        point = {x:point.x+this.x , y:this.y+point.y };
+    }else{
+        point = getPoint(arguments);
+    }
+    return point;
+};
+
+//rect
+Raphael.el.parent=paper1;
+Raphael.el.getTarget = function(x, y) {
+    if ((!this._opacity || this._opacity>0) && this.fillColor &&this.fillColor.length>0) {
+        return this.inside(x, y) ? this : null;
+    }
+    return null;
+};
+
+Raphael.el.globalToLocal = function() {
+    var point = getPoint(arguments);
+    //return this.parent.globalToLocal(point.x+this.attr('x'), point.y+this.attr('y'));
+    return this.parent.globalToLocal(point.x, point.y);
+};
+Raphael.el.localToGlobal = function() {
+    var point = getPoint(arguments);
+    point = this.parent.localToGlobal(point.x,point.y);
+    //return point ? {x:point.x-this.attr('x'), y:point.y-this.attr('y')} : null;
+    return point ? {x:point.x-0, y:point.y-0} : null;// la référence est au centre du rectangle, pas en haut à gauche
+};
+/*
+Raphael.rect.inside = function(x, y) {
+    var local = this.localToGlobal(x, y);
+    return local.x>=-this.width/2 && local.x<=this.width/2
+        && local.y>=-this.height/2 && local.y<=this.height/2;
+};
+*/
+

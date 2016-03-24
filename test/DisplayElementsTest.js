@@ -2,7 +2,7 @@
  * Created by qde3485 on 02/03/16.
  */
 
-var paper;
+//var paper;
 
 describe('Display Element of Question and Answer', function () {
     beforeEach(function () {
