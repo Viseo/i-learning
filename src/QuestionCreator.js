@@ -8,6 +8,11 @@ var QuestionCreator = function (question) {
 
     self.displaySet = paper.set();
     self.margin = 15;
+    self.headerHeigt=0.1;
+    self.questionHeight=0.2;
+    self.reponseHeight=0.7;
+    var larg = (window.innerWidth);
+    var haut = (window.innerHeight);
 
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;
     self.questionNameValidInput = true;
@@ -46,9 +51,14 @@ var QuestionCreator = function (question) {
     self.formationName = "Hibernate";
 
     self.display = function (x, y, w, h) {
-        self.displayQuizzInfo(x, y, w*0.5, 10);
+        /*self.displayQuizzInfo(x, y, w*0.5, 10);
         self.displayQuestionCreator(x, y+50, w, h-150);
-        self.displayPreviewButton(x, y+50+h-150+self.margin, w, 75);
+        self.displayPreviewButton(x, y+50+h-150+self.margin, w, 75);*/
+        var quizzInfoHeight=Math.floor(haut*self.headerHeigt);
+        var questionCreatorHeight=Math.floor(haut*(1-self.headerHeigt)-75);
+        self.displayQuizzInfo(x, y, w*0.5,quizzInfoHeight);
+        self.displayQuestionCreator(x,quizzInfoHeight, w, questionCreatorHeight-2*self.margin);
+        self.displayPreviewButton(x,quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
@@ -65,12 +75,13 @@ var QuestionCreator = function (question) {
         }
         if(h){
             self.h = h;
+            //self.h=innerHeight*self.questionHeight;
         }
 
         self.coordinatesAnswers.x = self.x+self.margin;
         self.coordinatesAnswers.y = self.y+2*self.margin+self.h*0.25;
         self.coordinatesAnswers.w = self.w-2*self.margin;
-        self.coordinatesAnswers.h = self.h*0.75-3*self.margin;
+        self.coordinatesAnswers.h = h*0.75-3*self.margin;
 
         // bloc Question
         self.questionBlock = {};
