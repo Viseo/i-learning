@@ -464,13 +464,12 @@ Raphael.rect.inside = function(x, y) {
 
 
 function insidePolygon(x, y, element) {
-    var rand = Math.random()*100;
-    return (rand >90);
+    //var rand = Math.random()*100;
+    //return (rand >90);
 
-    var local = element.localPoint(x, y);
-    console.log(element.label);
-    return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
-        && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+    var local = element.globalToLocal(x, y);
+    return local.x>=-element.attrs.width/2 && local.x<=element.attrs.width/2
+        && local.y>=-element.attrs.height/2 && local.y<=element.attrs.height/2;
 }
 
 Raphael.st.getTarget=function(clientX,clientY){

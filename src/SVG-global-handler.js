@@ -28,12 +28,12 @@ var Paper = function (x, y, w, h) {
         }
     };
 
-    self.glass.area.node.onmousemove = function(event) {
-        self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
-        if (self.target && self.target.node.onmousemove) {
-            self.target.node.onmousemove(event);
-        }
-    };
+    //self.glass.area.node.onmousemove = function(event) {
+    //    self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
+    //    if (self.target && self.target.node.onmousemove) {
+    //        self.target.node.onmousemove(event);
+    //    }
+    //};
 
     self.glass.area.node.onmouseup = function(event) {
         self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
