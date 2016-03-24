@@ -25,35 +25,41 @@ var myBib= {
         };
 
 
+var questionWithLabelImageAndMultipleAnswers = {
+label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
+    tabAnswer: [
+    {label:"Comtesse",imageSrc: null,bCorrect:false,
+        colorBordure: myColors.green,bgColor:myColors.grey},
+    {label:"Déesse",imageSrc:null,bCorrect:true,
+        colorBordure:myColors.green,bgColor:myColors.blue},
+    {label:"Bougresse",imageSrc:null,bCorrect:false,
+        colorBordure:myColors.green,bgColor:myColors.grey},
+    {label:"Diablesse",imageSrc:null,bCorrect:false,
+        colorBordure:myColors.green,bgColor:myColors.grey}
+],
+    nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green};
+
+var myQuestion2 =
+{label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
+    tabAnswer: [
+        {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
+            colorBordure: myColors.green,bgColor:myColors.grey},
+        {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
+            colorBordure:myColors.green,bgColor:myColors.blue},
+        {label:"La poire",imageSrc:null,bCorrect:false,
+            colorBordure:myColors.green,bgColor:myColors.grey},
+        {label:"L'orange",imageSrc:null,bCorrect:false,
+            colorBordure:myColors.green,bgColor:myColors.grey}
+    ],
+    nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple};
+
 var myQuizz={
     title:"Qui veut gagner des millions ? Quizz n°1",
+    bgColor:myColors.raspberry,
+    puzzleLines:3,
+    puzzleRows:1,
     tabQuestions:[
-        {label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
-            tabAnswer: [
-                {label:"Comtesse",imageSrc: null,bCorrect:false,
-                    colorBordure: myColors.green,bgColor:myColors.grey},
-                {label:"Déesse",imageSrc:null,bCorrect:true,
-                    colorBordure:myColors.green,bgColor:myColors.blue},
-                {label:"Bougresse",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey},
-                {label:"Diablesse",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey}
-            ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
-
-        {label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
-            tabAnswer: [
-                {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
-                    colorBordure: myColors.green,bgColor:myColors.grey},
-                {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
-                    colorBordure:myColors.green,bgColor:myColors.blue},
-                {label:"La poire",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey},
-                {label:"L'orange",imageSrc:null,bCorrect:false,
-                    colorBordure:myColors.green,bgColor:myColors.grey}
-            ],
-            nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
-
+        questionWithLabelImageAndMultipleAnswers, myQuestion2,
         {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null,
             tabAnswer: [
                 {label:"Les danseuses",imageSrc: null,bCorrect:true,
@@ -210,8 +216,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple}
 
-    ],
-    bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
+    ]
 };
 
 var myQuizzDemo={

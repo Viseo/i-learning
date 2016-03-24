@@ -5,6 +5,7 @@
 
 var QuestionCreator = function (question) {
     var self = this;
+    var MAX_ANSWERS = 8;
 
     self.displaySet = paper.set();
     displaySet.push(self.displaySet);
@@ -51,10 +52,24 @@ var QuestionCreator = function (question) {
     self.coordinatesAnswers = {x:0, y:0, w:0, h:0};
     self.formationName = "Hibernate";
 
+    self.checkInputTextArea = function (textarea, isValidElement) {
+        if(textarea.value.match(self.regex)) {
+            textarea.onblur = onblur;
+            textarea.style.border = "none";
+            self[isValidElement] = true;
+        } else {
+            textarea.style.border = "solid #FF0000";
+            textarea.focus();
+            self[isValidElement] = false;
+            textarea.onblur = function () {
+                asyncTimerController.timeout(function () {
+                    textarea.focus();
+                }, 0);
+            }
+        }
+    };
+
     self.display = function (x, y, w, h) {
-        /*self.displayQuizzInfo(x, y, w*0.5, 10);
-        self.displayQuestionCreator(x, y+50, w, h-150);
-        self.displayPreviewButton(x, y+50+h-150+self.margin, w, 75);*/
         var quizzInfoHeight=Math.floor(haut*self.headerHeigt);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeigt)-75);
         self.displayQuizzInfo(x, y, w*0.5,quizzInfoHeight);
@@ -65,30 +80,13 @@ var QuestionCreator = function (question) {
     self.displayQuestionCreator = function (x, y, w, h) {
         self.displaySetQuestionCreator.remove();
 
-        if(x) {
-            self.x = x;
-        }
-        if(y){
-            self.y = y;
-        }
-        if(w){
-            self.w = w;
-        }
-        if(h){
-            self.h = h;
-            //self.h=innerHeight*self.questionHeight;
-        }
-
-        self.coordinatesAnswers.x = self.x+self.margin;
-        self.coordinatesAnswers.y = self.y+2*self.margin+self.h*0.25;
-        self.coordinatesAnswers.w = self.w-2*self.margin;
-        self.coordinatesAnswers.h = h*0.75-3*self.margin;
-
-        // bloc Question
-        self.questionBlock = {};
-        self.questionBlock.rect = paper.rect(self.x, self.y, self.w, self.h).attr("fill", "none");
-        self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
-        self.questionBlock.title.cadre.attr("fill-opacity", 0);
+        var showTitle = function () {
+            self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
+            self.questionBlock.title.cadre.attr("fill-opacity", 0);
+            self.questionBlock.title.content.node.ondblclick = dblclickEdition;
+            self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
+            self.displaySetQuestionCreator.push(self.questionBlock.title.content, self.questionBlock.title.cadre);
+        };
 
         var dblclickEdition = function () {
             self.questionBlock.title.content.remove();
@@ -102,45 +100,34 @@ var QuestionCreator = function (question) {
                 self.label = textarea.value;
                 textarea.remove();
                 self.questionBlock.title.cadre.remove();
-                self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
-                self.questionBlock.title.cadre.attr("fill-opacity", 0);
-                self.questionBlock.title.content.node.ondblclick = dblclickEdition;
-                self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
-                self.displaySetQuestionCreator.push(self.questionBlock.title.content);
-                self.displaySetQuestionCreator.push(self.questionBlock.title.cadre);
+                showTitle();
             };
 
             textarea.oninput = function () {
-                if(textarea.value.match(self.regex)) {
-                    textarea.onblur = onblur;
-                    textarea.style.border = "none";
-                    self.questionNameValidInput = true;
-                } else {
-                    textarea.style.border = "solid #FF0000";
-                    textarea.focus();
-                    self.questionNameValidInput = false;
-                    textarea.onblur = function () {
-                        asyncTimerController.timeout(function () {
-                            textarea.focus();
-                        }, 0);
-                    }
-                }
+                self.checkInputTextArea(textarea, "questionNameValidInput");
             };
             textarea.onblur = onblur;
 
         };
 
+        x && (self.x = x);
+        y && (self.y = y);
+        w && (self.w = w);
+        h && (self.h = h);
+        self.coordinatesAnswers = {
+            x: self.x+self.margin,
+            y:self.y+2*self.margin+self.h*0.25,
+            w: self.w-2*self.margin,
+            h: h*0.75-3*self.margin
+        };
 
-        self.questionBlock.title.content.node.ondblclick = dblclickEdition;
-        self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
-
+        // bloc Question
+        self.questionBlock = {rect: paper.rect(self.x, self.y, self.w, self.h).attr("fill", "none")};
+        showTitle();
         self.displaySetQuestionCreator.push(self.questionBlock.rect);
-        self.displaySetQuestionCreator.push(self.questionBlock.title.content);
-        self.displaySetQuestionCreator.push(self.questionBlock.title.cadre);
 
         // bloc Answers
-        self.answersBlock = {};
-        if(self.tabAnswer.length !== 8) {
+        if(self.tabAnswer.length !== MAX_ANSWERS) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
@@ -148,7 +135,6 @@ var QuestionCreator = function (question) {
         self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
         });
-        //self.displaySetQuestionCreator.push(self.puzzle.displaySet);
     };
     self.displayQuizzInfo = function (x, y, w, h) {
         self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
@@ -170,20 +156,7 @@ var QuestionCreator = function (question) {
             };
 
             textarea.oninput = function () {
-                if(textarea.value.match(self.regex)) {
-                    textarea.onblur = onblur;
-                    textarea.style.border = "none";
-                    self.quizzNameValidInput = true;
-                } else {
-                    textarea.style.border = "solid #FF0000";
-                    textarea.focus();
-                    self.quizzNameValidInput = false;
-                    textarea.onblur = function () {
-                        asyncTimerController.timeout(function () {
-                            textarea.focus();
-                        }, 0);
-                    }
-                }
+                self.checkInputTextArea(textarea, "quizzNameValidInput");
             };
             textarea.onblur = onblur;
         };
@@ -191,8 +164,7 @@ var QuestionCreator = function (question) {
         self.quizzLabel = paper.text(x+2, y+30, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
         self.quizzBorder = paper.rect(x, y+20, self.quizzLabel.getBBox().width+4, 20);
         self.quizzLabel.node.ondblclick = dblclickEdition;
-        self.displaySetQuizzInfo.push(self.quizzLabel);
-        self.displaySetQuizzInfo.push(self.quizzBorder);
+        self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
     };
 
     self.displayPreviewButton = function (x, y, w, h) {
