@@ -58,11 +58,14 @@ var Answer = function (answer) {
         self.imageLoaded = true;
     }
 
-    if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
-        self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
-    }
-    else {
-        self.rgbBordure = "black";
+    if(self.label) {
+        if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
+            self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
+        } else {
+            self.rgbBordure = "black";
+        }
+    } else {
+        self.rgbBordure = "none";
     }
 
     if(answer.bgColor && !isNaN(parseInt(answer.bgColor.r)) && !isNaN(parseInt(answer.bgColor.g)) && !isNaN(parseInt(answer.bgColor.b))) {
@@ -118,8 +121,11 @@ var Answer = function (answer) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            self.image = displayImage(self.imageSrc, self.image,  -w/2, -h/2, w, h).image;
+            var obj = displayImageWithBorder(self.imageSrc, self.image, x, y, w, h);
+            self.image = obj.image;
+            self.bordure = obj.cadre;
             self.displaySet.push(self.image);
+            self.displaySet.push(self.bordure);
             var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
             self.displaySet.transform(t);
         }

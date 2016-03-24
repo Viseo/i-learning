@@ -6,8 +6,7 @@
  *
  * @param x
  * @param y
- * @param w
- * @param h
+ * @param size
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
@@ -24,12 +23,15 @@ var displayCheckbox = function (x, y, size, sender) {
     };
 
     if(sender.bCorrect) {
-        obj.checked = paper.path([
-            ["M", x+.2*size,y+.4*size],
-            ["l",.2*size,.3*size],
-            ["l",.4*size,-.5*size]]).attr({"stroke-width":3});
+        var path = "M " + (x+.2*size) + "," + (y+.4*size) +
+            "l " + (.2*size) + "," + (.3*size) +
+            "l " + (.4*size) + "," + (-.5*size);
+
+        obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
+        sender.displaySet.push(obj.checked);
     }
+    sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
 
     return obj;
@@ -63,6 +65,13 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgb
     text.toFront();
 
     return {cadre: cadre, image: image.image,  text: text};
+};
+
+var displayImageWithBorder = function (imageSrc, imageObj, x, y, w, h) {
+    var margin = 10;
+    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-2*margin);
+    var cadre = paper.rect(x, y, w, h, 25).attr({stroke: "none"});
+    return {image:image.image, height:image.height, cadre:cadre};
 };
 
 /**
@@ -197,7 +206,15 @@ var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
             // it fits in a new line
             else {
                 // we add the word in a new line
+                var tmpText = tempText;
                 tempText += "\n" + words[i];
+                t.attr("text", tmpStr);
+                // test if it fits in height
+                if (t.getBBox().height > h - margin) {
+                    // it doesn't : break
+                    tempText = tmpText.substring(0, tmpText.length-3) + "...";
+                    break;
+                }
             }
         } else {
             // it fits in the current line
@@ -311,8 +328,7 @@ var drawArrow = function(x,y,w,h,side,handler){
     arrowSet.push(chevron);
 
 
-    if(handler)
-    {
+    if(handler) {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
         chevron.node.onclick=handler;
     }else{
@@ -425,12 +441,6 @@ Raphael.st.localToGlobal = function() {
 
 //rect
 Raphael.el.parent=paper1;
-Raphael.el.getTarget = function(x, y) {
-    if ((!this._opacity || this._opacity>0) && this.fillColor &&this.fillColor.length>0) {
-        return this.inside(x, y) ? this : null;
-    }
-    return null;
-};
 
 Raphael.el.globalToLocal = function() {
     var point = getPoint(arguments);
@@ -451,3 +461,33 @@ Raphael.rect.inside = function(x, y) {
 };
 */
 
+
+
+function insidePolygon(x, y, element) {
+    var rand = Math.random()*100;
+    return (rand >90);
+
+    var local = element.localPoint(x, y);
+    console.log(element.label);
+    return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
+        && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+}
+
+Raphael.st.getTarget=function(clientX,clientY){
+    var el = {};
+    for(var i = 0; i<this.items.length; i++) {
+        el = this[i].getTarget(clientX,clientY);
+        if(el) {
+            return el;
+        }
+    }
+    return null;
+};
+
+Raphael.el.getTarget=function(clientX,clientY){
+    var inside = insidePolygon(clientX,clientY,this);
+    if (inside){
+        return this;
+    }
+    return null;
+};

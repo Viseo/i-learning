@@ -11,6 +11,9 @@ paper1=Raphael(x,y,document.body.clientWidth,1500);
 paper1.x=x;
 paper1.y=y;
 var asyncTimerController=AsyncTimerController();
+var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+var paper = papers.paper;
+var displaySet = papers.displaySet;
 
 function main() {
 

@@ -39,6 +39,10 @@ var onClickMock = function (obj, x, y) {
     obj.node.onclick({clientX:x, clientY:y});
 };
 
+var onDblclickMock = function(obj, x, y){
+    obj.node.ondblclick({clientX:x, clientY:y});
+};
+
 var AsyncTimerRuntime = {
     timers: {},
     count: 0,

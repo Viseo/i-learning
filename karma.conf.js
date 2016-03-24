@@ -25,6 +25,8 @@ module.exports = function(config) {
       'src/Question.js',
       'src/Puzzle.js',
       'src/Quizz.js',
+      'src/QuestionCreator.js',
+      'src/EmptyElement.js',
       'test/*.js'
     ],
 

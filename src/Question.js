@@ -63,8 +63,7 @@ var Question = function (question,quizz) {
             var tmp = new Answer(it);
             tmp.parent=self;
             self.tabAnswer.push(tmp);
-            if(tmp.correct)
-            {
+            if(tmp.correct) {
                self.rightAnswers.push(tmp);
             }
 
@@ -76,6 +75,11 @@ var Question = function (question,quizz) {
     }
 
     self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
+    if(self.tabAnswer.length%self.rows === 0) {
+        self.lines=Math.floor(self.tabAnswer.length/self.rows);
+    } else {
+        self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
+    }
 
     if (question.colorBordure && !isNaN(parseInt(question.colorBordure.r)) && !isNaN(parseInt(question.colorBordure.g)) && !isNaN(parseInt(question.colorBordure.b))) {
         self.rgbBordure = "rgb(" + question.colorBordure.r + ", " + question.colorBordure.g + ", " + question.colorBordure.b + ")";
@@ -236,7 +240,7 @@ var Question = function (question,quizz) {
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
 
-            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2));
+            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2+2*margin));
             self.validatedisplaySet.transform(t);
 
             //button. onclick
@@ -269,7 +273,14 @@ var Question = function (question,quizz) {
                     self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
                     var reponseD="";
                     self.rightAnswers.forEach(function(e){
-                        reponseD+= e.label+"\n";
+                        if(e.label) {
+                            reponseD+= e.label+"\n";
+                        }
+                        else if(e.imageSrc)
+                        {
+                            var tab=e.imageSrc.split('/');
+                            reponseD+= tab[(tab.length-1)]+"\n";
+                        }
                     });
                     console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
                 }
@@ -293,10 +304,10 @@ var Question = function (question,quizz) {
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);
-            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2));
+            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2+2*margin));
             self.resetDisplaySet.transform(t);
 
-            var reset = function(){
+            self.reset = function(){
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
                         e.selected=false;
@@ -308,8 +319,8 @@ var Question = function (question,quizz) {
                     self.resetButton.cadre.attr("stroke","grey");
                 }
             };
-            self.resetButton.content.node.onclick=reset;
-            self.resetButton.cadre.node.onclick=reset;
+            self.resetButton.content.node.onclick=self.reset;
+            self.resetButton.cadre.node.onclick=self.reset;
         }
 
     };
@@ -335,9 +346,17 @@ var Question = function (question,quizz) {
             self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
             var reponseD="";
             self.rightAnswers.forEach(function(e){
-               reponseD+= e.label+"\n";
+               if(e.label)
+               {
+                   reponseD+= e.label+"\n";
+               }
+                else if(e.imageSrc)
+               {
+                   var tab=e.imageSrc.split('/');
+                   reponseD+= tab[(tab.length-1)]+"\n";
+               }
             });
-            console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+            console.log("Mauvaise réponse!\n  Bonnes réponses: \n"+reponseD);
         }
 
         self.parentQuizz.nextQuestion();
@@ -354,7 +373,7 @@ var Question = function (question,quizz) {
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-                sourceElement.bordure.attr("stroke-width",1);
+                sourceElement.bordure.attr("stroke-width", 1);
                 sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
                 if(self.selectedAnswers.length==0){
                     self.resetButton.cadre.attr("fill","grey");
