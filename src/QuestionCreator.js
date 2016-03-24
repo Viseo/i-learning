@@ -7,6 +7,7 @@ var QuestionCreator = function (question) {
     var self = this;
 
     self.displaySet = paper.set();
+    displaySet.push(self.displaySet);
     self.margin = 15;
     self.headerHeigt=0.1;
     self.questionHeight=0.2;

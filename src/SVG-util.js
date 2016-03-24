@@ -320,8 +320,7 @@ var drawArrow = function(x,y,w,h,side,handler){
     arrowSet.push(chevron);
 
 
-    if(handler)
-    {
+    if(handler) {
         chevron.attr({"type":"path","stroke":"none","fill":"black"});
         chevron.node.onclick=handler;
     }else{
@@ -343,9 +342,8 @@ var drawArrow = function(x,y,w,h,side,handler){
 };
 
 function insidePolygon(x, y, element) {
-    console.log("inside");
     var rand = Math.random()*100;
-    return (rand =>90);
+    return (rand >90);
 
     var local = element.localPoint(x, y);
     console.log(element.label);
@@ -354,10 +352,9 @@ function insidePolygon(x, y, element) {
 }
 
 Raphael.st.getTarget=function(clientX,clientY){
-    var self =this;
     var el = {};
-    for(var i = 0; i<self.items.length; i++) {
-        el = self[i].getTarget(clientX,clientY);
+    for(var i = 0; i<this.items.length; i++) {
+        el = this[i].getTarget(clientX,clientY);
         if(el) {
             return el;
         }
@@ -370,4 +367,5 @@ Raphael.el.getTarget=function(clientX,clientY){
     if (inside){
         return this;
     }
+    return null;
 };
