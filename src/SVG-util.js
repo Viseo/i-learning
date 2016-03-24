@@ -206,7 +206,15 @@ var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
             // it fits in a new line
             else {
                 // we add the word in a new line
+                var tmpText = tempText;
                 tempText += "\n" + words[i];
+                t.attr("text", tmpStr);
+                // test if it fits in height
+                if (t.getBBox().height > h - margin) {
+                    // it doesn't : break
+                    tempText = tmpText.substring(0, tmpText.length-3) + "...";
+                    break;
+                }
             }
         } else {
             // it fits in the current line

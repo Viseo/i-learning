@@ -22,9 +22,11 @@
 
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
-        var papers = new Paper(0, 0, document.body.clientWidth, 1500);
-        var paper = papers.paper;
-        var displaySet = papers.displaySet;
+        /*var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+        var paper = papers.paper;*/
+        var paper = Raphael(0, 0, document.body.clientWidth, 1500);
+        var displaySet = paper.set();
+        //var displaySet = papers.displaySet;
 
         var quizz = new Quizz(myQuizz);
         var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);

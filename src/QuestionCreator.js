@@ -188,10 +188,11 @@ var QuestionCreator = function (question) {
             textarea.onblur = onblur;
         };
 
-        self.quizzLabel = paper.text(x, y+30, self.quizzName).attr("font-size", 20).attr("text-anchor", "start");
+        self.quizzLabel = paper.text(x+2, y+30, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
+        self.quizzBorder = paper.rect(x, y+20, self.quizzLabel.getBBox().width+4, 20);
         self.quizzLabel.node.ondblclick = dblclickEdition;
         self.displaySetQuizzInfo.push(self.quizzLabel);
-
+        self.displaySetQuizzInfo.push(self.quizzBorder);
     };
 
     self.displayPreviewButton = function (x, y, w, h) {
