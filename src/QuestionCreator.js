@@ -7,6 +7,7 @@ var QuestionCreator = function (question) {
     var self = this;
 
     self.displaySet = paper.set();
+    displaySet.push(self.displaySet);
     self.margin = 15;
 
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;

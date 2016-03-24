@@ -5,12 +5,10 @@
 //var paper=Raphael(0,0,1500,1500);
 
 var imageController = ImageController();
-//paper=Raphael(0,0,document.body.clientWidth,1500);
 var asyncTimerController=AsyncTimerController();
-//var piste = new Piste(0,0,document.body.clientWidth,1500);
-//var glass = new Glass(0,0,document.body.clientWidth,1500);
 var papers = new Paper(0, 0, document.body.clientWidth, 1500);
 var paper = papers.paper;
+var displaySet = papers.displaySet;
 
 function main() {
 

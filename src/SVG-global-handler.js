@@ -6,6 +6,7 @@ var Paper = function (x, y, w, h) {
     var self = this;
 
     self.paper = Raphael(x, y, w,h);
+    self.displaySet = self.paper.set();
 
     self.piste = new Raphael(x, y, w, h);
 
@@ -16,34 +17,43 @@ var Paper = function (x, y, w, h) {
 
 
     self.glass.area.node.onmousedown = function(event) {
-        self.target = paper.set().getTarget(event.clientX, event.clientY);
-        console.log(self.target);
+        //self.paper.forEach(function (el) {
+        //    console.log(el.type);
+        //});
+        self.target = self.displaySet.getTarget(event.clientX, event.clientY);
         self.drag = self.target;
         // Rajouter des lignes pour target.bordure et target.image si existe ?
         if (self.target && self.target.node.onmousedown) {
             self.target.node.onmousedown(event);
         }
     };
+
     self.glass.area.node.onmousemove = function(event) {
-        self.target = self.drag||paper.set().getTarget(event.clientX, event.clientY);
+        self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
         if (self.target && self.target.node.onmousemove) {
             self.target.node.onmousemove(event);
         }
     };
+
     self.glass.area.node.onmouseup = function(event) {
-        console.log("mouseup");
-        self.target = self.drag||paper.set().getTarget(event.clientX, event.clientY);
+        self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
         if (self.target) {
             if (self.target.node.onmouseup) {
                 self.target.node.onmouseup(event);
             } 
             if (self.target.node.onclick) {
-                console.log("onclick");
                 self.target.node.onclick(event);
             }
         }
         self.drag = null;
     };
+
+    self.glass.area.node.ondblclick = function (event) {
+        self.target = self.displaySet.getTarget(event.clientX, event.clientY);
+        if(self.target && self.target.node.ondblclick) {
+            self.target.node.ondblclick(event);
+        }
+    }
 };
 
 //var Glass=function(x,y,w,h){

@@ -213,6 +213,7 @@ function Quizz(quizz, previewMode) {
         self.titleText = object.content;
 
         self.displaySet=self.paper.set();
+        displaySet.push(self.displaySet);
         self.displaySet._transformation=self._transformation;
         /// à remettre quand DisplayText le permettra (write test ne n'affiche pas encore la valeur finale)
         /*var titleObject=displayText(self.title,0,0,self.paper.width,200,'black','rgb('+self.bgColor.r+','+self.bgColor.g+','+self.bgColor.b+')');

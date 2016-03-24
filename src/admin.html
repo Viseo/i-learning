@@ -17,10 +17,15 @@
     <script src="Quizz.js"></script>
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
+    <script src="SVG-global-handler.js"></script>
     <script>
+
         var imageController = ImageController();
-        var asyncTimerController = AsyncTimerController();
-        paper=Raphael(0,0,document.body.clientWidth,970);
+        var asyncTimerController=AsyncTimerController();
+        var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+        var paper = papers.paper;
+        var displaySet = papers.displaySet;
+
         var quizz = new Quizz(myQuizz);
         var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);
         questionCreator.displayQuestionCreator(20, 70, document.body.clientWidth-50, 800);
