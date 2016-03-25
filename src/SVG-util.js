@@ -151,26 +151,24 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight, fo
 };
 
 /**
- *
+ * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
  * @param content: text to print
  * @param x : X position
  * @param y : Y position
  * @param w : width
  * @param h : height
- * @param policeSize : number, taille de la police
+ * @param fontSize
  * @param font
  */
-var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
+var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
     var t = paper.text(x+w/2, y+h/2, "");
-    var fontSize = policeSize;
+    var fontSize = fontSize;
 
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;
 
-    if(font) {
-        t.attr("font-family", font);
-    }
+    font && t.attr("font-family", font);
 
     t.attr("font-size", fontSize);
     // add text word by word
@@ -226,16 +224,27 @@ var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
     var finalHeight = t.getBBox().height;
     return {finalHeight: finalHeight, text:t};
 };
-
-var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
+/**
+ *
+ * @param text
+ * @param imageSrc
+ * @param x
+ * @param y
+ * @param w
+ * @param fontSize
+ * @param image
+ * @param font
+ * @returns {*}
+ */
+var getHeight = function (text, imageSrc, x, y, w, fontSize, image, font) {
     var formatedText;
     var margin = 10;
     if (text && imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
+        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 3*margin + displayImage(imageSrc, image, x, y, w);
     } else if(text && !imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
+        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 2*margin;
     } else if(!text && imageSrc) {
@@ -464,13 +473,12 @@ Raphael.rect.inside = function(x, y) {
 
 
 function insidePolygon(x, y, element) {
-    var rand = Math.random()*100;
-    return (rand >90);
+    //var rand = Math.random()*100;
+    //return (rand >90);
 
-    var local = element.localPoint(x, y);
-    console.log(element.label);
-    return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
-        && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+    var local = element.globalToLocal(x, y);
+    return local.x>=-element.attrs.width/2 && local.x<=element.attrs.width/2
+        && local.y>=-element.attrs.height/2 && local.y<=element.attrs.height/2;
 }
 
 Raphael.st.getTarget=function(clientX,clientY){

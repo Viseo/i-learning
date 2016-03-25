@@ -106,9 +106,6 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        if (isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
-            throw new Error(NaN);
-        }
         self.displaySet=paper.set();
         self.displaySet._transformation=self._transformation;
 
@@ -126,9 +123,7 @@ var Question = function (question,quizz) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
-            self.displaySet.push(self.bordure);
-            self.displaySet.push(self.content);
-            self.displaySet.push(self.raphImage);
+            self.displaySet.push(self.bordure, self.content, self.raphImage);
 
             var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
@@ -155,7 +150,7 @@ var Question = function (question,quizz) {
             var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
             self.displaySet.transform(t);
         }
-        else if (!self.imageSrc && !self.label) {
+        else {
             self.bordure = paper.rect(x, y, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure})
         }
     };
@@ -172,10 +167,9 @@ var Question = function (question,quizz) {
             var tmpTileHeight;
 
             for(var answer of self.tabAnswer) {
-                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
+                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20, answer.image);
                 if(tmpTileHeight > self.tileHeight) {
                     self.tileHeight = tmpTileHeight;
-
                 }
             }
 
@@ -200,23 +194,22 @@ var Question = function (question,quizz) {
 
                 self.tabAnswer[i].display(posx, posy, tileWidth, self.tileHeight);
                 self.displaySetAnswers.push(self.tabAnswer[i].displaySet);
-               // self.temp=self.tabAnswer[i];
-                (function(element){
+                (function(element) {
                     if(element.bordure) {
                         element.bordure.node.onclick=function() {
-                            elementClicked(element,'bordure');
+                            elementClicked(element);
                         };
                     }
 
                     if(element.content) {
                         element.content.node.onclick=function() {
-                            elementClicked(element,'content');
+                            elementClicked(element);
                         };
                     }
 
                     if (element.image) {
                         element.image.node.onclick = function () {
-                            elementClicked(element, 'image');
+                            elementClicked(element);
                         };
                     }
 
@@ -330,19 +323,7 @@ var Question = function (question,quizz) {
 
     };
 
-    function elementClicked(sourceElement,type) {
-        var partClicked;
-        switch(type) {
-            case 'bordure':
-                partClicked=sourceElement.bordure;
-                break;
-            case 'content':
-                partClicked=sourceElement.content;
-                break;
-            case 'image':
-                partClicked=sourceElement.image;
-                break;
-        }
+    function elementClicked(sourceElement) {
         if(self.multipleChoice===false){// question normale, une seule réponse possible
         if(sourceElement.correct) {
             self.parentQuizz.score++;

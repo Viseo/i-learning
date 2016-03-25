@@ -2,6 +2,9 @@
  * Created by qde3485 on 09/03/16.
  */
 
+var clone = function (object) {
+    return JSON.parse(JSON.stringify(object));
+};
 
 var ImageRuntime = {
     images: {},
