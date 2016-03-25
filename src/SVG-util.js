@@ -402,7 +402,7 @@ papers.paper.localToGlobal = function() {
         };
 
 };
-paper1.inside = function(x, y) {
+papers.paper.inside = function(x, y) {
     var local = this.localToGlobal(x, y);
     return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
 };
