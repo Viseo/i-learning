@@ -42,6 +42,7 @@ var AnswerElement = function (answer, parent) {
 
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;
+    self.labelDefault = "Double clic pour modifier";
 
     if(answer) {
         self.label = answer.label;
@@ -52,7 +53,7 @@ var AnswerElement = function (answer, parent) {
         }
         self.bCorrect = answer.bCorrect;
     }else {
-        self.label = "Double clic pour modifier";
+        self.label = "";
         self.fontSize = 20;
         self.bCorrect = false;
     }
@@ -64,15 +65,17 @@ var AnswerElement = function (answer, parent) {
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
-        self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
-        self.obj.cadre.attr("fill-opacity", 0);
-        self.displaySet.push(self.obj.cadre);
-        self.displaySet.push(self.obj.content);
 
-        self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
-
-        self.cBLabel = paper.text(x+3*self.margin+40, y+h-self.margin-20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
-        self.displaySet.push(self.cBLabel);
+        var showTitle = function () {
+            var text = (self.label) ? self.label : self.labelDefault;
+            var color = (self.label) ? "black" : "#888";
+            self.obj = displayText(text, x, y, w, h, "black", "white", self.fontSize);
+            self.obj.content.attr("fill", color);
+            self.obj.cadre.attr("fill-opacity", 0);
+            self.displaySet.push(self.obj.cadre, self.obj.content);
+            self.obj.content.node.ondblclick = dblclickEdition;
+            self.obj.cadre.node.ondblclick = dblclickEdition;
+        };
 
         var dblclickEdition = function () {
             self.obj.content.remove();
@@ -85,16 +88,8 @@ var AnswerElement = function (answer, parent) {
                 self.label = contentarea.value;
                 contentarea.remove();
                 self.obj.cadre.remove();
-                self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
-
-                self.obj.cadre.attr("fill-opacity", 0);
-                self.obj.content.node.ondblclick = dblclickEdition;
-                self.obj.cadre.node.ondblclick = dblclickEdition;
+                showTitle();
                 self.obj.cadre.toBack();
-
-                self.displaySet.push(self.obj.cadre);
-                self.displaySet.push(self.obj.content);
-
                 self.cBLabel.toFront();
                 self.checkbox.checkbox.toFront();
                 if(self.checkbox.checked) {
@@ -112,17 +107,16 @@ var AnswerElement = function (answer, parent) {
                     self.isValidInput = false;
                     contentarea.focus();
                     contentarea.onblur = function () {
-                        asyncTimerController.timeout(function () {
-                            contentarea.focus();
-                        }, 0);
+                        contentarea.value = "";
+                        onblur();
                     }
                 }
             };
-
             contentarea.onblur = onblur;
         };
-
-        self.obj.content.node.ondblclick = dblclickEdition;
-        self.obj.cadre.node.ondblclick = dblclickEdition;
+        showTitle();
+        self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
+        self.cBLabel = paper.text(x+3*self.margin+40, y+h-self.margin-20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
+        self.displaySet.push(self.cBLabel);
     }
 };

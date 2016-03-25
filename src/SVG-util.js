@@ -10,9 +10,7 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {};
-    obj.checkbox = paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2});
-
+    var obj = {checkbox: paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2})};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
@@ -30,6 +28,8 @@ var displayCheckbox = function (x, y, size, sender) {
         obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
         sender.displaySet.push(obj.checked);
+        obj.checkbox.transform(sender.obj.cadre._.transform);
+        obj.checked.transform(sender.obj.cadre._.transform);
     }
     sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
@@ -402,7 +402,7 @@ papers.paper.localToGlobal = function() {
         };
 
 };
-papers.paper.inside = function(x, y) {
+paper1.inside = function(x, y) {
     var local = this.localToGlobal(x, y);
     return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
 };
