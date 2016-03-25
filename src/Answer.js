@@ -85,9 +85,6 @@ var Answer = function (answer) {
      * @param h : height
      */
     self.display = function (x, y, w, h) {
-        if(isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
-            throw new Error(NaN);
-        }
 
         self.displaySet=paper.set();
         self.displaySet._transformation=self._transformation;
@@ -103,11 +100,8 @@ var Answer = function (answer) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
-            self.displaySet.push(self.bordure);
-            self.displaySet.push(self.content);
-            self.displaySet.push(self.image);
-            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-            self.displaySet.transform(t);
+            self.displaySet.push(self.bordure,self.content,self.image);
+
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
@@ -116,8 +110,7 @@ var Answer = function (answer) {
             self.content = object.content;
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
-            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-            self.displaySet.transform(t);
+
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
@@ -126,16 +119,18 @@ var Answer = function (answer) {
             self.bordure = obj.cadre;
             self.displaySet.push(self.image);
             self.displaySet.push(self.bordure);
-            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-            self.displaySet.transform(t);
+
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
             self.bordure = paper.rect( -w/2, -h/2, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure});
             self.displaySet.push(self.bordure);
-            var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-            self.displaySet.transform(t);
+
         }
+
+        var point=self.displaySet.globalToLocal(x,y);
+        var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
+        self.displaySet.transform(t);
 
     };
 

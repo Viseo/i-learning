@@ -385,16 +385,16 @@ function getPoint(args) {
 }
 
 
-paper1.globalToLocal = function() {
+papers.paper.globalToLocal = function() {
     var point = getPoint(arguments);
-
-        return {
-            x:point.x-this.x,
-            y:point.y-this.y
-        };
+    var pt={
+        x:point.x-this.x,
+        y:point.y-this.y
+    };
+        return pt;
 
 };
-paper1.localToGlobal = function() {
+papers.paper.localToGlobal = function() {
     var point = getPoint(arguments);
         return {
             x:point.x+this.x,
@@ -402,7 +402,7 @@ paper1.localToGlobal = function() {
         };
 
 };
-paper1.inside = function(x, y) {
+papers.paper.inside = function(x, y) {
     var local = this.localToGlobal(x, y);
     return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
 };
@@ -410,23 +410,33 @@ paper1.inside = function(x, y) {
 
 Raphael.st.oldPush=function(){};
 Raphael.st.oldPush=Raphael.st.push.clone();
-Raphael.st.parent=paper1;
-Raphael.st.push = function(obj) {
+Raphael.st.parent=papers.paper;
+Raphael.st.push = function() {
     var self=this;
-    self.oldPush(obj);
-    obj.parent=self;
+    var tab=Array.prototype.slice.call(arguments);
+
+    tab.forEach(function(obj){
+
+        obj.parent=self;
+        /*if( obj.type ==='set' ){
+            obj.x=obj.parent.x;
+            obj.y=obj.parent.y;
+        }*/
+        self.oldPush(obj);
+    });
 };
-Raphael.st.x=paper1.x;
-Raphael.st.y=paper1.y;
+Raphael.st.x=papers.paper.x;
+Raphael.st.y=papers.paper.y;
+Raphael.st.hasBeenTransformed=false;
 Raphael.st.oldTransform=Raphael.st.transform.clone();
 Raphael.st.transform=function(str){
-    var pointless=str.split('.');
+    var pointless=str.split('...');
   var type=pointless[pointless.length-1].charAt(0);
   var tmp=  str.split(type);
     var vals=tmp[1].split(',');
     this.x=parseInt(vals[0]);
     this.y=parseInt(vals[1]);
-
+    this.hasBeenTransformed=true;
     this.oldTransform(str);
 
 };
@@ -449,7 +459,7 @@ Raphael.st.localToGlobal = function() {
 };
 
 //rect
-Raphael.el.parent=paper1;
+Raphael.el.parent=papers.paper;
 
 Raphael.el.globalToLocal = function() {
     var point = getPoint(arguments);

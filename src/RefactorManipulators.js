@@ -7,13 +7,13 @@ var imageController = ImageController();
 //paper=Raphael(0,0,document.body.clientWidth,1500);
 var asyncTimerController=AsyncTimerController();
 
-var mySet=paper1.set();
-var mySecondSet=paper1.set();
+var mySet=papers.paper.set();
+var mySecondSet=papers.paper.set();
 
 var x, y, w,h;
 w=100;
 h=150;
-var myRect=paper1.rect(-w/2,-h/2,w,h);//position du centre du rectangle
+var myRect=papers.paper.rect(-w/2,-h/2,w,h);//position du centre du rectangle
 
 mySet.push(myRect);
 

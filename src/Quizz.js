@@ -83,7 +83,7 @@ function Quizz(quizz, previewMode) {
     //self.bgColor=quizz.color;
 
     self.cadreResult={
-        x:0,
+        x:paper.width/2,
         y:220,
         w:paper.width,
         h:200
@@ -186,7 +186,7 @@ function Quizz(quizz, previewMode) {
         self.displaySetResult.push(self.resultBox);
         self.displaySetResult.push(self.resultText);
         var point=self.displaySetResult.globalToLocal(self.cadreResult.x,self.cadreResult.y);
-        var t=self.transformation('t',''+(0),''+(self.cadreResult.h));//!! en chantier
+        var t=self.transformation('t',''+(point.x+0),''+(point.y+self.cadreResult.h));//!! en chantier
         self.displaySetResult.transform('...'+t);
 
         self.displaySet.push(self.displaySetResult);
@@ -220,9 +220,10 @@ function Quizz(quizz, previewMode) {
 
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
-        var point=self.displaySet.globalToLocal(x,y);
+        var point=self.displaySet.globalToLocal(self.x,self.y);
         //var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-        var t=self.transformation('t',''+(point.x+w/2),''+(point.y+h/2));
+        var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
+
 
         self.displaySet.transform(t);
 
@@ -285,7 +286,7 @@ function Quizz(quizz, previewMode) {
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+               // self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
@@ -294,7 +295,7 @@ function Quizz(quizz, previewMode) {
                         self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                         self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                    self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+                 //   self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
                     self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
                 } else //--> fin du tableau, dernière question
                 {
