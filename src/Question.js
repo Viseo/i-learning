@@ -130,6 +130,7 @@ var Question = function (question,quizz) {
             self.displaySet.push(self.content);
             self.displaySet.push(self.raphImage);
 
+            var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
             self.displaySet.transform(t);
         }
@@ -141,6 +142,7 @@ var Question = function (question,quizz) {
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
 
+            var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
             self.displaySet.transform(t);
         }
@@ -149,6 +151,7 @@ var Question = function (question,quizz) {
             self.raphImage = displayImage(self.imageSrc, self.image, -w/2, -self.height/2, w, self.height).image;
             self.displaySet.push(self.raphImage);
 
+            var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
             self.displaySet.transform(t);
         }
@@ -240,6 +243,7 @@ var Question = function (question,quizz) {
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
 
+            var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2+2*margin));
             self.validatedisplaySet.transform(t);
 
@@ -304,6 +308,7 @@ var Question = function (question,quizz) {
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);
+            var point=self.displaySet.globalToLocal(self.x,self.y);
             var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2+2*margin));
             self.resetDisplaySet.transform(t);
 

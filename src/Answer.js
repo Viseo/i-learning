@@ -140,7 +140,7 @@ var Answer = function (answer) {
     };
 
 
-    self.localPoint=function(){
+   /* self.localPoint=function(){
         var point = getPoint(arguments);
         if (self.parent) {
             point = self.parent.localPoint(point);
@@ -165,5 +165,5 @@ var Answer = function (answer) {
         else {
             return args[0];
         }
-    };
+    };*/
 };

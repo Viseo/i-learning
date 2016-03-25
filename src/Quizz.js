@@ -185,8 +185,8 @@ function Quizz(quizz, previewMode) {
 
         self.displaySetResult.push(self.resultBox);
         self.displaySetResult.push(self.resultText);
-
-        var t=self.transformation('t',''+(0),''+(self.cadreResult.h));
+        var point=self.displaySetResult.globalToLocal(self.cadreResult.x,self.cadreResult.y);
+        var t=self.transformation('t',''+(0),''+(self.cadreResult.h));//!! en chantier
         self.displaySetResult.transform('...'+t);
 
         self.displaySet.push(self.displaySetResult);
@@ -206,8 +206,6 @@ function Quizz(quizz, previewMode) {
         self.quizzMarginX=x;
         self.quizzMarginY=y;
 
-
-
         var object = displayText(self.title, -w/2,-h/2,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
@@ -222,7 +220,10 @@ function Quizz(quizz, previewMode) {
 
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
-        var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+        var point=self.displaySet.globalToLocal(x,y);
+        //var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+        var t=self.transformation('t',''+(point.x+w/2),''+(point.y+h/2));
+
         self.displaySet.transform(t);
 
         self.nextQuestion();
