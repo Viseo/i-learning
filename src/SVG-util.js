@@ -10,9 +10,7 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {};
-    obj.checkbox = paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2});
-
+    var obj = {checkbox: paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2})};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
@@ -21,19 +19,18 @@ var displayCheckbox = function (x, y, size, sender) {
         obj.checkbox.remove();
         displayCheckbox(x, y, size, sender);
     };
-
     if(sender.bCorrect) {
         var path = "M " + (x+.2*size) + "," + (y+.4*size) +
             "l " + (.2*size) + "," + (.3*size) +
             "l " + (.4*size) + "," + (-.5*size);
-
         obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
         sender.displaySet.push(obj.checked);
+        obj.checkbox.transform(sender.obj.cadre._.transform);
+        obj.checked.transform(sender.obj.cadre._.transform);
     }
     sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
-
     return obj;
 };
 

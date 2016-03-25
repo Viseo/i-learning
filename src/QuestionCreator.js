@@ -16,15 +16,18 @@ var QuestionCreator = function (question) {
     var larg = (window.innerWidth);
     var haut = (window.innerHeight);
 
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
+
+    self.quizzNameDefault = "Ecrire ici le nom du quiz";
+    self.labelDefault = "Cliquer deux fois pour ajouter la question";
 
     if(!question) {
         // init default : 2 empty answers
         self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
-        self.quizzName = "Ecrire ici le nom du quiz";
-        self.label = "Cliquer deux fois pour ajouter la question";
+        self.quizzName = "";
+        self.label = "";
         self.rightAnswers = [];
         self.fontSize = 20;
     } else {
@@ -62,9 +65,8 @@ var QuestionCreator = function (question) {
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
-                asyncTimerController.timeout(function () {
-                    textarea.focus();
-                }, 0);
+                textarea.value = "";
+                onblur();
             }
         }
     };
@@ -81,7 +83,10 @@ var QuestionCreator = function (question) {
         self.displaySetQuestionCreator.remove();
 
         var showTitle = function () {
-            self.questionBlock.title = displayText(self.label, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
+            var color = (self.label) ? "black" : "#888";
+            var text = (self.label) ? self.label : self.labelDefault;
+            self.questionBlock.title = displayText(text, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
+            self.questionBlock.title.content.attr("fill", color);
             self.questionBlock.title.cadre.attr("fill-opacity", 0);
             self.questionBlock.title.content.node.ondblclick = dblclickEdition;
             self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
@@ -140,6 +145,15 @@ var QuestionCreator = function (question) {
         self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
         self.displaySetQuizzInfo.push(self.formationLabel);
 
+        var showTitle = function () {
+            var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
+            var color = (self.quizzName) ? "black" : "#888";
+            self.quizzLabel = paper.text(x+2, y+28, text).attr("font-size", 15).attr("text-anchor", "start").attr("fill", color);
+            self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
+            self.quizzLabel.node.ondblclick = dblclickEdition;
+            self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
+        };
+
         var dblclickEdition = function () {
             var width = self.quizzLabel.getBBox().width;
             self.quizzLabel.remove();
@@ -153,10 +167,7 @@ var QuestionCreator = function (question) {
             var onblur = function () {
                 self.quizzName = textarea.value;
                 textarea.remove();
-                self.quizzLabel = paper.text(x+2, y+28, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
-                self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
-                self.quizzLabel.node.ondblclick = dblclickEdition;
-                self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
+                showTitle();
             };
             textarea.oninput = function () {
                 self.checkInputTextArea(textarea, "quizzNameValidInput", onblur);
@@ -164,11 +175,7 @@ var QuestionCreator = function (question) {
             textarea.onblur = onblur;
             self.checkInputTextArea(textarea, "quizzNameValidInput", onblur);
         };
-
-        self.quizzLabel = paper.text(x+2, y+28, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
-        self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
-        self.quizzLabel.node.ondblclick = dblclickEdition;
-        self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
+        showTitle();
     };
 
     self.displayPreviewButton = function (x, y, w, h) {
@@ -180,6 +187,7 @@ var QuestionCreator = function (question) {
             var incorrectAnswers = 0;
 
             var isValidInput = true;
+            var isFilled = false;
 
             self.tabAnswer.forEach(function (el) {
                 if(el instanceof AnswerElement) {
@@ -189,13 +197,13 @@ var QuestionCreator = function (question) {
                         incorrectAnswers++;
                     }
                     isValidInput = isValidInput && el.isValidInput;
-
+                    isFilled = isFilled || (el.label);
                 }
             });
             if(isValidInput && self.questionNameValidInput && self.quizzNameValidInput) {
-                if (correctAnswers >= 1 && incorrectAnswers >= 1) {
-                    if (self.quizzName !== "Ecrire ici le nom du quiz") {
-                        if (self.label !== "Cliquer deux fois pour ajouter la question") {
+                if (correctAnswers >= 1 && incorrectAnswers >= 1 && isFilled) {
+                    if (self.quizzName) {
+                        if (self.label) {
                             self.displaySet.remove();
 
                             var tabAnswer = [];
@@ -254,7 +262,7 @@ var QuestionCreator = function (question) {
                     if (self.errorMessagePreview) {
                         self.errorMessagePreview.remove();
                     }
-                    self.errorMessagePreview = paper.text(x + w / 2 + 100 + self.margin, y + h / 2, "Vous devez définir au moins une bonne et une mauvaise réponse.").attr({
+                    self.errorMessagePreview = paper.text(x + w / 2 + 100 + self.margin, y + h / 2, "Vous devez écrire au moins une bonne et une mauvaise réponse.").attr({
                         "font-size": 20,
                         "fill": 'red',
                         "text-anchor": 'start'

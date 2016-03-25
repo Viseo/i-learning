@@ -21,6 +21,7 @@
     <script>
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
+
         /*var papers = new Paper(0, 0, document.body.clientWidth, 1500);
         var paper = papers.paper;*/
         var paper = Raphael(0, 0, document.body.clientWidth, 1500);
@@ -28,7 +29,7 @@
         //var displaySet = papers.displaySet;
 
         var quizz = new Quizz(myQuizz);
-        var questionCreator = new QuestionCreator(quizz.tabQuestions[13]);
+        var questionCreator = new QuestionCreator();
         questionCreator.display(20,20,document.body.clientWidth-50,innerHeight-20);
         //questionCreator.displayQuestionCreator(20, 70, document.body.clientWidth-50, 800);
         //questionCreator.displayPreviewButton(20, 890, document.body.clientWidth-50, 75);
