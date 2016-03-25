@@ -52,13 +52,13 @@ var QuestionCreator = function (question) {
     self.coordinatesAnswers = {x:0, y:0, w:0, h:0};
     self.formationName = "Hibernate";
 
-    self.checkInputTextArea = function (textarea, isValidElement) {
+    self.checkInputTextArea = function (textarea, isValidElement, onblur) {
         if(textarea.value.match(self.regex)) {
             textarea.onblur = onblur;
-            textarea.style.border = "none";
+            textarea.style.border = "solid 2px #888888";
             self[isValidElement] = true;
         } else {
-            textarea.style.border = "solid #FF0000";
+            textarea.style.border = "solid 2px #FF0000";
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
@@ -104,7 +104,7 @@ var QuestionCreator = function (question) {
             };
 
             textarea.oninput = function () {
-                self.checkInputTextArea(textarea, "questionNameValidInput");
+                self.checkInputTextArea(textarea, "questionNameValidInput", onblur);
             };
             textarea.onblur = onblur;
 
@@ -141,28 +141,32 @@ var QuestionCreator = function (question) {
         self.displaySetQuizzInfo.push(self.formationLabel);
 
         var dblclickEdition = function () {
+            var width = self.quizzLabel.getBBox().width;
             self.quizzLabel.remove();
+            self.quizzBorder.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
-            textarea.setAttribute("style", "position: absolute; top:"+(y+20)+"px; left:"+(x)+"px; width:"+(w/2)+"px; height:"+(20)+"px; resize: none; border: red;");
+            textarea.setAttribute("style", "position: absolute; top:"+(y+16)+"px; left:"+(x-1)+"px; width:"+(width)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px;");
             var body = document.getElementById("body");
             body.appendChild(textarea).focus();
+
             var onblur = function () {
                 self.quizzName = textarea.value;
                 textarea.remove();
-                self.quizzLabel = paper.text(x, y+30, self.quizzName).attr("font-size", 20).attr("text-anchor", "start");
+                self.quizzLabel = paper.text(x+2, y+28, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
+                self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
                 self.quizzLabel.node.ondblclick = dblclickEdition;
-                self.displaySetQuizzInfo.push(self.quizzLabel);
+                self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
             };
-
             textarea.oninput = function () {
-                self.checkInputTextArea(textarea, "quizzNameValidInput");
+                self.checkInputTextArea(textarea, "quizzNameValidInput", onblur);
             };
             textarea.onblur = onblur;
+            self.checkInputTextArea(textarea, "quizzNameValidInput", onblur);
         };
 
-        self.quizzLabel = paper.text(x+2, y+30, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
-        self.quizzBorder = paper.rect(x, y+20, self.quizzLabel.getBBox().width+4, 20);
+        self.quizzLabel = paper.text(x+2, y+28, self.quizzName).attr("font-size", 15).attr("text-anchor", "start");
+        self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
         self.quizzLabel.node.ondblclick = dblclickEdition;
         self.displaySetQuizzInfo.push(self.quizzLabel, self.quizzBorder);
     };

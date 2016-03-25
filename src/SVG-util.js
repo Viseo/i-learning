@@ -385,7 +385,7 @@ function getPoint(args) {
 }
 
 
-paper1.globalToLocal = function() {
+/*papers.paper.globalToLocal = function() {
     var point = getPoint(arguments);
 
         return {
@@ -394,7 +394,7 @@ paper1.globalToLocal = function() {
         };
 
 };
-paper1.localToGlobal = function() {
+papers.paper.localToGlobal = function() {
     var point = getPoint(arguments);
         return {
             x:point.x+this.x,
@@ -402,7 +402,7 @@ paper1.localToGlobal = function() {
         };
 
 };
-paper1.inside = function(x, y) {
+papers.paper.inside = function(x, y) {
     var local = this.localToGlobal(x, y);
     return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
 };
