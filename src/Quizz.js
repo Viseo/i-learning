@@ -38,33 +38,15 @@ function Quizz(quizz, previewMode) {
         });
     }
 
-    if(previewMode) {
-        self.previewMode = previewMode;
-    } else {
-        self.previewMode = false;
-    }
+    (previewMode) ? (self.previewMode = previewMode):(self.previewMode = false);
 
-    if(quizz.puzzleRows) {
-        self.puzzleRows = quizz.puzzleRows;
-    } else {
-        self.puzzleRows = 2;
-    }
+    quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows): (self.puzzleRows = 2);
 
-    if(quizz.puzzleLines) {
-        self.puzzleLines = quizz.puzzleLines;
-    } else {
-        self.puzzleLines = 2;
-    }
+    quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines):(self.puzzleLines = 2);
 
-    if(quizz.font) {
-        self.font = quizz.font;
-    }
+    quizz.font && (self.font = quizz.font);
 
-    if(quizz.fontSize) {
-        self.fontSize = quizz.fontSize;
-    } else {
-        self.fontSize = 20;
-    }
+    quizz.fontSize ? (self.fontSize = quizz.fontSize): (self.fontSize = 20);
 
     if (quizz.colorBordure && !isNaN(parseInt(quizz.colorBordure.r)) && !isNaN(parseInt(quizz.colorBordure.g)) && !isNaN(parseInt(quizz.colorBordure.b))) {
         self.rgbBordure = "rgb(" + quizz.colorBordure.r + ", " + quizz.colorBordure.g + ", " + quizz.colorBordure.b + ")";
@@ -114,9 +96,7 @@ function Quizz(quizz, previewMode) {
     //self.puzzle;  //plus tard !
     self.title=quizz.title;
 
-
     self.currentQuestionIndex=-1;
-
     self.finalMessage="";
 
     self.run = function(x,y,w,h) {
@@ -181,14 +161,11 @@ function Quizz(quizz, previewMode) {
 
         self.resultBox = object.cadre;
         self.resultText = object.content;
-
-
         self.displaySetResult.push(self.resultBox);
         self.displaySetResult.push(self.resultText);
         var point=self.displaySetResult.globalToLocal(self.cadreResult.x,self.cadreResult.y);
         var t=self.transformation('t',''+(point.x+0),''+(point.y+self.cadreResult.h));//!! en chantier
         self.displaySetResult.transform('...'+t);
-
         self.displaySet.push(self.displaySetResult);
 
     };
@@ -196,15 +173,14 @@ function Quizz(quizz, previewMode) {
     self.display=function(x,y,w,h){
         // Quizz title
 
-        self.x=x;
-        self.y=y;
-
-        self.cadreQuestion.w=w;
-        self.cadreResult.w=w-x;
-        self.cadreResult.x=x;
-        self.cadreTitle.w=w;
-        self.quizzMarginX=x;
-        self.quizzMarginY=y;
+        x && (self.x=x);
+        y && (self.y=y);
+        w && (self.cadreQuestion.w=w);
+        (w && x) &&(self.cadreResult.w=w-x);
+        x && (self.cadreResult.x=x);
+        w && (self.cadreTitle.w=w);
+        x && (self.quizzMarginX=x);
+        y && (self.quizzMarginY=y);
 
         var object = displayText(self.title, -w/2,-h/2,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
