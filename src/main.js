@@ -105,16 +105,14 @@ function main() {
         });*/
     }
     window.onresize = function(){
-        resizePaper();
+        //resizePaper();
     }
 
-
-    quizz.run(50,50,1200,1200);
 
     setTimeout(function(){
         var rect =paper.rect(0,0,10,10);
         console.log('préparez vous, on va push!');
-        quizz.displaySet.push(rect);
+        quizz.tabQuestions[0].tabAnswer[1].displaySet.push(rect);
     },500);
 
     /*setTimeout(function(){

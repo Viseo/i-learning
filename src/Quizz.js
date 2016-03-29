@@ -164,9 +164,7 @@ function Quizz(quizz, previewMode) {
         self.displaySetResult.push(self.resultBox);
         self.displaySetResult.push(self.resultText);
         self.displaySet.positionSet(self.cadreResult.x,self.cadreResult.y,0,self.cadreResult.h);
-        /*var point=self.displaySetResult.globalToLocal(self.cadreResult.x,self.cadreResult.y);
-        var t='t'+(point.x+0)+','+(point.y+self.cadreResult.h);
-        self.displaySetResult.transform('...'+t);*/
+
         self.displaySet.push(self.displaySetResult);
 
     };
@@ -216,12 +214,7 @@ function Quizz(quizz, previewMode) {
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
         self.displaySet.positionSet(self.x,self.y,0,0);
-        /*
-        var point=self.displaySet.globalToLocal(self.x,self.y);
-        //var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
-        var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
-        self.displaySet.transform(t);
-        */
+
         self.nextQuestion();
 
         function getTarget(clientX, clientY){

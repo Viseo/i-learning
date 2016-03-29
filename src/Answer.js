@@ -128,9 +128,11 @@ var Answer = function (answer) {
 
         }
 
+        self.displaySet.positionSet(x,y,w/2,h/2);
+        /*
         var point=self.displaySet.globalToLocal(x,y);
         var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
-        self.displaySet.transform(t);
+        self.displaySet.transform(t);*/
 
     };
 

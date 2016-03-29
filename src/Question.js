@@ -111,6 +111,7 @@ var Question = function (question,quizz) {
 
         self.x=x;
         self.y=y;
+        self.width=w;
         if(!h) {
             self.height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
         } else {
@@ -125,10 +126,6 @@ var Question = function (question,quizz) {
             self.raphImage = objectTotal.image;
             self.displaySet.push(self.bordure, self.content, self.raphImage);
 
-            var point=self.displaySet.globalToLocal(self.x,self.y);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
-            self.displaySet.transform(t);
-
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
@@ -138,39 +135,34 @@ var Question = function (question,quizz) {
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
 
-            var point=self.displaySet.globalToLocal(self.x,self.y);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
-            self.displaySet.transform(t);
+
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
             self.raphImage = displayImage(self.imageSrc, self.image, -w/2, -self.height/2, w, self.height).image;
             self.displaySet.push(self.raphImage);
 
-            var point=self.displaySet.globalToLocal(self.x,self.y);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
-            self.displaySet.transform(t);
+
         }
         else {
             var point=self.displaySet.globalToLocal(self.x,self.y);
             self.bordure = paper.rect(-w/2, -self.height/2, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure});
             self.displaySet.push(self.bordure);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
-            self.displaySet.transform(t);
+
         }
+
+        self.displaySet.positionSet(self.x,self.y,self.width/2,self.height/2);
     };
 
     self.displayAnswers = function (x, y, w, h) {
         self.displaySetAnswers=paper.set();
 
-
-
         if (self.rows !== 0) {
 
             self.displaySetAnswers._transformation=self._transformation;
             self.displaySet.push(self.displaySetAnswers);
-            var point=self.displaySetAnswers.globalToLocal(0,0);
-            self.displaySetAnswers.transform('...t'+point.x+','+point.y+'');
+            self.displaySetAnswers.positionSet(0,0,0,0);
+
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
@@ -216,9 +208,7 @@ var Question = function (question,quizz) {
                 }
 
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                var point=self.tabAnswer[i].displaySet.globalToLocal(posx,posy);
-                var t=self.transformation('...t',''+(point.x+tileWidth/2),''+(point.y+self.tileHeight/2));
-                self.tabAnswer[i].displaySet.transform(t);
+                self.tabAnswer[i].displaySet.positionSet(posx,posy,tileWidth/2,self.tileHeight/2);
 
                 self.displaySetAnswers.push(self.tabAnswer[i].displaySet);
                 (function(element) {
@@ -262,11 +252,7 @@ var Question = function (question,quizz) {
             self.validatedisplaySet.push(validateButton.cadre);
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
-
-            var point=self.validatedisplaySet.globalToLocal(validateX,validateY);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
-            self.validatedisplaySet.transform(t);
-
+            self.validatedisplaySet.positionSet(validateX,validateY,w/2,h/2);
 
             //button. onclick
             var oclk=function(){
@@ -329,10 +315,7 @@ var Question = function (question,quizz) {
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);
-            var point=self.resetDisplaySet.globalToLocal(resetX,resetY);
-            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
-            self.resetDisplaySet.transform(t);
-
+            self.resetDisplaySet.positionSet(resetX,resetY,w/2,h/2);
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){
