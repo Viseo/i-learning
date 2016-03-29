@@ -182,8 +182,26 @@ function Quizz(quizz, previewMode) {
         w && (self.cadreTitle.w=w);
         x && (self.quizzMarginX=x);
         y && (self.quizzMarginY=y);
+        self.headerPercentage=0.1;
+        self.questionPercentageWithImage=0.3;
+        self.questionPercentage=0.2;
+        self.responsePercentageWithImage=0.6;
+        self.responsePercentage=0.7;
 
-        var object = displayText(self.title, 0,0,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        var heightPage = document.documentElement.clientHeight;
+
+
+        self.headerHeight=heightPage*self.headerPercentage-self.quizzMarginY;
+        self.questionHeight=heightPage*self.questionPercentage-2*self.quizzMarginY;
+        self.responseHeight=heightPage*self.responsePercentage-2*self.quizzMarginY;
+        self.questionHeightWithoutImage=heightPage*self.questionPercentage-2*self.quizzMarginY;
+        self.responseHeightWithoutImage=heightPage*self.responsePercentage-2*self.quizzMarginY;
+        self.questionHeightWithImage=heightPage*self.questionPercentageWithImage-2*self.quizzMarginY;
+        self.responseHeightWithImage=heightPage*self.responsePercentageWithImage-2*self.quizzMarginY;
+
+
+        //var object = displayText(self.title, -w/2,-h/2,(self.cadreTitle.w-x),self.cadreTitle.h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        var object = displayText(self.title, 0,0,(self.cadreTitle.w-x),self.headerHeight-x, self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
 
@@ -268,12 +286,22 @@ function Quizz(quizz, previewMode) {
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                     self.currentQuestionIndex++;
-                    self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithImage)
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithoutImage)
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithImage)
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage)
+                    self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.headerHeight + self.quizzMarginY,
+                        self.cadreQuestion.w - self.quizzMarginX, self.questionHeight);
+                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.headerHeight + self.quizzMarginY,
+                        self.cadreQuestion.w - self.quizzMarginX, self.responseHeight);
+                    self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+                    self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+                    /*self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                         self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                         self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                 //   self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
-                    self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
+                    self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+                    self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);*/
                 } else //--> fin du tableau, dernière question
                 {
                     console.log("Final score: " + self.score);
