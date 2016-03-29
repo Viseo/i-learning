@@ -498,8 +498,11 @@ function insidePolygon(x, y, element) {
     //return (rand >90);
 
     var local = element.globalToLocal(x, y);
-    return local.x>=-element.attrs.width/2 && local.x<=element.attrs.width/2
-        && local.y>=-element.attrs.height/2 && local.y<=element.attrs.height/2;
+    var width = element.attrs.width ? element.attrs.width : element.getBBox().width;
+    var height = element.attrs.height ? element.attrs.height : element.getBBox().height;
+
+    return local.x>=-width/2 && local.x<=width/2
+        && local.y>=-height/2 && local.y<=height/2;
 }
 
 Raphael.st.getTarget=function(clientX,clientY){
@@ -516,6 +519,7 @@ Raphael.st.getTarget=function(clientX,clientY){
 Raphael.el.getTarget=function(clientX,clientY){
     var inside = insidePolygon(clientX,clientY,this);
     if (inside){
+        console.log("FOUND YOU");
         return this;
     }
     return null;

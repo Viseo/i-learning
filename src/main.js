@@ -34,7 +34,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(20,20,1200,1200);
+    quizz.run(1,1,1200,1200);
 
     setTimeout(function(){
         quizz.displaySet.getTarget(0,0);
@@ -104,18 +104,16 @@ function main() {
             element.scale(scale);
         });*/
     }
-    window.onresize = function(){
-        resizePaper();
-    }
-
-
-    quizz.run(50,50,1200,1200);
+    //window.onresize = function(){
+    //    resizePaper();
+    //}
 
     setTimeout(function(){
         var rect =paper.rect(0,0,10,10);
         console.log('préparez vous, on va push!');
         quizz.displaySet.push(rect);
     },500);
+
 
     /*setTimeout(function(){
         quizz.tabQuestions[0].displaySet.transform('...t50,50');
