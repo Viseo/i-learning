@@ -7,8 +7,8 @@ var Paper = function (x, y, w, h) {
 
     self.paper = Raphael(x, y, w,h);
     self.displaySet = self.paper.set();
-    self.paper.x=0;
-    self.paper.y=0;
+    self.paper.x=x;
+    self.paper.y=y;
 
     self.piste = new Raphael(x, y, w, h);
 
@@ -37,6 +37,13 @@ var Paper = function (x, y, w, h) {
     //    }
     //};
 
+    self.glass.area.node.ondblclick = function (event) {
+        self.target = self.displaySet.getTarget(event.clientX, event.clientY);
+        if(self.target && self.target.node.ondblclick) {
+            self.target.node.ondblclick(event);
+        }
+    }
+
     self.glass.area.node.onmouseup = function(event) {
         self.target = self.drag||self.displaySet.getTarget(event.clientX, event.clientY);
         if (self.target) {
@@ -49,13 +56,6 @@ var Paper = function (x, y, w, h) {
         }
         self.drag = null;
     };
-
-    self.glass.area.node.ondblclick = function (event) {
-        self.target = self.displaySet.getTarget(event.clientX, event.clientY);
-        if(self.target && self.target.node.ondblclick) {
-            self.target.node.ondblclick(event);
-        }
-    }
 };
 
 //var Glass=function(x,y,w,h){

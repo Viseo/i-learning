@@ -21,13 +21,13 @@
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
 
-        var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+        var papers = new Paper(0, 0, document.body.clientWidth, window.innerHeight);
         var paper = papers.paper;
         var displaySet = papers.displaySet;
         var admin = function () {
             var quizz = new Quizz(myQuizz);
             var questionCreator = new QuestionCreator();
-            questionCreator.display(20,20,document.body.clientWidth-50,innerHeight-20);
+            questionCreator.display(1,1,document.body.clientWidth-50,innerHeight-20);
         };
     </script>
     <script src="SVG-util.js"></script>

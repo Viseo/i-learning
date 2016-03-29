@@ -1,7 +1,8 @@
 /**
  * Created by qde3485 on 25/02/16.
  */
-
+var x = 0;
+var y = 0;
 //var paper=Raphael(0,0,1500,1500);
 
 var imageController = ImageController(); 

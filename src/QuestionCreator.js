@@ -28,7 +28,7 @@ var QuestionCreator = function (question) {
     displaySet.push(self.displaySet);
     self.displaySet._transformation=self._transformation;
     self.margin = 15;
-    self.headerHeigt=0.1;
+    self.headerHeight=0.1;
     self.questionHeight=0.2;
     self.reponseHeight=0.7;
     var larg = (window.innerWidth);
@@ -77,7 +77,8 @@ var QuestionCreator = function (question) {
         if(textarea.value.match(self.regex)) {
             self.errorMessage && self.errorMessage.remove();
             textarea.onblur = onblur;
-            textarea.style.border = "solid 2px #888888";
+            textarea.style.border = "none";
+            textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
@@ -101,16 +102,16 @@ var QuestionCreator = function (question) {
     };
 
     self.display = function (x, y, w, h) {
-        var quizzInfoHeight=Math.floor(haut*self.headerHeigt);
-        var questionCreatorHeight=Math.floor(haut*(1-self.headerHeigt)-75);
-        self.displayQuizzInfo(x, y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(x,quizzInfoHeight+15, w, questionCreatorHeight-2*self.margin-30);
-        self.displayPreviewButton(x,quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
+        var quizzInfoHeight=Math.floor(haut*self.headerHeight);
+        var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
+        self.displayQuizzInfo(self.margin+x, self.margin+y, w*0.5,quizzInfoHeight);
+        self.displayQuestionCreator(self.margin+x,self.margin+quizzInfoHeight+15, w, questionCreatorHeight-2*self.margin-30);
+        self.displayPreviewButton(self.margin+x,self.margin+quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
         self.displaySetQuestionCreator.remove();
-
+        self._transformation = self.transformation("t", x, y);
         var showTitle = function () {
             var color = (self.label) ? "black" : "#888";
             var text = (self.label) ? self.label : self.labelDefault;
@@ -126,7 +127,7 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.content.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin)+"px; height:"+(self.h*0.25-4*self.margin)+"px; text-align:center; resize: none; border: none;");
+            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin)+"px; height:"+(self.h*0.25-4*self.margin)+"px; text-align:center; resize: none; outline:none; border: none;");
             var body = document.getElementById("body");
             body.appendChild(textarea).focus();
 
@@ -209,7 +210,6 @@ var QuestionCreator = function (question) {
     };
 
     self.displayPreviewButton = function (x, y, w, h) {
-        paper.setSize(x+w+2*self.margin, y+h+2);
         self.previewButton = displayText("Aperçu", x+w/2-100, y, 200, h, "black", "white", 20);
 
         var previewFunction = function () {

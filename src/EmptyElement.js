@@ -30,7 +30,7 @@ var AddEmptyElement = function (parent) {
     self.display = function (x, y, w, h) {
         self.margin = 15;
         self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
-        self.plus = drawPlus(x+w/2, y+(h*0.4), w, h*0.3);
+        self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
         self.displaySet.push(self.plus);
 
         self.obj.cadre.attr("stroke-dasharray", "--").attr("stroke-width", 3);

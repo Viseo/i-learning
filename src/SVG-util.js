@@ -262,22 +262,10 @@ var getHeight = function (text, imageSrc, x, y, w, fontSize, image, font) {
  * @param thicknessPercentage
  */
 
-var drawPlus =function(x,y,w,h,thicknessPercentage) {
-    var baseWidth=500;
-    var baseHeight=500;
-    var tempWidth=baseWidth;
-    var tempHeight=baseHeight;
-    var scale=1;
-    var thickness=0;
-
-    if((!thicknessPercentage)||(thicknessPercentage>=1)){
-        thickness=(((baseHeight+baseWidth)/2)*0.3);
-    }
-    else
-    {
-        thickness=((baseHeight+baseWidth)/2)*thicknessPercentage;
-    }
-
+var drawPlus =function(x,y,w,h) {
+    var baseWidth=w;
+    var baseHeight=h;
+    var thickness=(((baseHeight+baseWidth)/2)*0.3);
     var path="M "+(x-(thickness/2))+","+(y+(thickness/2))+" "+
 
             "L "+(x-(baseWidth/2))+","+(y+(thickness/2))+" "+
@@ -295,13 +283,6 @@ var drawPlus =function(x,y,w,h,thicknessPercentage) {
             "L "+(x-(thickness/2))+","+(y+(thickness/2))+" ";
 
     var plus=paper.path(path);
-    while((w<tempHeight)||(h<tempWidth))
-    {
-        scale-=0.1;
-        tempHeight=baseHeight*scale;
-        tempWidth=baseWidth*scale;
-    }
-    plus.scale(scale);
     plus.attr('fill','black');
     return plus;
 };
@@ -520,6 +501,7 @@ Raphael.el.getTarget=function(clientX,clientY){
     var inside = insidePolygon(clientX,clientY,this);
     if (inside){
         console.log("FOUND YOU");
+        console.log(this);
         return this;
     }
     return null;
