@@ -38,33 +38,15 @@ function Quizz(quizz, previewMode) {
         });
     }
 
-    if(previewMode) {
-        self.previewMode = previewMode;
-    } else {
-        self.previewMode = false;
-    }
+    (previewMode) ? (self.previewMode = previewMode):(self.previewMode = false);
 
-    if(quizz.puzzleRows) {
-        self.puzzleRows = quizz.puzzleRows;
-    } else {
-        self.puzzleRows = 2;
-    }
+    quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows): (self.puzzleRows = 2);
 
-    if(quizz.puzzleLines) {
-        self.puzzleLines = quizz.puzzleLines;
-    } else {
-        self.puzzleLines = 2;
-    }
+    quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines):(self.puzzleLines = 2);
 
-    if(quizz.font) {
-        self.font = quizz.font;
-    }
+    quizz.font && (self.font = quizz.font);
 
-    if(quizz.fontSize) {
-        self.fontSize = quizz.fontSize;
-    } else {
-        self.fontSize = 20;
-    }
+    quizz.fontSize ? (self.fontSize = quizz.fontSize): (self.fontSize = 20);
 
     if (quizz.colorBordure && !isNaN(parseInt(quizz.colorBordure.r)) && !isNaN(parseInt(quizz.colorBordure.g)) && !isNaN(parseInt(quizz.colorBordure.b))) {
         self.rgbBordure = "rgb(" + quizz.colorBordure.r + ", " + quizz.colorBordure.g + ", " + quizz.colorBordure.b + ")";
@@ -83,7 +65,7 @@ function Quizz(quizz, previewMode) {
     //self.bgColor=quizz.color;
 
     self.cadreResult={
-        x:0,
+        x:paper.width/2,
         y:220,
         w:paper.width,
         h:200
@@ -114,9 +96,7 @@ function Quizz(quizz, previewMode) {
     //self.puzzle;  //plus tard !
     self.title=quizz.title;
 
-
     self.currentQuestionIndex=-1;
-
     self.finalMessage="";
 
     self.run = function(x,y,w,h) {
@@ -181,14 +161,11 @@ function Quizz(quizz, previewMode) {
 
         self.resultBox = object.cadre;
         self.resultText = object.content;
-
-
         self.displaySetResult.push(self.resultBox);
         self.displaySetResult.push(self.resultText);
-
-        var t=self.transformation('t',''+(0),''+(self.cadreResult.h));
+        var point=self.displaySetResult.globalToLocal(self.cadreResult.x,self.cadreResult.y);
+        var t=self.transformation('t',''+(point.x+0),''+(point.y+self.cadreResult.h));//!! en chantier
         self.displaySetResult.transform('...'+t);
-
         self.displaySet.push(self.displaySetResult);
 
     };
@@ -196,16 +173,14 @@ function Quizz(quizz, previewMode) {
     self.display=function(x,y,w,h){
         // Quizz title
 
-        self.x=x;
-        self.y=y;
-
-        self.cadreQuestion.w=w;
-        self.cadreResult.w=w-x;
-        self.cadreResult.x=x;
-        self.cadreTitle.w=w;
-        self.quizzMarginX=x;
-        self.quizzMarginY=y;
-
+        x && (self.x=x);
+        y && (self.y=y);
+        w && (self.cadreQuestion.w=w);
+        (w && x) &&(self.cadreResult.w=w-x);
+        x && (self.cadreResult.x=x);
+        w && (self.cadreTitle.w=w);
+        x && (self.quizzMarginX=x);
+        y && (self.quizzMarginY=y);
         self.headerPercentage=0.1;
         self.questionPercentageWithImage=0.3;
         self.questionPercentage=0.2;
@@ -213,6 +188,7 @@ function Quizz(quizz, previewMode) {
         self.responsePercentage=0.7;
 
         var heightPage = document.documentElement.clientHeight;
+
 
         self.headerHeight=heightPage*self.headerPercentage-self.quizzMarginY;
         self.questionHeight=heightPage*self.questionPercentage-2*self.quizzMarginY;
@@ -238,7 +214,11 @@ function Quizz(quizz, previewMode) {
 
         self.displaySet.push(self.titleBox);
         self.displaySet.push(self.titleText);
-        var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+        var point=self.displaySet.globalToLocal(self.x,self.y);
+        //var t=self.transformation('t',''+(x+w/2),''+(y+h/2));
+        var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
+
+
         self.displaySet.transform(t);
 
         self.nextQuestion();
@@ -300,7 +280,7 @@ function Quizz(quizz, previewMode) {
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.cadreQuestion.y,
                     self.cadreQuestion.w - self.quizzMarginX, self.cadreQuestion.h);
-                self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
+               // self.tabQuestions[self.currentQuestionIndex].displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySetAnswers);
                 self.displaySet.push(self.tabQuestions[self.currentQuestionIndex].displaySet);
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {

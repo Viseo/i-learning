@@ -10,9 +10,7 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {};
-    obj.checkbox = paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2});
-
+    var obj = {checkbox: paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2})};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
@@ -30,6 +28,8 @@ var displayCheckbox = function (x, y, size, sender) {
         obj.checked = paper.path(path).attr({"stroke-width":3});
         obj.checked.node.onclick = onclickFunction;
         sender.displaySet.push(obj.checked);
+        obj.checkbox.transform(sender.obj.cadre._.transform);
+        obj.checked.transform(sender.obj.cadre._.transform);
     }
     sender.displaySet.push(obj.checkbox);
     obj.checkbox.node.onclick = onclickFunction;
@@ -151,26 +151,24 @@ var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight, fo
 };
 
 /**
- *
+ * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
  * @param content: text to print
  * @param x : X position
  * @param y : Y position
  * @param w : width
  * @param h : height
- * @param policeSize : number, taille de la police
+ * @param fontSize
  * @param font
  */
-var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
+var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
     var t = paper.text(x+w/2, y+h/2, "");
-    var fontSize = policeSize;
+    var fontSize = fontSize;
 
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;
 
-    if(font) {
-        t.attr("font-family", font);
-    }
+    font && t.attr("font-family", font);
 
     t.attr("font-size", fontSize);
     // add text word by word
@@ -226,16 +224,27 @@ var autoAdjustText = function (content, x, y, w, h, policeSize, font) {
     var finalHeight = t.getBBox().height;
     return {finalHeight: finalHeight, text:t};
 };
-
-var getHeight = function (text, imageSrc, x, y, w, policeSize, image, font) {
+/**
+ *
+ * @param text
+ * @param imageSrc
+ * @param x
+ * @param y
+ * @param w
+ * @param fontSize
+ * @param image
+ * @param font
+ * @returns {*}
+ */
+var getHeight = function (text, imageSrc, x, y, w, fontSize, image, font) {
     var formatedText;
     var margin = 10;
     if (text && imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
+        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 3*margin + displayImage(imageSrc, image, x, y, w);
     } else if(text && !imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, policeSize, font);
+        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
         formatedText.text.remove();
         return formatedText.finalHeight + 2*margin;
     } else if(!text && imageSrc) {
@@ -349,14 +358,137 @@ var drawArrow = function(x,y,w,h,side,handler){
     return arrowSet;
 };
 
-function insidePolygon(x, y, element) {
-    var rand = Math.random()*100;
-    return (rand >90);
+Function.prototype.clone = function() {
+    var that = this;
+    var temp = function temporary() { return that.apply(this, arguments); };
+    for(var key in this) {
+        if (this.hasOwnProperty(key)) {
+            temp[key] = this[key];
+        }
+    }
+    return temp;
+};
 
-    var local = element.localPoint(x, y);
-    console.log(element.label);
-    return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
-        && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
+/// Modifying Raphael.js prototype to add Local/GlobalPoint to various elements
+
+/// Shape, commun à tout le monde
+
+
+
+function getPoint(args) {
+    if (args[0]!==undefined && (typeof args[0]==='number')) {
+        return {x:args[0], y:args[1]}
+    }
+    else {
+        return arguments[0];
+    }
+}
+
+
+papers.paper.globalToLocal = function() {
+    var point = getPoint(arguments);
+    var pt={
+        x:point.x-this.x,
+        y:point.y-this.y
+    };
+        return pt;
+
+};
+papers.paper.localToGlobal = function() {
+    var point = getPoint(arguments);
+        return {
+            x:point.x+this.x,
+            y:point.y+this.y
+        };
+
+};
+papers.paper.inside = function(x, y) {
+    var local = this.localToGlobal(x, y);
+    return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
+};
+
+
+Raphael.st.oldPush=function(){};
+Raphael.st.oldPush=Raphael.st.push.clone();
+Raphael.st.parent=papers.paper;
+Raphael.st.push = function() {
+    var self=this;
+    var tab=Array.prototype.slice.call(arguments);
+
+    tab.forEach(function(obj){
+
+        obj.parent=self;
+        /*if( obj.type ==='set' ){
+            obj.x=obj.parent.x;
+            obj.y=obj.parent.y;
+        }*/
+        self.oldPush(obj);
+    });
+};
+Raphael.st.x=papers.paper.x;
+Raphael.st.y=papers.paper.y;
+Raphael.st.hasBeenTransformed=false;
+Raphael.st.oldTransform=Raphael.st.transform.clone();
+Raphael.st.transform=function(str){
+    var pointless=str.split('...');
+  var type=pointless[pointless.length-1].charAt(0);
+  var tmp=  str.split(type);
+    var vals=tmp[1].split(',');
+    this.x=parseInt(vals[0]);
+    this.y=parseInt(vals[1]);
+    this.hasBeenTransformed=true;
+    this.oldTransform(str);
+
+};
+
+Raphael.st.globalToLocal = function() {
+    var point = getPoint(arguments);
+    point = {x:point.x-this.x, y:point.y-this.y};
+    return this.parent ? this.parent.globalToLocal(point.x,point.y) : null;
+};
+
+Raphael.st.localToGlobal = function() {
+    var point = getPoint(arguments);
+    point = this.parent ? this.parent.localToGlobal(point.x,point.y) : null;
+    if (point) {
+        point = {x:point.x+this.x , y:this.y+point.y };
+    }else{
+        point = getPoint(arguments);
+    }
+    return point;
+};
+
+//rect
+Raphael.el.parent=papers.paper;
+
+Raphael.el.globalToLocal = function() {
+    var point = getPoint(arguments);
+    //return this.parent.globalToLocal(point.x+this.attr('x'), point.y+this.attr('y'));
+    return this.parent.globalToLocal(point.x, point.y);
+};
+Raphael.el.localToGlobal = function() {
+    var point = getPoint(arguments);
+    point = this.parent.localToGlobal(point.x,point.y);
+    //return point ? {x:point.x-this.attr('x'), y:point.y-this.attr('y')} : null;
+    return point ? {x:point.x-0, y:point.y-0} : null;// la référence est au centre du rectangle, pas en haut à gauche
+};
+/*
+Raphael.rect.inside = function(x, y) {
+    var local = this.localToGlobal(x, y);
+    return local.x>=-this.width/2 && local.x<=this.width/2
+        && local.y>=-this.height/2 && local.y<=this.height/2;
+};
+*/
+
+
+
+function insidePolygon(x, y, element) {
+    //var rand = Math.random()*100;
+    //return (rand >90);
+
+    var local = element.globalToLocal(x, y);
+    return local.x>=-element.attrs.width/2 && local.x<=element.attrs.width/2
+        && local.y>=-element.attrs.height/2 && local.y<=element.attrs.height/2;
 }
 
 Raphael.st.getTarget=function(clientX,clientY){

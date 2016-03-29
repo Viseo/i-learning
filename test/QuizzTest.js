@@ -45,14 +45,15 @@ describe('Quizz Test', function() {
     });
 
     it("should display the first question (testing interface)",function(){
+        var myQuizz= {
+            title:"Qui veut gagner des millions ? Quizz n°1",
+            bgColor:myColors.raspberry,
+            puzzleLines:3,
+            puzzleRows:1,
+            tabQuestions:[
+                questionWithLabelImageAndMultipleAnswers]};
 
-        var tmpQuizz=JSON.parse(JSON.stringify(myQuizz));// clone de myQuizz
-        var quizz=new Quizz(tmpQuizz);
-
-        console.log(quizz.tabQuestions.length);
-        while (quizz.tabQuestions.length>1) {
-            quizz.tabQuestions.pop();
-        }
+        var quizz=new Quizz(myQuizz);
 
         imageController.imageLoaded(quizz.tabQuestions[0].image.id,1024,1024);
 
@@ -236,8 +237,7 @@ describe('Quizz Test', function() {
 
     });
 
-    it('should display the 1st satifaction level (best score)',function(){
-        //TODO: Devrait marcher quand on aura plus de chargement dans le display du puzzle !_!
+    it('should display the 1st satisfaction level (best score)',function(){
         var quizz = new Quizz(myQuizz);
 
         var startTabQuestionLength=quizz.tabQuestions.length;
@@ -248,14 +248,9 @@ describe('Quizz Test', function() {
         while(quizz.tabQuestions.length>4){
             quizz.tabQuestions.pop();
         }
-        console.log("shift&pop");
-        //quizz.display(50,10,1200,1200);
         quizz.puzzleLines=3;
         quizz.puzzleRows=3;
 
-        console.log("lines&rows");
-
-        console.log('length: '+quizz.tabQuestions.length);
         for(var i=0;i<quizz.tabQuestions.length-3;i++) {
             quizz.questionsWithBadAnswers.push(quizz.tabQuestions[i]);
         }

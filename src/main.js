@@ -5,11 +5,17 @@
 //var paper=Raphael(0,0,1500,1500);
 
 var imageController = ImageController();
+var x=0;
+var y=0;
+//paper1=Raphael(x,y,document.body.clientWidth,1500);
+
 var asyncTimerController=AsyncTimerController();
-var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+var papers = new Paper(x, y, document.body.clientWidth, 1500);
 var paper = papers.paper;
 //paper.setViewBox(0, 0, document.body.clientWidth/2, 1500/2, false);
 paper.canvas.setAttribute('preserveAspectRatio', 'none');
+paper.x=x;
+paper.y=y;
 var displaySet = papers.displaySet;
 
 function main() {
@@ -103,6 +109,10 @@ function main() {
     }
 
 
+    quizz.run(50,50,1200,1200);
+    /*setTimeout(function(){
+        quizz.tabQuestions[0].displaySet.transform('...t50,50');
+    },500);*/
     // Navigation Puzzle
     /*var puzzle = new Puzzle(3, 3, tabQuestions);
      puzzle.display(20, 20, 600, 600, 0);*/

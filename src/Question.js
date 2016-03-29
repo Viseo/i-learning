@@ -106,9 +106,6 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        if (isNaN(parseInt(x)) || isNaN(parseInt(y)) || isNaN(parseInt(w)) || isNaN(parseInt(h))) {
-            throw new Error(NaN);
-        }
         self.displaySet=paper.set();
         self.displaySet._transformation=self._transformation;
 
@@ -126,12 +123,12 @@ var Question = function (question,quizz) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
-            self.displaySet.push(self.bordure);
-            self.displaySet.push(self.content);
-            self.displaySet.push(self.raphImage);
+            self.displaySet.push(self.bordure, self.content, self.raphImage);
 
-            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            var point=self.displaySet.globalToLocal(self.x,self.y);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
             self.displaySet.transform(t);
+
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
@@ -141,7 +138,8 @@ var Question = function (question,quizz) {
             self.displaySet.push(self.bordure);
             self.displaySet.push(self.content);
 
-            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            var point=self.displaySet.globalToLocal(self.x,self.y);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
             self.displaySet.transform(t);
         }
         // Question avec Image uniquement
@@ -149,19 +147,30 @@ var Question = function (question,quizz) {
             self.raphImage = displayImage(self.imageSrc, self.image, -w/2, -self.height/2, w, self.height).image;
             self.displaySet.push(self.raphImage);
 
-            var t=self.transformation('t',''+(x+w/2),''+(y+self.height/2));
+            var point=self.displaySet.globalToLocal(self.x,self.y);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
             self.displaySet.transform(t);
         }
-        else if (!self.imageSrc && !self.label) {
-            self.bordure = paper.rect(x, y, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure})
+        else {
+            var point=self.displaySet.globalToLocal(self.x,self.y);
+            self.bordure = paper.rect(-w/2, -self.height/2, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure});
+            self.displaySet.push(self.bordure);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+self.height/2));
+            self.displaySet.transform(t);
         }
     };
 
     self.displayAnswers = function (x, y, w, h) {
-        if (self.rows !== 0) {
-            self.displaySetAnswers=paper.set();
-            self.displaySetAnswers._transformation=self._transformation;
+        self.displaySetAnswers=paper.set();
 
+
+
+        if (self.rows !== 0) {
+
+            self.displaySetAnswers._transformation=self._transformation;
+            self.displaySet.push(self.displaySetAnswers);
+            var point=self.displaySetAnswers.globalToLocal(0,0);
+            self.displaySetAnswers.transform('...t'+point.x+','+point.y+'');
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
@@ -184,7 +193,6 @@ var Question = function (question,quizz) {
                 tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*//*, answer.image);
                 if(tmpTileHeight > self.tileHeight) {
                     self.tileHeight = tmpTileHeight;
-
                 }
             }*/
 
@@ -207,25 +215,28 @@ var Question = function (question,quizz) {
                     posx = x;
                 }
 
-                self.tabAnswer[i].display(posx, posy, tileWidth, self.tileHeight);
+                self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
+                var point=self.tabAnswer[i].displaySet.globalToLocal(posx,posy);
+                var t=self.transformation('...t',''+(point.x+tileWidth/2),''+(point.y+self.tileHeight/2));
+                self.tabAnswer[i].displaySet.transform(t);
+
                 self.displaySetAnswers.push(self.tabAnswer[i].displaySet);
-               // self.temp=self.tabAnswer[i];
-                (function(element){
+                (function(element) {
                     if(element.bordure) {
                         element.bordure.node.onclick=function() {
-                            elementClicked(element,'bordure');
+                            elementClicked(element);
                         };
                     }
 
                     if(element.content) {
                         element.content.node.onclick=function() {
-                            elementClicked(element,'content');
+                            elementClicked(element);
                         };
                     }
 
                     if (element.image) {
                         element.image.node.onclick = function () {
-                            elementClicked(element, 'image');
+                            elementClicked(element);
                         };
                     }
 
@@ -242,7 +253,7 @@ var Question = function (question,quizz) {
             var h=50;
             var validateX,validateY;
             validateX=self.bordure.attr('width')/2+self.x-75+100;
-            validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height;
+            validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
             var validateButton=displayText("Valider",-w/2,-h/2,w,h,'green','yellow',20
             );
 
@@ -252,8 +263,10 @@ var Question = function (question,quizz) {
             self.validatedisplaySet.push(validateButton.content);
             self.displaySetAnswers.push(self.validatedisplaySet);
 
-            var t=self.transformation('t',''+(validateX+w/2),''+(validateY+h/2+2*margin));
+            var point=self.validatedisplaySet.globalToLocal(validateX,validateY);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
             self.validatedisplaySet.transform(t);
+
 
             //button. onclick
             var oclk=function(){
@@ -307,7 +320,7 @@ var Question = function (question,quizz) {
             var w=150;
             var h=50;
             var resetX=self.bordure.attr('width')/2+self.x-75 -100;
-            var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height;
+            var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
             self.resetButton=displayText("Reset",-w/2,-h/2,w,h,'grey','grey',20
             );
 
@@ -316,8 +329,10 @@ var Question = function (question,quizz) {
             self.resetDisplaySet.push(self.resetButton.cadre);
             self.resetDisplaySet.push(self.resetButton.content);
             self.displaySetAnswers.push(self.resetDisplaySet);
-            var t=self.transformation('t',''+(resetX+w/2),''+(resetY+h/2+2*margin));
+            var point=self.resetDisplaySet.globalToLocal(resetX,resetY);
+            var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
             self.resetDisplaySet.transform(t);
+
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){
@@ -337,19 +352,7 @@ var Question = function (question,quizz) {
 
     };
 
-    function elementClicked(sourceElement,type) {
-        var partClicked;
-        switch(type) {
-            case 'bordure':
-                partClicked=sourceElement.bordure;
-                break;
-            case 'content':
-                partClicked=sourceElement.content;
-                break;
-            case 'image':
-                partClicked=sourceElement.image;
-                break;
-        }
+    function elementClicked(sourceElement) {
         if(self.multipleChoice===false){// question normale, une seule réponse possible
         if(sourceElement.correct) {
             self.parentQuizz.score++;
