@@ -33,6 +33,13 @@ function main() {
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
     quizz.run(50,50,1200,1200);
+
+    setTimeout(function(){
+        var rect =paper.rect(0,0,10,10);
+        console.log('préparez vous, on va push!');
+        quizz.displaySet.push(rect);
+    },500);
+
     /*setTimeout(function(){
         quizz.tabQuestions[0].displaySet.transform('...t50,50');
     },500);*/

@@ -358,6 +358,9 @@ var drawArrow = function(x,y,w,h,side,handler){
     return arrowSet;
 };
 
+
+
+
 Function.prototype.clone = function() {
     var that = this;
     var temp = function temporary() { return that.apply(this, arguments); };
@@ -417,16 +420,16 @@ Raphael.st.push = function() {
 
     tab.forEach(function(obj){
 
+        if(self._transform && obj.type!=='set'){
+            obj.transform(self._transform);
+            console.log('\ntransfo effectuée!');
+        }
         obj.parent=self;
-        /*if( obj.type ==='set' ){
-            obj.x=obj.parent.x;
-            obj.y=obj.parent.y;
-        }*/
         self.oldPush(obj);
     });
 };
-Raphael.st.x=papers.paper.x;
-Raphael.st.y=papers.paper.y;
+Raphael.st.x=0;
+Raphael.st.y=0;
 Raphael.st.hasBeenTransformed=false;
 Raphael.st.oldTransform=Raphael.st.transform.clone();
 Raphael.st.transform=function(str){
@@ -440,6 +443,14 @@ Raphael.st.transform=function(str){
     this.oldTransform(str);
 
 };
+
+Raphael.st.positionSet=function(x,y,dx,dy){
+
+    var point=this.globalToLocal(x,y);
+    var t='t'+(point.x+dx)+','+(point.y+dy);
+    this.transform('...'+t);
+    this._transform=t;
+}
 
 Raphael.st.globalToLocal = function() {
     var point = getPoint(arguments);
