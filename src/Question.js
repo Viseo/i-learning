@@ -165,16 +165,28 @@ var Question = function (question,quizz) {
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
+            self.tileHeightMax = Math.floor(h/self.rows)-2*margin;
 
             var tmpTileHeight;
 
             for(var answer of self.tabAnswer) {
+                //tmpTileHeight=answer.imageSrc.height;
                 tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
+                if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
+                    self.tileHeight = self.tileHeightMax;
+                }
+                else if (tmpTileHeight>self.tileHeight){
+                    self.tileHeight = tmpTileHeight;
+                }
+            }
+
+            /*for(var answer of self.tabAnswer) {
+                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*//*, answer.image);
                 if(tmpTileHeight > self.tileHeight) {
                     self.tileHeight = tmpTileHeight;
 
                 }
-            }
+            }*/
 
             if(self.tabAnswer.length%self.rows === 0) {
                 paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin+100);
