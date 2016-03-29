@@ -77,6 +77,7 @@ var QuestionCreator = function (question) {
             textarea.onblur = function () {
                 textarea.value = "";
                 onblur();
+                self.errorMessage.remove();
             }
         }
     };
@@ -85,7 +86,7 @@ var QuestionCreator = function (question) {
         var quizzInfoHeight=Math.floor(haut*self.headerHeigt);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeigt)-75);
         self.displayQuizzInfo(x, y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(x,quizzInfoHeight, w, questionCreatorHeight-2*self.margin);
+        self.displayQuestionCreator(x,quizzInfoHeight+15, w, questionCreatorHeight-2*self.margin-30);
         self.displayPreviewButton(x,quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
     };
 
@@ -250,7 +251,7 @@ var QuestionCreator = function (question) {
                             if (self.errorMessagePreview) {
                                 self.errorMessagePreview.remove();
                             }
-                            self.errorMessagePreview = paper.text(x+ w/2 - self.margin -170, y + h / 2 - 35, "Vous devez donner un nom à la question.").attr({
+                            self.errorMessagePreview = paper.text(x+ w/2 - self.margin -170, y + h / 2 - 50, "Vous devez donner un nom à la question.").attr({
                                 "font-size": 20,
                                 "fill": 'red',
                                 "text-anchor": 'start'
@@ -261,7 +262,7 @@ var QuestionCreator = function (question) {
                         if (self.errorMessagePreview) {
                             self.errorMessagePreview.remove();
                         }
-                        self.errorMessagePreview = paper.text(x+ w/2 - self.margin -150, y + h / 2 - 35, "Vous devez donner un nom au quiz.").attr({
+                        self.errorMessagePreview = paper.text(x+ w/2 - self.margin -150, y + h / 2 - 50, "Vous devez donner un nom au quiz.").attr({
                             "font-size": 20,
                             "fill": 'red',
                             "text-anchor": 'start'
@@ -272,7 +273,7 @@ var QuestionCreator = function (question) {
                     if (self.errorMessagePreview) {
                         self.errorMessagePreview.remove();
                     }
-                    self.errorMessagePreview = paper.text(x+ w/2 - self.margin -240, y + h / 2 - 35, "Vous ne pouvez pas créer une question sans réponses.").attr({
+                    self.errorMessagePreview = paper.text(x+ w/2 - self.margin -240, y + h / 2 - 50, "Vous ne pouvez pas créer une question sans réponses.").attr({
                         "font-size": 20,
                         "fill": 'red',
                         "text-anchor": 'start'
