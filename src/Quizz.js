@@ -218,8 +218,8 @@ function Quizz(quizz, previewMode) {
         self.nextQuestion();
 
         function getTarget(clientX, clientY){
-            var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-            var scrollLeft = (window.pageXOffset !== undefined) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+            var scrollTop = (window.pageYOffset) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+            var scrollLeft = (window.pageXOffset) ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
             var target = null;
             // si la page du navigateur est trop zoomee et qu'un ascenseur apparait
             // il faut ajouter le deplacement de l'ascenseur à la position de la souris

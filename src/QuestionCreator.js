@@ -57,11 +57,21 @@ var QuestionCreator = function (question) {
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
         if(textarea.value.match(self.regex)) {
+            self.errorMessage && self.errorMessage.remove();
             textarea.onblur = onblur;
             textarea.style.border = "solid 2px #888888";
             self[isValidElement] = true;
+
         } else {
+            self.errorMessage && self.errorMessage.remove();
             textarea.style.border = "solid 2px #FF0000";
+
+            var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
+            var anchor = isValidElement === "questionNameValidInput" ? 'middle' : 'start';
+
+            self.errorMessage = paper.text(position, textarea.getBoundingClientRect().bottom+self.margin, "Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.").attr({
+                "font-size": 15,"fill": 'red',"text-anchor": anchor});
+
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
@@ -240,7 +250,7 @@ var QuestionCreator = function (question) {
                             if (self.errorMessagePreview) {
                                 self.errorMessagePreview.remove();
                             }
-                            self.errorMessagePreview = paper.text(x + w / 2 + 100 + self.margin, y + h / 2, "Vous devez donner un nom à la question.").attr({
+                            self.errorMessagePreview = paper.text(x+ w/2 - self.margin -170, y + h / 2 - 35, "Vous devez donner un nom à la question.").attr({
                                 "font-size": 20,
                                 "fill": 'red',
                                 "text-anchor": 'start'
@@ -251,7 +261,7 @@ var QuestionCreator = function (question) {
                         if (self.errorMessagePreview) {
                             self.errorMessagePreview.remove();
                         }
-                        self.errorMessagePreview = paper.text(x + w / 2 + 100 + self.margin, y + h / 2, "Vous devez donner un nom au quiz.").attr({
+                        self.errorMessagePreview = paper.text(x+ w/2 - self.margin -150, y + h / 2 - 35, "Vous devez donner un nom au quiz.").attr({
                             "font-size": 20,
                             "fill": 'red',
                             "text-anchor": 'start'
@@ -262,7 +272,7 @@ var QuestionCreator = function (question) {
                     if (self.errorMessagePreview) {
                         self.errorMessagePreview.remove();
                     }
-                    self.errorMessagePreview = paper.text(x + w / 2 + 100 + self.margin, y + h / 2, "Vous devez écrire au moins une bonne et une mauvaise réponse.").attr({
+                    self.errorMessagePreview = paper.text(x+ w/2 - self.margin -240, y + h / 2 - 35, "Vous ne pouvez pas créer une question sans réponses.").attr({
                         "font-size": 20,
                         "fill": 'red',
                         "text-anchor": 'start'
