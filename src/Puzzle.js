@@ -156,11 +156,10 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             for(var i = startPosition; i<(startPosition+self.lines); i++) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
-
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.displaySet.push.apply(self.displaySet, self.virtualTab[i][j].displaySet);
-
                         self.virtualTab[i][j].displaySet.positionSet(posX,posY,self.tileWidth/2,self.tileHeight/2);
+
                         posX += self.tileWidth+self.margin;
                         count++;
                     }

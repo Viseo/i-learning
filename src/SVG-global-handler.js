@@ -7,6 +7,8 @@ var Paper = function (x, y, w, h) {
 
     self.paper = Raphael(x, y, w,h);
     self.displaySet = self.paper.set();
+    self.paper.x=0;
+    self.paper.y=0;
 
     self.piste = new Raphael(x, y, w, h);
 

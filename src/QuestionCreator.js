@@ -7,8 +7,26 @@ var QuestionCreator = function (question) {
     var self = this;
     var MAX_ANSWERS = 8;
 
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.displaySet = paper.set();
     displaySet.push(self.displaySet);
+    self.displaySet._transformation=self._transformation;
     self.margin = 15;
     self.headerHeigt=0.1;
     self.questionHeight=0.2;
@@ -148,9 +166,10 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        self.tabAnswer.forEach(function (el) {
+        self.displaySetQuestionCreator.push(self.puzzle.displaySet);
+        /*self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
-        });
+        });*/
     };
     self.displayQuizzInfo = function (x, y, w, h) {
         self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");

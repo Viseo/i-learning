@@ -237,14 +237,14 @@ function Quizz(quizz, previewMode) {
                 }
             });
             return target;
-        };
+        }
 
         function insidePolygon(x, y, element) {
             var local = element.localPoint(x, y);
             console.log(element.label);
             return local.x>=-element.bordure.attrs.width/2 && local.x<=element.bordure.attrs.width/2
                 && local.y>=-element.bordure.attrs.height/2 && local.y<=element.bordure.attrs.height/2;
-        };
+        }
 
         var drag = null;
         var target = null;

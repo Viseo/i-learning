@@ -17,24 +17,20 @@
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
     <script src="SVG-global-handler.js"></script>
-    <script src="SVG-util.js"></script>
     <script>
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
 
-        /*var papers = new Paper(0, 0, document.body.clientWidth, 1500);
-        var paper = papers.paper;*/
-        var paper = Raphael(0, 0, document.body.clientWidth, 1500);
-        var displaySet = paper.set();
-        //var displaySet = papers.displaySet;
-
-        var quizz = new Quizz(myQuizz);
-        var questionCreator = new QuestionCreator();
-        questionCreator.display(20,20,document.body.clientWidth-50,innerHeight-20);
-        //questionCreator.displayQuestionCreator(20, 70, document.body.clientWidth-50, 800);
-        //questionCreator.displayPreviewButton(20, 890, document.body.clientWidth-50, 75);
-        //questionCreator.displayQuizzInfo(20, 20, document.body.clientWidth-50, 50);
+        var papers = new Paper(0, 0, document.body.clientWidth, 1500);
+        var paper = papers.paper;
+        var displaySet = papers.displaySet;
+        var admin = function () {
+            var quizz = new Quizz(myQuizz);
+            var questionCreator = new QuestionCreator();
+            questionCreator.display(20,20,document.body.clientWidth-50,innerHeight-20);
+        };
     </script>
-
+    <script src="SVG-util.js"></script>
+    <script>admin();</script>
 </body>
 </html>

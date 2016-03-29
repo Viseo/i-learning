@@ -4,7 +4,25 @@
 
 var AddEmptyElement = function (parent) {
     var self = this;
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.displaySet = paper.set();
+    self.displaySet._transformation=self._transformation;
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
     self.parent = parent;
@@ -38,7 +56,25 @@ var AddEmptyElement = function (parent) {
 
 var AnswerElement = function (answer, parent) {
     var self = this;
+    self._transformation={
+        type:'',param1:'',param2:''
+    };
+    self.transformation=function(type,param1,param2){
+        if(type){
+            self._transformation.type=type;
+        }
+        if(param1){
+            self._transformation.param1=param1;
+        }
+        if(param2){
+            self._transformation.param2=param2;
+        }
+
+        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
+    };
+
     self.displaySet = paper.set();
+    self.displaySet._transformation=self._transformation;
 
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;

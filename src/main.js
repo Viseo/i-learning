@@ -4,9 +4,7 @@
 
 //var paper=Raphael(0,0,1500,1500);
 
-var imageController = ImageController();
-var x=0;
-var y=0;
+var imageController = ImageController(); 
 //paper1=Raphael(x,y,document.body.clientWidth,1500);
 
 var asyncTimerController=AsyncTimerController();
@@ -14,8 +12,6 @@ var papers = new Paper(x, y, document.body.clientWidth, 1500);
 var paper = papers.paper;
 //paper.setViewBox(0, 0, document.body.clientWidth/2, 1500/2, false);
 paper.canvas.setAttribute('preserveAspectRatio', 'none');
-paper.x=x;
-paper.y=y;
 var displaySet = papers.displaySet;
 
 function main() {
