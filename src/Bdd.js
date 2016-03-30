@@ -22,7 +22,8 @@ var myColors={
     green:[155, 222, 17],
     raspberry:[194, 46, 83],
     black:[0, 0, 0],
-    white:[255, 255, 255]
+    white:[255, 255, 255],
+    none:[]
 };
 
 var myBib= {
