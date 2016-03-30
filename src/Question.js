@@ -10,22 +10,6 @@
 var Question = function (question,quizz) {
     var self = this;
 
-    self._transformation={
-        type:'',param1:'',param2:''
-    };
-    self.transformation=function(type,param1,param2){
-        if(type){
-            self._transformation.type=type;
-        }
-        if(param1){
-            self._transformation.param1=param1;
-        }
-        if(param2){
-            self._transformation.param2=param2;
-        }
-
-        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
-    };
 
     self.parentQuizz=quizz;
     self.label = question.label;
@@ -81,19 +65,9 @@ var Question = function (question,quizz) {
         self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
     }
 
-    if (question.colorBordure && !isNaN(parseInt(question.colorBordure.r)) && !isNaN(parseInt(question.colorBordure.g)) && !isNaN(parseInt(question.colorBordure.b))) {
-        self.rgbBordure = "rgb(" + question.colorBordure.r + ", " + question.colorBordure.g + ", " + question.colorBordure.b + ")";
-    }
-    else {
-        self.rgbBordure = "black";
-    }
+    self.rgbBordure=question.colorBordure;
+    self.bgColor = question.bgColor;
 
-    if (question.bgColor && !isNaN(parseInt(question.bgColor.r)) && !isNaN(parseInt(question.bgColor.g)) && !isNaN(parseInt(question.bgColor.b))) {
-        self.bgColor = "rgb(" + question.bgColor.r + ", " + question.bgColor.g + ", " + question.bgColor.b + ")";
-    }
-    else {
-        self.bgColor = "none";
-    }
     self.bordure = null;
     self.content = null;
 
@@ -106,52 +80,44 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        self.displaySet=paper.set();
-        self.displaySet._transformation=self._transformation;
+        self.displaySet=new Manipulator();
 
         self.x=x;
         self.y=y;
         self.width=w;
-        if(!h) {
-            self.height = getHeight(self.label, self.imageSrc, x, y, w, 20, self.image);
-        } else {
-            self.height=h;
-        }
+        self.height=h;
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, -w/2, -self.height/2, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.imag, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
-            self.displaySet.push(self.bordure, self.content, self.raphImage);
+            self.displaySet.last.add(self.bordure, self.content, self.raphImage);
 
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, -w/2, -self.height/2, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.displaySet.push(self.bordure);
-            self.displaySet.push(self.content);
-
+            self.displaySet.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, -w/2, -self.height/2, w, self.height).image;
-            self.displaySet.push(self.raphImage);
-
+            self.raphImage = displayImage(self.imageSrc, self.image, w, self.height).image;
+            self.displaySet.last.add(self.raphImage);
 
         }
         else {
             var point=self.displaySet.globalToLocal(self.x,self.y);
-            self.bordure = paper.rect(-w/2, -self.height/2, w, self.height).attr({fill: self.bgColor, stroke: self.rgbBordure});
-            self.displaySet.push(self.bordure);
+            self.bordure = new svg.Rect( w, self.height).color(self.bgColor,1,self.rgbBordure);
+            self.displaySet.last.add(self.bordure);
 
         }
 
-        self.displaySet.positionSet(self.x,self.y,self.width/2,self.height/2);
+        self.displaySet.translator.moveTo(self.x+self.width/2,self.y+self.height/2);
     };
 
     self.displayAnswers = function (x, y, w, h) {
@@ -159,9 +125,8 @@ var Question = function (question,quizz) {
 
         if (self.rows !== 0) {
 
-            self.displaySetAnswers._transformation=self._transformation;
-            self.displaySet.push(self.displaySetAnswers);
-            self.displaySetAnswers.positionSet(0,0,0,0);
+            self.displaySet.last.add(self.displaySetAnswers);
+            //self.displaySetAnswers.translator.moveTo(0,0);
 
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
@@ -170,29 +135,23 @@ var Question = function (question,quizz) {
 
             var tmpTileHeight;
 
-            for(var answer of self.tabAnswer) {
-                //tmpTileHeight=answer.imageSrc.height;
-                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
-                if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
-                    self.tileHeight = self.tileHeightMax;
-                }
-                else if (tmpTileHeight>self.tileHeight){
-                    self.tileHeight = tmpTileHeight;
-                }
-            }
+            //for(var answer of self.tabAnswer) {
+            //    //tmpTileHeight=answer.imageSrc.height;
+            //    tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
+            //    if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
+            //        self.tileHeight = self.tileHeightMax;
+            //    }
+            //    else if (tmpTileHeight>self.tileHeight){
+            //        self.tileHeight = tmpTileHeight;
+            //    }
+            //}
 
-            /*for(var answer of self.tabAnswer) {
-                tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*//*, answer.image);
-                if(tmpTileHeight > self.tileHeight) {
-                    self.tileHeight = tmpTileHeight;
-                }
-            }*/
 
-            if(self.tabAnswer.length%self.rows === 0) {
-                paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin+100);
-            } else {
-                paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin+100);
-            }
+            //if(self.tabAnswer.length%self.rows === 0) {
+            //    paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin+100);
+            //} else {
+            //    paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin+100);
+            //}
 
             var posx = x;
             var posy = y + self.height + margin * 2;
@@ -208,9 +167,9 @@ var Question = function (question,quizz) {
                 }
 
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                self.tabAnswer[i].displaySet.positionSet(posx,posy,tileWidth/2,self.tileHeight/2);
+                self.tabAnswer[i].displaySet.translator.moveTo(posx+tileWidth/2,posy+self.tileHeight/2);
 
-                self.displaySetAnswers.push(self.tabAnswer[i].displaySet);
+                self.displaySetAnswers.last.add(self.tabAnswer[i].displaySet);
                 (function(element) {
                     if(element.bordure) {
                         element.bordure.node.onclick=function() {
@@ -242,17 +201,15 @@ var Question = function (question,quizz) {
             var w=150;
             var h=50;
             var validateX,validateY;
-            validateX=self.bordure.attr('width')/2+self.x-75+100;
+            validateX=self.bordure.component.attr('width')/2+self.x-75+100;
             validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            var validateButton=displayText("Valider",-w/2,-h/2,w,h,'green','yellow',20
+            var validateButton=displayText("Valider",w,h,'green','yellow',20
             );
 
-            self.validatedisplaySet=paper.set();
-            self.validatedisplaySet._transformation=self._transformation;
-            self.validatedisplaySet.push(validateButton.cadre);
-            self.validatedisplaySet.push(validateButton.content);
-            self.displaySetAnswers.push(self.validatedisplaySet);
-            self.validatedisplaySet.positionSet(validateX,validateY,w/2,h/2);
+            self.validatedisplaySet=new Manipulator();
+            self.validatedisplaySet.last.add(validateButton.cadre,validateButton.content);
+            self.displaySetAnswers.last.add(self.validatedisplaySet);
+            self.validatedisplaySet.translator.moveTo(validateX+w/2,validateY+h/2);
 
             //button. onclick
             var oclk=function(){
@@ -299,38 +256,35 @@ var Question = function (question,quizz) {
                 self.parentQuizz.nextQuestion();
 
             };
-            validateButton.cadre.node.onclick=oclk;
-            validateButton.content.node.onclick=oclk;
+            svg.addEvent(validateButton.cadre,'click',oclk);
+            svg.addEvent(validateButton.content,'click',oclk);
 
             //Button reset
             var w=150;
             var h=50;
-            var resetX=self.bordure.attr('width')/2+self.x-75 -100;
+            var resetX=self.bordure.component.attr('width')/2+self.x-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            self.resetButton=displayText("Reset",-w/2,-h/2,w,h,'grey','grey',20
+            self.resetButton=displayText("Reset",w,h,'grey','grey',20
             );
 
-            self.resetDisplaySet=paper.set();
-            self.resetDisplaySet._transformation=self._transformation;
-            self.resetDisplaySet.push(self.resetButton.cadre);
-            self.resetDisplaySet.push(self.resetButton.content);
-            self.displaySetAnswers.push(self.resetDisplaySet);
-            self.resetDisplaySet.positionSet(resetX,resetY,w/2,h/2);
+            self.resetDisplaySet=new Manipulator();
+            self.resetDisplaySet.last.add(self.resetButton.cadre,self.resetButton.content);
+            self.displaySetAnswers.last.add(self.resetDisplaySet);
+            self.resetDisplaySet.translator.moveTo(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
                         e.selected=false;
-                        e.bordure.attr("stroke-width",1);
-                        e.bordure.attr("stroke",e.rgbBordure);
+                        e.bordure.color(null,1,e.rgbBordure);
+
                     });
                     self.selectedAnswers.splice(0,self.selectedAnswers.length);
-                    self.resetButton.cadre.attr("fill","grey");
-                    self.resetButton.cadre.attr("stroke","grey");
+                    self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }
             };
-            self.resetButton.content.node.onclick=self.reset;
-            self.resetButton.cadre.node.onclick=self.reset;
+            svg.addEvent(self.resetButton.content,'click',self.reset);
+            svg.addEvent(self.resetButton.cadre,'click',self.reset);
         }
 
     };
@@ -363,19 +317,17 @@ var Question = function (question,quizz) {
                 // on sélectionne une réponse
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
-                sourceElement.bordure.attr("stroke-width",5);
-                sourceElement.bordure.attr("stroke",'red');
-                self.resetButton.cadre.attr("fill","yellow");
-                self.resetButton.cadre.attr("stroke","green");
+
+                sourceElement.bordure.color(null,5,myColors.red);
+                self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-                sourceElement.bordure.attr("stroke-width", 1);
-                sourceElement.bordure.attr("stroke",sourceElement.rgbBordure);
+
+                sourceElement.bordure.color(null,1,sourceElement.rgbBordure);
                 if(self.selectedAnswers.length==0){
-                    self.resetButton.cadre.attr("fill","grey");
-                    self.resetButton.cadre.attr("stroke","grey");
+                    self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }
             }
 
@@ -384,31 +336,6 @@ var Question = function (question,quizz) {
 
        // console.log("score: "+self.parentQuizz.score);
     }
-
-    self.localPoint=function(){
-        var point = getPoint(arguments);
-        if (this.parent) {
-            point = this.parent.localPoint(point);
-            return {
-                x:point.x-this.x,
-                y:point.y-this.y
-            };
-        }
-        else {
-            return {
-                x:point.x,//-this._transformation.param1,//-svgr.boundingRect(this.component).left,
-                y:point.y//-this._transformation.param2//-svgr.boundingRect(this.component).top
-            };
-        }
-    };
-    function getPoint(args) {
-        if (args[0]!==undefined && (typeof args[0]==='number')) {
-            return {x:args[0], y:args[1]}
-        }
-        else {
-            return args[0];
-        }
-    };
 
 };
 

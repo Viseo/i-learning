@@ -76,14 +76,8 @@ var Drawings = function (w, h) {
         self.drag = null;
     };
     svg.addEvent(self.glass.area,"mouseup",onmouseupHandler);
+
+
+
 };
 
-var Manipulator = function(){
-    var self=this;
-    self.translator = new svg.Translation(0,0);
-    self.rotator = new svg.Rotation(0);
-    self.scalor = new svg.Scaling(1);
-    self.ordonator = new svg.Ordered(10);
-    self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
-    self.last = self.scalor;
-};

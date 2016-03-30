@@ -15,23 +15,6 @@
 var Answer = function (answer) {
     var self = this;
 
-    self._transformation={
-        type:'',param1:'',param2:''
-    };
-    self.transformation=function(type,param1,param2){
-        if(type){
-            self._transformation.type=type;
-        }
-        if(param1){
-            self._transformation.param1=param1;
-        }
-        if(param2){
-            self._transformation.param2=param2;
-        }
-
-        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
-    };
-
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
@@ -86,81 +69,48 @@ var Answer = function (answer) {
      */
     self.display = function (x, y, w, h) {
 
-        self.displaySet=paper.set();
-        self.displaySet._transformation=self._transformation;
+        self.displaySet=new Manipulator();
 
         if(self.selected){// image pré-selectionnée
-            self.bordure.attr("stroke-width",5);
-            self.rgbBordure='red';
+            self.bordure.color(null,5,myColors.red);
         }
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, -w/2, -h/2, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
-            self.displaySet.push(self.bordure,self.content,self.image);
+            self.displaySet.last.add(self.bordure,self.content,self.image);
 
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, -w/2, -h/2, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.displaySet.push(self.bordure);
-            self.displaySet.push(self.content);
+            self.displaySet.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            var obj = displayImageWithBorder(self.imageSrc, self.image, x, y, w, h);
+            var obj = displayImageWithBorder(self.imageSrc, self.image, w, h);
             self.image = obj.image;
             self.bordure = obj.cadre;
-            self.displaySet.push(self.image);
-            self.displaySet.push(self.bordure);
+            self.displaySet.last.add(self.image,self.bordure);
 
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            self.bordure = paper.rect( -w/2, -h/2, w, h).attr({fill: self.bgColor, stroke: self.rgbBordure});
-            self.displaySet.push(self.bordure);
+            self.bordure = new svg.Rect(w, h).color(self.bgColor,1, self.rgbBordure);
+            self.displaySet.last.add(self.bordure);
 
         }
 
-        self.displaySet.positionSet(x,y,w/2,h/2);
-        /*
-        var point=self.displaySet.globalToLocal(x,y);
-        var t=self.transformation('...t',''+(point.x+w/2),''+(point.y+h/2));
-        self.displaySet.transform(t);*/
+        self.displaySet.translator.moveTo(x,y);
 
     };
 
 
-   /* self.localPoint=function(){
-        var point = getPoint(arguments);
-        if (self.parent) {
-            point = self.parent.localPoint(point);
-            console.log(self);
-            console.log(self._transformation);
-            return {
-                x:point.x-self._transformation.param1,
-                y:point.y-self._transformation.param2
-            };
-        }
-        else {
-            return {
-                //x:point.x-svgr.boundingRect(this.component).left, ??
-                //y:point.y-svgr.boundingRect(this.component).top ??
-            };
-        }
-    };
-    function getPoint(args) {
-        if (args[0]!==undefined && (typeof args[0]==='number')) {
-            return {x:args[0], y:args[1]}
-        }
-        else {
-            return args[0];
-        }
-    };*/
+
 };
