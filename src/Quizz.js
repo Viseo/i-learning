@@ -132,33 +132,33 @@ function Quizz(quizz, previewMode) {
 
     };
 
-    self.display=function(x,y,w,h){
+    self.display=function(x,y,w,h) {
 
-        x && (self.x=x);
-        y && (self.y=y);
-        w && (self.cadreQuestion.w=w);
-        (w && x) &&(self.cadreResult.w=w-x);
-        x && (self.cadreResult.x=x);
-        w && (self.cadreTitle.w=w);
-        x && (self.quizzMarginX=x);
-        y && (self.quizzMarginY=y);
-        self.headerPercentage=0.1;
-        self.questionPercentageWithImage=0.3;
-        self.questionPercentage=0.2;
-        self.responsePercentageWithImage=0.6;
-        self.responsePercentage=0.7;
+        x && (self.x = x);
+        y && (self.y = y);
+        w && (self.cadreQuestion.w = w);
+        (w && x) && (self.cadreResult.w = w - x);
+        x && (self.cadreResult.x = x);
+        w && (self.cadreTitle.w = w);
+        x && (self.quizzMarginX = x);
+        y && (self.quizzMarginY = y);
+        self.headerPercentage = 0.1;
+        self.questionPercentageWithImage = 0.3;
+        self.questionPercentage = 0.2;
+        self.responsePercentageWithImage = 0.6;
+        self.responsePercentage = 0.7;
 
         var heightPage = document.documentElement.clientHeight;
 
-        self.headerHeight=heightPage*self.headerPercentage-self.quizzMarginY;
-        self.questionHeight=heightPage*self.questionPercentage-2*self.quizzMarginY;
-        self.responseHeight=heightPage*self.responsePercentage-2*self.quizzMarginY;
-        self.questionHeightWithoutImage=heightPage*self.questionPercentage-2*self.quizzMarginY;
-        self.responseHeightWithoutImage=heightPage*self.responsePercentage-2*self.quizzMarginY;
-        self.questionHeightWithImage=heightPage*self.questionPercentageWithImage-2*self.quizzMarginY;
-        self.responseHeightWithImage=heightPage*self.responsePercentageWithImage-2*self.quizzMarginY;
+        self.headerHeight = heightPage * self.headerPercentage - self.quizzMarginY;
+        self.questionHeight = heightPage * self.questionPercentage - 2 * self.quizzMarginY;
+        self.responseHeight = heightPage * self.responsePercentage - 2 * self.quizzMarginY;
+        self.questionHeightWithoutImage = heightPage * self.questionPercentage - 2 * self.quizzMarginY;
+        self.responseHeightWithoutImage = heightPage * self.responsePercentage - 2 * self.quizzMarginY;
+        self.questionHeightWithImage = heightPage * self.questionPercentageWithImage - 2 * self.quizzMarginY;
+        self.responseHeightWithImage = heightPage * self.responsePercentageWithImage - 2 * self.quizzMarginY;
 
-        var object = displayText(self.title,(self.cadreTitle.w-self.quizzMarginX),(self.headerHeight-self.quizzMarginY), self.rgbBordure, self.bgColor, self.fontSize, self.font);
+        var object = displayText(self.title, (self.cadreTitle.w - self.quizzMarginX), (self.headerHeight - self.quizzMarginY), self.rgbBordure, self.bgColor, self.fontSize, self.font);
         self.titleBox = object.cadre;
         self.titleText = object.content;
 
@@ -167,9 +167,10 @@ function Quizz(quizz, previewMode) {
 
         self.quizzManipulator.last.add(self.titleBox);
         self.quizzManipulator.last.add(self.titleText);
-        self.quizzManipulator.translator.moveTo(self.x,self.y);
+        self.quizzManipulator.translator.moveTo(self.x, self.y);
 
         self.nextQuestion();
+    }
 
     self.nextQuestion=function(){
 
