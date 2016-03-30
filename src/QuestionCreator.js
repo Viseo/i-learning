@@ -7,26 +7,9 @@ var QuestionCreator = function (question) {
     var self = this;
     var MAX_ANSWERS = 8;
 
-    self._transformation={
-        type:'',param1:'',param2:''
-    };
-    self.transformation=function(type,param1,param2){
-        if(type){
-            self._transformation.type=type;
-        }
-        if(param1){
-            self._transformation.param1=param1;
-        }
-        if(param2){
-            self._transformation.param2=param2;
-        }
+    self.manipulator = new Manipulator();
+    mainManipulator.add(self.manipulator.translator);
 
-        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
-    };
-
-    self.displaySet = paper.set();
-    displaySet.push(self.displaySet);
-    self.displaySet._transformation=self._transformation;
     self.margin = 15;
     self.headerHeight=0.1;
     self.questionHeight=0.2;
@@ -65,10 +48,10 @@ var QuestionCreator = function (question) {
         });
     }
 
-    self.displaySetQuestionCreator = paper.set();
-    self.displaySetQuizzInfo = paper.set();
-    self.displaySetPreviewButton = paper.set();
-    self.displaySet.push(self.displaySetQuestionCreator, self.displaySetQuizzInfo, self.displaySetPreviewButton);
+    //self.displaySetQuestionCreator = paper.set();
+    //self.displaySetQuizzInfo = paper.set();
+    //self.displaySetPreviewButton = paper.set();
+    //self.displaySet.push(self.displaySetQuestionCreator, self.displaySetQuizzInfo, self.displaySetPreviewButton);
 
     self.coordinatesAnswers = {x:0, y:0, w:0, h:0};
     self.formationName = "Hibernate";
@@ -88,8 +71,9 @@ var QuestionCreator = function (question) {
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
             var anchor = isValidElement === "questionNameValidInput" ? 'middle' : 'start';
 
-            self.errorMessage = paper.text(position, textarea.getBoundingClientRect().bottom+self.margin, "Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.").attr({
-                "font-size": 15,"fill": 'red',"text-anchor": anchor});
+            self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                .position(position, textarea.getBoundingClientRect().bottom+self.margin)
+                .font("arial", 15).color(myColors.red).anchor(anchor);
 
             textarea.focus();
             self[isValidElement] = false;
@@ -110,17 +94,18 @@ var QuestionCreator = function (question) {
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
-        self.displaySetQuestionCreator.remove();
-        self._transformation = self.transformation("t", x, y);
+        self.manipulatorQuestionCreator && self.manipulator.last.remove(self.manipulatorQuestionCreator);
+        self.manipulatorQuestionCreator = new Manipulator();
+
         var showTitle = function () {
-            var color = (self.label) ? "black" : "#888";
+            var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.x+self.margin, self.y+self.margin, self.w-2*self.margin, self.h*0.25, "black", "white", self.fontSize);
-            self.questionBlock.title.content.attr("fill", color);
-            self.questionBlock.title.cadre.attr("fill-opacity", 0);
-            self.questionBlock.title.content.node.ondblclick = dblclickEdition;
-            self.questionBlock.title.cadre.node.ondblclick = dblclickEdition;
-            self.displaySetQuestionCreator.push(self.questionBlock.title.content, self.questionBlock.title.cadre);
+            self.questionBlock.title = displayText(text, self.w-2*self.margin, self.h*0.25, myColors.black, myColors.white, self.fontSize, self.manipulatorQuestionCreator);
+            self.questionBlock.title.content.color(color);
+            self.questionBlock.title.cadre.opacity(0);
+            svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
+            self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
         };
 
         var dblclickEdition = function () {
@@ -128,7 +113,7 @@ var QuestionCreator = function (question) {
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.label;
             textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin)+"px; height:"+(self.h*0.25-4*self.margin)+"px; text-align:center; resize: none; outline:none; border: none;");
-            var body = document.getElementById("body");
+            var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {
@@ -159,7 +144,7 @@ var QuestionCreator = function (question) {
         // bloc Question
         self.questionBlock = {rect: paper.rect(self.x, self.y, self.w, self.h).attr("fill", "none")};
         showTitle();
-        self.displaySetQuestionCreator.push(self.questionBlock.rect);
+        self.manipulatorQuestionCreator.last.add(self.questionBlock.rect);
 
         // bloc Answers
         if(self.tabAnswer.length !== MAX_ANSWERS) {

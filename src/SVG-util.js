@@ -27,7 +27,7 @@ var displayCheckbox = function (x, y, size, sender) {
         svg.addEvent(obj.checked,"click", onclickFunction);
         sender.manipulator.last.add(obj.checked);
     }
-    sender.manipulator.add(obj.checkbox);
+    sender.manipulator.last.add(obj.checkbox);
     svg.addEvent(obj.checkbox,"click", onclickFunction);
 
     return obj;
@@ -39,14 +39,13 @@ var displayCheckbox = function (x, y, size, sender) {
  * @param label
  * @param imageSrc
  * @param imageObj
- * @param x
- * @param y
  * @param w
  * @param h
  * @param rgbCadre
  * @param bgColor
  * @param fontSize
  * @param font
+ * @param manipulator
  * @returns {{cadre: *, image, text}}
  */
 var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
@@ -61,7 +60,15 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
 
     return {cadre: cadre, image: image.image,  text: text};
 };
-
+/**
+ *
+ * @param imageSrc
+ * @param imageObj
+ * @param w
+ * @param h
+ * @param manipulator
+ * @returns {{image: *, height: *, cadre}}
+ */
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
     var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-2*margin);
@@ -75,8 +82,6 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
  *
  * @param imageSrc
  * @param image
- * @param x
- * @param y
  * @param w
  * @param h
  */
@@ -113,7 +118,7 @@ var displayImage = function (imageSrc, image, w, h) {
  * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
  */
 var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font,manipulator) {
-    var content = autoAdjustText(label, w, h, textHeight, font).text;
+    var content = autoAdjustText(label, 0, 0, w, h, textHeight, font).text;
 
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre);
     manipulator.ordered.set(0,cadre).set(1,content);
@@ -132,27 +137,25 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font,man
  * @param font
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
-    var t = paper.text(x+w/2, y+h/2, "");
-    var fontSize = fontSize;
+    var t = new svg.Text("");
 
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;
 
-    font && t.attr("font-family", font);
+    font && t.font(font ? font : "arial", fontSize ? fontSize : 20);
 
-    t.attr("font-size", fontSize);
     // add text word by word
     for (var i = 0; i < words.length; i++) {
         // set text to test the BBox.width
-        t.attr("text", tempText + " " + words[i]);
+        t.message(tempText + " " + words[i]);
         // test if DOESN'T fit in the line
-        if (t.getBBox().width > w - margin) {
+        if (t.component.getBBox().width > w - margin) {
             // temporary string to store the word in a new line
             var tmpStr = tempText + "\n" + words[i];
-            t.attr("text", tmpStr);
+            t.message(tmpStr);
             // test if the whole word can fit in a line
-            if (t.getBBox().width > w - margin) {
+            if (t.component.getBBox().width > w - margin) {
                 // we don't need the tmpStr anymore
                 // add a space before the problematic word
                 tempText += " ";
@@ -161,9 +164,9 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
                 // goes character by character
                 for (var j = 0; j < longWord.length; j++) {
                     // set text to test the BBox.width
-                    t.attr("text", tempText + " " + longWord.charAt(j));
+                    t.message(tempText + " " + longWord.charAt(j));
                     // check if we can add an additional character in this line
-                    if (t.getBBox().width > w - margin) {
+                    if (t.component.getBBox().width > w - margin) {
                         // we can't: break line, add the character
                         tempText += "-\n" + longWord.charAt(j);
                     } else {
@@ -177,9 +180,9 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
                 // we add the word in a new line
                 var tmpText = tempText;
                 tempText += "\n" + words[i];
-                t.attr("text", tmpStr);
+                t.message(tmpStr);
                 // test if it fits in height
-                if (t.getBBox().height > h - margin) {
+                if (t.component.getBBox().height > h - margin) {
                     // it doesn't : break
                     tempText = tmpText.substring(0, tmpText.length-3) + "...";
                     break;
@@ -191,37 +194,9 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
         }
     }
 
-    t.attr("text", tempText.substring(1));
-    var finalHeight = t.getBBox().height;
+    t.message(tempText.substring(1));
+    var finalHeight = t.component.getBBox().height;
     return {finalHeight: finalHeight, text:t};
-};
-/**
- *
- * @param text
- * @param imageSrc
- * @param x
- * @param y
- * @param w
- * @param fontSize
- * @param image
- * @param font
- * @returns {*}
- */
-var getHeight = function (text, imageSrc, x, y, w, fontSize, image, font) {
-    var formatedText;
-    var margin = 10;
-    if (text && imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
-        formatedText.text.remove();
-        return formatedText.finalHeight + 3*margin + displayImage(imageSrc, image, x, y, w);
-    } else if(text && !imageSrc) {
-        formatedText = autoAdjustText(text, x, y, w, 0, fontSize, font);
-        formatedText.text.remove();
-        return formatedText.finalHeight + 2*margin;
-    } else if(!text && imageSrc) {
-        return displayImage(imageSrc, image, x, y, w);
-    }
-    return 0
 };
 
 /**
@@ -230,32 +205,30 @@ var getHeight = function (text, imageSrc, x, y, w, fontSize, image, font) {
  * @param y
  * @param w
  * @param h
- * @param thicknessPercentage
  */
 
 var drawPlus =function(x,y,w,h) {
     var baseWidth=w;
     var baseHeight=h;
     var thickness=(((baseHeight+baseWidth)/2)*0.3);
-    var path="M "+(x-(thickness/2))+","+(y+(thickness/2))+" "+
 
-            "L "+(x-(baseWidth/2))+","+(y+(thickness/2))+" "+
-            "L "+(x-(baseWidth/2))+","+(y-(thickness/2))+" "+
-            "L "+(x-(thickness/2))+","+(y-(thickness/2))+" "+
-            "L "+(x-(thickness/2))+","+(y-(baseHeight/2))+" "+
-            "L "+(x+(thickness/2))+","+(y-(baseHeight/2))+" "+
-            "L "+(x+(thickness/2))+","+(y-(thickness/2))+" "+
+    var path = new svg.Path(x,y).move(x-(thickness/2), y+(thickness/2))
+        .line(x-(baseWidth/2), y+(thickness/2))
+        .line(x-(baseWidth/2), y-(thickness/2))
+        .line(x-(thickness/2), y-(thickness/2))
+        .line(x-(thickness/2), y-(baseHeight/2))
+        .line(x+(thickness/2), y-(baseHeight/2))
+        .line(x+(thickness/2), y-(thickness/2))
 
-            "L "+(x+(baseWidth/2))+","+(y-(thickness/2))+" "+
-            "L "+(x+(baseWidth/2))+","+(y+(thickness/2))+" "+
-            "L "+(x+(thickness/2))+","+(y+(thickness/2))+" "+
-            "L "+(x+(thickness/2))+","+(y+(baseHeight/2))+" "+
-            "L "+(x-(thickness/2))+","+(y+(baseHeight/2))+" "+
-            "L "+(x-(thickness/2))+","+(y+(thickness/2))+" ";
+        .line(x+(baseWidth/2), y-(thickness/2))
+        .line(x+(baseWidth/2), y+(thickness/2))
+        .line(x+(thickness/2), y+(thickness/2))
+        .line(x+(thickness/2), y+(baseHeight/2))
+        .line(x-(thickness/2), y+(baseHeight/2))
+        .line(x-(thickness/2), y+(thickness/2));
 
-    var plus=paper.path(path);
-    plus.attr('fill','black');
-    return plus;
+    path.color([], 1, myColors.black);
+    return path;
 };
 
 /**
@@ -264,54 +237,55 @@ var drawPlus =function(x,y,w,h) {
  * @param y
  * @param w
  * @param h
- * @param side
  * @param handler
  */
 
-var drawArrow = function(x,y,w,h,side,handler){
+var drawArrow = function(x,y,w,h,handler){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
-    var scale=1;
-    var arrowSet=paper.set();
-    var path = "M "+(x)+","+(y)+" "+
-        "L "+(-100+x)+","+(100+y)+" "+
-        "C "+(-140+x)+","+(140+y)+" "+(-85+x)+","+(185+y)+" "+(-50+x)+","+(150+y)+" "+
-        "L "+(60+x)+","+(40+y)+" "+
-        "C "+(95+x)+","+(5+y)+" "+(95+x)+","+(-5+y)+" "+(60+x)+","+(-40+y)+" "+
-        "L "+(-50+x)+","+(-150+y)+" "+
-        "C "+(-85+x)+","+(-190+y)+" "+(-145+x)+","+(-140+y)+" "+(-100+x)+","+(-100+y)+" "+
-        "L "+(x)+","+(y)+" ";
+    var arrowManipulator = new Manipulator();
 
-    var chevron=paper.path(path);
+    var chevron = new svg.Path(x, y).line(x-100, y+100)
+        .cubic(x-140, y+140, x-85, y+185, x-50, y+150)
+        .line(x+60, y+40)
+        .cubic(x+95, y+5, x+95, y-5, x+60, y-40)
+        .line(x-50, y-150)
+        .cubic(x-85, y-190, x-145, y-140, x-100, y-100)
+        .line(x, y);
+
+    //var path = "M "+(x)+","+(y)+" "+
+    //    "L "+(-100+x)+","+(100+y)+" "+
+    //    "C "+(-140+x)+","+(140+y)+" "+(-85+x)+","+(185+y)+" "+(-50+x)+","+(150+y)+" "+
+    //    "L "+(60+x)+","+(40+y)+" "+
+    //    "C "+(95+x)+","+(5+y)+" "+(95+x)+","+(-5+y)+" "+(60+x)+","+(-40+y)+" "+
+    //    "L "+(-50+x)+","+(-150+y)+" "+
+    //    "C "+(-85+x)+","+(-190+y)+" "+(-145+x)+","+(-140+y)+" "+(-100+x)+","+(-100+y)+" "+
+    //    "L "+(x)+","+(y)+" ";
+
     chevron.tempWidth=baseWidth;
     chevron.tempHeight=baseHeight;
-    arrowSet.push(chevron);
-
+    arrowManipulator.last.add(chevron);
 
     if(handler) {
-        chevron.attr({"type":"path","stroke":"none","fill":"black"});
-        chevron.node.onclick=handler;
+        chevron.color(myColors.black);
+        svg.addEvent(chevron, "click", handler);
     }else{
-        chevron.attr({"type":"path","stroke":"none","fill":"grey"});
+        chevron.color(myColors.grey);
     }
-    if(side==="left") {
-        //arrowSet.transform("...r" + 180 + " "+x+" "+y);/// coordonnées globales ici!
+
+    if(chevron.tempWidth> w) {
+        chevron.tempHeight *= w/chevron.tempWidth;
+        chevron.tempWidth = w;
     }
-    while((w<chevron.tempWidth)||(h<chevron.tempHeight)) {
-        scale-=0.1;
-        chevron.tempWidth=(baseWidth*scale);
-        chevron.tempHeight=(baseHeight*scale);
+    if(chevron.tempHeight > h) {
+        chevron.tempWidth *= h/chevron.tempHeight;
+        chevron.tempHeight = h;
     }
-    var s="s"+scale;
-    //arrowSet.scale(scale);
-    arrowSet._scale=scale;
-    //arrowSet.transform('...'+s)
-    return arrowSet;
+
+    arrowManipulator.scalor.scale(chevron.tempHeight/baseHeight);
+    return chevron;
 };
-
-
-
 
 Function.prototype.clone = function() {
     var that = this;
@@ -340,140 +314,139 @@ function getPoint(args) {
 }
 
 
-papers.paper.globalToLocal = function() {
-    var point = getPoint(arguments);
-    var pt={
-        x:point.x-this.x,
-        y:point.y-this.y
-    };
-        return pt;
-
-};
-papers.paper.localToGlobal = function() {
-    var point = getPoint(arguments);
-        return {
-            x:point.x+this.x,
-            y:point.y+this.y
-        };
-
-};
-papers.paper.inside = function(x, y) {
-    var local = this.localToGlobal(x, y);
-    return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
-};
-
-
-Raphael.st.oldPush=function(){};
-Raphael.st.oldPush=Raphael.st.push.clone();
-Raphael.st.parent=papers.paper;
-Raphael.st.push = function() {
-    var self=this;
-    var tab=Array.prototype.slice.call(arguments);
-
-    tab.forEach(function(obj){
-
-        if(self._transform && obj.type!=='set'){
-            obj.transform(self._transform);
-            console.log('\ntransfo effectuée!');
-        }
-        obj.parent=self;
-        self.oldPush(obj);
-    });
-};
-Raphael.st.x=0;
-Raphael.st.y=0;
-Raphael.st.hasBeenTransformed=false;
-Raphael.st.oldTransform=Raphael.st.transform.clone();
-Raphael.st.transform=function(str){
-    var pointless=str.split('...');
-  var type=pointless[pointless.length-1].charAt(0);
-  var tmp=  str.split(type);
-    var vals=tmp[1].split(',');
-    this.x=parseInt(vals[0]);
-    this.y=parseInt(vals[1]);
-    this.hasBeenTransformed=true;
-    this.oldTransform(str);
-
-};
-
-Raphael.st.positionSet=function(x,y,dx,dy){
-
-    var point=this.globalToLocal(x,y);
-    var t='t'+(point.x+dx)+','+(point.y+dy);
-    this.transform('...'+t);
-    this._transform=t;
-}
-
-Raphael.st.globalToLocal = function() {
-    var point = getPoint(arguments);
-    point = {x:point.x-this.x, y:point.y-this.y};
-    return this.parent ? this.parent.globalToLocal(point.x,point.y) : null;
-};
-
-Raphael.st.localToGlobal = function() {
-    var point = getPoint(arguments);
-    point = this.parent ? this.parent.localToGlobal(point.x,point.y) : null;
-    if (point) {
-        point = {x:point.x+this.x , y:this.y+point.y };
-    }else{
-        point = getPoint(arguments);
-    }
-    return point;
-};
-
-//rect
-Raphael.el.parent=papers.paper;
-
-Raphael.el.globalToLocal = function() {
-    var point = getPoint(arguments);
-    //return this.parent.globalToLocal(point.x+this.attr('x'), point.y+this.attr('y'));
-    return this.parent.globalToLocal(point.x, point.y);
-};
-Raphael.el.localToGlobal = function() {
-    var point = getPoint(arguments);
-    point = this.parent.localToGlobal(point.x,point.y);
-    //return point ? {x:point.x-this.attr('x'), y:point.y-this.attr('y')} : null;
-    return point ? {x:point.x-0, y:point.y-0} : null;// la référence est au centre du rectangle, pas en haut à gauche
-};
-/*
-Raphael.rect.inside = function(x, y) {
-    var local = this.localToGlobal(x, y);
-    return local.x>=-this.width/2 && local.x<=this.width/2
-        && local.y>=-this.height/2 && local.y<=this.height/2;
-};
-*/
-
-
-
-function insidePolygon(x, y, element) {
-    //var rand = Math.random()*100;
-    //return (rand >90);
-
-    var local = element.globalToLocal(x, y);
-    var width = element.attrs.width ? element.attrs.width : element.getBBox().width;
-    var height = element.attrs.height ? element.attrs.height : element.getBBox().height;
-
-    return local.x>=-width/2 && local.x<=width/2
-        && local.y>=-height/2 && local.y<=height/2;
-}
-
-Raphael.st.getTarget=function(clientX,clientY){
-    var el = {};
-    for(var i = 0; i<this.items.length; i++) {
-        el = this[i].getTarget(clientX,clientY);
-        if(el) {
-            return el;
-        }
-    }
-    return null;
-};
-
-Raphael.el.getTarget=function(clientX,clientY){
-    var inside = insidePolygon(clientX,clientY,this);
-    if (inside){
-        console.log("FOUND YOU");
-        console.log(this);
-        return this;
-    }
-    return null;
-};
+//papers.paper.globalToLocal = function() {
+//    var point = getPoint(arguments);
+//    var pt={
+//        x:point.x-this.x,
+//        y:point.y-this.y
+//    };
+//        return pt;
+//
+//};
+//papers.paper.localToGlobal = function() {
+//    var point = getPoint(arguments);
+//        return {
+//            x:point.x+this.x,
+//            y:point.y+this.y
+//        };
+//
+//};
+//papers.paper.inside = function(x, y) {
+//    var local = this.localToGlobal(x, y);
+//    return local.x>=0 && local.x<=this.width && local.y>=0 && local.y<=this.height;
+//};
+//
+//
+//Raphael.st.oldPush=function(){};
+//Raphael.st.oldPush=Raphael.st.push.clone();
+//Raphael.st.parent=papers.paper;
+//Raphael.st.push = function() {
+//    var self=this;
+//    var tab=Array.prototype.slice.call(arguments);
+//
+//    tab.forEach(function(obj){
+//
+//        if(self._transform && obj.type!=='set'){
+//            obj.transform(self._transform);
+//            console.log('\ntransfo effectuée!');
+//        }
+//        obj.parent=self;
+//        self.oldPush(obj);
+//    });
+//};
+//Raphael.st.x=0;
+//Raphael.st.y=0;
+//Raphael.st.hasBeenTransformed=false;
+//Raphael.st.oldTransform=Raphael.st.transform.clone();
+//Raphael.st.transform=function(str){
+//    var pointless=str.split('...');
+//  var type=pointless[pointless.length-1].charAt(0);
+//  var tmp=  str.split(type);
+//    var vals=tmp[1].split(',');
+//    this.x=parseInt(vals[0]);
+//    this.y=parseInt(vals[1]);
+//    this.hasBeenTransformed=true;
+//    this.oldTransform(str);
+//
+//};
+//
+//Raphael.st.positionSet=function(x,y,dx,dy){
+//
+//    var point=this.globalToLocal(x,y);
+//    var t='t'+(point.x+dx)+','+(point.y+dy);
+//    this.transform('...'+t);
+//    this._transform=t;
+//}
+//
+//Raphael.st.globalToLocal = function() {
+//    var point = getPoint(arguments);
+//    point = {x:point.x-this.x, y:point.y-this.y};
+//    return this.parent ? this.parent.globalToLocal(point.x,point.y) : null;
+//};
+//
+//Raphael.st.localToGlobal = function() {
+//    var point = getPoint(arguments);
+//    point = this.parent ? this.parent.localToGlobal(point.x,point.y) : null;
+//    if (point) {
+//        point = {x:point.x+this.x , y:this.y+point.y };
+//    }else{
+//        point = getPoint(arguments);
+//    }
+//    return point;
+//};
+//
+////rect
+//Raphael.el.parent=papers.paper;
+//
+//Raphael.el.globalToLocal = function() {
+//    var point = getPoint(arguments);
+//    //return this.parent.globalToLocal(point.x+this.attr('x'), point.y+this.attr('y'));
+//    return this.parent.globalToLocal(point.x, point.y);
+//};
+//Raphael.el.localToGlobal = function() {
+//    var point = getPoint(arguments);
+//    point = this.parent.localToGlobal(point.x,point.y);
+//    //return point ? {x:point.x-this.attr('x'), y:point.y-this.attr('y')} : null;
+//    return point ? {x:point.x-0, y:point.y-0} : null;// la référence est au centre du rectangle, pas en haut à gauche
+//};
+///*
+//Raphael.rect.inside = function(x, y) {
+//    var local = this.localToGlobal(x, y);
+//    return local.x>=-this.width/2 && local.x<=this.width/2
+//        && local.y>=-this.height/2 && local.y<=this.height/2;
+//};
+//*/
+//
+//
+//
+//function insidePolygon(x, y, element) {
+//    //var rand = Math.random()*100;
+//    //return (rand >90);
+//
+//    var local = element.globalToLocal(x, y);
+//    var width = element.attrs.width ? element.attrs.width : element.getBBox().width;
+//    var height = element.attrs.height ? element.attrs.height : element.getBBox().height;
+//
+//    return local.x>=-width/2 && local.x<=width/2
+//        && local.y>=-height/2 && local.y<=height/2;
+//}
+//
+//Raphael.st.getTarget=function(clientX,clientY){
+//    var el = {};
+//    for(var i = 0; i<this.items.length; i++) {
+//        el = this[i].getTarget(clientX,clientY);
+//        if(el) {
+//            return el;
+//        }
+//    }
+//    return null;
+//};
+//
+//Raphael.el.getTarget=function(clientX,clientY){
+//    var inside = insidePolygon(clientX,clientY,this);
+//    if (inside){
+//        console.log(this);
+//        return this;
+//    }
+//    return null;
+//};

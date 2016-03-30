@@ -4,35 +4,35 @@
     <meta charset="UTF-8">
     <title>Administrator area</title>
 </head>
-<body id="body">
-    <script src="../lib/raphael-min.js"></script>
+<body>
+    <div id="content"></div>
     <script src="../lib/d3.min.js"></script>
     <script src="../test/Test-util.js"></script>
     <script src="Bdd.js"></script>
+    <script src="../ext-files/targetruntime.js"></script>
+    <script src="../ext-files/runtimemock.js"></script>
+    <script src="../ext-files/svghandler.js"></script>
     <script src="Answer.js"></script>
     <script src="Question.js"></script>
     <script src="Puzzle.js"></script>
-    <script src="../test/svgMock.js"></script>
     <script src="Quizz.js"></script>
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
     <script src="SVG-global-handler.js"></script>
+    <script src="SVG-util.js"></script>
     <script>
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
 
-        var papers = new Paper(0, 0, document.body.clientWidth, window.innerHeight);
-//        var paper = papers.paper;
-//        var displaySet = papers.displaySet;
-        var paper = new Raphael(0, 0, document.body.clientWidth, window.innerHeight);
-        var displaySet = paper.set();
+        var drawings = new Drawings(window.innerWidth, window.innerHeight);
+        var drawing = drawings.drawing;
+        var mainManipulator = drawing.manipulator.last;
+
         var admin = function () {
-            var quizz = new Quizz(myQuizz);
             var questionCreator = new QuestionCreator();
             questionCreator.display(1,1,document.body.clientWidth-50,innerHeight-20);
         };
     </script>
-    <script src="SVG-util.js"></script>
     <script>admin();</script>
 </body>
 </html>
