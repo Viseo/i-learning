@@ -22,8 +22,10 @@
         var asyncTimerController=AsyncTimerController();
 
         var papers = new Paper(0, 0, document.body.clientWidth, window.innerHeight);
-        var paper = papers.paper;
-        var displaySet = papers.displaySet;
+//        var paper = papers.paper;
+//        var displaySet = papers.displaySet;
+        var paper = new Raphael(0, 0, document.body.clientWidth, window.innerHeight);
+        var displaySet = paper.set();
         var admin = function () {
             var quizz = new Quizz(myQuizz);
             var questionCreator = new QuestionCreator();

@@ -7,10 +7,30 @@ function setTarget(target) {
     targetRuntime = target;
 }
 
+if (!Array.prototype.add) {
+    Object.defineProperty(Array.prototype, "add", {
+        enumerable: false,
+        value: function(val) {
+            var i = this.indexOf(val);
+            i===-1 && this.push(val);
+            return i===-1;
+        }
+    });
+}
+
+if (!Array.prototype.remove) {
+    Object.defineProperty(Array.prototype, "remove", {
+        enumerable: false,
+        value: function(val) {
+            var i = this.indexOf(val);
+            i>-1 && this.splice(i, 1);
+            return i>-1;
+        }
+    });
+}
+
 function SVG(runtime) {
     var svgr = runtime || targetRuntime();
-
-    function NullFunction() {};
 
     function print(points) {
         if (points.length==0) return "";
@@ -36,6 +56,14 @@ function SVG(runtime) {
 
     function angle(x, y) {
         return Math.atan2(x, -y)/Math.PI*180;
+    }
+
+    function rotate(x, y, angle) {
+        var _angle = angle * Math.PI / 180;
+        return {
+            x: x * Math.cos(_angle) - y * Math.sin(_angle),
+            y: x * Math.sin(_angle) + y * Math.cos(_angle)
+        };
     }
 
     function Visitor() {
@@ -214,7 +242,7 @@ function SVG(runtime) {
     };
     Handler.prototype.accept = function(visitor) {
         visitor.visit(this);
-        for (var index in this.children) {
+        for (var index=0; index<this.children.length; index++) {
             this.children[index].accept(visitor);
         }
         return this;
@@ -390,22 +418,14 @@ function SVG(runtime) {
     };
     Rotation.prototype.globalPoint = function() {
         var point = getPoint(arguments);
-        var angle = this.angle*Math.PI/180;
-        point = {
-            x:point.x*Math.cos(angle)-point.y*Math.sin(angle),
-            y:point.x*Math.sin(angle)+point.y*Math.cos(angle)
-        };
+        point = rotate(point.x, point.y, this.angle);
         return this.parent ? this.parent.globalPoint(point) : null;
     };
     Rotation.prototype.localPoint = function() {
         var point = getPoint(arguments);
         point = this.parent ? this.parent.localPoint(point) : null;
         if (point) {
-            var angle = -this.angle * Math.PI / 180;
-            point = {
-                x: point.x * Math.cos(angle) - point.y * Math.sin(angle),
-                y: point.x * Math.sin(angle) + point.y * Math.cos(angle)
-            };
+            point = rotate(point.x, point.y, -this.angle);
         }
         return point;
     };
@@ -936,9 +956,14 @@ function SVG(runtime) {
         this._draw();
         return this;
     };
+    Polygon.prototype.trace=function(dx, dy) {
+        var lastPoint = this.points[this.points.length-1];
+        this.points.push({x:lastPoint.x+dx, y:lastPoint.y+dy});
+        return this;
+    };
     Polygon.prototype.add=function(x, y) {
         if (Array.isArray(x) && Array.isArray(x[0])) {
-            for (var i in x) {
+            for (var i=0; i< x.length; i++) {
                 this.points.push({x:x[i][0], y:x[i][1]});
             }
         }
@@ -1359,7 +1384,7 @@ function SVG(runtime) {
         svgr.attr(this.component, "y", (this.y-this.height/2));
         svgr.attr(this.component, "width", this.width);
         svgr.attr(this.component, "height", this.height);
-        svgr.attr(this.component, xlink, "href", this.src);
+        svgr.attrXlink(this.component, "href", this.src);
     };
     Image.prototype.globalPoint = function() {
         var point = getPoint(arguments);
@@ -1430,7 +1455,7 @@ function SVG(runtime) {
         function smoothy(executor, speed, step, channel) {
             var delta = [];
             var sum = 0;
-            for (var k in executor.source) {
+            for (var k=0; k<executor.source.length; k++) {
                 delta[k] = executor.target[k] - executor.source[k];
                 sum += delta[k]*delta[k];
             }
@@ -1442,7 +1467,7 @@ function SVG(runtime) {
             for (var i = 0; i < stepCount - 1; i++) {
                 channel.animate(speed, function (progress) {
                     var inc = [];
-                    for (var l in executor.source) {
+                    for (var l=0; l<executor.source.length; l++) {
                         inc[l] = executor.source[l] + (executor.target[l] - executor.source[l]) * progress;
                     }
                     executor.setter(inc);
@@ -1545,6 +1570,15 @@ function SVG(runtime) {
     function clearInterval(token) {
         return svgr.clearInterval(token);
     }
+    function addEvent(component, eventName, handler) {
+        svgr.addEvent(component.component, eventName, handler);
+    }
+    function removeEvent(component, eventName, handler) {
+        svgr.removeEvent(component.component, eventName, handler);
+    }
+    function event(component, eventName, event) {
+        svgr.event(component.component, eventName, event);
+    }
 
     return {
         Drawing : Drawing,
@@ -1565,13 +1599,19 @@ function SVG(runtime) {
         Text : Text,
         Image : Image,
 
+        Animator : Animator,
+
         insidePolygon:insidePolygon,
         angle:angle,
+        rotate:rotate,
 
         onChannel : onChannel,
         animate: animate,
 
         targetRuntime: targetRuntime,
+        addEvent : addEvent,
+        removeEvent : removeEvent,
+        event : event,
         random : random,
         timeout : timeout,
         interval : interval,
