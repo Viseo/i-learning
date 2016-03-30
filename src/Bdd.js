@@ -1,7 +1,7 @@
 /**
  * Created by ABL3483 on 10/03/2016.
  */
-var myColors={
+var myColorsOld={
     blue:{r: 25, g: 122, b: 230},
     primaryBlue:{r: 0, g: 0, b: 255},
     grey:{r: 125, g: 122, b: 117},
@@ -11,6 +11,18 @@ var myColors={
     raspberry:{r: 194, g: 46, b: 83},
     black:{r:0, g:0, b:0},
     white:{r:255, g:255, b:255}
+};
+
+var myColors={
+    blue:[25, 122, 230],
+    primaryBlue:[0, 0, 255],
+    grey:[125, 122, 117],
+    orange:[230, 122, 25],
+    purple:[170, 100, 170],
+    green:[155, 222, 17],
+    raspberry:[194, 46, 83],
+    black:[0, 0, 0],
+    white:[255, 255, 255]
 };
 
 var myBib= {

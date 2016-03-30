@@ -10,7 +10,7 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {checkbox: paper.rect(x, y, size, size).attr({fill: "white", stroke:"black", "stroke-width":2})};
+    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black)};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
@@ -21,18 +21,14 @@ var displayCheckbox = function (x, y, size, sender) {
     };
 
     if(sender.bCorrect) {
-        var path = "M " + (x+.2*size) + "," + (y+.4*size) +
-            "l " + (.2*size) + "," + (.3*size) +
-            "l " + (.4*size) + "," + (-.5*size);
-
-        obj.checked = paper.path(path).attr({"stroke-width":3});
-        obj.checked.node.onclick = onclickFunction;
-        sender.displaySet.push(obj.checked);
-        //obj.checkbox.transform(sender.obj.cadre._.transform);
-        //obj.checked.transform(sender.obj.cadre._.transform);
+        obj.checked = new svg.Path(0,0).move(x+.2*size,y+.4*size)
+            .lineTo(.2*size,.3*size).lineTo(.4*size,-.5*size)
+        .color([],3,myColors.black);
+        svg.addEvent(obj.checked,"click", onclickFunction);
+        sender.manipulator.last.add(obj.checked);
     }
-    sender.displaySet.push(obj.checkbox);
-    obj.checkbox.node.onclick = onclickFunction;
+    sender.manipulator.add(obj.checkbox);
+    svg.addEvent(obj.checkbox,"click", onclickFunction);
 
     return obj;
 };
@@ -53,24 +49,25 @@ var displayCheckbox = function (x, y, size, sender) {
  * @param font
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, x, y, w, h, rgbCadre, bgColor, fontSize, font) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
     var margin = 10;
 
-    var text = autoAdjustText(label, x, y+h-2*margin, w, null, fontSize, font).text;
-    var textHeight = text.getBBox().height;
-    text.animate({y:y+h-margin-textHeight/2}, 0);
-    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-textHeight-3*margin);
-    var cadre = paper.rect(x, y, w, h, 25).attr({fill: bgColor, stroke: rgbCadre});
-    image.image.toFront();
-    text.toFront();
+    var text = autoAdjustText(label, 0, h-2*margin, w, null, fontSize, font).text;
+    var textHeight = text.component.getBBox().height;
+    text.position(0,h-margin-textHeight/2);
+    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-textHeight-3*margin);
+    var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
+    manipulator.ordonator.set(0,cadre).set(1,image.image).set(2,text);
 
     return {cadre: cadre, image: image.image,  text: text};
 };
 
-var displayImageWithBorder = function (imageSrc, imageObj, x, y, w, h) {
+var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
-    var image = displayImage(imageSrc, imageObj, x+margin, y+margin, w-2*margin, h-2*margin);
-    var cadre = paper.rect(x, y, w, h, 25).attr({stroke: "none"});
+    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-2*margin);
+    var cadre = new svg.Rect(w, h).color([],1,[]);
+    manipulator.ordonator.set(0,cadre).set(1,image.image);
+
     return {image:image.image, height:image.height, cadre:cadre};
 };
 
@@ -83,7 +80,7 @@ var displayImageWithBorder = function (imageSrc, imageObj, x, y, w, h) {
  * @param w
  * @param h
  */
-var displayImage = function (imageSrc, image, x, y, w, h) {
+var displayImage = function (imageSrc, image, w, h) {
     var width = image.width;
     var height = image.height;
     if(width > w) {
@@ -97,55 +94,29 @@ var displayImage = function (imageSrc, image, x, y, w, h) {
         width *= h/height;
         height = h;
     }
-    //var obj = {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
-    var obj = {image:paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height), height:height};
-    return obj;
-};
-
-/**
- *
- * @param imageSrc
- * @param image
- * @param x
- * @param y
- * @param w
- * @param h
- * @param onclickEvent
- */
-var displayImageWithEvent = function (imageSrc, image, x, y, w, h, onclickEvent) {
-    var width = image.width;
-    var height = image.height;
-    if(width > w) {
-        height *= w/width;
-        width = w;
-    }
-    if(height > h) {
-        width *= h/height;
-        height = h;
-    }
-    var i = paper.image(imageSrc, x+w/2-width/2, y+h/2-height/2, width, height);
-    i.node.onclick = onclickEvent;
-    return i;
+    return {
+        image: new svg.Image(imageSrc, width, height).position(w / 2 - width / 2, h / 2 - height / 2),
+        height: height
+    };
 };
 
 /**
  *
  * @param label : text to print
- * @param x : X position
- * @param y : Y position
  * @param w : width
  * @param h : height
  * @param rgbCadre : rgb color for rectangle
  * @param bgColor : background color for rectangle
  * @param textHeight : number, taille de la police
  * @param font
+ * @param manipulator
  * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
  */
-var displayText = function (label, x, y, w, h, rgbCadre, bgColor, textHeight, font) {
-    var content = autoAdjustText(label, x, y, w, h, textHeight, font).text;
+var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font,manipulator) {
+    var content = autoAdjustText(label, w, h, textHeight, font).text;
 
-    var cadre = paper.rect(x, y, w, h, 25).attr({fill: bgColor, stroke: rgbCadre});
-    content.toFront();
+    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre);
+    manipulator.ordered.set(0,cadre).set(1,content);
 
     return {content:content, cadre:cadre};
 };

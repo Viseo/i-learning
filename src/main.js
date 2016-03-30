@@ -1,19 +1,12 @@
 /**
  * Created by qde3485 on 25/02/16.
  */
-var x = 0;
-var y = 0;
-//var paper=Raphael(0,0,1500,1500);
 
-var imageController = ImageController(); 
-//paper1=Raphael(x,y,document.body.clientWidth,1500);
-
+var imageController = ImageController();
 var asyncTimerController=AsyncTimerController();
-var papers = new Paper(x, y, document.body.clientWidth, 1500);
-var paper = papers.paper;
-//paper.setViewBox(0, 0, document.body.clientWidth/2, 1500/2, false);
-paper.canvas.setAttribute('preserveAspectRatio', 'none');
-var displaySet = papers.displaySet;
+var drawings = new Drawings(document.body.clientWidth, 1500);
+var drawing = drawings.drawing;
+var mainManipulator = drawing.manipulator.last;
 
 function main() {
 
@@ -33,14 +26,14 @@ function main() {
     quizz.puzzleRows=3;
     quizz.run(1,1,1200,1200);
 
-    setTimeout(function(){
-        quizz.displaySet.getTarget(0,0);
-    },2000);
+    //setTimeout(function(){
+    //    quizz.displaySet.getTarget(0,0);
+    //},2000);
 
-    displaySet.height= window.innerHeight;
-    displaySet.width = window.innerWidth;
-    viewBoxWidth = window.innerWidth;
-    viewBoxHeight = window.innerHeight;
+    //displaySet.height= window.innerHeight;
+    //displaySet.width = window.innerWidth;
+    //viewBoxWidth = window.innerWidth;
+    //viewBoxHeight = window.innerHeight;
 
     function resizePaper(){
         var w = 0, h = 0;
