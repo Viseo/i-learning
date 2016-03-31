@@ -18,7 +18,7 @@ var Answer = function (answer) {
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
-    self.selected=false;
+    self.selected = false;
 
     if(answer.fontSize) {
         self.fontSize = answer.fontSize;
@@ -68,7 +68,6 @@ var Answer = function (answer) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
-            self.answerManipulator.last.add(self.bordure,self.content,self.image);
 
         }
         // Question avec Texte uniquement
@@ -76,7 +75,6 @@ var Answer = function (answer) {
             var object = displayText(self.label, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.answerManipulator.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
@@ -84,7 +82,6 @@ var Answer = function (answer) {
             var obj = displayImageWithBorder(self.imageSrc, self.image, w, h, self.answerManipulator);
             self.image = obj.image;
             self.bordure = obj.cadre;
-            self.answerManipulator.last.add(self.image,self.bordure);
 
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure

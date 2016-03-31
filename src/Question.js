@@ -86,10 +86,10 @@ var Question = function (question,quizz) {
 
     self.display = function (x, y, w, h) {
 
-        self.x=x;
-        self.y=y;
-        self.width=w;
-        self.height=h;
+        self.x = x;
+        self.y = y;
+        self.width = w;
+        self.height = h;
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
@@ -97,15 +97,12 @@ var Question = function (question,quizz) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
-            self.questionManipulator.last.add(self.bordure, self.content, self.raphImage);
-
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
             var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.questionManipulator.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
@@ -225,7 +222,6 @@ var Question = function (question,quizz) {
             self.validateManipulator = new Manipulator();
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
-            self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
             //self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
@@ -283,15 +279,13 @@ var Question = function (question,quizz) {
             var resetY=self.tileHeight*self.lines+(self.lines)*margin;
             //self.resetManipulator=new Manipulator();
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
-            self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
-                        e.selected=false;
-                        e.bordure.color(null,1,e.rgbBordure);
-
+                        e.selected = false;
+                        e.bordure.color(e.bgColor,1,e.rgbBordure);
                     });
                     self.selectedAnswers.splice(0,self.selectedAnswers.length);
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
@@ -332,14 +326,13 @@ var Question = function (question,quizz) {
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
 
-                sourceElement.bordure.color(null,5,myColors.red);
+                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.red);
                 self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-
-                sourceElement.bordure.color(null,1,sourceElement.rgbBordure);
+                sourceElement.bordure.color(sourceElement.bgColor,1,sourceElement.rgbBordure);
                 if(self.selectedAnswers.length==0){
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }

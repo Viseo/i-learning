@@ -98,11 +98,6 @@ function main() {
     //    resizePaper();
     //}
 
-    setTimeout(function(){
-        var rect = new svg.Rect(10,10).position(0,0);
-        console.log('préparez vous, on va push!');
-        quizz.tabQuestions[0].tabAnswer[1].answerManipulator.last.add(rect);
-    },500);
 
 
     /*setTimeout(function(){

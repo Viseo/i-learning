@@ -163,10 +163,9 @@ function Quizz(quizz, previewMode) {
         self.titleBox = object.cadre;
         self.titleText = object.content;
 
+        self.quizzManipulator.ordonator.set(1,self.titleText);
 
-
-        self.quizzManipulator.last.add(self.titleBox);
-        self.quizzManipulator.last.add(self.titleText);
+        self.quizzManipulator.ordonator.set(0,self.titleBox);
         self.quizzManipulator.translator.move(w/2,self.headerHeight/2);
 
         self.nextQuestion();

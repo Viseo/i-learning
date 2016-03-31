@@ -53,10 +53,12 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
-    text.position(0,h-margin-textHeight/2);
+    text.position(0,0);
     var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin, manipulator);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-    manipulator.last.add(cadre);
+    manipulator.ordonator.set(0,cadre);
+    manipulator.ordonator.set(1,image.image);
+    manipulator.ordonator.set(2,text);
 
     return {cadre: cadre, image: image.image,  text: text};
 };
@@ -99,12 +101,11 @@ var displayImage = function (imageSrc, image, w, h, manipulator) {
         width *= h/height;
         height = h;
     }
-    var obj={
-        image: new svg.Image(imageSrc).dimension(width, height).position(w / 2 - width / 2, h / 2 - height / 2),
+    return {
+        image: new svg.Image(imageSrc).dimension(width, height).position(0, h / 2 - height / 2),
         height: height
     };
-    manipulator.ordonator.set(0, obj.image);
-    return obj;
+
 };
 
 /**
@@ -121,10 +122,9 @@ var displayImage = function (imageSrc, image, w, h, manipulator) {
  */
 var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
-
+    manipulator.ordonator.set(1,content);
     return {content:content, cadre:cadre};
 };
 
@@ -145,7 +145,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
     var tempText = "";
     var margin = 10;
 
-    font && t.font(font ? font : "arial", fontSize ? fontSize : 20);
+    t.font(font ? font : "arial", fontSize ? fontSize : 20);
 
     // add text word by word
     for (var i = 0; i < words.length; i++) {
@@ -198,6 +198,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
 
     t.message(tempText.substring(1));
     var finalHeight = t.component.getBBox().height;
+    t.position(0,(finalHeight-fontSize/2)/2); // finalHeight/2 ??
     return {finalHeight: finalHeight, text:t};
 };
 
