@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     var MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.add(self.manipulator.translator);
+    mainManipulator.last.add(self.manipulator.translator);
 
     self.margin = 15;
     self.headerHeight=0.1;
@@ -26,7 +26,7 @@ var QuestionCreator = function (question) {
 
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
+        self.tabAnswer = []//new AnswerElement(null, self), new AnswerElement(null, self)];
         self.quizzName = "";
         self.label = "";
         self.rightAnswers = [];
@@ -88,8 +88,8 @@ var QuestionCreator = function (question) {
     self.display = function (x, y, w, h) {
         var quizzInfoHeight=Math.floor(haut*self.headerHeight);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
-        self.displayQuizzInfo(self.margin+x, self.margin+y, w*0.5,quizzInfoHeight);
         self.displayQuestionCreator(self.margin+x,self.margin+quizzInfoHeight+15, w, questionCreatorHeight-2*self.margin-30);
+        self.displayQuizzInfo(self.margin+x, self.margin+y, w*0.5,quizzInfoHeight);
         self.displayPreviewButton(self.margin+x,self.margin+quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
     };
 
@@ -100,7 +100,7 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*self.margin, self.h*0.25, myColors.black, myColors.white, self.fontSize, self.manipulatorQuestionCreator);
+            self.questionBlock.title = displayText(text, self.w-2*self.margin, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.cadre.opacity(0);
             svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
@@ -142,7 +142,7 @@ var QuestionCreator = function (question) {
         };
 
         // bloc Question
-        self.questionBlock = {rect: paper.rect(self.x, self.y, self.w, self.h).attr("fill", "none")};
+        self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([]).position(self.x, self.y)};
         showTitle();
         self.manipulatorQuestionCreator.last.add(self.questionBlock.rect);
 
@@ -152,7 +152,7 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        self.displaySetQuestionCreator.push(self.puzzle.displaySet);
+        self.manipulatorQuestionCreator.last.add(self.puzzle.displaySet);
         /*self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
         });*/

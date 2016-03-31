@@ -98,7 +98,7 @@ var Question = function (question,quizz) {
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
             self.questionManipulator.last.add(self.bordure,self.content);
@@ -111,7 +111,7 @@ var Question = function (question,quizz) {
 
         }
         else {
-            var point=self.questionManipulator.globalToLocal(self.x,self.y);
+            //var point=self.questionManipulator.globalToLocal(self.x,self.y);
             self.bordure = new svg.Rect( w, self.height).color(self.bgColor,1,self.rgbBordure);
             self.questionManipulator.last.add(self.bordure);
 
@@ -203,8 +203,7 @@ var Question = function (question,quizz) {
             var validateX,validateY;
             validateX=self.bordure.component.attr('width')/2+self.x-75+100;
             validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            var validateButton=displayText("Valider",w,h,'green','yellow',20
-            );
+            var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.questionManipulator);
 
             self.validateManipulator = new Manipulator();
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
@@ -264,8 +263,7 @@ var Question = function (question,quizz) {
             var h=50;
             var resetX=self.bordure.component.attr('width')/2+self.x-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            self.resetButton=displayText("Reset",w,h,'grey','grey',20
-            );
+            self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.questionManipulator);
 
             self.resetManipulator=new Manipulator();
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
