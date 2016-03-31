@@ -96,6 +96,7 @@ var QuestionCreator = function (question) {
     self.displayQuestionCreator = function (x, y, w, h) {
         self.manipulatorQuestionCreator && self.manipulator.last.remove(self.manipulatorQuestionCreator);
         self.manipulatorQuestionCreator = new Manipulator();
+        self.manipulator.last.add(self.manipulatorQuestionCreator.first);
 
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
@@ -152,22 +153,26 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        self.manipulatorQuestionCreator.last.add(self.puzzle.displaySet);
+        self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
         /*self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
         });*/
     };
     self.displayQuizzInfo = function (x, y, w, h) {
-        self.formationLabel = paper.text(x, y, "Formation : " + self.formationName).attr("font-size", 20).attr("text-anchor", "start");
-        self.displaySetQuizzInfo.push(self.formationLabel);
+        self.manipulatorQuizzInfo && self.manipulator.last.remove(self.manipulatorQuizzInfo);
+        self.manipulatorQuizzInfo= new Manipulator();
+        self.manipulator.last.add(self.manipulatorQuizzInfo.first);
+
+        self.formationLabel = new svg.Text("Formation : " + self.formationName);
+        self.formationLabel.position(x, y).font("arial", 20).anchor("start");
+        self.manipulatorQuizzInfo.last.add(self.formationLabel);
 
         var showTitle = function () {
             var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
-            var color = (self.quizzName) ? "black" : "#888";
-            self.quizzLabel = paper.text(x+2, y+28, text).attr("font-size", 15).attr("text-anchor", "start").attr("fill", color);
-            //self.quizzBorder = paper.rect(x, y+18, self.quizzLabel.getBBox().width+4, 20);
-            self.quizzLabel.node.ondblclick = dblclickEdition;
-            self.displaySetQuizzInfo.push(self.quizzLabel/*, self.quizzBorder*/);
+            var color = (self.quizzName) ? myColors.black : myColors.grey;
+            self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
+            svg.addEvent(self.quizzLabel, "dblclick", dblclickEdition);
+            self.manipulatorQuizzInfo.last.add(self.quizzLabel/*, self.quizzBorder*/);
         };
 
         var dblclickEdition = function () {
@@ -195,7 +200,11 @@ var QuestionCreator = function (question) {
     };
 
     self.displayPreviewButton = function (x, y, w, h) {
-        self.previewButton = displayText("Aperçu", x+w/2-100, y, 200, h, "black", "white", 20);
+        self.previewButtonManipulator && self.manipulator.last.remove(self.previewButtonManipulator);
+        self.previewButtonManipulator = new Manipulator();
+        self.manipulator.last.add(self.previewButtonManipulator.first);
+
+        self.previewButton = displayText("Aperçu", 200, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
 
         var previewFunction = function () {
             var correctAnswers = 0;
@@ -290,7 +299,7 @@ var QuestionCreator = function (question) {
         svg.addEvent(self.previewButton.cadre, "click", previewFunction);
         svg.addEvent(self.previewButton.content, "click", previewFunction);
 
-        self.displaySetPreviewButton.push(self.previewButton.cadre);
-        self.displaySetPreviewButton.push(self.previewButton.content);
+        self.previewButtonManipulator.last.add(self.previewButton.cadre);
+        self.previewButtonManipulator.last.add(self.previewButton.content);
     }
 };

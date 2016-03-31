@@ -120,8 +120,8 @@ var displayImage = function (imageSrc, image, w, h) {
 var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
 
-    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre);
-    manipulator.ordonator.set(0,cadre);
+    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25);
+    manipulator.ordonator.set(0, cadre);
 
     return {content:content, cadre:cadre};
 };
@@ -138,7 +138,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
     var t = new svg.Text("");
-    manipulator.ordonator.set(1,t);
+    mainManipulator.last.add(t);
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;

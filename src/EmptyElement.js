@@ -13,16 +13,16 @@ var AddEmptyElement = function (parent) {
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
-        self.obj = displayText(self.label, x, y, w, h, "black", "white", self.fontSize);
+        self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
         self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
-        self.displaySet.push(self.plus);
+        self.manipulator.last.add(self.plus);
 
-        self.obj.cadre.attr("stroke-dasharray", "--").attr("stroke-width", 3);
-        self.obj.cadre.attr("fill-opacity", 0);
-        self.displaySet.push(self.obj.cadre);
+        self.obj.cadre.color([], 3, myColors.black);
+        self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
+        self.manipulator.last.add(self.obj.cadre);
 
-        self.obj.content.animate({y:y+h*0.8}, 0);
-        self.displaySet.push(self.obj.content);
+        self.obj.content.position(x, y+h*0.8);
+        self.manipulator.last.add(self.obj.content);
 
         var dblclickEdition = function () {
             self.displaySet.remove();
@@ -32,9 +32,9 @@ var AddEmptyElement = function (parent) {
             self.parent.displayQuestionCreator();
         };
 
-        self.plus.node.ondblclick = dblclickEdition;
-        self.obj.content.node.ondblclick = dblclickEdition;
-        self.obj.cadre.node.ondblclick = dblclickEdition;
+        svg.addEvent(self.plus, "dblclick", dblclickEdition);
+        svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+        svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
     }
 };
 
