@@ -6,9 +6,16 @@
  * @constructor
  */
 
-/*label,imageSrc,tabAnswer, rows, colorBordure, bgColor*/
 var Question = function (question,quizz) {
     var self = this;
+    self.questionManipulator = new Manipulator();
+    self.answersManipulator = new Manipulator();
+    self.questionManipulator.last.add(self.answersManipulator.translator);
+    self.resetManipulator = new Manipulator();
+    self.answersManipulator.last.add(self.resetManipulator.translator);
+    self.validateManipulator = new Manipulator();
+    self.answersManipulator.last.add(self.validateManipulator.translator);
+
 
 
     self.parentQuizz=quizz;
@@ -38,8 +45,6 @@ var Question = function (question,quizz) {
     } else {
         self.imageLoaded = true;
     }
-
-
 
 
     if (question.tabAnswer !== null) {
@@ -80,7 +85,6 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        self.questionManipulator=new Manipulator();
 
         self.x=x;
         self.y=y;
@@ -121,12 +125,9 @@ var Question = function (question,quizz) {
     };
 
     self.displayAnswers = function (x, y, w, h) {
-        self.answersManipulator = new Manipulator();
-
         if (self.rows !== 0) {
 
-
-
+            //self.answersManipulator.translator.move(0,0);
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
@@ -179,12 +180,15 @@ var Question = function (question,quizz) {
                     posx = x;
                 }
 
+                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
+                //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
+                //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy-self.tileHeight/2-margin/2);
                 self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy);
 
-                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.translator);
+                //self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.translator);
                 (function(element) {
                     if(element.bordure) {
                         svg.addEvent(element.bordure,"click",function() {
@@ -222,8 +226,7 @@ var Question = function (question,quizz) {
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
-            self.answersManipulator.last.add(self.validateManipulator.translator);
-            self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
+            //self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
             var oclk = function(){
@@ -278,10 +281,9 @@ var Question = function (question,quizz) {
             var h=50;
             var resetX=-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin;
-            self.resetManipulator=new Manipulator();
+            //self.resetManipulator=new Manipulator();
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
-            self.answersManipulator.last.add(self.resetManipulator.translator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
@@ -342,13 +344,8 @@ var Question = function (question,quizz) {
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }
             }
-
-
         }
-
-       // console.log("score: "+self.parentQuizz.score);
     }
-
 };
 
 
