@@ -120,7 +120,7 @@ var displayImage = function (imageSrc, image, w, h) {
 var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
 
-    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25);
+    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
 
     return {content:content, cadre:cadre};
