@@ -55,7 +55,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
     var textHeight = text.component.getBBox().height;
     text.position(0,h-margin-textHeight/2);
     var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin, manipulator);
-    var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
+    var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
     manipulator.last.add(cadre);
 
     return {cadre: cadre, image: image.image,  text: text};
