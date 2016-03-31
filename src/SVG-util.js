@@ -54,9 +54,9 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
     var text = autoAdjustText(label, 0, h-2*margin, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
     text.position(0,h-margin-textHeight/2);
-    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-textHeight-3*margin);
+    var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin, manipulator);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-    manipulator.ordonator.set(0,cadre).set(2,image.image);
+    manipulator.last.add(cadre);
 
     return {cadre: cadre, image: image.image,  text: text};
 };
@@ -71,9 +71,9 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
  */
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
-    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-2*margin);
+    var image = displayImage(imageSrc, imageObj, w-2*margin, h-2*margin, manipulator);
     var cadre = new svg.Rect(w, h).color([],1,[]);
-    manipulator.ordonator.set(0,cadre).set(1,image.image);
+    manipulator.last.add(cadre);
 
     return {image:image.image, height:image.height, cadre:cadre};
 };
@@ -85,7 +85,7 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
  * @param w
  * @param h
  */
-var displayImage = function (imageSrc, image, w, h) {
+var displayImage = function (imageSrc, image, w, h, manipulator) {
     var width = image.width;
     var height = image.height;
     if(width > w) {
@@ -99,10 +99,12 @@ var displayImage = function (imageSrc, image, w, h) {
         width *= h/height;
         height = h;
     }
-    return {
-        image: new svg.Image(imageSrc, width, height).position(w / 2 - width / 2, h / 2 - height / 2),
+    var obj={
+        image: new svg.Image(imageSrc).dimension(width, height).position(w / 2 - width / 2, h / 2 - height / 2),
         height: height
     };
+    manipulator.ordonator.set(0, obj.image);
+    return obj;
 };
 
 /**
