@@ -89,7 +89,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.imag, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
@@ -117,7 +117,7 @@ var Question = function (question,quizz) {
 
         }
 
-        self.questionManipulator.translator.moveTo(self.x+self.width/2,self.y+self.height/2);
+        self.questionManipulator.translator.move(self.x+self.width/2,self.y+self.height/2);
     };
 
     self.displayAnswers = function (x, y, w, h) {
@@ -125,8 +125,8 @@ var Question = function (question,quizz) {
 
         if (self.rows !== 0) {
 
-            self.questionManipulator.last.add(self.answersManipulator);
-            //self.answersManipulator.translator.moveTo(0,0);
+            self.questionManipulator.last.add(self.answersManipulator.translator);
+            //self.answersManipulator.translator.move(0,0);
 
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
@@ -167,7 +167,7 @@ var Question = function (question,quizz) {
                 }
 
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                self.tabAnswer[i].answerManipulator.translator.moveTo(posx+tileWidth/2,posy+self.tileHeight/2);
+                self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
 
                 self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator);
                 (function(element) {
@@ -209,7 +209,7 @@ var Question = function (question,quizz) {
             self.validateManipulator = new Manipulator();
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
             self.answersManipulator.last.add(self.validateManipulator);
-            self.validateManipulator.translator.moveTo(validateX+w/2,validateY+h/2);
+            self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
             var oclk = function(){
@@ -270,7 +270,7 @@ var Question = function (question,quizz) {
             self.resetManipulator=new Manipulator();
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
             self.answersManipulator.last.add(self.resetManipulator);
-            self.resetManipulator.translator.moveTo(resetX+w/2,resetY+h/2);
+            self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){

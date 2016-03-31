@@ -83,7 +83,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
             self.displaySet.last.add(self.leftArrowSet);
             self.leftArrowSet.manipulator.rotator.rotateTo(180);
-            self.leftArrowSet.manipulator.translator.moveTo(x+self.margin+75/2,y + (h/2)+75/2);
+            self.leftArrowSet.manipulator.translator.move(x+self.margin+75/2,y + (h/2)+75/2);
             self.leftArrowSet.manipulator.scalor.scale(self.leftArrowSet._scale);
 
             if(startPosition + self.rows>= self.totalRows) {
@@ -105,7 +105,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             //self.rightArrowSet=paper.set();
             //self.rightArrowSet.push(self.rightArrow);
             self.displaySet.last.add(self.rightArrowSet);
-            self.rightArrowSet.manipulator.translator.moveTo(x+w-self.margin+75/2,y + (h/2)+75/2);
+            self.rightArrowSet.manipulator.translator.move(x+w-self.margin+75/2,y + (h/2)+75/2);
             self.rightArrowSet.manipulator.scalor.scale(self.rightArrowSet._scale);
 
             self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
@@ -136,7 +136,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     if(count < self.questionsTab.length) {
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.displaySet.last.add(self.displaySet, self.virtualTab[i][j].displaySet);
-                        self.virtualTab[i][j].displaySet.translator.moveTo(posX+self.tileWidth/2,posY+self.tileHeight/2);
+                        self.virtualTab[i][j].displaySet.translator.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
 
                         posX += self.tileWidth+self.margin;
                         count++;
@@ -155,7 +155,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
                     self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                     self.displaySet.last.add(self.virtualTab[i][j].displaySet);
-                    self.virtualTab[i][j].displaySet.translator.moveTo(posX+self.tileWidth/2,posY+self.tileHeight/2);
+                    self.virtualTab[i][j].displaySet.translator.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
 
                     posY += self.tileHeight + self.margin;
                     count++;

@@ -41,7 +41,7 @@ var handlerDblClick = function () {
 };
 
 var handlerClick = function () {
-    translator.smoothy(1, 5).onChannel("translator").moveTo(500, 500);
+    translator.smoothy(1, 5).onChannel("translator").move(500, 500);
     rotator.smoothy(10, 1).onChannel("disney").rotateTo(-289);
     orderedor.set(0, image);
     svg.onChannel("translator").animate(0, function () {

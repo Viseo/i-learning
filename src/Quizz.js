@@ -127,7 +127,7 @@ function Quizz(quizz, previewMode) {
         self.resultText = object.content;
         self.resultManipulator.last.add(self.resultBox);
         self.resultManipulator.last.add(self.resultText);
-        self.quizzManipulator.translator.moveTo(self.cadreResult.x,self.cadreResult.y);
+        self.quizzManipulator.translator.move(self.cadreResult.x,self.cadreResult.y);
         self.quizzManipulator.last.add(self.resultManipulator.translator);
 
     };

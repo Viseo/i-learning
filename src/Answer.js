@@ -107,7 +107,7 @@ var Answer = function (answer) {
 
         }
 
-        self.answerManipulator.translator.moveTo(x,y);
+        self.answerManipulator.translator.move(x,y);
 
     };
 
