@@ -14,7 +14,7 @@
 /*label, imageSrc, bCorrect, colorBordure, bgColor*/
 var Answer = function (answer) {
     var self = this;
-
+    self.answerManipulator=new Manipulator();
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
@@ -54,9 +54,9 @@ var Answer = function (answer) {
      * @param w : width
      * @param h : height
      */
+
     self.display = function (x, y, w, h) {
 
-        self.answerManipulator=new Manipulator();
 
         if(self.selected){// image pré-selectionnée
             self.bordure.color(null,5,myColors.red);
