@@ -5,7 +5,7 @@
 var AddEmptyElement = function (parent) {
     var self = this;
     self.manipulator = new Manipulator();
-    parent.manipulator.last.add(self.manipulator.translator);
+    parent.manipulator.last.add(self.manipulator.first);
 
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
@@ -40,25 +40,9 @@ var AddEmptyElement = function (parent) {
 
 var AnswerElement = function (answer, parent) {
     var self = this;
-    self._transformation={
-        type:'',param1:'',param2:''
-    };
-    self.transformation=function(type,param1,param2){
-        if(type){
-            self._transformation.type=type;
-        }
-        if(param1){
-            self._transformation.param1=param1;
-        }
-        if(param2){
-            self._transformation.param2=param2;
-        }
 
-        return ""+self._transformation.type+self._transformation.param1+","+self._transformation.param2;
-    };
-
-    self.displaySet = paper.set();
-    self.displaySet._transformation=self._transformation;
+    self.manipulator = new Manipulator();
+    parent.manipulator.last.add(self.manipulator.first);
 
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;
@@ -88,13 +72,13 @@ var AnswerElement = function (answer, parent) {
 
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
-            var color = (self.label) ? "black" : "#888";
-            self.obj = displayText(text, x, y, w, h, "black", "white", self.fontSize);
-            self.obj.content.attr("fill", color);
-            self.obj.cadre.attr("fill-opacity", 0);
-            self.displaySet.push(self.obj.cadre, self.obj.content);
-            self.obj.content.node.ondblclick = dblclickEdition;
-            self.obj.cadre.node.ondblclick = dblclickEdition;
+            var color = (self.label) ? myColors.black : myColors.grey;
+            self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            self.obj.content.color(color);
+            self.obj.cadre.opacity(0);
+            self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
+            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
         };
 
         var dblclickEdition = function () {
@@ -136,7 +120,7 @@ var AnswerElement = function (answer, parent) {
         };
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
-        self.cBLabel = paper.text(x+3*self.margin+40, y+h-self.margin-20, "Bonne réponse").attr("font-size", 20).attr("text-anchor", "start");
-        self.displaySet.push(self.cBLabel);
+        self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
+        self.manipulator.last.add(self.cBLabel);
     }
 };

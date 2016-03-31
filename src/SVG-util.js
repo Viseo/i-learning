@@ -14,16 +14,16 @@ var displayCheckbox = function (x, y, size, sender) {
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
-            obj.checked.remove();
+            sender.manipulator.last.remove(obj.checked);
         }
-        obj.checkbox.remove();
+        sender.manipulator.last.remove(obj.checkbox);
         displayCheckbox(x, y, size, sender);
     };
 
     if(sender.bCorrect) {
         obj.checked = new svg.Path(0,0).move(x+.2*size,y+.4*size)
-            .lineTo(.2*size,.3*size).lineTo(.4*size,-.5*size)
-        .color([],3,myColors.black);
+            .line(.2*size,.3*size).line(.4*size,-.5*size)
+            .color([],3,myColors.black);
         svg.addEvent(obj.checked,"click", onclickFunction);
         sender.manipulator.last.add(obj.checked);
     }
@@ -229,7 +229,7 @@ var drawPlus =function(x,y,w,h) {
         .line(x-(thickness/2), y+(baseHeight/2))
         .line(x-(thickness/2), y+(thickness/2));
 
-    path.color([], 1, myColors.black);
+    path.color(myColors.black);
     return path;
 };
 

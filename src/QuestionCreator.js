@@ -26,7 +26,7 @@ var QuestionCreator = function (question) {
 
     if(!question) {
         // init default : 2 empty answers
-        self.tabAnswer = []//new AnswerElement(null, self), new AnswerElement(null, self)];
+        self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
         self.quizzName = "";
         self.label = "";
         self.rightAnswers = [];
@@ -47,11 +47,6 @@ var QuestionCreator = function (question) {
             }
         });
     }
-
-    //self.displaySetQuestionCreator = paper.set();
-    //self.displaySetQuizzInfo = paper.set();
-    //self.displaySetPreviewButton = paper.set();
-    //self.displaySet.push(self.displaySetQuestionCreator, self.displaySetQuizzInfo, self.displaySetPreviewButton);
 
     self.coordinatesAnswers = {x:0, y:0, w:0, h:0};
     self.formationName = "Hibernate";
