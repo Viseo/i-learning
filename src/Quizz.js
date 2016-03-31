@@ -8,8 +8,6 @@
  * @param quizz
  * @param previewMode
  */
-
-
 function Quizz(quizz, previewMode) {
     var self=this;
 
