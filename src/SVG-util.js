@@ -14,16 +14,16 @@ var displayCheckbox = function (x, y, size, sender) {
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
-            obj.checked.remove();
+            sender.manipulator.last.remove(obj.checked);
         }
-        obj.checkbox.remove();
+        sender.manipulator.last.remove(obj.checkbox);
         displayCheckbox(x, y, size, sender);
     };
 
     if(sender.bCorrect) {
         obj.checked = new svg.Path(0,0).move(x+.2*size,y+.4*size)
-            .lineTo(.2*size,.3*size).lineTo(.4*size,-.5*size)
-        .color([],3,myColors.black);
+            .line(.2*size,.3*size).line(.4*size,-.5*size)
+            .color([],3,myColors.black);
         svg.addEvent(obj.checked,"click", onclickFunction);
         sender.manipulator.last.add(obj.checked);
     }
@@ -53,10 +53,10 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
-    text.position(0,h-margin-textHeight/2-150);
-    var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin);
+    text.position(0,h-margin-textHeight/2);
+    var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin, manipulator);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-    manipulator.ordonator.set(0,cadre).set(2,image.image);
+    manipulator.last.add(cadre);
 
     return {cadre: cadre, image: image.image,  text: text};
 };
@@ -71,9 +71,9 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
  */
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
-    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-2*margin);
+    var image = displayImage(imageSrc, imageObj, w-2*margin, h-2*margin, manipulator);
     var cadre = new svg.Rect(w, h).color([],1,[]);
-    manipulator.ordonator.set(0,cadre).set(1,image.image);
+    manipulator.last.add(cadre);
 
     return {image:image.image, height:image.height, cadre:cadre};
 };
@@ -85,7 +85,7 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
  * @param w
  * @param h
  */
-var displayImage = function (imageSrc, image, w, h) {
+var displayImage = function (imageSrc, image, w, h, manipulator) {
     var width = image.width;
     var height = image.height;
     if(width > w) {
@@ -99,10 +99,12 @@ var displayImage = function (imageSrc, image, w, h) {
         width *= h/height;
         height = h;
     }
-    return {
-        image: new svg.Image(imageSrc, width, height).position(w / 2 - width / 2, h / 2 - height / 2),
+    var obj={
+        image: new svg.Image(imageSrc).dimension(width, height).position(w / 2 - width / 2, h / 2 - height / 2),
         height: height
     };
+    manipulator.ordonator.set(0, obj.image);
+    return obj;
 };
 
 /**
@@ -120,8 +122,8 @@ var displayImage = function (imageSrc, image, w, h) {
 var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
 
-    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre);
-    manipulator.ordonator.set(0,cadre);
+    var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
+    manipulator.ordonator.set(0, cadre);
 
     return {content:content, cadre:cadre};
 };
@@ -138,7 +140,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
     var t = new svg.Text("");
-    manipulator.ordonator.set(1,t);
+    mainManipulator.last.add(t);
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;
@@ -227,7 +229,7 @@ var drawPlus =function(x,y,w,h) {
         .line(x-(thickness/2), y+(baseHeight/2))
         .line(x-(thickness/2), y+(thickness/2));
 
-    path.color([], 1, myColors.black);
+    path.color(myColors.black);
     return path;
 };
 

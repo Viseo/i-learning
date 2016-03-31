@@ -25,6 +25,7 @@ var Manipulator = function(){
     self.ordonator = new svg.Ordered(10);
     self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
     self.last = self.scalor;
+    self.first = self.translator;
 };
 
 var Drawings = function (w, h) {
