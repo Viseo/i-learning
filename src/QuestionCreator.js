@@ -287,8 +287,8 @@ var QuestionCreator = function (question) {
             }
         };
 
-        self.previewButton.cadre.node.onclick = previewFunction;
-        self.previewButton.content.node.onclick = previewFunction;
+        svg.addEvent(self.previewButton.cadre, "click", previewFunction);
+        svg.addEvent(self.previewButton.content, "click", previewFunction);
 
         self.displaySetPreviewButton.push(self.previewButton.cadre);
         self.displaySetPreviewButton.push(self.previewButton.content);

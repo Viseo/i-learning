@@ -41,22 +41,9 @@ var Answer = function (answer) {
         self.imageLoaded = true;
     }
 
-    if(self.label) {
-        if(answer.colorBordure && !isNaN(parseInt(answer.colorBordure.r)) && !isNaN(parseInt(answer.colorBordure.g)) && !isNaN(parseInt(answer.colorBordure.b))) {
-            self.rgbBordure = "rgb("+answer.colorBordure.r+", "+answer.colorBordure.g+", "+answer.colorBordure.b+")";
-        } else {
-            self.rgbBordure = "black";
-        }
-    } else {
-        self.rgbBordure = "none";
-    }
+    self.label ? (self.rgbBordure = answer.colorBordure):(self.rgbBordure = myColors.none);
+    answer.bgColor ? (self.bgColor = answer.bgColor):(self.bgColor = myColors.none);
 
-    if(answer.bgColor && !isNaN(parseInt(answer.bgColor.r)) && !isNaN(parseInt(answer.bgColor.g)) && !isNaN(parseInt(answer.bgColor.b))) {
-        self.bgColor = "rgb("+answer.bgColor.r+", "+answer.bgColor.g+", "+answer.bgColor.b+")";
-    }
-    else {
-        self.bgColor = "none";
-    }
     self.bordure = null;
     self.content = null;
 

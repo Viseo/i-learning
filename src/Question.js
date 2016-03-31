@@ -169,24 +169,24 @@ var Question = function (question,quizz) {
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
 
-                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator);
+                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.translator);
                 (function(element) {
                     if(element.bordure) {
-                        element.bordure.node.onclick=function() {
+                        svg.addEvent(element.bordure,"click",function() {
                             elementClicked(element);
-                        };
+                        });
                     }
 
                     if(element.content) {
-                        element.content.node.onclick=function() {
+                        svg.addEvent(element.content,"click",function() {
                             elementClicked(element);
-                        };
+                        });
                     }
 
                     if (element.image) {
-                        element.image.node.onclick = function () {
+                        svg.addEvent(element.image,"click",function() {
                             elementClicked(element);
-                        };
+                        });
                     }
 
                 })(self.tabAnswer[i]);
@@ -201,13 +201,13 @@ var Question = function (question,quizz) {
             var w=150;
             var h=50;
             var validateX,validateY;
-            validateX=self.bordure.component.attr('width')/2+self.x-75+100;
+            validateX=self.bordure.width/2+self.x-75+100;
             validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.questionManipulator);
-
             self.validateManipulator = new Manipulator();
+
+            var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
-            self.answersManipulator.last.add(self.validateManipulator);
+            self.answersManipulator.last.add(self.validateManipulator.translator);
             self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
@@ -261,13 +261,12 @@ var Question = function (question,quizz) {
             //Button reset
             var w=150;
             var h=50;
-            var resetX=self.bordure.component.attr('width')/2+self.x-75 -100;
+            var resetX=self.bordure.width/2+self.x-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.questionManipulator);
-
             self.resetManipulator=new Manipulator();
+            self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
-            self.answersManipulator.last.add(self.resetManipulator);
+            self.answersManipulator.last.add(self.resetManipulator.translator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
