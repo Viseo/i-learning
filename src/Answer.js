@@ -69,7 +69,7 @@ var Answer = function (answer) {
      */
     self.display = function (x, y, w, h) {
 
-        self.displaySet=new Manipulator();
+        self.answerManipulator=new Manipulator();
 
         if(self.selected){// image pré-selectionnée
             self.bordure.color(null,5,myColors.red);
@@ -81,7 +81,7 @@ var Answer = function (answer) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
-            self.displaySet.last.add(self.bordure,self.content,self.image);
+            self.answerManipulator.last.add(self.bordure,self.content,self.image);
 
         }
         // Question avec Texte uniquement
@@ -89,7 +89,7 @@ var Answer = function (answer) {
             var object = displayText(self.label, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.displaySet.last.add(self.bordure,self.content);
+            self.answerManipulator.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
@@ -97,17 +97,17 @@ var Answer = function (answer) {
             var obj = displayImageWithBorder(self.imageSrc, self.image, w, h);
             self.image = obj.image;
             self.bordure = obj.cadre;
-            self.displaySet.last.add(self.image,self.bordure);
+            self.answerManipulator.last.add(self.image,self.bordure);
 
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
             self.bordure = new svg.Rect(w, h).color(self.bgColor,1, self.rgbBordure);
-            self.displaySet.last.add(self.bordure);
+            self.answerManipulator.last.add(self.bordure);
 
         }
 
-        self.displaySet.translator.moveTo(x,y);
+        self.answerManipulator.translator.moveTo(x,y);
 
     };
 

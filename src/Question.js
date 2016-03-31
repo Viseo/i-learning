@@ -80,7 +80,7 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        self.displaySet=new Manipulator();
+        self.questionManipulator=new Manipulator();
 
         self.x=x;
         self.y=y;
@@ -93,7 +93,7 @@ var Question = function (question,quizz) {
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
-            self.displaySet.last.add(self.bordure, self.content, self.raphImage);
+            self.questionManipulator.last.add(self.bordure, self.content, self.raphImage);
 
         }
         // Question avec Texte uniquement
@@ -101,32 +101,32 @@ var Question = function (question,quizz) {
             var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
             self.bordure = object.cadre;
             self.content = object.content;
-            self.displaySet.last.add(self.bordure,self.content);
+            self.questionManipulator.last.add(self.bordure,self.content);
 
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
             self.raphImage = displayImage(self.imageSrc, self.image, w, self.height).image;
-            self.displaySet.last.add(self.raphImage);
+            self.questionManipulator.last.add(self.raphImage);
 
         }
         else {
-            var point=self.displaySet.globalToLocal(self.x,self.y);
+            var point=self.questionManipulator.globalToLocal(self.x,self.y);
             self.bordure = new svg.Rect( w, self.height).color(self.bgColor,1,self.rgbBordure);
-            self.displaySet.last.add(self.bordure);
+            self.questionManipulator.last.add(self.bordure);
 
         }
 
-        self.displaySet.translator.moveTo(self.x+self.width/2,self.y+self.height/2);
+        self.questionManipulator.translator.moveTo(self.x+self.width/2,self.y+self.height/2);
     };
 
     self.displayAnswers = function (x, y, w, h) {
-        self.displaySetAnswers=paper.set();
+        self.answersManipulator = new Manipulator();
 
         if (self.rows !== 0) {
 
-            self.displaySet.last.add(self.displaySetAnswers);
-            //self.displaySetAnswers.translator.moveTo(0,0);
+            self.questionManipulator.last.add(self.answersManipulator);
+            //self.answersManipulator.translator.moveTo(0,0);
 
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
@@ -167,9 +167,9 @@ var Question = function (question,quizz) {
                 }
 
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                self.tabAnswer[i].displaySet.translator.moveTo(posx+tileWidth/2,posy+self.tileHeight/2);
+                self.tabAnswer[i].answerManipulator.translator.moveTo(posx+tileWidth/2,posy+self.tileHeight/2);
 
-                self.displaySetAnswers.last.add(self.tabAnswer[i].displaySet);
+                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator);
                 (function(element) {
                     if(element.bordure) {
                         element.bordure.node.onclick=function() {
@@ -206,13 +206,13 @@ var Question = function (question,quizz) {
             var validateButton=displayText("Valider",w,h,'green','yellow',20
             );
 
-            self.validatedisplaySet=new Manipulator();
-            self.validatedisplaySet.last.add(validateButton.cadre,validateButton.content);
-            self.displaySetAnswers.last.add(self.validatedisplaySet);
-            self.validatedisplaySet.translator.moveTo(validateX+w/2,validateY+h/2);
+            self.validateManipulator = new Manipulator();
+            self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
+            self.answersManipulator.last.add(self.validateManipulator);
+            self.validateManipulator.translator.moveTo(validateX+w/2,validateY+h/2);
 
             //button. onclick
-            var oclk=function(){
+            var oclk = function(){
                 // test des valeurs, en gros si selectedAnswers === rigthAnswers
                 var allRight=false;
 
@@ -267,10 +267,10 @@ var Question = function (question,quizz) {
             self.resetButton=displayText("Reset",w,h,'grey','grey',20
             );
 
-            self.resetDisplaySet=new Manipulator();
-            self.resetDisplaySet.last.add(self.resetButton.cadre,self.resetButton.content);
-            self.displaySetAnswers.last.add(self.resetDisplaySet);
-            self.resetDisplaySet.translator.moveTo(resetX+w/2,resetY+h/2);
+            self.resetManipulator=new Manipulator();
+            self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
+            self.answersManipulator.last.add(self.resetManipulator);
+            self.resetManipulator.translator.moveTo(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
                 if(self.selectedAnswers.length>0){

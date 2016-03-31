@@ -84,7 +84,7 @@ function main() {
         //viewBoxWidth
 
         //paper.setViewBox(0, 0, document.body.clientWidth*scale/2, 1500*scale/2, false);
-        paper.setViewBox(0, 0, viewBoxHeight, viewBoxWidth, false);
+       // paper.setViewBox(0, 0, viewBoxHeight, viewBoxWidth, false);
         console.log(scale);
         //displaySet.scale(1/window.devicePixelRatio);
         //console.log(scale);
@@ -99,9 +99,9 @@ function main() {
     //}
 
     setTimeout(function(){
-        var rect =paper.rect(0,0,10,10);
+        var rect = new svg.Rect(10,10).position(0,0);
         console.log('préparez vous, on va push!');
-        quizz.tabQuestions[0].tabAnswer[1].displaySet.push(rect);
+        quizz.tabQuestions[0].tabAnswer[1].answerManipulator.last.add(rect);
     },500);
 
 

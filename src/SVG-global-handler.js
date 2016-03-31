@@ -19,6 +19,16 @@ var Drawings = function (w, h) {
         exports.setSvg = setSvg;
     }
 
+    var Manipulator = function(){
+        var self=this;
+        self.translator = new svg.Translation(0,0);
+        self.rotator = new svg.Rotation(0);
+        self.scalor = new svg.Scaling(1);
+        self.ordonator = new svg.Ordered(10);
+        self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
+        self.last = self.scalor;
+    };
+
     self.drawing = new svg.Drawing(w, h).show("content");
     self.drawing.manipulator = new Manipulator();
     self.piste = new svg.Drawing(w, h).show("content");
@@ -80,13 +90,5 @@ var Drawings = function (w, h) {
 
 };
 
-var Manipulator = function(){
-    var self=this;
-    self.translator = new svg.Translation(0,0);
-    self.rotator = new svg.Rotation(0);
-    self.scalor = new svg.Scaling(1);
-    self.ordonator = new svg.Ordered(10);
-    self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
-    self.last = self.scalor;
-};
+
 
