@@ -6,7 +6,7 @@ var imageController = ImageController();
 var asyncTimerController=AsyncTimerController();
 var drawings = new Drawings(document.body.clientWidth, 1500);
 var drawing = drawings.drawing;
-var mainManipulator = drawing.manipulator.last;
+var mainManipulator = drawing.manipulator;
 
 function main() {
 

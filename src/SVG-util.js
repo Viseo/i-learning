@@ -51,12 +51,12 @@ var displayCheckbox = function (x, y, size, sender) {
 var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
     var margin = 10;
 
-    var text = autoAdjustText(label, 0, h-2*margin, w, null, fontSize, font).text;
+    var text = autoAdjustText(label, 0, h-2*margin, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
     text.position(0,h-margin-textHeight/2);
     var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-textHeight-3*margin);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-    manipulator.ordonator.set(0,cadre).set(1,image.image).set(2,text);
+    manipulator.ordonator.set(0,cadre).set(2,image.image);
 
     return {cadre: cadre, image: image.image,  text: text};
 };
@@ -117,11 +117,11 @@ var displayImage = function (imageSrc, image, w, h) {
  * @param manipulator
  * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
  */
-var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font,manipulator) {
-    var content = autoAdjustText(label, 0, 0, w, h, textHeight, font).text;
+var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
 
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre);
-    manipulator.ordered.set(0,cadre).set(1,content);
+    manipulator.ordonator.set(0,cadre);
 
     return {content:content, cadre:cadre};
 };
@@ -136,9 +136,9 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font,man
  * @param fontSize
  * @param font
  */
-var autoAdjustText = function (content, x, y, w, h, fontSize, font) {
+var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
     var t = new svg.Text("");
-
+    manipulator.ordonator.set(1,t);
     var words = content.split(" ");
     var tempText = "";
     var margin = 10;

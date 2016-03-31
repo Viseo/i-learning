@@ -3,31 +3,33 @@
  */
 var svg = null;
 
+if(typeof SVG != "undefined") {
+    if(!svg) {
+        svg = new SVG();
+    }
+}
+
+function setSvg(_svg) {
+    svg = _svg;
+    // call setSvg on modules
+}
+if(typeof exports != "undefined") {
+    exports.setSvg = setSvg;
+}
+
+var Manipulator = function(){
+    var self=this;
+    self.translator = new svg.Translation(0,0);
+    self.rotator = new svg.Rotation(0);
+    self.scalor = new svg.Scaling(1);
+    self.ordonator = new svg.Ordered(10);
+    self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
+    self.last = self.scalor;
+};
+
 var Drawings = function (w, h) {
     var self = this;
-    if(typeof SVG != "undefined") {
-        if(!svg) {
-            svg = new SVG();
-        }
-    }
 
-    function setSvg(_svg) {
-        svg = _svg;
-        // call setSvg on modules
-    }
-    if(typeof exports != "undefined") {
-        exports.setSvg = setSvg;
-    }
-
-    var Manipulator = function(){
-        var self=this;
-        self.translator = new svg.Translation(0,0);
-        self.rotator = new svg.Rotation(0);
-        self.scalor = new svg.Scaling(1);
-        self.ordonator = new svg.Ordered(10);
-        self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
-        self.last = self.scalor;
-    };
 
     self.drawing = new svg.Drawing(w, h).show("content");
     self.drawing.manipulator = new Manipulator();
@@ -71,7 +73,7 @@ var Drawings = function (w, h) {
         if(self.target && self.target.node.ondblclick) {
             self.target.node.ondblclick(event);
         }
-    }
+    };
     svg.addEvent(self.glass.area,"dblclick",ondblclickHandler);
 
     var onmouseupHandler = function(event) {
