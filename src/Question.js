@@ -6,9 +6,16 @@
  * @constructor
  */
 
-/*label,imageSrc,tabAnswer, rows, colorBordure, bgColor*/
 var Question = function (question,quizz) {
     var self = this;
+    self.questionManipulator = new Manipulator();
+    self.answersManipulator = new Manipulator();
+    self.questionManipulator.last.add(self.answersManipulator.translator);
+    self.resetManipulator = new Manipulator();
+    self.answersManipulator.last.add(self.resetManipulator.translator);
+    self.validateManipulator = new Manipulator();
+    self.answersManipulator.last.add(self.validateManipulator.translator);
+
 
 
     self.parentQuizz=quizz;
@@ -38,8 +45,6 @@ var Question = function (question,quizz) {
     } else {
         self.imageLoaded = true;
     }
-
-
 
 
     if (question.tabAnswer !== null) {
@@ -80,7 +85,6 @@ var Question = function (question,quizz) {
      */
 
     self.display = function (x, y, w, h) {
-        self.questionManipulator=new Manipulator();
 
         self.x=x;
         self.y=y;
@@ -121,37 +125,15 @@ var Question = function (question,quizz) {
     };
 
     self.displayAnswers = function (x, y, w, h) {
-        self.answersManipulator = new Manipulator();
-
         if (self.rows !== 0) {
 
-            self.questionManipulator.last.add(self.answersManipulator.translator);
             //self.answersManipulator.translator.move(0,0);
-
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
             self.tileHeightMax = Math.floor(h/self.rows)-2*margin;
 
             var tmpTileHeight;
-
-            //for(var answer of self.tabAnswer) {
-            //    //tmpTileHeight=answer.imageSrc.height;
-            //    tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
-            //    if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
-            //        self.tileHeight = self.tileHeightMax;
-            //    }
-            //    else if (tmpTileHeight>self.tileHeight){
-            //        self.tileHeight = tmpTileHeight;
-            //    }
-            //}
-
-
-            //if(self.tabAnswer.length%self.rows === 0) {
-            //    paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor(self.tabAnswer.length/self.rows) + self.height + y + 2*margin+100);
-            //} else {
-            //    paper.setSize(paper.width, (margin + self.tileHeight)*Math.floor((self.tabAnswer.length/self.rows)+1) + self.height + y + 2*margin+100);
-            //}
 
             var posx = x;
             var posy = y + self.height + margin * 2;
@@ -166,10 +148,9 @@ var Question = function (question,quizz) {
                     posx = x;
                 }
 
+                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
-
-                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.translator);
+                self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 (function(element) {
                     if(element.bordure) {
                         svg.addEvent(element.bordure,"click",function() {
@@ -203,11 +184,9 @@ var Question = function (question,quizz) {
             var validateX,validateY;
             validateX=self.bordure.width/2+self.x-75+100;
             validateY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            self.validateManipulator = new Manipulator();
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
-            self.answersManipulator.last.add(self.validateManipulator.translator);
             self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
@@ -263,10 +242,8 @@ var Question = function (question,quizz) {
             var h=50;
             var resetX=self.bordure.width/2+self.x-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin+self.y+self.height+2*margin;
-            self.resetManipulator=new Manipulator();
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
-            self.answersManipulator.last.add(self.resetManipulator.translator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
             self.reset = function(){
@@ -327,13 +304,8 @@ var Question = function (question,quizz) {
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }
             }
-
-
         }
-
-       // console.log("score: "+self.parentQuizz.score);
     }
-
 };
 
 
