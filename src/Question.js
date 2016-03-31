@@ -117,7 +117,7 @@ var Question = function (question,quizz) {
 
         }
 
-        self.questionManipulator.translator.move(self.x+self.width/2,self.y+self.height/2);
+        self.questionManipulator.translator.move(self.x,self.y);
     };
 
     self.displayAnswers = function (x, y, w, h) {

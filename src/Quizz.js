@@ -169,7 +169,7 @@ function Quizz(quizz, previewMode) {
 
         self.quizzManipulator.last.add(self.titleBox);
         self.quizzManipulator.last.add(self.titleText);
-        self.quizzManipulator.translator.move(self.x, self.y);
+        self.quizzManipulator.translator.move(w/2,self.headerHeight/2);
 
         self.nextQuestion();
     }
@@ -198,9 +198,9 @@ function Quizz(quizz, previewMode) {
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithoutImage);
                     self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithImage);
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage);
-                    self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.headerHeight + self.quizzMarginY,
+                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight*2 + self.quizzMarginY+10,
                         self.cadreQuestion.w - self.quizzMarginX, self.questionHeight);
-                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.headerHeight + self.quizzMarginY,
+                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + self.quizzMarginY+self.questionHeight,
                         self.cadreQuestion.w - self.quizzMarginX, self.responseHeight);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.translator);

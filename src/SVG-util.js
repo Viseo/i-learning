@@ -51,10 +51,10 @@ var displayCheckbox = function (x, y, size, sender) {
 var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
     var margin = 10;
 
-    var text = autoAdjustText(label, 0, h-2*margin, w, null, fontSize, font, manipulator).text;
+    var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
-    text.position(0,h-margin-textHeight/2);
-    var image = displayImage(imageSrc, imageObj, margin, margin, w-2*margin, h-textHeight-3*margin);
+    text.position(0,h-margin-textHeight/2-150);
+    var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
     manipulator.ordonator.set(0,cadre).set(2,image.image);
 
