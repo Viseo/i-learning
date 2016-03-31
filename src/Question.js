@@ -137,7 +137,6 @@ var Question = function (question,quizz) {
             var tmpTileHeight;
 
             for(var answer of self.tabAnswer) {
-                //tmpTileHeight=answer.imageSrc.height;
                 answer.imageSrc ? (tmpTileHeight = answer.imageSrc.height): (tmpTileHeight=self.tileHeightMin);
                 if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
                     self.tileHeight = self.tileHeightMax;
@@ -148,17 +147,6 @@ var Question = function (question,quizz) {
             }
             self.questionManipulator.last.add(self.answersManipulator.translator);
             self.answersManipulator.translator.move(0,self.height/2+2*margin);
-
-            //for(var answer of self.tabAnswer) {
-            //    //tmpTileHeight=answer.imageSrc.height;
-            //    tmpTileHeight = getHeight(answer.label, answer.imageSrc, x, y, tileWidth, 20 /*TODO*/, answer.image);
-            //    if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
-            //        self.tileHeight = self.tileHeightMax;
-            //    }
-            //    else if (tmpTileHeight>self.tileHeight){
-            //        self.tileHeight = tmpTileHeight;
-            //    }
-            //}
 
 
             //if(self.tabAnswer.length%self.rows === 0) {
@@ -188,7 +176,6 @@ var Question = function (question,quizz) {
                 //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy-self.tileHeight/2-margin/2);
                 self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy);
 
-                //self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.translator);
                 (function(element) {
                     if(element.bordure) {
                         svg.addEvent(element.bordure,"click",function() {
@@ -222,11 +209,10 @@ var Question = function (question,quizz) {
             var validateX,validateY;
             validateX=-75+100;
             validateY=self.tileHeight*self.lines+(self.lines)*margin;
-            self.validateManipulator = new Manipulator();
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.last.add(validateButton.cadre,validateButton.content);
-            //self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
+            self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
 
             //button. onclick
             var oclk = function(){
@@ -281,7 +267,6 @@ var Question = function (question,quizz) {
             var h=50;
             var resetX=-75 -100;
             var resetY=self.tileHeight*self.lines+(self.lines)*margin;
-            //self.resetManipulator=new Manipulator();
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.last.add(self.resetButton.cadre,self.resetButton.content);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
