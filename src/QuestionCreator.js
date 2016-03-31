@@ -223,7 +223,7 @@ var QuestionCreator = function (question) {
                 if (correctAnswers >= 1 && incorrectAnswers >= 1 && isFilled) {
                     if (self.quizzName) {
                         if (self.label) {
-                            self.displaySet.remove();
+                            mainManipulator.remove(self.manipulator);
 
                             var tabAnswer = [];
                             self.tabAnswer.forEach(function (el) {
@@ -252,41 +252,34 @@ var QuestionCreator = function (question) {
 
                             var quizz = new Quizz(quizzObject, true);
                             quizz.run(20, 20, 1500, 800);
-                            //var quest = new Question(questionObject, null);
-                            //quest.display(20, 20, 1500, 200);
-                            //quest.displayAnswers(20, 20, 1500, 200);
                         } else {
                             if (self.errorMessagePreview) {
                                 self.errorMessagePreview.remove();
                             }
-                            self.errorMessagePreview = paper.text(x+ w/2 - self.margin -170, y + h / 2 - 50, "Vous devez donner un nom à la question.").attr({
-                                "font-size": 20,
-                                "fill": 'red',
-                                "text-anchor": 'start'
-                            });
-                            self.displaySetPreviewButton.push(self.errorMessagePreview);
+                            self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
+                                .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                                .font("arial", 20)
+                                .anchor('start').color(myColors.red);
+                            self.previewButtonManipulator.last.add(self.errorMessagePreview);
                         }
                     } else {
                         if (self.errorMessagePreview) {
                             self.errorMessagePreview.remove();
                         }
-                        self.errorMessagePreview = paper.text(x+ w/2 - self.margin -150, y + h / 2 - 50, "Vous devez donner un nom au quiz.").attr({
-                            "font-size": 20,
-                            "fill": 'red',
-                            "text-anchor": 'start'
-                        });
-                        self.displaySetPreviewButton.push(self.errorMessagePreview);
-                    }
+                        self.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
+                            .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                            .font("arial", 20)
+                            .anchor('start').color(myColors.red);
+                        self.previewButtonManipulator.last.add(self.errorMessagePreview);                    }
                 } else {
                     if (self.errorMessagePreview) {
                         self.errorMessagePreview.remove();
                     }
-                    self.errorMessagePreview = paper.text(x+ w/2 - self.margin -240, y + h / 2 - 50, "Vous ne pouvez pas créer une question sans réponses.").attr({
-                        "font-size": 20,
-                        "fill": 'red',
-                        "text-anchor": 'start'
-                    });
-                    self.displaySetPreviewButton.push(self.errorMessagePreview);
+                    self.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
+                        .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                        .font("arial", 20)
+                        .anchor('start').color(myColors.red);
+                    self.previewButtonManipulator.last.add(self.errorMessagePreview);
                 }
             }
         };

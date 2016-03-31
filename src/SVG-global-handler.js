@@ -32,11 +32,11 @@ var Drawings = function (w, h) {
     var self = this;
 
 
-    self.drawing = new svg.Drawing(w, h).show("content");
+    self.drawing = new svg.Drawing(w, h).show("content").position(0, 0);
     self.drawing.manipulator = new Manipulator();
-    self.piste = new svg.Drawing(w, h).show("content");
+    self.piste = new svg.Drawing(w, h).show("content").position(0, 0);
     self.piste.manipulator = new Manipulator();
-    self.glass = new svg.Drawing(w, h).show("content");
+    self.glass = new svg.Drawing(w, h).show("content").position(0, 0);
     self.glass.manipulator = new Manipulator();
     self.glass.area = new svg.Rect(w, h);
     self.glass.add(self.glass.manipulator.translator);
