@@ -172,7 +172,7 @@ function Quizz(quizz, previewMode) {
         self.quizzManipulator.translator.move(w/2,self.headerHeight/2);
 
         self.nextQuestion();
-    }
+    };
 
     self.nextQuestion=function(){
 
