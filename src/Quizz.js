@@ -174,7 +174,13 @@ function Quizz(quizz, previewMode) {
     self.nextQuestion=function(){
 
             if(self.currentQuestionIndex !== -1) {
-                self.tabQuestions[self.currentQuestionIndex].questionManipulator.first.remove();
+                //self.tabQuestions[self.currentQuestionIndex].questionManipulator.first.remove();
+                self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
+                //self.tabQuestions[self.currentQuestionIndex].questionManipulator.first.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.rotator);
+                //self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.children.forEach(function(child){
+                //    self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.child);
+                //});
+
             }
             if(self.previewMode) {
                 if(self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
