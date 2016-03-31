@@ -89,7 +89,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.imag, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.imag, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;

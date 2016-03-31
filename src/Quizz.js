@@ -121,7 +121,7 @@ function Quizz(quizz, previewMode) {
             usedColor=color;
         }
 
-        var object = displayText(self.finalMessage,self.cadreResult.w,self.cadreResult.h, myColors.black, usedColor, self.fontSize, self.font);
+        var object = displayText(self.finalMessage,self.cadreResult.w,self.cadreResult.h, myColors.black, usedColor, self.fontSize, self.font, self.resultManipulator);
 
         self.resultBox = object.cadre;
         self.resultText = object.content;
@@ -158,16 +158,18 @@ function Quizz(quizz, previewMode) {
         self.questionHeightWithImage = heightPage * self.questionPercentageWithImage - 2 * self.quizzMarginY;
         self.responseHeightWithImage = heightPage * self.responsePercentageWithImage - 2 * self.quizzMarginY;
 
-        var object = displayText(self.title, (self.cadreTitle.w - self.quizzMarginX), (self.headerHeight - self.quizzMarginY), self.rgbBordure, self.bgColor, self.fontSize, self.font);
-        self.titleBox = object.cadre;
-        self.titleText = object.content;
-
         self.quizzManipulator = new Manipulator();
         mainManipulator.last.add(self.quizzManipulator.translator);
 
+        var object = displayText(self.title, (self.cadreTitle.w - self.quizzMarginX), (self.headerHeight - self.quizzMarginY), self.rgbBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
+        self.titleBox = object.cadre;
+        self.titleText = object.content;
+
+
+
         self.quizzManipulator.last.add(self.titleBox);
         self.quizzManipulator.last.add(self.titleText);
-        self.quizzManipulator.translator.moveTo(self.x, self.y);
+        self.quizzManipulator.translator.move(self.x, self.y);
 
         self.nextQuestion();
     }
