@@ -60,9 +60,9 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
         }
     }
 
-    self.initDisplay(x, y, w, h, startPosition){
-
-    }
+    //self.initDisplay(x, y, w, h, startPosition){
+    //
+    //}
 
     /**
      *
