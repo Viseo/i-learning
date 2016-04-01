@@ -75,7 +75,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
     var image = displayImage(imageSrc, imageObj, w-2*margin, h-2*margin, manipulator);
-    var cadre = new svg.Rect(w, h).color([],1,[]);
+    var cadre = new svg.Rect(w, h).color(myColors.white,1,myColors.none);
     manipulator.ordonator.set(0,cadre);
     manipulator.ordonator.set(1,image.image);
 
