@@ -4,7 +4,7 @@
 
 var imageController = ImageController();
 var asyncTimerController=AsyncTimerController();
-var drawings = new Drawings(document.body.clientWidth, 1500);
+var drawings = new Drawings(document.body.clientWidth, document.documentElement.clientHeight);
 var drawing = drawings.drawing;
 var mainManipulator = drawing.manipulator;
 
@@ -24,7 +24,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1,1200,1200);
+    quizz.run(1,1,document.body.clientWidth,drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);
