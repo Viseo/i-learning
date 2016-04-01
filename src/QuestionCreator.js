@@ -10,7 +10,7 @@ var QuestionCreator = function (question) {
     self.manipulator = new Manipulator();
     mainManipulator.last.add(self.manipulator.translator);
 
-    self.margin = 15;
+    MARGIN = 15;
     self.headerHeight=0.1;
     self.questionHeight=0.2;
     self.reponseHeight=0.7;
@@ -67,7 +67,7 @@ var QuestionCreator = function (question) {
             var anchor = isValidElement === "questionNameValidInput" ? 'middle' : 'start';
 
             self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                .position(position, textarea.getBoundingClientRect().bottom+self.margin)
+                .position(position, textarea.getBoundingClientRect().bottom+MARGIN)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
 
             textarea.focus();
@@ -83,9 +83,9 @@ var QuestionCreator = function (question) {
     self.display = function (x, y, w, h) {
         var quizzInfoHeight=Math.floor(haut*self.headerHeight);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
-        self.displayQuestionCreator(self.margin+x,self.margin+quizzInfoHeight+15, w, questionCreatorHeight-2*self.margin-30);
-        self.displayQuizzInfo(self.margin+x, self.margin+y, w*0.5,quizzInfoHeight);
-        self.displayPreviewButton(self.margin+x,self.margin+quizzInfoHeight+questionCreatorHeight-self.margin, w, 75);
+        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-30);
+        self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
+        self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
@@ -96,7 +96,7 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*self.margin, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
+            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.cadre.opacity(0);
             svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
@@ -108,7 +108,7 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.content.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*self.margin)+"px; left:"+(self.x+3*self.margin)+"px; width:"+(self.w-6*self.margin)+"px; height:"+(self.h*0.25-4*self.margin)+"px; text-align:center; resize: none; outline:none; border: none;");
+            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -131,10 +131,10 @@ var QuestionCreator = function (question) {
         w && (self.w = w);
         h && (self.h = h);
         self.coordinatesAnswers = {
-            x: self.x+self.margin,
-            y:self.y+2*self.margin+self.h*0.25,
-            w: self.w-2*self.margin,
-            h: h*0.75-3*self.margin
+            x: self.x+MARGIN,
+            y:self.y+2*MARGIN+self.h*0.25,
+            w: self.w-2*MARGIN,
+            h: h*0.75-3*MARGIN
         };
 
         // bloc Question
@@ -257,7 +257,7 @@ var QuestionCreator = function (question) {
                                 self.errorMessagePreview.remove();
                             }
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
-                                .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                                .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
                                 .font("arial", 20)
                                 .anchor('start').color(myColors.red);
                             self.previewButtonManipulator.last.add(self.errorMessagePreview);
@@ -267,7 +267,7 @@ var QuestionCreator = function (question) {
                             self.errorMessagePreview.remove();
                         }
                         self.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
-                            .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                            .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
                             .font("arial", 20)
                             .anchor('start').color(myColors.red);
                         self.previewButtonManipulator.last.add(self.errorMessagePreview);                    }
@@ -276,7 +276,7 @@ var QuestionCreator = function (question) {
                         self.errorMessagePreview.remove();
                     }
                     self.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
-                        .position(x+ w/2 - self.margin -170, y + h / 2 - 50)
+                        .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
                         .font("arial", 20)
                         .anchor('start').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.errorMessagePreview);

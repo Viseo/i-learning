@@ -7,7 +7,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
     self.lines=lines;
     self.rows=rows;
-    self.margin=MARGIN;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
 
@@ -129,7 +128,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y);
             //self.rightArrowManipulator.manipulator.scalor.scale(self.rightArrowManipulator._scale);
 
-            self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
+            self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
         } else {
             self.initTiles(x, y, w, h, startPosition);
         }
@@ -139,15 +138,15 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
 
     self.initTiles=function(x, y, w, h, startPosition) {
-        self.tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
-        self.tileHeight=(h-(self.lines+1)*self.margin)/self.lines;
+        self.tileWidth=(w-(self.rows-1)*MARGIN)/self.rows;
+        self.tileHeight=(h-(self.lines+1)*MARGIN)/self.lines;
 
         var posX=0;
         var posY=self.parent.questionHeight/2;
 
         var newTile = {};
 
-        //paper.setSize(paper.width, (self.margin + self.tileHeight)*self.lines + y + 2*self.margin+100);
+        //paper.setSize(paper.width, (MARGIN + self.tileHeight)*self.lines + y + 2*MARGIN+100);
 
         var count = startPosition*self.lines;
 
@@ -161,14 +160,14 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
 
-                        posX += self.tileWidth+self.margin;
+                        posX += self.tileWidth+MARGIN;
                         count++;
                     }
                     else {
                         break;
                     }
                 }
-                posY += self.tileHeight+self.margin;
+                posY += self.tileHeight+MARGIN;
                 posX = 0;
             }
         } else {
@@ -182,14 +181,14 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
                     self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
 
                     console.log(posX+self.tileWidth/2);
-                    posY += self.tileHeight + self.margin;
+                    posY += self.tileHeight + MARGIN;
                     count++;
                     }
                     else {
                         break;
                     }
                 }
-                posX += self.tileWidth + self.margin;
+                posX += self.tileWidth +  MARGIN;
                 posY = parent.questionHeight/2;
             }
         }
