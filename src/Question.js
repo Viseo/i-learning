@@ -124,7 +124,7 @@ var Question = function (question,quizz) {
         if (self.rows !== 0) {
 
             //self.answersManipulator.translator.move(0,0);
-            var margin = 15;
+            var margin = self.parentQuizz.margin;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
             self.tileHeightMax = Math.floor(h/self.lines)-2*margin;
@@ -143,7 +143,7 @@ var Question = function (question,quizz) {
             }
             self.questionManipulator.last.add(self.answersManipulator.translator);
             //self.answersManipulator.translator.move(0,self.height/2+2*margin);
-            self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2+margin);
+            self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2);
 
             //var posx = x;
             //var posy = y + self.height + margin * 2;
@@ -200,7 +200,7 @@ var Question = function (question,quizz) {
 
         if(self.multipleChoice){
             //affichage d'un bouton "valider"
-            var margin = 15;
+            var margin = self.parentQuizz.margin;
             var w=150;
             var h=50;
             var validateX,validateY;

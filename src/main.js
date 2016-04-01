@@ -54,7 +54,7 @@ function main() {
     window.oldWidth=window.innerWidth;
     window.oldHeight=window.innerHeight;
 
-    window.onresize = resizePaper;
+   // window.onresize = resizePaper;
 
 
 }

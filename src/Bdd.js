@@ -13,6 +13,8 @@ var myColorsOld={
     white:{r:255, g:255, b:255}
 };
 
+var MARGIN=10;
+
 var myColors={
     blue:[25, 122, 230],
     primaryBlue:[0, 0, 255],

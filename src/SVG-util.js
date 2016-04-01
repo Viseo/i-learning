@@ -245,11 +245,11 @@ var drawPlus =function(x,y,w,h) {
  * @param handler
  */
 
-var drawArrow = function(x,y,w,h,handler){
+var drawArrow = function(x,y,w,h,handler,manipulator){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
-    var arrowManipulator = new Manipulator();
+    var arrowManipulator = manipulator;
 
     var chevron = new svg.Path(x, y).line(x-100, y+100)
         .cubic(x-140, y+140, x-85, y+185, x-50, y+150)
@@ -289,7 +289,7 @@ var drawArrow = function(x,y,w,h,handler){
     }
 
     arrowManipulator.scalor.scale(chevron.tempHeight/baseHeight);
-    return arrowManipulator;
+    //return arrowManipulator;
 };
 
 Function.prototype.clone = function() {

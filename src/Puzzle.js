@@ -7,11 +7,12 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
     self.lines=lines;
     self.rows=rows;
-    self.margin=15;
+    self.margin=MARGIN;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
 
     self.reverseMode = reverseMode;
+
 
     self.totalRows = 0;
     if(self.questionsTab.length%self.lines === 0) {
@@ -23,6 +24,13 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
     var count = 0;
     self.virtualTab = [];
+    self.puzzleManipulator = new Manipulator();
+    self.leftArrowManipulator=new Manipulator();
+    self.rightArrowManipulator=new Manipulator();
+    self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+    self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+
+
 
     if(self.reverseMode) {
         for (var i = 0; i < self.lines; i++) {
@@ -61,7 +69,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
      */
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
-        !self.puzzleManipulator && (self.puzzleManipulator = new Manipulator());
         self.puzzleManipulator.last.children.forEach(function (el) {
             self.puzzleManipulator.last.remove(el);
         });
@@ -78,9 +85,9 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                self.leftArrowManipulator = drawArrow(-75/2,-75/ 2, 75, 75,"left", handlerLeftArrow);
+                 drawArrow(-75/2,-75/ 2, 75, 75, handlerLeftArrow,self.leftArrowManipulator);
             } else {
-                self.leftArrowManipulator = drawArrow(-75/2,-75/ 2, 75, 75,"left", handlerLeftArrow);
+                drawArrow(-75/2,-75/ 2, 75, 75, handlerLeftArrow,self.leftArrowManipulator);
             }
 
 
@@ -104,15 +111,15 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                 }
             };
 
+
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrowManipulator= drawArrow(-75/2, -75/2, 75, 75,"right", handlerRightArrow);
+                 drawArrow(-75/2, -75/2, 75, 75, handlerRightArrow,self.rightArrowManipulator);
             } else {
-                self.rightArrowManipulator = drawArrow(-75/2, -75/2, 75, 75,"right", handlerRightArrow);
+                drawArrow(-75/2, -75/2, 75, 75, handlerRightArrow,self.rightArrowManipulator);
             }
             //self.puzzleManipulator.push(self.rightArrow);
             //self.rightArrowManipulator=paper.set();
             //self.rightArrowManipulator.push(self.rightArrow);
-            self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
             self.rightArrowManipulator.translator.move(x+w-self.margin+75/2,y + (h/2)+75/2);
             //self.rightArrowManipulator.manipulator.scalor.scale(self.rightArrowManipulator._scale);
 
@@ -120,7 +127,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
         } else {
             self.initTiles(x, y, w, h, startPosition);
         }
-        self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
 
 
     };
@@ -128,7 +134,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
 
     self.initTiles=function(x, y, w, h, startPosition) {
         self.tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
-        self.tileHeight=(h-(self.lines-1)*self.margin)/self.lines;
+        self.tileHeight=(h-(self.lines+1)*self.margin)/self.lines;
 
         var posX=0;
         var posY=y/2;
@@ -144,8 +150,9 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             for(var i = startPosition; i<(startPosition+self.lines); i++) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
-                        self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.puzzleManipulator.last.add(self.virtualTab[i][j].manipulator.first);
+
+                        self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
 
                         posX += self.tileWidth+self.margin;
@@ -163,11 +170,12 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                 for (var j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
 
-                    self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                     self.puzzleManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                    self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2);
+                    self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
 
-                        console.log(posX+self.tileWidth/2);
+                    self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
+
+                    console.log(posX+self.tileWidth/2);
                     posY += self.tileHeight + self.margin;
                     count++;
                     }
