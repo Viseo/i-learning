@@ -203,7 +203,8 @@ function Quizz(quizz, previewMode) {
                     self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithImage);
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage);
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight*2 + self.quizzMarginY+10,
+                    //self.parentQuizz.headerHeight+self.parentQuizz.questionHeight/2
+                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight/2 + self.questionHeight/2+6*self.quizzMarginY,
                         self.cadreQuestion.w - self.quizzMarginX, self.questionHeight);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + self.quizzMarginY+self.questionHeight,
