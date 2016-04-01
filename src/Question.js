@@ -117,10 +117,7 @@ var Question = function (question,quizz) {
             self.questionManipulator.last.add(self.bordure);
 
         }
-
         self.questionManipulator.translator.move(self.x,self.y);
-
-
     };
 
     self.displayAnswers = function (x, y, w, h) {
