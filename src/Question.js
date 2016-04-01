@@ -161,11 +161,11 @@ var Question = function (question,quizz) {
                     posx = x;
                 }
 
+                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
 
-                    self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
+                self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                     self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*tileWidth/2-(self.rows - 1)*margin/2,posy+margin);
 
-                    self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 /*self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);*/

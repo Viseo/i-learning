@@ -75,7 +75,8 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var margin = 10;
     var image = displayImage(imageSrc, imageObj, w-2*margin, h-2*margin, manipulator);
     var cadre = new svg.Rect(w, h).color([],1,[]);
-    manipulator.last.add(cadre);
+    manipulator.ordonator.set(0,cadre);
+    manipulator.ordonator.set(1,image.image);
 
     return {image:image.image, height:image.height, cadre:cadre};
 };
@@ -91,18 +92,18 @@ var displayImage = function (imageSrc, image, w, h, manipulator) {
     var width = image.width;
     var height = image.height;
     if(width > w) {
-        height *= w/width;
+        height *= (w/width);
         width = w;
     }
     if(!h) {
         return height;
     }
     if(height > h) {
-        width *= h/height;
+        width *= (h/height);
         height = h;
     }
     return {
-        image: new svg.Image(imageSrc).dimension(width, height).position(0, h / 2 - height / 2),
+        image: new svg.Image(imageSrc).dimension(width, height).position(0, 0),
         height: height
     };
 
