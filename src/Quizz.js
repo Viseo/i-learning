@@ -226,11 +226,11 @@ function Quizz(quizz, previewMode) {
 
     self.displayResult=function(color){
         //self.resultManipulator = new Manipulator();
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
+        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult,null,self);
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
 
-        self.puzzle.display(self.cadreResult.x, self.questionHeight+self.margin, self.cadreResult.w,self.responseHeight, 0);
+        self.puzzle.display(0, self.responseHeight/2+self.questionHeight/2, self.cadreResult.w,self.responseHeight, 0);
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
 }

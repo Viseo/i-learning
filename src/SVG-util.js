@@ -274,9 +274,12 @@ var drawArrow = function(x,y,w,h,handler,manipulator){
 
     if(handler) {
         chevron.color(myColors.black);
-        //svg.addEvent(chevron, "click", handler);
+        svg.addEvent(chevron, "click", handler);
     }else{
         chevron.color(myColors.grey);
+        if(chevron.onClick!==null){
+            svg.removeEvent(chevron,'click',chevron.onClick);
+        }
     }
 
     if(chevron.tempWidth> w) {
