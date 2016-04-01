@@ -133,7 +133,7 @@ var Question = function (question,quizz) {
             var tmpTileHeight;
 
             for(var answer of self.tabAnswer) {
-                answer.imageSrc ? (tmpTileHeight = answer.imageSrc.height): (tmpTileHeight=self.tileHeightMin);
+                answer.image ? (tmpTileHeight = answer.image.height): (tmpTileHeight=self.tileHeightMin);
                 if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
                     self.tileHeight = self.tileHeightMax;
                 }
@@ -142,7 +142,8 @@ var Question = function (question,quizz) {
                 }
             }
             self.questionManipulator.last.add(self.answersManipulator.translator);
-            self.answersManipulator.translator.move(0,self.height/2+2*margin);
+            //self.answersManipulator.translator.move(0,self.height/2+2*margin);
+            self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2+margin);
 
             //var posx = x;
             //var posy = y + self.height + margin * 2;
