@@ -274,7 +274,7 @@ var drawArrow = function(x,y,w,h,handler){
 
     if(handler) {
         chevron.color(myColors.black);
-        svg.addEvent(chevron, "click", handler);
+        //svg.addEvent(chevron, "click", handler);
     }else{
         chevron.color(myColors.grey);
     }
@@ -289,7 +289,7 @@ var drawArrow = function(x,y,w,h,handler){
     }
 
     arrowManipulator.scalor.scale(chevron.tempHeight/baseHeight);
-    return chevron;
+    return arrowManipulator;
 };
 
 Function.prototype.clone = function() {

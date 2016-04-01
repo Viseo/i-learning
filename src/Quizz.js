@@ -122,13 +122,20 @@ function Quizz(quizz, previewMode) {
             usedColor=color;
         }
 
+        self.resultManipulator = new Manipulator();
+        self.resultManipulator.translator.move(0,self.cadreResult.y/2+self.headerHeight/2);
+        self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
+
         var object = displayText(self.finalMessage,self.cadreResult.w,self.cadreResult.h, myColors.black, usedColor, self.fontSize, self.font, self.resultManipulator);
 
         self.resultBox = object.cadre;
         self.resultText = object.content;
         self.resultManipulator.last.add(self.resultBox);
         self.resultManipulator.last.add(self.resultText);
-        self.quizzManipulator.translator.move(self.cadreResult.x,self.cadreResult.y);
+        self.quizzManipulator.translator.move(self.cadreResult.w/2,self.headerHeight/2);
+
+
+        console.log(self.cadreResult.y);
         self.quizzManipulator.last.add(self.resultManipulator.translator);
 
     };
@@ -221,10 +228,11 @@ function Quizz(quizz, previewMode) {
 
 
     self.displayResult=function(color){
-        self.resultManipulator = new Manipulator();
+        //self.resultManipulator = new Manipulator();
         self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult);
-        self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
-        self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
+        //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
+        self.puzzle.display(self.cadreResult.x, self.cadreResult.h+15, self.cadreResult.w, 600, 0);
+        //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
         displayScore(color);
     };
 }

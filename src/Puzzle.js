@@ -42,6 +42,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             for (var j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     self.virtualTab[i][j] = self.questionsTab[count];
+                    self.virtualTab[i][j].answersManipulator.first && self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
                     count++;
                 } else {
                     break;
@@ -65,52 +66,62 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
             self.puzzleManipulator.last.remove(el);
         });
 
+       var handlerLeftArrow = function (){
+            if (self.rows === 1 && startPosition !== 0) {
+                self.display(x, y, w, h, startPosition - 1);
+            } else if (startPosition - self.rows + 1 <= 0) {
+                self.display(x, y, w, h, 0);
+            } else {
+                self.display(x, y, w, h, startPosition - self.rows + 1);
+            }
+        };
+
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                self.leftArrowSet = drawArrow(-75/2,-75/ 2, 75, 75,"left");
+                self.leftArrowManipulator = drawArrow(-75/2,-75/ 2, 75, 75,"left", handlerLeftArrow);
             } else {
-                self.leftArrowSet = drawArrow(-75/2,-75/ 2, 75, 75,"left",function (){
-                    if (self.rows === 1 && startPosition !== 0) {
-                        self.display(x, y, w, h, startPosition - 1);
-                    } else if (startPosition - self.rows + 1 <= 0) {
-                        self.display(x, y, w, h, 0);
-                    } else {
-                        self.display(x, y, w, h, startPosition - self.rows + 1);
-                    }
-                });
+                self.leftArrowManipulator = drawArrow(-75/2,-75/ 2, 75, 75,"left", handlerLeftArrow);
             }
 
-            self.displaySet.last.add(self.leftArrowSet);
-            self.leftArrowSet.manipulator.rotator.rotateTo(180);
-            self.leftArrowSet.manipulator.translator.move(x+self.margin+75/2,y + (h/2)+75/2);
-            self.leftArrowSet.manipulator.scalor.scale(self.leftArrowSet._scale);
+
+
+            //self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+            self.leftArrowManipulator.rotator.rotate(180);
+            //self.leftArrowManipulator.translator.move(x+self.margin+75/2,y + (h/2)+75/2);
+            self.leftArrowManipulator.translator.move(20, 1000);
+
+            // self.leftArrowManipulator.scalor.scale(self.leftArrowManipulator.scale);
+
+            var handlerRightArrow = function (){
+                if(self.rows === 1 && startPosition !== self.totalRows -1) {
+                    self.display(x, y, w, h, startPosition+1);
+                } else if(2*self.rows + startPosition >= self.totalRows) {
+                    var newStartPosition = self.totalRows - self.rows;
+                    self.display(x, y, w, h, newStartPosition);
+                } else {
+                    var newStartPosition = startPosition + self.rows - 1;
+                    self.display(x, y, w, h, newStartPosition);
+                }
+            };
 
             if(startPosition + self.rows>= self.totalRows) {
-                self.rightArrowSet= drawArrow(-75/2, -75/2, 75, 75,"right");
+                self.rightArrowManipulator= drawArrow(-75/2, -75/2, 75, 75,"right", handlerRightArrow);
             } else {
-                self.rightArrowSet = drawArrow(-75/2, -75/2, 75, 75,"right",function (){
-                    if(self.rows === 1 && startPosition !== self.totalRows -1) {
-                        self.display(x, y, w, h, startPosition+1);
-                    } else if(2*self.rows + startPosition >= self.totalRows) {
-                        var newStartPosition = self.totalRows - self.rows;
-                        self.display(x, y, w, h, newStartPosition);
-                    } else {
-                        var newStartPosition = startPosition + self.rows - 1;
-                        self.display(x, y, w, h, newStartPosition);
-                    }
-                });
+                self.rightArrowManipulator = drawArrow(-75/2, -75/2, 75, 75,"right", handlerRightArrow);
             }
-            //self.displaySet.push(self.rightArrow);
-            //self.rightArrowSet=paper.set();
-            //self.rightArrowSet.push(self.rightArrow);
-            self.displaySet.last.add(self.rightArrowSet);
-            self.rightArrowSet.manipulator.translator.move(x+w-self.margin+75/2,y + (h/2)+75/2);
-            self.rightArrowSet.manipulator.scalor.scale(self.rightArrowSet._scale);
+            //self.puzzleManipulator.push(self.rightArrow);
+            //self.rightArrowManipulator=paper.set();
+            //self.rightArrowManipulator.push(self.rightArrow);
+            self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+            self.rightArrowManipulator.translator.move(x+w-self.margin+75/2,y + (h/2)+75/2);
+            //self.rightArrowManipulator.manipulator.scalor.scale(self.rightArrowManipulator._scale);
 
             self.initTiles(x+self.margin+50, y, w-100-self.margin*2, h, startPosition);
         } else {
             self.initTiles(x, y, w, h, startPosition);
         }
+        self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+
 
     };
 
@@ -119,8 +130,8 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
         self.tileWidth=(w-(self.rows-1)*self.margin)/self.rows;
         self.tileHeight=(h-(self.lines-1)*self.margin)/self.lines;
 
-        var posX=x;
-        var posY=y;
+        var posX=0;
+        var posY=y/2;
 
         var newTile = {};
 
@@ -145,7 +156,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     }
                 }
                 posY += self.tileHeight+self.margin;
-                posX = x;
+                posX = 0;
             }
         } else {
             for (var i = startPosition; i < (startPosition + self.rows); i++) {
@@ -153,9 +164,10 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     if (count < self.questionsTab.length) {
 
                     self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                    self.displaySet.last.add(self.virtualTab[i][j].displaySet);
-                    self.virtualTab[i][j].displaySet.translator.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
+                    self.puzzleManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
+                    self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2);
 
+                        console.log(posX+self.tileWidth/2);
                     posY += self.tileHeight + self.margin;
                     count++;
                     }
@@ -164,7 +176,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode) {
                     }
                 }
                 posX += self.tileWidth + self.margin;
-                posY = y;
+                posY = y/2;
             }
         }
     };
