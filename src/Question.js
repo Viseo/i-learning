@@ -127,7 +127,7 @@ var Question = function (question,quizz) {
             var margin = 15;
             var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
-            self.tileHeightMax = Math.floor(h/self.rows)-2*margin;
+            self.tileHeightMax = Math.floor(h/self.lines)-2*margin;
             self.tileHeightMin = 50;
 
             var tmpTileHeight;
