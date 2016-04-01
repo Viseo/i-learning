@@ -49,12 +49,11 @@ var displayCheckbox = function (x, y, size, sender) {
  * @returns {{cadre: *, image, text}}
  */
 var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
-    var margin = 10;
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
     text.position(0,(h-textHeight)/2);
-    var image = displayImage(imageSrc, imageObj, w-2*margin, h-textHeight-3*margin, manipulator);
+    var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h-textHeight-3*MARGIN, manipulator);
     image.image.position(0,-textHeight/2);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0,cadre);
@@ -73,8 +72,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
  * @returns {{image: *, height: *, cadre}}
  */
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
-    var margin = 10;
-    var image = displayImage(imageSrc, imageObj, w-2*margin, h-2*margin, manipulator);
+    var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h-2*MARGIN, manipulator);
     var cadre = new svg.Rect(w, h).color(myColors.white,1,myColors.none);
     manipulator.ordonator.set(0,cadre);
     manipulator.ordonator.set(1,image.image);
@@ -145,7 +143,6 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
     manipulator.ordonator.set(1,t);
     var words = content.split(" ");
     var tempText = "";
-    var margin = 10;
 
     t.font(font ? font : "arial", fontSize ? fontSize : 20);
 
@@ -154,12 +151,12 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
         // set text to test the BBox.width
         t.message(tempText + " " + words[i]);
         // test if DOESN'T fit in the line
-        if (t.component.getBBox().width > w - margin) {
+        if (t.component.getBBox().width > w - MARGIN) {
             // temporary string to store the word in a new line
             var tmpStr = tempText + "\n" + words[i];
             t.message(tmpStr);
             // test if the whole word can fit in a line
-            if (t.component.getBBox().width > w - margin) {
+            if (t.component.getBBox().width > w - MARGIN) {
                 // we don't need the tmpStr anymore
                 // add a space before the problematic word
                 tempText += " ";
@@ -170,7 +167,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
                     // set text to test the BBox.width
                     t.message(tempText + " " + longWord.charAt(j));
                     // check if we can add an additional character in this line
-                    if (t.component.getBBox().width > w - margin) {
+                    if (t.component.getBBox().width > w - MARGIN) {
                         // we can't: break line, add the character
                         tempText += "-\n" + longWord.charAt(j);
                     } else {
@@ -186,7 +183,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
                 tempText += "\n" + words[i];
                 t.message(tmpStr);
                 // test if it fits in height
-                if (t.component.getBBox().height > h - margin) {
+                if (t.component.getBBox().height > h - MARGIN) {
                     // it doesn't : break
                     tempText = tmpText.substring(0, tmpText.length-3) + "...";
                     break;

@@ -55,7 +55,6 @@ function Quizz(quizz, previewMode) {
         w:drawing.width,
         h:600
     };
-    self.margin=10;
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.drawing=drawing;
@@ -123,7 +122,7 @@ function Quizz(quizz, previewMode) {
         }
 
         self.resultManipulator = new Manipulator();
-        self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+self.quizzMarginY);
+        self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+MARGIN);
         self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
         self.quizzManipulator.last.add(self.resultManipulator.translator);
 
@@ -146,7 +145,6 @@ function Quizz(quizz, previewMode) {
         x && (self.cadreResult.x = x);
         w && (self.cadreTitle.w = w);
         x && (self.quizzMarginX = x);
-        self.quizzMarginY = self.margin;
         self.headerPercentage = 0.1;
         self.questionPercentageWithImage = 0.3;
         self.questionPercentage = 0.2;
@@ -155,13 +153,13 @@ function Quizz(quizz, previewMode) {
 
         var heightPage = document.documentElement.clientHeight;
 
-        self.headerHeight = heightPage * self.headerPercentage - self.quizzMarginY;
-        self.questionHeight = heightPage * self.questionPercentage -  self.quizzMarginY;
-        self.responseHeight = heightPage * self.responsePercentage -  self.quizzMarginY;
-        self.questionHeightWithoutImage = heightPage * self.questionPercentage -  self.quizzMarginY;
-        self.responseHeightWithoutImage = heightPage * self.responsePercentage -  self.quizzMarginY;
-        self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  self.quizzMarginY;
-        self.responseHeightWithImage = heightPage * self.responsePercentageWithImage -  self.quizzMarginY;
+        self.headerHeight = heightPage * self.headerPercentage - MARGIN;
+        self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
+        self.responseHeight = heightPage * self.responsePercentage -  MARGIN;
+        self.questionHeightWithoutImage = heightPage * self.questionPercentage -  MARGIN;
+        self.responseHeightWithoutImage = heightPage * self.responsePercentage -  MARGIN;
+        self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
+        self.responseHeightWithImage = heightPage * self.responsePercentageWithImage -  MARGIN;
 
         var object = displayText(self.title, (self.cadreTitle.w ), (self.headerHeight ), self.rgbBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
         self.titleBox = object.cadre;
@@ -193,10 +191,10 @@ function Quizz(quizz, previewMode) {
 
                 self.currentQuestionIndex = 0;
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.headerHeight+self.margin,
+                self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
                     self.cadreQuestion.w , self.cadreQuestion.h);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, self.quizzMarginY + self.headerHeight+self.margin,
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
                     self.cadreQuestion.w , self.cadreQuestion.h);
 
             } else {
@@ -208,10 +206,10 @@ function Quizz(quizz, previewMode) {
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage);
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                     //self.parentQuizz.headerHeight+self.parentQuizz.questionHeight/2
-                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight/2 + self.questionHeight/2+self.quizzMarginY,
+                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight/2 + self.questionHeight/2+MARGIN,
                         self.cadreQuestion.w , self.questionHeight);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + self.margin+self.questionHeight,
+                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN+self.questionHeight,
                         self.cadreQuestion.w , self.responseHeight);
 
 
@@ -230,7 +228,7 @@ function Quizz(quizz, previewMode) {
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
 
-        self.puzzle.display(self.cadreResult.x, self.questionHeight+self.margin, self.cadreResult.w,self.responseHeight, 0);
+        self.puzzle.display(self.cadreResult.x, self.questionHeight+MARGIN, self.cadreResult.w,self.responseHeight, 0);
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
 }

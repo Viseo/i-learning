@@ -124,10 +124,9 @@ var Question = function (question,quizz) {
         if (self.rows !== 0) {
 
             //self.answersManipulator.translator.move(0,0);
-            var margin = self.parentQuizz.margin;
-            var tileWidth = (w - margin * (self.rows - 1)) / self.rows;
+            var tileWidth = (w - MARGIN * (self.rows - 1)) / self.rows;
             self.tileHeight = 0;
-            self.tileHeightMax = Math.floor(h/self.lines)-2*margin;
+            self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN;
             self.tileHeightMin = 50;
 
             var tmpTileHeight;
@@ -142,36 +141,36 @@ var Question = function (question,quizz) {
                 }
             }
             self.questionManipulator.last.add(self.answersManipulator.translator);
-            //self.answersManipulator.translator.move(0,self.height/2+2*margin);
+            //self.answersManipulator.translator.move(0,self.height/2+2*MARGIN);
             self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2);
 
             //var posx = x;
-            //var posy = y + self.height + margin * 2;
+            //var posy = y + self.height + MARGIN * 2;
 
             var posx = 0;
             var posy = 0;
             var count = 0;
             for (var i = 0; i < self.tabAnswer.length; i++) {
                 if (i !== 0) {
-                    posx += (tileWidth + margin);
+                    posx += (tileWidth + MARGIN);
                 }
                 if (count > (self.rows - 1)) {
                     count = 0;
-                    posy += (self.tileHeight + margin);
+                    posy += (self.tileHeight + MARGIN);
                     posx = x;
                 }
 
                 self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
 
                 self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*tileWidth/2-(self.rows - 1)*margin/2,posy+margin);
+                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 /*self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);*/
                 //self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
-                //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy-self.tileHeight/2-margin/2);
-                /*self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy);*/
+                //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy-self.tileHeight/2-MARGIN/2);
+                /*self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy);*/
 
                 (function(element) {
                     if(element.bordure) {
@@ -200,12 +199,11 @@ var Question = function (question,quizz) {
 
         if(self.multipleChoice){
             //affichage d'un bouton "valider"
-            var margin = self.parentQuizz.margin;
             var w=150;
             var h=50;
             var validateX,validateY;
             validateX=-75+100;
-            validateY=self.tileHeight*self.lines+(self.lines)*margin;
+            validateY=self.tileHeight*self.lines+(self.lines)*MARGIN;
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
@@ -262,7 +260,7 @@ var Question = function (question,quizz) {
             var w=150;
             var h=50;
             var resetX=-75 -100;
-            var resetY=self.tileHeight*self.lines+(self.lines)*margin;
+            var resetY=self.tileHeight*self.lines+(self.lines)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
 
