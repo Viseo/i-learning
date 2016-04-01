@@ -119,6 +119,8 @@ var Question = function (question,quizz) {
         }
 
         self.questionManipulator.translator.move(self.x,self.y);
+
+
     };
 
     self.displayAnswers = function (x, y, w, h) {
@@ -145,8 +147,11 @@ var Question = function (question,quizz) {
             self.questionManipulator.last.add(self.answersManipulator.translator);
             self.answersManipulator.translator.move(0,self.height/2+2*margin);
 
+            //var posx = x;
+            //var posy = y + self.height + margin * 2;
+
             var posx = 0;
-            var posy = margin;
+            var posy = 0;
             var count = 0;
             for (var i = 0; i < self.tabAnswer.length; i++) {
                 if (i !== 0) {
@@ -158,13 +163,17 @@ var Question = function (question,quizz) {
                     posx = x;
                 }
 
-                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
+
+                    self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
+                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*tileWidth/2-(self.rows - 1)*margin/2,posy+margin);
+
+                    self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
-                self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);
+                /*self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);*/
                 //self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy-self.tileHeight/2-margin/2);
-                self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy);
+                /*self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-margin/2,posy);*/
 
                 (function(element) {
                     if(element.bordure) {
