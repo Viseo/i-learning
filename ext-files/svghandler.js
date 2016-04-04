@@ -678,7 +678,7 @@ function SVG(runtime) {
     };
     Rect.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        return local.x>=-this.width/2 && local.x<=this.width/2
+        return local && local.x>=-this.width/2 && local.x<=this.width/2
             && local.y>=-this.height/2 && local.y<=this.height/2;
     };
 
