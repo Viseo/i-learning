@@ -123,12 +123,14 @@ function Quizz(quizz, previewMode) {
         }
 
         self.resultManipulator = new Manipulator();
+        self.scoreManipulator=new Manipulator();
         self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+MARGIN);
-        self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
-        self.quizzManipulator.last.add(self.resultManipulator.translator);
+        self.resultManipulator.last.add(self.scoreManipulator.first);
+        self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
+        self.quizzManipulator.last.add(self.resultManipulator.first);
 
-        var object = displayText(self.finalMessage,self.cadreResult.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.resultManipulator);
-
+        var object = displayText(self.finalMessage,self.cadreTitle.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
+        //self.scoreManipulator.add(object.cadre,object.content);
 
         self.quizzManipulator.translator.move(self.cadreResult.w/2,self.headerHeight/2);
 
@@ -142,7 +144,7 @@ function Quizz(quizz, previewMode) {
         x && (self.x = x);
         y && (self.y = y);
         w && (self.cadreQuestion.w = w);
-        (w && x) && (self.cadreResult.w = w - x);
+        (w && x) && (self.cadreResult.w = w );
         x && (self.cadreResult.x = x);
         w && (self.cadreTitle.w = w);
         x && (self.quizzMarginX = x);
@@ -219,6 +221,8 @@ function Quizz(quizz, previewMode) {
                 } else //--> fin du tableau, dernière question
                 {
                     console.log("Final score: " + self.score);
+                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult,null,self);
+
                     self.displayResult();
                 }
             }
@@ -227,7 +231,6 @@ function Quizz(quizz, previewMode) {
 
     self.displayResult=function(color){
         //self.resultManipulator = new Manipulator();
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult,null,self);
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
 

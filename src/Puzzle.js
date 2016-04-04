@@ -51,6 +51,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             for (var j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     self.virtualTab[i][j] = self.questionsTab[count];
+
                     self.virtualTab[i][j].answersManipulator.first && self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
                     count++;
                 } else {

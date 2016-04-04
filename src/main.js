@@ -69,18 +69,21 @@ function main() {
             e=new svg.Rect(0,0);
         });
 
+
         //qManip.last.children.forEach(function(e){
         //   if(e.children.length!==10){
         //       qManip.last.children.remove(e);
         //   }
         //});
 
-        if(quizz.currentQuestionIndex<quizz.tabQuestions.length){//-1?
+        if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
             quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
                 quizz.cadreQuestion.w , quizz.questionHeight);
             quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
                 quizz.cadreQuestion.w , quizz.responseHeight);
         }else{
+            quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
+            quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
         }
 
