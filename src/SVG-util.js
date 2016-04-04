@@ -152,6 +152,9 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
         t.message(tempText + " " + words[i]);
         // test if DOESN'T fit in the line
         if (t.component.getBBox().width > w - MARGIN) {
+            //Comment 2 next lines to add BreakLine
+            tempText = tempText.substring(0, tempText.length-3) + "...";
+            break;
             // temporary string to store the word in a new line
             var tmpStr = tempText + "\n" + words[i];
             t.message(tmpStr);
