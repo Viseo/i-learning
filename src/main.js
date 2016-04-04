@@ -20,6 +20,12 @@ function main() {
    quizz.puzzleRows=3;
 
    quizz.run(50,10,1200,1200);*/
+
+    /*
+    var bib=new BibImage(myBib);
+    bib.run(0,0,document.body.clientWidth,drawing.height);
+*/
+
     var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
     quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz = new Quizz(quizzCopy);

@@ -74,23 +74,44 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
      */
     self.display=function(x, y, w, h, startPosition) {
         // Clear SetDisplay
-        self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
-            self.questionWithBadAnswersManipulator.last.remove(el);
-        });
+        //self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
+        //    self.questionWithBadAnswersManipulator.last.remove(el);
+        //});
+        self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
+        self.questionWithBadAnswersManipulator=new Manipulator();
+        self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
-       var handlerLeftArrow = function (){
+
+
+        var removeArrows = function (){
+            if(self.leftArrowManipulator.last.children.length>1) {
+                self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
+                self.leftArrowManipulator = new Manipulator();
+                self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+            }
+            if (self.rightArrowManipulator.last.children.length>1){
+                self.puzzleManipulator.last.remove(self.rightArrowManipulator.first);
+                self.rightArrowManipulator=new Manipulator();
+                self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+            }
+        }
+
+        var handlerLeftArrow = function (){
             if (self.rows === 1 && startPosition !== 0) {
+                removeArrows();
                 self.display(x, y, w, h, startPosition - 1);
             } else if (startPosition - self.rows + 1 <= 0) {
+                removeArrows();
                 self.display(x, y, w, h, 0);
             } else {
+                removeArrows();
                 self.display(x, y, w, h, startPosition - self.rows + 1);
             }
         };
 
         if (self.rows < self.totalRows) {
             if(startPosition === 0) {
-                 drawArrow(0,0, 75, 75, null,self.leftArrowManipulator);
+                drawArrow(0,0, 75, 75, null,self.leftArrowManipulator);
             } else {
                 drawArrow(0,0, 75, 75, handlerLeftArrow,self.leftArrowManipulator);
             }
@@ -106,11 +127,14 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
             var handlerRightArrow = function (){
                 if(self.rows === 1 && startPosition !== self.totalRows -1) {
+                    removeArrows();
                     self.display(x, y, w, h, startPosition+1);
                 } else if(2*self.rows + startPosition >= self.totalRows) {
+                    removeArrows();
                     var newStartPosition = self.totalRows - self.rows;
                     self.display(x, y, w, h, newStartPosition);
                 } else {
+                    removeArrows();
                     var newStartPosition = startPosition + self.rows - 1;
                     self.display(x, y, w, h, newStartPosition);
                 }
@@ -118,7 +142,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
 
             if(startPosition + self.rows>= self.totalRows) {
-                 drawArrow(0, 0, 75, 75, null,self.rightArrowManipulator);
+                drawArrow(0, 0, 75, 75, null,self.rightArrowManipulator);
             } else {
                 drawArrow(0, 0, 75, 75, handlerRightArrow,self.rightArrowManipulator);
             }

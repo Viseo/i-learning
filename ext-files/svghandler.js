@@ -171,7 +171,8 @@ function SVG(runtime) {
         }
     };
     Drawing.prototype.localPoint = function() {
-        var point = getPoint(arguments);
+        var point = getPoint(arguments)[0][0];
+        //var point = Array.prototype.slice.call(point0, 0)[0][0];
         if (this.parent) {
             point = this.parent.localPoint(point);
             return {
@@ -677,7 +678,7 @@ function SVG(runtime) {
     };
     Rect.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        return local.x>=-this.width/2 && local.x<=this.width/2
+        return local && local.x>=-this.width/2 && local.x<=this.width/2
             && local.y>=-this.height/2 && local.y<=this.height/2;
     };
 

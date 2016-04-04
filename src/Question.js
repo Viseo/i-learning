@@ -44,6 +44,7 @@ var Question = function (question,quizz) {
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
+        self.dimImage = {width:self.image.width, height:self.image.height};
     }
 
 
@@ -95,7 +96,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
@@ -109,7 +110,7 @@ var Question = function (question,quizz) {
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, self.width, self.height).image;
+            self.raphImage = displayImage(self.imageSrc, self.dimImage, self.w, self.height).image;
             self.questionManipulator.last.add(self.raphImage);
 
         }
@@ -171,6 +172,12 @@ var Question = function (question,quizz) {
                 self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                     self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
+                //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
+                //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
+                /*self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);*/
+                //self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
+                //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy-self.tileHeight/2-MARGIN/2);
+                /*self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy);*/
 
                 (function(element) {
                     if(element.bordure) {

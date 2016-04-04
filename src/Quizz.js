@@ -12,7 +12,8 @@ function Quizz(quizz, previewMode) {
     var self=this;
 
     self.quizzManipulator = new Manipulator();
-    mainManipulator.last.add(self.quizzManipulator.translator);
+    //mainManipulator.last.add(self.quizzManipulator.translator);
+    mainManipulator.ordonator.set(0, self.quizzManipulator.first);
 
     self.tabQuestions=[];
     if (quizz.tabQuestions !== null) {
