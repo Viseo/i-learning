@@ -21,10 +21,11 @@ function main() {
 
    quizz.run(50,10,1200,1200);*/
 
+    /*
     var bib=new BibImage(myBib);
     bib.run(0,0,document.body.clientWidth,drawing.height);
+*/
 
-    /*
     var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
     quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz = new Quizz(quizzCopy);
@@ -32,7 +33,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1,document.body.clientWidth,drawing.height);*/
+    quizz.run(1,1,document.body.clientWidth,drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);
