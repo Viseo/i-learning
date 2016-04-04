@@ -57,10 +57,9 @@ var Drawings = function (w, h) {
         //    console.log(el.type);
         //});
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
-        //console.log(target);
         self.drag = self.target;
         // Rajouter des lignes pour target.bordure et target.image si existe ?
-        if (self.target && self.target.component.eventHandlers.mousedown) {
+        if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
             self.target.component.eventHandlers.mousedown(event);
         }
     };
@@ -69,7 +68,7 @@ var Drawings = function (w, h) {
 
     var onmousemoveHandler = function(event) {
         self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
-        if (self.target && self.target.component.eventHandlers.mousemove) {
+        if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousemove) {
             self.target.component.eventHandlers.mousemove(event);
         }
     };
@@ -78,7 +77,7 @@ var Drawings = function (w, h) {
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
-        if(self.target && self.target.component.eventHandlers.ondblclick) {
+        if(self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.ondblclick) {
             self.target.component.eventHandlers.ondblclick(event);
         }
     };
@@ -87,10 +86,10 @@ var Drawings = function (w, h) {
     var onmouseupHandler = function(event) {
         self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
         if (self.target) {
-            if (self.target.component.eventHandlers.mouseup) {
+            if (self.target.component.eventHandlers && self.target.component.eventHandlers.mouseup) {
                 self.target.component.eventHandlers.mouseup(event);
             }
-            if (self.target.component.eventHandlers.click) {
+            if (self.target.component.eventHandlers && self.target.component.eventHandlers.click) {
                 self.target.component.eventHandlers.click(event);
             }
         }

@@ -171,7 +171,14 @@ function SVG(runtime) {
         }
     };
     Drawing.prototype.localPoint = function() {
-        var point = getPoint(arguments)[0][0];
+        var point = getPoint(arguments)[0][0] ;
+        var tempPoint = getPoint(arguments);
+        if (tempPoint.x){
+            point = tempPoint;
+        }
+        else if (getPoint(arguments)[0].x){
+            point = getPoint(arguments)[0];
+        }
         //var point = Array.prototype.slice.call(point0, 0)[0][0];
         if (this.parent) {
             point = this.parent.localPoint(point);
@@ -181,10 +188,12 @@ function SVG(runtime) {
             };
         }
         else {
-            return {
-                x:point.x-svgr.boundingRect(this.component).left,
-                y:point.y-svgr.boundingRect(this.component).top
-            };
+            if (point) {
+                return {
+                    x: point.x - svgr.boundingRect(this.component).left,
+                    y: point.y - svgr.boundingRect(this.component).top
+                };
+            }
         }
     };
     Drawing.prototype.inside = function(x, y) {
@@ -678,8 +687,10 @@ function SVG(runtime) {
     };
     Rect.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        return local.x>=-this.width/2 && local.x<=this.width/2
-            && local.y>=-this.height/2 && local.y<=this.height/2;
+        if (local) {
+            return local.x >= -this.width / 2 && local.x <= this.width / 2
+                && local.y >= -this.height / 2 && local.y <= this.height / 2;
+        }
     };
 
     function Circle(radius) {
@@ -1348,7 +1359,9 @@ function SVG(runtime) {
     };
     Path.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        return insidePolygon(local.x, local.y, this.points);
+        if (local) {
+            return insidePolygon(local.x, local.y, this.points);
+        }
     };
 
     function Image(url) {
