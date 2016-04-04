@@ -135,7 +135,7 @@ function Quizz(quizz, previewMode) {
         self.quizzManipulator.translator.move(self.cadreResult.w/2,self.headerHeight/2);
 
 
-        console.log(self.cadreResult.y);
+       // console.log(self.cadreResult.y);
 
     };
 

@@ -51,7 +51,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             for (var j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     self.virtualTab[i][j] = self.questionsTab[count];
-
+                    self.virtualTab[i][j].tabAnswer.splice(0,self.virtualTab[i][j].tabAnswer.length);
                     self.virtualTab[i][j].answersManipulator.first && self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
                     count++;
                 } else {
@@ -205,7 +205,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
                     self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
 
-                    console.log(posX+self.tileWidth/2);
+                    //console.log(posX+self.tileWidth/2);
                     posY += self.tileHeight + MARGIN;
                     count++;
                     }
