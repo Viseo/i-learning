@@ -34,7 +34,6 @@ var myBib= {
     title: "Bibliotheque",
             tabSrcImg: [
                 {imgSrc: "../resource/millions.png"},
-                {imgSrc: "../resource/pomme.jpg"},
                 {imgSrc: "../resource/cerise.jpg"},
                 {imgSrc: "../resource/folder.png"}
             ],
