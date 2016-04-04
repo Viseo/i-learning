@@ -48,12 +48,20 @@ var displayCheckbox = function (x, y, size, sender) {
  * @param manipulator
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator,previousImage) {
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
     text.position(0,(h-textHeight)/2);
-    var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h-textHeight-3*MARGIN, manipulator);
+    var newWidth,newHeight;
+    newWidth=w-2*MARGIN;
+    previousImage && (w===previousImage.width) && (newWidth=w);
+
+    newHeight=h-textHeight-3*MARGIN;
+    previousImage&& (h===previousImage.height)&&(newHeight=h);
+
+
+    var image = displayImage(imageSrc, imageObj, newWidth, newHeight, manipulator);//
     image.image.position(0,-textHeight/2);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0,cadre);
@@ -72,7 +80,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
  * @returns {{image: *, height: *, cadre}}
  */
 var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
-    var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h-2*MARGIN, manipulator);
+    var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h, manipulator);//h-2*MARGIN
     var cadre = new svg.Rect(w, h).color(myColors.white,1,myColors.none);
     manipulator.ordonator.set(0,cadre);
     manipulator.ordonator.set(1,image.image);

@@ -35,11 +35,11 @@ var Answer = function (answer) {
     if(answer.imageSrc) {
         self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
+            self.dimImage = {width:self.image.width, height:self.image.height};
         });
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
-        self.dimImage = {width:self.image.width, height:self.image.height};
     }
 
     self.label ? (self.rgbBordure = answer.colorBordure):(self.rgbBordure = myColors.none);
@@ -71,7 +71,7 @@ var Answer = function (answer) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator,self.image);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;

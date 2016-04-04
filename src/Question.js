@@ -40,11 +40,11 @@ var Question = function (question,quizz) {
     if(question.imageSrc) {
         self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
+            self.dimImage = {width:self.image.width, height:self.image.height};
         });
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
-        self.dimImage = {width:self.image.width, height:self.image.height};
     }
 
 
@@ -96,7 +96,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator,self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
@@ -138,8 +138,8 @@ var Question = function (question,quizz) {
 
             var tmpTileHeight;
 
-            for(var answer of self.tabAnswer) {
-                answer.image ? (tmpTileHeight = answer.image.height): (tmpTileHeight=self.tileHeightMin);
+            for(var answer of self.tabAnswer) {//answer.image.height
+                answer.image ? (tmpTileHeight = self.tileHeightMax): (tmpTileHeight=self.tileHeightMin);
                 if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
                     self.tileHeight = self.tileHeightMax;
                 }
