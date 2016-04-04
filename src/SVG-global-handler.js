@@ -46,57 +46,57 @@ var Drawings = function (w, h) {
     //self.glass.area.color([255,255,255]).opacity(0.001);
 
     //Pour la glace et la piste apres Refactor
-    //self.piste = new svg.Rect(w,h).position(w/2, h/2).opacity(0.001);
-    //self.glass = new svg.Rect(w, h).position(w/2, h/2).opacity(0.001);
+    self.piste = new svg.Rect(w,h).position(w/2, h/2).opacity(0.001);
+    self.glass = new svg.Rect(w, h).position(w/2, h/2).opacity(0.001);
     self.drawing.add(self.drawing.manipulator.translator);
-    //self.drawing.manipulator.ordonator.set(1,self.piste).set(2,self.glass);
+    self.drawing.manipulator.ordonator.set(1,self.piste).set(2,self.glass);
 
 
-    //var onmousedownHandler = function(event) {
-    //    //self.paper.forEach(function (el) {
-    //    //    console.log(el.type);
-    //    //});
-    //    self.target = self.drawing.getTarget(event.clientX, event.clientY);
-    //    console.log(target);
-    //    self.drag = self.target;
-    //    // Rajouter des lignes pour target.bordure et target.image si existe ?
-    //    if (self.target && self.target.node.onmousedown) {
-    //        self.target.node.onmousedown(event);
-    //    }
-    //};
-    //
-    //svg.addEvent(self.glass,"mousedown",onmousedownHandler);
-    //
-    //var onmousemoveHandler = function(event) {
-    //    self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
-    //    if (self.target && self.target.node.onmousemove) {
-    //        self.target.node.onmousemove(event);
-    //    }
-    //};
-    //
+    var onmousedownHandler = function(event) {
+        //self.paper.forEach(function (el) {
+        //    console.log(el.type);
+        //});
+        self.target = self.drawing.getTarget(event.clientX, event.clientY);
+        //console.log(target);
+        self.drag = self.target;
+        // Rajouter des lignes pour target.bordure et target.image si existe ?
+        if (self.target && self.target.component.eventHandlers.mousedown) {
+            self.target.component.eventHandlers.mousedown(event);
+        }
+    };
+
+    svg.addEvent(self.glass,"mousedown",onmousedownHandler);
+
+    var onmousemoveHandler = function(event) {
+        self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
+        if (self.target && self.target.component.eventHandlers.mousemove) {
+            self.target.component.eventHandlers.mousemove(event);
+        }
+    };
+
     //svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
-    //
-    //var ondblclickHandler = function (event) {
-    //    self.target = self.drawing.getTarget(event.clientX, event.clientY);
-    //    if(self.target && self.target.node.ondblclick) {
-    //        self.target.node.ondblclick(event);
-    //    }
-    //};
-    //svg.addEvent(self.glass,"dblclick",ondblclickHandler);
-    //
-    //var onmouseupHandler = function(event) {
-    //    self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
-    //    if (self.target) {
-    //        if (self.target.node.onmouseup) {
-    //            self.target.node.onmouseup(event);
-    //        }
-    //        if (self.target.node.onclick) {
-    //            self.target.node.onclick(event);
-    //        }
-    //    }
-    //    self.drag = null;
-    //};
-    //svg.addEvent(self.glass,"mouseup",onmouseupHandler);
+
+    var ondblclickHandler = function (event) {
+        self.target = self.drawing.getTarget(event.clientX, event.clientY);
+        if(self.target && self.target.component.eventHandlers.ondblclick) {
+            self.target.component.eventHandlers.ondblclick(event);
+        }
+    };
+    svg.addEvent(self.glass,"dblclick",ondblclickHandler);
+
+    var onmouseupHandler = function(event) {
+        self.target = self.drag||self.drawing.getTarget(event.clientX, event.clientY);
+        if (self.target) {
+            if (self.target.component.eventHandlers.mouseup) {
+                self.target.component.eventHandlers.mouseup(event);
+            }
+            if (self.target.component.eventHandlers.click) {
+                self.target.component.eventHandlers.click(event);
+            }
+        }
+        self.drag = null;
+    };
+    svg.addEvent(self.glass,"mouseup",onmouseupHandler);
 
 };
 
