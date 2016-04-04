@@ -44,6 +44,7 @@ var Question = function (question,quizz) {
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
+        self.dimImage = {width:self.image.width, height:self.image.height};
     }
 
 
@@ -93,7 +94,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
@@ -107,7 +108,7 @@ var Question = function (question,quizz) {
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, w, self.height).image;
+            self.raphImage = displayImage(self.imageSrc, self.dimImage, w, self.height).image;
             self.questionManipulator.last.add(self.raphImage);
 
         }

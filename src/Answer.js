@@ -39,6 +39,7 @@ var Answer = function (answer) {
         self.imageLoaded = false;
     } else {
         self.imageLoaded = true;
+        self.dimImage = {width:self.image.width, height:self.image.height};
     }
 
     self.label ? (self.rgbBordure = answer.colorBordure):(self.rgbBordure = myColors.none);
@@ -64,7 +65,7 @@ var Answer = function (answer) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, w, h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -79,7 +80,7 @@ var Answer = function (answer) {
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            var obj = displayImageWithBorder(self.imageSrc, self.image, w, h, self.answerManipulator);
+            var obj = displayImageWithBorder(self.imageSrc, self.dimImage, w, h, self.answerManipulator);
             self.image = obj.image;
             self.bordure = obj.cadre;
 
