@@ -35,26 +35,54 @@ function main() {
 
 
     function resizePaper(){
+        //zoom
+        //var scale =1;
+        //var scaleY=window.oldHeight/window.innerHeight;
+        //window.oldHeight=window.innerHeight;
+        //var scaleX=window.oldWidth/window.innerWidth;
+        //window.oldWidth=window.innerWidth;
+        //
+        //
+        //scale=Math.min(scaleX,scaleY);
+        //
+        ////quizz.tabQuestions[0].tabAnswer[1].answerManipulator.scalor.scale(scale);
+        //quizz.quizzManipulator.scalor.scale(scale);
+        //quizz.quizzManipulator.translator.move((document.body.clientWidth/2)*scale,(document.documentElement.clientHeight/2)*scale);
+        //console.log(scale);
 
-        var scale =1;
-        var scaleY=window.oldHeight/window.innerHeight;
-        window.oldHeight=window.innerHeight;
-        var scaleX=window.oldWidth/window.innerWidth;
-        window.oldWidth=window.innerWidth;
+        //changement de taille de la fenêtre
+        //quizz.quizzManipulator.first.remove();
 
+        drawing.dimension(window.innerWidth,window.innerHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
 
-        scale=Math.min(scaleX,scaleY);
+        quizz.display(0,0,window.innerWidth,window.innerHeight);
+        var qManip=quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
+        //qManip.last.remove(qManip.ordonator);
+        //qManip.ordonator=new svg.Ordered(10);
+        qManip.ordonator.children.forEach(function(e){
+            e=new svg.Rect(0,0);
+        });
 
-        //quizz.tabQuestions[0].tabAnswer[1].answerManipulator.scalor.scale(scale);
-        quizz.quizzManipulator.scalor.scale(scale);
-        quizz.quizzManipulator.translator.move((document.body.clientWidth/2)*scale,(document.documentElement.clientHeight/2)*scale);
-        console.log(scale);
+        //qManip.last.children.forEach(function(e){
+        //   if(e.children.length!==10){
+        //       qManip.last.children.remove(e);
+        //   }
+        //});
+
+        if(quizz.currentQuestionIndex<quizz.tabQuestions.length){//-1?
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
+                quizz.cadreQuestion.w , quizz.questionHeight);
+            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
+                quizz.cadreQuestion.w , quizz.responseHeight);
+        }else{
+            quizz.displayResult();
+        }
 
     }
     window.oldWidth=window.innerWidth;
     window.oldHeight=window.innerHeight;
 
-   // window.onresize = resizePaper;
+    window.onresize = resizePaper;
 
 
 }

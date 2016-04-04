@@ -168,9 +168,11 @@ function Quizz(quizz, previewMode) {
         self.quizzManipulator.ordonator.set(1,self.titleText);
 
         self.quizzManipulator.ordonator.set(0,self.titleBox);
-        self.quizzManipulator.translator.move(w/2,self.headerHeight/2);
+        self.quizzManipulator.translator.move(self.cadreQuestion.w/2,self.headerHeight/2);
 
-        self.nextQuestion();
+        if(self.currentQuestionIndex===-1){// on passe à la première question
+            self.nextQuestion();
+        }
     };
 
     self.nextQuestion=function(){
@@ -192,10 +194,10 @@ function Quizz(quizz, previewMode) {
                 self.currentQuestionIndex = 0;
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                 self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
-                    self.cadreQuestion.w , self.cadreQuestion.h);
+                    self.cadreQuestion.w , self.questionHeight);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
-                    self.cadreQuestion.w , self.cadreQuestion.h);
+                    self.cadreQuestion.w , self.questionHeight);
 
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
