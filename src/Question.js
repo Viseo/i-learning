@@ -40,6 +40,7 @@ var Question = function (question,quizz) {
     if(question.imageSrc) {
         self.image = imageController.getImage(self.imageSrc, function () {
             self.imageLoaded = true;
+            self.dimImage = {width:self.image.width, height:self.image.height};
         });
         self.imageLoaded = false;
     } else {
@@ -86,34 +87,36 @@ var Question = function (question,quizz) {
 
     self.display = function (x, y, w, h) {
 
-        self.x = x;
-        self.y = y;
-        self.width = w;
-        self.height = h;
+        if(typeof x!== 'undefined'){
+            self.x = x;
+        }
+        y && (self.y = y);
+        w && (self.width = w);
+        h && (self.height = h);
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.image, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator,self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.raphImage = objectTotal.image;
         }
         // Question avec Texte uniquement
         else if (self.label && !self.imageSrc) {
-            var object = displayText(self.label, w, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
+            var object = displayText(self.label, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
 
         }
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
-            self.raphImage = displayImage(self.imageSrc, self.image, w, self.height).image;
+            self.raphImage = displayImage(self.imageSrc, self.dimImage, self.w, self.height).image;
             self.questionManipulator.last.add(self.raphImage);
 
         }
         else {
             //var point=self.questionManipulator.globalToLocal(self.x,self.y);
-            self.bordure = new svg.Rect( w, self.height).color(self.bgColor,1,self.rgbBordure);
+            self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.rgbBordure);
             self.questionManipulator.last.add(self.bordure);
 
         }
@@ -124,15 +127,19 @@ var Question = function (question,quizz) {
         if (self.rows !== 0) {
 
             //self.answersManipulator.translator.move(0,0);
-            var tileWidth = (w - MARGIN * (self.rows - 1)) / self.rows;
+            if(typeof x !=='undefined'){
+                (self.initialAnswersPosX=x);
+            }
+            w && ( self.tileWidth= (w - MARGIN * (self.rows - 1)) / self.rows);
             self.tileHeight = 0;
-            self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN;
-            self.tileHeightMin = 50;
+
+            h && (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
+            self.tileHeightMin = 2.50*self.fontSize;
 
             var tmpTileHeight;
 
-            for(var answer of self.tabAnswer) {
-                answer.image ? (tmpTileHeight = answer.image.height): (tmpTileHeight=self.tileHeightMin);
+            for(var answer of self.tabAnswer) {//answer.image.height
+                answer.image ? (tmpTileHeight = self.tileHeightMax): (tmpTileHeight=self.tileHeightMin);
                 if (tmpTileHeight > self.tileHeightMax && tmpTileHeight>self.tileHeight) {
                     self.tileHeight = self.tileHeightMax;
                 }
@@ -152,18 +159,18 @@ var Question = function (question,quizz) {
             var count = 0;
             for (var i = 0; i < self.tabAnswer.length; i++) {
                 if (i !== 0) {
-                    posx += (tileWidth + MARGIN);
+                    posx += (self.tileWidth + MARGIN);
                 }
                 if (count > (self.rows - 1)) {
                     count = 0;
                     posy += (self.tileHeight + MARGIN);
-                    posx = x;
+                    posx = self.initialAnswersPosX;
                 }
 
                 self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
 
-                self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
+                self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
+                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
@@ -198,6 +205,7 @@ var Question = function (question,quizz) {
         }
 
         if(self.multipleChoice){
+
             //affichage d'un bouton "valider"
             var w=150;
             var h=50;
@@ -263,7 +271,9 @@ var Question = function (question,quizz) {
             var resetY=self.tileHeight*self.lines+(self.lines)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
-
+            if(self.selectedAnswers.length!=0){
+                self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
+            }
             self.reset = function(){
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
