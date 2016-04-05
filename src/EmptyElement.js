@@ -62,7 +62,7 @@ var AnswerElement = function (answer, parent) {
     self.parent = parent;
 
     self.toAnswer = function () {
-        return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
+        return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.none};
     };
 
     self.display = function (x, y, w, h) {
@@ -70,7 +70,7 @@ var AnswerElement = function (answer, parent) {
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
             self.obj.content.color(color);
             self.obj.cadre;
             //self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
