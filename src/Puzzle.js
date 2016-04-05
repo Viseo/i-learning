@@ -125,7 +125,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             //self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
             self.leftArrowManipulator.rotator.rotate(180);
             //self.leftArrowManipulator.translator.move(x+self.margin+75/2,y + (h/2)+75/2);
-            self.leftArrowManipulator.translator.move(-w/2-MARGIN+75/2, y);// marge post-rotation
+            self.leftArrowManipulator.translator.move(-w/2-MARGIN+75/2, y+h/2);// marge post-rotation
 
             // self.leftArrowManipulator.scalor.scale(self.leftArrowManipulator.scale);
 
@@ -153,7 +153,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             //self.puzzleManipulator.push(self.rightArrow);
             //self.rightArrowManipulator=paper.set();
             //self.rightArrowManipulator.push(self.rightArrow);
-            self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y);
+            self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y+h/2);
             //self.rightArrowManipulator.manipulator.scalor.scale(self.rightArrowManipulator._scale);
 
             self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);

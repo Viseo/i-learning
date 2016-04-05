@@ -227,7 +227,8 @@ function Quizz(quizz, previewMode) {
         //self.resultManipulator = new Manipulator();
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
-        self.puzzle.display(0, self.responseHeight/2+self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
+        self.puzzle.display(0, self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
+    //self.responseHeight/2
 }
