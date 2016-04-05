@@ -10,7 +10,7 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black)};
+    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
@@ -27,6 +27,7 @@ var displayCheckbox = function (x, y, size, sender) {
         svg.addEvent(obj.checked,"click", onclickFunction);
         sender.manipulator.last.add(obj.checked);
     }
+
     sender.manipulator.last.add(obj.checkbox);
     svg.addEvent(obj.checkbox,"click", onclickFunction);
 

@@ -15,13 +15,13 @@ var AddEmptyElement = function (parent) {
         self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
         self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
         self.manipulator.last.add(self.plus);
+        self.obj.content.position(0,h*0.3);
 
         self.obj.cadre.color([], 3, myColors.black);
         self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
         //self.manipulator.last.add(self.obj.cadre);
 
         //self.manipulator.last.add(self.obj.content);
-        self.obj.content.position(x+w/2, y+h*0.8);
 
         var dblclickEdition = function () {
             //self.displaySet.remove();
@@ -72,7 +72,7 @@ var AnswerElement = function (answer, parent) {
             var color = (self.label) ? myColors.black : myColors.grey;
             self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
             self.obj.content.color(color);
-            self.obj.cadre.opacity(0);
+            self.obj.cadre;
             //self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
             svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
@@ -116,7 +116,7 @@ var AnswerElement = function (answer, parent) {
             contentarea.onblur = onblur;
         };
         showTitle();
-        self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
+        self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
         self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
         self.manipulator.last.add(self.cBLabel);
     }

@@ -183,16 +183,17 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
                     if(count < self.questionsTab.length) {
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                        self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
+                        self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2+MARGIN,posY+MARGIN);
 
-                        posX += self.tileWidth+MARGIN;
+
+                        posX += self.tileWidth + MARGIN;
                         count++;
                     }
                     else {
                         break;
                     }
                 }
-                posY += self.tileHeight+MARGIN;
+                posY += self.tileHeight + MARGIN;
                 posX = 0;
             }
         } else {

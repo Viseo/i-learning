@@ -92,6 +92,9 @@ var QuestionCreator = function (question) {
     self.display = function (x, y, w, h) {
         var quizzInfoHeight=Math.floor(haut*self.headerHeight);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
+        self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
+        self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
+
         self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
         self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-30);
         self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
@@ -101,9 +104,9 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
-            self.questionBlock.title.content.color(color);
-            self.questionBlock.title.cadre.opacity(0);
+            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
+            self.questionBlock.title.content.color(color).position(w/2,y);
+            self.questionBlock.title.cadre.position(w/2,y);
             svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
             self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
@@ -143,9 +146,9 @@ var QuestionCreator = function (question) {
         };
 
         // bloc Question
-        self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([]).position(self.x, self.y)};
-        showTitle();
+        self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([],1, myColors.black).position(self.w/2, self.h/2)};
         self.manipulatorQuestionCreator.last.add(self.questionBlock.rect);
+        showTitle();
 
         // bloc Answers
         if(self.tabAnswer.length !== MAX_ANSWERS) {
