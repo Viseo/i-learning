@@ -152,10 +152,8 @@ var QuestionCreator = function (question) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
-        console.log("puzzle created");
-        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        console.log("puzzle displayed");
         self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
+        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
         /*self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
         });*/

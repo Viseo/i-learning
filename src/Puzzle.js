@@ -78,12 +78,10 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
         //self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
         //    self.questionWithBadAnswersManipulator.last.remove(el);
         //});
-        console.log("OK 1");
         self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
         self.questionWithBadAnswersManipulator=new Manipulator();
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
-        console.log("OK 2");
 
         var removeArrows = function (){
             if(self.leftArrowManipulator.last.children.length>1) {
@@ -156,7 +154,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
             self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
         } else {
-            console.log("OK 3");
             self.initTiles(x, y, w, h, startPosition);
         }
 
@@ -182,11 +179,8 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
             for(var i = startPosition; i<(startPosition+self.lines); i++) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
-                        console.log("OK 4");
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                        console.log("OK 5");
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                        console.log("OK 6");
                         self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2,posY+self.tileHeight/2);
 
                         posX += self.tileWidth+MARGIN;
@@ -209,7 +203,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
 
                     self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
 
-                    //console.log(posX+self.tileWidth/2);
                     posY += self.tileHeight + MARGIN;
                     count++;
                     }
