@@ -62,14 +62,14 @@ var QuestionCreator = function (question) {
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
         if(textarea.value.match(self.regex)) {
-            self.errorMessage && self.errorMessage.remove();
+            self.errorMessage && self.previewButtonManipulator.last.remove(self.errorMessage);
             textarea.onblur = onblur;
             textarea.style.border = "none";
             textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
-            self.errorMessage && self.errorMessage.remove();
+            self.errorMessage && self.previewButtonManipulator.last.remove(self.errorMessage);
             textarea.style.border = "solid 2px #FF0000";
 
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
@@ -113,7 +113,7 @@ var QuestionCreator = function (question) {
         };
 
         var dblclickEdition = function () {
-            self.questionBlock.title.content.remove();
+            self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.content);
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.label;
             textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none;");
@@ -176,13 +176,13 @@ var QuestionCreator = function (question) {
         };
 
         var dblclickEdition = function () {
-            var width = self.quizzLabel.getBBox().width;
-            self.quizzLabel.remove();
+            var width = self.quizzLabel.component.getBBox().width;
+            self.manipulatorQuizzInfo.last.remove(self.quizzLabel);
             //self.quizzBorder.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
             textarea.setAttribute("style", "position: absolute; top:"+(y+16)+"px; left:"+(x-1)+"px; width:"+(width)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px;");
-            var body = document.getElementById("body");
+            var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {

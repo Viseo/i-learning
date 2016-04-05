@@ -171,13 +171,16 @@ function SVG(runtime) {
         }
     };
     Drawing.prototype.localPoint = function() {
-        var point = getPoint(arguments)[0][0] ;
+        var point = null;
         var tempPoint = getPoint(arguments);
         if (tempPoint.x){
             point = tempPoint;
         }
         else if (getPoint(arguments)[0].x){
             point = getPoint(arguments)[0];
+        }
+        else {
+            point = getPoint(arguments)[0][0] ;
         }
         //var point = Array.prototype.slice.call(point0, 0)[0][0];
         if (this.parent) {

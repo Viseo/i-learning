@@ -15,7 +15,7 @@ var AddEmptyElement = function (parent) {
         self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
         self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
         self.manipulator.last.add(self.plus);
-        self.obj.content.position(0,h*0.3);
+        self.obj.content.position(0,h*0.35);
 
         self.obj.cadre.color([], 3, myColors.black);
         self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
