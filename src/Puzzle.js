@@ -9,6 +9,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
     self.rows=rows;
     self.tilesTab=[];
     self.questionsTab=questionsTab;
+    self.startPosition=0;
 
     self.reverseMode = reverseMode;
     self.parent=parent;
@@ -74,6 +75,7 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
      * @param startPosition: Row number to align with
      */
     self.display=function(x, y, w, h, startPosition) {
+        self.startPosition=startPosition;
         // Clear SetDisplay
         //self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
         //    self.questionWithBadAnswersManipulator.last.remove(el);

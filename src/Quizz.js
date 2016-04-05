@@ -34,7 +34,7 @@ function Quizz(quizz, previewMode) {
     self.cadreResult={
         x:drawing.width/2,
         y:220,
-        w:drawing.width,
+        w:document.body.clientWidth,
         h:200
     };
     self.cadreTitle={
@@ -130,12 +130,6 @@ function Quizz(quizz, previewMode) {
         self.quizzManipulator.last.add(self.resultManipulator.first);
 
         var object = displayText(self.finalMessage,self.cadreTitle.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
-        //self.scoreManipulator.add(object.cadre,object.content);
-
-        self.quizzManipulator.translator.move(self.cadreResult.w/2,self.headerHeight/2);
-
-
-       // console.log(self.cadreResult.y);
 
     };
 
@@ -233,8 +227,7 @@ function Quizz(quizz, previewMode) {
         //self.resultManipulator = new Manipulator();
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
-
-        self.puzzle.display(0, self.responseHeight/2+self.questionHeight/2, self.cadreResult.w,self.responseHeight, 0);
+        self.puzzle.display(0, self.responseHeight/2+self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
 }

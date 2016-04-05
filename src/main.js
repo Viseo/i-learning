@@ -59,9 +59,9 @@ function main() {
         //changement de taille de la fenêtre
         //quizz.quizzManipulator.first.remove();
 
-        drawing.dimension(window.innerWidth,window.innerHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
+        drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
 
-        quizz.display(0,0,window.innerWidth,window.innerHeight);
+        quizz.display(0,0,drawing.width,drawing.height);
         var qManip=quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
         //qManip.last.remove(qManip.ordonator);
         //qManip.ordonator=new svg.Ordered(10);
@@ -85,6 +85,7 @@ function main() {
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
+            //quizz.puzzle.display(0, quizz.responseHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.responseHeight, quizz.puzzle.startPosition);
         }
 
     }
