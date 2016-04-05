@@ -5,7 +5,6 @@
 var AddEmptyElement = function (parent) {
     var self = this;
     self.manipulator = new Manipulator();
-    parent.manipulator.last.add(self.manipulator.first);
 
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
@@ -42,10 +41,9 @@ var AnswerElement = function (answer, parent) {
     var self = this;
 
     self.manipulator = new Manipulator();
-    parent.manipulator.last.add(self.manipulator.first);
 
     self.isValidInput = true;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){1,3000}$/g;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
     self.labelDefault = "Double clic pour modifier";
 
     if(answer) {
@@ -69,11 +67,13 @@ var AnswerElement = function (answer, parent) {
 
     self.display = function (x, y, w, h) {
         self.margin = 15;
-
+        console.log("OK 6");
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
+            console.log(mainManipulator);
             self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            console.log("OK 9");
             self.obj.content.color(color);
             self.obj.cadre.opacity(0);
             self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
@@ -119,6 +119,7 @@ var AnswerElement = function (answer, parent) {
             contentarea.onblur = onblur;
         };
         showTitle();
+        console.log("OK 7");
         self.checkbox = displayCheckbox(x+2*self.margin, y+h-self.margin - 40, 40, self);
         self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
         self.manipulator.last.add(self.cBLabel);

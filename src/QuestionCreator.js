@@ -8,7 +8,16 @@ var QuestionCreator = function (question) {
     var MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.last.add(self.manipulator.translator);
+    mainManipulator.last.add(self.manipulator.first);
+
+    self.manipulatorQuizzInfo = new Manipulator();
+    self.manipulator.last.add(self.manipulatorQuizzInfo.first);
+
+    self.manipulatorQuestionCreator = new Manipulator();
+    self.manipulator.last.add(self.manipulatorQuestionCreator.first);
+
+    self.previewButtonManipulator = new Manipulator();
+    self.manipulator.last.add(self.previewButtonManipulator.first);
 
     MARGIN = 15;
     self.headerHeight=0.1;
@@ -83,16 +92,12 @@ var QuestionCreator = function (question) {
     self.display = function (x, y, w, h) {
         var quizzInfoHeight=Math.floor(haut*self.headerHeight);
         var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
-        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-30);
         self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
+        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-30);
         self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
-        self.manipulatorQuestionCreator && self.manipulator.last.remove(self.manipulatorQuestionCreator);
-        self.manipulatorQuestionCreator = new Manipulator();
-        self.manipulator.last.add(self.manipulatorQuestionCreator.first);
-
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
@@ -146,17 +151,16 @@ var QuestionCreator = function (question) {
         if(self.tabAnswer.length !== MAX_ANSWERS) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
-        self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true);
+        self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
+        console.log("puzzle created");
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
+        console.log("puzzle displayed");
         self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
         /*self.tabAnswer.forEach(function (el) {
             self.displaySetQuestionCreator.push(el.displaySet);
         });*/
     };
     self.displayQuizzInfo = function (x, y, w, h) {
-        self.manipulatorQuizzInfo && self.manipulator.last.remove(self.manipulatorQuizzInfo);
-        self.manipulatorQuizzInfo= new Manipulator();
-        self.manipulator.last.add(self.manipulatorQuizzInfo.first);
 
         self.formationLabel = new svg.Text("Formation : " + self.formationName);
         self.formationLabel.position(x, y).font("arial", 20).anchor("start");
@@ -193,12 +197,7 @@ var QuestionCreator = function (question) {
         };
         showTitle();
     };
-
     self.displayPreviewButton = function (x, y, w, h) {
-        self.previewButtonManipulator && self.manipulator.last.remove(self.previewButtonManipulator);
-        self.previewButtonManipulator = new Manipulator();
-        self.manipulator.last.add(self.previewButtonManipulator.first);
-
         self.previewButton = displayText("Aperçu", 200, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
 
         var previewFunction = function () {
