@@ -145,12 +145,24 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  * @param h : height
  * @param fontSize
  * @param font
+ * @param manipulator
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
-    var t = new svg.Text("");
-    manipulator.ordonator.set(1,t);
+    var t = new svg.Text("text");
+    manipulator.ordonator.set(1, t);
+    console.log(manipulator);
     var words = content.split(" ");
     var tempText = "";
+    var loop = true;
+    var bidule = t;
+    console.log(bidule);
+    while(loop) {
+        console.log(bidule.parent);
+        bidule = bidule.parent;
+        if(!bidule.parent) {
+            loop = false;
+        }
+    }
 
     t.font(font ? font : "arial", fontSize ? fontSize : 20);
 
@@ -208,6 +220,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
 
     t.message(tempText.substring(1));
     var finalHeight = t.component.getBBox().height;
+    manipulator.ordonator.remove(t);
     t.position(0,(finalHeight-fontSize/2)/2); // finalHeight/2 ??
     return {finalHeight: finalHeight, text:t};
 };
