@@ -19,6 +19,7 @@ var myColors={
     blue:[25, 122, 230],
     primaryBlue:[0, 0, 255],
     grey:[125, 122, 117],
+    lightgrey:[242,242,241],
     orange:[230, 122, 25],
     purple:[170, 100, 170],
     green:[155, 222, 17],
