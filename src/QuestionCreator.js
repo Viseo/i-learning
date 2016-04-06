@@ -106,7 +106,7 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
+            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
             self.questionBlock.title.content.color(color).position(w/2,y);
             self.questionBlock.title.cadre.position(w/2,y).fillOpacity(0.001);
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
@@ -169,14 +169,30 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
             var color = (self.quizzName) ? myColors.black : myColors.grey;
-            self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
-            svg.addEvent(self.quizzLabel, "ondblclick", dblclickEdition);
-            self.manipulatorQuizzInfo.last.add(self.quizzLabel/*, self.quizzBorder*/);
+            var bgcolor = (self.quizzName) ? myColors.white : myColors.grey;
+
+            self.quizzLabel = {};
+            //self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
+            //self.quizzLabel = displayText(text, w, 35, color, color, 15, "arial", self.manipulatorQuizzInfo);
+            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "arial", self.manipulatorQuizzInfo).text;
+            var width = self.quizzLabel.content.component.getBBox().width;
+            self.quizzLabel.cadre = new svg.Rect(width+3*MARGIN, 35).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2,h/2).fillOpacity(0.1);
+            self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
+            self.quizzLabel.content.position(width/2+MARGIN,h/2).color(color);
+
+            svg.addEvent(self.quizzLabel.content, "ondblclick", dblclickEdition);
+            svg.addEvent(self.quizzLabel.cadre, "ondblclick", dblclickEdition);
+            //self.manipulatorQuizzInfo.last.add(self.quizzLabel.content/*, self.quizzBorder*/);
+            //self.manipulatorQuizzInfo.last.add(self.quizzLabel.cadre/*, self.quizzBorder*/);
+
         };
 
         var dblclickEdition = function () {
-            var width = self.quizzLabel.component.getBBox().width;
-            self.manipulatorQuizzInfo.last.remove(self.quizzLabel);
+            var width = self.quizzLabel.content.component.getBBox().width;
+            self.manipulatorQuizzInfo.ordonator.unset(0);
+            self.manipulatorQuizzInfo.ordonator.unset(1);
+
             //self.quizzBorder.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
@@ -185,7 +201,7 @@ var QuestionCreator = function (question) {
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                self.quizzName = textarea.value;
+                self["quizzNameValidInput"] && (self.quizzName = textarea.value);
                 textarea.remove();
                 showTitle();
             };

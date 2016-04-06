@@ -73,7 +73,7 @@ var Drawings = function (w, h) {
         }
     };
 
-    svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
+    //svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
