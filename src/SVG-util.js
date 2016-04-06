@@ -150,7 +150,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
     var t = new svg.Text("text");
-    manipulator.ordonator.set(6, t);
+    manipulator.ordonator.set(1, t);
     var words = content.split(" ");
     var tempText = "";
 
