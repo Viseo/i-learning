@@ -265,6 +265,11 @@ function SVG(runtime) {
         svgr.attr(this.component, "opacity", opacity);
         return this;
     };
+    Handler.prototype.fillOpacity = function(opacity) {
+        this._fillopacity = opacity;
+        svgr.attr(this.component, "fill-opacity", opacity);
+        return this;
+    };
     Handler.prototype.smoothy = function(speed, step) {
         return new Animator(this).smoothy(speed, step);
     };
@@ -560,6 +565,11 @@ function SVG(runtime) {
     Shape.prototype.opacity = function(opacity) {
         this._opacity = opacity;
         svgr.attr(this.component, "opacity", opacity);
+        return this;
+    };
+    Shape.prototype.fillOpacity = function(opacity) {
+        this._fillopacity = opacity;
+        svgr.attr(this.component, "fill-opacity", opacity);
         return this;
     };
     Shape.prototype.smoothy = function(speed, step) {

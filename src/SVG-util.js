@@ -10,24 +10,25 @@
  * @param sender
  */
 var displayCheckbox = function (x, y, size, sender) {
-    var obj = {checkbox: new svg.Rect(size, size).color(myColors.none,2,myColors.black).position(x,y)};
+    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
-            sender.manipulator.last.remove(obj.checked);
+            sender.manipulator.ordonator.set(8, new svg.Rect(0, 0).opacity(0));
         }
-        sender.manipulator.last.remove(obj.checkbox);
+        sender.manipulator.ordonator.set(7, new svg.Rect(0, 0).opacity(0));
         displayCheckbox(x, y, size, sender);
     };
+    sender.manipulator.ordonator.set(7, obj.checkbox);
 
     if(sender.bCorrect) {
-        obj.checked = new svg.Path(x+size/2, y+size/2).move(x+.2*size,y+.4*size)
-            .line(x+.2*size,y+.3*size).line(x+.4*size,y-.5*size)
-            .color(myColors.black, 3, myColors.black);
-        svg.addEvent(obj.checked,"click", onclickFunction);
-        sender.manipulator.last.add(obj.checked);
+        console.log("correct");
+        obj.checked = new svg.Path(x, y).move(x-.3*size,y-.1*size)
+            .line(x-.1*size,y+.2*size).line(x+.3*size,y-.3*size)
+            .color(myColors.none, 3, myColors.black);
+        svg.addEvent(obj.checked, "click", onclickFunction);
+        sender.manipulator.ordonator.set(8, obj.checked);
     }
-    sender.manipulator.last.add(obj.checkbox);
     svg.addEvent(obj.checkbox,"click", onclickFunction);
 
     return obj;
@@ -132,7 +133,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
-    manipulator.ordonator.set(1,content);
+    //manipulator.ordonator.set(1, content);
     return {content:content, cadre:cadre};
 };
 

@@ -184,8 +184,6 @@ function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
                         self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2+MARGIN,posY+MARGIN);
-
-
                         posX += self.tileWidth + MARGIN;
                         count++;
                     }
