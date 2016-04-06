@@ -61,39 +61,28 @@ var QuestionCreator = function (question) {
     self.formationName = "Hibernate";
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
-        if(textarea.value.match(self.regex)) {
-            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+        if(textarea.textContent.match(self.regex)) {
             self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             textarea.onblur = onblur;
             textarea.style.border = "none";
             textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
-            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
             self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             textarea.style.border = "solid 2px #FF0000";
-
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
             var anchor = isValidElement === "questionNameValidInput" ? 'middle' : 'start';
-
             self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
                 .position(position, textarea.getBoundingClientRect().bottom+MARGIN)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
-
-            //self.manipulatorQuestionCreator.last.add(self.errorMessage);
             self.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
-
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
                 textarea.value = "";
                 onblur();
-                //self.manipulatorQuestionCreator.last.remove(self.errorMessage);
                 self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             }
         }
     };
@@ -118,21 +107,23 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.cadre.position(w/2,y).fillOpacity(0.001);
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
-            self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
+            //self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
         };
 
         var dblclickEdition = function () {
-            self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.content);
-            var textarea = document.createElement("TEXTAREA");
-            textarea.value = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none;");
+            self.manipulatorQuestionCreator.ordonator.unset(1, self.questionBlock.title.content);
+            var textarea = document.createElement("div");
+            textarea.textContent = self.label;
+            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none; vertical-align: center; display:inline-block;");
+            textarea.setAttribute("contenteditable", true);
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                self.label = textarea.value;
+                console.log(textarea);
+                textarea.textContent && (self.label = textarea.textContent);
                 textarea.remove();
-                self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.cadre);
+                self.manipulatorQuestionCreator.ordonator.unset(0, self.questionBlock.title.cadre);
                 showTitle();
             };
 
