@@ -121,6 +121,9 @@ var Question = function (question,quizz) {
 
         }
         self.questionManipulator.translator.move(self.x,self.y);
+        self.questionManipulator.ordonator.children.forEach(function(e){
+            manageDnD(e);
+        });
     };
 
     self.displayAnswers = function (x, y, w, h) {
@@ -332,6 +335,37 @@ var Question = function (question,quizz) {
             }
         }
     }
+
+    function manageDnD(svgItem) {
+        var ref;
+        var mousedownHandler=function(event) {
+            ref = svgItem.localPoint(event.clientX, event.clientY);
+            svg.addEvent(svgItem, "mousemove",mousemoveHandler );
+
+            svg.addEvent(svgItem,"mouseup",mouseupHandler);
+        };
+        var mousemoveHandler=function(event) {
+            var mouse = svgItem.localPoint(event.clientX, event.clientY);
+            var dx=mouse.x-ref.x;
+            var dy=mouse.y-ref.y;
+            //var newPosition = self.x!==undefined ? /*self.point+*/dy : /*self.point+*/dx;
+            //setTimeout(function(){
+                self.questionManipulator.first.move(self.questionManipulator.first.x+dx,self.questionManipulator.first.y+dy);//newPosition);
+            //},100);
+            //if (self.callback) {
+            //    self.callback(/*self.point*/);
+            //}
+            return true;
+        };
+        var mouseupHandler=function(event) {
+            svg.removeEvent(svgItem,'mousemove',mousemoveHandler);
+            svg.removeEvent(svgItem,'mouseup',mouseupHandler);
+        };
+        svg.addEvent(svgItem, "mousedown",mousedownHandler );
+    }
+
+
+
 };
 
 

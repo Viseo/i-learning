@@ -73,7 +73,7 @@ var Drawings = function (w, h) {
         }
     };
 
-    //svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
+    svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
@@ -99,6 +99,15 @@ var Drawings = function (w, h) {
         self.drag = null;
     };
     svg.addEvent(self.glass,"mouseup",onmouseupHandler);
+
+
+    var onmouseoutHandler=function(event) {
+        if (self.drag && self.drag.component.eventHandlers && self.drag.component.eventHandlers.mouseout) {
+            self.target.component.eventHandlers.mouseup(event);
+        }
+        self.drag = null;
+    };
+    svg.addEvent(self.glass,"mouseout",onmouseoutHandler);
 
 };
 
