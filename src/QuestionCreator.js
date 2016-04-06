@@ -98,7 +98,7 @@ var QuestionCreator = function (question) {
         self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
 
         self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-30);
+        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
     };
 
@@ -256,9 +256,9 @@ var QuestionCreator = function (question) {
                                 self.errorMessagePreview.remove();
                             }
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
-                                .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
+                                .position(-11* MARGIN-5 , h/2 - 6* MARGIN)
                                 .font("arial", 20)
-                                .anchor('start').color(myColors.red);
+                                .anchor('center').color(myColors.red)
                             self.previewButtonManipulator.last.add(self.errorMessagePreview);
                         }
                     } else {
@@ -266,18 +266,19 @@ var QuestionCreator = function (question) {
                             self.errorMessagePreview.remove();
                         }
                         self.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
-                            .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
+                            .position(-10* MARGIN-10 , h/2 - 6* MARGIN)
                             .font("arial", 20)
-                            .anchor('start').color(myColors.red);
+                            .anchor('center').color(myColors.red);
                         self.previewButtonManipulator.last.add(self.errorMessagePreview);                    }
                 } else {
                     if (self.errorMessagePreview) {
                         self.errorMessagePreview.remove();
                     }
                     self.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
-                        .position(x+ w/2 - MARGIN -170, y + h / 2 - 50)
+                        .position(-15* MARGIN-5 , h/2 - 6* MARGIN)
                         .font("arial", 20)
-                        .anchor('start').color(myColors.red);
+                        .anchor('center').color(myColors.red);
+
                     self.previewButtonManipulator.last.add(self.errorMessagePreview);
                 }
             }
