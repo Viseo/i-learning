@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.last.add(self.manipulator.first);
+    mainManipulator.ordonator.set(0, self.manipulator.first);
 
     self.manipulatorQuizzInfo = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);

@@ -91,6 +91,8 @@ var AnswerElement = function (answer, parent) {
 
         var dblclickEdition = function () {
             self.manipulator.last.remove(self.obj.content);
+            self.manipulator.last.remove(self.obj.cadre);
+
             var contentarea = document.createElement("TEXTAREA");
             contentarea.value = self.label;
             contentarea.setAttribute("style", "position: absolute; top:"+(y+3*self.margin)+"px; left:"+(x+3*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
