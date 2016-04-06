@@ -5,7 +5,7 @@
 
 var QuestionCreator = function (question) {
     var self = this;
-    var MAX_ANSWERS = 8;
+    self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
     mainManipulator.last.add(self.manipulator.first);
@@ -62,14 +62,14 @@ var QuestionCreator = function (question) {
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
         if(textarea.value.match(self.regex)) {
-            self.errorMessage && self.previewButtonManipulator.last.remove(self.errorMessage);
+            self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
             textarea.onblur = onblur;
             textarea.style.border = "none";
             textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
-            self.errorMessage && self.previewButtonManipulator.last.remove(self.errorMessage);
+            self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
             textarea.style.border = "solid 2px #FF0000";
 
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
@@ -79,12 +79,14 @@ var QuestionCreator = function (question) {
                 .position(position, textarea.getBoundingClientRect().bottom+MARGIN)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
 
+            self.manipulatorQuestionCreator.last.add(self.errorMessage);
+
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
                 textarea.value = "";
                 onblur();
-                self.errorMessage.remove();
+                self.manipulatorQuestionCreator.last.remove(self.errorMessage);
             }
         }
     };
@@ -123,7 +125,7 @@ var QuestionCreator = function (question) {
             var onblur = function () {
                 self.label = textarea.value;
                 textarea.remove();
-                self.questionBlock.title.cadre.remove();
+                self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.cadre);
                 showTitle();
             };
 
@@ -151,7 +153,7 @@ var QuestionCreator = function (question) {
         showTitle();
 
         // bloc Answers
-        if(self.tabAnswer.length !== MAX_ANSWERS) {
+        if(self.tabAnswer.length !== self.MAX_ANSWERS) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);

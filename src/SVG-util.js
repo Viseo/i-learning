@@ -132,7 +132,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
-    manipulator.ordonator.set(1,content);
+    //manipulator.ordonator.set(1, content);
     return {content:content, cadre:cadre};
 };
 
@@ -149,7 +149,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
     var t = new svg.Text("text");
-    manipulator.ordonator.set(1, t);
+    manipulator.ordonator.set(6, t);
     var words = content.split(" ");
     var tempText = "";
 
