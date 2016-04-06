@@ -23,7 +23,7 @@ var displayCheckbox = function (x, y, size, sender) {
     if(sender.bCorrect) {
         obj.checked = new svg.Path(x+size/2, y+size/2).move(x+.2*size,y+.4*size)
             .line(x+.2*size,y+.3*size).line(x+.4*size,y-.5*size)
-            .color([],3,myColors.black);
+            .color(myColors.black, 3, myColors.black);
         svg.addEvent(obj.checked,"click", onclickFunction);
         sender.manipulator.last.add(obj.checked);
     }
