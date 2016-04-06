@@ -14,12 +14,12 @@ var displayCheckbox = function (x, y, size, sender) {
     var onclickFunction = function () {
         sender.bCorrect = !sender.bCorrect;
         if(obj.checked) {
-            sender.manipulator.last.remove(obj.checked);
+            sender.manipulator.ordonator.set(7, new svg.Rect(0, 0).opacity(0));
         }
-        sender.manipulator.last.remove(obj.checkbox);
+        sender.manipulator.ordonator.set(8, new svg.Rect(0, 0).opacity(0));
         displayCheckbox(x, y, size, sender);
     };
-    sender.manipulator.last.add(obj.checkbox);
+    sender.manipulator.ordonator.set(8, obj.checkbox);
 
     if(sender.bCorrect) {
         console.log("correct");
@@ -27,7 +27,7 @@ var displayCheckbox = function (x, y, size, sender) {
             .line(x-.1*size,y+.2*size).line(x+.3*size,y-.3*size)
             .color(myColors.none, 3, myColors.black);
         svg.addEvent(obj.checked, "click", onclickFunction);
-        sender.manipulator.last.add(obj.checked);
+        sender.manipulator.ordonator.set(7, obj.checked);
     }
     svg.addEvent(obj.checkbox,"click", onclickFunction);
 

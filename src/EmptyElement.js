@@ -84,8 +84,6 @@ var AnswerElement = function (answer, parent) {
             self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
-            self.obj.cadre;
-            //self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
         };
@@ -132,6 +130,6 @@ var AnswerElement = function (answer, parent) {
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
         self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
-        self.manipulator.last.add(self.cBLabel);
+        self.manipulator.ordonator.set(6, self.cBLabel);
     }
 };

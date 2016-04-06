@@ -159,9 +159,6 @@ var QuestionCreator = function (question) {
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
         self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
-        /*self.tabAnswer.forEach(function (el) {
-            self.displaySetQuestionCreator.push(el.displaySet);
-        });*/
     };
     self.displayQuizzInfo = function (x, y, w, h) {
 
