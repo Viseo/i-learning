@@ -252,7 +252,7 @@ var QuestionCreator = function (question) {
                 }
             });
             if(isValidInput && self.questionNameValidInput && self.quizzNameValidInput) {
-                if (correctAnswers >= 1 && incorrectAnswers >= 1 && isFilled) {
+                if (correctAnswers >= 1 && incorrectAnswers >= 1) {
                     if (self.quizzName) {
                         if (self.label) {
                             mainManipulator.remove(self.manipulator);
@@ -286,7 +286,7 @@ var QuestionCreator = function (question) {
                             quizz.run(20, 20, 1500, 800);
                         } else {
                             if (self.errorMessagePreview) {
-                                self.errorMessagePreview.remove();
+                                self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                             }
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
                                 .position(-11* MARGIN-5 , h/2 - 6* MARGIN)
@@ -296,7 +296,7 @@ var QuestionCreator = function (question) {
                         }
                     } else {
                         if (self.errorMessagePreview) {
-                            self.errorMessagePreview.remove();
+                            self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                         }
                         self.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
                             .position(-10* MARGIN-10 , h/2 - 6* MARGIN)
@@ -305,7 +305,7 @@ var QuestionCreator = function (question) {
                         self.previewButtonManipulator.last.add(self.errorMessagePreview);                    }
                 } else {
                     if (self.errorMessagePreview) {
-                        self.errorMessagePreview.remove();
+                        self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                     }
                     self.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
                         .position(-15* MARGIN-5 , h/2 - 6* MARGIN)
