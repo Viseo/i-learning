@@ -89,22 +89,25 @@ var AnswerElement = function (answer, parent) {
         };
 
         var dblclickEdition = function () {
-            self.manipulator.last.remove(self.obj.content);
-            self.manipulator.last.remove(self.obj.cadre);
+            //self.manipulator.last.remove(self.obj.content);
+            //self.manipulator.last.remove(self.obj.cadre);
+            //self.manipulator.ordonator.unset(0);
+            //self.manipulator.ordonator.unset(1);
 
             var contentarea = document.createElement("TEXTAREA");
             contentarea.value = self.label;
-            contentarea.setAttribute("style", "position: absolute; top:"+(y+3*self.margin)+"px; left:"+(x+3*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
-            var body = document.getElementById("body");
+            console.log(self.obj.content.globalPoint(0,0).y/2);
+            contentarea.setAttribute("style", "position: absolute; top:"+(self.obj.content.globalPoint(0,0).y/2)+"px; left:"+(self.obj.content.globalPoint(0,0).x)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
             var onblur = function () {
                 self.label = contentarea.value;
                 contentarea.remove();
-                self.obj.cadre.remove();
+                //self.obj.cadre.remove();
                 showTitle();
-                self.obj.cadre.toBack();
-                self.cBLabel.toFront();
-                self.checkbox.checkbox.toFront();
+                //self.obj.cadre.toBack();
+                //self.cBLabel.toFront();
+               // self.checkbox.checkbox.toFront();
                 if(self.checkbox.checked) {
                     self.checkbox.checked.toFront();
                 }

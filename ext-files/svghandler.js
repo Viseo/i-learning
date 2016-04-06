@@ -477,7 +477,19 @@ function SVG(runtime) {
         }
     };
     Scaling.prototype.globalPoint = function() {
-        var point = getPoint(arguments);
+        var point = null;
+        var tempPoint = getPoint(arguments);
+        if (tempPoint){
+            point = tempPoint;
+        }
+        else if (getPoint(arguments)[0]){
+            point = getPoint(arguments)[0];
+        }
+        else {
+            var test = getPoint(arguments);
+            console.log(test[0].x);
+            point = getPoint(arguments)[0][0] ;
+        }
         point = {
             x:point.x*this.factor,
             y:point.y*this.factor
