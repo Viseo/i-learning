@@ -106,11 +106,11 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
+            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.white, self.fontSize, null, self.manipulatorQuestionCreator);
             self.questionBlock.title.content.color(color).position(w/2,y);
-            self.questionBlock.title.cadre.position(w/2,y);
-            svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
-            svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
+            self.questionBlock.title.cadre.position(w/2,y).fillOpacity(0.001);
+            svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
+            svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
             self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
         };
 
@@ -173,7 +173,7 @@ var QuestionCreator = function (question) {
             var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
             var color = (self.quizzName) ? myColors.black : myColors.grey;
             self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
-            svg.addEvent(self.quizzLabel, "dblclick", dblclickEdition);
+            svg.addEvent(self.quizzLabel, "ondblclick", dblclickEdition);
             self.manipulatorQuizzInfo.last.add(self.quizzLabel/*, self.quizzBorder*/);
         };
 

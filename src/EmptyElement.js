@@ -42,9 +42,9 @@ var AddEmptyElement = function (parent) {
             //self.parent.displayQuestionCreator();
         };
 
-        svg.addEvent(self.plus, "dblclick", dblclickEdition);
-        svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+        svg.addEvent(self.plus, "ondblclick", dblclickEdition);
+        svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
+        svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
     }
 };
 
@@ -81,12 +81,13 @@ var AnswerElement = function (answer, parent) {
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
+            self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
             self.obj.cadre;
             //self.manipulator.last.add(self.obj.cadre).add(self.obj.content);
-            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
+            svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
         };
 
         var dblclickEdition = function () {
