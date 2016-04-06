@@ -62,14 +62,18 @@ var QuestionCreator = function (question) {
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
         if(textarea.value.match(self.regex)) {
-            self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+            self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
+
             textarea.onblur = onblur;
             textarea.style.border = "none";
             textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
-            self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+            self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
+
             textarea.style.border = "solid 2px #FF0000";
 
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
@@ -79,14 +83,17 @@ var QuestionCreator = function (question) {
                 .position(position, textarea.getBoundingClientRect().bottom+MARGIN)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
 
-            self.manipulatorQuestionCreator.last.add(self.errorMessage);
+            //self.manipulatorQuestionCreator.last.add(self.errorMessage);
+            self.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
 
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
                 textarea.value = "";
                 onblur();
-                self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                //self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
+
             }
         }
     };
@@ -201,7 +208,7 @@ var QuestionCreator = function (question) {
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                self["quizzNameValidInput"] && (self.quizzName = textarea.value);
+                self.quizzNameValidInput && (self.quizzName = textarea.value);
                 textarea.remove();
                 showTitle();
             };
