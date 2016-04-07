@@ -88,11 +88,11 @@ var AnswerElement = function (answer, parent) {
             //contentarea.width = self.obj.content.component.getBBox().width+MARGIN;
             contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-1)+"px; left:"+(contentarea.globalPointCenter.x-2)+"px; width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none;");
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-1)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none;");
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
             var onblur = function () {
-                self.isValidInput && (self.label = contentarea.value); //??
+                self.isValidInput && (self.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
 
