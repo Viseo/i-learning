@@ -19,12 +19,8 @@ var AddEmptyElement = function (parent) {
 
         self.obj.cadre.color([], 3, myColors.black);
         self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
-        //self.manipulator.last.add(self.obj.cadre);
-
-        //self.manipulator.last.add(self.obj.content);
 
         var dblclickEdition = function () {
-            //self.displaySet.remove();
             self.parent.tabAnswer.pop();
             self.manipulator.ordonator.remove(self.obj.content);
             self.manipulator.ordonator.remove(self.obj.cadre);
@@ -33,13 +29,9 @@ var AddEmptyElement = function (parent) {
             if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
                 self.parent.tabAnswer.push(new AddEmptyElement(self.parent));
             }
-            console.log(self.parent.tabAnswer);
             self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
             self.parent.manipulatorQuestionCreator.last.add(self.parent.puzzle.puzzleManipulator.first);
             self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
-
-            //self.display(x+w,y,w,h);
-            //self.parent.displayQuestionCreator();
         };
 
         svg.addEvent(self.plus, "ondblclick", dblclickEdition);
@@ -89,25 +81,21 @@ var AnswerElement = function (answer, parent) {
         };
 
         var dblclickEdition = function () {
-            //self.manipulator.last.remove(self.obj.content);
-            //self.manipulator.last.remove(self.obj.cadre);
-            //self.manipulator.ordonator.unset(0);
-            //self.manipulator.ordonator.unset(1);
-
             var contentarea = document.createElement("TEXTAREA");
             contentarea.value = self.label;
-            console.log(self.obj.content.globalPoint(0,0).y/2);
-            contentarea.setAttribute("style", "position: absolute; top:"+(self.obj.content.globalPoint(0,0).y/2)+"px; left:"+(self.obj.content.globalPoint(0,0).x)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            contentarea.width = w-2*self.margin-2;
+            //contentarea.height = h*.6-6*self.margin;
+            //contentarea.width = self.obj.content.component.getBBox().width+MARGIN;
+            contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-1)+"px; left:"+(contentarea.globalPointCenter.x-2)+"px; width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none;");
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
             var onblur = function () {
-                self.label = contentarea.value;
+                self.isValidInput && (self.label = contentarea.value); //??
                 contentarea.remove();
-                //self.obj.cadre.remove();
                 showTitle();
-                //self.obj.cadre.toBack();
-                //self.cBLabel.toFront();
-               // self.checkbox.checkbox.toFront();
+
                 if(self.checkbox.checked) {
                     self.checkbox.checked.toFront();
                 }

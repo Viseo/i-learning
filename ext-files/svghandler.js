@@ -479,15 +479,14 @@ function SVG(runtime) {
     Scaling.prototype.globalPoint = function() {
         var point = null;
         var tempPoint = getPoint(arguments);
-        if (tempPoint){
+        if (tempPoint.x!=undefined){
             point = tempPoint;
         }
-        else if (getPoint(arguments)[0]){
+        else if (getPoint(arguments)[0].x!=undefined){
             point = getPoint(arguments)[0];
         }
         else {
             var test = getPoint(arguments);
-            console.log(test[0].x);
             point = getPoint(arguments)[0][0] ;
         }
         point = {
