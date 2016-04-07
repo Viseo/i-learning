@@ -46,7 +46,7 @@ var AnswerElement = function (answer, parent) {
     self.manipulator = new Manipulator();
 
     self.isValidInput = true;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
 
     if(answer) {
@@ -81,18 +81,20 @@ var AnswerElement = function (answer, parent) {
         };
 
         var dblclickEdition = function () {
-            var contentarea = document.createElement("TEXTAREA");
-            contentarea.value = self.label;
+            var contentarea = document.createElement("div");
+            contentarea.textContent = self.label;
             contentarea.width = w-2*self.margin-2;
             //contentarea.height = h*.6-6*self.margin;
             //contentarea.width = self.obj.content.component.getBBox().width+MARGIN;
             contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-1)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none;");
+            self.manipulator.ordonator.unset(1, self.obj.content);
+            contentarea.setAttribute("contenteditable", true);
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-2)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; max-width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none; display: inline; word-wrap: break-word;");
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
             var onblur = function () {
-                self.isValidInput && (self.label = contentarea.value);
+                self.isValidInput && (self.label = contentarea.textContent);
                 contentarea.remove();
                 showTitle();
 
@@ -102,7 +104,7 @@ var AnswerElement = function (answer, parent) {
             };
 
             contentarea.oninput = function () {
-                if(contentarea.value.match(self.regex)) {
+                if(contentarea.textContent.match(self.regex)) {
                     contentarea.onblur = onblur;
                     contentarea.style.border = "none";
                     self.isValidInput = true;
@@ -111,7 +113,7 @@ var AnswerElement = function (answer, parent) {
                     self.isValidInput = false;
                     contentarea.focus();
                     contentarea.onblur = function () {
-                        contentarea.value = "";
+                        contentarea.textContent = "";
                         onblur();
                     }
                 }

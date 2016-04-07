@@ -113,8 +113,8 @@ var QuestionCreator = function (question) {
             var textarea = document.createElement("div");
             textarea.textContent = self.label;
             textarea.setAttribute("contenteditable", true);
-            textarea.setAttribute("style", "position: relative; top:"+(self.y+2*MARGIN-haut)+"px; left:"+(self.x+2*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-3*MARGIN)+"px; vertical-align: middle; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none;");
-            //
+            textarea.setAttribute("style", "position: relative; top:"+(self.y-haut-8)+"px; left:"+(self.x+2*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-3*MARGIN)+"px; vertical-align: middle; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none;");
+            
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -187,14 +187,15 @@ var QuestionCreator = function (question) {
             self.manipulatorQuizzInfo.ordonator.unset(0);
             self.manipulatorQuizzInfo.ordonator.unset(1);
 
-            var textarea = document.createElement("TEXTAREA");
-            textarea.value = self.quizzName;
+            var textarea = document.createElement("div");
+            textarea.textContent = self.quizzName;
+            textarea.setAttribute("contenteditable", true);
             textarea.setAttribute("style", "position: absolute; top:"+(h/2-7.5)+"px; left:"+(MARGIN+6)+"px; width:"+(w)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; color: grey; background-color: #F2F2F1;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                self.quizzNameValidInput && (self.quizzName = textarea.value);
+                self.quizzNameValidInput && (self.quizzName = textarea.textContent);
                 textarea.remove();
                 showTitle();
             };
