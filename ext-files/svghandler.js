@@ -486,7 +486,6 @@ function SVG(runtime) {
             point = getPoint(arguments)[0];
         }
         else {
-            var test = getPoint(arguments);
             point = getPoint(arguments)[0][0] ;
         }
         point = {
