@@ -39,7 +39,7 @@ var BibImage = function (bibimage) {
 
 
 
-    self.run = function(x,y,w,h) {
+    self.run = function(x,y,w,h,callback) {
         self.intervalToken = asyncTimerController.interval(function () {
             var loaded = true;
             self.tabImgBib.forEach(function (e) {
@@ -48,18 +48,23 @@ var BibImage = function (bibimage) {
             if(loaded) {
                 asyncTimerController.clearInterval(self.intervalToken);
                 self.display(x,y,w,h);
+                callback();
              }
         }, 100);
     };
     // Bib (Titre + tab Image
     self.display=function(x,y,w,h){
         //self.bordure =  new svg.Rect(w,h,self.bibManipulator);
-        self.bordure =  new svg.Rect(w,h,self.bibManipulator).color(myColors.white,5,myColors.black);
-        self.bordure.position(x+w/2,y+h/2);
+        x && (self.x = x);
+        y && (self.y = y);
+        w && (self.w = w);
+        h && (self.h = h);
+        self.bordure =  new svg.Rect(w,h,self.bibManipulator).color([],2,myColors.black);
+        self.bordure.position(w/2,h/2);
         self.bibManipulator.last.add(self.bordure);
         //self.title =  new svg.Text(x+w/2,y+(1/10*h),self.title,self.font,self.fontSize,self.bibManipulator);
-        self.title = autoAdjustText("Bibliothèque",x+w/2,y+(1/20)*h,w/2,(1/10)*h,null,self.font,self.bibManipulator).text;
-        self.title.position(x+w/2,y+(1/20)*h);
+        self.title = autoAdjustText("Bibliothèque",0,0,w,(1/10)*h,null,self.font,self.bibManipulator).text;
+        self.title.position(w/2,(1/20)*h);
         self.bibManipulator.last.add(self.title);
         var res=Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
         self.imageMargin=(w-(res*self.imageWidth))/(res+1);
@@ -78,7 +83,10 @@ var BibImage = function (bibimage) {
             self.tabImgBib.push(objectTotal.image);
             self.bibManipulator.last.add(objectTotal.image);
 
-        }
+    }
+        self.bibManipulator.first.move(x,y);
     };
+
+
 
 };

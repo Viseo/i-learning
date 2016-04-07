@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.ordonator.set(0, self.manipulator.first);
+    mainManipulator.ordonator.set(0,self.manipulator.first);
 
     self.manipulatorQuizzInfo = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
@@ -23,8 +23,6 @@ var QuestionCreator = function (question) {
     self.headerHeight=0.1;
     self.questionHeight=0.2;
     self.reponseHeight=0.7;
-    var larg = (window.innerWidth);
-    var haut = (window.innerHeight);
 
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
     self.questionNameValidInput = true;
@@ -88,14 +86,14 @@ var QuestionCreator = function (question) {
     };
 
     self.display = function (x, y, w, h) {
-        var quizzInfoHeight=Math.floor(haut*self.headerHeight);
-        var questionCreatorHeight=Math.floor(haut*(1-self.headerHeight)-80);
+        var quizzInfoHeight=Math.floor(h*self.headerHeight);
+        var questionCreatorHeight=Math.floor(h*(1-self.headerHeight)-80);
+        //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
-        self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
 
         self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
         self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-60);
-        self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
+        self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight-75/2, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
@@ -303,5 +301,8 @@ var QuestionCreator = function (question) {
 
         self.previewButtonManipulator.last.add(self.previewButton.cadre);
         self.previewButtonManipulator.last.add(self.previewButton.content);
+
+        self.previewButtonManipulator.translator.move(x, y);
+
     }
 };
