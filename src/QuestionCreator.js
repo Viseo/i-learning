@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.ordonator.set(0,self.manipulator.first);
+    mainManipulator.ordonator.set(0, self.manipulator.first);
 
     self.manipulatorQuizzInfo = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
@@ -19,12 +19,11 @@ var QuestionCreator = function (question) {
     self.previewButtonManipulator = new Manipulator();
     self.manipulator.last.add(self.previewButtonManipulator.first);
 
-    MARGIN = 15;
     self.headerHeight=0.1;
     self.questionHeight=0.2;
     self.reponseHeight=0.7;
 
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
 
@@ -43,7 +42,6 @@ var QuestionCreator = function (question) {
         question.tabAnswer.forEach(function (answer) {
             self.tabAnswer.push(new AnswerElement(answer));
         });
-        //self.tabAnswer = question.tabAnswer;
         self.quizzName = question.parentQuizz.title;
         self.label = question.label;
         self.rightAnswers = [];
@@ -78,7 +76,7 @@ var QuestionCreator = function (question) {
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
-                textarea.value = "";
+                textarea.textContent = "";
                 onblur();
                 self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
             }
@@ -91,6 +89,9 @@ var QuestionCreator = function (question) {
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
 
+        //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
+        //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
+        //self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
         self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
         self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight-75/2, w, 75);
@@ -101,19 +102,19 @@ var QuestionCreator = function (question) {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
             self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
-            self.questionBlock.title.content.color(color).position(w/2,y);
-            self.questionBlock.title.cadre.position(w/2,y).fillOpacity(0.001);
+            self.questionBlock.title.content.color(color).position(w/2, y-2*MARGIN);
+            self.questionBlock.title.cadre.position(w/2,y-2*MARGIN).fillOpacity(0.001);
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
-            //self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
         };
 
         var dblclickEdition = function () {
             self.manipulatorQuestionCreator.ordonator.unset(1, self.questionBlock.title.content);
             var textarea = document.createElement("div");
             textarea.textContent = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none; vertical-align: center; display:inline-block;");
             textarea.setAttribute("contenteditable", true);
+            textarea.setAttribute("style", "position: relative; top:"+(self.y+2*MARGIN-haut)+"px; left:"+(self.x+2*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-3*MARGIN)+"px; vertical-align: middle; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none;");
+            //
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -179,9 +180,6 @@ var QuestionCreator = function (question) {
 
             svg.addEvent(self.quizzLabel.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.quizzLabel.cadre, "ondblclick", dblclickEdition);
-            //self.manipulatorQuizzInfo.last.add(self.quizzLabel.content/*, self.quizzBorder*/);
-            //self.manipulatorQuizzInfo.last.add(self.quizzLabel.cadre/*, self.quizzBorder*/);
-
         };
 
         var dblclickEdition = function () {
@@ -189,7 +187,6 @@ var QuestionCreator = function (question) {
             self.manipulatorQuizzInfo.ordonator.unset(0);
             self.manipulatorQuizzInfo.ordonator.unset(1);
 
-            //self.quizzBorder.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
             textarea.setAttribute("style", "position: absolute; top:"+(h/2-7.5)+"px; left:"+(MARGIN+6)+"px; width:"+(w)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; color: grey; background-color: #F2F2F1;");
