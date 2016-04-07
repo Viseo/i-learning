@@ -477,7 +477,18 @@ function SVG(runtime) {
         }
     };
     Scaling.prototype.globalPoint = function() {
-        var point = getPoint(arguments);
+        var point = null;
+        var tempPoint = getPoint(arguments);
+        if (tempPoint.x!=undefined){
+            point = tempPoint;
+        }
+        else if (getPoint(arguments)[0].x!=undefined){
+            point = getPoint(arguments)[0];
+        }
+        else {
+            var test = getPoint(arguments);
+            point = getPoint(arguments)[0][0] ;
+        }
         point = {
             x:point.x*this.factor,
             y:point.y*this.factor
@@ -1193,7 +1204,7 @@ function SVG(runtime) {
         svgr.attr(this.component, "x", this.x);
         svgr.attr(this.component, "y", this.y);
         svgr.attr(this.component, "text-anchor", this.anchorText);
-        svgr.attr(this.component, "font", this.fontName);
+        svgr.attr(this.component, "font-family", this.fontName);
         svgr.attr(this.component, "font-size", this.fontSize);
         svgr.text(this.component, this.messageText);
     };

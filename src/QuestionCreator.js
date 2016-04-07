@@ -61,39 +61,28 @@ var QuestionCreator = function (question) {
     self.formationName = "Hibernate";
 
     self.checkInputTextArea = function (textarea, isValidElement, onblur) {
-        if(textarea.value.match(self.regex)) {
-            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
+        if(textarea.textContent.match(self.regex)) {
             self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             textarea.onblur = onblur;
             textarea.style.border = "none";
             textarea.style.outline = "none";
             self[isValidElement] = true;
 
         } else {
-            //self.errorMessage && self.manipulatorQuestionCreator.last.remove(self.errorMessage);
             self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             textarea.style.border = "solid 2px #FF0000";
-
             var position = isValidElement === "questionNameValidInput" ? (textarea.getBoundingClientRect().left+textarea.getBoundingClientRect().right)/2 : textarea.getBoundingClientRect().left;
             var anchor = isValidElement === "questionNameValidInput" ? 'middle' : 'start';
-
             self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
                 .position(position, textarea.getBoundingClientRect().bottom+MARGIN)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
-
-            //self.manipulatorQuestionCreator.last.add(self.errorMessage);
             self.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
-
             textarea.focus();
             self[isValidElement] = false;
             textarea.onblur = function () {
                 textarea.value = "";
                 onblur();
-                //self.manipulatorQuestionCreator.last.remove(self.errorMessage);
                 self.manipulatorQuestionCreator.ordonator.unset(5,self.errorMessage);
-
             }
         }
     };
@@ -118,21 +107,23 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.cadre.position(w/2,y).fillOpacity(0.001);
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
-            self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
+            //self.manipulatorQuestionCreator.last.add(self.questionBlock.title.content).add(self.questionBlock.title.cadre);
         };
 
         var dblclickEdition = function () {
-            self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.content);
-            var textarea = document.createElement("TEXTAREA");
-            textarea.value = self.label;
-            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none;");
+            self.manipulatorQuestionCreator.ordonator.unset(1, self.questionBlock.title.content);
+            var textarea = document.createElement("div");
+            textarea.textContent = self.label;
+            textarea.setAttribute("style", "position: absolute; top:"+(self.y+3*MARGIN)+"px; left:"+(self.x+3*MARGIN)+"px; width:"+(self.w-6*MARGIN)+"px; height:"+(self.h*0.25-4*MARGIN)+"px; text-align:center; resize: none; outline:none; border: none; vertical-align: center; display:inline-block;");
+            textarea.setAttribute("contenteditable", true);
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                self.label = textarea.value;
+                console.log(textarea);
+                textarea.textContent && (self.label = textarea.textContent);
                 textarea.remove();
-                self.manipulatorQuestionCreator.last.remove(self.questionBlock.title.cadre);
+                self.manipulatorQuestionCreator.ordonator.unset(0, self.questionBlock.title.cadre);
                 showTitle();
             };
 
@@ -181,10 +172,10 @@ var QuestionCreator = function (question) {
             self.quizzLabel = {};
             //self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
             //self.quizzLabel = displayText(text, w, 35, color, color, 15, "arial", self.manipulatorQuizzInfo);
-            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "arial", self.manipulatorQuizzInfo).text;
+            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             var width = self.quizzLabel.content.component.getBBox().width;
-            self.quizzLabel.cadre = new svg.Rect(width+3*MARGIN, 35).color(bgcolor);
-            self.quizzLabel.cadre.position(width/2,h/2).fillOpacity(0.1);
+            self.quizzLabel.cadre = new svg.Rect(width+MARGIN, 35).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2+MARGIN,h/2-6).fillOpacity(0.1);
             self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
             self.quizzLabel.content.position(width/2+MARGIN,h/2).color(color);
 
@@ -203,7 +194,7 @@ var QuestionCreator = function (question) {
             //self.quizzBorder.remove();
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
-            textarea.setAttribute("style", "position: absolute; top:"+(y+16)+"px; left:"+(x-1)+"px; width:"+(width)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px;");
+            textarea.setAttribute("style", "position: absolute; top:"+(h/2-7.5)+"px; left:"+(MARGIN+6)+"px; width:"+(w)+"px; height:"+(18)+"px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; color: grey; background-color: #F2F2F1;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
