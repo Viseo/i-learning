@@ -5,6 +5,9 @@
 var AddEmptyElement = function (parent) {
     var self = this;
     self.manipulator = new Manipulator();
+    MARGIN = 15;
+
+    self.answerNameValidInput = true;
 
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
@@ -68,19 +71,61 @@ var AnswerElement = function (answer, parent) {
         return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.none};
     };
 
+    self.checkInputTextArea = function (contentarea, isValidInput, onblur) {
+        MARGIN=15;
+            if(contentarea.value.match(self.regex)) {
+                self.errorMessage && self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+
+                contentarea.onblur = onblur;
+                contentarea.style.border = "none";
+                contentarea.style.outline = "none";
+                self[isValidInput] = true;
+
+            } else {
+                self.errorMessage && self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                contentarea.style.border = "solid #FF0000";
+
+                var position = isValidInput === "answerNameValidInput" ? (contentarea.getBoundingClientRect().left+contentarea.getBoundingClientRect().right)/2 : contentarea.getBoundingClientRect().left;
+                var anchor = isValidInput === "answerNameValidInput" ? 'middle' : 'start';
+                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                    .position(position+500, contentarea.getBoundingClientRect().bottom+110)
+                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                console.log(contentarea.getBoundingClientRect().left,contentarea.getBoundingClientRect());
+
+                //self.parent.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
+                self.parent.manipulatorQuestionCreator.last.add(self.errorMessage);
+
+                contentarea.focus();
+                self[isValidInput] = false;
+                contentarea.onblur = function () {
+                    contentarea.value = "";
+                    onblur();
+                self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                }
+            }
+        };
+
     self.display = function (x, y, w, h) {
         self.margin = 15;
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
+            self.manipulator.last.add(self.obj.content).add(self.obj.cadre);
+
         };
 
         var dblclickEdition = function () {
+            self.manipulator.last.remove(self.obj.content);
+
+            var contentarea = document.createElement("TEXTAREA");
+            contentarea.value = self.label;
+            contentarea.setAttribute("style", "position: absolute; top:"+(w+y+3*self.margin)+"px; left:"+(h+x+10*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            var body = document.getElementById("content");
             var contentarea = document.createElement("div");
             contentarea.textContent = self.label;
             contentarea.width = w-2*self.margin-2;
@@ -104,6 +149,7 @@ var AnswerElement = function (answer, parent) {
             };
 
             contentarea.oninput = function () {
+                self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
                 if(contentarea.textContent.match(self.regex)) {
                     contentarea.onblur = onblur;
                     contentarea.style.border = "none";
@@ -119,6 +165,7 @@ var AnswerElement = function (answer, parent) {
                 }
             };
             contentarea.onblur = onblur;
+            self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
         };
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
