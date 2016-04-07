@@ -339,6 +339,7 @@ var Question = function (question,quizz) {
     function manageDnD(svgItem) {
         var ref;
         var mousedownHandler=function(event) {
+            event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
             ref = svgItem.localPoint(event.clientX, event.clientY);
             svg.addEvent(svgItem, "mousemove",mousemoveHandler );
 
@@ -348,10 +349,8 @@ var Question = function (question,quizz) {
             var mouse = svgItem.localPoint(event.clientX, event.clientY);
             var dx=mouse.x-ref.x;
             var dy=mouse.y-ref.y;
-            //var newPosition = self.x!==undefined ? /*self.point+*/dy : /*self.point+*/dx;
-            //setTimeout(function(){
-                self.questionManipulator.first.move(self.questionManipulator.first.x+dx,self.questionManipulator.first.y+dy);//newPosition);
-            //},100);
+
+            self.questionManipulator.first.move(self.questionManipulator.first.x+dx,self.questionManipulator.first.y+dy);//combinaison de translations
             //if (self.callback) {
             //    self.callback(/*self.point*/);
             //}
