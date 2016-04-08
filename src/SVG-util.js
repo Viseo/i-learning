@@ -17,13 +17,15 @@ var displayCheckbox = function (x, y, size, sender) {
     var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
     var allNotChecked = true;
     sender.parent.tabAnswer.forEach(function(answer) {
-        var nonbCorrect = !answer.bCorrect;
+        var nonbCorrect = true;
+        (answer.bCorrect!=undefined) && (nonbCorrect = !answer.bCorrect);
         (answer.bCorrect!=undefined) && (allNotChecked = (allNotChecked && nonbCorrect));
     });
 
     var onclickFunction = function (event) {
-        sender = drawing.getTarget(event.clientX, event.clientY).answerParent;
-        sender.bCorrect = !sender.bCorrect;
+        var target = drawing.getTarget(event.clientX, event.clientY);
+        target.answerParent && (sender = target.answerParent);
+        (sender.bCorrect!=undefined) && (sender.bCorrect = !sender.bCorrect);
         if (sender.parent.simpleChoice && sender.bCorrect){
             allNotChecked=false;
             sender.parent.tabAnswer.forEach(function(answer){
@@ -56,6 +58,13 @@ var displayCheckbox = function (x, y, size, sender) {
         //}
         //sender.manipulator.ordonator.set(7, new svg.Rect(0, 0).opacity(0));
     };
+    if (!sender.bCorrect){
+        sender.parent.tabAnswer.forEach(function(answer){
+            (answer!=sender) && (answer.checkbox) && answer.checkbox.checkbox.color(myColors.white, 2, myColors.black);
+            (answer!=sender) && (answer.checkbox) && svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+        });
+        sender.manipulator.ordonator.set(8, new svg.Rect(0, 0).opacity(0));
+    }
     if (allNotChecked || sender.parent.multipleChoice) {
         sender.parent.tabAnswer.forEach(function(answer) {
             svg.addEvent(obj.checkbox, "click", onclickFunction);
