@@ -180,7 +180,7 @@ var AnswerElement = function (answer, parent) {
             };
             self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
         */
-        };
+
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
         self.checkbox.checkbox.answerParent = self;

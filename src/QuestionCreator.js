@@ -26,6 +26,7 @@ var QuestionCreator = function (question) {
     self.questionHeight = 0.2;
     self.reponseHeight = 0.7;
 
+    var haut = (window.innerHeight);
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
