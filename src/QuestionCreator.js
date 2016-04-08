@@ -84,7 +84,6 @@ var QuestionCreator = function (question) {
     self.display = function (x, y, w, h) {
         self.quizzInfoHeight = Math.floor(h * self.headerHeight);
         self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
-        console.log(self.questionCreatorHeight);
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, self.quizzInfoHeight);
         self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
@@ -209,6 +208,8 @@ var QuestionCreator = function (question) {
             var removeErrorMessage = function () {
                 self.questionNameValidInput = true;
                 self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5);
+                self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+
             };
 
             var displayErrorMessage = function () {
@@ -306,6 +307,8 @@ var QuestionCreator = function (question) {
             var removeErrorMessage = function () {
                 self.quizzNameValidInput = true;
                 self.errorMessage && self.manipulatorQuizzInfo.ordonator.unset(5);
+                self.quizzLabel.cadre.color(myColors.grey, 1, myColors.none);
+
             };
 
             var displayErrorMessage = function () {
