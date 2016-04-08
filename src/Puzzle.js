@@ -2,7 +2,7 @@
  * Created by ABL3483 on 29/02/2016.
  */
 
-function Puzzle(lines, rows,questionsTab, cadreResult, reverseMode,parent) {
+function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
     var self=this;
 
     self.lines=lines;

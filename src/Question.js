@@ -25,7 +25,9 @@ var Question = function (question,quizz) {
     self.rows=question.nbrows;
     self.rightAnswers=[];
     self.selectedAnswers=[];
-    self.multipleChoice=false;
+    self.multipleChoice=question.multipleChoice;
+    self.simpleChoice=question.simpleChoice;
+
 
     if(question.font) {
         self.font = question.font;
@@ -60,9 +62,9 @@ var Question = function (question,quizz) {
         });
     }
 
-    if(self.rightAnswers.length!=1){
-        self.multipleChoice=true;
-    }
+    //if(self.rightAnswers.length!=1){
+    //    self.multipleChoice=true;
+    //}
 
     self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
     if(self.tabAnswer.length%self.rows === 0) {

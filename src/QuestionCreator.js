@@ -16,6 +16,9 @@ var QuestionCreator = function (question) {
     self.manipulatorQuestionCreator = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuestionCreator.first);
 
+    self.toggleButtonManipulator = new Manipulator();
+    self.manipulatorQuestionCreator.last.add(self.toggleButtonManipulator.first);
+
     self.previewButtonManipulator = new Manipulator();
     self.manipulator.last.add(self.previewButtonManipulator.first);
 
@@ -29,6 +32,7 @@ var QuestionCreator = function (question) {
 
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
     self.labelDefault = "Cliquer deux fois pour ajouter la question";
+    self.quizzType = myQuizzType.tab;
 
     if(!question) {
         // init default : 2 empty answers
@@ -37,7 +41,11 @@ var QuestionCreator = function (question) {
         self.label = "";
         self.rightAnswers = [];
         self.fontSize = 20;
+        self.multipleChoice=false;
+        self.simpleChoice=true;
     } else {
+        self.multipleChoice=question.multipleChoice;
+        self.simpleChoice=question.simpleChoice;
         self.tabAnswer = [];
         question.tabAnswer.forEach(function (answer) {
             self.tabAnswer.push(new AnswerElement(answer));
@@ -77,6 +85,8 @@ var QuestionCreator = function (question) {
         var questionCreatorHeight=Math.floor(h*(1-self.headerHeight)-80);
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
+        self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
+        self.toggleButtonHeight = 40;
 
         //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
         //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
@@ -85,6 +95,43 @@ var QuestionCreator = function (question) {
         self.displayQuestionCreator(MARGIN+x,3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight, w, 75);
     };
+
+    self.displayToggleButton = function (x, y, w, h, clicked){
+        //self.w = Math.floor((w-(self.quizzType.length+1)*MARGIN)/self.quizzType.length);
+        var toggleHandler = function(event){
+            self.target = drawing.getTarget(event.clientX, event.clientY);
+            var questionType = self.target.parent.children[1].messageText;
+            self.displayToggleButton(x, y, w, h, questionType);
+            (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
+            (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+        }
+        self.w = 300;
+        var length = self.quizzType.length;
+        var lengthToUse = (length+1)*MARGIN+length*self.w;
+        self.margin = (w-lengthToUse)/2;
+        self.x = self.margin+self.w/2+MARGIN;
+        var i = 0;
+        self.virtualTab=[];
+        self.quizzType.forEach(function(type){
+            self.virtualTab[i] = {};
+            self.virtualTab[i].manipulator= new Manipulator();
+            self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
+            //type.default && (self.clicked = self.virtualTab[i]);
+            (type.label == clicked) ? (self.virtualTab[i].color = myColors.blue) : (self.virtualTab[i].color = myColors.white);
+            self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.w, h, myColors.black, self.virtualTab[i].color, self.fontSize, null, self.virtualTab[i].manipulator);
+            self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
+            self.x+= self.w + MARGIN;
+            (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));
+            (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.cadre, "click", toggleHandler));
+
+            //self.toggleButtonManipulator.translator.move(x, MARGIN);
+            i++;
+        });
+        //self.toggleButton = displayTextWithoutCorners("Choix unique", w-2*MARGIN, h, myColors.black, myColors.none, self.fontSize, null, self.toggleButtonManipulator);
+        //self.toggleButton.cadre.position(w/2, h/2);
+        //self.toggleButton.content.position(w/2, h/2);
+        //self.toggleButtonManipulator.translator.move(x, MARGIN);
+    }
 
     self.displayQuestionCreator = function (x, y, w, h) {
         var showTitle = function () {
