@@ -31,7 +31,6 @@ var Manipulator = function(){
 var Drawings = function (w, h) {
     var self = this;
 
-
     self.drawing = new svg.Drawing(w, h).show("content").position(0, 0);
     self.drawing.manipulator = new Manipulator();
     //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
@@ -99,7 +98,7 @@ var Drawings = function (w, h) {
 
 
     var onmouseoutHandler=function(event) {
-        if (self.drag && self.drag.component.eventHandlers && self.drag.component.eventHandlers.mouseout) {
+        if (self.drag && self.drag.component.eventHandlers && self.drag.component.eventHandlers.mouseup) {
             self.target.component.eventHandlers.mouseup(event);
         }
         self.drag = null;
