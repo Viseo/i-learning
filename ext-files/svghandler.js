@@ -564,6 +564,7 @@ function SVG(runtime) {
         }
     };
     Shape.prototype.color = function(fillColor, strokeWidth, strokeColor) {
+
         this.fillColor = fillColor;
         this.strokeWidth = strokeWidth;
         this.strokeColor = strokeColor;
@@ -571,6 +572,10 @@ function SVG(runtime) {
         svgr.attr(this.component, "stroke-width", strokeWidth || 0);
         svgr.attr(this.component, "stroke", strokeWidth && strokeColor && strokeColor.length ? "rgb("+strokeColor.join(",")+")" : "none");
         return this;
+    };
+    Shape.prototype.getColor = function() {
+
+        return {fillColor:this.fillColor,strokeWidth:this.strokeWidth,strokeColor:this.strokeColor};
     };
     Shape.prototype.opacity = function(opacity) {
         this._opacity = opacity;
@@ -666,6 +671,7 @@ function SVG(runtime) {
         }
         return null;
     };
+
 
     function Rect(width, height) {
         this.component = svgr.create("rect");

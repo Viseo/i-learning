@@ -93,13 +93,49 @@ var BibImage = function (bibimage) {
                 var manip=new Manipulator();
                 drawings.piste.last.add(manip.first);
 
-                var img=displayImage(elementCopy.src,{width:elementCopy.width,height:elementCopy.height},elementCopy.width,elementCopy.height).image;
-                manip.ordonator.add(img);
+                var img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
+                manip.ordonator.set(0,img);
                 manip.first.move(event.clientX,event.clientY);
 
                 manageDnD(img,manip);
 
-                img.component.eventHandlers.mousedown(event);
+                var mouseupHandler = function(event){
+                    var img=manip.ordonator.children.shift();
+                    manip.first.parent.remove(manip.first);
+
+                    // fonction qui accepte/refuse le drop
+                    var target = drawing.getTarget(event.clientX, event.clientY);
+                    if(target._acceptDrop){
+                        var oldQuest={cadre:target.parent.children.shift(),content:target.parent.children.shift()};
+                        target.parent.children.push(new svg.Rect(0,0).opacity(0));
+                        target.parent.children.push(new svg.Rect(0,0).opacity(0));
+
+                        var rectColors=oldQuest.cadre.getColor();
+
+
+                        var newQuest=displayImageWithTitle(oldQuest.content.messageText,img.src,
+                            {width:img.width,height:img.height},
+                            oldQuest.cadre.width,oldQuest.cadre.height,
+                            rectColors.strokeColor,rectColors.fillColor,null,null,target.parent.parentManip
+                        );
+
+                        //for(var i=0;i<target.parent.children[0].children.length;i++){
+                        //    target.parent.children[0].unset(i);
+                        //}
+                        //target.parent.children[0].add(newQuest);
+                        oldQuest.cadre.position(target.parent.parentManip.ordonator.children[0].x,target.parent.parentManip.ordonator.children[0].y);
+                        oldQuest.content.position(target.parent.parentManip.ordonator.children[1].x,target.parent.parentManip.ordonator.children[1].y)
+                        target.parent.parentManip.ordonator.set(0,oldQuest.cadre);
+                        target.parent.parentManip.ordonator.set(1,oldQuest.content);
+                    }
+                    console.log('test');
+
+                };
+
+
+                drawings.glass.component.eventHandlers.mousedown(event);
+                svg.removeEvent(img,'mouseup',img.component.eventHandlers.mouseup);
+                svg.addEvent(img,'mouseup',mouseupHandler);
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
                 //drawings.piste.

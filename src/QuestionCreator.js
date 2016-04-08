@@ -16,6 +16,9 @@ var QuestionCreator = function (question) {
     self.manipulatorQuestionCreator = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuestionCreator.first);
 
+    self.questionManipulator=new Manipulator();
+    self.manipulatorQuestionCreator.last.add(self.questionManipulator.first);
+
     self.toggleButtonManipulator = new Manipulator();
     self.manipulatorQuestionCreator.last.add(self.toggleButtonManipulator.first);
 
@@ -85,14 +88,14 @@ var QuestionCreator = function (question) {
         var questionCreatorHeight=Math.floor(h*(1-self.headerHeight)-80);
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
-        self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
+        self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
         self.toggleButtonHeight = 40;
 
         //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
         //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
         //self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
         self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(MARGIN+x,3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
+        self.displayQuestionCreator(MARGIN+x,quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight, w, 75);
     };
 
@@ -137,15 +140,28 @@ var QuestionCreator = function (question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
-            self.questionBlock.title.content.color(color).position(w/2, y-2*MARGIN);
-            self.questionBlock.title.cadre.position(w/2,y-2*MARGIN).fillOpacity(0.001);
+            if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
+                var img=self.questionManipulator.ordonator.children[2];
+                self.questionBlock.title=displayImageWithTitle( text,img.src,img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+            }else{
+                self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+
+            }
+            self.questionBlock.title.content.color(color);
+            self.questionBlock.title.content._acceptDrop=true;
+           // self.questionBlock.title.cadre.fillOpacity(0.001);
+            self.questionBlock.title.cadre.color(myColors.white,1,myColors.black);
+            self.questionBlock.title.cadre._acceptDrop=true;
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
+
+            //move
+            self.questionManipulator.first.move(w/2,y);
+
         };
 
         var dblclickEdition = function () {
-            self.manipulatorQuestionCreator.ordonator.unset(1, self.questionBlock.title.content);
+            self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             var textarea = document.createElement("div");
             textarea.textContent = self.label;
             textarea.setAttribute("contenteditable", true);
@@ -157,8 +173,9 @@ var QuestionCreator = function (question) {
             var onblur = function () {
                 console.log(textarea);
                 textarea.textContent && (self.label = textarea.textContent);
-                textarea.remove();
-                self.manipulatorQuestionCreator.ordonator.unset(0, self.questionBlock.title.cadre);
+                body.removeChild(textarea);
+                //textarea.remove();
+                //self.questionManipulator.ordonator.unset(0);//, self.questionBlock.title.cadre);
                 showTitle();
             };
 

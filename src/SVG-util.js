@@ -110,17 +110,18 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
     previousImage && (w===previousImage.width) && (newWidth=w);
 
     newHeight=h-textHeight-3*MARGIN;
-    previousImage&& (h===previousImage.height)&&(newHeight=h);
+    previousImage && (h===previousImage.height)&&(newHeight=h);
 
 
     var image = displayImage(imageSrc, imageObj, newWidth, newHeight, manipulator);//
     image.image.position(0,-textHeight/2);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0,cadre);
-    manipulator.ordonator.set(1,image.image);
-    manipulator.ordonator.set(2,text);
+    manipulator.ordonator.set(1,text);
+    manipulator.ordonator.set(2,image.image);
 
-    return {cadre: cadre, image: image.image,  text: text};
+
+    return {cadre: cadre, image: image.image,  content: text};
 };
 /**
  *
@@ -407,7 +408,6 @@ function getPoint(args) {
 function manageDnD(svgItem,manipulator) {
     var ref;
     var mousedownHandler=function(event) {
-        console.log('mouse DOWN!');
         event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
         ref = svgItem.localPoint(event.clientX, event.clientY);
         svg.addEvent(svgItem, "mousemove",mousemoveHandler );// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
@@ -415,8 +415,6 @@ function manageDnD(svgItem,manipulator) {
         svg.addEvent(svgItem, "mouseup",mouseupHandler);
     };
     var mousemoveHandler=function(event) {
-        console.log('mousemove!');
-
         var mouse = svgItem.localPoint(event.clientX, event.clientY);
         var dx=mouse.x-ref.x;
         var dy=mouse.y-ref.y;
@@ -428,7 +426,6 @@ function manageDnD(svgItem,manipulator) {
         return true;
     };
     var mouseupHandler=function(event) {
-        console.log('mouse UP!');
         svg.removeEvent(svgItem,'mousemove',mousemoveHandler);
         svg.removeEvent(svgItem,'mouseup',mouseupHandler);
     };
