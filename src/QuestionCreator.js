@@ -100,12 +100,51 @@ var QuestionCreator = function (question) {
 
     self.displayToggleButton = function (x, y, w, h, clicked){
         //self.w = Math.floor((w-(self.quizzType.length+1)*MARGIN)/self.quizzType.length);
+        var size = 40;
         var toggleHandler = function(event){
             self.target = drawing.getTarget(event.clientX, event.clientY);
             var questionType = self.target.parent.children[1].messageText;
             self.displayToggleButton(x, y, w, h, questionType);
+            var oldType = 0;
+            var result = {};
+            if (self.multipleChoice){
+                var bCorrectsTab = [];
+                self.tabAnswer.forEach(function(answer){
+                    answer.bCorrect && bCorrectsTab.push(answer.label);
+                })
+                result={bCorrects:bCorrectsTab};
+                console.log(result);
+            }
+            else if (self.simpleChoice){
+                var goodAnswer = null;
+                self.tabAnswer.forEach(function(answer){
+                    answer.bCorrect && (goodAnswer = answer.label);
+                })
+                result={bCorrect:goodAnswer};
+                console.log(result);
+            }
+            self.simpleChoice = false;
+            self.multipleChoice = true;
+            self.tabAnswer.forEach(function(answer){
+                var xCheckBox, yCheckBox = 0;
+                (answer!=undefined) && (answer.bCorrect = false);
+                if (answer.checkbox){
+                    xCheckBox = answer.checkbox.checkbox.x;
+                    yCheckBox = answer.checkbox.checkbox.y;
+                    displayCheckbox(xCheckBox, yCheckBox, size, answer);
+                }
+            });
+
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+            self.tabAnswer.forEach(function(answer){
+                var xCheckBox, yCheckBox = 0;
+                if (answer.checkbox){
+                    xCheckBox = answer.checkbox.checkbox.x;
+                    yCheckBox = answer.checkbox.checkbox.y;
+                    displayCheckbox(xCheckBox, yCheckBox, size, answer);
+                }
+            });
         }
         self.w = 300;
         var length = self.quizzType.length;
@@ -202,7 +241,7 @@ var QuestionCreator = function (question) {
             x: self.x + MARGIN,
             y: self.y + 2 * MARGIN + self.h * 0.25,
             w: self.w - 2 * MARGIN,
-            h: h * 0.75 - 3 * MARGIN
+            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN
         };
 
         // bloc Question

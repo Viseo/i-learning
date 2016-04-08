@@ -34,7 +34,7 @@ var AddEmptyElement = function (parent) {
             }
             self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
             self.parent.manipulatorQuestionCreator.last.add(self.parent.puzzle.puzzleManipulator.first);
-            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + MARGIN/2, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight/2 + MARGIN/2, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
         };
 
         svg.addEvent(self.plus, "ondblclick", dblclickEdition);
