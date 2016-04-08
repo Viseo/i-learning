@@ -658,6 +658,9 @@ function SVG(runtime) {
         }
     };
     Shape.prototype.getTarget = function(x, y) {
+        if(this instanceof svg.Image){// ._.
+            this.fillColor=[true];
+        }
         if ((!this._opacity || this._opacity>0) && this.fillColor &&this.fillColor.length>0) {
             return this.inside(x, y) ? this : null;
         }

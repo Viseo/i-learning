@@ -46,10 +46,11 @@ var Drawings = function (w, h) {
     //self.glass.area.color([255,255,255]).opacity(0.001);
 
     //Pour la glace et la piste apres Refactor
-    self.piste = new svg.Rect(w,h).position(w/2, h/2).opacity(0.001);
+    //self.piste = new svg.Drawing(w, h).show("content").position(0, 0);
+    self.piste = new Manipulator();
     self.glass = new svg.Rect(w, h).position(w/2, h/2).opacity(0.001);
     self.drawing.add(self.drawing.manipulator.translator);
-    self.drawing.manipulator.ordonator.set(1,self.piste).set(2,self.glass);
+    self.drawing.manipulator.ordonator.set(8,self.piste.first).set(9,self.glass);
 
 
     var onmousedownHandler = function(event) {

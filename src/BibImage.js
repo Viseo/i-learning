@@ -6,12 +6,13 @@
 var BibImage = function (bibimage) {
     var self = this;
     self.bibManipulator=new Manipulator();
-    mainManipulator.last.add(self.bibManipulator.first);
+    mainManipulator.ordonator.set(1,self.bibManipulator.first);
     self.title = bibimage.title;
     self.tabImgBib = [];
     //self.tabImgBib = bibimage.tabImgBib;
     self.tabSrcImg = [];
     self.tabSrcImg = bibimage.tabSrcImg;
+    self.imgManipulators=[];
     self.imageWidth =50;
     self.imageHeight=50;
     self.imageMargin=5;
@@ -77,14 +78,31 @@ var BibImage = function (bibimage) {
         if (i%res === 0 && i!=0){
             tempY+=self.imageHeight+self.imageMargin;
         }
-        var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i],self.imageWidth, self.imageHeight,self.bibManipulator );
-
+        self.imgManipulators[i]=new Manipulator();
+        self.bibManipulator.last.add(self.imgManipulators[i].first);
+        var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i],self.imageWidth, self.imageHeight,self.imgManipulators[i] );
+        self.imgManipulators[i].ordonator.set(0,objectTotal.image);
         objectTotal.image.position(x+self.imageMargin+((i%res)*(self.imageMargin+self.imageWidth)+self.imageWidth/2), tempY);
-            self.tabImgBib.push(objectTotal.image);
-            self.bibManipulator.last.add(objectTotal.image);
 
     }
         self.bibManipulator.first.move(x,y);
+        self.imgManipulators.forEach(function(e){
+            svg.addEvent(e.ordonator.children[0],'mousedown',function(event){
+                var elementCopy=e.ordonator.children[0];
+                //drawings.piste.add(clone(elementCopy));
+                var manip=new Manipulator();
+                drawings.piste.last.add(manip.first);
+
+                var img=displayImage(elementCopy.src,{width:elementCopy.width,height:elementCopy.height},elementCopy.width,elementCopy.height).image;
+                manip.ordonator.add(img);
+                manip.first.move(event.clientX+250,event.clientY);
+
+                manageDnD(img,manip);
+                //drawings.piste.
+            });
+          // manageDnD(e.ordonator.children[0],e);
+
+        });
     };
 
 

@@ -2,6 +2,10 @@
  * Created by qde3485 on 29/02/16.
  */
 
+
+var clone = function (object) {
+    return JSON.parse(JSON.stringify(object));
+};
 /**
  *
  * @param x
@@ -96,7 +100,7 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
  * @param w
  * @param h
  */
-var displayImage = function (imageSrc, image, w, h, manipulator) {
+var displayImage = function (imageSrc, image, w, h) {
     var width = image.width;
     var height = image.height;
     if(width > w) {
@@ -110,6 +114,7 @@ var displayImage = function (imageSrc, image, w, h, manipulator) {
         width *= (h/height);
         height = h;
     }
+
     return {
         image: new svg.Image(imageSrc).dimension(width, height).position(0, 0),
         height: height
@@ -331,6 +336,34 @@ function getPoint(args) {
     }
 }
 
+
+function manageDnD(svgItem,manipulator) {
+    var ref;
+    var mousedownHandler=function(event) {
+        event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
+        ref = svgItem.localPoint(event.clientX, event.clientY);
+        svg.addEvent(svgItem, "mousemove",mousemoveHandler );// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
+
+        svg.addEvent(svgItem, "mouseup",mouseupHandler);
+    };
+    var mousemoveHandler=function(event) {
+        var mouse = svgItem.localPoint(event.clientX, event.clientY);
+        console.log('mouse('+mouse.x+','+mouse.y+')');
+        var dx=mouse.x-ref.x;
+        var dy=mouse.y-ref.y;
+
+        manipulator.first.move(manipulator.first.x+dx,manipulator.first.y+dy);//combinaison de translations
+        //if (self.callback) {
+        //    self.callback(/*self.point*/);
+        //}
+        return true;
+    };
+    var mouseupHandler=function(event) {
+        svg.removeEvent(svgItem,'mousemove',mousemoveHandler);
+        svg.removeEvent(svgItem,'mouseup',mouseupHandler);
+    };
+    svg.addEvent(svgItem, "mousedown",mousedownHandler );
+}
 
 //papers.paper.globalToLocal = function() {
 //    var point = getPoint(arguments);

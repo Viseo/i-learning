@@ -121,9 +121,9 @@ var Question = function (question,quizz) {
 
         }
         self.questionManipulator.translator.move(self.x,self.y);
-        self.questionManipulator.ordonator.children.forEach(function(e){
-            manageDnD(e);
-        });
+        //self.questionManipulator.ordonator.children.forEach(function(e){
+        //    manageDnD(e,self.questionManipulator);
+        //});
     };
 
     self.displayAnswers = function (x, y, w, h) {
@@ -336,32 +336,7 @@ var Question = function (question,quizz) {
         }
     }
 
-    function manageDnD(svgItem) {
-        var ref;
-        var mousedownHandler=function(event) {
-            event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
-            ref = svgItem.localPoint(event.clientX, event.clientY);
-            svg.addEvent(svgItem, "mousemove",mousemoveHandler );
 
-            svg.addEvent(svgItem,"mouseup",mouseupHandler);
-        };
-        var mousemoveHandler=function(event) {
-            var mouse = svgItem.localPoint(event.clientX, event.clientY);
-            var dx=mouse.x-ref.x;
-            var dy=mouse.y-ref.y;
-
-            self.questionManipulator.first.move(self.questionManipulator.first.x+dx,self.questionManipulator.first.y+dy);//combinaison de translations
-            //if (self.callback) {
-            //    self.callback(/*self.point*/);
-            //}
-            return true;
-        };
-        var mouseupHandler=function(event) {
-            svg.removeEvent(svgItem,'mousemove',mousemoveHandler);
-            svg.removeEvent(svgItem,'mouseup',mouseupHandler);
-        };
-        svg.addEvent(svgItem, "mousedown",mousedownHandler );
-    }
 
 
 

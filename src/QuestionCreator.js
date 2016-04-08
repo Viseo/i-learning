@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.ordonator.set(0, self.manipulator.first);
+    mainManipulator.ordonator.set(0, self.manipulator.first);//!! à s'en inquiéter plus tard -> remplacer par .last.add
 
     self.manipulatorQuizzInfo = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
@@ -92,9 +92,9 @@ var QuestionCreator = function (question) {
         //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
         //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
         //self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
-        self.displayQuizzInfo(MARGIN+x, MARGIN+y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(MARGIN+x,MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-60);
-        self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight-75/2, w, 75);
+        self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
+        self.displayQuestionCreator(MARGIN+x,3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
+        self.displayPreviewButton(x+w/2,quizzInfoHeight+questionCreatorHeight, w, 75);
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
@@ -171,7 +171,7 @@ var QuestionCreator = function (question) {
             self.quizzLabel = {};
             //self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
             //self.quizzLabel = displayText(text, w, 35, color, color, 15, "arial", self.manipulatorQuizzInfo);
-            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
+            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.manipulatorQuizzInfo).text;
             var width = self.quizzLabel.content.component.getBBox().width;
             self.quizzLabel.cadre = new svg.Rect(width+MARGIN, 35).color(bgcolor);
             self.quizzLabel.cadre.position(width/2+MARGIN,h/2-6).fillOpacity(0.1);
