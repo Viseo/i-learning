@@ -95,14 +95,19 @@ var BibImage = function (bibimage) {
 
                 var img=displayImage(elementCopy.src,{width:elementCopy.width,height:elementCopy.height},elementCopy.width,elementCopy.height).image;
                 manip.ordonator.add(img);
-                manip.first.move(event.clientX+250,event.clientY);
+                manip.first.move(event.clientX,event.clientY);
 
                 manageDnD(img,manip);
+
+                img.component.eventHandlers.mousedown(event);
+                //img.component.eventHandlers.mouseup(event);
+                //img.component.eventHandlers.mousedown(event);
                 //drawings.piste.
             });
           // manageDnD(e.ordonator.children[0],e);
 
         });
+
     };
 
 

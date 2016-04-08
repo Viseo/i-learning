@@ -340,6 +340,7 @@ function getPoint(args) {
 function manageDnD(svgItem,manipulator) {
     var ref;
     var mousedownHandler=function(event) {
+        console.log('mouse DOWN!');
         event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
         ref = svgItem.localPoint(event.clientX, event.clientY);
         svg.addEvent(svgItem, "mousemove",mousemoveHandler );// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
@@ -347,8 +348,9 @@ function manageDnD(svgItem,manipulator) {
         svg.addEvent(svgItem, "mouseup",mouseupHandler);
     };
     var mousemoveHandler=function(event) {
+        console.log('mousemove!');
+
         var mouse = svgItem.localPoint(event.clientX, event.clientY);
-        console.log('mouse('+mouse.x+','+mouse.y+')');
         var dx=mouse.x-ref.x;
         var dy=mouse.y-ref.y;
 
@@ -359,6 +361,7 @@ function manageDnD(svgItem,manipulator) {
         return true;
     };
     var mouseupHandler=function(event) {
+        console.log('mouse UP!');
         svg.removeEvent(svgItem,'mousemove',mousemoveHandler);
         svg.removeEvent(svgItem,'mouseup',mouseupHandler);
     };

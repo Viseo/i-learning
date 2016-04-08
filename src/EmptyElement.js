@@ -5,6 +5,9 @@
 var AddEmptyElement = function (parent) {
     var self = this;
     self.manipulator = new Manipulator();
+    MARGIN = 15;
+
+    self.answerNameValidInput = true;
 
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
@@ -46,7 +49,7 @@ var AnswerElement = function (answer, parent) {
     self.manipulator = new Manipulator();
 
     self.isValidInput = true;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,3000}$/g;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
 
     if(answer) {
@@ -68,31 +71,75 @@ var AnswerElement = function (answer, parent) {
         return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.none};
     };
 
+    self.checkInputTextArea = function (contentarea, isValidInput, onblur) {
+        MARGIN=15;
+            if(contentarea.value.match(self.regex)) {
+                self.errorMessage && self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+
+                contentarea.onblur = onblur;
+                contentarea.style.border = "none";
+                contentarea.style.outline = "none";
+                self[isValidInput] = true;
+
+            } else {
+                self.errorMessage && self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                contentarea.style.border = "solid #FF0000";
+
+                var position = isValidInput === "answerNameValidInput" ? (contentarea.getBoundingClientRect().left+contentarea.getBoundingClientRect().right)/2 : contentarea.getBoundingClientRect().left;
+                var anchor = isValidInput === "answerNameValidInput" ? 'middle' : 'start';
+                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                    .position(position+500, contentarea.getBoundingClientRect().bottom+110)
+                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                console.log(contentarea.getBoundingClientRect().left,contentarea.getBoundingClientRect());
+
+                //self.parent.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
+                self.parent.manipulatorQuestionCreator.last.add(self.errorMessage);
+
+                contentarea.focus();
+                self[isValidInput] = false;
+                contentarea.onblur = function () {
+                    contentarea.value = "";
+                    onblur();
+                self.parent.manipulatorQuestionCreator.last.remove(self.errorMessage);
+                }
+            }
+        };
+
     self.display = function (x, y, w, h) {
         self.margin = 15;
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
+            self.manipulator.last.add(self.obj.content).add(self.obj.cadre);
+
         };
 
         var dblclickEdition = function () {
+            self.manipulator.last.remove(self.obj.content);
+
             var contentarea = document.createElement("TEXTAREA");
             contentarea.value = self.label;
+            contentarea.setAttribute("style", "position: absolute; top:"+(w+y+3*self.margin)+"px; left:"+(h+x+10*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            var body = document.getElementById("content");
+            var contentarea = document.createElement("div");
+            contentarea.textContent = self.label;
             contentarea.width = w-2*self.margin-2;
             //contentarea.height = h*.6-6*self.margin;
             //contentarea.width = self.obj.content.component.getBBox().width+MARGIN;
             contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-1)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none;");
+            self.manipulator.ordonator.unset(1, self.obj.content);
+            contentarea.setAttribute("contenteditable", true);
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-2)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; max-width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none; display: inline; word-wrap: break-word;");
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
             var onblur = function () {
-                self.isValidInput && (self.label = contentarea.value);
+                self.isValidInput && (self.label = contentarea.textContent);
                 contentarea.remove();
                 showTitle();
 
@@ -102,7 +149,8 @@ var AnswerElement = function (answer, parent) {
             };
 
             contentarea.oninput = function () {
-                if(contentarea.value.match(self.regex)) {
+                self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
+                if(contentarea.textContent.match(self.regex)) {
                     contentarea.onblur = onblur;
                     contentarea.style.border = "none";
                     self.isValidInput = true;
@@ -111,12 +159,13 @@ var AnswerElement = function (answer, parent) {
                     self.isValidInput = false;
                     contentarea.focus();
                     contentarea.onblur = function () {
-                        contentarea.value = "";
+                        contentarea.textContent = "";
                         onblur();
                     }
                 }
             };
             contentarea.onblur = onblur;
+            self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
         };
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
