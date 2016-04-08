@@ -71,8 +71,8 @@ var AnswerElement = function (answer, parent) {
         return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.none};
     };
 
-    self.checkInputTextArea = function (objCont) {
-            if(objCont.contentarea.textContent.match(self.regex)) {
+    self.checkInputContentArea = function (objCont) {
+            if (objCont.contentarea.textContent.match(self.regex)) {
                 objCont.remove();
                 objCont.contentarea.onblur = onblur;
                 objCont.contentarea.style.border = "none";
@@ -97,90 +97,68 @@ var AnswerElement = function (answer, parent) {
             self.obj.content.color(color);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
-            //self.manipulator.last.add(self.obj.content).add(self.obj.cadre);
-
         };
 
         var dblclickEdition = function () {
-            //self.manipulator.last.remove(self.obj.content);
-            self.manipulator.ordonator.unset(2, self.obj.content);
-            var contentarea = document.createElement("TEXTAREA");
-            contentarea.value = self.label;
-            contentarea.setAttribute("contenteditable",true);
-            contentarea.setAttribute("style", "position: absolute; top:"+(w+y+3*self.margin)+"px; left:"+(h+x+10*self.margin)+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
-
-            //var body = document.getElementById("content");
-            /*var contentarea = document.createElement("div");
+            var contentarea = document.createElement("div");
             contentarea.textContent = self.label;
             contentarea.width = w-2*self.margin-2;
-            //contentarea.height = h*.6-6*self.margin;
-            //contentarea.width = self.obj.content.component.getBBox().width+MARGIN;
             contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
             self.manipulator.ordonator.unset(1, self.obj.content);
-            contentarea.setAttribute("contenteditable", true);
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-2)+"px; left:"+(contentarea.globalPointCenter.x)+"px; width:"+(contentarea.width)+"px; max-width:"+(contentarea.width)+"px; height:"+(contentarea.height)+"px; align-content: center; resize: none; border: none; font-family: arial; font-size: "+(self.fontSize)+"px; text-align: center; outline: none; display: inline; word-wrap: break-word;");
-            */
+            contentarea.setAttribute("contenteditable",true);
+            contentarea.setAttribute("style", "position: absolute; top:"+contentarea.globalPointCenter.y+"px; left:"+contentarea.globalPointCenter.x+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
+
+            var removeErrorMessage = function () {
+                self.answerNameValidInput = true;
+                self.errorMessage && self.parent.manipulatorQuestionCreator.ordonator.unset(5);
+                self.obj.cadre.color(myColors.white, 1, myColors.black);
+            };
+
+
+            var displayErrorMessage = function () {
+                removeErrorMessage();
+                self.obj.cadre.color(myColors.white, 2, myColors.red);
+                var position = (window.innerWidth/2);
+                var anchor = 'middle' ;
+                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                    .position(position, self.parent.questionCreatorHeight - self.parent.quizzInfoHeight - MARGIN)
+                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                self.parent.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
+                contentarea.focus();
+                self.answerNameValidInput = false;
+            };
+
             var onblur = function () {
-                contentarea.textContent && (self.label = contentarea.textContent);
-                //self.isValidInput && (self.label = contentarea.textContent);
+                self.answerNameValidInput && (self.label = contentarea.textContent);
                 contentarea.remove();
-                self.manipulator.ordonator.unset(0, self.obj.cadre);
-
-
                 showTitle();
-
                 /*if(self.checkbox.checked) {
                  self.checkbox.checked.toFront();
                  };*/
             };
-
-                var removeErrorMessage = function () {
-                    self.answerNameValidInput = true;
-                    self.errorMessage && self.manipulator.ordonator.unset(5);
-                };
-
-                var displayErrorMessage = function () {
-                    removeErrorMessage();
-                    self.obj.cadre.color(myColors.white, 2, myColors.red);
-                    var position = (contentarea.getBoundingClientRect().left+contentarea.getBoundingClientRect().right)/2;
-                    var anchor = 'middle' ;
-                    self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                        .position(position, self.h*0.25+MARGIN)
-                        .font("arial", 15).color(myColors.red).anchor(anchor);
-                    self.manipulator.ordonator.set(5,self.errorMessage);
-                    contentarea.focus();
-                    self.answerNameValidInput = false;
-                };
-
                 contentarea.oninput = function () {
-                    self.checkInputTextArea({textarea: contentarea, border: self.obj.cadre, onblur: onblur, remove: removeErrorMessage, display: displayErrorMessage});
+                    self.checkInputContentArea({
+                        contentarea: contentarea,
+                        border: self.obj.cadre,
+                        onblur: onblur,
+                        remove: removeErrorMessage,
+                        display: displayErrorMessage
+                    });
                 };
-                contentarea.onblur = onblur;
-            };
 
-            /*contentarea.onblur = onblur;
-            contentarea.oninput = function () {
-                self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
-                if(contentarea.textContent.match(self.regex)) {
-                    contentarea.onblur = onblur;
-                    contentarea.style.border = "none";
-                    self.isValidInput = true;
-                } else {
-                    contentarea.style.border = "solid #FF0000";
-                    self.isValidInput = false;
-                    contentarea.focus();
-                    contentarea.onblur = function () {
-                        contentarea.textContent = "";
-                        onblur();
-                    }
-                }
+            contentarea.onblur = onblur;
+            self.checkInputContentArea({
+                contentarea: contentarea,
+                border: self.label.cadre,
+                onblur: onblur,
+                remove: removeErrorMessage,
+                display: displayErrorMessage
+            });
             };
-            self.checkInputTextArea(contentarea, "answerNameValidInput", onblur);
-        */
-
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
         self.checkbox.checkbox.answerParent = self;

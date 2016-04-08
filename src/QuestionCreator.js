@@ -82,19 +82,20 @@ var QuestionCreator = function (question) {
     };
 
     self.display = function (x, y, w, h) {
-        var quizzInfoHeight = Math.floor(h * self.headerHeight);
-        var questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
+        self.quizzInfoHeight = Math.floor(h * self.headerHeight);
+        self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
+        console.log(self.questionCreatorHeight);
         //var reponseAreaHeight=Math.floor(h*);
-        self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
+        self.manipulatorQuestionCreator.translator.move(x, self.quizzInfoHeight);
         self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
-        self.toggleButtonHeight = quizzInfoHeight/3;
+        self.toggleButtonHeight = self.quizzInfoHeight/3;
 
-        //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
-        //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
-        //self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
-        self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
-        self.displayQuestionCreator(MARGIN+x,2*MARGIN+quizzInfoHeight+15, w, questionCreatorHeight-2*MARGIN-60);
-        self.displayPreviewButton(x+w/2,2*MARGIN+quizzInfoHeight+questionCreatorHeight-75/2, w, 75);
+        //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,self.quizzInfoHeight);
+        //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+self.quizzInfoHeight, w, self.questionCreatorHeight-2*MARGIN-60);
+        //self.displayPreviewButton(MARGIN+x,MARGIN+self.quizzInfoHeight+self.questionCreatorHeight-MARGIN, w, 75);
+        self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,self.quizzInfoHeight);
+        self.displayQuestionCreator(MARGIN+x,2*MARGIN+self.quizzInfoHeight+15, w, self.questionCreatorHeight-2*MARGIN-60);
+        self.displayPreviewButton(x+w/2,2*MARGIN+self.quizzInfoHeight+self.questionCreatorHeight-75/2, w, 75);
         self.displayToggleButton(MARGIN+x, MARGIN+y, w,self.toggleButtonHeight, myQuizzType.tab[0].label);
     };
 
