@@ -96,9 +96,9 @@ var AnswerElement = function (answer, parent) {
                 contentarea.remove();
                 showTitle();
 
-                if(self.checkbox.checked) {
-                    self.checkbox.checked.toFront();
-                }
+                //if(self.checkbox.checked) {
+                //    //self.checkbox.checked.toFront();
+                //}
             };
 
             contentarea.oninput = function () {
@@ -120,6 +120,7 @@ var AnswerElement = function (answer, parent) {
         };
         showTitle();
         self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
+        self.checkbox.checkbox.answerParent = self;
         self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
         self.manipulator.ordonator.set(6, self.cBLabel);
     }

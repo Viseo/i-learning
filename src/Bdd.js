@@ -43,7 +43,7 @@ var myBib= {
 
 
 var questionWithLabelImageAndMultipleAnswers = {
-label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
+label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
     tabAnswer: [
     {label:"Comtesse",imageSrc: null,bCorrect:false,
         colorBordure: myColors.green,bgColor:myColors.grey},
@@ -57,7 +57,7 @@ label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png",
     nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green};
 
 var myQuestion2 =
-{label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null,
+{label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null, multipleChoice:false,
     tabAnswer: [
         {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
             colorBordure: myColors.green,bgColor:myColors.grey},
@@ -77,7 +77,7 @@ var myQuizz={
     puzzleRows:1,
     tabQuestions:[
         questionWithLabelImageAndMultipleAnswers, myQuestion2,
-        {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null,
+        {label:"Traditionnellement, le justaucorps est porté par...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Les danseuses",imageSrc: null,bCorrect:true,
                     colorBordure: myColors.green,bgColor:myColors.blue},
@@ -91,7 +91,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
-        {label:"Quelle est la capitale de la Libye?",imageSrc:null, font:"Courier New", fontSize:40,
+        {label:"Quelle est la capitale de la Libye?",imageSrc:null, multipleChoice:false, font:"Courier New", fontSize:40,
             tabAnswer: [
                 {label:"Malpoli",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey, font:"Courier New", fontSize:36},
@@ -104,7 +104,7 @@ var myQuizz={
             ],
             nbrows:4,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
 
-        {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null,
+        {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Stupide",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -117,7 +117,7 @@ var myQuizz={
             ],
             nbrows: 3,colorBordure:myColors.primaryBlue,bgColor:myColors.blue},
 
-        {label:"Un galurin est un...",imageSrc:null,
+        {label:"Un galurin est un...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Manteau",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -130,7 +130,7 @@ var myQuizz={
             ],
             nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-        {label:"Quelle est l'orthographe correcte de ce verbe?",imageSrc:null,
+        {label:"Quelle est l'orthographe correcte de ce verbe?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Boïcotter",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -142,7 +142,7 @@ var myQuizz={
             ],
             nbrows: 1, colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
-        {label:"Comment appelle-t-on un habitant de Flandre?",imageSrc:null,
+        {label:"Comment appelle-t-on un habitant de Flandre?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Un flandrois",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -155,7 +155,7 @@ var myQuizz={
             ],
             nbrows: 3, colorBordure:myColors.primaryBlue, bgColor:myColors.purple},
 
-        {label:"Formentera est une île des...",imageSrc:null,
+        {label:"Formentera est une île des...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Cyclades",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.orange},
@@ -168,7 +168,7 @@ var myQuizz={
             ],
             nbrows: 2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
-        {label:"Quel musée doit son nom à un dessinateur?",imageSrc:null,
+        {label:"Quel musée doit son nom à un dessinateur?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Musée d'Orsay",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -181,7 +181,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
 
-        {label:"Comment s'appelle le meilleur ami de Bob l'éponge?",imageSrc:null,
+        {label:"Comment s'appelle le meilleur ami de Bob l'éponge?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Luc",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -194,7 +194,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-        {label:"Le style 'rococo' était un style artistique en vogue au...",imageSrc:null,
+        {label:"Le style 'rococo' était un style artistique en vogue au...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"XVIe siècle",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -207,7 +207,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
 
-        {label:"L'aspic est une variété de...",imageSrc:null,
+        {label:"L'aspic est une variété de...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Magnolias",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -220,7 +220,7 @@ var myQuizz={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
 
-        {label:"En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",imageSrc:null,
+        {label:"En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"1996",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -239,7 +239,7 @@ var myQuizz={
 var myQuizzDemo={
     title:"Qui veut gagner des millions ? Quizz n°1",
     tabQuestions:[
-        {label:"Parmi ces divinités, lesquelles sont de sexe féminin?",imageSrc:"../resource/millions.png",
+        {label:"Parmi ces divinités, lesquelles sont de sexe féminin?",imageSrc:"../resource/millions.png", multipleChoice:false,
             tabAnswer: [
                 {label:"Athéna",imageSrc: null,bCorrect:true,
                     colorBordure: myColors.green,bgColor:myColors.blue},
@@ -252,7 +252,7 @@ var myQuizzDemo={
             ],
             nbrows:4,colorBordure:myColors.primaryBlue,bgColor:myColors.green},
 
-        {label:"Parmi ces fruits, lequel ne possède pas de noyau?",imageSrc:null,
+        {label:"Parmi ces fruits, lequel ne possède pas de noyau?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:true,
                     colorBordure: myColors.green,bgColor:myColors.blue},
@@ -265,7 +265,7 @@ var myQuizzDemo={
             ],
             nbrows:3,colorBordure:myColors.primaryBlue,bgColor:myColors.purple},
 
-        {label:"Quelle ceinture n'existe pas au judo?",imageSrc:null,
+        {label:"Quelle ceinture n'existe pas au judo?",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Bleue",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -279,7 +279,7 @@ var myQuizzDemo={
             ],
             nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.orange},
 
-        {label:"Quelle est la capitale de la Libye?",imageSrc:null, font:"Courier New", fontSize:40,
+        {label:"Quelle est la capitale de la Libye?",imageSrc:null, multipleChoice:false, font:"Courier New", fontSize:40,
             tabAnswer: [
                 {label:"Malpoli",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey, font:"Courier New", fontSize:36},
@@ -292,7 +292,7 @@ var myQuizzDemo={
             ],
             nbrows:1,colorBordure:myColors.primaryBlue,bgColor:myColors.grey},
 
-        {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null,
+        {label:"Un terrain où on n'a rien planté est une terre...",imageSrc:null, multipleChoice:false,
             tabAnswer: [
                 {label:"Stupide",imageSrc: null,bCorrect:false,
                     colorBordure: myColors.green,bgColor:myColors.grey},
@@ -307,3 +307,8 @@ var myQuizzDemo={
     ],
     bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
 };
+var myQuizzType = {
+    tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
+    //tab: [{label:"Réponse unique", default:true}, {label:"Réponses multiples"}]
+
+}
