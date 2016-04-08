@@ -73,6 +73,7 @@ var AnswerElement = function (answer, parent) {
 
     self.checkInputContentArea = function (objCont) {
             if (objCont.contentarea.textContent.match(self.regex)) {
+                self.label = objCont.contentarea.textContent;
                 objCont.remove();
                 objCont.contentarea.onblur = onblur;
                 objCont.contentarea.style.border = "none";

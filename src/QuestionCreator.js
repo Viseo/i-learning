@@ -112,6 +112,7 @@ var QuestionCreator = function (question) {
                 var bCorrectsTab = [];
                 self.tabAnswer.forEach(function(answer){
                     answer.bCorrect && bCorrectsTab.push(answer.label);
+                    console.log("answer " + answer.label);
                 })
                 result={bCorrects:bCorrectsTab};
                 console.log(result);
@@ -120,6 +121,7 @@ var QuestionCreator = function (question) {
                 var goodAnswer = null;
                 self.tabAnswer.forEach(function(answer){
                     answer.bCorrect && (goodAnswer = answer.label);
+                    console.log("answer " + answer.label);
                 })
                 result={bCorrect:goodAnswer};
                 console.log(result);

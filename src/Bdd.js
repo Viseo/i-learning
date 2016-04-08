@@ -308,7 +308,7 @@ var myQuizzDemo={
     bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
 };
 var myQuizzType = {
-    tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
-    //tab: [{label:"Réponse unique", default:true}, {label:"Réponses multiples"}]
+    //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
+    tab: [{label:"Réponse unique", default:true}, {label:"Réponses multiples"}]
 
 }
