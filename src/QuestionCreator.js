@@ -87,7 +87,7 @@ var QuestionCreator = function (question) {
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, quizzInfoHeight);
         self.previewButtonManipulator.translator.move(w/2-MARGIN, haut - self.headerHeight*haut);
-        self.toggleButtonHeight = 40;
+        self.toggleButtonHeight = quizzInfoHeight/3;
 
         //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
         //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
@@ -141,7 +141,7 @@ var QuestionCreator = function (question) {
             var text = (self.label) ? self.label : self.labelDefault;
             self.questionBlock.title = displayText(text, self.w - 2 * MARGIN, self.h * 0.25, myColors.black, myColors.none, self.fontSize, null, self.manipulatorQuestionCreator);
             self.questionBlock.title.content.color(color).position(w / 2, y - 2 * MARGIN);
-            self.questionBlock.title.cadre.position(w / 2, y - 2 * MARGIN).fillOpacity(0.001);
+            self.questionBlock.title.cadre.position(w / 2, y - 2 * MARGIN + self.toggleButtonHeight + MARGIN/2).fillOpacity(0.001);
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
         };
@@ -216,7 +216,7 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
         self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
-        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
+        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight/2 + MARGIN/2, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
     };
     self.displayQuizzInfo = function (x, y, w, h) {
 
