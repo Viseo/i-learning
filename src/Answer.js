@@ -20,15 +20,8 @@ var Answer = function (answer) {
     self.correct = answer.bCorrect;
     self.selected = false;
 
-    if(answer.fontSize) {
-        self.fontSize = answer.fontSize;
-    } else {
-        self.fontSize = 20;
-    }
-
-    if(answer.font) {
-        self.font = answer.font;
-    }
+    self.fontSize = answer.fontSize ? answer.fontSize : 20;
+    answer.font && (self.font = answer.font);
 
     self.imageLoaded = false;
 
@@ -42,8 +35,8 @@ var Answer = function (answer) {
         self.imageLoaded = true;
     }
 
-    self.label ? (self.rgbBordure = answer.colorBordure):(self.rgbBordure = myColors.none);
-    answer.bgColor ? (self.bgColor = answer.bgColor):(self.bgColor = myColors.none);
+    self.rgbBordure = self.label ? answer.colorBordure : myColors.black;
+    self.bgColor = answer.bgColor ? answer.bgColor : myColors.none;
 
     self.bordure = null;
     self.content = null;
@@ -93,7 +86,7 @@ var Answer = function (answer) {
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
-            self.bordure = new svg.Rect(self.w, self.h).color(self.bgColor,1, self.rgbBordure);
+            self.bordure = new svg.Rect(self.w, self.h).color(self.bgColor, 1, myColors.black).corners(25, 25);
             self.answerManipulator.last.add(self.bordure);
 
         }

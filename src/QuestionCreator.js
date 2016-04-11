@@ -115,7 +115,6 @@ var QuestionCreator = function (question) {
                 //self.bCorrectsTab = [];
                 self.tabAnswer.forEach(function(answer){
                     answer.bCorrect && (answer.multipleAnswer = true);
-                    console.log("answer " + answer.label);
                 });
                 //result={bCorrects:self.bCorrectsTab};
             }
@@ -199,8 +198,6 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
 
             }
-            console.log(self.w);
-            console.log(MARGIN);
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop=true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
@@ -402,7 +399,7 @@ var QuestionCreator = function (question) {
                 if (correctAnswers >= 1 && incorrectAnswers >= 1) {
                     if (self.quizzName) {
                         if (self.label) {
-                            mainManipulator.remove(self.manipulator);
+                            mainManipulator.ordonator.unset(0, self.manipulator.first);
 
                             var tabAnswer = [];
                             self.tabAnswer.forEach(function (el) {
@@ -430,7 +427,7 @@ var QuestionCreator = function (question) {
                             };
 
                             var quizz = new Quizz(quizzObject, true);
-                            quizz.run(20, 20, 1500, 800);
+                            quizz.run(1, 1, document.body.clientWidth, drawing.height);
                         } else {
                             if (self.errorMessagePreview) {
                                 self.previewButtonManipulator.last.remove(self.errorMessagePreview);
@@ -438,7 +435,7 @@ var QuestionCreator = function (question) {
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
                                 .position(-11 * MARGIN - 5, h / 2 - 6 * MARGIN)
                                 .font("arial", 20)
-                                .anchor('center').color(myColors.red)
+                                .anchor('center').color(myColors.red);
                             self.previewButtonManipulator.last.add(self.errorMessagePreview);
                         }
                     } else {
