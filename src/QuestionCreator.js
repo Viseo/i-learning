@@ -298,8 +298,11 @@ var QuestionCreator = function (question) {
             //self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.manipulatorQuizzInfo).text;
 
+            var quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
+            self.quizzLabel.cadre = new svg.Rect(width + MARGIN, 2*quizzNameHeight).color(bgcolor);
             self.quizzLabel.cadre.position(width/2, h/4).fillOpacity(0.1); //.position(width/2+MARGIN,h/2-6)
             self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
+            self.quizzLabel.content.color(color).anchor("start").position(0,h/4 + quizzNameHeight/4); //.position(MARGIN, h / 2)
 
             svg.addEvent(self.quizzLabel.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.quizzLabel.cadre, "ondblclick", dblclickEdition);
