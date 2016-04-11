@@ -96,6 +96,7 @@ var AnswerElement = function (answer, parent) {
             self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
+            self.parent.puzzle.puzzleManipulator.translator.move(0,self.parent.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
         };

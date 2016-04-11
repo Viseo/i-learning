@@ -109,54 +109,62 @@ var QuestionCreator = function (question) {
             self.target = drawing.getTarget(event.clientX, event.clientY);
             var questionType = self.target.parent.children[1].messageText;
             self.displayToggleButton(x, y, w, h, questionType);
-            var oldType = 0;
-            var result = {};
+            //var oldType = 0;
+            //var result = {};
             if (self.multipleChoice){
-                var bCorrectsTab = [];
+                //self.bCorrectsTab = [];
                 self.tabAnswer.forEach(function(answer){
-                    answer.bCorrect && bCorrectsTab.push(answer.label);
+                    answer.bCorrect && (answer.multipleAnswer = true);
                     console.log("answer " + answer.label);
                 })
-                result={bCorrects:bCorrectsTab};
-                console.log(result);
+                //result={bCorrects:self.bCorrectsTab};
             }
             else if (self.simpleChoice){
-                var goodAnswer = null;
+                //self.goodAnswer = null;
                 self.tabAnswer.forEach(function(answer){
-                    answer.bCorrect && (goodAnswer = answer.label);
-                    console.log("answer " + answer.label);
+                    answer.bCorrect && (answer.simpleAnswer = true);//(self.goodAnswer = answer.label);
+                    //console.log("answer " + answer.label);
                 })
-                result={bCorrect:goodAnswer};
-                console.log(result);
+                //result={bCorrect:self.goodAnswer};
+                //console.log(result);
             }
-            self.simpleChoice = false;
-            self.multipleChoice = true;
-            self.tabAnswer.forEach(function(answer){
-                var xCheckBox, yCheckBox = 0;
-                (answer!=undefined) && (answer.bCorrect = false);
-                if (answer.checkbox){
-                    xCheckBox = answer.checkbox.checkbox.x;
-                    yCheckBox = answer.checkbox.checkbox.y;
-                    displayCheckbox(xCheckBox, yCheckBox, size, answer);
-                }
-            });
+            //self.simpleChoice = false;
+            //self.multipleChoice = true;
+            //self.tabAnswer.forEach(function(answer){
+            //    var xCheckBox, yCheckBox = 0;
+            //    (answer!=undefined) && (answer.bCorrect = false);
+            //    if (answer.checkbox){
+            //        xCheckBox = answer.checkbox.checkbox.x;
+            //        yCheckBox = answer.checkbox.checkbox.y;
+            //        displayCheckbox(xCheckBox, yCheckBox, size, answer);
+            //    }
+            //});
 
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
                 if (answer.checkbox){
                     xCheckBox = answer.checkbox.checkbox.x;
                     yCheckBox = answer.checkbox.checkbox.y;
+                    self.simpleChoice && (answer.bCorrect=answer.simpleAnswer);
+                    if (self.multipleChoice){
+                        answer.bCorrect=false;
+                        answer.multipleAnswer && (answer.bCorrect=true);
+                        //(self.bCorrectsTab!=undefined) && self.bCorrectsTab.forEach(function(correctAnswer){
+                        //    (answer.label == correctAnswer) && (answer.bCorrect=true);
+                        //});
+                    }
                     displayCheckbox(xCheckBox, yCheckBox, size, answer);
                 }
             });
         }
-        self.w = 300;
+        self.toggleButtonWidth = 300;
         var length = self.quizzType.length;
-        var lengthToUse = (length+1)*MARGIN+length*self.w;
+        var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
         self.margin = (w-lengthToUse)/2;
-        self.x = self.margin+self.w/2+MARGIN;
+        self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
         var i = 0;
         self.virtualTab=[];
         self.quizzType.forEach(function(type){
@@ -165,9 +173,9 @@ var QuestionCreator = function (question) {
             self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
             //type.default && (self.clicked = self.virtualTab[i]);
             (type.label == clicked) ? (self.virtualTab[i].color = myColors.blue) : (self.virtualTab[i].color = myColors.white);
-            self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.w, h, myColors.black, self.virtualTab[i].color, self.fontSize, null, self.virtualTab[i].manipulator);
+            self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, self.fontSize, null, self.virtualTab[i].manipulator);
             self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
-            self.x+= self.w + MARGIN;
+            self.x+= self.toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));
             (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.cadre, "click", toggleHandler));
 
@@ -200,7 +208,7 @@ var QuestionCreator = function (question) {
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
 
             //move
-            self.questionManipulator.first.move(w/2,y);
+            self.questionManipulator.first.move(w/2,y + self.toggleButtonHeight+ 2*MARGIN);
 
         };
 
