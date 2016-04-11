@@ -122,7 +122,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
     previousImage && (h===previousImage.height)&&(newHeight=h);
 
 
-    var image = displayImage(imageSrc, imageObj, newWidth, newHeight, manipulator);//
+    var image = displayImage(imageSrc, imageObj, newWidth, newHeight);//
     image.image.position(0,-textHeight/2);
     var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0,cadre);
@@ -145,7 +145,7 @@ var displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
     var image = displayImage(imageSrc, imageObj, w-2*MARGIN, h, manipulator);//h-2*MARGIN
     var cadre = new svg.Rect(w, h).color(myColors.white,1,myColors.none);
     manipulator.ordonator.set(0,cadre);
-    manipulator.ordonator.set(1,image.image);
+    manipulator.ordonator.set(2,image.image);
 
     return {image:image.image, height:image.height, cadre:cadre};
 };

@@ -130,7 +130,8 @@ var AnswerElement = function (answer, parent) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var position = (window.innerWidth/2);
+                var bibRatio=0.2;
+                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN);
                 var anchor = 'middle' ;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
                     .position(position, self.parent.questionCreatorHeight - self.parent.quizzInfoHeight - MARGIN)
@@ -168,9 +169,10 @@ var AnswerElement = function (answer, parent) {
             });
             };
         showTitle();
-        self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
+        self.checkboxSize=h*0.2;
+        self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
         self.checkbox.checkbox.answerParent = self;
-        self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
+        self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
         self.manipulator.ordonator.set(6, self.cBLabel);
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;

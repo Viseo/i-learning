@@ -356,6 +356,13 @@ function SVG(runtime) {
         this.children[layer] = dummy;
         return this;
     };
+
+    Ordered.prototype.extract = function(position) {
+        var dummy = new svg.Rect(0, 0).opacity(0);
+        svgr.replace(this.component,dummy.component,this.children[position].component);
+        var result=this.children.splice(position,1,dummy) ;
+        return result[0];
+    };
     Ordered.prototype.globalPoint = function() {
         return this.parent ? this.parent.globalPoint(arguments) : null;
     };
