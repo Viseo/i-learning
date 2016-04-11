@@ -20,7 +20,7 @@ var AddEmptyElement = function (parent) {
         self.manipulator.last.add(self.plus);
         self.obj.content.position(0,h*0.35);
 
-        self.obj.cadre.color([], 3, myColors.black);
+        self.obj.cadre.color(myColors.white, 3, myColors.black);
         self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
 
         var dblclickEdition = function () {
