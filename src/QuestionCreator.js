@@ -215,10 +215,18 @@ var QuestionCreator = function (question) {
             var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
             textarea.width = self.w-2*MARGIN;
-            textarea.height = self.h*.25;//self.questionBlock.title.content.component.getBBox().height;
+            var decalageImage;
+            if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
+                textarea.height = self.questionBlock.title.content.component.getBBox().height;//self.questionBlock.title.content.component.getBBox().height;
+                decalageImage=-textarea.height+1;
+            }
+            else{
+                textarea.height = (self.h*.25)/2;//self.questionBlock.title.content.component.getBBox().height;
+                decalageImage=MARGIN;
+            }
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2,-(textarea.height)/2);
-            textarea.setAttribute("style", "position: relative; top:" + (MARGIN-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (self.h * 0.25 - 3 * MARGIN) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((self.h * 0.25 - 4 * MARGIN)/2-20)+"px;");
+            textarea.setAttribute("style", "position: relative; top:" + (decalageImage-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((textarea.height - 4 * MARGIN)/2-20)+"px; overflow:hidden;");
 
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
@@ -246,7 +254,7 @@ var QuestionCreator = function (question) {
                 var position = window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN;
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, self.h * 0.25 + 2 * MARGIN)
+                    .position(position, textarea.height + 2 * MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
@@ -305,11 +313,11 @@ var QuestionCreator = function (question) {
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBBox().width;
 
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.manipulatorQuizzInfo).text;
-            var quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
-            self.quizzLabel.cadre = new svg.Rect(width, 2*quizzNameHeight).color(bgcolor);
+            self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
+            self.quizzLabel.cadre = new svg.Rect(width, 2*self.quizzNameHeight).color(bgcolor);
             self.quizzLabel.cadre.position(width/2,h/4).fillOpacity(0.1);
             self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(0,h/4 + quizzNameHeight/4).color(color).anchor("start");
+            self.quizzLabel.content.position(0,h/4 + self.quizzNameHeight/4).color(color).anchor("start");
 
             self.manipulatorQuizzInfo.first.move(x,y);
 
@@ -324,7 +332,7 @@ var QuestionCreator = function (question) {
 
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
-            textarea.setAttribute("style", "position: absolute; top:" + (h / 2 - 7.5) + "px; left:" + (MARGIN + 6) + "px; width:" + (700) + "px; height:" + (20) + "px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; background-color: transparent;");
+            textarea.setAttribute("style", "position: absolute; top:" + (h / 2 - self.quizzNameHeight/2 + 2) + "px; left:" + (x+MARGIN/2 + 1) + "px; width:" + (700) + "px; height:" + (2*self.quizzNameHeight) + "px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; background-color: transparent;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 

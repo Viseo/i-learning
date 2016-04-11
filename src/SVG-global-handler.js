@@ -61,6 +61,7 @@ var Drawings = function (w, h) {
         //self.paper.forEach(function (el) {
         //    console.log(el.type);
         //});
+        document.activeElement.blur();
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
         self.drag = self.target;
         // Rajouter des lignes pour target.bordure et target.image si existe ?
