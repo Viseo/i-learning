@@ -15,6 +15,7 @@ var clone = function (object) {
  */
 var displayCheckbox = function (x, y, size, sender) {
     var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
+
     var allNotChecked = true;
     sender.parent.tabAnswer.forEach(function(answer) {
         var nonbCorrect = true;
@@ -66,18 +67,31 @@ var displayCheckbox = function (x, y, size, sender) {
         sender.manipulator.ordonator.set(8, new svg.Rect(0, 0).opacity(0));
     }
     if (allNotChecked || sender.parent.multipleChoice) {
+        svg.addEvent(obj.checkbox, "click", onclickFunction);
         sender.parent.tabAnswer.forEach(function(answer) {
-            svg.addEvent(obj.checkbox, "click", onclickFunction);
+            (answer!=sender) && (answer.checkbox) && answer.checkbox.checkbox.color(myColors.white, 2, myColors.black);
             (answer.checkbox) && (answer.checkbox.checkbox)&& svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+            if (answer.bCorrect && answer.checkbox){
+                answer.checkbox.checkbox.checked = new svg.Path(x, y).move(x-.3*size,y-.1*size)
+                .line(x-.1*size,y+.2*size).line(x+.3*size,y-.3*size)
+                .color(myColors.none, 3, myColors.black);
+                svg.addEvent(answer.checkbox.checkbox.checked, "click", onclickFunction);
+                answer.manipulator.ordonator.set(8, answer.checkbox.checkbox.checked);
+            }
+            else {
+                answer.manipulator.ordonator.unset(8);
+            }
         });
     }
-    else if (sender.parent.simpleChoice){
+    else if (sender.parent.simpleChoice && sender.bCorrect){
         sender.parent.tabAnswer.forEach(function(answer) {
-            (!answer.bCorrect) && (answer.checkbox) && (answer.checkbox.checkbox)&& svg.removeEvent(answer.checkbox.checkbox, "click", onclickFunction);
-            (!answer.bCorrect) && (answer.checkbox) && (answer.checkbox.checkbox)&& answer.checkbox.checkbox.color(myColors.white, 2, myColors.lightgrey);
+            (!answer.bCorrect) && (answer.checkbox!=undefined) && (answer.checkbox.checkbox)&& answer.checkbox.checkbox.color(myColors.white, 2, myColors.lightgrey);
+            (!answer.bCorrect) && (answer.checkbox!=undefined) && (answer.checkbox.checkbox)&& svg.removeEvent(answer.checkbox.checkbox, "click", onclickFunction);
+            (answer.checkbox!=undefined) && (answer.checkbox.checkbox)&& answer.manipulator.ordonator.set(7, answer.checkbox.checkbox);
             (!sender.bCorrect) && obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
-            (answer.bCorrect) && svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+            //(answer.bCorrect) && svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
         });
+        svg.addEvent(obj.checkbox, "click", onclickFunction);
     }
     sender.manipulator.ordonator.set(7, obj.checkbox);
 

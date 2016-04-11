@@ -5,16 +5,12 @@
 var AddEmptyElement = function (parent) {
     var self = this;
     self.manipulator = new Manipulator();
-    MARGIN = 15;
-
     self.answerNameValidInput = true;
-
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
     self.parent = parent;
 
     self.display = function (x, y, w, h) {
-        self.margin = 15;
         self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
         self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
         self.manipulator.last.add(self.plus);
@@ -73,16 +69,16 @@ var AnswerElement = function (answer, parent) {
     };
 
     self.checkInputContentArea = function (objCont) {
-            if (objCont.contentarea.textContent.match(self.regex)) {
-                self.label = objCont.contentarea.textContent;
+            if (objCont.contentarea.value.match(self.regex)) {
+                self.label = objCont.contentarea.value;
                 objCont.remove();
-                objCont.contentarea.onblur = onblur;
+                objCont.contentarea.onblur = objCont.onblur;
                 objCont.contentarea.style.border = "none";
                 objCont.contentarea.style.outline = "none";
             } else {
                 objCont.display();
                 objCont.contentarea.onblur = function () {
-                    objCont.contentarea.textContent = "";
+                    objCont.contentarea.value = "";
                     objCont.onblur();
                     objCont.remove();
                 }
@@ -90,7 +86,6 @@ var AnswerElement = function (answer, parent) {
         };
 
     self.display = function (x, y, w, h) {
-        self.margin = 15;
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
@@ -103,19 +98,19 @@ var AnswerElement = function (answer, parent) {
             }
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
+            self.parent.puzzle.puzzleManipulator.translator.move(0,self.parent.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
         };
 
         var dblclickEdition = function () {
-            var contentarea = document.createElement("div");
-            contentarea.textContent = self.label;
-            contentarea.width = w-2*self.margin-2;
-            contentarea.height = self.obj.content.component.getBBox().height+MARGIN;
+            var contentarea = document.createElement("TEXTAREA");
+            contentarea.value = self.label;
+            contentarea.width = w;
+            contentarea.height = self.obj.content.component.getBBox().height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
             self.manipulator.ordonator.unset(1, self.obj.content);
-            contentarea.setAttribute("contenteditable",true);
-            contentarea.setAttribute("style", "position: absolute; top:"+contentarea.globalPointCenter.y+"px; left:"+contentarea.globalPointCenter.x+"px; width:"+(w-6*self.margin-2)+"px; height:"+(h*.8-6*self.margin)+"px; content-align:center; resize: none; border: none;");
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-MARGIN+2)+"px; left:"+(contentarea.globalPointCenter.x+3*MARGIN)+"px; width:"+(w-6*MARGIN-2)+"px; height:"+(h*.8-6*MARGIN)+"px; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
@@ -142,7 +137,7 @@ var AnswerElement = function (answer, parent) {
             };
 
             var onblur = function () {
-                self.answerNameValidInput && (self.label = contentarea.textContent);
+                self.answerNameValidInput && (self.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
                 /*if(self.checkbox.checked) {
