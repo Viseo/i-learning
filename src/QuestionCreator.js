@@ -296,7 +296,7 @@ var QuestionCreator = function (question) {
     self.displayQuizzInfo = function (x, y, w, h) {
 
         self.formationLabel = new svg.Text("Formation : " + self.formationName);
-        self.formationLabel.position(x, y).font("arial", 20).anchor("start");
+        self.formationLabel.font("arial", 20).anchor("start");
         self.manipulatorQuizzInfo.last.add(self.formationLabel);
 
         var showTitle = function () {
@@ -305,20 +305,16 @@ var QuestionCreator = function (question) {
             var bgcolor = myColors.grey;
 
             self.quizzLabel = {};
-            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBBox().width;
-            //self.quizzLabel.cadre = new svg.Rect(width + MARGIN, 35).color(bgcolor);
-            //self.quizzLabel.cadre.position(width / 2 + MARGIN, h / 2 - 6).fillOpacity(0.1);
-            //self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
-            //self.quizzLabel = displayText(text, w, 35, color, color, 15, "arial", self.manipulatorQuizzInfo);
 
-            //self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.manipulatorQuizzInfo).text;
-            //var width = self.quizzLabel.content.component.getBBox().width;//700
-            self.quizzLabel.cadre = new svg.Rect(width+2*MARGIN, 35).color(bgcolor);
-            self.quizzLabel.cadre.position(width/2+MARGIN,h/2-6).fillOpacity(0.1);
+            var quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
+            self.quizzLabel.cadre = new svg.Rect(width, 2*quizzNameHeight).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2,h/4).fillOpacity(0.1);
             self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(MARGIN, h / 2).color(color).anchor("start");
+            self.quizzLabel.content.position(0,h/4 + quizzNameHeight/4).color(color).anchor("start");
+
+            self.manipulatorQuizzInfo.first.move(x,y);
 
             svg.addEvent(self.quizzLabel.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.quizzLabel.cadre, "ondblclick", dblclickEdition);
