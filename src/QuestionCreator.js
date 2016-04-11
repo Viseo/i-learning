@@ -104,7 +104,8 @@ var QuestionCreator = function (question) {
 
     self.displayToggleButton = function (x, y, w, h, clicked){
         //self.w = Math.floor((w-(self.quizzType.length+1)*MARGIN)/self.quizzType.length);
-        var size = 40;
+        //var size = 40;
+        var size=self.puzzle.tileHeight*0.2;
         var toggleHandler = function(event){
             self.target = drawing.getTarget(event.clientX, event.clientY);
             var questionType = self.target.parent.children[1].messageText;

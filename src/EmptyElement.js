@@ -161,9 +161,10 @@ var AnswerElement = function (answer, parent) {
             });
             };
         showTitle();
-        self.checkbox = displayCheckbox(x+2*self.margin+40/2, y+h - 40, 40, self);
+        self.checkboxSize=h*0.2;
+        self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
         self.checkbox.checkbox.answerParent = self;
-        self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
+        self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
         self.manipulator.ordonator.set(6, self.cBLabel);
     }
 };
