@@ -115,15 +115,17 @@ var QuestionCreator = function (question) {
             if (self.multipleChoice){
                 //self.bCorrectsTab = [];
                 self.tabAnswer.forEach(function(answer){
-                    answer.bCorrect && (answer.multipleAnswer = true);
-                    console.log("answer " + answer.label);
-                })
+                    answer.multipleAnswer = answer.bCorrect;
+                    (answer.simpleAnswer==undefined) && (answer.simpleAnswer = false);
+                });
                 //result={bCorrects:self.bCorrectsTab};
             }
             else if (self.simpleChoice){
                 //self.goodAnswer = null;
                 self.tabAnswer.forEach(function(answer){
-                    answer.bCorrect && (answer.simpleAnswer = true);//(self.goodAnswer = answer.label);
+                    answer.simpleAnswer = answer.bCorrect;
+                    (answer.multipleAnswer==undefined) && (answer.multipleAnswer = false);
+                    //answer.bCorrect && (answer.simpleAnswer = true);//(self.goodAnswer = answer.label);
                     //console.log("answer " + answer.label);
                 })
                 //result={bCorrect:self.goodAnswer};
@@ -150,14 +152,15 @@ var QuestionCreator = function (question) {
                     xCheckBox = answer.checkbox.checkbox.x;
                     yCheckBox = answer.checkbox.checkbox.y;
                     self.simpleChoice && (answer.bCorrect=answer.simpleAnswer);
-                    if (self.multipleChoice){
-                        answer.bCorrect=false;
-                        answer.multipleAnswer && (answer.bCorrect=true);
+                    self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
+                    console.log(" ici : " + answer.bCorrect);
+                        //answer.bCorrect=false;
+                        //answer.multipleAnswer && (answer.bCorrect=true);
                         //(self.bCorrectsTab!=undefined) && self.bCorrectsTab.forEach(function(correctAnswer){
                         //    (answer.label == correctAnswer) && (answer.bCorrect=true);
                         //});
-                    }
-                    displayCheckbox(xCheckBox, yCheckBox, size, answer);
+                    //}
+                    /*(answer.simpleAnswer || answer.multipleAnswer) && */(answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
                 }
             });
         }
