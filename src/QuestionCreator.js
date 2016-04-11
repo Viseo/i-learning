@@ -91,10 +91,6 @@ var QuestionCreator = function (question) {
         self.manipulatorQuestionCreator.translator.move(x, self.quizzInfoHeight);
         self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
         self.toggleButtonHeight = 40;
-
-        //self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,quizzInfoHeight);
-        //self.displayQuestionCreator(MARGIN+x, 3*MARGIN+quizzInfoHeight, w, questionCreatorHeight-2*MARGIN-60);
-        //self.displayPreviewButton(MARGIN+x,MARGIN+quizzInfoHeight+questionCreatorHeight-MARGIN, w, 75);
         self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,self.quizzInfoHeight);
         self.displayQuestionCreator(MARGIN+x,self.quizzInfoHeight, w, self.questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(x+w/2,self.quizzInfoHeight+self.questionCreatorHeight, w, 75);
@@ -102,45 +98,23 @@ var QuestionCreator = function (question) {
     };
 
     self.displayToggleButton = function (x, y, w, h, clicked){
-        //self.w = Math.floor((w-(self.quizzType.length+1)*MARGIN)/self.quizzType.length);
-        //var size = 40;
         var size=self.puzzle.tileHeight*0.2;
         var toggleHandler = function(event){
             self.target = drawing.getTarget(event.clientX, event.clientY);
             var questionType = self.target.parent.children[1].messageText;
             self.displayToggleButton(x, y, w, h, questionType);
-            //var oldType = 0;
-            //var result = {};
             if (self.multipleChoice){
-                //self.bCorrectsTab = [];
                 self.tabAnswer.forEach(function(answer){
                     answer.multipleAnswer = answer.bCorrect;
                     (answer.simpleAnswer==undefined) && (answer.simpleAnswer = false);
                 });
-                //result={bCorrects:self.bCorrectsTab};
             }
             else if (self.simpleChoice){
-                //self.goodAnswer = null;
                 self.tabAnswer.forEach(function(answer){
                     answer.simpleAnswer = answer.bCorrect;
                     (answer.multipleAnswer==undefined) && (answer.multipleAnswer = false);
-                    //answer.bCorrect && (answer.simpleAnswer = true);//(self.goodAnswer = answer.label);
-                    //console.log("answer " + answer.label);
                 });
-                //result={bCorrect:self.goodAnswer};
-                //console.log(result);
-            }
-            //self.simpleChoice = false;
-            //self.multipleChoice = true;
-            //self.tabAnswer.forEach(function(answer){
-            //    var xCheckBox, yCheckBox = 0;
-            //    (answer!=undefined) && (answer.bCorrect = false);
-            //    if (answer.checkbox){
-            //        xCheckBox = answer.checkbox.checkbox.x;
-            //        yCheckBox = answer.checkbox.checkbox.y;
-            //        displayCheckbox(xCheckBox, yCheckBox, size, answer);
-            //    }
-            //});
+             }
 
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
@@ -151,14 +125,8 @@ var QuestionCreator = function (question) {
                     yCheckBox = answer.checkbox.checkbox.y;
                     self.simpleChoice && (answer.bCorrect=answer.simpleAnswer);
                     self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
-                    console.log(" ici : " + answer.bCorrect);
-                        //answer.bCorrect=false;
-                        //answer.multipleAnswer && (answer.bCorrect=true);
-                        //(self.bCorrectsTab!=undefined) && self.bCorrectsTab.forEach(function(correctAnswer){
-                        //    (answer.label == correctAnswer) && (answer.bCorrect=true);
-                        //});
-                    //}
-                    /*(answer.simpleAnswer || answer.multipleAnswer) && */(answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
+                    (self.simpleChoice || self.multipleChoice) && (answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
+                    answer.checkbox.checkbox.answerParent = answer;
                 }
             });
         };
