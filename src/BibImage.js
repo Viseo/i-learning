@@ -126,6 +126,7 @@ var BibImage = function (bibimage) {
                         oldQuest.content.position(target.parent.parentManip.ordonator.children[1].x,target.parent.parentManip.ordonator.children[1].y)
                         target.parent.parentManip.ordonator.set(0,oldQuest.cadre);
                         target.parent.parentManip.ordonator.set(1,oldQuest.content);
+                        target.parent.parentManip.ordonator.children[2]._acceptDrop = true;
                     }
                     console.log('test');
 
