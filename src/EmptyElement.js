@@ -123,7 +123,8 @@ var AnswerElement = function (answer, parent) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var position = (window.innerWidth/2);
+                var bibRatio=0.2;
+                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN);
                 var anchor = 'middle' ;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
                     .position(position, self.parent.questionCreatorHeight - self.parent.quizzInfoHeight - MARGIN)
