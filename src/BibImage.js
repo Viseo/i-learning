@@ -113,7 +113,7 @@ var BibImage = function (bibimage) {
                         var rectColors=oldQuest.cadre.getColor();
 
 
-                        var newQuest=displayImageWithTitle(oldQuest.content.messageText,img.src,
+                            var newQuest=displayImageWithTitle(oldQuest.content.messageText,img.src,
                             {width:img.width,height:img.height},
                             oldQuest.cadre.width,oldQuest.cadre.height,
                             rectColors.strokeColor,rectColors.fillColor,null,null,target.parent.parentManip

@@ -51,6 +51,7 @@ var AnswerElement = function (answer, parent) {
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
+    self._acceptDrop = true;
 
     if(answer) {
         self.label = answer.label;
@@ -93,7 +94,13 @@ var AnswerElement = function (answer, parent) {
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            self.obj = displayText(text, w, h, myColors.black, myColors.none, self.fontSize, null, self.manipulator);
+            if(self.manipulator.ordonator.children[2] instanceof svg.Image){
+                var img = self.manipulator.ordonator.children[2];
+                self.obj = displayImageWithTitle(text, img.src, img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            }
+            else{
+                self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+            }
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
@@ -165,5 +172,8 @@ var AnswerElement = function (answer, parent) {
         self.checkbox.checkbox.answerParent = self;
         self.cBLabel = new svg.Text("Bonne réponse").position(x+3*self.margin+40, y+h-self.margin-20).font("arial", 20).anchor("start");
         self.manipulator.ordonator.set(6, self.cBLabel);
+        self.manipulator.ordonator.children.forEach(function(e) {
+            e._acceptDrop = true;
+        });
     }
 };
