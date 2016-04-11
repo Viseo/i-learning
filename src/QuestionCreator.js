@@ -234,10 +234,11 @@ var QuestionCreator = function (question) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
-                var position = (textarea.getBoundingClientRect().left + textarea.getBoundingClientRect().right) / 2;
+                var bibRatio=0.2;
+                var position = window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN;
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, self.h * 0.25 + MARGIN)
+                    .position(position, self.h * 0.25 + 2 * MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
