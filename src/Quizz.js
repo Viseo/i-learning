@@ -187,15 +187,17 @@ function Quizz(quizz, previewMode) {
                 if(self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
                     self.tabQuestions[0].reset();
                 }
-
                 self.currentQuestionIndex = 0;
+                self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithImage);
+                !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithoutImage);
+                self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithImage);
+                !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage);
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                self.tabQuestions[self.currentQuestionIndex].display(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
+                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight/2 + self.questionHeight/2+MARGIN,
                     self.cadreQuestion.w , self.questionHeight);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.quizzMarginX + self.cadreQuestion.x, MARGIN + self.headerHeight+MARGIN,
-                    self.cadreQuestion.w , self.questionHeight);
-
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN+self.questionHeight,
+                    self.cadreQuestion.w , self.responseHeight);
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                     self.currentQuestionIndex++;
@@ -210,8 +212,6 @@ function Quizz(quizz, previewMode) {
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN+self.questionHeight,
                         self.cadreQuestion.w , self.responseHeight);
-
-
                 } else //--> fin du tableau, dernière question
                 {
                     console.log("Final score: " + self.score);

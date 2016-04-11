@@ -69,15 +69,15 @@ var QuestionCreator = function (question) {
     self.formationName = "Hibernate";
 
     self.checkInputTextArea = function (myObj) {
-        if (myObj.textarea.textContent.match(self.regex)) {
+        if (myObj.textarea.value.match(self.regex)) {
             myObj.remove();
-            myObj.textarea.onblur = onblur;
+            myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.style.border = "none";
             myObj.textarea.style.outline = "none";
         } else {
             myObj.display();
             myObj.textarea.onblur = function () {
-                myObj.textarea.textContent = "";
+                myObj.textarea.value = "";
                 myObj.onblur();
                 myObj.remove();
             }
@@ -99,7 +99,6 @@ var QuestionCreator = function (question) {
         self.displayQuestionCreator(MARGIN+x,self.quizzInfoHeight, w, self.questionCreatorHeight-2*MARGIN-60);
         self.displayPreviewButton(x+w/2,self.quizzInfoHeight+self.questionCreatorHeight, w, 75);
         self.displayToggleButton(MARGIN+x, MARGIN+y, w,self.toggleButtonHeight, myQuizzType.tab[0].label);
-
     };
 
     self.displayToggleButton = function (x, y, w, h, clicked){
@@ -127,7 +126,7 @@ var QuestionCreator = function (question) {
                     (answer.multipleAnswer==undefined) && (answer.multipleAnswer = false);
                     //answer.bCorrect && (answer.simpleAnswer = true);//(self.goodAnswer = answer.label);
                     //console.log("answer " + answer.label);
-                })
+                });
                 //result={bCorrect:self.goodAnswer};
                 //console.log(result);
             }
@@ -145,7 +144,6 @@ var QuestionCreator = function (question) {
 
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
-
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
                 if (answer.checkbox){
@@ -163,7 +161,8 @@ var QuestionCreator = function (question) {
                     /*(answer.simpleAnswer || answer.multipleAnswer) && */(answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
                 }
             });
-        }
+        };
+
         self.toggleButtonWidth = 300;
         var length = self.quizzType.length;
         var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
@@ -190,7 +189,7 @@ var QuestionCreator = function (question) {
         //self.toggleButton.cadre.position(w/2, h/2);
         //self.toggleButton.content.position(w/2, h/2);
         //self.toggleButtonManipulator.translator.move(x, MARGIN);
-    }
+    };
 
     self.displayQuestionCreator = function (x, y, w, h) {
         var showTitle = function () {
@@ -198,14 +197,14 @@ var QuestionCreator = function (question) {
             var text = (self.label) ? self.label : self.labelDefault;
             if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
                 var img=self.questionManipulator.ordonator.children[2];
-                self.questionBlock.title=displayImageWithTitle( text,img.src,img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+                self.questionBlock.title=displayImageWithTitle(text, img.src,img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
             }else{
                 self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
 
             }
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop=true;
-           // self.questionBlock.title.cadre.fillOpacity(0.001);
+            // self.questionBlock.title.cadre.fillOpacity(0.001);
             self.questionBlock.title.cadre.color(myColors.white,1,myColors.black);
             self.questionBlock.title.cadre._acceptDrop=true;
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
@@ -217,18 +216,28 @@ var QuestionCreator = function (question) {
         };
 
         var dblclickEdition = function () {
-            self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
-            var textarea = document.createElement("div");
+            var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
-            textarea.setAttribute("contenteditable", true);
-            textarea.setAttribute("style", "position: relative; top:" + (-drawing.height + self.y - MARGIN + 1) + "px; left:" + (self.x + 2 * MARGIN) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (self.h * 0.25 - 3 * MARGIN) + "px; vertical-align: middle; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none;");
+            textarea.width = self.w-2*MARGIN;
+            var decalageImage;
+            if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
+                textarea.height = self.questionBlock.title.content.component.getBBox().height;//self.questionBlock.title.content.component.getBBox().height;
+                decalageImage=-textarea.height+1;
+            }
+            else{
+                textarea.height = (self.h*.25)/2;//self.questionBlock.title.content.component.getBBox().height;
+                decalageImage=MARGIN;
+            }
+            self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
+            textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2,-(textarea.height)/2);
+            textarea.setAttribute("style", "position: relative; top:" + (decalageImage-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((textarea.height - 4 * MARGIN)/2-20)+"px; overflow:hidden;");
 
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
             var onblur = function () {
                 console.log(textarea);
-                textarea.textContent && (self.label = textarea.textContent);
+                textarea.value && (self.label = textarea.value);
                 body.removeChild(textarea);
                 //textarea.remove();
                 //self.questionManipulator.ordonator.unset(0);//, self.questionBlock.title.cadre);
@@ -249,7 +258,7 @@ var QuestionCreator = function (question) {
                 var position = window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN;
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, self.h * 0.25 + 2 * MARGIN)
+                    .position(position, textarea.height + 2 * MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
@@ -295,7 +304,7 @@ var QuestionCreator = function (question) {
     self.displayQuizzInfo = function (x, y, w, h) {
 
         self.formationLabel = new svg.Text("Formation : " + self.formationName);
-        self.formationLabel.position(x, y).font("arial", 20).anchor("start");
+        self.formationLabel.font("arial", 20).anchor("start");
         self.manipulatorQuizzInfo.last.add(self.formationLabel);
 
         var showTitle = function () {
@@ -304,20 +313,16 @@ var QuestionCreator = function (question) {
             var bgcolor = myColors.grey;
 
             self.quizzLabel = {};
-            self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBBox().width;
-            self.quizzLabel.cadre = new svg.Rect(width + MARGIN, 35).color(bgcolor);
-            self.quizzLabel.cadre.position(width / 2 + MARGIN, h / 2 - 6).fillOpacity(0.1);
-            //self.quizzLabel = new svg.Text(text).position(x+2, y+28).font("arial", 15).anchor("start").color(color);
-            //self.quizzLabel = displayText(text, w, 35, color, color, 15, "arial", self.manipulatorQuizzInfo);
 
-            //self.quizzLabel.content = autoAdjustText(text, 0, 0, w, 35, 15, "Arial", self.manipulatorQuizzInfo).text;
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.manipulatorQuizzInfo).text;
-            var width = self.quizzLabel.content.component.getBBox().width;//700
-            self.quizzLabel.cadre = new svg.Rect(width+MARGIN, 35).color(bgcolor);
-            self.quizzLabel.cadre.position(width/2+MARGIN,h/2-6).fillOpacity(0.1);
+            self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
+            self.quizzLabel.cadre = new svg.Rect(width, 2*self.quizzNameHeight).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2,h/4).fillOpacity(0.1);
             self.manipulatorQuizzInfo.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(MARGIN, h / 2).color(color).anchor("start");
+            self.quizzLabel.content.position(0,h/4 + self.quizzNameHeight/4).color(color).anchor("start");
+
+            self.manipulatorQuizzInfo.first.move(x,y);
 
             svg.addEvent(self.quizzLabel.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.quizzLabel.cadre, "ondblclick", dblclickEdition);
@@ -328,10 +333,9 @@ var QuestionCreator = function (question) {
             //self.manipulatorQuizzInfo.ordonator.unset(0);
             self.manipulatorQuizzInfo.ordonator.unset(1);
 
-            var textarea = document.createElement("div");
-            textarea.textContent = self.quizzName;
-            textarea.setAttribute("contenteditable", true);
-            textarea.setAttribute("style", "position: absolute; top:" + (h / 2 - 7.5) + "px; left:" + (MARGIN + 6) + "px; width:" + (700) + "px; height:" + (20) + "px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; color: grey;");
+            var textarea = document.createElement("TEXTAREA");
+            textarea.value = self.quizzName;
+            textarea.setAttribute("style", "position: absolute; top:" + (h / 2 - self.quizzNameHeight/2 + 2) + "px; left:" + (x+MARGIN/2 + 1) + "px; width:" + (700) + "px; height:" + (2*self.quizzNameHeight) + "px; resize: none; border: solid 2px #888; font-family: Arial; font-size: 15px; background-color: transparent;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -355,7 +359,7 @@ var QuestionCreator = function (question) {
                 self.quizzNameValidInput = false;
             };
             var onblur = function () {
-                self.quizzNameValidInput && (self.quizzName = textarea.textContent);
+                self.quizzNameValidInput && (self.quizzName = textarea.value);
                 textarea.remove();
                 showTitle();
             };
@@ -406,7 +410,7 @@ var QuestionCreator = function (question) {
                 if (correctAnswers >= 1 && incorrectAnswers >= 1) {
                     if (self.quizzName) {
                         if (self.label) {
-                            mainManipulator.remove(self.manipulator);
+                            mainManipulator.ordonator.unset(0, self.manipulator.first);
 
                             var tabAnswer = [];
                             self.tabAnswer.forEach(function (el) {
@@ -434,7 +438,7 @@ var QuestionCreator = function (question) {
                             };
 
                             var quizz = new Quizz(quizzObject, true);
-                            quizz.run(20, 20, 1500, 800);
+                            quizz.run(1, 1, document.body.clientWidth, drawing.height);
                         } else {
                             if (self.errorMessagePreview) {
                                 self.previewButtonManipulator.last.remove(self.errorMessagePreview);
@@ -442,7 +446,7 @@ var QuestionCreator = function (question) {
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
                                 .position(-11 * MARGIN - 5, h / 2 - 6 * MARGIN)
                                 .font("arial", 20)
-                                .anchor('center').color(myColors.red)
+                                .anchor('center').color(myColors.red);
                             self.previewButtonManipulator.last.add(self.errorMessagePreview);
                         }
                     } else {
