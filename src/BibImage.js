@@ -106,15 +106,14 @@ var BibImage = function (bibimage) {
                     // fonction qui accepte/refuse le drop
                     var target = drawing.getTarget(event.clientX, event.clientY);
                     if(target._acceptDrop){
-                        var oldQuest={cadre:target.parent.children.shift(),content:target.parent.children.shift()};
-                        target.parent.children.push(new svg.Rect(0,0).opacity(0));
-                        target.parent.children.push(new svg.Rect(0,0).opacity(0));
+                        var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
+                            content:target.parent.parentManip.ordonator.extract(1)};
 
                         var rectColors=oldQuest.cadre.getColor();
 
 
                         var newQuest=displayImageWithTitle(oldQuest.content.messageText,img.src,
-                            {width:img.width,height:img.height},
+                            img,
                             oldQuest.cadre.width,oldQuest.cadre.height,
                             rectColors.strokeColor,rectColors.fillColor,null,null,target.parent.parentManip
                         );
