@@ -26,7 +26,7 @@ var displayCheckbox = function (x, y, size, sender) {
         });
     };
 
-    checkAllCheckBoxes();
+    //checkAllCheckBoxes();
     var drawPathChecked = function (sender){
         svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
         obj.checked = new svg.Path(x, y).move(x-.3*size,y-.1*size)

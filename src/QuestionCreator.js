@@ -118,13 +118,17 @@ var QuestionCreator = function (question) {
 
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+            self.tabAnswer.forEach(function(answer) {
+                if (answer.checkbox) {
+                    self.simpleChoice && (answer.bCorrect = answer.simpleAnswer);
+                    self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
+                }
+            });
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
-                if (answer.checkbox){
+                if (answer.checkbox) {
                     xCheckBox = answer.checkbox.checkbox.x;
                     yCheckBox = answer.checkbox.checkbox.y;
-                    self.simpleChoice && (answer.bCorrect=answer.simpleAnswer);
-                    self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
                     (self.simpleChoice || self.multipleChoice) && (answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
                     answer.checkbox.checkbox.answerParent = answer;
                 }
