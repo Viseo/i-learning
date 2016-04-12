@@ -172,8 +172,8 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title=displayImageWithTitle(text, img.src,img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
             }else{
                 self.questionBlock.title = displayText(text, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
-
             }
+
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop=true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
@@ -181,10 +181,8 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.cadre._acceptDrop=true;
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
-
             //move
             self.questionManipulator.first.move(w/2,y + self.toggleButtonHeight+ 2*MARGIN);
-
         };
 
         var dblclickEdition = function () {
@@ -200,6 +198,7 @@ var QuestionCreator = function (question) {
                 textarea.height = (self.h*.25)/2;//self.questionBlock.title.content.component.getBBox().height;
                 decalageImage=MARGIN;
             }
+
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2,-(textarea.height)/2);
             textarea.setAttribute("style", "position: relative; top:" + (decalageImage-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((textarea.height - 4 * MARGIN)/2-20)+"px; overflow:hidden;");
@@ -220,7 +219,6 @@ var QuestionCreator = function (question) {
                 self.questionNameValidInput = true;
                 self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5);
                 self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
-
             };
 
             var displayErrorMessage = function () {
@@ -228,7 +226,7 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(0,self.h * 0.5 - 3* MARGIN)
+                    .position(w/2,self.h * 0.25 + 4* MARGIN + self.toggleButtonHeight + 5)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
@@ -319,15 +317,15 @@ var QuestionCreator = function (question) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
-                var position = (textarea.getBoundingClientRect().left - MARGIN);
                 var anchor = 'start';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, h - MARGIN)
+                    .position(0, h - 2 * MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuizzInfo.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.quizzNameValidInput = false;
             };
+
             var onblur = function () {
                 self.quizzNameValidInput && (self.quizzName = textarea.value);
                 textarea.remove();
