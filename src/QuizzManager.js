@@ -33,7 +33,7 @@ function QuizzManager(){
     // HEIGHT
     self.quizzInfoHeightRatio = 0.05;
     self.questionsPuzzleHeightRatio = 0.25;
-    self.questCreaHeightRatio = 0.6;
+    self.questCreaHeightRatio = 0.57;
     self.bibHeightRatio = self.questCreaHeightRatio;
     self.previewButtonHeightRatio = 0.1;
 

@@ -222,11 +222,12 @@ var QuestionCreator = function (question) {
                 removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
                 var anchor = 'middle';
-                var previewButtonHeightRatio = 0.1;
+                var quizzInfoHeightRatio = 0.05;
+                var questionsPuzzleHeightRatio = 0.25;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(w/2,drawing.height*(1-previewButtonHeightRatio)-self.questionCreatorHeight+self.questionBlock.title.cadre.height-5*MARGIN-5)
-                   // .position(w/2,self.h - 2 * MARGIN -self.toggleButtonHeight)
+                    .position(w/2,drawing.height*(quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 *MARGIN + self.questionBlock.title.cadre.height )
                     .font("arial", 15).color(myColors.red).anchor(anchor);
+                console.log(self.quizzNameHeight);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.questionNameValidInput = false;
@@ -261,7 +262,7 @@ var QuestionCreator = function (question) {
         showTitle();
 
         // bloc Answers
-        if (self.tabAnswer.length !== self.MAX_ANSWERS) {7
+        if (self.tabAnswer.length !== self.MAX_ANSWERS) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
