@@ -30,7 +30,7 @@ var AddEmptyElement = function (parent) {
             }
             self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
             self.parent.manipulatorQuestionCreator.last.add(self.parent.puzzle.puzzleManipulator.first);
-            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight/2 + MARGIN/2, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight/2 , self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h-2*MARGIN, 0);
         };
 
         svg.addEvent(self.plus, "ondblclick", dblclickEdition);
@@ -129,7 +129,7 @@ var AnswerElement = function (answer, parent) {
                 var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN);
                 var anchor = 'middle' ;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, self.parent.questionCreatorHeight - self.parent.quizzInfoHeight - MARGIN)
+                    .position(position, self.parent.questionCreatorHeight - self.parent.quizzInfoHeight)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.parent.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
                 contentarea.focus();

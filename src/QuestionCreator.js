@@ -86,14 +86,14 @@ var QuestionCreator = function (question) {
 
     self.display = function (x, y, w, h) {
         self.quizzInfoHeight = Math.floor(h * self.headerHeight);
-        self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
+        self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 100);
         //var reponseAreaHeight=Math.floor(h*);
-        self.manipulatorQuestionCreator.translator.move(x, self.quizzInfoHeight);
-        self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
+        self.manipulatorQuestionCreator.translator.move(x, self.quizzInfoHeight+2*MARGIN);
+        self.previewButtonManipulator.translator.move(x, h - self.headerHeight*h);
         self.toggleButtonHeight = 40;
         self.displayQuizzInfo(MARGIN+x, 2*MARGIN+y, w*0.5,self.quizzInfoHeight);
-        self.displayQuestionCreator(MARGIN+x,self.quizzInfoHeight, w, self.questionCreatorHeight-2*MARGIN-60);
-        self.displayPreviewButton(x+w/2,self.quizzInfoHeight+self.questionCreatorHeight, w, 75);
+        self.displayQuestionCreator(MARGIN+x,self.quizzInfoHeight, w, self.questionCreatorHeight-2*MARGIN-40);
+        self.displayPreviewButton(x+w/2,self.quizzInfoHeight+self.questionCreatorHeight+ 3 *MARGIN, w, 65);
         self.displayToggleButton(MARGIN+x, MARGIN+y, w,self.toggleButtonHeight, myQuizzType.tab[0].label);
     };
 
@@ -226,11 +226,9 @@ var QuestionCreator = function (question) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
-                var bibRatio=0.2;
-                var position = window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN;
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, textarea.height + 2 * MARGIN)
+                    .position(0,self.h * 0.5 - 3* MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
@@ -255,9 +253,9 @@ var QuestionCreator = function (question) {
         h && (self.h = h);
         self.coordinatesAnswers = {
             x: self.x + MARGIN,
-            y: self.y + 2 * MARGIN + self.h * 0.25,
+            y: self.y + 3 * MARGIN + self.h * 0.25 ,
             w: self.w - 2 * MARGIN,
-            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN
+            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN -20
         };
 
         // bloc Question
@@ -271,7 +269,7 @@ var QuestionCreator = function (question) {
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
         self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
-        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight/2 + MARGIN/2, self.coordinatesAnswers.w, self.coordinatesAnswers.h, 0);
+        self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight/2, self.coordinatesAnswers.w, self.coordinatesAnswers.h-2*MARGIN, 0);
     };
     self.displayQuizzInfo = function (x, y, w, h) {
 
@@ -416,9 +414,9 @@ var QuestionCreator = function (question) {
                                 self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                             }
                             self.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
-                                .position(-11 * MARGIN - 5, h / 2 - 6 * MARGIN)
+                                .position(0 , -(h / 2 + MARGIN) )
                                 .font("arial", 20)
-                                .anchor('center').color(myColors.red);
+                                .anchor('middle').color(myColors.red);
                             self.previewButtonManipulator.last.add(self.errorMessagePreview);
                         }
                     } else {
@@ -426,19 +424,18 @@ var QuestionCreator = function (question) {
                             self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                         }
                         self.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
-                            .position(-10 * MARGIN - 10, h / 2 - 6 * MARGIN)
+                            .position(0 , -(h / 2 + MARGIN) )
                             .font("arial", 20)
-                            .anchor('center').color(myColors.red);
+                            .anchor('middle').color(myColors.red);
                         self.previewButtonManipulator.last.add(self.errorMessagePreview);                    }
                 } else {
                     if (self.errorMessagePreview) {
                         self.previewButtonManipulator.last.remove(self.errorMessagePreview);
                     }
                     self.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
-                        .position(-15 * MARGIN - 5, h / 2 - 6 * MARGIN)
+                        .position(0, -(h / 2 + MARGIN) )
                         .font("arial", 20)
-                        .anchor('center').color(myColors.red);
-
+                        .anchor('middle').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.errorMessagePreview);
                 }
             }
