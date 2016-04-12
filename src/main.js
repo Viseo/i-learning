@@ -61,16 +61,16 @@ function main() {
 
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
 
-        drawings.piste.dimension(drawing.width,drawing.height);
+       // drawings.piste.dimension(drawing.width,drawing.height); N'a plus de dimension !!!
         drawings.glass.dimension(drawing.width,drawing.height);
 
         quizz.display(0,0,drawing.width,drawing.height);
         var qManip=quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
         //qManip.last.remove(qManip.ordonator);
         //qManip.ordonator=new svg.Ordered(10);
-        qManip.ordonator.children.forEach(function(e){
-            e=new svg.Rect(0,0);
-        });
+        for( var i = 0;i<qManip.ordonator.children.length;i++) {
+            qManip.ordonator.unset(i);
+        }
 
 
         //qManip.last.children.forEach(function(e){
