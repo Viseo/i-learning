@@ -222,8 +222,10 @@ var QuestionCreator = function (question) {
                 removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
                 var anchor = 'middle';
+                var previewButtonHeightRatio = 0.1;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(w/2,self.h * 0.25 + 4* MARGIN + self.toggleButtonHeight + 5)
+                    .position(w/2,drawing.height*(1-previewButtonHeightRatio)-self.questionCreatorHeight+self.questionBlock.title.cadre.height-5*MARGIN-5)
+                   // .position(w/2,self.h - 2 * MARGIN -self.toggleButtonHeight)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
