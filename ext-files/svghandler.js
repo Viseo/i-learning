@@ -325,7 +325,23 @@ function SVG(runtime) {
         }
         return null;
     };
-
+    Handler.prototype.flush = function(){
+      var self = this;
+      self.children.forEach(function(e){
+          if(e instanceof Handler){
+              e.flush();
+          }
+          else{
+              if(self instanceof Ordered){
+                  var index=self.children.indexOf(e);
+                  self.unset(index);
+              }
+              else{
+                  self.remove(e);
+              }
+          }
+      });
+    };
     function Ordered(layerCount) {
         this.children = [];
         this._active = true;

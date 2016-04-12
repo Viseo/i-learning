@@ -83,8 +83,8 @@ var Drawings = function (w, h) {
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
-        if(self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.ondblclick) {
-            self.target.component.eventHandlers.ondblclick(event);
+        if(self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
+            self.target.component.eventHandlers.dblclick(event);
         }
     };
     svg.addEvent(self.glass,"dblclick",ondblclickHandler);

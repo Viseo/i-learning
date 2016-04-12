@@ -8,7 +8,7 @@ var QuestionCreator = function (question) {
     self.MAX_ANSWERS = 8;
 
     self.manipulator = new Manipulator();
-    mainManipulator.ordonator.set(0, self.manipulator.first);//!! à s'en inquiéter plus tard -> remplacer par .last.add
+    //mainManipulator.ordonator.set(0, self.manipulator.first);//!! à s'en inquiéter plus tard -> remplacer par .last.add
 
     self.manipulatorQuizzInfo = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
@@ -175,8 +175,8 @@ var QuestionCreator = function (question) {
             // self.questionBlock.title.cadre.fillOpacity(0.001);
             self.questionBlock.title.cadre.color(myColors.white,1,myColors.black);
             self.questionBlock.title.cadre._acceptDrop = true;
-            svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
-            svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
+            svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
             //move
             self.questionManipulator.first.move(w/2,y + self.toggleButtonHeight+2*MARGIN+self.questionBlock.title.cadre.height/2 );
 

@@ -6,7 +6,7 @@
 var BibImage = function (bibimage) {
     var self = this;
     self.bibManipulator=new Manipulator();
-    mainManipulator.ordonator.set(1,self.bibManipulator.first);
+    //mainManipulator.ordonator.set(1,self.bibManipulator.first);
     self.title = bibimage.title;
     self.tabImgBib = [];
     //self.tabImgBib = bibimage.tabImgBib;
@@ -60,7 +60,7 @@ var BibImage = function (bibimage) {
         y && (self.y = y);
         w && (self.w = w);
         h && (self.h = h);
-        self.bordure =  new svg.Rect(w,h,self.bibManipulator).color([],2,myColors.black);
+        self.bordure =  new svg.Rect(w,h).color([],2,myColors.black);
         self.bordure.position(w/2,h/2);
         self.bibManipulator.last.add(self.bordure);
         //self.title =  new svg.Text(x+w/2,y+(1/10*h),self.title,self.font,self.fontSize,self.bibManipulator);
@@ -70,8 +70,6 @@ var BibImage = function (bibimage) {
         var res=Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
         self.imageMargin=(w-(res*self.imageWidth))/(res+1);
         var tempY=(2/10*h);
-
-
 
     for (var i=0;i<self.tabSrcImg.length;i++) {
 

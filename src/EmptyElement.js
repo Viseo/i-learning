@@ -33,9 +33,9 @@ var AddEmptyElement = function (parent) {
             self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
         };
 
-        svg.addEvent(self.plus, "ondblclick", dblclickEdition);
-        svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
-        svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
+        svg.addEvent(self.plus, "dblclick", dblclickEdition);
+        svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+        svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
     }
 };
 
@@ -101,8 +101,8 @@ var AnswerElement = function (answer, parent) {
             self.obj.cadre._acceptDrop=true;
             self.obj.content._acceptDrop=true;
             self.parent.puzzle.puzzleManipulator.translator.move(0,self.parent.toggleButtonHeight-MARGIN);
-            svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
-            svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);
+            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
         };
 
         var dblclickEdition = function () {
