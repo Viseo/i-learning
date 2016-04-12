@@ -113,13 +113,17 @@ var QuestionCreator = function (question) {
 
             (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
             (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+            self.tabAnswer.forEach(function(answer) {
+                if (answer.checkbox) {
+                    self.simpleChoice && (answer.bCorrect = answer.simpleAnswer);
+                    self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
+                }
+            });
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
-                if (answer.checkbox){
+                if (answer.checkbox) {
                     xCheckBox = answer.checkbox.checkbox.x;
                     yCheckBox = answer.checkbox.checkbox.y;
-                    self.simpleChoice && (answer.bCorrect=answer.simpleAnswer);
-                    self.multipleChoice && (answer.bCorrect = answer.multipleAnswer);
                     (self.simpleChoice || self.multipleChoice) && (answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
                     answer.checkbox.checkbox.answerParent = answer;
                 }
@@ -165,6 +169,7 @@ var QuestionCreator = function (question) {
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
 
             }
+
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop = true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
@@ -172,7 +177,6 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.cadre._acceptDrop = true;
             svg.addEvent(self.questionBlock.title.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "ondblclick", dblclickEdition);
-
             //move
             self.questionManipulator.first.move(w/2,y + self.toggleButtonHeight+2*MARGIN+self.questionBlock.title.cadre.height/2 );
 
@@ -191,6 +195,7 @@ var QuestionCreator = function (question) {
                 textarea.height = (self.h*.25)/2;//self.questionBlock.title.content.component.getBBox().height;
                 decalageImage=MARGIN;
             }
+
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2,-(textarea.height)/2);
             textarea.setAttribute("style", "position: relative; top:" + (decalageImage-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((textarea.height - 4 * MARGIN)/2-20)+"px; overflow:hidden;");
@@ -211,17 +216,14 @@ var QuestionCreator = function (question) {
                 self.questionNameValidInput = true;
                 self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5);
                 self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
-
             };
 
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
-                var bibRatio=0.2;
-                var position = window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN;
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, textarea.height + 2 * MARGIN)
+                    .position(w/2,self.h * 0.25 + 4* MARGIN + self.toggleButtonHeight + 5)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
@@ -246,9 +248,9 @@ var QuestionCreator = function (question) {
         h && (self.h = h);
         self.coordinatesAnswers = {
             x: self.x + MARGIN,
-            y: self.y + 2 * MARGIN + self.h * 0.25,
+            y: self.y + 3 * MARGIN + self.h * 0.25 ,
             w: self.w - 2 * MARGIN,
-            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN
+            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN -20
         };
 
         // bloc Question
