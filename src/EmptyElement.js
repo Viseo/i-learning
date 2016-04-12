@@ -21,8 +21,8 @@ var AddEmptyElement = function (parent) {
 
         var dblclickEdition = function () {
             self.parent.tabAnswer.pop();
-            self.manipulator.ordonator.remove(self.obj.content);
-            self.manipulator.ordonator.remove(self.obj.cadre);
+            self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
+            self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
             self.manipulator.last.remove(self.plus);
             self.parent.tabAnswer.push(new AnswerElement(null, self.parent));
             if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
@@ -30,7 +30,7 @@ var AddEmptyElement = function (parent) {
             }
             self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
             self.parent.manipulatorQuestionCreator.last.add(self.parent.puzzle.puzzleManipulator.first);
-            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight/2 + MARGIN/2, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
         };
 
         svg.addEvent(self.plus, "ondblclick", dblclickEdition);
@@ -98,6 +98,8 @@ var AnswerElement = function (answer, parent) {
             }
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
+            self.obj.cadre._acceptDrop=true;
+            self.obj.content._acceptDrop=true;
             self.parent.puzzle.puzzleManipulator.translator.move(0,self.parent.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "ondblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "ondblclick", dblclickEdition);

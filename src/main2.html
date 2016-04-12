@@ -21,6 +21,7 @@
 <script src="BibImage.js"></script>
 <script src="SVG-global-handler.js"></script>
 <script src="SVG-util.js"></script>
+<script src="QuizzManager.js"></script>
 <script>
     var imageController = ImageController();
     var asyncTimerController=AsyncTimerController();
@@ -29,19 +30,9 @@
     var drawing = drawings.drawing;
     var mainManipulator = drawing.manipulator;
 
-    var admin = function () {
-        var questionCreator = new QuestionCreator();
-        var bib=new BibImage(myBib);
+    var quizzManager = new QuizzManager ();
+    quizzManager.display();
 
-        var bibRatio=0.2;
-        var questCreaRatio=0.8;
-
-        bib.run(MARGIN,0,bibRatio*drawing.width,drawing.height-MARGIN,function(){
-            questionCreator.display(bib.x+bibRatio*drawing.width+MARGIN,1,questCreaRatio*drawing.width-MARGIN-bib.x,drawing.height);
-        });
-
-    };
 </script>
-<script>admin();</script>
 </body>
 </html>
