@@ -65,7 +65,12 @@ var AnswerElement = function (answer, parent) {
     self.parent = parent;
 
     self.toAnswer = function () {
-        return {label: self.label, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.none};
+        if(self.manipulator.ordonator.children[2] instanceof svg.Image){
+            self.img = self.manipulator.ordonator.children[2].src;
+        }else{
+            self.img = null;
+        }
+        return {label: self.label, imageSrc:self.img, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
     };
 
     self.checkInputContentArea = function (objCont) {

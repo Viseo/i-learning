@@ -171,7 +171,6 @@ function QuizzManager(){
                     if (self.quizzName) {
                         if (self.questionCreator.label) {
                             //mainManipulator.ordonator.unset(0, self.questionCreator.manipulator.first);
-                            self.quizzManagerManipulator.last.flush();
                             var tabAnswer = [];
                             self.questionCreator.tabAnswer.forEach(function (el) {
                                 if (el instanceof AnswerElement) {
@@ -179,14 +178,18 @@ function QuizzManager(){
                                 }
                             });
 
+
                             var tabQuestion = [];
                             var questionObject = {
                                 label: self.questionCreator.label,
+                                imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
                                 tabAnswer: tabAnswer,
+                                multipleChoice:self.questionCreator.multipleChoice,
                                 nbrows: 4,
                                 colorBordure: myColors.black,
                                 bgColor: myColors.white
                             };
+
                             tabQuestion.push(questionObject);
 
                             var quizzObject = {
@@ -196,6 +199,7 @@ function QuizzManager(){
                                 puzzleLines: 3,
                                 puzzleRows: 3
                             };
+                            self.quizzManagerManipulator.last.flush();
 
                             var quizz = new Quizz(quizzObject, true);
                             quizz.run(1, 1, document.body.clientWidth, drawing.height);

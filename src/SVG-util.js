@@ -352,7 +352,6 @@ var drawArrow = function(x,y,w,h,handler,manipulator){
             svg.removeEvent(chevron,'click',chevron.onClick);
         }
     }
-
     if(chevron.tempWidth> w) {
         chevron.tempHeight *= w/chevron.tempWidth;
         chevron.tempWidth = w;

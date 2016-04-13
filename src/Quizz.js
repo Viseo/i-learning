@@ -133,7 +133,7 @@ function Quizz(quizz, previewMode) {
 
     };
 
-    self.display=function(x,y,w,h) {
+    self.display = function(x,y,w,h) {
 
         x && (self.x = x);
         y && (self.y = y);
@@ -174,30 +174,37 @@ function Quizz(quizz, previewMode) {
 
     self.nextQuestion=function(){
 
-            if(self.currentQuestionIndex !== -1) {
+            if(self.currentQuestionIndex !== -1 && !self.previewMode){
                 //self.tabQuestions[self.currentQuestionIndex].questionManipulator.first.remove();
                 self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
+
                 //self.tabQuestions[self.currentQuestionIndex].questionManipulator.first.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.rotator);
                 //self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.children.forEach(function(child){
                 //    self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.child);
                 //});
 
             }
-            if(self.previewMode) {
-                if(self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
-                    self.tabQuestions[0].reset();
+            if(self.previewMode){
+                if(self.currentQuestionIndex === -1) {
+                    if (self.currentQuestionIndex === 0 && self.tabQuestions[0].multipleChoice) {
+                        self.tabQuestions[0].reset();
+                    }
+                    self.currentQuestionIndex = 0;//numéro de la question affichée
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithImage);
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithoutImage);
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithImage);
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithoutImage);
+
+
+                    self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
+                   // self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
+                    self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.flush();
+
+                    self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
+                        self.cadreQuestion.w, self.questionHeight);
+                    self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
+                        self.cadreQuestion.w, self.responseHeight);
                 }
-                self.currentQuestionIndex = 0;
-                self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithImage);
-                !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight=self.questionHeightWithoutImage);
-                self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithImage);
-                !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight=self.responseHeightWithoutImage);
-                self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight/2 + self.questionHeight/2+MARGIN,
-                    self.cadreQuestion.w , self.questionHeight);
-                self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN+self.questionHeight,
-                    self.cadreQuestion.w , self.responseHeight);
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                     self.currentQuestionIndex++;
@@ -212,8 +219,7 @@ function Quizz(quizz, previewMode) {
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN+self.questionHeight,
                         self.cadreQuestion.w , self.responseHeight);
-                } else //--> fin du tableau, dernière question
-                {
+                } else {//--> fin du tableau, dernière question
                     console.log("Final score: " + self.score);
                     self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult,null,self);
 

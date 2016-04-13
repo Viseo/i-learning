@@ -63,10 +63,8 @@ var BibImage = function (bibimage) {
         self.bordure =  new svg.Rect(w,h).color([],2,myColors.black);
         self.bordure.position(w/2,h/2);
         self.bibManipulator.last.add(self.bordure);
-        //self.title =  new svg.Text(x+w/2,y+(1/10*h),self.title,self.font,self.fontSize,self.bibManipulator);
         self.title = autoAdjustText("Bibliothèque",0,0,w,(1/10)*h,null,self.font,self.bibManipulator).text;
         self.title.position(w/2,(1/20)*h);
-        self.bibManipulator.last.add(self.title);
         var res=Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
         self.imageMargin=(w-(res*self.imageWidth))/(res+1);
         var tempY=(2/10*h);
@@ -98,7 +96,7 @@ var BibImage = function (bibimage) {
                 manageDnD(img,manip);
 
                 var mouseupHandler = function(event){
-                    var img=manip.ordonator.children.shift();
+                    var img = manip.ordonator.children.shift();
                     manip.first.parent.remove(manip.first);
 
                     // fonction qui accepte/refuse le drop
@@ -107,10 +105,10 @@ var BibImage = function (bibimage) {
                         var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
                             content:target.parent.parentManip.ordonator.extract(1)};
 
-                        var rectColors=oldQuest.cadre.getColor();
+                        var rectColors = oldQuest.cadre.getColor();
 
 
-                        var newQuest=displayImageWithTitle(oldQuest.content.messageText,img.src,
+                        var newQuest = displayImageWithTitle(oldQuest.content.messageText,img.src,
                             img,
                             oldQuest.cadre.width,oldQuest.cadre.height,
                             rectColors.strokeColor,rectColors.fillColor,null,null,target.parent.parentManip
@@ -126,7 +124,6 @@ var BibImage = function (bibimage) {
                         target.parent.parentManip.ordonator.set(1,oldQuest.content);
                         target.parent.parentManip.ordonator.children[2]._acceptDrop = true;
                     }
-                    console.log('test');
 
                 };
 
@@ -136,7 +133,6 @@ var BibImage = function (bibimage) {
                 svg.addEvent(img,'mouseup',mouseupHandler);
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
-                //drawings.piste.
             });
           // manageDnD(e.ordonator.children[0],e);
 

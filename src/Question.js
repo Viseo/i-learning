@@ -73,7 +73,7 @@ var Question = function (question,quizz) {
         self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
     }
 
-    self.rgbBordure=question.colorBordure;
+    self.rgbBordure = question.colorBordure;
     self.bgColor = question.bgColor;
 
     self.bordure = null;
@@ -113,14 +113,13 @@ var Question = function (question,quizz) {
         // Question avec Image uniquement
         else if (self.imageSrc && !self.label) {
             self.raphImage = displayImage(self.imageSrc, self.dimImage, self.w, self.height).image;
-            self.questionManipulator.last.add(self.raphImage);
+            self.questionManipulator.ordonator.set(2, self.raphImage);
 
         }
         else {
             //var point=self.questionManipulator.globalToLocal(self.x,self.y);
             self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.rgbBordure);
-            self.questionManipulator.last.add(self.bordure);
-
+            self.questionManipulator.ordonator.set(0, self.bordure);
         }
         self.questionManipulator.translator.move(self.x,self.y);
         //self.questionManipulator.ordonator.children.forEach(function(e){

@@ -44,11 +44,11 @@ var QuestionCreator = function (question) {
         self.label = "";
         self.rightAnswers = [];
         self.fontSize = 20;
-        self.multipleChoice=false;
-        self.simpleChoice=true;
+        self.multipleChoice = false;
+        self.simpleChoice = true;
     } else {
-        self.multipleChoice=question.multipleChoice;
-        self.simpleChoice=question.simpleChoice;
+        self.multipleChoice = question.multipleChoice;
+        self.simpleChoice = question.simpleChoice;
         self.tabAnswer = [];
         question.tabAnswer.forEach(function (answer) {
             self.tabAnswer.push(new AnswerElement(answer));
@@ -101,7 +101,7 @@ var QuestionCreator = function (question) {
             if (self.multipleChoice){
                 self.tabAnswer.forEach(function(answer){
                     answer.multipleAnswer = answer.bCorrect;
-                    (answer.simpleAnswer==undefined) && (answer.simpleAnswer = false);
+                    (answer.simpleAnswer == undefined) && (answer.simpleAnswer = false);
                 });
             }
             else if (self.simpleChoice){
@@ -111,8 +111,8 @@ var QuestionCreator = function (question) {
                 });
              }
 
-            (questionType === "Réponses multiples") ? (self.multipleChoice=true) : (self.multipleChoice=false);
-            (questionType === "Réponse unique") ? (self.simpleChoice=true) : (self.simpleChoice=false);
+            (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
+            (questionType === "Réponse unique") ? (self.simpleChoice = true) : (self.simpleChoice = false);
             self.tabAnswer.forEach(function(answer) {
                 if (answer.checkbox) {
                     self.simpleChoice && (answer.bCorrect = answer.simpleAnswer);
@@ -145,7 +145,7 @@ var QuestionCreator = function (question) {
             (type.label == clicked) ? (self.virtualTab[i].color = myColors.blue) : (self.virtualTab[i].color = myColors.white);
             self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, self.fontSize, null, self.virtualTab[i].manipulator);
             self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
-            self.x+= self.toggleButtonWidth + MARGIN;
+            self.x += self.toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));
             (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.cadre, "click", toggleHandler));
 
@@ -164,7 +164,7 @@ var QuestionCreator = function (question) {
             var text = (self.label) ? self.label : self.labelDefault;
             if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
                 var img = self.questionManipulator.ordonator.children[2];
-                self.questionBlock.title = displayImageWithTitle(text, img.src,img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+                self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
             }else{
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
 
@@ -173,33 +173,31 @@ var QuestionCreator = function (question) {
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop = true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
-            self.questionBlock.title.cadre.color(myColors.white,1,myColors.black);
+            self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
             self.questionBlock.title.cadre._acceptDrop = true;
             svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
             //move
-            self.questionManipulator.first.move(w/2,y + self.toggleButtonHeight+2*MARGIN+self.questionBlock.title.cadre.height/2 );
-
+            self.questionManipulator.first.move(w/2, y + self.toggleButtonHeight + 2 * MARGIN + self.questionBlock.title.cadre.height/2);
         };
 
         var dblclickEdition = function () {
             var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
-            textarea.width = self.w-2*MARGIN;
+            textarea.width = self.w - 2 * MARGIN;
             var decalageImage;
             if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
                 textarea.height = self.questionBlock.title.content.component.getBBox().height;//self.questionBlock.title.content.component.getBBox().height;
-                decalageImage=-textarea.height+1;
+                decalageImage = -textarea.height + 1;
             }
             else{
-                textarea.height = (self.h*.25)/2;//self.questionBlock.title.content.component.getBBox().height;
-                decalageImage=MARGIN;
+                textarea.height = (self.h * .25)/2;//self.questionBlock.title.content.component.getBBox().height;
+                decalageImage = MARGIN;
             }
 
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
-            textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2,-(textarea.height)/2);
-            textarea.setAttribute("style", "position: relative; top:" + (decalageImage-drawing.height+textarea.globalPointCenter.y) + "px; left:" + (MARGIN+textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align:center; display:table-cell; font-family: Arial; font-size: 20px; resize: none; outline:none; border: none; background-color: transparent; padding-top:"+((textarea.height - 4 * MARGIN)/2-20)+"px; overflow:hidden;");
-
+            textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
+            textarea.setAttribute("style", "position: relative; top:" + (decalageImage - drawing.height + textarea.globalPointCenter.y) + "px; left:" + (MARGIN + textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -225,7 +223,7 @@ var QuestionCreator = function (question) {
                 var quizzInfoHeightRatio = 0.05;
                 var questionsPuzzleHeightRatio = 0.25;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(w/2,drawing.height*(quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 *MARGIN + self.questionBlock.title.cadre.height )
+                    .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 console.log(self.quizzNameHeight);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
@@ -253,7 +251,7 @@ var QuestionCreator = function (question) {
             x: self.x + MARGIN,
             y: self.y + 3 * MARGIN + self.h * 0.25 ,
             w: self.w - 2 * MARGIN,
-            h: (self.h-self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN -20
+            h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
         };
 
         // bloc Question
