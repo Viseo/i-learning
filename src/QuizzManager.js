@@ -153,6 +153,8 @@ function QuizzManager(){
             var isValidInput = true;
             var isFilled = false;
 
+            self.toggleButtonHeight = 40;
+
             self.questionCreator.tabAnswer.forEach(function (el) {
                 if (el instanceof AnswerElement) {
                     if (el.bCorrect) {
@@ -202,9 +204,9 @@ function QuizzManager(){
                                 self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                             }
                             self.questionCreator.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
-                                .position(-11 * MARGIN - 5, h / 2 - 6 * MARGIN)
+                                .position(0, h/2 - 2 * self.toggleButtonHeight)
                                 .font("arial", 20)
-                                .anchor('center').color(myColors.red);
+                                .anchor('middle').color(myColors.red);
                             self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
                         }
                     } else {
@@ -212,19 +214,19 @@ function QuizzManager(){
                             self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                         }
                         self.questionCreator.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
-                            .position(-10 * MARGIN - 10, h / 2 - 6 * MARGIN)
+                            .position(0, h/2 - 2 * self.toggleButtonHeight)
                             .font("arial", 20)
-                            .anchor('center').color(myColors.red);
+                            .anchor('middle').color(myColors.red);
                         self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);                    }
                 } else {
                     if (self.questionCreator.errorMessagePreview) {
                         self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                     }
                     self.questionCreator.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
-                        .position(-15 * MARGIN - 5, h / 2 - 6 * MARGIN)
-                        .font("arial", 20)
-                        .anchor('center').color(myColors.red);
 
+                        .position(0, h/2 - 2 * self.toggleButtonHeight)
+                        .font("arial", 20)
+                        .anchor('middle').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
                 }
             }
