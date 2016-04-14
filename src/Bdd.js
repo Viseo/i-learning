@@ -317,7 +317,7 @@ var uniqueAnswerValidationTab = [
     },
     function (quiz) {
         // Check Question Name:
-        var isValid = (quiz.questionCreator.label !== "") || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
+        var isValid = (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
         var message = "Vous devez remplir le nom de la question.";
         return {isValid:isValid, message: message};
     },
@@ -331,7 +331,8 @@ var uniqueAnswerValidationTab = [
                 }
             }
         });
-        var isValid = (quiz.correctAnswers === 1);
+        console.log(correctAnswers);
+        var isValid = (correctAnswers === 1);
         var message = "Votre quiz doit avoir une bonne réponse.";
         return {isValid:isValid, message: message};
     },
@@ -340,10 +341,10 @@ var uniqueAnswerValidationTab = [
         var isFilled = false;
         quiz.questionCreator.tabAnswer.forEach(function (el) {
             if (el instanceof AnswerElement) {
-                isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
+                isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
             }
         });
-        var isValid = isFilled;
+        var isValid = (isFilled);
         var message = "Vous devez remplir au moins une réponse.";
         return {isValid:isValid, message: message};
     }

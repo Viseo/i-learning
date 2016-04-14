@@ -241,7 +241,7 @@ var QuestionCreator = function (parent, question) {
                     textarea: textarea,
                     border: self.questionBlock.title.cadre,
                     onblur: onblur,
-                    remove: removePreviewErrorMessage,
+                    remove: removeErrorMessage,
                     display: displayErrorMessage
                 });
             };

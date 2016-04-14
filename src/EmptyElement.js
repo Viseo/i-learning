@@ -130,7 +130,7 @@ var AnswerElement = function (answer, parent) {
 
 
             var displayErrorMessage = function () {
-                removePreviewErrorMessage();
+                removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
                 var bibRatio=0.2;
                 var previewButtonHeightRatio = 0.1;
@@ -158,7 +158,7 @@ var AnswerElement = function (answer, parent) {
                         contentarea: contentarea,
                         border: self.obj.cadre,
                         onblur: onblur,
-                        remove: removePreviewErrorMessage,
+                        remove: removeErrorMessage,
                         display: displayErrorMessage
                     });
                 };
@@ -168,10 +168,10 @@ var AnswerElement = function (answer, parent) {
                 contentarea: contentarea,
                 border: self.label.cadre,
                 onblur: onblur,
-                remove: removePreviewErrorMessage,
+                remove: removeErrorMessage,
                 display: displayErrorMessage
             });
-            };
+        };
         showTitle();
         self.checkboxSize=h*0.2;
         self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
