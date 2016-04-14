@@ -2,31 +2,34 @@
  * Created by ACA3502 on 14/04/2016.
  */
 
-function FormationsManager() {
+function FormationsManager(formations, additionalMessage) {
     var self = this;
-    //self.ilearningBandeau = new ??
-    //self.x = document.body.clientWidth/15; //??
-    self.x = 10;
-    self.y = 20; //self.ilearningBandeau.height
+
+    self.header = new Header(additionalMessage);
+    self.header.display();
+    self.x = MARGIN;
+    self.y = drawing.height*self.header.size+3*MARGIN; //self.ilearningBandeau.height
     self.addButtonWidth = 330;
     self.addButtonHeight = 40;
     self.fontSize = 20;
     self.plusDim = self.fontSize*2;
+    self.formations = formations;
 
     self.formationsManagerManipulator = new Manipulator();
-    mainManipulator.ordonator.set(0,self.formationsManagerManipulator.first);
-    self.title = autoAdjustText("Formations", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize, null, self.formationsManagerManipulator);
-    self.title.text.position(-self.addButtonWidth/4,0);
+    self.header.manipulator.last.add(self.formationsManagerManipulator.first);
+    self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
+    self.formationsManagerManipulator.last.add(self.title);
 
     self.addButtonManipulator = new Manipulator();
     self.formationsManagerManipulator.last.add(self.addButtonManipulator.first);
     self.addButtonManipulator.translator.move(self.plusDim/2, self.addButtonHeight);
-    self.addFormationButton = autoAdjustText("Ajouter une formation", -self.addButtonWidth/2, self.addButtonHeight/2, self.addButtonWidth, self.addButtonHeight, self.fontSize, null, self.addButtonManipulator);
-    self.addFormationButton.text.position(self.x/2,self.addFormationButton.text.y);
-    self.formationsManagerManipulator.translator.move(self.addButtonWidth/2, self.y);
+    self.addFormationButton = new svg.Text("Ajouter une formation");
+    self.addFormationButton.position(MARGIN + self.plusDim, MARGIN/2).font("Arial", 20).anchor("start");
+    self.addButtonManipulator.last.add(self.addFormationButton);
+    self.formationsManagerManipulator.translator.move(0, self.y);
 
 
-    self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(self.x,0);
+    self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(+self.addButtonWidth/2-MARGIN,0);
     self.addButtonManipulator.ordonator.set(0,self.addFormationCadre);
 
     self.imageSrc = "../resource/plusSign.svg.png";
@@ -35,7 +38,7 @@ function FormationsManager() {
 
     self.addFormationObject = displayImage(self.imageSrc, self.dimImage, self.plusDim, self.plusDim).image;
     self.addButtonManipulator.ordonator.set(2, self.addFormationObject);
-    self.addFormationObject.position(-self.addButtonWidth/2+self.plusDim, 0);
+    self.addFormationObject.position(MARGIN, 0);
 
 
     function onClickAddFormation(){
@@ -45,7 +48,7 @@ function FormationsManager() {
 
     svg.addEvent(self.addFormationObject, "click", onClickAddFormation);
     svg.addEvent(self.addFormationCadre, "click", onClickAddFormation);
-    svg.addEvent(self.addFormationButton.text, "click", onClickAddFormation);
+    svg.addEvent(self.addFormationButton, "click", onClickAddFormation);
 
     self.legendManipulator = new Manipulator();
     self.formationsManagerManipulator.last.add(self.legendManipulator.first);
@@ -69,6 +72,11 @@ function FormationsManager() {
     self.exclamationManipulator.translator.move(document.body.clientWidth/12, 0);
     self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize/1.5, null, self.exclamationManipulator);
     self.toPublish.text.position(self.toPublish.text.component.getBBox().width/2+self.legendDim, self.toPublish.text.y);
+
+    self.formations.tab.forEach(function(formation){
+        console.log(formation);
+        //formation.display();
+    });
 
 
 };

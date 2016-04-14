@@ -382,3 +382,7 @@ var myQuizzType = {
     tab: [{label:"Réponse unique", default:true, validationTab:uniqueAnswerValidationTab}, {label:"Réponses multiples", default:false, validationTab:multipleAnswerValidationTab}]
 };
 
+var myFormations = {
+    tab: ["Hibernate", "HTML3", "Javascript", "Nouvelle formation", "Une autre formation", "Formation suivante"]
+}
+
