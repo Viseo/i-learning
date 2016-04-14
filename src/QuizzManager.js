@@ -49,12 +49,23 @@ function QuizzManager(){
     self.questCreaHeight = drawing.height*self.questCreaHeightRatio;
     self.previewButtonHeight = drawing.height*self.previewButtonHeightRatio;
 
+    self.marginRatio=0.03;
+    self.globalMargin={
+            height:self.marginRatio*drawing.height,
+            width:self.marginRatio*drawing.width
+        };
+
     self.display = function(){
 
-        self.bib.run(1, self.quizzInfoHeight+self.questionsPuzzleHeight, self.bibWidth, self.bibHeight, function(){
-            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y, self.questCreaWidth, self.questCreaHeight);
-            self.displayQuizzInfo(1, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2, 150, self.previewButtonHeight-2*MARGIN);
+        self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+            self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
+            self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
+            self.displayQuestionsPuzzle(self.globalMargin.width/2,self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2
+                ,drawing.width-self.globalMargin.width,self.questionsPuzzleHeight-self.globalMargin.height);
+            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
+                self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
+            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+                150, self.previewButtonHeight-self.globalMargin.height);
 
         });
 
@@ -76,10 +87,10 @@ function QuizzManager(){
 
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
             self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
-            self.quizzLabel.cadre = new svg.Rect(width, 2*self.quizzNameHeight).color(bgcolor);
-            self.quizzLabel.cadre.position(width/2,h/2).fillOpacity(0.1);
+            self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
             self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(0,h/2 + self.quizzNameHeight/4).color(color).anchor("start");
+            self.quizzLabel.content.position(0,h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
             self.quizzInfoManipulator.first.move(x,y);
             svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEdition);
@@ -245,7 +256,15 @@ function QuizzManager(){
         self.previewButtonManipulator.translator.move(x, y);
        // self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
 
-    }
+    };
+
+    self.displayQuestionsPuzzle = function(x, y, w, h){
+
+        var border=new svg.Rect(w,h);
+        border.color([],3,myColors.black);
+        self.questionsPuzzleManipulator.ordonator.set(0,border);
+        self.questionsPuzzleManipulator.first.move(x+w/2,y);
+    };
 
 
 };
