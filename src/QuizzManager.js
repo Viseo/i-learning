@@ -9,7 +9,7 @@ function QuizzManager(){
     self.quizzName="";
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
-    self.questionCreator = new QuestionCreator();
+    self.questionCreator = new QuestionCreator(self);
     self.bib = new BibImage(myBib);
 
     self.quizzManagerManipulator = new Manipulator();
@@ -49,12 +49,23 @@ function QuizzManager(){
     self.questCreaHeight = drawing.height*self.questCreaHeightRatio;
     self.previewButtonHeight = drawing.height*self.previewButtonHeightRatio;
 
+    self.marginRatio=0.03;
+    self.globalMargin={
+            height:self.marginRatio*drawing.height,
+            width:self.marginRatio*drawing.width
+        };
+
     self.display = function(){
 
-        self.bib.run(1, self.quizzInfoHeight+self.questionsPuzzleHeight, self.bibWidth, self.bibHeight, function(){
-            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y, self.questCreaWidth, self.questCreaHeight);
-            self.displayQuizzInfo(1, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2, 150, self.previewButtonHeight-2*MARGIN);
+        self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+            self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
+            self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
+            self.displayQuestionsPuzzle(self.globalMargin.width/2,self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2
+                ,drawing.width-self.globalMargin.width,self.questionsPuzzleHeight-self.globalMargin.height);
+            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
+                self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
+            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+                150, self.previewButtonHeight-self.globalMargin.height);
 
         });
 
@@ -76,10 +87,10 @@ function QuizzManager(){
 
             self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
             self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
-            self.quizzLabel.cadre = new svg.Rect(width, 2*self.quizzNameHeight).color(bgcolor);
-            self.quizzLabel.cadre.position(width/2,h/2).fillOpacity(0.1);
+            self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
+            self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
             self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(0,h/2 + self.quizzNameHeight/4).color(color).anchor("start");
+            self.quizzLabel.content.position(0,h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
             self.quizzInfoManipulator.first.move(x,y);
             svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEdition);
@@ -101,7 +112,6 @@ function QuizzManager(){
                 self.questionCreator.quizzNameValidInput = true;
                 self.questionCreator.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
                 self.quizzLabel.cadre.color(myColors.grey, 1, myColors.none);
-
             };
 
             var displayErrorMessage = function () {
@@ -146,96 +156,58 @@ function QuizzManager(){
     self.displayPreviewButton = function (x, y, w, h) {
         self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
 
+        self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
         var previewFunction = function () {
-            var correctAnswers = 0;
-            var incorrectAnswers = 0;
-
-            var isValidInput = true;
-            var isFilled = false;
-
             self.toggleButtonHeight = 40;
 
-            self.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
-                    if (el.bCorrect) {
-                        correctAnswers++;
-                    } else {
-                        incorrectAnswers++;
-                    }
-                    isValidInput = isValidInput && el.isValidInput;
-                    isFilled = isFilled || (el.label);
-                }
-            });
-            if (isValidInput && self.questionCreator.questionNameValidInput && self.questionCreator.quizzNameValidInput) {
-                if (correctAnswers >= 1 && incorrectAnswers >= 1) {
-                    if (self.quizzName) {
-                        if (self.questionCreator.label) {
-                            //mainManipulator.ordonator.unset(0, self.questionCreator.manipulator.first);
-                            var tabAnswer = [];
-                            self.questionCreator.tabAnswer.forEach(function (el) {
-                                if (el instanceof AnswerElement) {
-                                    tabAnswer.push(el.toAnswer());
-                                }
-                            });
-
-
-                            var tabQuestion = [];
-                            var questionObject = {
-                                label: self.questionCreator.label,
-                                imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
-                                tabAnswer: tabAnswer,
-                                multipleChoice:self.questionCreator.multipleChoice,
-                                nbrows: 4,
-                                colorBordure: myColors.black,
-                                bgColor: myColors.white
-                            };
-
-                            tabQuestion.push(questionObject);
-
-                            var quizzObject = {
-                                title: self.quizzName,
-                                bgColor: myColors.white,
-                                tabQuestions: tabQuestion,
-                                puzzleLines: 3,
-                                puzzleRows: 3
-                            };
-                            self.quizzManagerManipulator.last.flush();
-
-                            var quizz = new Quizz(quizzObject, true);
-                            quizz.run(1, 1, document.body.clientWidth, drawing.height);
-                        } else {
-                            if (self.questionCreator.errorMessagePreview) {
-                                self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
-                            }
-                            self.questionCreator.errorMessagePreview = new svg.Text("Vous devez donner un nom à la question.")
-                                .position(0, h/2 - 2 * self.toggleButtonHeight)
-                                .font("arial", 20)
-                                .anchor('middle').color(myColors.red);
-                            self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
-                        }
-                    } else {
-                        if (self.questionCreator.errorMessagePreview) {
-                            self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
-                        }
-                        self.questionCreator.errorMessagePreview = new svg.Text("Vous devez donner un nom au quiz.")
-                            .position(0, h/2 - 2 * self.toggleButtonHeight)
-                            .font("arial", 20)
-                            .anchor('middle').color(myColors.red);
-                        self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);                    }
-                } else {
-                    if (self.questionCreator.errorMessagePreview) {
-                        self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
-                    }
-                    self.questionCreator.errorMessagePreview = new svg.Text("Vous ne pouvez pas créer de question sans bonne réponse.")
-
-                        .position(0, h/2 - 2 * self.toggleButtonHeight)
+            var validation = true;
+            console.log(self.questionCreator.activeQuizzType);
+            self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
+                var result = funcEl(self);
+                if(!result.isValid) {
+                    self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
+                    self.questionCreator.errorMessagePreview = new svg.Text(result.message)
+                        .position(0, h/2 - 2 * self.toggleButtonHeight-MARGIN)
                         .font("arial", 20)
                         .anchor('middle').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
                 }
+                validation = validation&&result.isValid;
+            });
+
+            if(validation) {
+                var tabAnswer = [];
+                self.questionCreator.tabAnswer.forEach(function (el) {
+                    if (el instanceof AnswerElement) {
+                        tabAnswer.push(el.toAnswer());
+                    }
+                });
+                var tabQuestion = [];
+                var questionObject = {
+                    label: self.questionCreator.label,
+                    imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
+                    tabAnswer: tabAnswer,
+                    multipleChoice:self.questionCreator.multipleChoice,
+                    nbrows: 4,
+                    colorBordure: myColors.black,
+                    bgColor: myColors.white
+                };
+
+                tabQuestion.push(questionObject);
+
+                var quizzObject = {
+                    title: self.quizzName,
+                    bgColor: myColors.white,
+                    tabQuestions: tabQuestion,
+                    puzzleLines: 3,
+                    puzzleRows: 3
+                };
+                self.quizzManagerManipulator.last.flush();
+
+                var quizz = new Quizz(quizzObject, true);
+                quizz.run(1, 1, document.body.clientWidth, drawing.height);
             }
         };
-
         svg.addEvent(self.previewButton.cadre, "click", previewFunction);
         svg.addEvent(self.previewButton.content, "click", previewFunction);
 
@@ -244,8 +216,16 @@ function QuizzManager(){
 
         self.previewButtonManipulator.translator.move(x, y);
        // self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
-
     }
+
+
+    self.displayQuestionsPuzzle = function(x, y, w, h){
+
+        var border=new svg.Rect(w,h);
+        border.color([],3,myColors.black);
+        self.questionsPuzzleManipulator.ordonator.set(0,border);
+        self.questionsPuzzleManipulator.first.move(x+w/2,y);
+    };
 
 
 };

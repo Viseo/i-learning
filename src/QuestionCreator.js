@@ -3,9 +3,10 @@
  */
 
 
-var QuestionCreator = function (question) {
+var QuestionCreator = function (parent, question) {
     var self = this;
     self.MAX_ANSWERS = 8;
+    self.parent = parent;
 
     self.manipulator = new Manipulator();
     //mainManipulator.ordonator.set(0, self.manipulator.first);//!! à s'en inquiéter plus tard -> remplacer par .last.add
@@ -113,6 +114,9 @@ var QuestionCreator = function (question) {
 
             (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
             (questionType === "Réponse unique") ? (self.simpleChoice = true) : (self.simpleChoice = false);
+            self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
+            self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
+
             self.tabAnswer.forEach(function(answer) {
                 if (answer.checkbox) {
                     self.simpleChoice && (answer.bCorrect = answer.simpleAnswer);
@@ -154,6 +158,7 @@ var QuestionCreator = function (question) {
         //self.toggleButton = displayTextWithoutCorners("Choix unique", w-2*MARGIN, h, myColors.black, myColors.none, self.fontSize, null, self.toggleButtonManipulator);
         //self.toggleButton.cadre.position(w/2, h/2);
         //self.toggleButton.content.position(w/2, h/2);
+        self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
         self.toggleButtonManipulator.translator.move(0, y);
     };
 

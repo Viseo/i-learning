@@ -53,7 +53,11 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                 if (count < self.questionsTab.length) {
                     self.virtualTab[i][j] = self.questionsTab[count];
                     self.virtualTab[i][j].tabAnswer.splice(0,self.virtualTab[i][j].tabAnswer.length);
-                    self.virtualTab[i][j].answersManipulator.first && self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
+
+                    if(self.virtualTab[i][j].answersManipulator.first){
+                        self.virtualTab[i][j].answersManipulator.first.flush();
+                        self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
+                    }
                     count++;
                 } else {
                     break;
@@ -84,17 +88,18 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
         self.questionWithBadAnswersManipulator=new Manipulator();
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
-
         var removeArrows = function (){
             if(self.leftArrowManipulator.last.children.length>1) {
-                self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
-                self.leftArrowManipulator = new Manipulator();
-                self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+                //self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
+                //self.leftArrowManipulator = new Manipulator();
+                //self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
+                self.leftArrowManipulator.last.flush();
             }
             if (self.rightArrowManipulator.last.children.length>1){
-                self.puzzleManipulator.last.remove(self.rightArrowManipulator.first);
-                self.rightArrowManipulator=new Manipulator();
-                self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+                //self.puzzleManipulator.last.remove(self.rightArrowManipulator.first);
+                //self.rightArrowManipulator=new Manipulator();
+                //self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+                self.rightArrowManipulator.last.flush();
             }
         };
 
