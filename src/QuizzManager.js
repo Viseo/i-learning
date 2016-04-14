@@ -101,11 +101,10 @@ function QuizzManager(){
                 self.questionCreator.quizzNameValidInput = true;
                 self.questionCreator.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
                 self.quizzLabel.cadre.color(myColors.grey, 1, myColors.none);
-
             };
 
             var displayErrorMessage = function () {
-                removePreviewErrorMessage();
+                removeErrorMessage();
                 self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
                 var position = (textarea.getBoundingClientRect().left - MARGIN);
                 var anchor = 'start';
@@ -126,7 +125,7 @@ function QuizzManager(){
                     textarea: textarea,
                     border: self.quizzLabel.cadre,
                     onblur: onblur,
-                    remove: removePreviewErrorMessage,
+                    remove: removeErrorMessage,
                     display: displayErrorMessage
                 });
                 //self.questionCreator.checkInputTextArea(textarea, "quizzNameValidInput", onblur, self.quizzLabel.cadre);
@@ -136,7 +135,7 @@ function QuizzManager(){
                 textarea: textarea,
                 border: self.quizzLabel.cadre,
                 onblur: onblur,
-                remove: removePreviewErrorMessage,
+                remove: removeErrorMessage,
                 display: displayErrorMessage
             });
         };
