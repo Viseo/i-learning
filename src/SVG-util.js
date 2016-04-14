@@ -58,7 +58,7 @@ var displayCheckbox = function (x, y, size, sender) {
                 !answer.bCorrect && answer.manipulator.ordonator.unset(8);
             }});
     };
-    
+
     checkAllCheckBoxes();
     if(sender.parent.simpleChoice && !sender.bCorrect && !allNotChecked) {
         obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
