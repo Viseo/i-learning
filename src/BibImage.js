@@ -5,7 +5,7 @@
 
 var BibImage = function (bibimage) {
     var self = this;
-    self.bibManipulator=new Manipulator();
+    self.bibManipulator = new Manipulator();
     //mainManipulator.ordonator.set(1,self.bibManipulator.first);
     self.title = bibimage.title;
     self.tabImgBib = [];
@@ -14,16 +14,16 @@ var BibImage = function (bibimage) {
     self.tabSrcImg = bibimage.tabSrcImg;
     self.imgManipulators=[];
     self.imageWidth =50;
-    self.imageHeight=50;
-    self.imageMargin=5;
+    self.imageHeight = 50;
+    self.imageMargin = 5;
 
-    for(var i=0;i<self.tabSrcImg.length;i++){
-        var img=imageController.getImage(self.tabSrcImg[i].imgSrc, function () {
+    for(var i = 0; i<self.tabSrcImg.length; i++){
+        var img = imageController.getImage(self.tabSrcImg[i].imgSrc, function () {
             this.imageLoaded = true;
            // console.log('Loaded! ');
            // console.log(this);
         });
-        self.tabImgBib[i]=img;
+        self.tabImgBib[i] = img;
     }
 
 
@@ -54,7 +54,7 @@ var BibImage = function (bibimage) {
         }, 100);
     };
     // Bib (Titre + tab Image
-    self.display=function(x,y,w,h){
+    self.display = function(x,y,w,h){
         //self.bordure =  new svg.Rect(w,h,self.bibManipulator);
         x && (self.x = x);
         y && (self.y = y);
@@ -63,18 +63,18 @@ var BibImage = function (bibimage) {
         self.bordure =  new svg.Rect(w,h).color([],2,myColors.black);
         self.bordure.position(w/2,h/2);
         self.bibManipulator.last.add(self.bordure);
-        self.title = autoAdjustText("Bibliothèque",0,0,w,(1/10)*h,null,self.font,self.bibManipulator).text;
-        self.title.position(w/2,(1/20)*h);
-        var res=Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
+        self.title = autoAdjustText("Bibliothèque", 0, 0, w, (1/10)*h, null, self.font, self.bibManipulator).text;
+        self.title.position(w/2, (1/20)*h);
+        var res = Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
         self.imageMargin=(w-(res*self.imageWidth))/(res+1);
-        var tempY=(2/10*h);
+        var tempY = (2/10*h);
 
-    for (var i=0;i<self.tabSrcImg.length;i++) {
+    for (var i = 0; i<self.tabSrcImg.length; i++) {
 
         if (i%res === 0 && i!=0){
-            tempY+=self.imageHeight+self.imageMargin;
+            tempY += self.imageHeight+self.imageMargin;
         }
-        self.imgManipulators[i]=new Manipulator();
+        self.imgManipulators[i] = new Manipulator();
         self.bibManipulator.last.add(self.imgManipulators[i].first);
         var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i],self.imageWidth, self.imageHeight,self.imgManipulators[i] );
         self.imgManipulators[i].ordonator.set(0,objectTotal.image);
@@ -83,10 +83,10 @@ var BibImage = function (bibimage) {
     }
         self.bibManipulator.first.move(x,y);
         self.imgManipulators.forEach(function(e){
-            svg.addEvent(e.ordonator.children[0],'mousedown',function(event){
-                var elementCopy=e.ordonator.children[0];
+            svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
+                var elementCopy = e.ordonator.children[0];
                 //drawings.piste.add(clone(elementCopy));
-                var manip=new Manipulator();
+                var manip = new Manipulator();
                 drawings.piste.last.add(manip.first);
 
                 var img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
@@ -108,20 +108,20 @@ var BibImage = function (bibimage) {
                         var rectColors = oldQuest.cadre.getColor();
 
 
-                        var newQuest = displayImageWithTitle(oldQuest.content.messageText,img.src,
+                        var newQuest = displayImageWithTitle(oldQuest.content.messageText, img.src,
                             img,
-                            oldQuest.cadre.width,oldQuest.cadre.height,
-                            rectColors.strokeColor,rectColors.fillColor,null,null,target.parent.parentManip
+                            oldQuest.cadre.width, oldQuest.cadre.height,
+                            rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
                         );
 
                         //for(var i=0;i<target.parent.children[0].children.length;i++){
                         //    target.parent.children[0].unset(i);
                         //}
                         //target.parent.children[0].add(newQuest);
-                        oldQuest.cadre.position(target.parent.parentManip.ordonator.children[0].x,target.parent.parentManip.ordonator.children[0].y);
-                        oldQuest.content.position(target.parent.parentManip.ordonator.children[1].x,target.parent.parentManip.ordonator.children[1].y)
-                        target.parent.parentManip.ordonator.set(0,oldQuest.cadre);
-                        target.parent.parentManip.ordonator.set(1,oldQuest.content);
+                        oldQuest.cadre.position(target.parent.parentManip.ordonator.children[0].x, target.parent.parentManip.ordonator.children[0].y);
+                        oldQuest.content.position(target.parent.parentManip.ordonator.children[1].x, target.parent.parentManip.ordonator.children[1].y)
+                        target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+                        target.parent.parentManip.ordonator.set(1, oldQuest.content);
                         target.parent.parentManip.ordonator.children[2]._acceptDrop = true;
                     }
 
@@ -129,8 +129,8 @@ var BibImage = function (bibimage) {
 
 
                 drawings.glass.component.eventHandlers.mousedown(event);
-                svg.removeEvent(img,'mouseup',img.component.eventHandlers.mouseup);
-                svg.addEvent(img,'mouseup',mouseupHandler);
+                svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
+                svg.addEvent(img, 'mouseup', mouseupHandler);
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
             });

@@ -171,7 +171,7 @@ var AnswerElement = function (answer, parent) {
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
-            };
+        };
         showTitle();
         self.checkboxSize=h*0.2;
         self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
