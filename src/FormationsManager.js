@@ -7,7 +7,7 @@ function FormationsManager() {
     //self.ilearningBandeau = new ??
     self.x = document.body.clientWidth/15; //??
     self.y = 50; //self.ilearningBandeau.height
-    self.addButtonWidth= document.body.clientWidth/4;
+    self.addButtonWidth = document.body.clientWidth/4;
     self.addButtonHeight = document.body.clientHeight/20;
     self.fontSize = 20;
     self.plusDim = self.fontSize*2;
@@ -23,7 +23,7 @@ function FormationsManager() {
 
     self.addButtonManipulator = new Manipulator();
     self.formationsManagerManipulator.last.add(self.addButtonManipulator.first);
-    self.addButtonManipulator.translator.move(0, self.addButtonHeight);
+    self.addButtonManipulator.translator.move(self.plusDim/2, self.addButtonHeight);
     self.addFormationButton = autoAdjustText("Ajouter une formation", -self.addButtonWidth/2, self.addButtonHeight/2, self.addButtonWidth, self.addButtonHeight, self.fontSize, null, self.addButtonManipulator);
     //self.addFormationButton = displayTextWithoutCorners("Ajouter une formation", self.addButtonWidth, self.addButtonHeight, myColors.none, myColors.lightgrey, self.fontSize, null, self.addButtonManipulator);
     self.addFormationButton.text.position(self.plusDim + self.x/2,self.addFormationButton.text.y);
@@ -41,7 +41,24 @@ function FormationsManager() {
     self.dimImage = {width:self.plusDim, height:self.plusDim};
     console.log(self.dimImage);
 
-    var addFormationObject = displayImage(self.imageSrc, self.dimImage, self.plusDim, self.plusDim).image;
-    self.addButtonManipulator.ordonator.set(2,addFormationObject);
-    addFormationObject.position(-self.plusDim,0);
+    self.addFormationObject = displayImage(self.imageSrc, self.dimImage, self.plusDim, self.plusDim).image;
+    self.addButtonManipulator.ordonator.set(2,self.addFormationObject);
+    self.addFormationObject.position(-self.plusDim,0);
+
+    function onClickAddFormation(){
+        console.log("Tu as bien cliqué");
+        //display();
+    };
+
+    svg.addEvent(self.addFormationObject, "click", onClickAddFormation);
+    svg.addEvent(self.addFormationCadre, "click", onClickAddFormation);
+    svg.addEvent(self.addFormationButton.text, "click", onClickAddFormation);
+
+    self.legendManipulator = new Manipulator();
+    self.formationsManagerManipulator.last.add(self.legendManipulator.first);
+    self.legendManipulator.translator.move(document.body.clientWidth/2);
+    self.checkLegendSrc = "../resource/check.png";
+    self.checkLegend = displayImage(self.checkLegendSrc, self.dimImage, self.plusDim, self.plusDim).image;
+
+
 };
