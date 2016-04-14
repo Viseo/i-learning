@@ -222,7 +222,7 @@ var QuestionCreator = function (parent, question) {
             };
 
             var displayErrorMessage = function () {
-                removePreviewErrorMessage();
+                removeErrorMessage();
                 self.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
                 var anchor = 'middle';
                 var quizzInfoHeightRatio = 0.05;
