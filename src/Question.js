@@ -10,11 +10,11 @@ var Question = function (question,quizz) {
     var self = this;
     self.questionManipulator = new Manipulator();
     self.answersManipulator = new Manipulator();
-    self.questionManipulator.last.add(self.answersManipulator.translator);
+    self.questionManipulator.last.add(self.answersManipulator.first);
     self.resetManipulator = new Manipulator();
-    self.answersManipulator.last.add(self.resetManipulator.translator);
+    self.answersManipulator.last.add(self.resetManipulator.first);
     self.validateManipulator = new Manipulator();
-    self.answersManipulator.last.add(self.validateManipulator.translator);
+    self.answersManipulator.last.add(self.validateManipulator.first);
 
 
 
@@ -151,7 +151,7 @@ var Question = function (question,quizz) {
                     self.tileHeight = tmpTileHeight;
                 }
             }
-            self.questionManipulator.last.add(self.answersManipulator.translator);
+            self.questionManipulator.last.add(self.answersManipulator.first);
             //self.answersManipulator.translator.move(0,self.height/2+2*MARGIN);
             self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2);
 
@@ -174,7 +174,7 @@ var Question = function (question,quizz) {
                 self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
 
                 self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                    self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
+                self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
                 //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
