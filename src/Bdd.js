@@ -307,8 +307,77 @@ var myQuizzDemo={
     ],
     bgColor:myColors.raspberry, puzzleLines:3, puzzleRows:1
 };
+
+var uniqueAnswerValidationTab = [
+    function (quiz) {
+        // Check Quiz Name:
+        var isValid = (quiz.quizzName !== "");
+        var message = "Vous devez remplir le nom du quiz.";
+        return {isValid:isValid, message: message};
+    },
+    function (quiz) {
+        // Check Question Name:
+        var isValid = (quiz.questionCreator.label !== "") || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
+        var message = "Vous devez remplir le nom de la question.";
+        return {isValid:isValid, message: message};
+    },
+    function (quiz) {
+        // Check 1 Correct Answer:
+        var correctAnswers = 0;
+        quiz.questionCreator.tabAnswer.forEach(function (el) {
+            if (el instanceof AnswerElement) {
+                if (el.bCorrect) {
+                    correctAnswers++;
+                }
+            }
+        });
+        var isValid = (quiz.correctAnswers === 1);
+        var message = "Votre quiz doit avoir une bonne réponse.";
+        return {isValid:isValid, message: message};
+    },
+    function (quiz) {
+        // Check at least 1 valid answer:
+        var isFilled = false;
+        quiz.questionCreator.tabAnswer.forEach(function (el) {
+            if (el instanceof AnswerElement) {
+                isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
+            }
+        });
+        var isValid = isFilled;
+        var message = "Vous devez remplir au moins une réponse.";
+        return {isValid:isValid, message: message};
+    }
+];
+
+var multipleAnswerValidationTab = [
+    function (quiz) {
+        // Check Quiz Name:
+        var isValid = (quiz.quizzName !== "");
+        var message = "Vous devez remplir le nom du quiz.";
+        return {isValid:isValid, message: message};
+    },
+    function (quiz) {
+        // Check Question Name:
+        var isValid = (quiz.questionCreator.label !== "") || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
+        var message = "Vous devez remplir le nom de la question.";
+        return {isValid:isValid, message: message};
+    },
+    function (quiz) {
+        // Check at least 1 valid answer:
+        var isFilled = false;
+        quiz.questionCreator.tabAnswer.forEach(function (el) {
+            if (el instanceof AnswerElement) {
+                isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
+            }
+        });
+        var isValid = isFilled;
+        var message = "Vous devez remplir au moins une réponse.";
+        return {isValid:isValid, message: message};
+    }
+];
+
 var myQuizzType = {
     //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
-    tab: [{label:"Réponse unique", default:true}, {label:"Réponses multiples"}]
+    tab: [{label:"Réponse unique", default:true, validationTab:uniqueAnswerValidationTab}, {label:"Réponses multiples", default:false, validationTab:multipleAnswerValidationTab}]
+};
 
-}

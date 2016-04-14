@@ -130,7 +130,7 @@ var AnswerElement = function (answer, parent) {
 
 
             var displayErrorMessage = function () {
-                removeErrorMessage();
+                removePreviewErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
                 var bibRatio=0.2;
                 var previewButtonHeightRatio = 0.1;
@@ -158,7 +158,7 @@ var AnswerElement = function (answer, parent) {
                         contentarea: contentarea,
                         border: self.obj.cadre,
                         onblur: onblur,
-                        remove: removeErrorMessage,
+                        remove: removePreviewErrorMessage,
                         display: displayErrorMessage
                     });
                 };
@@ -168,7 +168,7 @@ var AnswerElement = function (answer, parent) {
                 contentarea: contentarea,
                 border: self.label.cadre,
                 onblur: onblur,
-                remove: removeErrorMessage,
+                remove: removePreviewErrorMessage,
                 display: displayErrorMessage
             });
             };
