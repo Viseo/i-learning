@@ -13,7 +13,15 @@ function FormationsManager(formations, additionalMessage) {
     self.addButtonHeight = 40;
     self.fontSize = 20;
     self.plusDim = self.fontSize * 2;
-    self.formations = formations.tab;
+    self.iconeSize = self.plusDim/1.5;
+
+    self.formations=[];
+    count = 0;
+    formations.tab.forEach(function (formation) {
+        self.formations[count] = new Formation(formation);
+        count ++;
+        //formation.display();
+    });
 
     self.formationsManagerManipulator = new Manipulator();
     self.addButtonManipulator = new Manipulator();
@@ -46,36 +54,45 @@ function FormationsManager(formations, additionalMessage) {
         self.addButtonManipulator.ordonator.set(0, self.addFormationCadre);
         self.imageSrc = "../resource/plusSign.svg.png";
         self.dimImage = {width: self.plusDim, height: self.plusDim};
-        self.addFormationObject = displayImage(self.imageSrc, self.dimImage, self.plusDim, self.plusDim).image;
-        self.addButtonManipulator.ordonator.set(2, self.addFormationObject);
-        self.addFormationObject.position(MARGIN, 0);
+        //self.addFormationObject = displayImage(self.imageSrc, self.dimImage, self.plusDim, self.plusDim).image;
+        //self.addButtonManipulator.ordonator.set(2, self.addFormationObject);
+        self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight,self.addButtonHeight);
+        self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
+        self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
+        self.addFormationObject.circle.position(MARGIN, 0);
 
-        svg.addEvent(self.addFormationObject, "click", onClickFormation);
+
+        svg.addEvent(self.addFormationObject.circle, "click", onClickFormation);
+        svg.addEvent(self.addFormationObject.plus, "click", onClickFormation);
         svg.addEvent(self.addFormationCadre, "click", onClickFormation);
         svg.addEvent(self.addFormationButton, "click", onClickFormation);
 
         self.legendManipulator.translator.move(document.body.clientWidth / 1.5, 0);
         self.legendDim = self.plusDim / 2;
 
-        self.checkLegendSrc = "../resource/check.png";
-        self.checkLegend = displayImage(self.checkLegendSrc, self.dimImage, self.legendDim, self.legendDim).image;
-        self.legendManipulator.ordonator.set(2, self.checkLegend);
+        console.log(self.addButtonHeight);
+        self.checkLegend = drawCheckSquare(0, 0, self.iconeSize);
+        self.legendManipulator.ordonator.set(2, self.checkLegend.square);
+        //self.checkLegend.square.position(self.plusDim/2, self.plusDim/2);
+        self.legendManipulator.ordonator.set(3, self.checkLegend.check);
         self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator);
+        self.headerHeightFormation = self.addButtonHeight + 2*MARGIN + drawing.height * self.header.size;
         self.checkManipulator.translator.move(self.published.text.component.getBBox().width, 0);
         self.published.text.position(0, self.published.text.y);
 
-        self.exclamationLegendSrc = "../resource/exclamation.png";
-        self.exclamationLegend = displayImage(self.exclamationLegendSrc, self.dimImage, self.legendDim, self.legendDim).image;
-        self.exclamationManipulator.ordonator.set(3, self.exclamationLegend);
+        //self.exclamationLegendSrc = "../resource/exclamation.png";
+        //self.exclamationLegend = displayImage(self.exclamationLegendSrc, self.dimImage, self.legendDim, self.legendDim).image;
+        //self.exclamationManipulator.ordonator.set(3, self.exclamationLegend);
+        self.exclamationLegend = drawExclamationCircle(self.iconeSize);
+        self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
+        self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
+        self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
         self.exclamationManipulator.translator.move(document.body.clientWidth / 12, 0);
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator);
         self.toPublish.text.position(self.toPublish.text.component.getBBox().width / 2 + self.legendDim, self.toPublish.text.y);
     }
 
-    self.formations.forEach(function (formation) {
-        formation.formationManipulator = new Manipulator();
-        //formation.display();
-    });
+
 
 
     self.formations.sort(function (a, b) {
@@ -87,33 +104,39 @@ function FormationsManager(formations, additionalMessage) {
         return 0
     });
 
+    self.displayHeaderFormations();
 
     self.puzzleRows = 6;
-    self.tileWidth = 20;
-    self.tileHeight = 20;
-    self.initialFormationsPosX = 0;
+
+    self.initialFormationsPosX = MARGIN;
     self.rows = 6;
+    self.lines = 4;
+
+    self.tileWidth= (drawing.width - 2*MARGIN * (self.rows +1)) / self.rows;
+
+    self.tileHeight = Math.floor(((drawing.height-self.headerHeightFormation- 2*MARGIN * (self.rows +1)))/self.lines);
 
     self.displayFormations = function(){
-        var posx = 0;
-        var posy = 0;
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
         var count = 0;
         for (var i = 0; i < self.formations.length; i++) {
             if (i !== 0) {
-                posx += (self.tileWidth + MARGIN);
+                posx += (self.tileWidth + 2*MARGIN);
             }
             if (count > (self.rows - 1)) {
                 count = 0;
-                posy += (self.tileHeight + MARGIN);
+                posy += (self.tileHeight + 2*MARGIN);
                 posx = self.initialFormationsPosX;
             }
 
-            self.formationsManipulator.last.add(self.formations[i].formationManipulator.first);
+            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+            self.formationsManipulator.translator.move(self.tileWidth/2-MARGIN,self.tileHeight/2+2*MARGIN);
 
             console.log(self.formations[i]);
             console.log(posx + " ___ " + posy);
-            //self.formations[i].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
-            //self.formations[i].formationManipulator.translator.move(posx - (self.rows - 1) * self.tileWidth / 2 - (self.rows - 1) * MARGIN / 2, posy + MARGIN);
+            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
 
             (function (element) {
                 if (element.bordure) {
@@ -140,7 +163,6 @@ function FormationsManager(formations, additionalMessage) {
         }
     }
 
-    self.displayHeaderFormations();
     self.displayFormations();
 
 };

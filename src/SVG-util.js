@@ -2,6 +2,13 @@
  * Created by qde3485 on 29/02/16.
  */
 
+var drawExclamationCircle = function(size){
+    var self = this;
+    self.circle = new svg.Circle(size/2).color(myColors.orange);
+    self.exclamation = new svg.Rect(size/7, size/2.5).position(0, -size/6).color(myColors.white);
+    self.dot = new svg.Rect(size/6.5, size/6.5).position(0, size/4).color(myColors.white);
+    return self;
+}
 
 var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
@@ -26,13 +33,25 @@ var checkAllCheckBoxes = function (sender) {
     return allNotChecked;
 };
 
-var drawPathChecked = function (sender, x, y, size){
-    svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
-    sender.obj.checked = new svg.Path(x, y).move(x-.3*size,y-.1*size)
+var drawCheck = function(x, y, size){
+    return new svg.Path(x, y).move(x-.3*size,y-.1*size)
         .line(x-.1*size,y+.2*size).line(x+.3*size,y-.3*size)
         .color(myColors.none, 3, myColors.black);
+};
+
+var drawPathChecked = function (sender, x, y, size){
+    svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
+    sender.obj.checked = drawCheck(x, y, size);
     svg.addEvent(sender.obj.checked, "click", onclickFunction);
     sender.manipulator.ordonator.set(8, sender.obj.checked);
+};
+
+var drawCheckSquare = function(x, y, size){
+    console.log(size);
+    var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
+    var square = new svg.Rect(size, size).color(myColors.green);
+    console.log(square);
+    return {check: check, square: square};
 };
 
 var updateAllCheckBoxes = function (sender) {
@@ -313,6 +332,21 @@ var drawPlus =function(x,y,w,h) {
     path.color(myColors.black);
     return path;
 };
+
+/**
+ *
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ */
+
+var drawPlusWithCircle =function(x,y,w,h) {
+    var circle = new svg.Circle(w/2).color(myColors.black);
+    var plus = drawPlus(x, y, w-1.5*MARGIN, h-1.5*MARGIN).color(myColors.lightgrey);
+    return {circle:circle, plus:plus};
+}
+
 
 /**
  *
