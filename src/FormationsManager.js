@@ -48,11 +48,11 @@ function FormationsManager(formations, additionalMessage) {
     //
     self.checkManipulator = new Manipulator();
     self.headerManipulator.last.add(self.checkManipulator.first);
-    self.checkManipulator.first.move(drawing.width*0.60, 30);
+    //self.checkManipulator.first.move(drawing.width*0.60, 30);
 
     self.exclamationManipulator = new Manipulator();
     self.headerManipulator.last.add(self.exclamationManipulator.first);
-    self.exclamationManipulator.first.move(drawing.width*0.80, 30);
+    //self.exclamationManipulator.first.move(drawing.width*0.80, 30);
 
     self.formationsManipulator = new Manipulator();
     self.manipulator.last.add(self.formationsManipulator.first);
@@ -101,7 +101,11 @@ function FormationsManager(formations, additionalMessage) {
             self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator).text.anchor("start");
             self.toPublish.position(25, self.toPublish.y);
 
-            self.legendWidth = self.toPublish.component.getBBox().width + 6 * MARGIN + 2 * self.iconeSize + self.published.component.getBBox().width;
+            self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width;
+
+            self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
+            self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
+
 
             //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
             //self.checkManipulator.translator.move(self.published.component.getBBox().width, 0);
