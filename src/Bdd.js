@@ -34,9 +34,10 @@ var myColors={
 var myBib= {
     title: "Bibliotheque",
             tabSrcImg: [
+                {imgSrc: "../resource/littleCat.png"},
                 {imgSrc: "../resource/millions.png"},
-                {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/folder.png"}
+                {imgSrc: "../resource/folder.png"},
+                {imgSrc: "../resource/cerise.jpg"}
             ],
             font:"Courier New", fontSize:20
         };

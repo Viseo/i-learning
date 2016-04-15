@@ -17,7 +17,7 @@ var QuestionCreator = function (parent, question) {
     self.manipulatorQuestionCreator = new Manipulator();
     self.manipulator.last.add(self.manipulatorQuestionCreator.first);
 
-    self.questionManipulator=new Manipulator();
+    self.questionManipulator = new Manipulator();
     self.manipulatorQuestionCreator.last.add(self.questionManipulator.first);
 
     self.toggleButtonManipulator = new Manipulator();
@@ -172,7 +172,6 @@ var QuestionCreator = function (parent, question) {
                 self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
             }else{
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
-
             }
 
             self.questionBlock.title.content.color(color);
@@ -190,19 +189,20 @@ var QuestionCreator = function (parent, question) {
             var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
             textarea.width = self.w - 2 * MARGIN;
-            var decalageImage;
-            if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
-                textarea.height = self.questionBlock.title.content.component.getBBox().height;//self.questionBlock.title.content.component.getBBox().height;
-                decalageImage = -textarea.height + 1;
-            }
-            else{
-                textarea.height = (self.h * .25)/2;//self.questionBlock.title.content.component.getBBox().height;
-                decalageImage = MARGIN;
-            }
+
+            //(self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (textarea.height = self.questionBlock.title.content.component.getBBox().height) : (textarea.height = (self.h * .25)/2);
+            textarea.height = (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
 
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
-            textarea.setAttribute("style", "position: relative; top:" + (decalageImage - drawing.height + textarea.globalPointCenter.y) + "px; left:" + (MARGIN + textarea.globalPointCenter.x) + "px; width:" + (self.w - 6 * MARGIN) + "px; height:" + (textarea.height) + "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
+
+            var contentareaStyle = {
+                toppx: (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
+                leftpx: (MARGIN + textarea.globalPointCenter.x),
+                width: (self.w - 6 * MARGIN),
+                height: (textarea.height)
+            };
+            textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
