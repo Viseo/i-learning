@@ -30,8 +30,16 @@
         var mainManipulator = drawing.manipulator;
 
         var admin = function () {
-            var header = new Header("Formation : Hibernate");
+            var header = new Header();
             header.display();
+
+            setTimeout(function () {
+                header.setMessage("Formation : Hibernate");
+            }, 1000);
+
+            setTimeout(function () {
+                header.removeMessage();
+            }, 2000);
         };
     </script>
     <script>admin();</script>
