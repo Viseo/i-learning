@@ -13,7 +13,7 @@ var BibImage = function (bibimage) {
     self.tabSrcImg = [];
     self.tabSrcImg = bibimage.tabSrcImg;
     self.imgManipulators=[];
-    self.imageWidth =50;
+    self.imageWidth = 50;
     self.imageHeight = 50;
     self.imageMargin = 5;
 
@@ -65,21 +65,21 @@ var BibImage = function (bibimage) {
         self.bibManipulator.last.add(self.bordure);
         self.title = autoAdjustText("Bibliothèque", 0, 0, w, (1/10)*h, null, self.font, self.bibManipulator).text;
         self.title.position(w/2, (1/20)*h);
-        var res = Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
-        self.imageMargin=(w-(res*self.imageWidth))/(res+1);
+        var maxImagesPerLine = Math.floor((w-self.imageMargin)/(self.imageWidth+self.imageMargin));
+        self.imageMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
         var tempY = (2/10*h);
 
     for (var i = 0; i<self.tabSrcImg.length; i++) {
 
-        if (i%res === 0 && i!=0){
+        if (i%maxImagesPerLine === 0 && i!=0){
             tempY += self.imageHeight+self.imageMargin;
         }
         self.imgManipulators[i] = new Manipulator();
         self.bibManipulator.last.add(self.imgManipulators[i].first);
-        var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i],self.imageWidth, self.imageHeight,self.imgManipulators[i] );
+        var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.imgManipulators[i]);
         self.imgManipulators[i].ordonator.set(0,objectTotal.image);
-        objectTotal.image.position(x+self.imageMargin+((i%res)*(self.imageMargin+self.imageWidth)+self.imageWidth/2), tempY);
-
+        var X=x+self.imageMargin+((i%maxImagesPerLine)*(self.imageMargin+self.imageWidth));
+        self.imgManipulators[i].first.move(X, tempY);
     }
         self.bibManipulator.first.move(x,y);
         self.imgManipulators.forEach(function(e){
