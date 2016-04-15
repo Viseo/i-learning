@@ -34,13 +34,13 @@ var myColors={
 var myBib= {
     title: "Bibliotheque",
             tabSrcImg: [
+                {imgSrc: "../resource/littleCat.png"},
                 {imgSrc: "../resource/millions.png"},
-                {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/folder.png"}
+                {imgSrc: "../resource/folder.png"},
+                {imgSrc: "../resource/cerise.jpg"}
             ],
             font:"Courier New", fontSize:20
         };
-
 
 var questionWithLabelImageAndMultipleAnswers = {
 label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
@@ -381,4 +381,32 @@ var myQuizzType = {
     //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
     tab: [{label:"Réponse unique", default:true, validationTab:uniqueAnswerValidationTab}, {label:"Réponses multiples", default:false, validationTab:multipleAnswerValidationTab}]
 };
+
+var statusEnum = {
+    Published:{icon: function(x, y, size){
+        var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
+        var square = new svg.Rect(size, size).color(myColors.green);
+        return {check: check, square: square};
+    }
+    },
+    Edited: {icon: function(size){
+        var self = this;
+        self.circle = new svg.Circle(size/2).color(myColors.orange);
+        self.exclamation = new svg.Rect(size/7, size/2.5).position(0, -size/6).color(myColors.white);
+        self.dot = new svg.Rect(size/6.5, size/6.5).position(0, size/4).color(myColors.white);
+        return self;
+    }
+    },
+    NotPublished: {icon: null}
+};
+
+var myFormations = {
+    tab: [{label:"Hibernate",status:statusEnum.NotPublished}, {label:"Perturbation Ordre Alphabétique",status:statusEnum.Published}, {label:"HTML3",status:statusEnum.Edited}, {label:"Javascript"},
+        {label:"Nouvelle formation"}, {label:"Une autre formation",status:statusEnum.Edited}, {label:"Formation suivante"}, {label:"AA"},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
+        {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante"}, {label:"AA",status:statusEnum.Published},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
+        {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante",status:statusEnum.Edited}, {label:"AA"}, {label: "ZEdernier"}]
+}
+
+
+
 

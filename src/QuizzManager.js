@@ -120,7 +120,13 @@ function QuizzManager(){
 
             var textarea = document.createElement("TEXTAREA");
             textarea.value = self.quizzName;
-            textarea.setAttribute("style", "position: absolute; top:" + (self.quizzInfoHeight-self.quizzNameHeight/4+1) + "px; left:" + (x+MARGIN/2 + 1) + "px; width:" + (700) + "px; height:" + (self.quizzNameHeight+3) + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+            var contentareaStyle = {
+                toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),
+                leftpx: (x+MARGIN/2 + 1),
+                width: 700,
+                height:(self.quizzNameHeight+3)
+            };
+            textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
             var body = document.getElementById("content");
             body.appendChild(textarea).focus();
 
@@ -265,7 +271,7 @@ function QuizzManager(){
         self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
         self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, 0);
 
-        self.questionPuzzle.
+        //self.questionPuzzle.// !! hep, par ici!
 
         for(var i=0;i<self.quizz.tabQuestions.length;i++){
         (function (element) {

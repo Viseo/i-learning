@@ -18,8 +18,13 @@
     <script src="Quizz.js"></script>
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
+    <script src="BibImage.js"></script>
     <script src="SVG-global-handler.js"></script>
     <script src="SVG-util.js"></script>
+    <script src="QuizzManager.js"></script>
+    <script src="Header.js"></script>
+    <script src="Formation.js"></script>
+    <script src="FormationsManager.js"></script>
     <script>
         var imageController = ImageController();
         var asyncTimerController=AsyncTimerController();
@@ -28,11 +33,9 @@
         var drawing = drawings.drawing;
         var mainManipulator = drawing.manipulator;
 
-        var admin = function () {
-            var questionCreator = new QuestionCreator();
-            questionCreator.display(1,1,document.body.clientWidth,drawing.height);
-        };
+            var quizzManager = new QuizzManager ();
+            quizzManager.display();
     </script>
-    <script>admin();</script>
+
 </body>
 </html>

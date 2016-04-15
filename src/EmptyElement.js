@@ -94,15 +94,20 @@ var AnswerElement = function (answer, parent) {
         };
 
     self.display = function (x, y, w, h) {
+        self.checkboxSize=h*0.2;
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
             if(self.linkedAnswer.image){
-                var img = self.linkedAnswer.image;
-                self.obj = displayImageWithTitle(text, img.src, img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+                self.img = self.linkedAnswer.image;
+                self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+                self.obj.content.position((self.checkboxSize/2),0);
+
             }
             else{
                 self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+                self.obj.content.position((self.checkboxSize/2),0);
+
             }
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
@@ -120,7 +125,13 @@ var AnswerElement = function (answer, parent) {
             contentarea.height = self.obj.content.component.getBBox().height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
             self.manipulator.ordonator.unset(1, self.obj.content);
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentarea.globalPointCenter.y-MARGIN+2)+"px; left:"+(contentarea.globalPointCenter.x+3*MARGIN)+"px; width:"+(w-6*MARGIN-2)+"px; height:"+(h*.8-6*MARGIN)+"px; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
+            var contentareaStyle = {
+                toppx: (self.manipulator.ordonator.children[2] instanceof svg.Image) ? (contentarea.globalPointCenter.y - 8) : (contentarea.globalPointCenter.y - MARGIN / 2 - 3),
+                leftpx: contentarea.globalPointCenter.x + 5 * MARGIN,
+                height:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? contentarea.height : (h*.5),
+                width:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? (self.obj.cadre.component.getBBox().width-6*MARGIN-2) : (self.obj.cadre.component.getBBox().width-6*MARGIN-2)
+            };
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
             var body = document.getElementById("content");
             body.appendChild(contentarea).focus();
@@ -135,7 +146,7 @@ var AnswerElement = function (answer, parent) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var bibRatio=0.2;
+                var bibRatio = 0.2;
                 var previewButtonHeightRatio = 0.1;
                 var marginErrorMessagePreviewButton = 0.03;
                 var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN);
@@ -177,11 +188,11 @@ var AnswerElement = function (answer, parent) {
         };
         self.manipulator.last.flush();
         showTitle();
-        self.checkboxSize=h*0.2;
+
         self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
         self.checkbox.checkbox.answerParent = self;
-        self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
-        self.manipulator.ordonator.set(6, self.cBLabel);
+       // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
+       // self.manipulator.ordonator.set(6, self.cBLabel);
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });
