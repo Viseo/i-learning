@@ -64,7 +64,6 @@ function FormationsManager(formations, additionalMessage) {
         svg.addEvent(self.addFormationCadre, "click", onClickFormation);
         svg.addEvent(self.addFormationButton, "click", onClickFormation);
 
-        self.legendManipulator.translator.move(document.body.clientWidth / 1.26, 0);
         self.legendDim = self.plusDim / 2;
 
         self.checkLegend = drawCheckSquare(0, 0, self.iconeSize);
@@ -72,15 +71,19 @@ function FormationsManager(formations, additionalMessage) {
         self.legendManipulator.ordonator.set(3, self.checkLegend.check);
         self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator);
         self.headerHeightFormation = self.addButtonHeight + 2*MARGIN + drawing.height * self.header.size;
-        self.checkManipulator.translator.move(self.published.text.component.getBBox().width, 0);
         self.published.text.position(0, self.published.text.y);
 
         self.exclamationLegend = drawExclamationCircle(self.iconeSize);
         self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
         self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
-        self.exclamationManipulator.translator.move(document.body.clientWidth / 12, 0);
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator);
+
+        self.legendWidth = self.toPublish.text.component.getBBox().width + 6*MARGIN + 2*self.iconeSize + self.published.text.component.getBBox().width;
+
+        self.legendManipulator.translator.move(drawing.width-self.legendWidth, 0);
+        self.checkManipulator.translator.move(self.published.text.component.getBBox().width, 0);
+        self.exclamationManipulator.translator.move(2*self.published.text.component.getBBox().width, 0);
         self.toPublish.text.position(self.toPublish.text.component.getBBox().width / 2 + self.legendDim, self.toPublish.text.y);
     }
 
@@ -121,7 +124,7 @@ function FormationsManager(formations, additionalMessage) {
             }
 
             self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
-            self.formationsManipulator.translator.move(self.tileWidth/2-MARGIN,self.tileHeight/2+2*MARGIN);
+            self.formationsManipulator.translator.move(self.tileWidth/2-MARGIN,self.tileHeight/2+3*MARGIN);
 
             self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
             self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
