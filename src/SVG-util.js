@@ -47,10 +47,8 @@ var drawPathChecked = function (sender, x, y, size){
 };
 
 var drawCheckSquare = function(x, y, size){
-    console.log(size);
     var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
     var square = new svg.Rect(size, size).color(myColors.green);
-    console.log(square);
     return {check: check, square: square};
 };
 
