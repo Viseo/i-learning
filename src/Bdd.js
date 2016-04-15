@@ -41,6 +41,15 @@ var myBib= {
             font:"Courier New", fontSize:20
         };
 
+var formation = {
+
+};
+
+var statusEnum = {
+    Published: {icone: "../resource/check.png"},
+    Edited: {icone: "../resource/exclamation.png"},
+    NotPublished: {icone: null}
+};
 
 var questionWithLabelImageAndMultipleAnswers = {
 label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
