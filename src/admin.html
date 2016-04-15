@@ -18,6 +18,7 @@
     <script src="Quizz.js"></script>
     <script src="EmptyElement.js"></script>
     <script src="QuestionCreator.js"></script>
+    <script src="Header.js"></script>
     <script src="SVG-global-handler.js"></script>
     <script src="SVG-util.js"></script>
     <script>
@@ -29,8 +30,16 @@
         var mainManipulator = drawing.manipulator;
 
         var admin = function () {
-            var questionCreator = new QuestionCreator();
-            questionCreator.display(1,1,document.body.clientWidth,drawing.height);
+            var header = new Header();
+            header.display();
+
+            setTimeout(function () {
+                header.setMessage("Formation : Hibernate");
+            }, 1000);
+
+            setTimeout(function () {
+                header.removeMessage();
+            }, 2000);
         };
     </script>
     <script>admin();</script>
