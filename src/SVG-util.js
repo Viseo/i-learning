@@ -8,7 +8,7 @@ var drawExclamationCircle = function(size){
     self.exclamation = new svg.Rect(size/7, size/2.5).position(0, -size/6).color(myColors.white);
     self.dot = new svg.Rect(size/6.5, size/6.5).position(0, size/4).color(myColors.white);
     return self;
-}
+};
 
 var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
