@@ -7,7 +7,7 @@ function FormationsManager(formations, additionalMessage) {
 
     self.header = new Header(additionalMessage);
     self.x = MARGIN;
-    self.y = drawing.height * self.header.size + 3 * MARGIN; //self.ilearningBandeau.height
+    self.y = drawing.height * self.header.size + 3 * MARGIN;
     self.addButtonWidth = 330;
     self.addButtonHeight = 40;
     self.fontSize = 20;
@@ -27,7 +27,6 @@ function FormationsManager(formations, additionalMessage) {
     formations.tab.forEach(function (formation) {
         self.formations[count] = new Formation(formation);
         count ++;
-        //formation.display();
     });
 
     self.manipulator = new Manipulator();
@@ -35,24 +34,18 @@ function FormationsManager(formations, additionalMessage) {
     mainManipulator.ordonator.set(1, self.manipulator.first);
 
     self.headerManipulator = new Manipulator();
-    self.manipulator.ordonator.set(0, self.headerManipulator.first);
+    self.manipulator.last.add(self.headerManipulator.first);
+
 
     self.addButtonManipulator = new Manipulator();
     self.headerManipulator.last.add(self.addButtonManipulator.first);
     self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
 
-    //self.header.manipulator.last.add(self.formationsManagerManipulator.first);
-
-    //self.legendManipulator = new Manipulator();
-    //self.headerManipulator.last.add(self.legendManipulator.first);
-    //
     self.checkManipulator = new Manipulator();
     self.headerManipulator.last.add(self.checkManipulator.first);
-    //self.checkManipulator.first.move(drawing.width*0.60, 30);
 
     self.exclamationManipulator = new Manipulator();
     self.headerManipulator.last.add(self.exclamationManipulator.first);
-    //self.exclamationManipulator.first.move(drawing.width*0.80, 30);
 
     self.formationsManipulator = new Manipulator();
     self.manipulator.last.add(self.formationsManipulator.first);
@@ -61,7 +54,12 @@ function FormationsManager(formations, additionalMessage) {
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
         //formation.display();
-    }
+    };
+
+    function onClickNewFormation() {
+        console.log("Tu as bien cliqué pour ajouter une formation");
+        //formation.display();
+    };
 
     self.display = function() {
         self.header.display();
@@ -80,11 +78,12 @@ function FormationsManager(formations, additionalMessage) {
             self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
             self.addFormationObject.circle.position(MARGIN, 0);
 
+            svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
+            svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
+            svg.addEvent(self.addFormationCadre, "click", onClickNewFormation);
+            svg.addEvent(self.addFormationButton, "click", onClickNewFormation);
 
-            svg.addEvent(self.addFormationObject.circle, "click", onClickFormation);
-            svg.addEvent(self.addFormationObject.plus, "click", onClickFormation);
-            svg.addEvent(self.addFormationCadre, "click", onClickFormation);
-            svg.addEvent(self.addFormationButton, "click", onClickFormation);
+            console.log(self.addFormationObject.plus);
 
             self.legendDim = self.plusDim / 2;
 
