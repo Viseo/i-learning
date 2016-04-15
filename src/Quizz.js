@@ -11,17 +11,21 @@
 function Quizz(quizz, previewMode) {
     var self=this;
 
-    self.quizzManipulator = new Manipulator();
+    self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
     mainManipulator.ordonator.set(0, self.quizzManipulator.first);
 
-    self.tabQuestions=[];
-    if (quizz.tabQuestions !== null) {
-        quizz.tabQuestions.forEach(function (it) {
-            var tmp = new Question(it, self);
-            self.tabQuestions.push(tmp);
-        });
-    }
+    //self.tabQuestions=[];
+    self.loadQuestions=function(quizz){
+        if (quizz.tabQuestions !== null) {
+            self.tabQuestions=[];
+            quizz.tabQuestions.forEach(function (it) {
+                var tmp = new Question(it, self);
+                self.tabQuestions.push(tmp);
+            });
+        }
+    };
+    self.loadQuestions(quizz);
 
     (previewMode) ? (self.previewMode = previewMode):(self.previewMode = false);
     quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows): (self.puzzleRows = 2);
@@ -59,7 +63,7 @@ function Quizz(quizz, previewMode) {
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.drawing=drawing;
-    self.title=quizz.title;
+    self.title=quizz.title?quizz.title:'';
 
     self.currentQuestionIndex=-1;
     self.finalMessage="";
@@ -122,8 +126,8 @@ function Quizz(quizz, previewMode) {
             usedColor=color;
         }
 
-        self.resultManipulator = new Manipulator();
-        self.scoreManipulator=new Manipulator();
+        self.resultManipulator = new Manipulator(self);
+        self.scoreManipulator=new Manipulator(self);
         self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+MARGIN);
         self.resultManipulator.last.add(self.scoreManipulator.first);
         self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
@@ -230,7 +234,7 @@ function Quizz(quizz, previewMode) {
 
 
     self.displayResult=function(color){
-        //self.resultManipulator = new Manipulator();
+        //self.resultManipulator = new Manipulator(self);
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
         self.puzzle.display(0, self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);

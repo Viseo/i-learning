@@ -6,6 +6,11 @@
 var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
 };
+
+var toType = function(obj) {
+    return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+};
+
 /**
  *
  * @param x
@@ -316,7 +321,7 @@ var drawPlus =function(x,y,w,h) {
  * @param handler
  */
 
-var drawArrow = function(x,y,w,h,handler,manipulator){
+var drawArrow = function(x,y,w,h,manipulator){
     // x [55;295] y [10;350]
     var baseWidth=160;//295-55;
     var baseHeight=300;//385-10;
@@ -343,15 +348,7 @@ var drawArrow = function(x,y,w,h,handler,manipulator){
     chevron.tempHeight=baseHeight;
     arrowManipulator.last.add(chevron);
 
-    if(handler) {
-        chevron.color(myColors.black);
-        svg.addEvent(chevron, "click", handler);
-    }else{
-        chevron.color(myColors.grey);
-        if(chevron.onClick!==null){
-            svg.removeEvent(chevron,'click',chevron.onClick);
-        }
-    }
+
     if(chevron.tempWidth> w) {
         chevron.tempHeight *= w/chevron.tempWidth;
         chevron.tempWidth = w;
@@ -362,7 +359,7 @@ var drawArrow = function(x,y,w,h,handler,manipulator){
     }
 
     arrowManipulator.scalor.scale(chevron.tempHeight/baseHeight);
-    //return arrowManipulator;
+    return chevron;
 };
 
 Function.prototype.clone = function() {

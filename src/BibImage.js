@@ -5,7 +5,7 @@
 
 var BibImage = function (bibimage) {
     var self = this;
-    self.bibManipulator = new Manipulator();
+    self.bibManipulator = new Manipulator(self);
     //mainManipulator.ordonator.set(1,self.bibManipulator.first);
     self.title = bibimage.title;
     self.tabImgBib = [];
@@ -74,7 +74,7 @@ var BibImage = function (bibimage) {
         if (i%res === 0 && i!=0){
             tempY += self.imageHeight+self.imageMargin;
         }
-        self.imgManipulators[i] = new Manipulator();
+        self.imgManipulators[i] = new Manipulator(self);
         self.bibManipulator.last.add(self.imgManipulators[i].first);
         var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i],self.imageWidth, self.imageHeight,self.imgManipulators[i] );
         self.imgManipulators[i].ordonator.set(0,objectTotal.image);
@@ -86,7 +86,7 @@ var BibImage = function (bibimage) {
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
                 var elementCopy = e.ordonator.children[0];
                 //drawings.piste.add(clone(elementCopy));
-                var manip = new Manipulator();
+                var manip = new Manipulator(self);
                 drawings.piste.last.add(manip.first);
 
                 var img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
@@ -118,11 +118,27 @@ var BibImage = function (bibimage) {
                         //    target.parent.children[0].unset(i);
                         //}
                         //target.parent.children[0].add(newQuest);
-                        oldQuest.cadre.position(target.parent.parentManip.ordonator.children[0].x, target.parent.parentManip.ordonator.children[0].y);
-                        oldQuest.content.position(target.parent.parentManip.ordonator.children[1].x, target.parent.parentManip.ordonator.children[1].y)
+                        oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+                        oldQuest.content.position(newQuest.content.x,newQuest.content.y);
+
+                        img._acceptDrop = true;
+                        var type= target.parent.parentManip.parentObject instanceof QuestionCreator;
+                        var type2=target.parent.parentManip.parentObject instanceof AnswerElement;
+                        switch(true){
+
+                            case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                                target.parent.parentManip.parentObject.linkedQuestion.image=img;
+                                target.parent.parentManip.parentObject.linkedQuestion.imageSrc=img.src;
+                                break;
+                            case target.parent.parentManip.parentObject instanceof AnswerElement:
+                                target.parent.parentManip.parentObject.linkedAnswer.image=img;
+                                target.parent.parentManip.parentObject.linkedAnswer.imageSrc=img.src;
+                                break;
+                        }
+
+
                         target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                         target.parent.parentManip.ordonator.set(1, oldQuest.content);
-                        target.parent.parentManip.ordonator.children[2]._acceptDrop = true;
                     }
 
                 };

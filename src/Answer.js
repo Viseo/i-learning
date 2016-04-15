@@ -12,9 +12,16 @@
  * @constructor
  */
 /*label, imageSrc, bCorrect, colorBordure, bgColor*/
-var Answer = function (answer) {
+var Answer = function (answerParameters) {
     var self = this;
-    self.answerManipulator=new Manipulator();
+
+    var answer={
+        label:'New Answer',
+        imageSrc:null,
+        bCorrect:false
+    };
+    answerParameters && (answer=answerParameters);
+    self.answerManipulator=new Manipulator(self);
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;

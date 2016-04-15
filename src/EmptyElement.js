@@ -4,7 +4,7 @@
 
 var AddEmptyElement = function (parent) {
     var self = this;
-    self.manipulator = new Manipulator();
+    self.manipulator = new Manipulator(self);
     self.answerNameValidInput = true;
     self.label = "Double-cliquez pour ajouter une réponse";
     self.fontSize = 20;
@@ -24,7 +24,10 @@ var AddEmptyElement = function (parent) {
             self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
             self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
             self.manipulator.last.remove(self.plus);
-            self.parent.tabAnswer.push(new AnswerElement(null, self.parent));
+            var newAnswer=new Answer();
+            self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
+
+            self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
             if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
                 self.parent.tabAnswer.push(new AddEmptyElement(self.parent));
             }
@@ -42,8 +45,8 @@ var AddEmptyElement = function (parent) {
 var AnswerElement = function (answer, parent) {
     var self = this;
 
-    self.manipulator = new Manipulator();
-
+    self.manipulator = new Manipulator(self);
+    self.linkedAnswer=answer;
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
@@ -94,8 +97,8 @@ var AnswerElement = function (answer, parent) {
         var showTitle = function () {
             var text = (self.label) ? self.label : self.labelDefault;
             var color = (self.label) ? myColors.black : myColors.grey;
-            if(self.manipulator.ordonator.children[2] instanceof svg.Image){
-                var img = self.manipulator.ordonator.children[2];
+            if(self.linkedAnswer.image){
+                var img = self.linkedAnswer.image;
                 self.obj = displayImageWithTitle(text, img.src, img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
             }
             else{
@@ -172,6 +175,7 @@ var AnswerElement = function (answer, parent) {
                 display: displayErrorMessage
             });
         };
+        self.manipulator.last.flush();
         showTitle();
         self.checkboxSize=h*0.2;
         self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);

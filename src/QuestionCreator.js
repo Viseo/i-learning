@@ -8,22 +8,22 @@ var QuestionCreator = function (parent, question) {
     self.MAX_ANSWERS = 8;
     self.parent = parent;
 
-    self.manipulator = new Manipulator();
+    self.manipulator = new Manipulator(self);
     //mainManipulator.ordonator.set(0, self.manipulator.first);//!! à s'en inquiéter plus tard -> remplacer par .last.add
 
-    self.manipulatorQuizzInfo = new Manipulator();
+    self.manipulatorQuizzInfo = new Manipulator(self);
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
 
-    self.manipulatorQuestionCreator = new Manipulator();
+    self.manipulatorQuestionCreator = new Manipulator(self);
     self.manipulator.last.add(self.manipulatorQuestionCreator.first);
 
-    self.questionManipulator=new Manipulator();
+    self.questionManipulator=new Manipulator(self);
     self.manipulatorQuestionCreator.last.add(self.questionManipulator.first);
 
-    self.toggleButtonManipulator = new Manipulator();
+    self.toggleButtonManipulator = new Manipulator(self);
     self.manipulatorQuestionCreator.last.add(self.toggleButtonManipulator.first);
 
-    self.previewButtonManipulator = new Manipulator();
+    self.previewButtonManipulator = new Manipulator(self);
     self.manipulator.last.add(self.previewButtonManipulator.first);
 
     self.headerHeight = 0.1;
@@ -38,8 +38,28 @@ var QuestionCreator = function (parent, question) {
     self.labelDefault = "Cliquer deux fois pour ajouter la question";
     self.quizzType = myQuizzType.tab;
 
+    self.loadQuestion=function(quest){
+        self.linkedQuestion=quest;
+        self.multipleChoice = quest.multipleChoice;
+        self.simpleChoice = quest.simpleChoice;
+        self.tabAnswer = [];
+        quest.tabAnswer.forEach(function (answer) {
+            self.tabAnswer.push(new AnswerElement(answer,self));
+        });
+        self.quizzName = quest.parentQuizz.title;
+        self.label = quest.label;
+        self.rightAnswers = [];
+        self.fontSize = quest.fontSize;
+        self.tabAnswer.forEach(function (el) {
+            if (el.bCorrect) {
+                self.rightAnswers.push(el);
+            }
+        });
+    };
+
     if (!question) {
         // init default : 2 empty answers
+
         self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
         self.quizzName = "";
         self.label = "";
@@ -48,21 +68,7 @@ var QuestionCreator = function (parent, question) {
         self.multipleChoice = false;
         self.simpleChoice = true;
     } else {
-        self.multipleChoice = question.multipleChoice;
-        self.simpleChoice = question.simpleChoice;
-        self.tabAnswer = [];
-        question.tabAnswer.forEach(function (answer) {
-            self.tabAnswer.push(new AnswerElement(answer));
-        });
-        self.quizzName = question.parentQuizz.title;
-        self.label = question.label;
-        self.rightAnswers = [];
-        self.fontSize = question.fontSize;
-        self.tabAnswer.forEach(function (el) {
-            if (el.bCorrect) {
-                self.rightAnswers.push(el);
-            }
-        });
+        self.loadQuestion(question);
     }
 
     self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
@@ -84,6 +90,12 @@ var QuestionCreator = function (parent, question) {
     };
 
     self.display = function (x, y, w, h) {
+
+        self.previousX=x;
+        self.previousY=y;
+        self.previousW=w;
+        self.previousH=h;
+
         self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
         //var reponseAreaHeight=Math.floor(h*);
         self.manipulatorQuestionCreator.translator.move(x, 0);
@@ -143,7 +155,7 @@ var QuestionCreator = function (parent, question) {
         self.virtualTab=[];
         self.quizzType.forEach(function(type){
             self.virtualTab[i] = {};
-            self.virtualTab[i].manipulator= new Manipulator();
+            self.virtualTab[i].manipulator= new Manipulator(self);
             self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
             //type.default && (self.clicked = self.virtualTab[i]);
             (type.label == clicked) ? (self.virtualTab[i].color = myColors.blue) : (self.virtualTab[i].color = myColors.white);
@@ -167,8 +179,8 @@ var QuestionCreator = function (parent, question) {
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
-            if(self.questionManipulator.ordonator.children[2] instanceof svg.Image){
-                var img = self.questionManipulator.ordonator.children[2];
+            if(self.linkedQuestion.image){
+                var img = self.linkedQuestion.image;
                 self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
             }else{
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
@@ -260,8 +272,10 @@ var QuestionCreator = function (parent, question) {
         };
 
         // bloc Question
+        self.manipulatorQuestionCreator.last.flush();
         self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([], 1, myColors.black).position(self.w / 2, y + self.h / 2)};
         self.manipulatorQuestionCreator.last.add(self.questionBlock.rect);
+
         showTitle();
 
         // bloc Answers
@@ -269,7 +283,7 @@ var QuestionCreator = function (parent, question) {
             self.tabAnswer.push(new AddEmptyElement(self));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
-        self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);
+        self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);// !_! ça va pas! si on repasse plusieures fois ici ça craque!
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
     };
 

@@ -8,12 +8,12 @@
 
 var Question = function (question,quizz) {
     var self = this;
-    self.questionManipulator = new Manipulator();
-    self.answersManipulator = new Manipulator();
+    self.questionManipulator = new Manipulator(self);
+    self.answersManipulator = new Manipulator(self);
     self.questionManipulator.last.add(self.answersManipulator.first);
-    self.resetManipulator = new Manipulator();
+    self.resetManipulator = new Manipulator(self);
     self.answersManipulator.last.add(self.resetManipulator.first);
-    self.validateManipulator = new Manipulator();
+    self.validateManipulator = new Manipulator(self);
     self.answersManipulator.last.add(self.validateManipulator.first);
 
 
@@ -92,7 +92,9 @@ var Question = function (question,quizz) {
         if(typeof x!== 'undefined'){
             self.x = x;
         }
-        y && (self.y = y);
+        if(typeof y !== 'undefined' ){
+            self.y=y;
+        }
         w && (self.width = w);
         h && (self.height = h);
 

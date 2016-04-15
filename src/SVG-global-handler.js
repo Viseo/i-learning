@@ -17,9 +17,9 @@ if(typeof exports != "undefined") {
     exports.setSvg = setSvg;
 }
 
-var Manipulator = function(){
+var Manipulator = function(sourceObject){
     var self=this;
-
+    self.parentObject=sourceObject;
     self.translator = new svg.Translation(0,0);
     self.translator.parentManip=self;
     self.rotator = new svg.Rotation(0);
@@ -37,11 +37,11 @@ var Drawings = function (w, h) {
     var self = this;
 
     self.drawing = new svg.Drawing(w, h).show("content").position(0, 0);
-    self.drawing.manipulator = new Manipulator();
+    self.drawing.manipulator = new Manipulator(self);
     //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
-    //self.piste.manipulator = new Manipulator();
+    //self.piste.manipulator = new Manipulator(self);
     //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
-    //self.glass.manipulator = new Manipulator();
+    //self.glass.manipulator = new Manipulator(self);
 
     //self.glass.add(self.glass.manipulator.translator);
     //self.glass.manipulator.last.add(self.glass.area);
@@ -51,7 +51,7 @@ var Drawings = function (w, h) {
 
     //Pour la glace et la piste apres Refactor
     //self.piste = new svg.Drawing(w, h).show("content").position(0, 0);
-    self.piste = new Manipulator();
+    self.piste = new Manipulator(self);
     self.glass = new svg.Rect(w, h).position(w/2, h/2).opacity(0.001);
     self.drawing.add(self.drawing.manipulator.translator);
     self.drawing.manipulator.ordonator.set(8,self.piste.first).set(9,self.glass);
