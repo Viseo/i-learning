@@ -2,14 +2,6 @@
  * Created by qde3485 on 29/02/16.
  */
 
-var drawExclamationCircle = function(size){
-    var self = this;
-    self.circle = new svg.Circle(size/2).color(myColors.orange);
-    self.exclamation = new svg.Rect(size/7, size/2.5).position(0, -size/6).color(myColors.white);
-    self.dot = new svg.Rect(size/6.5, size/6.5).position(0, size/4).color(myColors.white);
-    return self;
-};
-
 var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
 };
@@ -44,12 +36,6 @@ var drawPathChecked = function (sender, x, y, size){
     sender.obj.checked = drawCheck(x, y, size);
     svg.addEvent(sender.obj.checked, "click", onclickFunction);
     sender.manipulator.ordonator.set(8, sender.obj.checked);
-};
-
-var drawCheckSquare = function(x, y, size){
-    var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
-    var square = new svg.Rect(size, size).color(myColors.green);
-    return {check: check, square: square};
 };
 
 var updateAllCheckBoxes = function (sender) {

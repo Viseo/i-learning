@@ -88,13 +88,13 @@ function FormationsManager(formations, additionalMessage) {
 
             self.legendDim = self.plusDim / 2;
 
-            self.checkLegend = drawCheckSquare(0, 0, self.iconeSize);
+            self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
             self.checkManipulator.ordonator.set(2, self.checkLegend.square);
             self.checkManipulator.ordonator.set(3, self.checkLegend.check);
             self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator).text.anchor("start");
             self.published.position(25, self.published.y);
 
-            self.exclamationLegend = drawExclamationCircle(self.iconeSize);
+            self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
             self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
             self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
             self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
@@ -132,6 +132,8 @@ function FormationsManager(formations, additionalMessage) {
                     posy += (self.tileHeight + 2 * MARGIN);
                     posx = self.initialFormationsPosX;
                 }
+
+                self.formations[i].parent = self;
                 self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
                 //self.formationsManipulator.translator.move(self.tileWidth / 2 - MARGIN, self.tileHeight / 2 + 3 * MARGIN);
                 self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
