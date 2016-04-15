@@ -140,21 +140,24 @@ function FormationsManager(formations, additionalMessage) {
                 self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
 
                 (function (element) {
-                    if (element.bordure) {
-                        svg.addEvent(element.bordure, "click", function () {
+                    if (element.miniature.cadre) {
+                        svg.addEvent(element.miniature.cadre, "click", function () {
                             onClickFormation(element);
                         });
                     }
-                    if (element.content) {
-                        svg.addEvent(element.content, "click", function () {
+
+                    if (element.miniature.content) {
+                        svg.addEvent(element.miniature.content, "click", function () {
                             onClickFormation(element);
                         });
                     }
-                    if (element.image) {
-                        svg.addEvent(element.image, "click", function () {
+
+                    if (element.miniature.image) {
+                        svg.addEvent(element.miniature.image, "click", function () {
                             onClickFormation(element);
                         });
                     }
+
                 })(self.formations[i]);
                 count++;
             }
