@@ -414,7 +414,19 @@ var myFormations = {
         {label:"Nouvelle formation"}, {label:"Une autre formation",status:statusEnum.Edited}, {label:"Formation suivante"}, {label:"AA"},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
         {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante"}, {label:"AA",status:statusEnum.Published},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
         {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante",status:statusEnum.Edited}, {label:"AA"}, {label: "ZEdernier"}]
-}
+};
+
+var myBibJeux= {
+    title: "Type de jeux",
+    tabJeuxBib: [
+        {label: "Quiz"},
+        {label: "BD"}
+    ],
+    font:"Courier New", fontSize:20
+};
+
+
+
 
 
 
