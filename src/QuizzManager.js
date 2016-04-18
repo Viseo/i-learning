@@ -142,7 +142,7 @@ function QuizzManager(){
                 var position = (textarea.getBoundingClientRect().left - MARGIN);
                 var anchor = 'start';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, h - MARGIN)
+                    .position(position, h+1)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
                 textarea.focus();

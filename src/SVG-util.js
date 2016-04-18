@@ -209,6 +209,25 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  * @param label : text to print
  * @param w : width
  * @param h : height
+ * @param rgbCadre : rgb color for circle
+ * @param bgColor : background color for circle
+ * @param textHeight : number, taille de la police
+ * @param font
+ * @param manipulator
+ * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
+ */
+var displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+    var cadre = new svg.Circle(w/2).color(bgColor,1,rgbCadre);
+    manipulator.ordonator.set(0, cadre);
+    return {content:content, cadre:cadre};
+};
+
+/**
+ *
+ * @param label : text to print
+ * @param w : width
+ * @param h : height
  * @param rgbCadre : rgb color for rectangle
  * @param bgColor : background color for rectangle
  * @param textHeight : number, taille de la police

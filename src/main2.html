@@ -12,6 +12,7 @@
 <script src="../ext-files/targetruntime.js"></script>
 <script src="../ext-files/runtimemock.js"></script>
 <script src="../ext-files/svghandler.js"></script>
+<script src="BibJeux.js"></script>
 <script src="Answer.js"></script>
 <script src="Question.js"></script>
 <script src="Puzzle.js"></script>
@@ -35,10 +36,14 @@
     var drawing = drawings.drawing;
     var mainManipulator = drawing.manipulator;
 
-
-   var formationsManager = new FormationsManager(myFormations);
+    var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
 
+//    var bibjeux=new BibJeux(myBibJeux);
+//    //self.bibWidthRatio=0.15;
+//    self.bibWidthRatio=0.17;
+//    self.bibWidth = drawing.width*self.bibWidthRatio;
+//    bibjeux.display(0,0,self.bibWidth,drawing.height-3*MARGIN);
 
 </script>
 </body>

@@ -60,6 +60,13 @@ function Quizz(quizz, previewMode) {
         w:drawing.width,
         h:600
     };
+
+    self.cadreBibJeux={
+        x:0,
+        y:210,
+        w:drawing.width,
+        h:600
+    };
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.drawing=drawing;

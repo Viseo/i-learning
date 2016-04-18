@@ -377,6 +377,15 @@ var multipleAnswerValidationTab = [
     }
 ];
 
+var formationValidation = [
+    function (formation) {
+        // Check Formation Name:
+        var isValid = (formation.formationName !== "");
+        var message = "Vous devez remplir le nom de la formation.";
+        return {isValid:isValid, message: message};
+    }
+];
+
 var myQuizzType = {
     //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
     tab: [{label:"Réponse unique", default:true, validationTab:uniqueAnswerValidationTab}, {label:"Réponses multiples", default:false, validationTab:multipleAnswerValidationTab}]
@@ -405,7 +414,19 @@ var myFormations = {
         {label:"Nouvelle formation"}, {label:"Une autre formation",status:statusEnum.Edited}, {label:"Formation suivante"}, {label:"AA"},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
         {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante"}, {label:"AA",status:statusEnum.Published},{label:"Hibernate"}, {label:"Perturbation Ordre Alphabétique"}, {label:"HTML3"}, {label:"Javascript"},
         {label:"Nouvelle formation"}, {label:"Une autre formation"}, {label:"Formation suivante",status:statusEnum.Edited}, {label:"AA"}, {label: "ZEdernier"}]
-}
+};
+
+var myBibJeux= {
+    title: "Type de jeux",
+    tabJeuxBib: [
+        {label: "Quiz"},
+        {label: "BD"}
+    ],
+    font:"Courier New", fontSize:20
+};
+
+
+
 
 
 
