@@ -14,14 +14,14 @@ var QuestionCreator = function (parent, question) {
     self.manipulatorQuizzInfo = new Manipulator(self);
     self.manipulator.last.add(self.manipulatorQuizzInfo.first);
 
-    self.manipulatorQuestionCreator = new Manipulator(self);
-    self.manipulator.last.add(self.manipulatorQuestionCreator.first);
+    self.questionCreatorManipulator= new Manipulator(self);
+    self.manipulator.last.add(self.questionCreatorManipulator.first);
 
     self.questionManipulator=new Manipulator(self);
-    self.manipulatorQuestionCreator.last.add(self.questionManipulator.first);
+    self.questionCreatorManipulator.last.add(self.questionManipulator.first);
 
     self.toggleButtonManipulator = new Manipulator(self);
-    self.manipulatorQuestionCreator.last.add(self.toggleButtonManipulator.first);
+    self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
 
     self.previewButtonManipulator = new Manipulator(self);
     self.manipulator.last.add(self.previewButtonManipulator.first);
@@ -98,7 +98,7 @@ var QuestionCreator = function (parent, question) {
 
         self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
         //var reponseAreaHeight=Math.floor(h*);
-        self.manipulatorQuestionCreator.translator.move(x, 0);
+        self.questionCreatorManipulator.translator.move(x, 0);
         self.toggleButtonHeight = 40;
         self.displayQuestionCreator(MARGIN+x,y, w, h);
         self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, myQuizzType.tab[0].label);
@@ -119,7 +119,7 @@ var QuestionCreator = function (parent, question) {
             }
             else if (self.simpleChoice){
                 self.tabAnswer.forEach(function(answer){
-                    answer.simpleAnswer = answer.bCorrect;
+                        answer.simpleAnswer = answer.bCorrect;
                     (answer.multipleAnswer==undefined) && (answer.multipleAnswer = false);
                 });
              }
@@ -229,7 +229,7 @@ var QuestionCreator = function (parent, question) {
 
             var removeErrorMessage = function () {
                 self.questionNameValidInput = true;
-                self.errorMessage && self.manipulatorQuestionCreator.ordonator.unset(5);
+                self.errorMessage && self.questionCreatorManipulator.ordonator.unset(5);
                 self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
             };
 
@@ -243,7 +243,7 @@ var QuestionCreator = function (parent, question) {
                     .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 console.log(self.quizzNameHeight);
-                self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
+                self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.questionNameValidInput = false;
             };
@@ -272,18 +272,18 @@ var QuestionCreator = function (parent, question) {
         };
 
         // bloc Question
-        self.manipulatorQuestionCreator.last.flush();
+        self.questionCreatorManipulator.last.flush();
         self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([], 1, myColors.black).position(self.w / 2, y + self.h / 2)};
-        self.manipulatorQuestionCreator.last.add(self.questionBlock.rect);
+        self.questionCreatorManipulator.last.add(self.questionBlock.rect);
 
         showTitle();
 
         // bloc Answers
         if (self.tabAnswer.length !== self.MAX_ANSWERS) {
-            self.tabAnswer.push(new AddEmptyElement(self));
+            self.tabAnswer.push(new AddEmptyElement(self, 'answer'));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
-        self.manipulatorQuestionCreator.last.add(self.puzzle.puzzleManipulator.first);// !_! ça va pas! si on repasse plusieures fois ici ça craque!
+        self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);// !_! ça va pas! si on repasse plusieurs fois ici ça craque!
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
     };
 

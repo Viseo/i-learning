@@ -2,8 +2,8 @@
  * Created by ABL3483 on 12/04/2016.
  */
 
-function QuizzManager(){
-    var self=this;
+function QuizzManager(quizz){
+    var self = this;
 
     self.formationName = "Hibernate";
     self.quizzName="";
@@ -14,22 +14,37 @@ function QuizzManager(){
         self.tabQuestions.push(new Question(myQuizz.tabQuestions[i],self.quizz));
     }
     self.questionPuzzle={};
-    var initialQuizzObject = {
-        title: myQuizz.title,
-        bgColor: myColors.white,
-        tabQuestions:self.tabQuestions,
-        puzzleLines: 3,
-        puzzleRows: 3
+
+    self.loadQuizz = function(quizz){
+        self.quizz = new Quizz(quizz);
     };
-    self.quizz=new Quizz(initialQuizzObject,false);
-    self.indexOfEditedQuestion=0;
-    self.quizzName=self.quizz.title;
+
+
+    if(!quizz){
+        var initialQuizzObject = {
+            title: myQuizz.title,
+            bgColor: myColors.white,
+            tabQuestions:self.tabQuestions,
+            puzzleLines: 3,
+            puzzleRows: 3
+        };
+        self.quizz = new Quizz(initialQuizzObject,false);
+        self.indexOfEditedQuestion = 0;
+        self.quizzName = self.quizz.title;
+
+    }else {
+        self.loadQuizz(quizz);
+    }
+    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+
+
+
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
     self.bib = new BibImage(myBib);
 
     self.quizzManagerManipulator = new Manipulator(self);
-    mainManipulator.ordonator.set(0,self.quizzManagerManipulator.first);
+    mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
 
     self.questionsPuzzleManipulator = new Manipulator(self);
     self.quizzInfoManipulator = new Manipulator(self);
@@ -70,14 +85,19 @@ function QuizzManager(){
             height:self.marginRatio*drawing.height,
             width:self.marginRatio*drawing.width
         };
+    self.questionPuzzleCoordinates={
+        x : self.globalMargin.width/2,
+        y : (self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2),
+        w : (drawing.width-self.globalMargin.width),
+        h : (self.questionsPuzzleHeight-self.globalMargin.height)
+    };
 
     self.display = function(){
 
         self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
             self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-            self.displayQuestionsPuzzle(self.globalMargin.width/2,self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2
-                ,drawing.width-self.globalMargin.width,self.questionsPuzzleHeight-self.globalMargin.height);
+            self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
             self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
@@ -241,7 +261,7 @@ function QuizzManager(){
 
         self.previewButtonManipulator.translator.move(x, y);
        // self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
-    }
+    };
 
     var questionClickHandler=function(element){
         //self.target = drawing.getTarget(event.clientX, event.clientY);
@@ -253,8 +273,8 @@ function QuizzManager(){
 
     };
 
-    self.displayQuestionsPuzzle = function(x, y, w, h) {
-
+    self.displayQuestionsPuzzle = function(x, y, w, h, index) {
+        var index = index ? index : 0;
         var border = new svg.Rect(w, h);
         border.color([], 2, myColors.black);
         self.questionsPuzzleManipulator.ordonator.set(0, border);
@@ -269,7 +289,7 @@ function QuizzManager(){
 
         self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
         self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
-        self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, 0);
+        self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 
         //self.questionPuzzle.// !! hep, par ici!
 
@@ -299,7 +319,7 @@ function QuizzManager(){
 
     };
 
-    var addQuestionToQuizz=function(){
+    var addQuestionToQuizz = function(){
 
         var finalQuizzObject = {
             title: self.quizzName,

@@ -113,7 +113,7 @@ var displayCheckbox = function (x, y, size, sender) {
  * @param manipulator
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator,previousImage) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
