@@ -45,10 +45,10 @@ var QuestionCreator = function (parent, question) {
         }else{
             self.multipleChoice=false;
         }
-        if(typeof quest.simpleChoice !== 'undefined'){// !! peut être en trop
+        if(typeof quest.simpleChoice !== 'undefined'){
             self.simpleChoice = quest.simpleChoice;
         }else{
-            self.simpleChoice=self.multipleChoice;
+            self.simpleChoice=true;
         }
         self.tabAnswer = [];
         quest.tabAnswer.forEach(function (answer) {
@@ -109,7 +109,8 @@ var QuestionCreator = function (parent, question) {
         self.manipulatorQuestionCreator.translator.move(x, 0);
         self.toggleButtonHeight = 40;
         self.displayQuestionCreator(MARGIN+x,y, w, h);
-        self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, myQuizzType.tab[0].label);
+        var clickedButton= self.multipleChoice? myQuizzType.tab[1].label :myQuizzType.tab[0].label;
+        self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, clickedButton);
 
     };
 
@@ -146,10 +147,16 @@ var QuestionCreator = function (parent, question) {
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
                 if (answer.checkbox) {
-                    xCheckBox = answer.checkbox.checkbox.x;
-                    yCheckBox = answer.checkbox.checkbox.y;
-                    (self.simpleChoice || self.multipleChoice) && (answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
-                    answer.checkbox.checkbox.answerParent = answer;
+                    xCheckBox = answer.checkbox.x;
+                    yCheckBox = answer.checkbox.y;
+                    if (self.simpleChoice || self.multipleChoice){
+                        //if(typeof answer.checkbox ==='undefined')
+                        //{
+                            answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer);
+                        answer.obj.checkbox.answerParent = answer;
+
+                        //}
+                    }
                 }
             });
         };

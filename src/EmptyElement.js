@@ -59,8 +59,8 @@ var AnswerElement = function (answer, parent) {
         } else {
             self.fontSize = 20;
         }
-        if(typeof answer.bCorrect !== 'undefined'){
-            self.bCorrect = answer.bCorrect;
+        if(typeof answer.correct !== 'undefined'){
+            self.bCorrect = answer.correct;
         }else{
             self.bCorrect=false;
         }
@@ -192,9 +192,10 @@ var AnswerElement = function (answer, parent) {
         };
         self.manipulator.last.flush();
         showTitle();
-
-        self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
-        self.checkbox.checkbox.answerParent = self;
+        if(typeof self.checkbox === 'undefined') {
+            self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.checkbox.answerParent = self;
+        }
        // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
        // self.manipulator.ordonator.set(6, self.cBLabel);
         self.manipulator.ordonator.children.forEach(function(e) {

@@ -9,9 +9,9 @@ function QuizzManager(){
     self.quizzName="";
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
-    self.tabQuestions=[new Question(questionWithLabelImageAndMultipleAnswers,self.quizz)];
+    self.tabQuestions=[];
     for(var i=0;i<7;i++){
-        self.tabQuestions.push(new Question(myQuizz.tabQuestions[i],self.quizz));
+        self.tabQuestions.push(myQuizz.tabQuestions[i]);
     }
     self.questionPuzzle={};
     var initialQuizzObject = {
@@ -243,8 +243,9 @@ function QuizzManager(){
        // self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
     }
 
-    var questionClickHandler=function(element){
-        //self.target = drawing.getTarget(event.clientX, event.clientY);
+    var questionClickHandler=function(event){
+        var target=drawing.getTarget(event.clientX,event.clientY);
+        var element=target.parent.parentManip.parentObject;
         var index= self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion=index;
         self.questionCreator.loadQuestion(element);
@@ -255,10 +256,16 @@ function QuizzManager(){
 
     self.displayQuestionsPuzzle = function(x, y, w, h) {
 
-        var border = new svg.Rect(w, h);
+        x && (self.qPuzzleX=x);
+        y && (self.qPuzzleY=y);
+        w && (self.qPuzzleW=w);
+        h && (self.qPuzzleH=h);
+
+        //self.questionsPuzzleManipulator.last.flush();
+        var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
         border.color([], 2, myColors.black);
         self.questionsPuzzleManipulator.ordonator.set(0, border);
-        self.questionsPuzzleManipulator.first.move(x + w / 2, y);
+        self.questionsPuzzleManipulator.first.move(self.qPuzzleX + self.qPuzzleW / 2, self.qPuzzleY);
 
         self.coordinatesQuestion = {
             x: 0,
@@ -267,34 +274,40 @@ function QuizzManager(){
             h: self.questionsPuzzleHeight - self.globalMargin.height
         };
 
+        for(var i=0;i<self.quizz.tabQuestions.length;i++){
+            self.quizz.tabQuestions[i].bordureEventHandler=questionClickHandler;
+            self.quizz.tabQuestions[i].contentEventHandler=questionClickHandler;
+            self.quizz.tabQuestions[i].imageEventHandler=questionClickHandler;
+        }
+
         self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
         self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
         self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, 0);
 
-        //self.questionPuzzle.// !! hep, par ici!
+        //self.questionPuzzle.
 
-        for(var i=0;i<self.quizz.tabQuestions.length;i++){
-        (function (element) {
-            if (element.bordure) {
-                svg.addEvent(element.bordure, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-            if (element.content) {
-                svg.addEvent(element.content, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-            if (element.raphImage) {
-                svg.addEvent(element.raphImage, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-        })(self.quizz.tabQuestions[i]);
-    }
+        //for(var i=0;i<self.quizz.tabQuestions.length;i++){
+        //    (function (element) {
+        //        if (element.bordure) {
+        //            svg.addEvent(element.bordure, "click", function () {
+        //                questionClickHandler(element);
+        //            });
+        //        }
+        //
+        //        if (element.content) {
+        //            svg.addEvent(element.content, "click", function () {
+        //                questionClickHandler(element);
+        //            });
+        //        }
+        //
+        //        if (element.raphImage) {
+        //            svg.addEvent(element.raphImage, "click", function () {
+        //                questionClickHandler(element);
+        //            });
+        //        }
+        //
+        //    })(self.quizz.tabQuestions[i]);
+        //}
 
 
     };

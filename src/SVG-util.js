@@ -25,6 +25,7 @@ var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
     var sender = null;
     target.answerParent && (sender = target.answerParent);
+    sender.linkedAnswer.correct=!sender.bCorrect;////// !!!!! de temps en temps, answerParent est undef...
     sender.bCorrect = !sender.bCorrect;
     sender.bCorrect && drawPathChecked(sender, sender.x, sender.y, sender.size);
     updateAllCheckBoxes(sender);
@@ -47,7 +48,7 @@ var drawCheck = function(x, y, size){
 };
 
 var drawPathChecked = function (sender, x, y, size){
-    svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
+    svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
     sender.obj.checked = drawCheck(x, y, size);
     svg.addEvent(sender.obj.checked, "click", onclickFunction);
     sender.manipulator.ordonator.set(8, sender.obj.checked);
@@ -58,12 +59,12 @@ var updateAllCheckBoxes = function (sender) {
         if(answer instanceof AnswerElement && answer.checkbox) {
             var allNotChecked = checkAllCheckBoxes(sender);
             if(answer.parent.simpleChoice && !answer.bCorrect && !allNotChecked) {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.lightgrey);
+                answer.checkbox.color(myColors.white, 2, myColors.lightgrey);
                 //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
-                svg.removeEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                svg.removeEvent(answer.checkbox, "click", onclickFunction);
             } else {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.black);
-                svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                answer.checkbox.color(myColors.white, 2, myColors.black);
+                svg.addEvent(answer.checkbox, "click", onclickFunction);
             }
             !answer.bCorrect && answer.manipulator.ordonator.unset(8);
         }});
