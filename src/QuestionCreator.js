@@ -90,6 +90,7 @@ var QuestionCreator = function (parent, question) {
         } else {
             myObj.display();
             myObj.textarea.onblur = function () {
+                console.log("blur");
                 myObj.textarea.value = "";
                 myObj.onblur();
                 myObj.remove();
@@ -248,9 +249,8 @@ var QuestionCreator = function (parent, question) {
                 var quizzInfoHeightRatio = 0.05;
                 var questionsPuzzleHeightRatio = 0.25;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 * MARGIN + self.questionBlock.title.cadre.height)
+                    .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
-                console.log(self.quizzNameHeight);
                 self.manipulatorQuestionCreator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.questionNameValidInput = false;
