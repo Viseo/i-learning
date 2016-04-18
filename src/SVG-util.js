@@ -17,9 +17,9 @@ var toType = function(obj) {
  * @param size
  * @param sender
  */
-var displayCheckbox = function (x, y, size, sender) {
-    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
-}
+//var displayCheckbox = function (x, y, size, sender) {
+//    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
+//}
 
 var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
@@ -78,7 +78,7 @@ var updateAllCheckBoxes = function (sender) {
  */
 var displayCheckbox = function (x, y, size, sender) {
     var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
-    sender.obj = obj;
+    sender.obj.checkbox = obj.checkbox;
     sender.x = x;
     sender.y = y;
     sender.size = size;

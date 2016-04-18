@@ -40,8 +40,16 @@ var QuestionCreator = function (parent, question) {
 
     self.loadQuestion=function(quest){
         self.linkedQuestion=quest;
-        self.multipleChoice = quest.multipleChoice;
-        self.simpleChoice = quest.simpleChoice;
+        if(typeof quest.multipleChoice !== 'undefined'){
+            self.multipleChoice = quest.multipleChoice;
+        }else{
+            self.multipleChoice=false;
+        }
+        if(typeof quest.simpleChoice !== 'undefined'){// !! peut être en trop
+            self.simpleChoice = quest.simpleChoice;
+        }else{
+            self.simpleChoice=self.multipleChoice;
+        }
         self.tabAnswer = [];
         quest.tabAnswer.forEach(function (answer) {
             self.tabAnswer.push(new AnswerElement(answer,self));
@@ -266,7 +274,7 @@ var QuestionCreator = function (parent, question) {
         h && (self.h = h);
         self.coordinatesAnswers = {
             x: self.x + MARGIN,
-            y: self.y + 3 * MARGIN + self.h * 0.25 ,
+            y: self.y + 3 * MARGIN + self.h * 0.25,
             w: self.w - 2 * MARGIN,
             h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
         };
