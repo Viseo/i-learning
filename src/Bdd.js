@@ -377,6 +377,15 @@ var multipleAnswerValidationTab = [
     }
 ];
 
+var formationValidation = [
+    function (formation) {
+        // Check Formation Name:
+        var isValid = (formation.formationName !== "");
+        var message = "Vous devez remplir le nom de la formation.";
+        return {isValid:isValid, message: message};
+    }
+];
+
 var myQuizzType = {
     //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
     tab: [{label:"Réponse unique", default:true, validationTab:uniqueAnswerValidationTab}, {label:"Réponses multiples", default:false, validationTab:multipleAnswerValidationTab}]

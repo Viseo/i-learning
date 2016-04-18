@@ -53,12 +53,13 @@ function FormationsManager(formations, additionalMessage) {
 
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
-        //formation.display();
+        formation.displayFormation();
     };
 
     function onClickNewFormation() {
+        var formation = new Formation({});
         console.log("Tu as bien cliqué pour ajouter une formation");
-        //formation.display();
+        formation.displayFormation();
     };
 
     self.display = function() {
