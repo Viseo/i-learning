@@ -27,7 +27,8 @@ var BibJeux = function (bibJeux) {
         y && (self.y = y);
         w && (self.w = w);
         h && (self.h = h);
-        self.bordure =  new svg.Rect(w,h,self.bibJeuxManipulator).color([],2,myColors.black);
+        self.borderSize = 3;
+        self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.bibJeuxManipulator).color([],self.borderSize,myColors.grey);
         self.bordure.position(x+w/2,y+h/2);
         self.bibJeuxManipulator.last.add(self.bordure);
         self.title = autoAdjustText("Type de jeux", x+w/2,y+(1/20)*h,w/2,(1/10)*h, null, self.font, self.bibJeuxManipulator).text;
@@ -49,6 +50,7 @@ var BibJeux = function (bibJeux) {
             self.jeuxManipulators[i].ordonator.set(1,objectTotal.content);
             var X=x+self.jeuxMargin-2*MARGIN+((i%maxJeuxbyLine+1)*(self.jeuxMargin+w/2-2*MARGIN));
             self.jeuxManipulators[i].first.move(X, tempY);
+            manageDnD(objectTotal.cadre, self.jeuxManipulators[i]);
         }
         self.bibJeuxManipulator.first.move(x,y);
     };

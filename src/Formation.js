@@ -10,9 +10,12 @@ var Formation = function(formation){
     self.manipulator = new Manipulator();
     self.formationInfoManipulator = new Manipulator();
     self.graphManipulator = new Manipulator();
-    //self.bib = new BibImage(myQuizzTypeBib);
-    //self.libraryManipulator = self.bib.bibManipulator;
-    //self.manipulator.last.add(self.libraryManipulator.first);
+
+    self.bib = new BibJeux(myBibJeux);
+
+    //self.bib = new BibJeux(myQuizzTypeBib);
+    self.libraryManipulator = self.bib.bibJeuxManipulator;
+    self.manipulator.last.add(self.libraryManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
 
     self.manipulatorMiniature.last.add(self.iconManipulator.first);
@@ -41,6 +44,7 @@ var Formation = function(formation){
     // HEIGHT
     self.graphCreaHeightRatio = 0.85;
     self.graphCreaHeight = drawing.height*self.graphCreaHeightRatio;
+
 
 
     self.checkInputTextArea = function (myObj) {
@@ -82,6 +86,8 @@ var Formation = function(formation){
         mainManipulator.ordonator.set(1, self.manipulator.first);
         self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
         self.manipulator.last.add(self.title);
+
+        self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
 
         var showTitle = function() {
             var text = (self.label) ? self.label : (self.label=self.labelDefault);
@@ -158,12 +164,16 @@ var Formation = function(formation){
                 display: displayErrorMessage
             });
         };
-    showTitle();
-    var displayGraph = function (w, h){
-        self.graphManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
-        self.graphBlock = {rect: new svg.Rect(w, h).color([], 1, myColors.black).position(w / 2, 0 + h / 2)};
-        self.graphManipulator.last.add(self.graphBlock.rect);
-    };
+        showTitle();
+
+        self.libraryManipulator.translator.move(0, self.title.component.getBBox().height);
+
+        var displayGraph = function (w, h){
+            self.graphManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+            self.borderSize = 3;
+            self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color([], self.borderSize, myColors.grey).position(w / 2 - self.borderSize, 0 + h / 2)};
+            self.graphManipulator.last.add(self.graphBlock.rect);
+        };
     displayGraph(self.graphCreaWidth, self.graphCreaHeight);
 
     };
