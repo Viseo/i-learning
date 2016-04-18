@@ -59,7 +59,11 @@ var AnswerElement = function (answer, parent) {
         } else {
             self.fontSize = 20;
         }
-        self.bCorrect = answer.bCorrect;
+        if(typeof answer.bCorrect !== 'undefined'){
+            self.bCorrect = answer.bCorrect;
+        }else{
+            self.bCorrect=false;
+        }
     }else {
         self.label = "";
         self.fontSize = 20;
@@ -101,12 +105,12 @@ var AnswerElement = function (answer, parent) {
             if(self.linkedAnswer.image){
                 self.img = self.linkedAnswer.image;
                 self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-                self.obj.content.position((self.checkboxSize/2),0);
+                //self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             else{
                 self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-                self.obj.content.position((self.checkboxSize/2),0);
+                self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             self.obj.cadre.fillOpacity(0.001);
@@ -126,10 +130,10 @@ var AnswerElement = function (answer, parent) {
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
             self.manipulator.ordonator.unset(1, self.obj.content);
             var contentareaStyle = {
-                toppx: (self.manipulator.ordonator.children[2] instanceof svg.Image) ? (contentarea.globalPointCenter.y - 8) : (contentarea.globalPointCenter.y - MARGIN / 2 - 3),
-                leftpx: contentarea.globalPointCenter.x + 5 * MARGIN,
-                height:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? contentarea.height : (h*.5),
-                width:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? (self.obj.cadre.component.getBBox().width-6*MARGIN-2) : (self.obj.cadre.component.getBBox().width-6*MARGIN-2)
+                toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
+                leftpx: contentarea.globalPointCenter.x+(1/6)*self.obj.cadre.component.getBBox().width,
+                height:(self.linkedAnswer.image) ? contentarea.height : (h*.5),
+                width:self.obj.cadre.component.getBBox().width*2/3
             };
             contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
@@ -160,7 +164,7 @@ var AnswerElement = function (answer, parent) {
             };
 
             var onblur = function () {
-                self.answerNameValidInput && (self.label = contentarea.value);
+                self.answerNameValidInput && (self.linkedAnswer.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
                 /*if(self.checkbox.checked) {

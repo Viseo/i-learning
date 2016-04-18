@@ -122,8 +122,6 @@ var BibImage = function (bibimage) {
                         oldQuest.content.position(newQuest.content.x,newQuest.content.y);
 
                         img._acceptDrop = true;
-                        var type= target.parent.parentManip.parentObject instanceof QuestionCreator;
-                        var type2=target.parent.parentManip.parentObject instanceof AnswerElement;
                         switch(true){
 
                             case target.parent.parentManip.parentObject instanceof QuestionCreator:
