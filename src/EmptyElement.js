@@ -27,7 +27,7 @@ var AddEmptyElement = function (parent, type) {
         self.plus = drawPlus(0, 0, h*.3, h*0.3);
         self.plusManipulator.ordonator.set(2, self.plus);
         self.plusManipulator.translator.move(x+w/2, y+(h*0.4));
-        //self.manipulator.last.add(self.plus);
+        self.manipulator.last.add(self.plus);
         self.obj.content.position(0,h*0.35);
 
         self.obj.cadre.color(myColors.white, 3, myColors.black);
