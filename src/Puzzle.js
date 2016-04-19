@@ -88,6 +88,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
         self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
+
         var removeArrows = function (){
             if(self.leftArrowManipulator.last.children.length>1) {
                 //self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
@@ -243,6 +244,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                             }
+                       // }
 
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
