@@ -218,6 +218,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+    content.position(0,content.component.getBBox().height/4);
     var cadre = new svg.Circle(w/2).color(bgColor,1,rgbCadre);
     manipulator.ordonator.set(0, cadre);
     return {content:content, cadre:cadre};
