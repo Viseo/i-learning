@@ -17,14 +17,15 @@ var toType = function(obj) {
  * @param size
  * @param sender
  */
-var displayCheckbox = function (x, y, size, sender) {
-    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
-}
+//var displayCheckbox = function (x, y, size, sender) {
+//    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
+//}
 
 var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
     var sender = null;
     target.answerParent && (sender = target.answerParent);
+    sender.linkedAnswer.correct=!sender.bCorrect;////// !!!!! de temps en temps, answerParent est undef...
     sender.bCorrect = !sender.bCorrect;
     sender.bCorrect && drawPathChecked(sender, sender.x, sender.y, sender.size);
     updateAllCheckBoxes(sender);
@@ -47,7 +48,7 @@ var drawCheck = function(x, y, size){
 };
 
 var drawPathChecked = function (sender, x, y, size){
-    svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
+    svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
     sender.obj.checked = drawCheck(x, y, size);
     svg.addEvent(sender.obj.checked, "click", onclickFunction);
     sender.manipulator.ordonator.set(8, sender.obj.checked);
@@ -58,12 +59,12 @@ var updateAllCheckBoxes = function (sender) {
         if(answer instanceof AnswerElement && answer.checkbox) {
             var allNotChecked = checkAllCheckBoxes(sender);
             if(answer.parent.simpleChoice && !answer.bCorrect && !allNotChecked) {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.lightgrey);
+                answer.checkbox.color(myColors.white, 2, myColors.lightgrey);
                 //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
-                svg.removeEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                svg.removeEvent(answer.checkbox, "click", onclickFunction);
             } else {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.black);
-                svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                answer.checkbox.color(myColors.white, 2, myColors.black);
+                svg.addEvent(answer.checkbox, "click", onclickFunction);
             }
             !answer.bCorrect && answer.manipulator.ordonator.unset(8);
         }});
@@ -78,7 +79,7 @@ var updateAllCheckBoxes = function (sender) {
  */
 var displayCheckbox = function (x, y, size, sender) {
     var obj = {checkbox: new svg.Rect(size, size).color(myColors.white,2,myColors.black).position(x,y)};
-    sender.obj = obj;
+    sender.obj.checkbox = obj.checkbox;
     sender.x = x;
     sender.y = y;
     sender.size = size;
@@ -200,6 +201,25 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
     //manipulator.ordonator.set(1, content);
+    return {content:content, cadre:cadre};
+};
+
+/**
+ *
+ * @param label : text to print
+ * @param w : width
+ * @param h : height
+ * @param rgbCadre : rgb color for circle
+ * @param bgColor : background color for circle
+ * @param textHeight : number, taille de la police
+ * @param font
+ * @param manipulator
+ * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
+ */
+var displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+    var cadre = new svg.Circle(w/2).color(bgColor,1,rgbCadre);
+    manipulator.ordonator.set(0, cadre);
     return {content:content, cadre:cadre};
 };
 

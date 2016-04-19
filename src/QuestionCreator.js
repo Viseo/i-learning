@@ -40,8 +40,16 @@ var QuestionCreator = function (parent, question) {
 
     self.loadQuestion=function(quest){
         self.linkedQuestion=quest;
-        self.multipleChoice = quest.multipleChoice;
-        self.simpleChoice = quest.simpleChoice;
+        if(typeof quest.multipleChoice !== 'undefined'){
+            self.multipleChoice = quest.multipleChoice;
+        }else{
+            self.multipleChoice=false;
+        }
+        if(typeof quest.simpleChoice !== 'undefined'){
+            self.simpleChoice = quest.simpleChoice;
+        }else{
+            self.simpleChoice=true;
+        }
         self.tabAnswer = [];
         quest.tabAnswer.forEach(function (answer) {
             self.tabAnswer.push(new AnswerElement(answer,self));
@@ -82,6 +90,7 @@ var QuestionCreator = function (parent, question) {
         } else {
             myObj.display();
             myObj.textarea.onblur = function () {
+                console.log("blur");
                 myObj.textarea.value = "";
                 myObj.onblur();
                 myObj.remove();
@@ -101,7 +110,8 @@ var QuestionCreator = function (parent, question) {
         self.questionCreatorManipulator.translator.move(x, 0);
         self.toggleButtonHeight = 40;
         self.displayQuestionCreator(MARGIN+x,y, w, h);
-        self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, myQuizzType.tab[0].label);
+        var clickedButton= self.multipleChoice? myQuizzType.tab[1].label :myQuizzType.tab[0].label;
+        self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, clickedButton);
 
     };
 
@@ -138,10 +148,16 @@ var QuestionCreator = function (parent, question) {
             self.tabAnswer.forEach(function(answer){
                 var xCheckBox, yCheckBox = 0;
                 if (answer.checkbox) {
-                    xCheckBox = answer.checkbox.checkbox.x;
-                    yCheckBox = answer.checkbox.checkbox.y;
-                    (self.simpleChoice || self.multipleChoice) && (answer.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer));
-                    answer.checkbox.checkbox.answerParent = answer;
+                    xCheckBox = answer.checkbox.x;
+                    yCheckBox = answer.checkbox.y;
+                    if (self.simpleChoice || self.multipleChoice){
+                        //if(typeof answer.checkbox ==='undefined')
+                        //{
+                            answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer);
+                        answer.obj.checkbox.answerParent = answer;
+
+                        //}
+                    }
                 }
             });
         };
@@ -240,9 +256,8 @@ var QuestionCreator = function (parent, question) {
                 var quizzInfoHeightRatio = 0.05;
                 var questionsPuzzleHeightRatio = 0.25;
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 4 * MARGIN + self.questionBlock.title.cadre.height)
+                    .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
-                console.log(self.quizzNameHeight);
                 self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.questionNameValidInput = false;
@@ -266,7 +281,7 @@ var QuestionCreator = function (parent, question) {
         h && (self.h = h);
         self.coordinatesAnswers = {
             x: self.x + MARGIN,
-            y: self.y + 3 * MARGIN + self.h * 0.25 ,
+            y: self.y + 3 * MARGIN + self.h * 0.25,
             w: self.w - 2 * MARGIN,
             h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
         };

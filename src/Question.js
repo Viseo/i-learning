@@ -108,7 +108,7 @@ var Question = function (question, quizz) {
         if (self.label && self.imageSrc) {
             var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
-            self.content = objectTotal.text;
+            self.content = objectTotal.content;
             self.raphImage = objectTotal.image;
         }
         // Question avec Texte uniquement

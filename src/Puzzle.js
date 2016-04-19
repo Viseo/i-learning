@@ -200,8 +200,20 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                 for(var j = 0; j<self.rows; j++) {
                     if(count < self.questionsTab.length) {
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                        self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
+                        if(!(self.virtualTab[i][j].bordure)){
+                            self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
+                            if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
+                            }
+                            if(self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].content,'click',self.virtualTab[i][j].contentEventHandler);
+                            }
+                            if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
+                            }
+                        }
                         self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2+MARGIN,posY+MARGIN);
+
                         posX += self.tileWidth + MARGIN;
                         count++;
                     }
@@ -221,7 +233,19 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     }else{
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
                     }
-                    self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
+                        if(!(self.virtualTab[i][j].bordure)){
+                            self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
+                            if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
+                            }
+                            if(self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].content,'click',self.virtualTab[i][j].contentEventHandler);
+                            }
+                            if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
+                                svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
+                            }
+                        }
+
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
                     }else{
@@ -229,7 +253,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     }
 
 
-                    posY += self.tileHeight + MARGIN;
+                        posY += self.tileHeight + MARGIN;
                     count++;
                     }
                     else {

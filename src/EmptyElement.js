@@ -51,9 +51,16 @@ var AddEmptyElement = function (parent, type) {
                 case 'question':
                     self.parent.quizz.tabQuestions.pop();
                     var newQuestion = new Question(null, self.parent.quizz);
+                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
+                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
+                    //self.manipulator.last.remove(self.plus);
+
                     self.parent.quizz.tabQuestions.push(newQuestion);
                     self.parent.quizz.tabQuestions.push(new AddEmptyElement(self.parent, self.type));
-                    self.parent.questionsPuzzleManipulator.last.flush();
+
+                   //self.parent.puzzle = new Puzzle(1, 6, self.parent.quizz.tabQuestions, self.parent.questionPuzzleCoordinates, false, self);
+
+                   // self.parent.questionsPuzzleManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
             };
         };
@@ -81,7 +88,11 @@ var AnswerElement = function (answer, parent) {
         } else {
             self.fontSize = 20;
         }
-        self.bCorrect = answer.bCorrect;
+        if(typeof answer.correct !== 'undefined'){
+            self.bCorrect = answer.correct;
+        }else{
+            self.bCorrect=false;
+        }
     }else {
         self.label = "";
         self.fontSize = 20;
@@ -123,12 +134,12 @@ var AnswerElement = function (answer, parent) {
             if(self.linkedAnswer.image){
                 self.img = self.linkedAnswer.image;
                 self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-                self.obj.content.position((self.checkboxSize/2),0);
+                //self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             else{
                 self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-                self.obj.content.position((self.checkboxSize/2),0);
+                self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             self.obj.cadre.fillOpacity(0.001);
@@ -148,10 +159,10 @@ var AnswerElement = function (answer, parent) {
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
             self.manipulator.ordonator.unset(1, self.obj.content);
             var contentareaStyle = {
-                toppx: (self.manipulator.ordonator.children[2] instanceof svg.Image) ? (contentarea.globalPointCenter.y - 8) : (contentarea.globalPointCenter.y - MARGIN / 2 - 3),
-                leftpx: contentarea.globalPointCenter.x + 5 * MARGIN,
-                height:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? contentarea.height : (h*.5),
-                width:(self.manipulator.ordonator.children[2] instanceof svg.Image) ? (self.obj.cadre.component.getBBox().width-6*MARGIN-2) : (self.obj.cadre.component.getBBox().width-6*MARGIN-2)
+                toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
+                leftpx: contentarea.globalPointCenter.x+(1/6)*self.obj.cadre.component.getBBox().width,
+                height:(self.linkedAnswer.image) ? contentarea.height : (h*.5),
+                width:self.obj.cadre.component.getBBox().width*2/3
             };
             contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
@@ -171,10 +182,10 @@ var AnswerElement = function (answer, parent) {
                 var bibRatio = 0.2;
                 var previewButtonHeightRatio = 0.1;
                 var marginErrorMessagePreviewButton = 0.03;
-                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width - MARGIN);
-                var anchor = 'middle' ;
+                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
+                var anchor = 'middle';
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-MARGIN/2 )
+                    .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
                 contentarea.focus();
@@ -182,7 +193,7 @@ var AnswerElement = function (answer, parent) {
             };
 
             var onblur = function () {
-                self.answerNameValidInput && (self.label = contentarea.value);
+                self.answerNameValidInput && (self.linkedAnswer.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
                 /*if(self.checkbox.checked) {
@@ -210,11 +221,12 @@ var AnswerElement = function (answer, parent) {
         };
         self.manipulator.last.flush();
         showTitle();
-
-        self.checkbox = displayCheckbox(x+self.checkboxSize, y+h-self.checkboxSize , self.checkboxSize, self);
-        self.checkbox.checkbox.answerParent = self;
-        // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
-        // self.manipulator.ordonator.set(6, self.cBLabel);
+        if(typeof self.checkbox === 'undefined') {
+            self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.checkbox.answerParent = self;
+        }
+       // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
+       // self.manipulator.ordonator.set(6, self.cBLabel);
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });
