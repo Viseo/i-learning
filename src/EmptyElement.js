@@ -5,6 +5,8 @@
 var AddEmptyElement = function (parent, type) {
     var self = this;
     self.manipulator = new Manipulator(self);
+    self.plusManipulator = new Manipulator(self);
+    self.manipulator.last.add(self.plusManipulator.first);
     type && (self.type = type);
     switch(type) {
         case 'question':
@@ -22,7 +24,9 @@ var AddEmptyElement = function (parent, type) {
 
     self.display = function (x, y, w, h) {
         self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-        self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
+        self.plus = drawPlus(0, 0, h*.3, h*0.3);
+        self.plusManipulator.ordonator.set(0, self.plus);
+        self.plusManipulator.translator.move(x+w/2, y+(h*0.4));
         self.manipulator.last.add(self.plus);
         self.obj.content.position(0,h*0.35);
 
@@ -49,19 +53,25 @@ var AddEmptyElement = function (parent, type) {
 
                     break;
                 case 'question':
+
                     self.parent.quizz.tabQuestions.pop();
-                    var newQuestion = new Question(null, self.parent.quizz);
-                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
-                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
+
+                    // self.parent.questionsPuzzleManipulator.last.children[1].children[0].children[0].children[2].children[0].children[0].children[0].remove(self.plus);
+                    var index = self.parent.questionsPuzzleManipulator.last.children[1].children[0].children[0].children[2].children[0].children[0].children[0].remove(self.plus);//scaling.children.indexOf(self.obj.cadre);
+                    self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
+                    index = self.parent.questionsPuzzleManipulator.ordonator.children.indexOf(self.obj.content);
+                    self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
+                    self.parent.questionsPuzzleManipulator.puzzleManipulator.last.remove(self.plus);
+
                     //self.manipulator.last.remove(self.plus);
 
+                    var newQuestion = new Question(null, self.parent.quizz);
+
                     self.parent.quizz.tabQuestions.push(newQuestion);
-                    self.parent.quizz.tabQuestions.push(new AddEmptyElement(self.parent, self.type));
+                    //self.parent.quizz.tabQuestions.push();
 
-                   //self.parent.puzzle = new Puzzle(1, 6, self.parent.quizz.tabQuestions, self.parent.questionPuzzleCoordinates, false, self);
-
-                   // self.parent.questionsPuzzleManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
+
             };
         };
 
