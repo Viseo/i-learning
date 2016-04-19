@@ -196,6 +196,10 @@ var AnswerElement = function (answer, parent) {
                 self.answerNameValidInput && (self.linkedAnswer.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
+                if(typeof self.obj.checkbox === 'undefined') {
+                    self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+                    self.obj.checkbox.answerParent = self;
+                }
                 /*if(self.checkbox.checked) {
                  self.checkbox.checked.toFront();
                  };*/
