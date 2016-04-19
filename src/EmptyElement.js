@@ -221,9 +221,9 @@ var AnswerElement = function (answer, parent) {
         };
         self.manipulator.last.flush();
         showTitle();
-        if(typeof self.checkbox === 'undefined') {
+        if(typeof self.obj.checkbox === 'undefined') {
             self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-            self.checkbox.answerParent = self;
+            self.obj.checkbox.answerParent = self;
         }
        // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
        // self.manipulator.ordonator.set(6, self.cBLabel);

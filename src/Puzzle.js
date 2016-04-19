@@ -233,7 +233,6 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     }else{
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
                     }
-                        if(!(self.virtualTab[i][j].bordure)){
                             self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                             if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
@@ -244,7 +243,6 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                             }
-                        }
 
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
