@@ -2,11 +2,21 @@
  * Created by qde3485 on 15/03/16.
  */
 
-var AddEmptyElement = function (parent) {
+var AddEmptyElement = function (parent, type) {
     var self = this;
     self.manipulator = new Manipulator(self);
-    self.answerNameValidInput = true;
-    self.label = "Double-cliquez pour ajouter une réponse";
+    type && (self.type = type);
+    switch(type) {
+        case 'question':
+            //self.questionNameValidInput = true;
+            self.label = "Double-cliquez pour ajouter une question";
+            break;
+        case 'answer':
+            self.answerNameValidInput = true;
+            self.label = "Double-cliquez pour ajouter une réponse";
+            break;
+    };
+
     self.fontSize = 20;
     self.parent = parent;
 
@@ -20,33 +30,52 @@ var AddEmptyElement = function (parent) {
         self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
 
         var dblclickEdition = function () {
-            self.parent.tabAnswer.pop();
-            self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
-            self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
-            self.manipulator.last.remove(self.plus);
-            var newAnswer=new Answer();
-            self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
+            switch (self.type) {
+                case 'answer':
+                    self.parent.tabAnswer.pop();
+                    var newAnswer = new Answer();
+                    self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
+                    self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
+                    self.manipulator.last.remove(self.plus);
+                    self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
 
-            self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
-            if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
-                self.parent.tabAnswer.push(new AddEmptyElement(self.parent));
-            }
-            self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
-            self.parent.manipulatorQuestionCreator.last.add(self.parent.puzzle.puzzleManipulator.first);
-            self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+                    self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
+                    if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
+                        self.parent.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
+                    }
+                    self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
+                    self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
+                    self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+
+                    break;
+                case 'question':
+                    self.parent.quizz.tabQuestions.pop();
+                    var newQuestion = new Question(null, self.parent.quizz);
+                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
+                    //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
+                    //self.manipulator.last.remove(self.plus);
+
+                    self.parent.quizz.tabQuestions.push(newQuestion);
+                    self.parent.quizz.tabQuestions.push(new AddEmptyElement(self.parent, self.type));
+
+                   //self.parent.puzzle = new Puzzle(1, 6, self.parent.quizz.tabQuestions, self.parent.questionPuzzleCoordinates, false, self);
+
+                   // self.parent.questionsPuzzleManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
+                    self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
+            };
         };
 
         svg.addEvent(self.plus, "dblclick", dblclickEdition);
         svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
         svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
-    }
+    };
 };
 
 var AnswerElement = function (answer, parent) {
     var self = this;
 
     self.manipulator = new Manipulator(self);
-    self.linkedAnswer=answer;
+    self.linkedAnswer = answer;
     self.isValidInput = true;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
@@ -81,21 +110,21 @@ var AnswerElement = function (answer, parent) {
     };
 
     self.checkInputContentArea = function (objCont) {
-            if (objCont.contentarea.value.match(self.regex)) {
-                self.label = objCont.contentarea.value;
+        if (objCont.contentarea.value.match(self.regex)) {
+            self.label = objCont.contentarea.value;
+            objCont.remove();
+            objCont.contentarea.onblur = objCont.onblur;
+            objCont.contentarea.style.border = "none";
+            objCont.contentarea.style.outline = "none";
+        } else {
+            objCont.display();
+            objCont.contentarea.onblur = function () {
+                objCont.contentarea.value = "";
+                objCont.onblur();
                 objCont.remove();
-                objCont.contentarea.onblur = objCont.onblur;
-                objCont.contentarea.style.border = "none";
-                objCont.contentarea.style.outline = "none";
-            } else {
-                objCont.display();
-                objCont.contentarea.onblur = function () {
-                    objCont.contentarea.value = "";
-                    objCont.onblur();
-                    objCont.remove();
-                }
             }
-        };
+        }
+    };
 
     self.display = function (x, y, w, h) {
         self.checkboxSize=h*0.2;
@@ -115,9 +144,9 @@ var AnswerElement = function (answer, parent) {
             }
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
-            self.obj.cadre._acceptDrop=true;
-            self.obj.content._acceptDrop=true;
-            self.parent.puzzle.puzzleManipulator.translator.move(0,self.parent.toggleButtonHeight-MARGIN);
+            self.obj.cadre._acceptDrop = true;
+            self.obj.content._acceptDrop = true;
+            self.parent.puzzle.puzzleManipulator.translator.move(0, self.parent.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
         };
@@ -142,7 +171,7 @@ var AnswerElement = function (answer, parent) {
 
             var removeErrorMessage = function () {
                 self.answerNameValidInput = true;
-                self.errorMessage && self.parent.manipulatorQuestionCreator.ordonator.unset(5);
+                self.errorMessage && self.parent.questionCreatorManipulator.ordonator.unset(5);
                 self.obj.cadre.color(myColors.white, 1, myColors.black);
             };
 
@@ -158,7 +187,7 @@ var AnswerElement = function (answer, parent) {
                 self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
-                self.parent.manipulatorQuestionCreator.ordonator.set(5,self.errorMessage);
+                self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
@@ -171,15 +200,15 @@ var AnswerElement = function (answer, parent) {
                  self.checkbox.checked.toFront();
                  };*/
             };
-                contentarea.oninput = function () {
-                    self.checkInputContentArea({
-                        contentarea: contentarea,
-                        border: self.obj.cadre,
-                        onblur: onblur,
-                        remove: removeErrorMessage,
-                        display: displayErrorMessage
-                    });
-                };
+            contentarea.oninput = function () {
+                self.checkInputContentArea({
+                    contentarea: contentarea,
+                    border: self.obj.cadre,
+                    onblur: onblur,
+                    remove: removeErrorMessage,
+                    display: displayErrorMessage
+                });
+            };
 
             contentarea.onblur = onblur;
             self.checkInputContentArea({
@@ -201,5 +230,5 @@ var AnswerElement = function (answer, parent) {
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });
-    }
+    };
 };

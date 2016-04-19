@@ -6,7 +6,7 @@
  * @constructor
  */
 
-var Question = function (question,quizz) {
+var Question = function (question, quizz) {
     var self = this;
     self.questionManipulator = new Manipulator(self);
     self.answersManipulator = new Manipulator(self);
@@ -18,63 +18,69 @@ var Question = function (question,quizz) {
 
 
 
-    self.parentQuizz=quizz;
-    self.label = question.label;
-    self.imageSrc = question.imageSrc;
+    self.parentQuizz = quizz;
     self.tabAnswer = [];
-    self.rows=question.nbrows;
-    self.rightAnswers=[];
-    self.selectedAnswers=[];
-    self.multipleChoice=question.multipleChoice;
-    self.simpleChoice=question.simpleChoice;
+    self.fontSize = 20;
 
+    if(!question){
+        self.label = "New Question";
+        self.imageSrc = "";
+        self.rows = 2;
+        self.rightAnswers = [];
+        self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
+        self.selectedAnswers = [];
+        self.multipleChoice = false;
+        self.simpleChoice = true;
+        self.font = "Arial";
+        self.bgColor = myColors.white;
+        self.rgbBordure = myColors.black;
 
-    if(question.font) {
-        self.font = question.font;
-    }
+    }else{
+        self.label = question.label;
+        self.imageSrc = question.imageSrc;
+        self.rows = question.nbrows;
+        self.rightAnswers = [];
+        self.selectedAnswers = [];
+        self.multipleChoice = question.multipleChoice;
+        self.simpleChoice = question.simpleChoice;
 
-    if(question.fontSize) {
-        self.fontSize = question.fontSize;
-    } else {
-        self.fontSize = 20;
-    }
+        question.colorBordure && (self.rgbBordure = question.colorBordure);
+        question.bgColor && (self.bgColor = question.bgColor);
+        question.font && (self.font = question.font);
+        question.fontSize && (self.fontSize = question.fontSize);
 
-    if(question.imageSrc) {
-        self.image = imageController.getImage(self.imageSrc, function () {
+        if(question.imageSrc) {
+            self.image = imageController.getImage(self.imageSrc, function () {
+                self.imageLoaded = true;
+                self.dimImage = {width:self.image.width, height:self.image.height};
+            });
+            self.imageLoaded = false;
+        } else {
             self.imageLoaded = true;
-            self.dimImage = {width:self.image.width, height:self.image.height};
-        });
-        self.imageLoaded = false;
+        }
+
+
+        if (question.tabAnswer !== null) {
+            question.tabAnswer.forEach(function (it) {
+                var tmp = new Answer(it);
+                tmp.parent = self;
+                self.tabAnswer.push(tmp);
+                if(tmp.correct) {
+                    self.rightAnswers.push(tmp);
+                }
+
+            });
+        }
+    }
+
+    self.lines = Math.floor(self.tabAnswer.length/self.rows)+1;
+    if(self.tabAnswer.length % self.rows === 0) {
+        self.lines = Math.floor(self.tabAnswer.length/self.rows);
     } else {
-        self.imageLoaded = true;
+        self.lines = Math.floor(self.tabAnswer.length/self.rows)+1;
     }
 
 
-    if (question.tabAnswer !== null) {
-        question.tabAnswer.forEach(function (it) {
-            var tmp = new Answer(it);
-            tmp.parent=self;
-            self.tabAnswer.push(tmp);
-            if(tmp.correct) {
-               self.rightAnswers.push(tmp);
-            }
-
-        });
-    }
-
-    //if(self.rightAnswers.length!=1){
-    //    self.multipleChoice=true;
-    //}
-
-    self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
-    if(self.tabAnswer.length%self.rows === 0) {
-        self.lines=Math.floor(self.tabAnswer.length/self.rows);
-    } else {
-        self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
-    }
-
-    self.rgbBordure = question.colorBordure;
-    self.bgColor = question.bgColor;
 
     self.bordure = null;
     self.content = null;
@@ -89,7 +95,7 @@ var Question = function (question,quizz) {
 
     self.display = function (x, y, w, h) {
 
-        if(typeof x!== 'undefined'){
+        if(typeof x !== 'undefined'){
             self.x = x;
         }
         if(typeof y !== 'undefined' ){
@@ -100,7 +106,7 @@ var Question = function (question,quizz) {
 
         // Question avec Texte ET image
         if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator,self.raphImage);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.content;
             self.raphImage = objectTotal.image;

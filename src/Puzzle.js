@@ -54,9 +54,9 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     self.virtualTab[i][j] = self.questionsTab[count];
                     //self.virtualTab[i][j].tabAnswer.splice(0,self.virtualTab[i][j].tabAnswer.length);
 
-                    if(self.virtualTab[i][j].answersManipulator.first){
-                        self.virtualTab[i][j].answersManipulator.first.flush();
-                        self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
+                    if((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first){
+                        self.virtualTab[i][j].questionManipulator.first.flush();
+                        //self.virtualTab[i][j].questionManipulator.last.remove(self.virtualTab[i][j].answersManipulator.first);
                     }
                     count++;
                 } else {
@@ -78,14 +78,14 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
      * @param h: Height
      * @param startPosition: Row number to align with
      */
-    self.display=function(x, y, w, h, startPosition) {
-        self.startPosition=startPosition;
+    self.display = function(x, y, w, h, startPosition) {
+        self.startPosition = startPosition;
         // Clear SetDisplay
         //self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
         //    self.questionWithBadAnswersManipulator.last.remove(el);
         //});
         self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
-        self.questionWithBadAnswersManipulator=new Manipulator(self);
+        self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
 
@@ -229,9 +229,11 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
             for (var i = startPosition; i < (startPosition + self.rows); i++) {
                 for (var j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
-
-                    self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                       // if(!(self.virtualTab[i][j].bordure)){
+                    if(self.virtualTab[i][j] instanceof AddEmptyElement){
+                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
+                    }else{
+                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
+                    }
                             self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                             if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
@@ -244,7 +246,12 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             }
                        // }
 
+                    if(self.virtualTab[i][j] instanceof AddEmptyElement){
+                        self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
+                    }else{
                         self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
+                    }
+
 
                         posY += self.tileHeight + MARGIN;
                     count++;
