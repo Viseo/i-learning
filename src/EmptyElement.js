@@ -57,7 +57,7 @@ var AddEmptyElement = function (parent, type) {
                     self.parent.quizz.tabQuestions.pop();
 
                     // self.parent.questionsPuzzleManipulator.last.children[1].children[0].children[0].children[2].children[0].children[0].children[0].remove(self.plus);
-                    var index = self.parent.questionsPuzzleManipulator.last.children[1].children[0].children[0].children[2].children[0].children[0].children[0].remove(self.plus);//scaling.children.indexOf(self.obj.cadre);
+                    var index = self.parent.questionsPuzzleManipulator.puzzleManipulator.last.remove(self.plus);//scaling.children.indexOf(self.obj.cadre);
                     self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
                     index = self.parent.questionsPuzzleManipulator.ordonator.children.indexOf(self.obj.content);
                     self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
