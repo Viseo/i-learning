@@ -88,6 +88,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
         self.questionWithBadAnswersManipulator=new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
+
         var removeArrows = function (){
             if(self.leftArrowManipulator.last.children.length>1) {
                 //self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
@@ -230,7 +231,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     if (count < self.questionsTab.length) {
 
                     self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                        if(!(self.virtualTab[i][j].bordure)){
+                       // if(!(self.virtualTab[i][j].bordure)){
                             self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                             if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
@@ -241,7 +242,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                             }
-                        }
+                       // }
 
                         self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
 
