@@ -27,7 +27,7 @@ var Question = function (question, quizz) {
         self.imageSrc = "";
         self.rows = 2;
         self.rightAnswers = [];
-        self.tabAnswer = [new Answer(), new Answer()];
+        self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
         self.selectedAnswers = [];
         self.multipleChoice = false;
         self.simpleChoice = true;
@@ -59,18 +59,17 @@ var Question = function (question, quizz) {
             self.imageLoaded = true;
         }
 
+    }
+    if (question !== null && question.tabAnswer !== null) {
 
-        if (question.tabAnswer !== null) {
-            question.tabAnswer.forEach(function (it) {
-                var tmp = new Answer(it);
-                tmp.parent = self;
-                self.tabAnswer.push(tmp);
-                if(tmp.correct) {
-                    self.rightAnswers.push(tmp);
-                }
+        question.tabAnswer.forEach(function (it) {
+            var tmp = new Answer(it, self);
+            self.tabAnswer.push(tmp);
+            if(tmp.correct) {
+                self.rightAnswers.push(tmp);
+            }
 
-            });
-        }
+        });
     }
 
     self.lines = Math.floor(self.tabAnswer.length/self.rows)+1;

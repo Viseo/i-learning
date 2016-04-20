@@ -37,7 +37,7 @@ var AddEmptyElement = function (parent, type) {
             switch (self.type) {
                 case 'answer':
                     self.parent.tabAnswer.pop();
-                    var newAnswer = new Answer();
+                    var newAnswer = new Answer(null, self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion]);
                     self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                     self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
                     self.plusManipulator.last.flush();

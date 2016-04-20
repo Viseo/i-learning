@@ -52,7 +52,7 @@ var QuestionCreator = function (parent, question) {
         }
         self.tabAnswer = [];
         quest.tabAnswer.forEach(function (answer) {
-            self.tabAnswer.push(new AnswerElement(answer,self));
+            self.tabAnswer.push(new AnswerElement(answer, self));
         });
         self.quizzName = quest.parentQuizz.title;
         self.label = quest.label;

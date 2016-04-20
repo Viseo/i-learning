@@ -12,9 +12,9 @@
  * @constructor
  */
 /*label, imageSrc, bCorrect, colorBordure, bgColor*/
-var Answer = function (answerParameters) {
+var Answer = function (answerParameters, parent) {
     var self = this;
-
+    self.parent = parent;
     var answer = {
         label:'',
         imageSrc:null,
