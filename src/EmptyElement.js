@@ -27,7 +27,7 @@ var AddEmptyElement = function (parent, type) {
         self.plus = drawPlus(0,0, h*.3, h*0.3);
         self.plusManipulator.ordonator.set(0, self.plus);
         //self.plusManipulator.translator.move(x+w/2, y+(h*0.4));
-       // self.manipulator.last.add(self.plus);
+        // self.manipulator.last.add(self.plus);
         self.obj.content.position(0,h*0.35);
 
         self.obj.cadre.color(myColors.white, 3, myColors.black);
@@ -86,20 +86,22 @@ var AnswerElement = function (answer, parent) {
 
     if(answer) {
         self.label = answer.label;
-        if(answer.fontSize) {
-            self.fontSize = answer.fontSize;
-        } else {
-            self.fontSize = 20;
-        }
+        answer.fontSize && (self.fontSize = answer.fontSize);
+
         if(typeof answer.correct !== 'undefined'){
             self.bCorrect = answer.correct;
         }else{
             self.bCorrect=false;
         }
+        answer.font && (self.font = answer.font);
+
     }else {
         self.label = "";
         self.fontSize = 20;
         self.bCorrect = false;
+        self.font = "Arial";
+        self.colorBordure = myColors.black;
+        self.bgColor = myColors.white;
     }
     self.parent = parent;
 
@@ -109,7 +111,7 @@ var AnswerElement = function (answer, parent) {
         }else{
             self.img = null;
         }
-        return {label: self.label, imageSrc:self.img, bCorrect: self.bCorrect, colorBordure: myColors.black, bgColor: myColors.white};
+        return {label: self.label, imageSrc:self.img, font:self.font, fontSize:self.fontSize, bCorrect: self.bCorrect, colorBordure: self.linkedAnswer.rgbBordure, bgColor: self.linkedAnswer.bgColor};
     };
 
     self.checkInputContentArea = function (objCont) {
@@ -136,12 +138,12 @@ var AnswerElement = function (answer, parent) {
             var color = (self.label) ? myColors.black : myColors.grey;
             if(self.linkedAnswer.image){
                 self.img = self.linkedAnswer.image;
-                self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+                self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.rgbBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
                 //self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             else{
-                self.obj = displayText(text, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+                self.obj = displayText(text, w, h, self.linkedAnswer.rgbBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
@@ -232,8 +234,8 @@ var AnswerElement = function (answer, parent) {
             self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }
-       // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
-       // self.manipulator.ordonator.set(6, self.cBLabel);
+        // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
+        // self.manipulator.ordonator.set(6, self.cBLabel);
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });

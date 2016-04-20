@@ -38,17 +38,17 @@ var QuestionCreator = function (parent, question) {
     self.labelDefault = "Cliquer deux fois pour ajouter la question";
     self.quizzType = myQuizzType.tab;
 
-    self.loadQuestion=function(quest){
-        self.linkedQuestion=quest;
+    self.loadQuestion = function(quest){
+        self.linkedQuestion = quest;
         if(typeof quest.multipleChoice !== 'undefined'){
             self.multipleChoice = quest.multipleChoice;
         }else{
-            self.multipleChoice=false;
+            self.multipleChoice = false;
         }
         if(typeof quest.simpleChoice !== 'undefined'){
             self.simpleChoice = quest.simpleChoice;
         }else{
-            self.simpleChoice= (!self.multipleChoice);
+            self.simpleChoice = (!self.multipleChoice);
         }
         self.tabAnswer = [];
         quest.tabAnswer.forEach(function (answer) {
@@ -58,11 +58,16 @@ var QuestionCreator = function (parent, question) {
         self.label = quest.label;
         self.rightAnswers = [];
         self.fontSize = quest.fontSize;
+        self.font = quest.font;
+        self.bgColor = quest.bgColor;
+        self.colorBordure = quest.rgbBordure;
+
         self.tabAnswer.forEach(function (el) {
             if (el.bCorrect) {
                 self.rightAnswers.push(el);
             }
         });
+
     };
 
     if (!question) {
@@ -211,15 +216,15 @@ var QuestionCreator = function (parent, question) {
             var text = (self.label) ? self.label : self.labelDefault;
             if(self.linkedQuestion.image){
                 var img = self.linkedQuestion.image;
-                self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+                self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
             }else{
-                self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, null, self.questionManipulator);
+                self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
             }
 
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop = true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
-            self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+            self.questionBlock.title.cadre.color(self.bgColor, 1, self.colorBordure);
             self.questionBlock.title.cadre._acceptDrop = true;
             svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
             svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);

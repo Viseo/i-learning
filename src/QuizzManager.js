@@ -223,16 +223,18 @@ function QuizzManager(quizz){
                 });
 
                 var questionObject = {
-                    label: self.questionCreator.label,
+                    label: self.questionCreator.linkedQuestion.label,
                     imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
-                    tabAnswer: tabAnswer,
+                    tabAnswer: self.questionCreator.linkedQuestion.tabAnswer,
                     multipleChoice:self.questionCreator.multipleChoice,
+                    font:self.questionCreator.linkedQuestion.font,
+                    fontSize:self.questionCreator.linkedQuestion.fontSize,
                     nbrows: 4,
-                    colorBordure: myColors.black,
-                    bgColor: myColors.white
+                    colorBordure: self.questionCreator.linkedQuestion.rgbBordure,
+                    bgColor: self.questionCreator.linkedQuestion.bgColor
                 };
 
-                self.tabQuestions[self.indexOfEditedQuestion]=questionObject;
+                self.tabQuestions[self.indexOfEditedQuestion] = questionObject;
 
                 var tmpQuizzObject = {
                     title: self.quizzName,

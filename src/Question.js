@@ -23,11 +23,11 @@ var Question = function (question, quizz) {
     self.fontSize = 20;
 
     if(!question){
-        self.label = "New Question";
+        self.label = "";
         self.imageSrc = "";
         self.rows = 2;
         self.rightAnswers = [];
-        self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
+        self.tabAnswer = [new Answer(), new Answer()];
         self.selectedAnswers = [];
         self.multipleChoice = false;
         self.simpleChoice = true;
@@ -105,14 +105,14 @@ var Question = function (question, quizz) {
         h && (self.height = h);
 
         // Question avec Texte ET image
-        if (self.label && self.imageSrc) {
+        if (typeof self.label !== "undefined" && self.imageSrc) {
             var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.content;
             self.raphImage = objectTotal.image;
         }
         // Question avec Texte uniquement
-        else if (self.label && !self.imageSrc) {
+        else if (typeof self.label !== "undefined" && !self.imageSrc) {
             var object = displayText(self.label, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;

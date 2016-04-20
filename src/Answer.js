@@ -15,13 +15,13 @@
 var Answer = function (answerParameters) {
     var self = this;
 
-    var answer={
+    var answer = {
         label:'',
         imageSrc:null,
         bCorrect:false
     };
-    answerParameters && (answer=answerParameters);
-    self.answerManipulator=new Manipulator(self);
+    answerParameters && (answer = answerParameters);
+    self.answerManipulator = new Manipulator(self);
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
@@ -43,7 +43,7 @@ var Answer = function (answerParameters) {
     }
 
     self.rgbBordure = self.label ? answer.colorBordure : myColors.black;
-    self.bgColor = answer.bgColor ? answer.bgColor : myColors.none;
+    self.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
 
     self.bordure = null;
     self.content = null;
