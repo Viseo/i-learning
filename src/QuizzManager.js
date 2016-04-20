@@ -301,32 +301,6 @@ function QuizzManager(quizz){
         self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
         self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 
-        //self.questionPuzzle.
-
-        //for(var i=0;i<self.quizz.tabQuestions.length;i++){
-        //    (function (element) {
-        //        if (element.bordure) {
-        //            svg.addEvent(element.bordure, "click", function () {
-        //                questionClickHandler(element);
-        //            });
-        //        }
-        //
-        //        if (element.content) {
-        //            svg.addEvent(element.content, "click", function () {
-        //                questionClickHandler(element);
-        //            });
-        //        }
-        //
-        //        if (element.raphImage) {
-        //            svg.addEvent(element.raphImage, "click", function () {
-        //                questionClickHandler(element);
-        //            });
-        //        }
-        //
-        //    })(self.quizz.tabQuestions[i]);
-        //}
-
-
     };
 
     var addQuestionToQuizz = function(){

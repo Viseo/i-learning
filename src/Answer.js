@@ -16,7 +16,7 @@ var Answer = function (answerParameters) {
     var self = this;
 
     var answer={
-        label:'New Answer',
+        label:'',
         imageSrc:null,
         bCorrect:false
     };

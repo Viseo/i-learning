@@ -24,10 +24,10 @@ var AddEmptyElement = function (parent, type) {
 
     self.display = function (x, y, w, h) {
         self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-        self.plus = drawPlus(x+w/2, y+(h*0.4), h*.3, h*0.3);
-        //self.plusManipulator.ordonator.set(2, self.plus);
+        self.plus = drawPlus(0,0, h*.3, h*0.3);
+        self.plusManipulator.ordonator.set(0, self.plus);
         //self.plusManipulator.translator.move(x+w/2, y+(h*0.4));
-        self.manipulator.last.add(self.plus);
+       // self.manipulator.last.add(self.plus);
         self.obj.content.position(0,h*0.35);
 
         self.obj.cadre.color(myColors.white, 3, myColors.black);
@@ -40,7 +40,8 @@ var AddEmptyElement = function (parent, type) {
                     var newAnswer = new Answer();
                     self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                     self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
-                    self.manipulator.last.remove(self.plus);
+                    self.plusManipulator.last.flush();
+                    //self.manipulator.last.remove(self.plus);
                     self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
 
                     self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
@@ -55,19 +56,9 @@ var AddEmptyElement = function (parent, type) {
                 case 'question':
                     self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(0);
                     self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(1);
-                    self.parent.questionPuzzle.puzzleManipulator.unset(2);
-                   // self.parent.questionPuzzle.puzzleManipulator.last.remove(self.parent.questionPuzzle.puzzleManipulator.);
+                    self.plusManipulator.last.flush();
 
                     self.parent.quizz.tabQuestions.pop();
-
-                    // self.parent.questionsPuzzleManipulator.last.children[1].children[0].children[0].children[2].children[0].children[0].children[0].remove(self.plus);
-                    var index = self.parent.questionsPuzzleManipulator.puzzleManipulator.last.remove(self.plus);//scaling.children.indexOf(self.obj.cadre);
-                    self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
-                    index = self.parent.questionsPuzzleManipulator.ordonator.children.indexOf(self.obj.content);
-                    self.parent.questionsPuzzleManipulator.puzzleManipulator.ordonator.unset(index);
-                    self.parent.questionsPuzzleManipulator.puzzleManipulator.last.remove(self.plus);
-
-                    //self.manipulator.last.remove(self.plus);
 
                     var newQuestion = new Question(null, self.parent.quizz);
                     self.parent.quizz.tabQuestions.push(newQuestion);
