@@ -21,7 +21,7 @@ var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
     var sender = null;
     target.answerParent && (sender = target.answerParent);
-    sender.linkedAnswer.correct=!sender.bCorrect;////// !_! de temps en temps, answerParent est undef...
+    sender.linkedAnswer.correct=!sender.bCorrect;
     sender.bCorrect = !sender.bCorrect;
     sender.bCorrect && drawPathChecked(sender, sender.x, sender.y, sender.size);
     updateAllCheckBoxes(sender);

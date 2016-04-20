@@ -206,7 +206,7 @@ function QuizzManager(quizz){
                 if(!result.isValid) {
                     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                     self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                        .position(0, h/2 - 2 * self.toggleButtonHeight-MARGIN)
+                        .position(0,-self.toggleButtonHeight)
                         .font("arial", 20)
                         .anchor('middle').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
@@ -279,7 +279,7 @@ function QuizzManager(quizz){
         y && (self.qPuzzleY=y);
         w && (self.qPuzzleW=w);
         h && (self.qPuzzleH=h);
-
+        self.questionPuzzle.puzzleManipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.puzzleManipulator.first);
         //self.questionsPuzzleManipulator.last.flush();
         var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
         border.color([], 2, myColors.black);
