@@ -144,8 +144,10 @@ var Question = function (question, quizz) {
             }
             w && ( self.tileWidth= (w - MARGIN * (self.rows - 1)) / self.rows);
             self.tileHeight = 0;
+            self.multipleChoice && (h=h-50);
 
             h && (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
+
             self.tileHeightMin = 2.50*self.fontSize;
 
             var tmpTileHeight;
@@ -223,7 +225,7 @@ var Question = function (question, quizz) {
             var h=50;
             var validateX,validateY;
             validateX=-75+100;
-            validateY=self.tileHeight*self.lines+(self.lines)*MARGIN;
+            validateY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
@@ -280,7 +282,7 @@ var Question = function (question, quizz) {
             var w=150;
             var h=50;
             var resetX=-75 -100;
-            var resetY=self.tileHeight*self.lines+(self.lines)*MARGIN;
+            var resetY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
             if(self.selectedAnswers.length!=0){
