@@ -31,7 +31,6 @@ var QuestionCreator = function (parent, question) {
     self.reponseHeight = 0.7;
 
     var haut = (window.innerHeight);
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
 
@@ -87,7 +86,7 @@ var QuestionCreator = function (parent, question) {
     self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
 
     self.checkInputTextArea = function (myObj) {
-        if (myObj.textarea.value.match(self.regex)) {
+        if (myObj.textarea.value.match(REGEX)) {
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.style.border = "none";
@@ -217,6 +216,7 @@ var QuestionCreator = function (parent, question) {
             if(self.linkedQuestion.image){
                 var img = self.linkedQuestion.image;
                 self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
+                self.questionBlock.title.image._acceptDrop = true;
             }else{
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
             }
@@ -274,7 +274,7 @@ var QuestionCreator = function (parent, question) {
                 var anchor = 'middle';
                 var quizzInfoHeightRatio = 0.05;
                 var questionsPuzzleHeightRatio = 0.25;
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                self.errorMessage = new svg.Text(REGEXERROR)
                     .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);

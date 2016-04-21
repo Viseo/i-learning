@@ -17,7 +17,7 @@ var AddEmptyElement = function (parent, type) {
             self.answerNameValidInput = true;
             self.label = "Double-cliquez pour ajouter une réponse";
             break;
-    };
+    }
 
     self.fontSize = 20;
     self.parent = parent;
@@ -80,7 +80,6 @@ var AnswerElement = function (answer, parent) {
     self.manipulator = new Manipulator(self);
     self.linkedAnswer = answer;
     self.isValidInput = true;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
     self._acceptDrop = true;
 
@@ -115,7 +114,7 @@ var AnswerElement = function (answer, parent) {
     };
 
     self.checkInputContentArea = function (objCont) {
-        if (objCont.contentarea.value.match(self.regex)) {
+        if (objCont.contentarea.value.match(REGEX)) {
             self.label = objCont.contentarea.value;
             objCont.remove();
             objCont.contentarea.onblur = objCont.onblur;
@@ -189,7 +188,7 @@ var AnswerElement = function (answer, parent) {
                 var marginErrorMessagePreviewButton = 0.03;
                 var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
                 var anchor = 'middle';
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);

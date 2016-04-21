@@ -77,13 +77,11 @@ var Library = function (lib) {
             self.bibManipulators[i] = new Manipulator(self);
             self.libraryManipulator.last.add(self.bibManipulators[i].first);
             if (self.tabLib[i].imgSrc) {
-
                 var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.bibManipulators[i]);
                 self.bibManipulators[i].ordonator.set(0, objectTotal.image);
                 var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
                 self.bibManipulators[i].first.move(X, tempY);
             }
-
             else {
 
                 if (i % maxJeuxbyLine === 0 && i != 0) {
@@ -91,7 +89,6 @@ var Library = function (lib) {
                 }
 
                 var objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.bibManipulators[i]);
-                //self.bibManipulators[i].ordonator.set(1, objectTotal.content);
                 var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxbyLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
 
@@ -104,15 +101,12 @@ var Library = function (lib) {
         }
         self.libraryManipulator.first.move(x, y);
 
-
         self.bibManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
 
                 var elementCopy = e.ordonator.children[0];
-                //drawings.piste.add(clone(elementCopy));
                 var manip = new Manipulator(self);
                 drawings.piste.last.add(manip.first);
-
                 var img;
                 console.log(e.ordonator.children[0]);
                 if (e.ordonator.children[0] instanceof svg.Image){
