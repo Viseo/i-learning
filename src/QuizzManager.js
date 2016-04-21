@@ -267,6 +267,8 @@ function QuizzManager(quizz){
     var questionClickHandler=function(event){
         var target=drawing.getTarget(event.clientX,event.clientY);
         var element=target.parent.parentManip.parentObject;
+        self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
+        target.parent.children[0].color(element.bgColor, 5, myColors.blue);
         var index= self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion=index;
         self.questionCreator.loadQuestion(element);
