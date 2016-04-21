@@ -105,7 +105,7 @@ var Question = function (question, quizz) {
 
         // Question avec Texte ET image
         if (typeof self.label !== "undefined" && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.content;
             self.raphImage = objectTotal.image;
