@@ -57,7 +57,7 @@ var Library = function (lib) {
         h && (self.h = h);
         self.borderSize = 3;
 
-        self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.white,self.borderSize,myColors.black);
+        self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
         self.bordure.position(w/2,h/2);
         self.libraryManipulator.last.add(self.bordure);
 
@@ -77,13 +77,11 @@ var Library = function (lib) {
             self.bibManipulators[i] = new Manipulator(self);
             self.libraryManipulator.last.add(self.bibManipulators[i].first);
             if (self.tabLib[i].imgSrc) {
-
                 var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.bibManipulators[i]);
                 self.bibManipulators[i].ordonator.set(0, objectTotal.image);
                 var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
                 self.bibManipulators[i].first.move(X, tempY);
             }
-
             else {
 
                 if (i % maxJeuxbyLine === 0 && i != 0) {
@@ -91,27 +89,40 @@ var Library = function (lib) {
                 }
 
                 var objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.bibManipulators[i]);
-                //self.bibManipulators[i].ordonator.set(1, objectTotal.content);
                 var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxbyLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
             }
         }
         self.libraryManipulator.first.move(x, y);
 
-
         self.bibManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
+                var target = drawing.getTarget(event.clientX, event.clientY);
+                target.clicked = !target.clicked;
+                if (target.clicked){
+                    target.color(myColors.white, 3, myColors.blue);
+                    self.jeux.forEach(function(element){
+                        if (element.objectTotal.cadre!=target){
+                            element.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                            element.objectTotal.cadre.clicked = false;
+                        }
+                    });
+                }
+                else{
+                    target.color(myColors.white, 1, myColors.black);
+                }
                 var elementCopy = e.ordonator.children[0];
-                //drawings.piste.add(clone(elementCopy));
                 var manip = new Manipulator(self);
                 drawings.piste.last.add(manip.first);
-
                 var img;
                 console.log(e.ordonator.children[0]);
                 if (e.ordonator.children[0] instanceof svg.Image){
                     img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
                 }else{
-                    img = displayTextWithCircle(".",w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip).content
+                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip)
+                    manip.ordonator.set(1, img.content);
+                    manageDnD(img.content, manip);
+                    img = img.cadre;
                 };
 
                 manip.ordonator.set(0,img);

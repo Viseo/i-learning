@@ -686,7 +686,6 @@ function SVG(runtime) {
         }
     };
     Shape.prototype.getTarget = function(x, y) {
-
         if ((!this._opacity || this._opacity>0) && this.fillColor &&this.fillColor.length>0) {
             return this.inside(x, y) ? this : null;
         }
@@ -1224,6 +1223,11 @@ function SVG(runtime) {
         this._draw();
         return this;
     };
+    Text.prototype.fontStyle = function(fontStyle){
+        this.fontStyle = fontStyle;
+        this._draw();
+        return this;
+    };
     Text.prototype.anchor = function(anchorText) {
         this.anchorText = anchorText;
         this._draw();
@@ -1235,6 +1239,7 @@ function SVG(runtime) {
         svgr.attr(this.component, "text-anchor", this.anchorText);
         svgr.attr(this.component, "font-family", this.fontName);
         svgr.attr(this.component, "font-size", this.fontSize);
+        svgr.attr(this.component, "font-style", this.fontStyle);
         svgr.text(this.component, this.messageText);
     };
     Text.prototype.globalPoint = function() {
@@ -1274,11 +1279,17 @@ function SVG(runtime) {
         this._draw();
         return this;
     };
+    Line.prototype.strokeDasharray = function(dasharray){
+        this.dasharray = dasharray;
+        this._draw();
+        return this;
+    };
     Line.prototype._draw = function() {
         svgr.attr(this.component, "x1", this.x1);
         svgr.attr(this.component, "y1", this.y1);
         svgr.attr(this.component, "x2", this.x2);
         svgr.attr(this.component, "y2", this.y2);
+        svgr.attr(this.component, "stroke-dasharray", this.dasharray);
     };
     Line.prototype.prepareAnimator = function(animator) {
         Shape.prototype.prepareAnimator.call(this, animator);
@@ -1421,7 +1432,6 @@ function SVG(runtime) {
         this.component = svgr.create("image");
         Shape.call(this);
         this.src = url;
-        // ._.
         this.fillColor=[true];
         this.x = 0;
         this.y = 0;

@@ -38,6 +38,7 @@ var Drawings = function (w, h) {
 
     self.drawing = new svg.Drawing(w, h).show("content").position(0, 0);
     self.drawing.manipulator = new Manipulator(self);
+
     //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
     //self.piste.manipulator = new Manipulator(self);
     //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
