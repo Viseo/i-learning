@@ -205,7 +205,7 @@ var Library = function (lib) {
                     self.jeux.forEach(function(e){
                         if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                             if (!e.objectTotal.cadre.clicked){
-                                target.color(myColors.white, 3, SELECTED_COLOR);
+                                target.color(myColors.white, 3, SELECTION_COLOR);
                                 e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
                                 e.objectTotal.cadre.clicked = true;
                             }

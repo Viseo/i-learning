@@ -116,15 +116,6 @@ var AnswerElement = function (answer, parent) {
     }
     self.parent = parent;
 
-    self.toAnswer = function () {
-        if(self.manipulator.ordonator.children[2] instanceof svg.Image){
-            self.img = self.manipulator.ordonator.children[2].src;
-        }else{
-            self.img = null;
-        }
-        return {label: self.label, imageSrc:self.img, font:self.font, fontSize:self.fontSize, bCorrect: self.bCorrect, colorBordure: self.linkedAnswer.rgbBordure, bgColor: self.linkedAnswer.bgColor};
-    };
-
     self.checkInputContentArea = function (objCont) {
         if (objCont.contentarea.value.match(REGEX)) {
             self.label = objCont.contentarea.value;
