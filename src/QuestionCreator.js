@@ -217,6 +217,7 @@ var QuestionCreator = function (parent, question) {
             if(self.linkedQuestion.image){
                 var img = self.linkedQuestion.image;
                 self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
+                self.questionBlock.title.image._acceptDrop = true;
             }else{
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
             }
