@@ -89,7 +89,6 @@ var Answer = function (answerParameters, parent) {
             var obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.w, self.h, self.answerManipulator);
             self.image = obj.image;
             self.bordure = obj.cadre;
-
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
@@ -99,7 +98,7 @@ var Answer = function (answerParameters, parent) {
         }
         if(self.selected){// image pré-selectionnée
             //self.bordure.color(null,5,myColors.red);
-            self.bordure.color(self.bgColor,5,myColors.red);
+            self.bordure.color(self.bgColor, 5, myColors.blue);
 
         }
         self.answerManipulator.translator.move(self.x,self.y);

@@ -21,6 +21,7 @@ var Question = function (question, quizz) {
     self.parentQuizz = quizz;
     self.tabAnswer = [];
     self.fontSize = 20;
+    self.questionNum = self.parentQuizz.tabQuestions.length+1;
 
     if(!question){
         self.label = "";
@@ -128,6 +129,9 @@ var Question = function (question, quizz) {
             self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.rgbBordure);
             self.questionManipulator.ordonator.set(0, self.bordure);
         }
+        var fontSize = Math.min(20, h*0.1);
+        self.questNum = new svg.Text(self.questionNum).position(-w/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -h/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
+        self.questionManipulator.ordonator.set(4, self.questNum);
         self.questionManipulator.translator.move(self.x,self.y);
         self.selected && self.selectedQuestion();
         //self.questionManipulator.ordonator.children.forEach(function(e){
@@ -275,14 +279,14 @@ var Question = function (question, quizz) {
                 self.parentQuizz.nextQuestion();
 
             };
-            svg.addEvent(validateButton.cadre,'click',oclk);
-            svg.addEvent(validateButton.content,'click',oclk);
+            svg.addEvent(validateButton.cadre, 'click', oclk);
+            svg.addEvent(validateButton.content, 'click', oclk);
 
             //Button reset
-            var w=150;
-            var h=50;
-            var resetX=-75 -100;
-            var resetY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
+            var w = 150;
+            var h = 50;
+            var resetX =- 75 -100;
+            var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
             if(self.selectedAnswers.length!=0){
@@ -333,7 +337,7 @@ var Question = function (question, quizz) {
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
 
-                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.red);
+                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.blue);
                 self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{

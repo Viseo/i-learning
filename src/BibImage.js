@@ -108,9 +108,26 @@ var Library = function (lib) {
                         formation.gamesCounter.bd++;
                         break;
                 }
-                formation.displayNewLevel(formation.graphCreaWidth, formation.graphCreaHeight);
+                if (formation.quizzTab[0].length>formation.maxGameInARow){
+                    autoAdjustText(formation.maxGameInARowMessage, 0, 0, formation.graphCreaWidth, formation.graphCreaHeight, 20, null, formation.manipulator).text.color(myColors.red)
+                    .position(drawing.width - MARGIN, 0).anchor("end");
+                }
+                else {
+                    //formation.bib.jeux.forEach(function(game){
+                    //    game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                    //    game.objectTotal.cadre.clicked = false;
+                    //});
+                    //self.displayNewLevel(w, h);
+                    formation.displayNewLevel(formation.graphCreaWidth, formation.graphCreaHeight);
+                }
             }
         }
+        var selected;
+        self.jeux.forEach(function (game) {
+            game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
+        });
+        selected && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
+        selected && selected.color(myColors.white, 1, myColors.black);
     };
 
     self.display = function(x,y,w,h){
