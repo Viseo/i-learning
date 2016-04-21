@@ -78,6 +78,7 @@ var Library = function (lib) {
             self.libraryManipulator.last.add(self.bibManipulators[i].first);
             if (self.tabLib[i].imgSrc) {
                 var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.bibManipulators[i]);
+                objectTotal.image.srcDimension = {width: self.tabImgBib[i].width, height: self.tabImgBib[i].height};
                 self.bibManipulators[i].ordonator.set(0, objectTotal.image);
                 var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
                 self.bibManipulators[i].first.move(X, tempY);
@@ -108,9 +109,9 @@ var Library = function (lib) {
                 var manip = new Manipulator(self);
                 drawings.piste.last.add(manip.first);
                 var img;
-                console.log(e.ordonator.children[0]);
                 if (e.ordonator.children[0] instanceof svg.Image){
-                    img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
+                    img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
+                    img.srcDimension = elementCopy.srcDimension;
                 }else{
                     img = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip)
                     manip.ordonator.set(1, img.content);
@@ -151,7 +152,7 @@ var Library = function (lib) {
 
 
                         var newQuest = displayImageWithTitle(oldQuest.content.messageText, img.src,
-                            img,
+                            img.srcDimension,
                             oldQuest.cadre.width, oldQuest.cadre.height,
                             rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
                         );
