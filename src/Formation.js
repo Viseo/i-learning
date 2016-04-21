@@ -11,11 +11,12 @@ var Formation = function(formation){
     self.formationInfoManipulator = new Manipulator();
     self.graphManipulator = new Manipulator();
 
-    self.bib = new BibJeux(myBibJeux);
+    self.bib = new Library(myBibJeux);
 
     //self.bib = new BibJeux(myQuizzTypeBib);
-    self.libraryManipulator = self.bib.bibJeuxManipulator;
-    self.manipulator.last.add(self.libraryManipulator.first);
+
+    self.libraryJManipulator = self.bib.libraryManipulator;
+    self.manipulator.last.add(self.libraryJManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
 
     self.manipulatorMiniature.last.add(self.iconManipulator.first);
@@ -166,7 +167,7 @@ var Formation = function(formation){
         };
         showTitle();
 
-        self.libraryManipulator.translator.move(0, self.title.component.getBBox().height);
+        self.libraryJManipulator.translator.move(0, self.title.component.getBBox().height);
 
         var displayGraph = function (w, h){
             self.graphManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);

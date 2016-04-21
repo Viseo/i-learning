@@ -22,7 +22,7 @@ function main() {
    quizz.run(50,10,1200,1200);*/
 
     /*
-    var bib=new BibImage(myBib);
+    var bib=new Library(myBibImage);
     bib.run(0,0,document.body.clientWidth,drawing.height);
 */
 
