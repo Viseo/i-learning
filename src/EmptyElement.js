@@ -61,20 +61,23 @@ var AddEmptyElement = function (parent, type) {
                     self.parent.quizz.tabQuestions.pop();
 
                     var newQuestion = new Question(null, self.parent.quizz);
+                    self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false;
+                    newQuestion.selected = true;
+                    self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
                     self.parent.quizz.tabQuestions.push(newQuestion);
                     var AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
                     self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
                     if(self.parent.questionPuzzle.questionsTab.length >self.parent.questionPuzzle.rows){
                         self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
 
-                    }else{
+                    } else {
                         self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition);
 
                     }
                     self.parent.questionCreator.loadQuestion(newQuestion);
                     self.parent.questionCreatorManipulator.last.flush();
                     self.parent.questionCreator.display(self.parent.questionCreator.previousX, self.parent.questionCreator.previousY, self.parent.questionCreator.previousW, self.parent.questionCreator.previousH);
-            };
+            }
         };
 
         svg.addEvent(self.plus, "dblclick", dblclickEdition);

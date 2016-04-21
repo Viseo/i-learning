@@ -50,7 +50,7 @@ var defaultQuestion = {
     tabAnswer: [
         {label:"",imageSrc: null,bCorrect:false,
             colorBordure: myColors.black,bgColor:myColors.white},
-        {label:"",imageSrc:null,bCorrect:true,
+        {label:"",imageSrc:null,bCorrect:false,
             colorBordure:myColors.black,bgColor:myColors.white}
     ],
     nbrows:2,colorBordure:myColors.black,bgColor:myColors.white};

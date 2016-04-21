@@ -35,6 +35,7 @@ function QuizzManager(quizz){
     }else {
         self.loadQuizz(quizz);
     }
+    self.quizz.tabQuestions[0].selected = true;
     self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
@@ -267,14 +268,14 @@ function QuizzManager(quizz){
     var questionClickHandler=function(event){
         var target=drawing.getTarget(event.clientX,event.clientY);
         var element=target.parent.parentManip.parentObject;
+        self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
+        element.selected = true;
         self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
-        target.parent.children[0].color(element.bgColor, 5, myColors.blue);
         var index= self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion=index;
         self.questionCreator.loadQuestion(element);
         self.questionCreatorManipulator.last.flush();
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
-
     };
 
     self.displayQuestionsPuzzle = function(x, y, w, h, index) {
@@ -325,8 +326,5 @@ function QuizzManager(quizz){
         self.quizz.tabQuestions.forEach(function(e){
             self.quizz.puzzle.tabQuestions.push(e);
         });
-
     };
-
-
-};
+}
