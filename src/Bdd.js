@@ -13,6 +13,8 @@ var myColorsOld={
     white:{r:255, g:255, b:255}
 };
 
+var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'-]){0,50}$/g;
+
 var MARGIN=10;
 
 var myColors={

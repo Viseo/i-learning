@@ -17,7 +17,7 @@ var AddEmptyElement = function (parent, type) {
             self.answerNameValidInput = true;
             self.label = "Double-cliquez pour ajouter une réponse";
             break;
-    };
+    }
 
     self.fontSize = 20;
     self.parent = parent;
@@ -80,7 +80,6 @@ var AnswerElement = function (answer, parent) {
     self.manipulator = new Manipulator(self);
     self.linkedAnswer = answer;
     self.isValidInput = true;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.labelDefault = "Double clic pour modifier";
     self._acceptDrop = true;
 
@@ -115,7 +114,7 @@ var AnswerElement = function (answer, parent) {
     };
 
     self.checkInputContentArea = function (objCont) {
-        if (objCont.contentarea.value.match(self.regex)) {
+        if (objCont.contentarea.value.match(REGEX)) {
             self.label = objCont.contentarea.value;
             objCont.remove();
             objCont.contentarea.onblur = objCont.onblur;

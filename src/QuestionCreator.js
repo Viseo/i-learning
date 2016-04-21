@@ -31,7 +31,6 @@ var QuestionCreator = function (parent, question) {
     self.reponseHeight = 0.7;
 
     var haut = (window.innerHeight);
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.questionNameValidInput = true;
     self.quizzNameValidInput = true;
 
@@ -87,7 +86,7 @@ var QuestionCreator = function (parent, question) {
     self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
 
     self.checkInputTextArea = function (myObj) {
-        if (myObj.textarea.value.match(self.regex)) {
+        if (myObj.textarea.value.match(REGEX)) {
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.style.border = "none";
