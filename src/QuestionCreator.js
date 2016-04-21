@@ -103,7 +103,6 @@ var QuestionCreator = function (parent, question) {
     };
 
     self.display = function (x, y, w, h) {
-
         self.previousX = x;
         self.previousY = y;
         self.previousW = w;
@@ -260,6 +259,7 @@ var QuestionCreator = function (parent, question) {
                 //textarea.remove();
                 //self.questionManipulator.ordonator.unset(0);//, self.questionBlock.title.cadre);
                 showTitle();
+                self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
             };
 
             var removeErrorMessage = function () {
