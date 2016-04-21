@@ -126,8 +126,8 @@ var Library = function (lib) {
         self.jeux.forEach(function (game) {
             game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
         });
-        selected && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
-        selected && selected.color(myColors.white, 1, myColors.black);
+        selected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
+        selected && formation && selected.color(myColors.white, 1, myColors.black);
     };
 
     self.display = function(x,y,w,h){
