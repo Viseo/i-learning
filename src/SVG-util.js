@@ -6,6 +6,11 @@ var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
 };
 
+
+var getComplementary = function(tab){
+  return [255-tab[0], 255-tab[1] , 255-tab[2]];
+};
+
 /**
  *
  * @param x

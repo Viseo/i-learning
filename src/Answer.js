@@ -98,7 +98,7 @@ var Answer = function (answerParameters, parent) {
         }
         if(self.selected){// image pré-selectionnée
             //self.bordure.color(null,5,myColors.red);
-            self.bordure.color(self.bgColor, 5, myColors.blue);
+            self.bordure.color(self.bgColor, 5, SELECTION_COLOR);
 
         }
         self.answerManipulator.translator.move(self.x,self.y);

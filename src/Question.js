@@ -336,8 +336,8 @@ var Question = function (question, quizz) {
                 // on sélectionne une réponse
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
-
-                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.blue);
+                sourceElement.rgbBordure = sourceElement.bordure.strokeColor;
+                sourceElement.bordure.color(sourceElement.bgColor, 5, SELECTION_COLOR);
                 self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{
@@ -352,7 +352,7 @@ var Question = function (question, quizz) {
     }
 
     self.selectedQuestion = function () {
-        self.bordure.color(self.bgColor, 5, myColors.blue);
+        self.bordure.color(self.bgColor, 5, SELECTION_COLOR);
     }
 };
 
