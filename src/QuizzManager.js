@@ -10,9 +10,9 @@ function QuizzManager(quizz){
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
     self.tabQuestions=[defaultQuestion];
-    //for(var i=0;i<7;i++){
-    //    self.tabQuestions.push(myQuizz.tabQuestions[i]);
-    //}
+    for(var i=0;i<7;i++){
+        self.tabQuestions.push(myQuizz.tabQuestions[i]);
+    }
     self.questionPuzzle={};
 
     self.loadQuizz = function(quizz){
@@ -35,6 +35,7 @@ function QuizzManager(quizz){
     }else {
         self.loadQuizz(quizz);
     }
+    self.quizz.tabQuestions[0].selected = true;
     self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
@@ -123,7 +124,7 @@ function QuizzManager(quizz){
             self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
             self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
             self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-            self.quizzLabel.content.position(0,h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
+            self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
             self.quizzInfoManipulator.first.move(x,y);
             svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEdition);
@@ -149,8 +150,9 @@ function QuizzManager(quizz){
 
             var removeErrorMessage = function () {
                 self.questionCreator.quizzNameValidInput = true;
-                self.questionCreator.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
+                self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
                 self.quizzLabel.cadre.color(myColors.grey, 1, myColors.none);
+                self.quizzNameValidInput = true;
             };
 
             var displayErrorMessage = function () {
@@ -159,16 +161,17 @@ function QuizzManager(quizz){
                 //var position = (textarea.getBoundingClientRect().left - MARGIN);
                 var anchor = 'start';
                 self.errorMessage = new svg.Text(REGEXERROR)
-                    .position(0, h+1)
+                    .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
                 textarea.focus();
                 self.quizzNameValidInput = false;
             };
             var onblur = function () {
-                self.questionCreator.quizzNameValidInput && (self.quizzName = textarea.value);
+                self.quizzNameValidInput && (self.quizzName = textarea.value);
                 textarea.remove();
                 showTitle();
+                //removeErrorMessage();
             };
             textarea.oninput = function () {
                 self.questionCreator.checkInputTextArea({
@@ -265,12 +268,14 @@ function QuizzManager(quizz){
     var questionClickHandler=function(event){
         var target=drawing.getTarget(event.clientX,event.clientY);
         var element=target.parent.parentManip.parentObject;
+        self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
+        element.selected = true;
+        self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
         var index= self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion=index;
         self.questionCreator.loadQuestion(element);
         self.questionCreatorManipulator.last.flush();
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
-
     };
 
     self.displayQuestionsPuzzle = function(x, y, w, h, index) {
@@ -321,8 +326,5 @@ function QuizzManager(quizz){
         self.quizz.tabQuestions.forEach(function(e){
             self.quizz.puzzle.tabQuestions.push(e);
         });
-
     };
-
-
-};
+}

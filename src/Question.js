@@ -16,7 +16,7 @@ var Question = function (question, quizz) {
     self.validateManipulator = new Manipulator(self);
     self.answersManipulator.last.add(self.validateManipulator.first);
 
-
+    self.selected = false;
 
     self.parentQuizz = quizz;
     self.tabAnswer = [];
@@ -129,6 +129,7 @@ var Question = function (question, quizz) {
             self.questionManipulator.ordonator.set(0, self.bordure);
         }
         self.questionManipulator.translator.move(self.x,self.y);
+        self.selected && self.selectedQuestion();
         //self.questionManipulator.ordonator.children.forEach(function(e){
         //    manageDnD(e,self.questionManipulator);
         //});
@@ -346,10 +347,9 @@ var Question = function (question, quizz) {
         }
     }
 
-
-
-
-
+    self.selectedQuestion = function () {
+        self.bordure.color(self.bgColor, 5, myColors.blue);
+    }
 };
 
 
