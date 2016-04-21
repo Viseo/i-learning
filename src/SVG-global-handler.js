@@ -38,6 +38,7 @@ var Drawings = function (w, h) {
 
     self.drawing = new svg.Drawing(w, h).show("content").position(0, 0);
     self.drawing.manipulator = new Manipulator(self);
+
     //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
     //self.piste.manipulator = new Manipulator(self);
     //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
@@ -63,6 +64,7 @@ var Drawings = function (w, h) {
         //});
         document.activeElement.blur();
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
+        console.log(self.target);
         self.drag = self.target;
         // Rajouter des lignes pour target.bordure et target.image si existe ?
         if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
@@ -79,7 +81,7 @@ var Drawings = function (w, h) {
         }
     };
 
-    svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
+    //svg.addEvent(self.glass,"mousemove",onmousemoveHandler);
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);

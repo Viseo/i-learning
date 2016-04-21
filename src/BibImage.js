@@ -20,8 +20,8 @@ var BibImage = function (bibimage) {
     for(var i = 0; i<self.tabSrcImg.length; i++){
         var img = imageController.getImage(self.tabSrcImg[i].imgSrc, function () {
             this.imageLoaded = true;
-           // console.log('Loaded! ');
-           // console.log(this);
+            // console.log('Loaded! ');
+            // console.log(this);
         });
         self.tabImgBib[i] = img;
     }
@@ -50,7 +50,7 @@ var BibImage = function (bibimage) {
                 asyncTimerController.clearInterval(self.intervalToken);
                 self.display(x,y,w,h);
                 callback();
-             }
+            }
         }, 100);
     };
     // Bib (Titre + tab Image
@@ -69,18 +69,18 @@ var BibImage = function (bibimage) {
         self.imageMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
         var tempY = (2/10*h);
 
-    for (var i = 0; i<self.tabSrcImg.length; i++) {
+        for (var i = 0; i<self.tabSrcImg.length; i++) {
 
-        if (i%maxImagesPerLine === 0 && i!=0){
-            tempY += self.imageHeight+self.imageMargin;
+            if (i%maxImagesPerLine === 0 && i!=0){
+                tempY += self.imageHeight+self.imageMargin;
+            }
+            self.imgManipulators[i] = new Manipulator(self);
+            self.bibManipulator.last.add(self.imgManipulators[i].first);
+            var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.imgManipulators[i]);
+            self.imgManipulators[i].ordonator.set(0,objectTotal.image);
+            var X=x+self.imageMargin+((i%maxImagesPerLine)*(self.imageMargin+self.imageWidth));
+            self.imgManipulators[i].first.move(X, tempY);
         }
-        self.imgManipulators[i] = new Manipulator(self);
-        self.bibManipulator.last.add(self.imgManipulators[i].first);
-        var objectTotal = displayImage(self.tabSrcImg[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.imgManipulators[i]);
-        self.imgManipulators[i].ordonator.set(0,objectTotal.image);
-        var X=x+self.imageMargin+((i%maxImagesPerLine)*(self.imageMargin+self.imageWidth));
-        self.imgManipulators[i].first.move(X, tempY);
-    }
         self.bibManipulator.first.move(x,y);
         self.imgManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
@@ -133,12 +133,9 @@ var BibImage = function (bibimage) {
                                 target.parent.parentManip.parentObject.linkedAnswer.imageSrc=img.src;
                                 break;
                         }
-
-
                         target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                         target.parent.parentManip.ordonator.set(1, oldQuest.content);
                     }
-
                 };
 
 
@@ -148,7 +145,7 @@ var BibImage = function (bibimage) {
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
             });
-          // manageDnD(e.ordonator.children[0],e);
+            // manageDnD(e.ordonator.children[0],e);
 
         });
 

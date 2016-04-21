@@ -447,6 +447,7 @@ function manageDnD(svgItem,manipulator) {
     var ref;
     var mousedownHandler=function(event) {
         event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
+        event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
         ref = svgItem.localPoint(event.clientX, event.clientY);
         svg.addEvent(svgItem, "mousemove",mousemoveHandler );// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
 

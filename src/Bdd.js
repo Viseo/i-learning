@@ -425,6 +425,13 @@ var myBibJeux= {
     font:"Courier New", fontSize:20
 };
 
+var myFormation = {
+    gamesCounter:{
+    quizz: 0,
+    bd: 0}
+    ,
+    quizzTab:[[{type: "Quiz", label: "Quiz 0"}, {type: "BD", label: "BD 0"}, {type: "Quiz", label: "Le premier Quiz"}]]
+};
 
 
 
