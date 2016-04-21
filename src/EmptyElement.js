@@ -65,6 +65,9 @@ var AddEmptyElement = function (parent, type) {
                     var AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
                     self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
+                    self.parent.questionCreator.loadQuestion(newQuestion);
+                    self.parent.questionCreatorManipulator.last.flush();
+                    self.parent.questionCreator.display(self.parent.questionCreator.previousX, self.parent.questionCreator.previousY, self.parent.questionCreator.previousW, self.parent.questionCreator.previousH);
             };
         };
 
@@ -80,7 +83,7 @@ var AnswerElement = function (answer, parent) {
     self.manipulator = new Manipulator(self);
     self.linkedAnswer = answer;
     self.isValidInput = true;
-    self.labelDefault = "Double clic pour modifier";
+    self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
     self._acceptDrop = true;
 
     if(answer) {
