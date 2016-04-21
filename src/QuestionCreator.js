@@ -103,17 +103,16 @@ var QuestionCreator = function (parent, question) {
     };
 
     self.display = function (x, y, w, h) {
-
-        self.previousX=x;
-        self.previousY=y;
-        self.previousW=w;
-        self.previousH=h;
+        self.previousX = x;
+        self.previousY = y;
+        self.previousW = w;
+        self.previousH = h;
 
         self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
         //var reponseAreaHeight=Math.floor(h*);
         self.questionCreatorManipulator.translator.move(x, 0);
         self.toggleButtonHeight = 40;
-        self.displayQuestionCreator(MARGIN+x,y, w, h);
+        self.displayQuestionCreator(MARGIN+x, y, w, h);
         var clickedButton= self.multipleChoice? myQuizzType.tab[1].label :myQuizzType.tab[0].label;
         self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, clickedButton);
 
@@ -255,11 +254,16 @@ var QuestionCreator = function (parent, question) {
 
             var onblur = function () {
                 console.log(textarea);
-                textarea.value && (self.label = textarea.value);
+                if(textarea.value){
+                    self.label = textarea.value;
+                    self.linkedQuestion.label=textarea.value;
+                }
+
                 body.removeChild(textarea);
                 //textarea.remove();
                 //self.questionManipulator.ordonator.unset(0);//, self.questionBlock.title.cadre);
                 showTitle();
+                self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
             };
 
             var removeErrorMessage = function () {

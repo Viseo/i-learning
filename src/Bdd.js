@@ -13,7 +13,7 @@ var myColorsOld={
     white:{r:255, g:255, b:255}
 };
 
-var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,50}$/g;
+var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,100}$/g;
 var REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
 
 var MARGIN=10;
@@ -45,6 +45,15 @@ var myBibImage= {
             font:"Courier New", fontSize:20
         };
 
+var defaultQuestion = {
+    label:"",imageSrc:"", multipleChoice:false,
+    tabAnswer: [
+        {label:"",imageSrc: null,bCorrect:false,
+            colorBordure: myColors.black,bgColor:myColors.white},
+        {label:"",imageSrc:null,bCorrect:false,
+            colorBordure:myColors.black,bgColor:myColors.white}
+    ],
+    nbrows:2,colorBordure:myColors.black,bgColor:myColors.white};
 var questionWithLabelImageAndMultipleAnswers = {
 label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
     tabAnswer: [
