@@ -275,14 +275,14 @@ var Question = function (question, quizz) {
                 self.parentQuizz.nextQuestion();
 
             };
-            svg.addEvent(validateButton.cadre,'click',oclk);
-            svg.addEvent(validateButton.content,'click',oclk);
+            svg.addEvent(validateButton.cadre, 'click', oclk);
+            svg.addEvent(validateButton.content, 'click', oclk);
 
             //Button reset
-            var w=150;
-            var h=50;
-            var resetX=-75 -100;
-            var resetY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
+            var w = 150;
+            var h = 50;
+            var resetX =- 75 -100;
+            var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
             if(self.selectedAnswers.length!=0){
@@ -333,7 +333,7 @@ var Question = function (question, quizz) {
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
 
-                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.red);
+                sourceElement.bordure.color(sourceElement.bgColor,5,myColors.blue);
                 self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{

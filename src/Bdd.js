@@ -72,7 +72,7 @@ var myQuestion2 =
 {label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null, multipleChoice:true,
     tabAnswer: [
         {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
-            colorBordure: myColors.green,bgColor:myColors.grey},
+            colorBordure: myColors.green,bgColor:myColors.white},
         {label:"La cerise",imageSrc:"../resource/cerise.jpg",bCorrect:true,
             colorBordure:myColors.green,bgColor:myColors.blue},
         {label:"La poire",imageSrc:null,bCorrect:false,
