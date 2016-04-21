@@ -6,7 +6,7 @@
 var Library = function (lib) {
     var self = this;
     self.libraryManipulator = new Manipulator(self);
-    mainManipulator.last.add(self.libraryManipulator.first);
+    //mainManipulator.last.add(self.libraryManipulator.first);
     self.title = lib.title;
 
     self.tabImgBib = [];
@@ -57,7 +57,7 @@ var Library = function (lib) {
         h && (self.h = h);
         self.borderSize = 3;
 
-        self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.white,self.borderSize,myColors.black);
+        self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
         self.bordure.position(w/2,h/2);
         self.libraryManipulator.last.add(self.bordure);
 
@@ -101,6 +101,20 @@ var Library = function (lib) {
 
         self.bibManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
+                var target = drawing.getTarget(event.clientX, event.clientY);
+                target.clicked = !target.clicked;
+                if (target.clicked){
+                    target.color(myColors.white, 3, myColors.blue);
+                    self.jeux.forEach(function(element){
+                        if (element.objectTotal.cadre!=target){
+                            element.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                            element.objectTotal.cadre.clicked = false;
+                        }
+                    });
+                }
+                else{
+                    target.color(myColors.white, 1, myColors.black);
+                }
                 var elementCopy = e.ordonator.children[0];
                 //drawings.piste.add(clone(elementCopy));
                 var manip = new Manipulator(self);
@@ -111,7 +125,10 @@ var Library = function (lib) {
                 if (e.ordonator.children[0] instanceof svg.Image){
                     img = displayImage(elementCopy.src,elementCopy,elementCopy.width,elementCopy.height).image;
                 }else{
-                    img = displayTextWithCircle(".",w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip).content
+                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip)
+                    manip.ordonator.set(1, img.content);
+                    manageDnD(img.content, manip);
+                    img = img.cadre;
                 };
 
                 manip.ordonator.set(0,img);
