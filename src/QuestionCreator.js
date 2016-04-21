@@ -234,18 +234,18 @@ var QuestionCreator = function (parent, question) {
         var dblclickEdition = function () {
             var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
-            textarea.width = self.w - 2 * MARGIN;
+            textarea.width = self.w;
 
             //(self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (textarea.height = self.questionBlock.title.content.component.getBBox().height) : (textarea.height = (self.h * .25)/2);
-            textarea.height = (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
+            textarea.height = (self.linkedQuestion.image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
 
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
 
             var contentareaStyle = {
-                toppx: (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
-                leftpx: (MARGIN + textarea.globalPointCenter.x),
-                width: (self.w - 6 * MARGIN),
+                toppx: (self.linkedQuestion.image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
+                leftpx: (textarea.globalPointCenter.x+1/12*self.w),
+                width: (self.w*5/6),
                 height: (textarea.height)
             };
             textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
