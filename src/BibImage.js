@@ -94,6 +94,12 @@ var Library = function (lib) {
                 //self.bibManipulators[i].ordonator.set(1, objectTotal.content);
                 var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxbyLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
+
+                //self.jeux[i] = {};
+                //var X=x+self.jeuxMargin-2*MARGIN+((i%maxJeuxbyLine+1)*(self.jeuxMargin+w/2-2*MARGIN));
+                //self.jeux[i].manipulator.first.move(X, tempY);
+                //manageDnD(self.jeux[i].objectTotal.cadre, self.jeuxManipulators[i]);
+                //self.jeux[i].objectTotal.cadre.clicked = false;
             }
         }
         self.libraryManipulator.first.move(x, y);
@@ -101,20 +107,7 @@ var Library = function (lib) {
 
         self.bibManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
-                var target = drawing.getTarget(event.clientX, event.clientY);
-                target.clicked = !target.clicked;
-                if (target.clicked){
-                    target.color(myColors.white, 3, myColors.blue);
-                    self.jeux.forEach(function(element){
-                        if (element.objectTotal.cadre!=target){
-                            element.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                            element.objectTotal.cadre.clicked = false;
-                        }
-                    });
-                }
-                else{
-                    target.color(myColors.white, 1, myColors.black);
-                }
+
                 var elementCopy = e.ordonator.children[0];
                 //drawings.piste.add(clone(elementCopy));
                 var manip = new Manipulator(self);
@@ -129,6 +122,20 @@ var Library = function (lib) {
                     manip.ordonator.set(1, img.content);
                     manageDnD(img.content, manip);
                     img = img.cadre;
+                    var target = drawing.getTarget(event.clientX, event.clientY);
+                    target.clicked = !target.clicked;
+                    if (target.clicked){
+                        target.color(myColors.white, 3, myColors.blue);
+                        self.jeux.forEach(function(element){
+                            if (element.objectTotal.cadre!=target){
+                                element.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                element.objectTotal.cadre.clicked = false;
+                            }
+                        });
+                    }
+                    else{
+                        target.color(myColors.white, 1, myColors.black);
+                    }
                 };
 
                 manip.ordonator.set(0,img);
