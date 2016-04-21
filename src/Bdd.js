@@ -31,9 +31,9 @@ var myColors={
     none:[]
 };
 
-var myBib= {
+var myBibImage= {
     title: "Bibliotheque",
-            tabSrcImg: [
+            tabLib: [
                 {imgSrc: "../resource/littleCat.png"},
                 {imgSrc: "../resource/millions.png"},
                 {imgSrc: "../resource/folder.png"},
@@ -418,7 +418,7 @@ var myFormations = {
 
 var myBibJeux= {
     title: "Type de jeux",
-    tabJeuxBib: [
+    tabLib: [
         {label: "Quiz"},
         {label: "BD"}
     ],

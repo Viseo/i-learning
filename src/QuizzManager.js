@@ -38,7 +38,7 @@ function QuizzManager(quizz){
     self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
-    self.bib = new BibImage(myBib);
+    self.bib = new Library(myBibImage);
 
     self.quizzManagerManipulator = new Manipulator(self);
     mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
@@ -47,9 +47,9 @@ function QuizzManager(quizz){
     self.quizzInfoManipulator = new Manipulator(self);
     self.questionCreatorManipulator = self.questionCreator.manipulator;
     self.previewButtonManipulator = new Manipulator(self);
-    self.libraryManipulator = self.bib.bibManipulator;
 
-    self.quizzManagerManipulator.last.add(self.libraryManipulator.first); // La bibliothèque n'est pas removed lors de l'aperçu
+    self.libraryIManipulator = self.bib.libraryManipulator;
+    self.quizzManagerManipulator.last.add(self.libraryIManipulator.first); // La bibliothèque n'est pas removed lors de l'aperçu
 
     self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
     self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);

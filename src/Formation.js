@@ -8,8 +8,15 @@ var Formation = function(formation){
     self.iconManipulator = new Manipulator();
     self.manipulator = new Manipulator();
     self.formationInfoManipulator = new Manipulator();
+    self.graphManipulator = new Manipulator();
+
+    self.bib = new Library(myBibJeux);
 
     //self.bib = new BibJeux(myQuizzTypeBib);
+
+    self.libraryJManipulator = self.bib.libraryManipulator;
+    self.manipulator.last.add(self.libraryJManipulator.first);
+    self.manipulator.last.add(self.graphManipulator.first);
 
 
     self.manipulatorMiniature.last.add(self.iconManipulator.first);
@@ -82,15 +89,12 @@ var Formation = function(formation){
     self.displayFormation = function (){
         self.graphManipulator = new Manipulator();
 
-        self.bib = new BibJeux(myBibJeux);
+        //self.bib = new BibJeux(myBibJeux);
 
         self.manipulator.first.move(0, drawing.height*0.075);
         mainManipulator.ordonator.set(1, self.manipulator.first);
         self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
         self.manipulator.last.add(self.title);
-        self.libraryManipulator = self.bib.bibJeuxManipulator;
-        self.manipulator.last.add(self.libraryManipulator.first);
-        self.manipulator.last.add(self.graphManipulator.first);
 
         self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
 
@@ -174,7 +178,7 @@ var Formation = function(formation){
         };
         showTitle();
 
-        self.libraryManipulator.translator.move(0, self.title.component.getBBox().height);
+        self.libraryJManipulator.translator.move(0, self.title.component.getBBox().height);
 
         var onclickQuizzHandler = function(){
             var quizzManager = new QuizzManager();
