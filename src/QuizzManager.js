@@ -16,6 +16,7 @@ function QuizzManager(quizz){
     self.questionPuzzle={};
 
     self.loadQuizz = function(quizz){
+        self.indexOfEditedQuestion = 0;
         self.quizz = new Quizz(quizz);
     };
 
@@ -227,7 +228,7 @@ function QuizzManager(quizz){
 
                 var questionObject = {
                     label: self.questionCreator.linkedQuestion.label,
-                    imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
+                    imageSrc:(self.questionCreator.linkedQuestion.image)?(self.questionCreator.linkedQuestion.image.src):null,
                     tabAnswer: self.questionCreator.linkedQuestion.tabAnswer,
                     multipleChoice:self.questionCreator.multipleChoice,
                     font:self.questionCreator.linkedQuestion.font,

@@ -43,7 +43,8 @@ var myBibImage = {
                 {imgSrc: "../resource/littleCat.png"},
                 {imgSrc: "../resource/millions.png"},
                 {imgSrc: "../resource/folder.png"},
-                {imgSrc: "../resource/cerise.jpg"}
+                {imgSrc: "../resource/cerise.jpg"},
+                {imgSrc: "../resource/ChatTim.jpg"}
             ],
             font:"Courier New", fontSize:20
         };
@@ -63,7 +64,7 @@ var defaultQuizz = {
     bgColor:myColors.white,
     puzzleLines:3,
     puzzleRows:1,
-    tabQuestions:defaultQuestion
+    tabQuestions:[defaultQuestion]
 };
 
 var questionWithLabelImageAndMultipleAnswers = {
