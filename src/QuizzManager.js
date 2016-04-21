@@ -216,11 +216,11 @@ function QuizzManager(quizz){
 
             if(validation) {
                 var tabAnswer = [];
-                self.questionCreator.tabAnswer.forEach(function (el) {
-                    if (el instanceof AnswerElement) {
-                        tabAnswer.push(el.toAnswer());
-                    }
-                });
+                //self.questionCreator.tabAnswer.forEach(function (el) {
+                //    if (el instanceof AnswerElement) {
+                //        tabAnswer.push(el.toAnswer());
+                //    }
+                //});
 
                 var questionObject = {
                     label: self.questionCreator.linkedQuestion.label,

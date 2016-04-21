@@ -31,6 +31,8 @@ var Manipulator = function(sourceObject){
     self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
     self.last = self.scalor;
     self.first = self.translator;
+
+
 };
 
 var Drawings = function (w, h) {

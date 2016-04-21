@@ -173,9 +173,9 @@ var AnswerElement = function (answer, parent) {
             self.manipulator.ordonator.unset(1, self.obj.content);
             var contentareaStyle = {
                 toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
-                leftpx: contentarea.globalPointCenter.x+(1/6)*self.obj.cadre.component.getBBox().width,
+                leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
                 height:(self.linkedAnswer.image) ? contentarea.height : (h*.5),
-                width:self.obj.cadre.component.getBBox().width*2/3
+                width:self.obj.cadre.width*5/6
             };
             contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
