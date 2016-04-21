@@ -255,7 +255,11 @@ var QuestionCreator = function (parent, question) {
 
             var onblur = function () {
                 console.log(textarea);
-                textarea.value && (self.label = textarea.value);
+                if(textarea.value){
+                    self.label = textarea.value;
+                    self.linkedQuestion.label=textarea.value;
+                }
+
                 body.removeChild(textarea);
                 //textarea.remove();
                 //self.questionManipulator.ordonator.unset(0);//, self.questionBlock.title.cadre);
