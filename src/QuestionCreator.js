@@ -104,16 +104,16 @@ var QuestionCreator = function (parent, question) {
 
     self.display = function (x, y, w, h) {
 
-        self.previousX=x;
-        self.previousY=y;
-        self.previousW=w;
-        self.previousH=h;
+        self.previousX = x;
+        self.previousY = y;
+        self.previousW = w;
+        self.previousH = h;
 
         self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
         //var reponseAreaHeight=Math.floor(h*);
         self.questionCreatorManipulator.translator.move(x, 0);
         self.toggleButtonHeight = 40;
-        self.displayQuestionCreator(MARGIN+x,y, w, h);
+        self.displayQuestionCreator(MARGIN+x, y, w, h);
         var clickedButton= self.multipleChoice? myQuizzType.tab[1].label :myQuizzType.tab[0].label;
         self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, clickedButton);
 
