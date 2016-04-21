@@ -60,7 +60,7 @@ var defaultQuizz = {
     bgColor:myColors.white,
     puzzleLines:3,
     puzzleRows:1,
-    tabQuestions:defaultQuestion
+    tabQuestions:[defaultQuestion]
 };
 
 var questionWithLabelImageAndMultipleAnswers = {

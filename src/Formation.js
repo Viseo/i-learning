@@ -93,14 +93,13 @@ var Formation = function(formation){
             game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
         });
 
-        var mouseUpGraphBlock = function(event){
+        self.mouseUpGraphBlock = function(event){
             self.bib.upAddFunction(selected, event);
             selected.clicked = false;
             selected.color(myColors.white, 1, myColors.black);
-            svg.removeEvent(self.graphBlock.rect, "mouseup", mouseUpGraphBlock);
+            svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
         };
-
-        selected && svg.addEvent(self.graphBlock.rect, "mouseup", mouseUpGraphBlock);
+        selected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
     }
 
     self.displayFormation = function (){
@@ -196,8 +195,9 @@ var Formation = function(formation){
         self.libraryJManipulator.translator.move(0, self.title.component.getBBox().height);
 
         var onclickQuizzHandler = function(){
-            var quizzManager = new QuizzManager();
-            //quizzManager.loadQuizz();
+            var quizzManager;
+            //myFormation.quizzTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.quizzTab[/*TODO*/][/*TODO*/]);
+            quizzManager = new QuizzManager(defaultQuizz);
             quizzManager.display();
             mainManipulator.ordonator.unset(1);
         };

@@ -16,6 +16,7 @@ function QuizzManager(quizz){
     self.questionPuzzle={};
 
     self.loadQuizz = function(quizz){
+        self.indexOfEditedQuestion = 0;
         self.quizz = new Quizz(quizz);
     };
 
