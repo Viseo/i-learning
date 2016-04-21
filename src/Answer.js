@@ -12,16 +12,16 @@
  * @constructor
  */
 /*label, imageSrc, bCorrect, colorBordure, bgColor*/
-var Answer = function (answerParameters) {
+var Answer = function (answerParameters, parent) {
     var self = this;
-
-    var answer={
-        label:'New Answer',
+    self.parent = parent;
+    var answer = {
+        label:'',
         imageSrc:null,
         bCorrect:false
     };
-    answerParameters && (answer=answerParameters);
-    self.answerManipulator=new Manipulator(self);
+    answerParameters && (answer = answerParameters);
+    self.answerManipulator = new Manipulator(self);
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
     self.correct = answer.bCorrect;
@@ -43,7 +43,7 @@ var Answer = function (answerParameters) {
     }
 
     self.rgbBordure = self.label ? answer.colorBordure : myColors.black;
-    self.bgColor = answer.bgColor ? answer.bgColor : myColors.none;
+    self.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
 
     self.bordure = null;
     self.content = null;

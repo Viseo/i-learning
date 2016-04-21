@@ -49,18 +49,29 @@ function FormationsManager(formations, additionalMessage) {
 
     self.formationsManipulator = new Manipulator();
     self.manipulator.last.add(self.formationsManipulator.first);
+
+    //self.foreign = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
+    //self.foreign.setAttribute("style", "width: 900px; height: 900px;");
+    //self.div = document.createElement("div");
+    //self.div.setAttribute("id", "foreign");
+    //self.div.setAttribute("style", "width: 900px; height: 900px;");
+    //self.manipulator.last.component.appendChild(self.foreign);
+    //self.foreign.appendChild(self.div);
+    //self.svg = new svg.Drawing(900, 900).show("foreign").position(0,0);
+    //self.svg.add(self.formationsManipulator.first);
+
     self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height*0.15+MARGIN);
 
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
         formation.displayFormation();
-    };
+    }
 
     function onClickNewFormation() {
         var formation = new Formation({});
         console.log("Tu as bien cliqué pour ajouter une formation");
         formation.displayFormation();
-    };
+    }
 
     self.display = function() {
         self.header.display();

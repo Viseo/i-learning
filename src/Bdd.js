@@ -57,7 +57,7 @@ label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", 
     nbrows:2,colorBordure:myColors.primaryBlue,bgColor:myColors.green};
 
 var myQuestion2 =
-{label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null, multipleChoice:false,
+{label:"Parmi ces fruits, lequel possède un noyau?",imageSrc:null, multipleChoice:true,
     tabAnswer: [
         {label:"",imageSrc: "../resource/pomme.jpg",bCorrect:false,
             colorBordure: myColors.green,bgColor:myColors.grey},

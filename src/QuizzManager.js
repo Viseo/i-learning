@@ -2,34 +2,46 @@
  * Created by ABL3483 on 12/04/2016.
  */
 
-function QuizzManager(){
-    var self=this;
+function QuizzManager(quizz){
+    var self = this;
 
     self.formationName = "Hibernate";
     self.quizzName="";
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
-    self.tabQuestions=[new Question(questionWithLabelImageAndMultipleAnswers,self.quizz)];
+    self.tabQuestions=[];
     for(var i=0;i<7;i++){
-        self.tabQuestions.push(new Question(myQuizz.tabQuestions[i],self.quizz));
+        self.tabQuestions.push(myQuizz.tabQuestions[i]);
     }
     self.questionPuzzle={};
-    var initialQuizzObject = {
-        title: myQuizz.title,
-        bgColor: myColors.white,
-        tabQuestions:self.tabQuestions,
-        puzzleLines: 3,
-        puzzleRows: 3
+
+    self.loadQuizz = function(quizz){
+        self.quizz = new Quizz(quizz);
     };
-    self.quizz=new Quizz(initialQuizzObject,false);
-    self.indexOfEditedQuestion=0;
-    self.quizzName=self.quizz.title;
+
+
+    if(!quizz){
+        var initialQuizzObject = {
+            title: myQuizz.title,
+            bgColor: myColors.white,
+            tabQuestions:self.tabQuestions,
+            puzzleLines: 3,
+            puzzleRows: 3
+        };
+        self.quizz = new Quizz(initialQuizzObject,false);
+        self.indexOfEditedQuestion = 0;
+        self.quizzName = self.quizz.title;
+
+    }else {
+        self.loadQuizz(quizz);
+    }
+    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
     self.bib = new BibImage(myBib);
 
     self.quizzManagerManipulator = new Manipulator(self);
-    mainManipulator.ordonator.set(0,self.quizzManagerManipulator.first);
+    mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
 
     self.questionsPuzzleManipulator = new Manipulator(self);
     self.quizzInfoManipulator = new Manipulator(self);
@@ -70,14 +82,19 @@ function QuizzManager(){
             height:self.marginRatio*drawing.height,
             width:self.marginRatio*drawing.width
         };
+    self.questionPuzzleCoordinates={
+        x : self.globalMargin.width/2,
+        y : (self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2),
+        w : (drawing.width-self.globalMargin.width),
+        h : (self.questionsPuzzleHeight-self.globalMargin.height)
+    };
 
     self.display = function(){
 
         self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
             self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-            self.displayQuestionsPuzzle(self.globalMargin.width/2,self.quizzInfoHeight+self.questionsPuzzleHeight/2+self.globalMargin.height/2
-                ,drawing.width-self.globalMargin.width,self.questionsPuzzleHeight-self.globalMargin.height);
+            self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
             self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
@@ -189,7 +206,7 @@ function QuizzManager(){
                 if(!result.isValid) {
                     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                     self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                        .position(0, h/2 - 2 * self.toggleButtonHeight-MARGIN)
+                        .position(0,-self.toggleButtonHeight)
                         .font("arial", 20)
                         .anchor('middle').color(myColors.red);
                     self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
@@ -206,16 +223,18 @@ function QuizzManager(){
                 });
 
                 var questionObject = {
-                    label: self.questionCreator.label,
+                    label: self.questionCreator.linkedQuestion.label,
                     imageSrc:(self.questionCreator.questionBlock.title.image)?(self.questionCreator.questionBlock.title.image.src):null,
-                    tabAnswer: tabAnswer,
+                    tabAnswer: self.questionCreator.linkedQuestion.tabAnswer,
                     multipleChoice:self.questionCreator.multipleChoice,
+                    font:self.questionCreator.linkedQuestion.font,
+                    fontSize:self.questionCreator.linkedQuestion.fontSize,
                     nbrows: 4,
-                    colorBordure: myColors.black,
-                    bgColor: myColors.white
+                    colorBordure: self.questionCreator.linkedQuestion.rgbBordure,
+                    bgColor: self.questionCreator.linkedQuestion.bgColor
                 };
 
-                self.tabQuestions[self.indexOfEditedQuestion]=questionObject;
+                self.tabQuestions[self.indexOfEditedQuestion] = questionObject;
 
                 var tmpQuizzObject = {
                     title: self.quizzName,
@@ -241,10 +260,11 @@ function QuizzManager(){
 
         self.previewButtonManipulator.translator.move(x, y);
        // self.previewButtonManipulator.translator.move(w/2-MARGIN, h - self.headerHeight*h);
-    }
+    };
 
-    var questionClickHandler=function(element){
-        //self.target = drawing.getTarget(event.clientX, event.clientY);
+    var questionClickHandler=function(event){
+        var target=drawing.getTarget(event.clientX,event.clientY);
+        var element=target.parent.parentManip.parentObject;
         var index= self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion=index;
         self.questionCreator.loadQuestion(element);
@@ -253,12 +273,18 @@ function QuizzManager(){
 
     };
 
-    self.displayQuestionsPuzzle = function(x, y, w, h) {
-
-        var border = new svg.Rect(w, h);
+    self.displayQuestionsPuzzle = function(x, y, w, h, index) {
+        var index = index ? index : 0;
+        x && (self.qPuzzleX=x);
+        y && (self.qPuzzleY=y);
+        w && (self.qPuzzleW=w);
+        h && (self.qPuzzleH=h);
+        self.questionPuzzle.puzzleManipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.puzzleManipulator.first);
+        //self.questionsPuzzleManipulator.last.flush();
+        var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
         border.color([], 2, myColors.black);
         self.questionsPuzzleManipulator.ordonator.set(0, border);
-        self.questionsPuzzleManipulator.first.move(x + w / 2, y);
+        self.questionsPuzzleManipulator.first.move(self.qPuzzleX + self.qPuzzleW / 2, self.qPuzzleY);
 
         self.coordinatesQuestion = {
             x: 0,
@@ -267,39 +293,19 @@ function QuizzManager(){
             h: self.questionsPuzzleHeight - self.globalMargin.height
         };
 
+        for(var i=0;i<self.quizz.tabQuestions.length;i++){
+            self.quizz.tabQuestions[i].bordureEventHandler=questionClickHandler;
+            self.quizz.tabQuestions[i].contentEventHandler=questionClickHandler;
+            self.quizz.tabQuestions[i].imageEventHandler=questionClickHandler;
+        }
+
         self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
         self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
-        self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, 0);
-
-        //self.questionPuzzle.// !! hep, par ici!
-
-        for(var i=0;i<self.quizz.tabQuestions.length;i++){
-        (function (element) {
-            if (element.bordure) {
-                svg.addEvent(element.bordure, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-            if (element.content) {
-                svg.addEvent(element.content, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-            if (element.raphImage) {
-                svg.addEvent(element.raphImage, "click", function () {
-                    questionClickHandler(element);
-                });
-            }
-
-        })(self.quizz.tabQuestions[i]);
-    }
-
+        self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 
     };
 
-    var addQuestionToQuizz=function(){
+    var addQuestionToQuizz = function(){
 
         var finalQuizzObject = {
             title: self.quizzName,

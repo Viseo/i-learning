@@ -6,10 +6,6 @@ var clone = function (object) {
     return JSON.parse(JSON.stringify(object));
 };
 
-var toType = function(obj) {
-    return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
-};
-
 /**
  *
  * @param x
@@ -25,6 +21,7 @@ var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
     var sender = null;
     target.answerParent && (sender = target.answerParent);
+    sender.linkedAnswer.correct=!sender.bCorrect;
     sender.bCorrect = !sender.bCorrect;
     sender.bCorrect && drawPathChecked(sender, sender.x, sender.y, sender.size);
     updateAllCheckBoxes(sender);
@@ -47,7 +44,7 @@ var drawCheck = function(x, y, size){
 };
 
 var drawPathChecked = function (sender, x, y, size){
-    svg.addEvent(sender.checkbox.checkbox, "click", onclickFunction);
+    svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
     sender.obj.checked = drawCheck(x, y, size);
     svg.addEvent(sender.obj.checked, "click", onclickFunction);
     sender.manipulator.ordonator.set(8, sender.obj.checked);
@@ -55,15 +52,15 @@ var drawPathChecked = function (sender, x, y, size){
 
 var updateAllCheckBoxes = function (sender) {
     sender.parent.tabAnswer.forEach(function(answer){
-        if(answer instanceof AnswerElement && answer.checkbox) {
+        if(answer instanceof AnswerElement && answer.obj.checkbox) {
             var allNotChecked = checkAllCheckBoxes(sender);
             if(answer.parent.simpleChoice && !answer.bCorrect && !allNotChecked) {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.lightgrey);
+                answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
                 //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
-                svg.removeEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
             } else {
-                answer.checkbox.checkbox.color(myColors.white, 2, myColors.black);
-                svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
+                answer.obj.checkbox.color(myColors.white, 2, myColors.black);
+                svg.addEvent(answer.obj.checkbox, "click", onclickFunction);
             }
             !answer.bCorrect && answer.manipulator.ordonator.unset(8);
         }});
@@ -113,7 +110,7 @@ var displayCheckbox = function (x, y, size, sender) {
  * @param manipulator
  * @returns {{cadre: *, image, text}}
  */
-var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator,previousImage) {
+var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
@@ -199,7 +196,6 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
     var cadre = new svg.Rect(w, h).color(bgColor,1,rgbCadre).corners(25, 25);
     manipulator.ordonator.set(0, cadre);
-    //manipulator.ordonator.set(1, content);
     return {content:content, cadre:cadre};
 };
 
@@ -217,6 +213,7 @@ var displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, ma
  */
 var displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
     var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+    content.position(0,content.component.getBBox().height/4);
     var cadre = new svg.Circle(w/2).color(bgColor,1,rgbCadre);
     manipulator.ordonator.set(0, cadre);
     return {content:content, cadre:cadre};

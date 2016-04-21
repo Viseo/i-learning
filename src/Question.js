@@ -6,7 +6,7 @@
  * @constructor
  */
 
-var Question = function (question,quizz) {
+var Question = function (question, quizz) {
     var self = this;
     self.questionManipulator = new Manipulator(self);
     self.answersManipulator = new Manipulator(self);
@@ -18,63 +18,68 @@ var Question = function (question,quizz) {
 
 
 
-    self.parentQuizz=quizz;
-    self.label = question.label;
-    self.imageSrc = question.imageSrc;
+    self.parentQuizz = quizz;
     self.tabAnswer = [];
-    self.rows=question.nbrows;
-    self.rightAnswers=[];
-    self.selectedAnswers=[];
-    self.multipleChoice=question.multipleChoice;
-    self.simpleChoice=question.simpleChoice;
+    self.fontSize = 20;
 
+    if(!question){
+        self.label = "";
+        self.imageSrc = "";
+        self.rows = 2;
+        self.rightAnswers = [];
+        self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
+        self.selectedAnswers = [];
+        self.multipleChoice = false;
+        self.simpleChoice = true;
+        self.font = "Arial";
+        self.bgColor = myColors.white;
+        self.rgbBordure = myColors.black;
 
-    if(question.font) {
-        self.font = question.font;
-    }
+    }else{
+        self.label = question.label;
+        self.imageSrc = question.imageSrc;
+        self.rows = question.nbrows;
+        self.rightAnswers = [];
+        self.selectedAnswers = [];
+        self.multipleChoice = question.multipleChoice;
+        self.simpleChoice = question.simpleChoice;
 
-    if(question.fontSize) {
-        self.fontSize = question.fontSize;
-    } else {
-        self.fontSize = 20;
-    }
+        question.colorBordure && (self.rgbBordure = question.colorBordure);
+        question.bgColor && (self.bgColor = question.bgColor);
+        question.font && (self.font = question.font);
+        question.fontSize && (self.fontSize = question.fontSize);
 
-    if(question.imageSrc) {
-        self.image = imageController.getImage(self.imageSrc, function () {
+        if(question.imageSrc) {
+            self.image = imageController.getImage(self.imageSrc, function () {
+                self.imageLoaded = true;
+                self.dimImage = {width:self.image.width, height:self.image.height};
+            });
+            self.imageLoaded = false;
+        } else {
             self.imageLoaded = true;
-            self.dimImage = {width:self.image.width, height:self.image.height};
-        });
-        self.imageLoaded = false;
-    } else {
-        self.imageLoaded = true;
+        }
+
     }
+    if (question !== null && question.tabAnswer !== null) {
 
-
-    if (question.tabAnswer !== null) {
         question.tabAnswer.forEach(function (it) {
-            var tmp = new Answer(it);
-            tmp.parent=self;
+            var tmp = new Answer(it, self);
             self.tabAnswer.push(tmp);
             if(tmp.correct) {
-               self.rightAnswers.push(tmp);
+                self.rightAnswers.push(tmp);
             }
 
         });
     }
 
-    //if(self.rightAnswers.length!=1){
-    //    self.multipleChoice=true;
-    //}
-
-    self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
-    if(self.tabAnswer.length%self.rows === 0) {
-        self.lines=Math.floor(self.tabAnswer.length/self.rows);
+    self.lines = Math.floor(self.tabAnswer.length/self.rows)+1;
+    if(self.tabAnswer.length % self.rows === 0) {
+        self.lines = Math.floor(self.tabAnswer.length/self.rows);
     } else {
-        self.lines=Math.floor(self.tabAnswer.length/self.rows)+1;
+        self.lines = Math.floor(self.tabAnswer.length/self.rows)+1;
     }
 
-    self.rgbBordure = question.colorBordure;
-    self.bgColor = question.bgColor;
+
 
     self.bordure = null;
     self.content = null;
@@ -89,7 +94,7 @@ var Question = function (question,quizz) {
 
     self.display = function (x, y, w, h) {
 
-        if(typeof x!== 'undefined'){
+        if(typeof x !== 'undefined'){
             self.x = x;
         }
         if(typeof y !== 'undefined' ){
@@ -99,14 +104,14 @@ var Question = function (question,quizz) {
         h && (self.height = h);
 
         // Question avec Texte ET image
-        if (self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator,self.raphImage);
+        if (typeof self.label !== "undefined" && self.imageSrc) {
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
-            self.content = objectTotal.text;
+            self.content = objectTotal.content;
             self.raphImage = objectTotal.image;
         }
         // Question avec Texte uniquement
-        else if (self.label && !self.imageSrc) {
+        else if (typeof self.label !== "undefined" && !self.imageSrc) {
             var object = displayText(self.label, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
@@ -138,8 +143,10 @@ var Question = function (question,quizz) {
             }
             w && ( self.tileWidth= (w - MARGIN * (self.rows - 1)) / self.rows);
             self.tileHeight = 0;
+            self.multipleChoice && (h=h-50);
 
             h && (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
+
             self.tileHeightMin = 2.50*self.fontSize;
 
             var tmpTileHeight;
@@ -217,7 +224,7 @@ var Question = function (question,quizz) {
             var h=50;
             var validateX,validateY;
             validateX=-75+100;
-            validateY=self.tileHeight*self.lines+(self.lines)*MARGIN;
+            validateY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
 
             var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
             self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
@@ -274,7 +281,7 @@ var Question = function (question,quizz) {
             var w=150;
             var h=50;
             var resetX=-75 -100;
-            var resetY=self.tileHeight*self.lines+(self.lines)*MARGIN;
+            var resetY=self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
             self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
             self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
             if(self.selectedAnswers.length!=0){
