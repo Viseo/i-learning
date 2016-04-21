@@ -54,6 +54,11 @@ var defaultQuestion = {
             colorBordure:myColors.black,bgColor:myColors.white}
     ],
     nbrows:2,colorBordure:myColors.black,bgColor:myColors.white};
+
+var defaultQuizz = {
+
+};
+
 var questionWithLabelImageAndMultipleAnswers = {
 label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
     tabAnswer: [

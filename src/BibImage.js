@@ -75,7 +75,6 @@ var Library = function (lib) {
 
                 newQuest.image._acceptDrop = true;
                 switch(true){
-
                     case target.parent.parentManip.parentObject instanceof QuestionCreator:
                         target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
                         target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
@@ -86,11 +85,8 @@ var Library = function (lib) {
                         target.parent.parentManip.parentObject.linkedAnswer.imageSrc=newQuest.image.src;
                         break;
                 }
-
-
                 target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                 target.parent.parentManip.ordonator.set(1, oldQuest.content);
-            }
             }
             else {
                 var formation = target.parent.parentManip.parentObject;

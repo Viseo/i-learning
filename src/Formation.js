@@ -197,7 +197,7 @@ var Formation = function(formation){
 
         var onclickQuizzHandler = function(){
             var quizzManager = new QuizzManager();
-            quizzManager.loadQuizz();
+            //quizzManager.loadQuizz();
             quizzManager.display();
             mainManipulator.ordonator.unset(1);
         };
