@@ -170,6 +170,7 @@ var Library = function (lib) {
                             case target.parent.parentManip.parentObject instanceof QuestionCreator:
                                 target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
                                 target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
+
                                 break;
                             case target.parent.parentManip.parentObject instanceof AnswerElement:
                                 target.parent.parentManip.parentObject.linkedAnswer.image=newQuest.image;
