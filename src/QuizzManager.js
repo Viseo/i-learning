@@ -156,10 +156,10 @@ function QuizzManager(quizz){
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
-                var position = (textarea.getBoundingClientRect().left - MARGIN);
+                //var position = (textarea.getBoundingClientRect().left - MARGIN);
                 var anchor = 'start';
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(position, h+1)
+                self.errorMessage = new svg.Text(REGEXERROR)
+                    .position(0, h+1)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
                 textarea.focus();

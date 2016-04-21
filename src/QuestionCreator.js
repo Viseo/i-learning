@@ -274,7 +274,7 @@ var QuestionCreator = function (parent, question) {
                 var anchor = 'middle';
                 var quizzInfoHeightRatio = 0.05;
                 var questionsPuzzleHeightRatio = 0.25;
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                self.errorMessage = new svg.Text(REGEXERROR)
                     .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);

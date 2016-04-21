@@ -188,7 +188,7 @@ var AnswerElement = function (answer, parent) {
                 var marginErrorMessagePreviewButton = 0.03;
                 var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
                 var anchor = 'middle';
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
                     .font("arial", 15).color(myColors.red).anchor(anchor);
                 self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
