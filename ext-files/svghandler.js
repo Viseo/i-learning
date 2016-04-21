@@ -686,7 +686,6 @@ function SVG(runtime) {
         }
     };
     Shape.prototype.getTarget = function(x, y) {
-
         if ((!this._opacity || this._opacity>0) && this.fillColor &&this.fillColor.length>0) {
             return this.inside(x, y) ? this : null;
         }
@@ -1433,7 +1432,6 @@ function SVG(runtime) {
         this.component = svgr.create("image");
         Shape.call(this);
         this.src = url;
-        // ._.
         this.fillColor=[true];
         this.x = 0;
         this.y = 0;
