@@ -58,7 +58,7 @@ var BibJeux = function (bibJeux) {
                 var target = drawing.getTarget(event.clientX, event.clientY);
                 target.clicked = !target.clicked;
                 if (target.clicked){
-                    target.color(myColors.white, 3, myColors.blue);
+                    target.color(myColors.white, 3, SELECTION_COLOR);
                     self.jeux.forEach(function(element){
                         if (element.objectTotal.cadre!=target){
                             element.objectTotal.cadre.color(myColors.white, 1, myColors.black);

@@ -192,8 +192,9 @@ var QuestionCreator = function (parent, question) {
             self.virtualTab[i].manipulator= new Manipulator(self);
             self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
             //type.default && (self.clicked = self.virtualTab[i]);
-            (type.label == clicked) ? (self.virtualTab[i].color = myColors.blue) : (self.virtualTab[i].color = myColors.white);
+            (type.label == clicked) ? (self.virtualTab[i].color = SELECTION_COLOR) : (self.virtualTab[i].color = myColors.white);
             self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, 20, null, self.virtualTab[i].manipulator);
+            self.virtualTab[i].toggleButton.content.color(getComplementary(self.virtualTab[i].color), 0, myColors.black);
             self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
             self.x += self.toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));

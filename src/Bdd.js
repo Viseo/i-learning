@@ -16,9 +16,10 @@ var myColorsOld={
 var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
 var REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
 
-var MARGIN=10;
+var MARGIN = 10;
 
-var myColors={
+var myColors = {
+    darkBlue: [25, 25, 112],
     blue:[25, 122, 230],
     primaryBlue:[0, 0, 255],
     grey:[125, 122, 117],
@@ -34,7 +35,9 @@ var myColors={
     none:[]
 };
 
-var myBibImage= {
+var SELECTION_COLOR = myColors.darkBlue;
+
+var myBibImage = {
     title: "Bibliotheque",
             tabLib: [
                 {imgSrc: "../resource/littleCat.png"},
