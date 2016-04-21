@@ -6,11 +6,12 @@ var Formation = function(formation){
     var self = this;
     self.manipulatorMiniature = new Manipulator();
     self.iconManipulator = new Manipulator();
-    self.manipulator = new Manipulator();
+    self.manipulator = new Manipulator(self);
     self.formationInfoManipulator = new Manipulator();
-    self.graphManipulator = new Manipulator();
+    self.graphManipulator = new Manipulator(self);
 
     self.bib = new Library(myBibJeux);
+    self.bib.formation = self;
 
     //self.bib = new BibJeux(myQuizzTypeBib);
 
@@ -31,7 +32,7 @@ var Formation = function(formation){
 
     self.quizzTab = [];
     self.quizzTab.push([]);
-    self.quizzTab = myFormation.quizzTab;
+    //self.quizzTab = myFormation.quizzTab;
     self.marginRatio=0.03;
     self.globalMargin={
         height:self.marginRatio*drawing.height,
@@ -86,8 +87,23 @@ var Formation = function(formation){
                 self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
             }
         };
+    self.clickToAdd = function (){
+        var selected;
+        self.bib.jeux.forEach(function (game) {
+            game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
+        });
+
+        var mouseUpGraphBlock = function(){
+            self.bib.upAddFunction(selected);
+            selected.clicked = false;
+            selected.color(myColors.white, 1, myColors.black);
+            svg.removeEvent(self.graphBlock.rect, "mouseup", mouseUpGraphBlock);
+        };
+
+        selected && svg.addEvent(self.graphBlock.rect, "mouseup", mouseUpGraphBlock);
+    }
+
     self.displayFormation = function (){
-        self.graphManipulator = new Manipulator();
 
         //self.bib = new BibJeux(myBibJeux);
 
@@ -98,8 +114,7 @@ var Formation = function(formation){
 
         self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
 
-        self.gamesCounter = myFormation;
-        console.log(self.gamesCounter);
+        self.gamesCounter = myFormation.gamesCounter;
 
         var showTitle = function() {
             var text = (self.label) ? self.label : (self.label=self.labelDefault);
@@ -182,6 +197,7 @@ var Formation = function(formation){
 
         var onclickQuizzHandler = function(){
             var quizzManager = new QuizzManager();
+            quizzManager.loadQuizz();
             quizzManager.display();
             mainManipulator.ordonator.unset(1);
         };
@@ -196,7 +212,6 @@ var Formation = function(formation){
             newLevel.content.position(newLevel.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
             //self.quizzTab[self.quizzTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, self.newLevelManipulator));
-            console.log(self.gamesCounter);
             //self.quizzTab[self.quizzTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.quizzTab);
             //var test = self.quizzTab[0][0].label;
@@ -224,23 +239,24 @@ var Formation = function(formation){
             self.graphManipulator.ordonator.set(4, self.graphBlock.rect);
             self.graphBlock.rect._acceptDrop = true;
 
-            var clickHandler = function(event){
-                //self.quizzTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
-                var target = drawing.getTarget(event.clientX, event.clientY);
-                /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
-                if (self.quizzTab[0].length>=self.maxGameInARow){
-                    autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
-                    .position(drawing.width - MARGIN, 0).anchor("end");
-                }
-                else {
-                    self.bib.jeux.forEach(function(game){
-                        game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                        game.objectTotal.cadre.clicked = false;
-                    });
-                    self.displayNewLevel(w, h);
-                }
-            };
-            svg.addEvent(self.graphBlock.rect, "click", clickHandler);
+
+            //var clickHandler = function(event){
+            //    //self.quizzTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
+            //    var target = drawing.getTarget(event.clientX, event.clientY);
+            //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
+            //    if (self.quizzTab[0].length>=self.maxGameInARow){
+            //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
+            //        .position(drawing.width - MARGIN, 0).anchor("end");
+            //    }
+            //    else {
+            //        self.bib.jeux.forEach(function(game){
+            //            game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+            //            game.objectTotal.cadre.clicked = false;
+            //        });
+            //        self.displayNewLevel(w, h);
+            //    }
+            //};
+            //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
         };
     displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
