@@ -95,8 +95,6 @@ function FormationsManager(formations, additionalMessage) {
             svg.addEvent(self.addFormationCadre, "click", onClickNewFormation);
             svg.addEvent(self.addFormationButton, "click", onClickNewFormation);
 
-            console.log(self.addFormationObject.plus);
-
             self.legendDim = self.plusDim / 2;
 
             self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);

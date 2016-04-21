@@ -42,7 +42,7 @@ var Answer = function (answerParameters, parent) {
         self.imageLoaded = true;
     }
 
-    self.rgbBordure = self.label ? answer.colorBordure : myColors.black;
+    self.rgbBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
     self.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
 
     self.bordure = null;

@@ -10,9 +10,9 @@ function QuizzManager(quizz){
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
     self.tabQuestions=[defaultQuestion];
-    for(var i=0;i<7;i++){
-        self.tabQuestions.push(myQuizz.tabQuestions[i]);
-    }
+    //for(var i=0;i<7;i++){
+    //    self.tabQuestions.push(myQuizz.tabQuestions[i]);
+    //}
     self.questionPuzzle={};
 
     self.loadQuizz = function(quizz){
@@ -219,11 +219,11 @@ function QuizzManager(quizz){
 
             if(validation) {
                 var tabAnswer = [];
-                self.questionCreator.tabAnswer.forEach(function (el) {
-                    if (el instanceof AnswerElement) {
-                        tabAnswer.push(el.toAnswer());
-                    }
-                });
+                //self.questionCreator.tabAnswer.forEach(function (el) {
+                //    if (el instanceof AnswerElement) {
+                //        tabAnswer.push(el.toAnswer());
+                //    }
+                //});
 
                 var questionObject = {
                     label: self.questionCreator.linkedQuestion.label,

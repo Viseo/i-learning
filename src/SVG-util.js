@@ -114,7 +114,7 @@ var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre,
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
     var textHeight = text.component.getBBox().height;
-    text.position(0,(h-textHeight)/2);
+    text.position(0,(h-textHeight)/2);//w*1/6
     var newWidth,newHeight;
     newWidth=w-2*MARGIN;
     previousImage && (w===previousImage.width) && (newWidth=w);
@@ -255,6 +255,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
     manipulator.ordonator.set(1, t);
     var words = content.split(" ");
     var tempText = "";
+    var w=w*5/6;
 
     t.font(font ? font : "arial", fontSize ? fontSize : 20);
 
@@ -263,7 +264,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
         // set text to test the BBox.width
         t.message(tempText + " " + words[i]);
         // test if DOESN'T fit in the line
-        if (t.component.getBBox().width > w - MARGIN) {
+        if (t.component.getBBox().width > w ) {
             //Comment 2 next lines to add BreakLine
             tempText = tempText.substring(0, tempText.length-3) + "...";
             break;
@@ -271,7 +272,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
             var tmpStr = tempText + "\n" + words[i];
             t.message(tmpStr);
             // test if the whole word can fit in a line
-            if (t.component.getBBox().width > w - MARGIN) {
+            if (t.component.getBBox().width > w ) {
                 // we don't need the tmpStr anymore
                 // add a space before the problematic word
                 tempText += " ";
@@ -282,7 +283,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
                     // set text to test the BBox.width
                     t.message(tempText + " " + longWord.charAt(j));
                     // check if we can add an additional character in this line
-                    if (t.component.getBBox().width > w - MARGIN) {
+                    if (t.component.getBBox().width > w ) {
                         // we can't: break line, add the character
                         tempText += "-\n" + longWord.charAt(j);
                     } else {

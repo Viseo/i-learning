@@ -41,12 +41,12 @@ var QuestionCreator = function (parent, question) {
         self.linkedQuestion = quest;
         if(typeof quest.multipleChoice !== 'undefined'){
             self.multipleChoice = quest.multipleChoice;
-        }else{
+        } else {
             self.multipleChoice = false;
         }
         if(typeof quest.simpleChoice !== 'undefined'){
             self.simpleChoice = quest.simpleChoice;
-        }else{
+        } else {
             self.simpleChoice = (!self.multipleChoice);
         }
         self.tabAnswer = [];
@@ -60,6 +60,7 @@ var QuestionCreator = function (parent, question) {
         self.font = quest.font;
         self.bgColor = quest.bgColor;
         self.colorBordure = quest.rgbBordure;
+        self.questionNum = quest.questionNum;
 
         self.tabAnswer.forEach(function (el) {
             if (el.bCorrect) {
@@ -208,7 +209,6 @@ var QuestionCreator = function (parent, question) {
     };
 
     self.displayQuestionCreator = function (x, y, w, h) {
-
         var showTitle = function () {
             var color = (self.label) ? myColors.black : myColors.grey;
             var text = (self.label) ? self.label : self.labelDefault;
@@ -216,10 +216,12 @@ var QuestionCreator = function (parent, question) {
                 var img = self.linkedQuestion.image;
                 self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
                 self.questionBlock.title.image._acceptDrop = true;
-            }else{
+            } else {
                 self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
             }
-
+            var fontSize = Math.min(20, self.h*0.1);
+            self.questNum = new svg.Text(self.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
+            self.questionManipulator.ordonator.set(6, self.questNum);
             self.questionBlock.title.content.color(color);
             self.questionBlock.title.content._acceptDrop = true;
             // self.questionBlock.title.cadre.fillOpacity(0.001);
@@ -234,18 +236,18 @@ var QuestionCreator = function (parent, question) {
         var dblclickEdition = function () {
             var textarea = document.createElement("TEXTAREA");
             textarea.textContent = self.label;
-            textarea.width = self.w - 2 * MARGIN;
+            textarea.width = self.w;
 
             //(self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (textarea.height = self.questionBlock.title.content.component.getBBox().height) : (textarea.height = (self.h * .25)/2);
-            textarea.height = (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
+            textarea.height = (self.linkedQuestion.image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
 
             self.questionManipulator.ordonator.unset(1);//, self.questionBlock.title.content);
             textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
 
             var contentareaStyle = {
-                toppx: (self.questionManipulator.ordonator.children[2] instanceof svg.Image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
-                leftpx: (MARGIN + textarea.globalPointCenter.x),
-                width: (self.w - 6 * MARGIN),
+                toppx: (self.linkedQuestion.image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
+                leftpx: (textarea.globalPointCenter.x+1/12*self.w),
+                width: (self.w*5/6),
                 height: (textarea.height)
             };
             textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");

@@ -17,6 +17,7 @@ var Library = function (lib) {
     self.imageWidth = 50;
     self.imageHeight = 50;
     self.libMargin = 5;
+    self.jeux=[];
 
     for(var i = 0; i<self.tabLib.length; i++) {
         if (self.tabLib[i].imgSrc) {
@@ -48,6 +49,68 @@ var Library = function (lib) {
                 callback();
             }
         }, 100);
+    };
+    self.upAddFunction = function(img, event){
+        var target = drawing.getTarget(event.clientX, event.clientY);
+        if(target && target._acceptDrop) {
+            if (img instanceof svg.Image) {
+                var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
+                    content:target.parent.parentManip.ordonator.extract(1)};
+
+                var rectColors = oldQuest.cadre.getColor();
+
+
+                var newQuest = displayImageWithTitle(oldQuest.content.messageText, img.src,
+                    img.srcDimension,
+                    oldQuest.cadre.width, oldQuest.cadre.height,
+                    rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
+                );
+
+                //for(var i=0;i<target.parent.children[0].children.length;i++){
+                //    target.parent.children[0].unset(i);
+                //}
+                //target.parent.children[0].add(newQuest);
+                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+                oldQuest.content.position(newQuest.content.x,newQuest.content.y);
+
+                newQuest.image._acceptDrop = true;
+                switch(true){
+                    case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                        target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
+                        target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
+                        target.parent.parentManip.parentObject.parent.displayQuestionsPuzzle(null, null, null, null, target.parent.parentManip.parentObject.parent.questionPuzzle.startPosition);
+                        break;
+                    case target.parent.parentManip.parentObject instanceof AnswerElement:
+                        target.parent.parentManip.parentObject.linkedAnswer.image=newQuest.image;
+                        target.parent.parentManip.parentObject.linkedAnswer.imageSrc=newQuest.image.src;
+                        break;
+                }
+                target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+                target.parent.parentManip.ordonator.set(1, oldQuest.content);
+            }
+            else {
+                var formation = target.parent.parentManip.parentObject;
+                var type;
+                (img.parent.children[0] instanceof svg.Text) ? (type = img.parent.children[0].messageText) : (type = img.parent.children[1].messageText);
+                switch (true) {
+                    case type === myBibJeux.tabLib[0].label:
+                        formation.quizzTab[0].push({
+                            type: type,
+                            label: type + " " + formation.gamesCounter.quizz
+                        })
+                        formation.gamesCounter.quizz++;
+                        break;
+                    case type === myBibJeux.tabLib[1].label:
+                        formation.quizzTab[0].push({
+                            type: type,
+                            label: type + " " + formation.gamesCounter.bd
+                        })
+                        formation.gamesCounter.bd++;
+                        break;
+                }
+                formation.displayNewLevel(formation.graphCreaWidth, formation.graphCreaHeight);
+            }
+        }
     };
 
     self.display = function(x,y,w,h){
@@ -93,18 +156,15 @@ var Library = function (lib) {
                 var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxbyLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
 
-                //self.jeux[i] = {};
-                //var X=x+self.jeuxMargin-2*MARGIN+((i%maxJeuxbyLine+1)*(self.jeuxMargin+w/2-2*MARGIN));
-                //self.jeux[i].manipulator.first.move(X, tempY);
-                //manageDnD(self.jeux[i].objectTotal.cadre, self.jeuxManipulators[i]);
-                //self.jeux[i].objectTotal.cadre.clicked = false;
+                self.jeux[i] = {};
+                self.jeux[i].objectTotal = objectTotal;
+                self.jeux[i].objectTotal.cadre.clicked = false;
             }
         }
         self.libraryManipulator.first.move(x, y);
 
         self.bibManipulators.forEach(function(e){
             svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
-
                 var elementCopy = e.ordonator.children[0];
                 var manip = new Manipulator(self);
                 drawings.piste.last.add(manip.first);
@@ -113,24 +173,9 @@ var Library = function (lib) {
                     img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
                     img.srcDimension = elementCopy.srcDimension;
                 }else{
-                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip)
+                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip)
                     manip.ordonator.set(1, img.content);
-                    manageDnD(img.content, manip);
                     img = img.cadre;
-                    var target = drawing.getTarget(event.clientX, event.clientY);
-                    target.clicked = !target.clicked;
-                    if (target.clicked){
-                        target.color(myColors.white, 3, myColors.blue);
-                        self.jeux.forEach(function(element){
-                            if (element.objectTotal.cadre!=target){
-                                element.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                                element.objectTotal.cadre.clicked = false;
-                            }
-                        });
-                    }
-                    else{
-                        target.color(myColors.white, 1, myColors.black);
-                    }
                 };
 
                 manip.ordonator.set(0,img);
@@ -138,49 +183,42 @@ var Library = function (lib) {
 
                 manageDnD(img,manip);
 
+                var mouseClickHandler = function (event){
+                    target = drawing.getTarget(event.clientX, event.clientY);
+                    self.jeux.forEach(function(e){
+                        if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
+                            if (!e.objectTotal.cadre.clicked){
+                                target.color(myColors.white, 3, myColors.blue);
+                                e.objectTotal.cadre.color(myColors.white, 3, myColors.blue);
+                                e.objectTotal.cadre.clicked = true;
+                            }
+                            else{
+                                e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                e.objectTotal.cadre.clicked = false;
+                            }
+                        }
+                        else{
+                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                            e.objectTotal.cadre.clicked = false;
+                        }
+
+                    });
+                    //svg.addEvent(target, 'mouseup', mouseupHandler);
+                    //console.log(target);
+                    //target.component.eventHandlers.mouseup();
+                };
+
                 var mouseupHandler = function(event){
                     var img = manip.ordonator.children.shift();
                     manip.first.parent.remove(manip.first);
-
                     // fonction qui accepte/refuse le drop
                     var target = drawing.getTarget(event.clientX, event.clientY);
-                    if(target._acceptDrop){
-                        var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
-                            content:target.parent.parentManip.ordonator.extract(1)};
-
-                        var rectColors = oldQuest.cadre.getColor();
-
-
-                        var newQuest = displayImageWithTitle(oldQuest.content.messageText, img.src,
-                            img.srcDimension,
-                            oldQuest.cadre.width, oldQuest.cadre.height,
-                            rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
-                        );
-
-                        //for(var i=0;i<target.parent.children[0].children.length;i++){
-                        //    target.parent.children[0].unset(i);
-                        //}
-                        //target.parent.children[0].add(newQuest);
-                        oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                        oldQuest.content.position(newQuest.content.x,newQuest.content.y);
-
-                        newQuest.image._acceptDrop = true;
-                        switch(true){
-
-                            case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                                target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
-                                target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
-                                target.parent.parentManip.parentObject.parent.displayQuestionsPuzzle(null, null, null, null, target.parent.parentManip.parentObject.parent.questionPuzzle.startPosition);
-                                break;
-                            case target.parent.parentManip.parentObject instanceof AnswerElement:
-                                target.parent.parentManip.parentObject.linkedAnswer.image=newQuest.image;
-                                target.parent.parentManip.parentObject.linkedAnswer.imageSrc=newQuest.image.src;
-                                break;
-                        }
-
-
-                        target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-                        target.parent.parentManip.ordonator.set(1, oldQuest.content);
+                    if(!(target instanceof svg.Circle)){
+                        self.upAddFunction(img, event);
+                    }
+                    else {
+                        mouseClickHandler(event);
+                        self.formation.clickToAdd();
                     }
 
                 };
