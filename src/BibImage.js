@@ -162,16 +162,16 @@ var Library = function (lib) {
                         oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
                         oldQuest.content.position(newQuest.content.x,newQuest.content.y);
 
-                        img._acceptDrop = true;
+                        newQuest.image._acceptDrop = true;
                         switch(true){
 
                             case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                                target.parent.parentManip.parentObject.linkedQuestion.image=img;
-                                target.parent.parentManip.parentObject.linkedQuestion.imageSrc=img.src;
+                                target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
+                                target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
                                 break;
                             case target.parent.parentManip.parentObject instanceof AnswerElement:
-                                target.parent.parentManip.parentObject.linkedAnswer.image=img;
-                                target.parent.parentManip.parentObject.linkedAnswer.imageSrc=img.src;
+                                target.parent.parentManip.parentObject.linkedAnswer.image=newQuest.image;
+                                target.parent.parentManip.parentObject.linkedAnswer.imageSrc=newQuest.image.src;
                                 break;
                         }
 

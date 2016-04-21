@@ -1435,7 +1435,6 @@ function SVG(runtime) {
         this.src = url;
         // ._.
         this.fillColor=[true];
-        this._opacity=1;
         this.x = 0;
         this.y = 0;
         this.width = 0;
