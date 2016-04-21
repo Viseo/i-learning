@@ -50,7 +50,7 @@ var Library = function (lib) {
             }
         }, 100);
     };
-    self.upAddFunction = function(img){
+    self.upAddFunction = function(img, event){
         var target = drawing.getTarget(event.clientX, event.clientY);
         if(target && target._acceptDrop) {
             if (img instanceof svg.Image) {
@@ -214,7 +214,7 @@ var Library = function (lib) {
                     // fonction qui accepte/refuse le drop
                     var target = drawing.getTarget(event.clientX, event.clientY);
                     if(!(target instanceof svg.Circle)){
-                        self.upAddFunction(img);
+                        self.upAddFunction(img, event);
                     }
                     else {
                         mouseClickHandler(event);

@@ -56,7 +56,11 @@ var defaultQuestion = {
     nbrows:2,colorBordure:myColors.black,bgColor:myColors.white};
 
 var defaultQuizz = {
-
+    title:"Quizz pas rempli",
+    bgColor:myColors.white,
+    puzzleLines:3,
+    puzzleRows:1,
+    tabQuestions:defaultQuestion
 };
 
 var questionWithLabelImageAndMultipleAnswers = {

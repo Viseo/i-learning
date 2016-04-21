@@ -93,8 +93,8 @@ var Formation = function(formation){
             game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
         });
 
-        var mouseUpGraphBlock = function(){
-            self.bib.upAddFunction(selected);
+        var mouseUpGraphBlock = function(event){
+            self.bib.upAddFunction(selected, event);
             selected.clicked = false;
             selected.color(myColors.white, 1, myColors.black);
             svg.removeEvent(self.graphBlock.rect, "mouseup", mouseUpGraphBlock);
