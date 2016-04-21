@@ -45,6 +45,15 @@ var myBibImage= {
             font:"Courier New", fontSize:20
         };
 
+var defaultQuestion = {
+    label:"",imageSrc:"", multipleChoice:false,
+    tabAnswer: [
+        {label:"",imageSrc: null,bCorrect:false,
+            colorBordure: myColors.black,bgColor:myColors.white},
+        {label:"",imageSrc:null,bCorrect:true,
+            colorBordure:myColors.black,bgColor:myColors.white}
+    ],
+    nbrows:2,colorBordure:myColors.black,bgColor:myColors.white};
 var questionWithLabelImageAndMultipleAnswers = {
 label:"Une divinité féminine est une...",imageSrc:"../resource/millions.png", multipleChoice:true,
     tabAnswer: [

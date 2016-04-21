@@ -9,10 +9,10 @@ function QuizzManager(quizz){
     self.quizzName="";
     self.quizzNameDefault = "Ecrire ici le nom du quiz";
 
-    self.tabQuestions=[];
-    for(var i=0;i<7;i++){
-        self.tabQuestions.push(myQuizz.tabQuestions[i]);
-    }
+    self.tabQuestions=[defaultQuestion];
+    //for(var i=0;i<7;i++){
+    //    self.tabQuestions.push(myQuizz.tabQuestions[i]);
+    //}
     self.questionPuzzle={};
 
     self.loadQuizz = function(quizz){
