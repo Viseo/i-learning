@@ -59,11 +59,11 @@ var QuestionCreator = function (parent, question) {
         self.fontSize = quest.fontSize;
         self.font = quest.font;
         self.bgColor = quest.bgColor;
-        self.colorBordure = quest.rgbBordure;
+        self.colorBordure = quest.colorBordure;
         self.questionNum = quest.questionNum;
 
         self.tabAnswer.forEach(function (el) {
-            if (el.bCorrect) {
+            if (el.correct) {
                 self.rightAnswers.push(el);
             }
         });
@@ -127,22 +127,22 @@ var QuestionCreator = function (parent, question) {
             if (self.multipleChoice){
                 self.tabAnswer.forEach(function(answer){
                     if(answer instanceof AnswerElement){
-                        answer.multipleAnswer = answer.bCorrect;
-                        answer.linkedAnswer.parent.multipleChoice=answer.bCorrect;
-                        answer.linkedAnswer.parent.simpleChoice=!answer.bCorrect;
+                        answer.multipleAnswer = answer.correct;
+                        answer.linkedAnswer.parent.multipleChoice=answer.correct;
+                        answer.linkedAnswer.parent.simpleChoice=!answer.correct;
                         (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
-                        answer.bCorrect = answer.simpleAnswer;
+                        answer.correct = answer.simpleAnswer;
                         answer.linkedAnswer.correct = answer.simpleAnswer;
                     }});
             }
             else if (self.simpleChoice){
                 self.tabAnswer.forEach(function(answer){
                     if(answer instanceof AnswerElement){
-                        answer.simpleAnswer = answer.bCorrect;
-                        answer.linkedAnswer.parent.simpleChoice=answer.bCorrect;
-                        answer.linkedAnswer.parent.multipleChoice=!answer.bCorrect;
+                        answer.simpleAnswer = answer.correct;
+                        answer.linkedAnswer.parent.simpleChoice=answer.correct;
+                        answer.linkedAnswer.parent.multipleChoice=!answer.correct;
                         (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
-                        answer.bCorrect = answer.multipleAnswer;
+                        answer.correct = answer.multipleAnswer;
                         answer.linkedAnswer.correct = answer.multipleAnswer;
 
                     }});
@@ -155,8 +155,8 @@ var QuestionCreator = function (parent, question) {
 
             self.tabAnswer.forEach(function(answer) {
                 if (answer.obj.checkbox) {
-                    self.simpleChoice && (answer.bCorrect = false);
-                    self.multipleChoice && (answer.bCorrect = false);
+                    self.simpleChoice && (answer.correct = false);
+                    self.multipleChoice && (answer.correct = false);
                     self.simpleChoice && (answer.linkedAnswer.correct = false);
                     self.multipleChoice && (answer.linkedAnswer.correct = false);
                 }
@@ -324,7 +324,7 @@ var QuestionCreator = function (parent, question) {
             self.tabAnswer.push(new AddEmptyElement(self, 'answer'));
         }
         self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
-        self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);// !_! ça va pas! si on repasse plusieurs fois ici ça craque!
+        self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
     };
 

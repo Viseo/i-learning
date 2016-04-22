@@ -226,19 +226,19 @@ function QuizzManager(quizz){
                 //    }
                 //});
 
-                var questionObject = {
-                    label: self.questionCreator.linkedQuestion.label,
-                    imageSrc:(self.questionCreator.linkedQuestion.image)?(self.questionCreator.linkedQuestion.image.src):null,
-                    tabAnswer: self.questionCreator.linkedQuestion.tabAnswer,
-                    multipleChoice:self.questionCreator.multipleChoice,
-                    font:self.questionCreator.linkedQuestion.font,
-                    fontSize:self.questionCreator.linkedQuestion.fontSize,
-                    nbrows: 4,
-                    colorBordure: self.questionCreator.linkedQuestion.rgbBordure,
-                    bgColor: self.questionCreator.linkedQuestion.bgColor
-                };
+                //var questionObject = {
+                //    label: self.questionCreator.linkedQuestion.label,
+                //    imageSrc:(self.questionCreator.linkedQuestion.image)?(self.questionCreator.linkedQuestion.image.src):null,
+                //    tabAnswer: self.questionCreator.linkedQuestion.tabAnswer,
+                //    multipleChoice:self.questionCreator.multipleChoice,
+                //    font:self.questionCreator.linkedQuestion.font,
+                //    fontSize:self.questionCreator.linkedQuestion.fontSize,
+                //    nbrows: 4,
+                //    colorBordure: self.questionCreator.linkedQuestion.rgbBordure,
+                //    bgColor: self.questionCreator.linkedQuestion.bgColor
+                //};
 
-                self.tabQuestions[self.indexOfEditedQuestion] = questionObject;
+                self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
 
                 var tmpQuizzObject = {
                     title: self.quizzName,

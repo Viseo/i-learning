@@ -18,6 +18,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     //self.tabQuestions=[];
     self.loadQuestions=function(quizz){
         if (quizz.tabQuestions !== null) {
+            //self.tabQuestions=quizz.tabQuestions;
             self.tabQuestions=[];
             quizz.tabQuestions.forEach(function (it) {
                 var tmp = new Question(it, self);
@@ -32,7 +33,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines):(self.puzzleLines = 2);
     quizz.font && (self.font = quizz.font);
     quizz.fontSize ? (self.fontSize = quizz.fontSize): (self.fontSize = 20);
-    quizz.colorBordure ? (self.rgbBordure = quizz.colorBordure):(self.rgbBordure = myColors.black);
+    quizz.colorBordure ? (self.colorBordure = quizz.colorBordure):(self.colorBordure = myColors.black);
     quizz.bgColor ? (self.bgColor = quizz.bgColor):(self.bgColor = myColors.none);
 
     self.cadreResult={
@@ -169,7 +170,7 @@ function Quizz(quizz, previewMode, parentFormation) {
         self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
         self.responseHeightWithImage = heightPage * self.responsePercentageWithImage -  MARGIN;
 
-        var object = displayText(self.title, (self.cadreTitle.w ), (self.headerHeight ), self.rgbBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
+        var object = displayText(self.title, (self.cadreTitle.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
         self.titleBox = object.cadre;
         self.titleText = object.content;
 

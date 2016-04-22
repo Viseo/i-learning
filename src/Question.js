@@ -34,18 +34,18 @@ var Question = function (question, quizz) {
         self.simpleChoice = true;
         self.font = "Arial";
         self.bgColor = myColors.white;
-        self.rgbBordure = myColors.black;
+        self.colorBordure = myColors.black;
 
     }else{
         self.label = question.label;
         self.imageSrc = question.imageSrc;
-        self.rows = question.nbrows;
+        self.rows = question.rows;
         self.rightAnswers = [];
         self.selectedAnswers = [];
         self.multipleChoice = question.multipleChoice;
         self.simpleChoice = question.simpleChoice;
 
-        question.colorBordure && (self.rgbBordure = question.colorBordure);
+        question.colorBordure && (self.colorBordure = question.colorBordure);
         question.bgColor && (self.bgColor = question.bgColor);
         question.font && (self.font = question.font);
         question.fontSize && (self.fontSize = question.fontSize);
@@ -106,14 +106,14 @@ var Question = function (question, quizz) {
 
         // Question avec Texte ET image
         if (typeof self.label !== "undefined" && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.content;
             self.raphImage = objectTotal.image;
         }
         // Question avec Texte uniquement
         else if (typeof self.label !== "undefined" && !self.imageSrc) {
-            var object = displayText(self.label, self.width, self.height, self.rgbBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
+            var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
             self.bordure = object.cadre;
             self.content = object.content;
 
@@ -126,7 +126,7 @@ var Question = function (question, quizz) {
         }
         else {
             //var point=self.questionManipulator.globalToLocal(self.x,self.y);
-            self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.rgbBordure);
+            self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
             self.questionManipulator.ordonator.set(0, self.bordure);
         }
         var fontSize = Math.min(20, h*0.1);
@@ -146,11 +146,15 @@ var Question = function (question, quizz) {
             if(typeof x !=='undefined'){
                 (self.initialAnswersPosX=x);
             }
-            w && ( self.tileWidth= (w - MARGIN * (self.rows - 1)) / self.rows);
+            if(typeof w !=='undefined' ){
+                ( self.tileWidth= (w - MARGIN * (self.rows - 1)) / self.rows);
+            }
             self.tileHeight = 0;
             self.multipleChoice && (h=h-50);
 
-            h && (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
+            if(typeof h !== 'undefined'){
+                (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
+            }
 
             self.tileHeightMin = 2.50*self.fontSize;
 
@@ -185,17 +189,17 @@ var Question = function (question, quizz) {
                     posx = self.initialAnswersPosX;
                 }
 
-                self.answersManipulator.last.add(self.tabAnswer[i].answerManipulator.first);
+                self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
 
                 self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                self.tabAnswer[i].answerManipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
+                self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
                 //self.tabAnswer[i].display(-tileWidth/2, -self.tileHeight/2, tileWidth, self.tileHeight);
-                //self.tabAnswer[i].answerManipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
+                //self.tabAnswer[i].manipulator.first.move(posx+tileWidth/2,posy+self.tileHeight/2);
                 /*self.tabAnswer[i].display(0, 0, tileWidth, self.tileHeight);*/
-                //self.tabAnswer[i].answerManipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
-                //self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy-self.tileHeight/2-MARGIN/2);
-                /*self.tabAnswer[i].answerManipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy);*/
+                //self.tabAnswer[i].manipulator.translator.move(posx+tileWidth/2,posy+self.tileHeight/2);
+                //self.tabAnswer[i].manipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy-self.tileHeight/2-MARGIN/2);
+                /*self.tabAnswer[i].manipulator.translator.move(posx-tileWidth/2-MARGIN/2,posy);*/
 
                 (function(element) {
                     if(element.bordure) {
@@ -296,7 +300,7 @@ var Question = function (question, quizz) {
                 if(self.selectedAnswers.length>0){
                     self.selectedAnswers.forEach(function(e){
                         e.selected = false;
-                        e.bordure.color(e.bgColor,1,e.rgbBordure);
+                        e.bordure.color(e.bgColor,1,e.colorBordure);
                     });
                     self.selectedAnswers.splice(0,self.selectedAnswers.length);
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
@@ -336,14 +340,14 @@ var Question = function (question, quizz) {
                 // on sélectionne une réponse
                 sourceElement.selected=true;
                 self.selectedAnswers.push(sourceElement);
-                sourceElement.rgbBordure = sourceElement.bordure.strokeColor;
+                sourceElement.colorBordure = sourceElement.bordure.strokeColor;
                 sourceElement.bordure.color(sourceElement.bgColor, 5, SELECTION_COLOR);
                 self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
 
             }else{
                 sourceElement.selected=false;
                 self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-                sourceElement.bordure.color(sourceElement.bgColor,1,sourceElement.rgbBordure);
+                sourceElement.bordure.color(sourceElement.bgColor,1,sourceElement.colorBordure);
                 if(self.selectedAnswers.length==0){
                     self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
                 }

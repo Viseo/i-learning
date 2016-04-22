@@ -27,7 +27,7 @@ function main() {
 */
 
     var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
-    quizzCopy.tabQuestions[0].tabAnswer[0].bCorrect=true;
+    quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 
     console.log('Length: '+quizz.tabQuestions.length);
