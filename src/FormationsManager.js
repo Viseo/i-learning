@@ -50,6 +50,24 @@ function FormationsManager(formations, additionalMessage) {
     self.formationsManipulator = new Manipulator();
     self.manipulator.last.add(self.formationsManipulator.first);
 
+    window.onkeydown = function (event) {
+        if(hasKeyDownEvent(event)) {
+            event.preventDefault();
+        }
+    };
+
+    hasKeyDownEvent = function (event) {
+        self.target = self.panel;
+        return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+    };
+
+    var gui = new Gui();
+    self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight, myColors.node);
+    var totalLines = count%self.rows === 0 ? count/self.rows : count/self.rows+1;
+    self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)-self.tileHeight+MARGIN);
+    self.formationsManipulator.last.add(self.panel.translate);
+    //self.panel.translate.move(-self.tileWidth/2, -self.tileHeight/2);
+
     //self.foreign = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
     //self.foreign.setAttribute("style", "width: 900px; height: 900px;");
     //self.div = document.createElement("div");
@@ -115,7 +133,6 @@ function FormationsManager(formations, additionalMessage) {
             self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
             self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
 
-
             //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
             //self.checkManipulator.translator.move(self.published.component.getBBox().width, 0);
             //self.exclamationManipulator.translator.move(2 * self.published.component.getBBox().width, 0);
@@ -147,7 +164,7 @@ function FormationsManager(formations, additionalMessage) {
                 }
 
                 self.formations[i].parent = self;
-                self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+                self.panel.content.add(self.formations[i].manipulatorMiniature.first);
                 //self.formationsManipulator.translator.move(self.tileWidth / 2 - MARGIN, self.tileHeight / 2 + 3 * MARGIN);
                 self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
                 self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
