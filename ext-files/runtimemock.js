@@ -141,6 +141,9 @@ var runtimeMock =  (function() {
                 component.listeners[event](event);
             }
         },
+        now: function() {
+            return time;
+        },
         timeout: function(handler, delay) {
             var i=0;
             while (i<timeouts.length && time+delay>=timeouts[i].time) {
@@ -323,6 +326,9 @@ var runtimeRegister =  function(register) {
         },
         event: function(component, eventName, event) {
             target.event(component.target, eventName, event);
+        },
+        now: function() {
+            return target.now();
         },
         timeout: function(handler, delay) {
             return target.timeout(function() {
