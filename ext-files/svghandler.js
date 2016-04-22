@@ -172,16 +172,7 @@ function SVG(runtime) {
     };
     Drawing.prototype.localPoint = function() {
         var point = null;
-        var tempPoint = getPoint(arguments);
-        if (tempPoint.x){
-            point = tempPoint;
-        }
-        else if (getPoint(arguments)[0].x){
-            point = getPoint(arguments)[0];
-        }
-        else {
-            point = getPoint(arguments)[0][0] ;
-        }
+        point = getPoint(arguments);
         //var point = Array.prototype.slice.call(point0, 0)[0][0];
         if (this.parent) {
             point = this.parent.localPoint(point);
@@ -353,10 +344,15 @@ function SVG(runtime) {
         return this.children[layer];
     };
     Ordered.prototype.globalPoint = function() {
-        return this.parent ? this.parent.globalPoint(arguments) : null;
+        var point = getPoint(arguments);
+        return this.parent ? this.parent.globalPoint(point) : null;
+        //return this.parent ? this.parent.globalPoint(arguments) : null;
     };
     Ordered.prototype.localPoint = function() {
-        return this.parent ? this.parent.localPoint(arguments) : null;
+        var point = getPoint(arguments);
+        point = this.parent ? this.parent.localPoint(point) : null;
+        return point;
+        // return this.parent ? this.parent.localPoint(arguments) : null;
     };
 
     function Translation(x, y) {

@@ -235,7 +235,7 @@ var Formation = function(formation){
             self.messageDragDropMargin = h/20;
             self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.grey).position(w / 2 - self.borderSize, 0 + h / 2)};
             self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(w/2, self.title.component.getBBox().height + self.messageDragDropMargin).color(myColors.grey).fontStyle("italic");
+            self.messageDragDrop.position(w/2, self.title.component.getBBox().height + self.messageDragDropMargin).color(myColors.grey);//.fontStyle("italic");
             self.graphManipulator.ordonator.set(4, self.graphBlock.rect);
             self.graphBlock.rect._acceptDrop = true;
 
