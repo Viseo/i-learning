@@ -114,8 +114,25 @@ var Drawings = function (w, h) {
         self.drag = null;
     };
     svg.addEvent(self.glass,"mouseout",onmouseoutHandler);
-
 };
 
+
+svg.Handler.prototype.flush = function(){
+    var self = this;
+    self.children.forEach(function(e){
+        if(e instanceof svg.Handler){
+            e.flush();
+        }
+        else{
+            if(self instanceof svg.Ordered){
+                var index=self.children.indexOf(e);
+                self.unset(index);
+            }
+            else{
+                self.remove(e);
+            }
+        }
+    });
+};
 
 

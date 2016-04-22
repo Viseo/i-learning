@@ -126,7 +126,7 @@ function Quizz(quizz, previewMode, parentFormation) {
         }
         var str1,str2;
 
-        self.finalMessage=str1+"\nVous avez répondu à "+self.tabQuestions.length+" questions, "+str2;
+        self.finalMessage=str1+" Vous avez répondu à "+self.tabQuestions.length+" questions, "+str2;
         if(!color) {
             var usedColor=autoColor;
         } else {

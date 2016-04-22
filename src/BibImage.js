@@ -55,16 +55,16 @@ var Library = function (lib) {
         var target = drawing.getTarget(event.clientX, event.clientY);
         if(target && target._acceptDrop) {
             if (element instanceof svg.Image) {
-                var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
-                    content:target.parent.parentManip.ordonator.extract(1)};
+                var oldQuest={cadre:target.parent.parentManip.ordonator.get(0),
+                    content:target.parent.parentManip.ordonator.get(1)};
 
-                var rectColors = oldQuest.cadre.getColor();
-
+                target.parent.parentManip.ordonator.unset(0);
+                target.parent.parentManip.ordonator.unset(1);
 
                 var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
                     element.srcDimension,
                     oldQuest.cadre.width, oldQuest.cadre.height,
-                    rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
+                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
                 );
 
                 //for(var i=0;i<target.parent.children[0].children.length;i++){
@@ -125,8 +125,8 @@ var Library = function (lib) {
         self.jeux.forEach(function (game) {
             game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
         });
-        selected && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
-        selected && selected.color(myColors.white, 1, myColors.black);
+        selected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
+        selected && formation && selected.color(myColors.white, 1, myColors.black);
     };
 
 
@@ -192,8 +192,7 @@ var Library = function (lib) {
                     img = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
                     self.draggedObjectLabel = img.content.messageText;
                     img = img.cadre;
-
-                };
+                }
 
                 manip.ordonator.set(0, img);
                 var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
@@ -203,7 +202,7 @@ var Library = function (lib) {
                 manageDnD(img,manip);
 
                 var mouseClickHandler = function (event){
-                    target = drawing.getTarget(event.clientX, event.clientY);
+                    var target = drawing.getTarget(event.clientX, event.clientY);
                     self.jeux.forEach(function(e){
                         if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                             if (!e.objectTotal.cadre.clicked){
@@ -250,6 +249,7 @@ var Library = function (lib) {
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
             });
+            console.log(e.ordonator.get(0));
             // manageDnD(e.ordonator.children[0],e);
 
         });

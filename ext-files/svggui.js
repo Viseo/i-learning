@@ -9,40 +9,58 @@ function Gui() {
         this.drawing.background = new svg.Translation();
         this.drawing.glass = new svg.Rect(width, height).position(width/2, height/2).opacity(0.001);
         this.drawing.add(this.drawing.background).add(this.drawing.glass);
+        this.currentFocus = null;
         var drag = null;
         var self=this;
-        this.drawing.glass.component.onmousedown = function(event) {
+        svg.addEvent(this.drawing.glass, 'mousedown', function(event) {
             var target = self.drawing.background.getTarget(event.clientX, event.clientY);
             drag = target;
-            if (target && target.component.onmousedown) {
-                target.component.onmousedown(event);
+            if (target) {
+                svg.event(target, 'mousedown', event);
             }
-        };
-        this.drawing.glass.component.onmousemove = function(event) {
-            var target = drag||self.drawing.background.getTarget(event.clientX, event.clientY);
-            if (target && target.component.onmousemove) {
-                target.component.onmousemove(event);
-            }
-        };
-        this.drawing.glass.component.onmouseup = function(event) {
+        });
+        svg.addEvent(this.drawing.glass, 'mousemove', function(event) {
             var target = drag||self.drawing.background.getTarget(event.clientX, event.clientY);
             if (target) {
-                if (target.component.onmouseup) {
-                    target.component.onmouseup(event);
-                }
-                if (target.component.onclick) {
-                    target.component.onclick(event);
-                }
+                svg.event(target, 'mousemove', event);
+            }
+        });
+        svg.addEvent(this.drawing.glass, 'mouseup', function(event) {
+            var target = drag||self.drawing.background.getTarget(event.clientX, event.clientY);
+            if (target) {
+                self.currentFocus = self.getFocus(target);
+                svg.event(target, 'mouseup', event);
+                svg.event(target, 'click', event);
             }
             drag = null;
-        };
-        this.drawing.glass.component.onmouseout = function(event) {
-            if (drag && drag.component.onmouseup) {
-                drag.component.onmouseup(event);
+        });
+        svg.addEvent(this.drawing.glass, 'mouseout', function(event) {
+            if (drag) {
+                svg.event(drag, 'mouseup', event);
             }
             drag = null;
+        });
+        window.onkeydown = function(event) {
+            if (self.processKeys(event.keyCode)) {
+                event.preventDefault();
+            }
         };
     }
+    Canvas.prototype.getFocus = function(component) {
+        while (component!=null) {
+            if (component.focus) {
+                return component.focus;
+            }
+            else {
+                component = component.parent;
+            }
+        }
+        return null;
+    };
+    Canvas.prototype.processKeys = function(key) {
+        this.currentFocus && this.currentFocus.processKeys && this.currentFocus.processKeys(key);
+        return true;
+    };
     Canvas.prototype.show = function(anchor) {
         this.drawing.show(anchor) ;
         return this;
@@ -65,6 +83,7 @@ function Gui() {
     function Frame(width, height) {
         var self = this;
         self.component = new svg.Translation();
+        self.component.focus = self;
         self.border = new svg.Rect(width, height).color([], 4, [0, 0, 0]);
         self.view = new svg.Drawing(width, height).position(-width/2, -height/2);
         self.scale = new svg.Scaling(1);
@@ -77,11 +96,6 @@ function Gui() {
         self.component.add(self.hHandle.component);
         self.vHandle = new Handle([[255, 204, 0], 3, [220, 100, 0]], vHandleCallback).vertical(width/2, -height/2, height/2);
         self.component.add(self.vHandle.component);
-        window.onkeydown = function(event) {
-            if (self.processKeys(event.keyCode)) {
-                event.preventDefault();
-            }
-        };
 
         function hHandleCallback(position) {
             var factor = self.scale.factor;
@@ -117,9 +131,13 @@ function Gui() {
             .position((this.view.height/2-this.content.y*factor)/(this.content.height*factor)*this.view.height);
     };
     Frame.prototype.remove = function(component) {
-        this.scale.remove(component);
+        if (this.content===component) {
+            this.scale.remove(component);
+            delete this.content;
+        }
         return this;
     };
+
     Frame.prototype.controlLocation = function(x, y) {
         if (x > 0) {
             x = 0;
@@ -135,6 +153,7 @@ function Gui() {
         }
         return {x:x, y:y};
     };
+
     Frame.prototype.moveContent = function(x, y) {
         var self=this;
         if (!self.animation) {
@@ -151,6 +170,7 @@ function Gui() {
         }
         return this;
     };
+
     Frame.prototype.zoomContent = function(factor) {
         var oldFactor = this.scale.factor;
         var minFactorWidth = this.view.width/this.content.width;
@@ -229,9 +249,9 @@ function Gui() {
         manageDnD();
 
         function manageDnD() {
-            self.handle.component.onmousedown = function(event) {
+            svg.addEvent(self.handle, 'mousedown', function(event) {
                 var ref = self.handle.localPoint(event.clientX, event.clientY);
-                self.handle.component.onmousemove = function(event) {
+                self.handle.mousemoveHandler = function(event) {
                     var mouse = self.handle.localPoint(event.clientX, event.clientY);
                     var dx=mouse.x-ref.x;
                     var dy=mouse.y-ref.y;
@@ -242,11 +262,15 @@ function Gui() {
                     }
                     return true;
                 };
-                self.handle.component.onmouseup = function(event) {
-                    self.handle.component.onmousemove = function() {};
-                    self.handle.component.onmouseup = function() {};
+                self.handle.mouseupHandler = function(event) {
+                    svg.removeEvent(self.handle, 'mousemove', self.handle.mousemoveHandler);
+                    svg.removeEvent(self.handle, 'mouseup', self.handle.mouseupHandler);
+                    delete self.handle.mousemoveHandler;
+                    delete self.handle.mouseupHandler;
                 };
-            }
+                svg.addEvent(self.handle, 'mousemove', self.handle.mousemoveHandler);
+                svg.addEvent(self.handle, 'mouseup', self.handle.mouseupHandler);
+            })
         }
     }
     Handle.prototype.vertical = function(x, y1, y2) {
@@ -369,27 +393,284 @@ function Gui() {
         }
     };
 
-    function Palette(width, height, colors, elemSize) {
+    function Panel(width, height, color) {
+        var self = this;
+        self.width = width;
+        self.height = height;
+        self.component = new svg.Translation();
+        self.component.focus = self;
+        self.border = new svg.Rect(width, height).color([], 4, [0, 0, 0]);
+        self.view = new svg.Drawing(width, height).position(-width/2, -height/2);
+        self.translate = new svg.Translation();
+        self.component.add(self.view.add(self.translate)).add(self.border);
+        self.vHandle = new Handle([[255, 204, 0], 3, [220, 100, 0]], vHandleCallback).vertical(width/2, -height/2, height/2);
+        self.component.add(self.vHandle.component);
+        self.back = new svg.Rect(width, height).color(color, 0, []);
+        self.content = new svg.Translation();
+        self.content.width = width;
+        self.content.height = height;
+        self.translate.add(self.back.position(width/2, height/2)).add(self.content);
+
+        function vHandleCallback(position) {
+            var x = self.content.x;
+            var y = -position*self.content.height/self.view.height + self.view.height/2;
+            self.content.move(x, y);
+        }
+    }
+    Panel.prototype.position = function(x, y) {
+        this.component.move(x, y);
+        return this;
+    };
+    Panel.prototype.resize = function(width, height) {
         this.width = width;
         this.height = height;
-        this.elemSize = elemSize;
-        this.support = new svg.Rect(width, height).color(colors[0], colors[1], colors[2]);
-        this.component = new svg.Translation().add(this.support);
-        this.tools = [];
+        this.border.dimension(width, height);
+        this.view.dimension(width, height).position(-width/2, -height/2);
+        this.vHandle.vertical(width/2, -height/2, height/2);
+        this.back.dimension(width, height).position(width/2, height/2);
+        return this;
+    };
+    Panel.prototype.updateHandle = function() {
+        this.vHandle.dimension(this.view.height, this.content.height)
+            .position((this.view.height/2-this.content.y)/(this.content.height)*this.view.height);
+        return this;
+    };
+    Panel.prototype.add = function(component) {
+        this.content.add(component);
+        return this;
+    };
+    Panel.prototype.remove = function(component) {
+        this.content.remove(component);
+        return this;
+    };
+    Panel.prototype.resizeContent = function(height) {
+        if (height>this.height) {
+            this.content.height = height;
+            var width = this.content.width;
+            this.back.position(width / 2, height / 2);
+            this.back.dimension(width, height);
+            this.updateHandle();
+        }
+        return this;
+    };
+    Panel.prototype.controlPosition = function(y) {
+        if (y > 0) {
+            y = 0;
+        }
+        if (y < -this.content.height + this.view.height) {
+            y = -this.content.height + this.view.height;
+        }
+        return y;
+    };
+    Panel.prototype.moveContent = function(y) {
+        var self=this;
+        if (!self.animation) {
+            self.animation = true;
+            var ly = this.controlPosition(y);
+            this.content.onChannel().smoothy(param.speed, param.step)
+                .execute(completeMovement).moveTo(0, ly);
+        }
+        function completeMovement(progress) {
+            self.updateHandle();
+            if (progress===1) {
+                delete self.animation;
+            }
+        }
+        return this;
+    };
+    Panel.prototype.processKeys = function(keycode) {
+        if (isUpArrow(keycode)) {
+            this.moveContent(this.content.y+100);
+        }
+        else if (isDownArrow(keycode)) {
+            this.moveContent(this.content.y-100);
+        }
+        else {
+            return false;
+        }
+        return true;
+
+        function isUpArrow(keycode) {
+            return keycode===38;
+        }
+        function isDownArrow(keycode) {
+            return keycode===40;
+        }
+    };
+
+    function Button(width, height, colors, text) {
+        this.width = width;
+        this.height = height;
+        this.back = new svg.Rect(width, height).color(colors[0], colors[1], colors[2]);
+        this.component = new svg.Translation().add(this.back);
+        this.text = new svg.Text(text).font("Arial", 24);
+        this.component.add(this.text.position(0, 8));
+        this.glass = new svg.Rect(width, height).color([0, 0, 0]).opacity(0.001);
+        this.component.add(this.text.position(0, 8)).add(this.glass);
+    }
+    Button.prototype.resize = function(width, height) {
+        this.width = width;
+        this.height = height;
+        this.back.dimension(width, height);
+        this.glass.dimension(width, height);
+        return this;
+    };
+    Button.prototype.position = function(x, y) {
+        this.component.move(x, y);
+        return this;
+    };
+    Button.prototype.onClick = function(handler) {
+        if (this.handler) {
+            svg.removeEvent(this.glass, "mouseup", this.handler);
+        }
+        this.handler = handler;
+        svg.addEvent(this.glass, "mouseup", this.handler);
+        return this;
+    };
+
+    function Palette(width, height) {
+        this.width = width;
+        this.height = height;
+        this.component = new svg.Translation();
+        this.panes = [];
+        this.channel = svg.onChannel();
     }
     Palette.prototype.position = function(x, y) {
         this.component.move(x, y);
         return this;
     };
-    Palette.prototype.addTool = function(tool) {
+    Palette.prototype.addPane = function(pane) {
+        var self = this;
+        pane.palette = this;
+        if (this.panes.length===0) {
+            this.currentPane = pane;
+            pane.open();
+        }
+        else {
+            pane.close();
+        }
+        pane.title.onClick(function() {
+            if (self.currentPane!==pane) {
+                var paneToClose = self.currentPane;
+                var paneToOpen = pane;
+                self.animate(paneToOpen, paneToClose);
+            }
+        });
+        this.panes.push(pane);
+        this.component.add(pane.component);
+        this.resizePanes();
+        return this;
+    };
+    Palette.prototype.resizePanes = function() {
+        var y = -this.height/2;
+        var panelHeight = this.height - this.panes.length*TITLE_HEIGHT;
+        for (var i=0; i<this.panes.length; i++) {
+            var pane = this.panes[i];
+            if (pane.opened) {
+                pane.resize(this.width, panelHeight + TITLE_HEIGHT);
+                pane.position(0, y+pane.height/2);
+                y+=TITLE_HEIGHT+panelHeight;
+            }
+            else {
+                pane.resize(this.width, TITLE_HEIGHT);
+                pane.position(0, y+pane.height/2);
+                y+=TITLE_HEIGHT;
+            }
+        }
+    };
+    Palette.prototype.animate = function(openedPane, closedPane) {
+        var STEPS = 100;
+        var DELAY = 2;
+        var panelHeight = this.height - this.panes.length*TITLE_HEIGHT;
+        var delta = panelHeight/STEPS;
+        var self = this;
+        this.channel.play(DELAY, STEPS,
+            function (i) {
+                var y = -self.height / 2;
+                for (var p = 0; p < self.panes.length; p++) {
+                    var pane = self.panes[p];
+                    if (pane === openedPane) {
+                        pane.resize(self.width, (i+1) * delta + TITLE_HEIGHT);
+                        pane.position(0, y + pane.height / 2);
+                        y += (i+1) * delta + TITLE_HEIGHT;
+                    }
+                    else if (pane === closedPane) {
+                        pane.resize(self.width, panelHeight - (i+1) * delta + TITLE_HEIGHT);
+                        pane.position(0, y + pane.height / 2);
+                        y += panelHeight - (i+1) * delta + TITLE_HEIGHT;
+                    }
+                    else {
+                        pane.position(0, y + pane.height / 2);
+                        y += TITLE_HEIGHT;
+                    }
+                }
+            },
+            function () {
+                openedPane.open();
+                closedPane.close();
+                delete self.animation;
+                self.currentPane = openedPane;
+            }
+        );
+    };
+
+    var TITLE_HEIGHT = 40;
+    var DEFAULT = 100;
+    function Pane(colors, text, elemSize) {
+        this.elemSize = elemSize;
+        this.width = DEFAULT;
+        this.height = DEFAULT;
+        this.colors = colors;
+        this.opened = false;
+        this.component = new svg.Translation();
+        this.title = new Button(this.width, TITLE_HEIGHT, this.colors, text);
+        var self = this;
+        this.title.onClick(function() {
+            if (self.opened) {
+                self.close();
+            }
+            else {
+                self.open();
+            }
+        });
+        this.panel = new Panel(this.width, this.height-TITLE_HEIGHT, colors[0]);
+        this.panel.component.move(0, TITLE_HEIGHT+this.height/2);
+        this.component.add(this.title.component);
+        this.component.add(this.panel.component);
+        this.tools = [];
+    }
+    Pane.prototype.addTool = function(tool) {
         this.tools.push(tool);
-        this.component.add(tool.component);
-        tool.palette = this;
-        var colSize = Math.floor(this.height/this.elemSize);
-        console.log((Math.floor((this.tools.length-1)/colSize)*this.elemSize)+"k"+(((this.tools.length-1)%colSize)*this.elemSize));
+        this.panel.add(tool.component);
+        tool.palette = this.palette;
+        var rowSize = Math.floor(this.width/this.elemSize);
+        var height = Math.floor(((this.tools.length-1)/rowSize)+1)*this.elemSize;
         tool.component.move(
-            Math.floor((this.tools.length-1)/colSize)*this.elemSize+this.elemSize/2-this.width/2,
-            ((this.tools.length-1)%colSize)*this.elemSize+this.elemSize/2-this.height/2);
+            ((this.tools.length-1)%rowSize)*this.elemSize+this.elemSize/2,
+            height-this.elemSize/2);
+        this.panel.resizeContent(height);
+        return this;
+    };
+    Pane.prototype.position = function(x, y) {
+        this.component.move(x, y);
+        return this;
+    };
+    Pane.prototype.resize = function(width, height) {
+        this.width = width;
+        this.height = height;
+        this.title.resize(width, TITLE_HEIGHT).position(0, -height/2+TITLE_HEIGHT/2);
+        this.panel.resize(width, this.height-TITLE_HEIGHT).position(0, TITLE_HEIGHT/2);
+    };
+    Pane.prototype.open = function() {
+        if (!this.opened) {
+            this.opened = true;
+        }
+        return this;
+    };
+    Pane.prototype.close = function() {
+        if (this.opened) {
+            this.opened = false;
+        }
         return this;
     };
 
@@ -403,6 +684,8 @@ function Gui() {
         Canvas:Canvas,
         Frame:Frame,
         Handle:Handle,
+        Panel:Panel,
+        Pane:Pane,
         Palette:Palette,
         Tool:Tool
     }

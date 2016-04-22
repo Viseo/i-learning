@@ -63,6 +63,9 @@ function targetRuntime() {
         preventDefault: function(event) {
             event.preventDefault();
         },
+        now: function() {
+            return new Date().getTime();
+        },
         timeout: function(handler, delay) {
             return setTimeout(handler, delay);
         },
