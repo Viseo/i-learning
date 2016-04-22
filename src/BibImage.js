@@ -51,7 +51,7 @@ var Library = function (lib) {
         }, 100);
     };
 
-    self.upAddFunction = function(element, event){
+    self.dropAction = function(element, event){
         var target = drawing.getTarget(event.clientX, event.clientY);
         if(target && target._acceptDrop) {
             if (element instanceof svg.Image) {
@@ -91,7 +91,8 @@ var Library = function (lib) {
             }
             else {
                 var formation = target.parent.parentManip.parentObject;
-                switch (self.draggedObjectLabel) {
+                var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
+                switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
                         formation.quizzTab[0].push({
                             type: element.parent.children[0].messageText,
@@ -112,21 +113,13 @@ var Library = function (lib) {
                         .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
-                    //formation.bib.jeux.forEach(function(game){
-                    //    game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                    //    game.objectTotal.cadre.clicked = false;
-                    //});
-                    //self.displayNewLevel(w, h);
                     formation.displayNewLevel(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
             }
         }
-        var selected;
-        self.jeux.forEach(function (game) {
-            game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
-        });
-        selected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
-        selected && formation && selected.color(myColors.white, 1, myColors.black);
+
+        self.gameSelected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
+        self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
     };
 
 
@@ -199,25 +192,24 @@ var Library = function (lib) {
                 var point2 = manip.first.globalPoint(0,0);
                 manip.first.move(point.x-point2.x, point.y-point2.y);
 
-                manageDnD(img,manip);
+                manageDnD(img, manip);
 
                 var mouseClickHandler = function (event){
                     var target = drawing.getTarget(event.clientX, event.clientY);
                     self.jeux.forEach(function(e){
                         if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
-                            if (!e.objectTotal.cadre.clicked){
+                            if (e.objectTotal!==self.gameSelected){
                                 target.color(myColors.white, 3, SELECTION_COLOR);
                                 e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                e.objectTotal.cadre.clicked = true;
+                                self.gameSelected = e.objectTotal;
+
                             }
                             else{
                                 e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                                e.objectTotal.cadre.clicked = false;
                             }
                         }
                         else{
                             e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                            e.objectTotal.cadre.clicked = false;
                         }
 
                     });
@@ -232,7 +224,7 @@ var Library = function (lib) {
                     // fonction qui accepte/refuse le drop
                     var target = drawing.getTarget(event.clientX, event.clientY);
                     if(!(target instanceof svg.Circle)){
-                        self.upAddFunction(img, event);
+                        self.dropAction(img, event);
                     }
                     else {
                         mouseClickHandler(event);

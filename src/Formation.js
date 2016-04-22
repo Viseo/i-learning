@@ -88,18 +88,14 @@ var Formation = function(formation){
             }
         };
     self.clickToAdd = function (){
-        var selected;
-        self.bib.jeux.forEach(function (game) {
-            game.objectTotal.cadre.clicked && (selected = game.objectTotal.cadre);
-        });
 
         self.mouseUpGraphBlock = function(event){
-            self.bib.upAddFunction(selected, event);
-            selected.clicked = false;
-            selected.color(myColors.white, 1, myColors.black);
+            self.bib.dropAction(self.bib.gameSelected.cadre, event);
+            self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+            self.bib.gameSelected = null;
             svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
         };
-        selected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+        self.bib.gameSelected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
     };
 
     self.displayFormation = function (){
@@ -205,8 +201,10 @@ var Formation = function(formation){
         self.displayNewLevel = function(w, h){
             self.newLevelManipulator = new Manipulator();
             self.graphManipulator.last.add(self.newLevelManipulator.first);
-            var line = new svg.Line(MARGIN,2*self.messageDragDropMargin,w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).strokeDasharray(6).color(myColors.black, 3, myColors.black);
+            var line = new svg.Line(MARGIN,2*self.messageDragDropMargin,w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
             self.newLevelManipulator.ordonator.set(9,line);
+
+            // .strokeDasharray(6)
             var newLevel = displayTextWithoutCorners("Niveau 1", w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, self.newLevelManipulator);
             newLevel.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             newLevel.content.position(newLevel.content.component.getBBox().width, self.messageDragDropMargin);
