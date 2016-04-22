@@ -8,8 +8,8 @@
  * @param quizz
  * @param previewMode
  */
-function Quizz(quizz, previewMode) {
-    var self=this;
+function Quizz(quizz, previewMode, parentFormation) {
+    var self = this;
 
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
@@ -127,7 +127,7 @@ function Quizz(quizz, previewMode) {
         }
         var str1,str2;
 
-        self.finalMessage=str1+"\nVous avez répondu à "+self.tabQuestions.length+" questions, "+str2;
+        self.finalMessage=str1+" Vous avez répondu à "+self.tabQuestions.length+" questions, "+str2;
         if(!color) {
             var usedColor=autoColor;
         } else {

@@ -191,12 +191,10 @@ function SVG(runtime) {
             };
         }
         else {
-            if (point) {
-                return {
-                    x: point.x - svgr.boundingRect(this.component).left,
-                    y: point.y - svgr.boundingRect(this.component).top
-                };
-            }
+            return {
+                x:point.x-svgr.boundingRect(this.component).left,
+                y:point.y-svgr.boundingRect(this.component).top
+            };
         }
     };
     Drawing.prototype.inside = function(x, y) {
@@ -265,11 +263,6 @@ function SVG(runtime) {
         svgr.attr(this.component, "opacity", opacity);
         return this;
     };
-    Handler.prototype.fillOpacity = function(opacity) {
-        this._fillopacity = opacity;
-        svgr.attr(this.component, "fill-opacity", opacity);
-        return this;
-    };
     Handler.prototype.smoothy = function(speed, step) {
         return new Animator(this).smoothy(speed, step);
     };
@@ -325,23 +318,7 @@ function SVG(runtime) {
         }
         return null;
     };
-    Handler.prototype.flush = function(){
-      var self = this;
-      self.children.forEach(function(e){
-          if(e instanceof Handler){
-              e.flush();
-          }
-          else{
-              if(self instanceof Ordered){
-                  var index=self.children.indexOf(e);
-                  self.unset(index);
-              }
-              else{
-                  self.remove(e);
-              }
-          }
-      });
-    };
+
     function Ordered(layerCount) {
         this.children = [];
         this._active = true;
@@ -372,12 +349,8 @@ function SVG(runtime) {
         this.children[layer] = dummy;
         return this;
     };
-
-    Ordered.prototype.extract = function(position) {
-        var dummy = new svg.Rect(0, 0).opacity(0);
-        svgr.replace(this.component,dummy.component,this.children[position].component);
-        var result=this.children.splice(position,1,dummy) ;
-        return result[0];
+    Ordered.prototype.get = function(layer) {
+        return this.children[layer];
     };
     Ordered.prototype.globalPoint = function() {
         return this.parent ? this.parent.globalPoint(arguments) : null;
@@ -431,7 +404,7 @@ function SVG(runtime) {
 
     function Rotation(angle) {
         Handler.call(this);
-        this.rotate(angle);
+        this.rotate(angle||0);
     }
     Rotation.prototype.__proto__ = Handler.prototype;
     Rotation.prototype.rotate = function(angle) {
@@ -500,17 +473,7 @@ function SVG(runtime) {
         }
     };
     Scaling.prototype.globalPoint = function() {
-        var point = null;
-        var tempPoint = getPoint(arguments);
-        if (tempPoint.x!=undefined){
-            point = tempPoint;
-        }
-        else if (getPoint(arguments)[0].x!=undefined){
-            point = getPoint(arguments)[0];
-        }
-        else {
-            point = getPoint(arguments)[0][0] ;
-        }
+        var point = getPoint(arguments);
         point = {
             x:point.x*this.factor,
             y:point.y*this.factor
@@ -587,7 +550,6 @@ function SVG(runtime) {
         }
     };
     Shape.prototype.color = function(fillColor, strokeWidth, strokeColor) {
-
         this.fillColor = fillColor;
         this.strokeWidth = strokeWidth;
         this.strokeColor = strokeColor;
@@ -595,10 +557,6 @@ function SVG(runtime) {
         svgr.attr(this.component, "stroke-width", strokeWidth || 0);
         svgr.attr(this.component, "stroke", strokeWidth && strokeColor && strokeColor.length ? "rgb("+strokeColor.join(",")+")" : "none");
         return this;
-    };
-    Shape.prototype.getColor = function() {
-
-        return {fillColor:this.fillColor,strokeWidth:this.strokeWidth,strokeColor:this.strokeColor};
     };
     Shape.prototype.opacity = function(opacity) {
         this._opacity = opacity;
@@ -692,7 +650,6 @@ function SVG(runtime) {
         return null;
     };
 
-
     function Rect(width, height) {
         this.component = svgr.create("rect");
         Shape.call(this);
@@ -739,10 +696,8 @@ function SVG(runtime) {
     };
     Rect.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        if (local) {
-            return local.x >= -this.width / 2 && local.x <= this.width / 2
-                && local.y >= -this.height / 2 && local.y <= this.height / 2;
-        }
+        return local.x>=-this.width/2 && local.x<=this.width/2
+            && local.y>=-this.height/2 && local.y<=this.height/2;
     };
 
     function Circle(radius) {
@@ -1197,17 +1152,19 @@ function SVG(runtime) {
     function Text(message) {
         this.component = svgr.create("text");
         Shape.call(this);
-        this.messageText = message;
+        this.messageText = ""+message;
         this.x = 0;
         this.y = 0;
         this.fontName = "arial";
         this.fontSize = 12;
+        this.lineSpacing = 24;
         this.anchorText = "middle";
+        this.lines = [];
         this._draw();
     }
     Text.prototype.__proto__ = Shape.prototype;
     Text.prototype.message = function(message) {
-        this.messageText = message;
+        this.messageText = ""+message;
         this._draw();
         return this;
     };
@@ -1217,14 +1174,10 @@ function SVG(runtime) {
         this._draw();
         return this;
     };
-    Text.prototype.font = function(fontName, fontSize) {
+    Text.prototype.font = function(fontName, fontSize, lineSpacing) {
         this.fontName = fontName;
         this.fontSize = fontSize;
-        this._draw();
-        return this;
-    };
-    Text.prototype.fontStyle = function(fontStyle){
-        this.fontStyle = fontStyle;
+        this.lineSpacing = lineSpacing || fontSize*2;
         this._draw();
         return this;
     };
@@ -1234,13 +1187,25 @@ function SVG(runtime) {
         return this;
     };
     Text.prototype._draw = function() {
+        for (var l=0; l<this.lines.length; l++) {
+            svgr.remove(this.component, this.lines[l]);
+        }
+        this.lines = [];
+        var lines = this.messageText.split("\n");
+        for (l=1; l<lines.length; l++) {
+            var line = svgr.create("tspan");
+            svgr.attr(line, "x", this.x);
+            svgr.attr(line, "y", this.y-(l-1)/2*this.lineSpacing);
+            svgr.text(line, lines[l]);
+            this.lines[l-1] = line;
+            svgr.add(this.component, line);
+        }
         svgr.attr(this.component, "x", this.x);
-        svgr.attr(this.component, "y", this.y);
+        svgr.attr(this.component, "y", this.y-(lines.length-1)/2*this.lineSpacing);
         svgr.attr(this.component, "text-anchor", this.anchorText);
         svgr.attr(this.component, "font-family", this.fontName);
         svgr.attr(this.component, "font-size", this.fontSize);
-        svgr.attr(this.component, "font-style", this.fontStyle);
-        svgr.text(this.component, this.messageText);
+        svgr.text(this.component, lines[0]);
     };
     Text.prototype.globalPoint = function() {
         var point = getPoint(arguments);
@@ -1279,17 +1244,11 @@ function SVG(runtime) {
         this._draw();
         return this;
     };
-    Line.prototype.strokeDasharray = function(dasharray){
-        this.dasharray = dasharray;
-        this._draw();
-        return this;
-    };
     Line.prototype._draw = function() {
         svgr.attr(this.component, "x1", this.x1);
         svgr.attr(this.component, "y1", this.y1);
         svgr.attr(this.component, "x2", this.x2);
         svgr.attr(this.component, "y2", this.y2);
-        svgr.attr(this.component, "stroke-dasharray", this.dasharray);
     };
     Line.prototype.prepareAnimator = function(animator) {
         Shape.prototype.prepareAnimator.call(this, animator);
@@ -1423,20 +1382,18 @@ function SVG(runtime) {
     };
     Path.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
-        if (local) {
-            return insidePolygon(local.x, local.y, this.points);
-        }
+        return insidePolygon(local.x, local.y, this.points);
     };
 
     function Image(url) {
         this.component = svgr.create("image");
         Shape.call(this);
         this.src = url;
-        this.fillColor=[true];
         this.x = 0;
         this.y = 0;
         this.width = 0;
         this.height = 0;
+        this.fillColor = [true];
         var self = this;
         this._draw();
     }
@@ -1543,8 +1500,10 @@ function SVG(runtime) {
         }
 
         function steppy(executor, speed, stepCount, channel) {
-            for (var i = 0; i < stepCount - 1; i++) {
-                channel.animate(speed, function (progress) {
+
+            channel.play(speed, stepCount,
+                function (i) {
+                    var progress = i/stepCount;
                     var inc = [];
                     for (var l=0; l<executor.source.length; l++) {
                         inc[l] = executor.source[l] + (executor.target[l] - executor.source[l]) * progress;
@@ -1553,14 +1512,14 @@ function SVG(runtime) {
                     if (executor.processing) {
                         executor.processing(progress);
                     }
-                }, null, i/stepCount);
-            }
-            channel.animate(speed, function () {
-                executor.setter(executor.target);
-                if (executor.processing) {
-                    executor.processing(1);
+                },
+                function () {
+                    executor.setter(executor.target);
+                    if (executor.processing) {
+                        executor.processing(1);
+                    }
                 }
-            });
+            );
         }
     }
 
@@ -1573,7 +1532,7 @@ function SVG(runtime) {
     function onChannel(channelInfo) {
         var channel = channelInfo===undefined ? null : channels[channelInfo];
         if (!channel) {
-            channel = {time:0};
+            channel = {time:svgr.now()};
             if (channelInfo!==undefined) {
                 channels[channelInfo] = channel;
             }
@@ -1585,12 +1544,15 @@ function SVG(runtime) {
     var channelPrototype = {
         animate: function (delay, todo) {
             var self = this;
+            var now = svgr.now();
+            if (now>self.time) {
+                self.time = now;
+            }
             self.time += delay;
             var args = Array.prototype.slice.call(arguments, 0);
             args.shift();
             args.shift();
-            svgr.timeout(function () {
-                self.time = 0;
+            var last = function () {
                 if (args.length == 0) {
                     todo();
                 }
@@ -1598,7 +1560,21 @@ function SVG(runtime) {
                     var who = args.shift();
                     todo.apply(who || null, args);
                 }
-            }, self.time);
+            };
+            svgr.timeout(last, self.time-now);
+        },
+        play: function(delay, stepCounts, animator, terminator) {
+            var self = this;
+            for (var i=0; i<stepCounts; i++) {
+                (function (i) {
+                    self.animate(delay, function() {
+                        animator(i);
+                    });
+                })(i);
+            }
+            self.animate(1, function() {
+                terminator();
+            });
         }
     };
 
@@ -1661,6 +1637,7 @@ function SVG(runtime) {
 
     return {
         Drawing : Drawing,
+        Handler: Handler,
         Ordered : Ordered,
         Translation : Translation,
         Rotation : Rotation,

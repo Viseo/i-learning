@@ -50,20 +50,21 @@ var Library = function (lib) {
             }
         }, 100);
     };
-    self.upAddFunction = function(img, event){
+
+    self.upAddFunction = function(element, event){
         var target = drawing.getTarget(event.clientX, event.clientY);
         if(target && target._acceptDrop) {
-            if (img instanceof svg.Image) {
-                var oldQuest={cadre:target.parent.parentManip.ordonator.extract(0),
-                    content:target.parent.parentManip.ordonator.extract(1)};
+            if (element instanceof svg.Image) {
+                var oldQuest={cadre:target.parent.parentManip.ordonator.get(0),
+                    content:target.parent.parentManip.ordonator.get(1)};
 
-                var rectColors = oldQuest.cadre.getColor();
+                target.parent.parentManip.ordonator.unset(0);
+                target.parent.parentManip.ordonator.unset(1);
 
-
-                var newQuest = displayImageWithTitle(oldQuest.content.messageText, img.src,
-                    img.srcDimension,
+                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                    element.srcDimension,
                     oldQuest.cadre.width, oldQuest.cadre.height,
-                    rectColors.strokeColor, rectColors.fillColor, null, null, target.parent.parentManip
+                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
                 );
 
                 //for(var i=0;i<target.parent.children[0].children.length;i++){
@@ -90,27 +91,25 @@ var Library = function (lib) {
             }
             else {
                 var formation = target.parent.parentManip.parentObject;
-                var type;
-                (img.parent.children[0] instanceof svg.Text) ? (type = img.parent.children[0].messageText) : (type = img.parent.children[1].messageText);
-                switch (true) {
-                    case type === myBibJeux.tabLib[0].label:
+                switch (self.draggedObjectLabel) {
+                    case (myBibJeux.tabLib[0].label):
                         formation.quizzTab[0].push({
-                            type: type,
-                            label: type + " " + formation.gamesCounter.quizz
-                        })
+                            type: element.parent.children[0].messageText,
+                            label: element.parent.children[0].messageText + " " + formation.gamesCounter.quizz
+                        });
                         formation.gamesCounter.quizz++;
                         break;
-                    case type === myBibJeux.tabLib[1].label:
+                    case (myBibJeux.tabLib[1].label):
                         formation.quizzTab[0].push({
-                            type: type,
-                            label: type + " " + formation.gamesCounter.bd
-                        })
+                            type: element.parent.children[0].messageText,
+                            label: element.parent.children[0].messageText + " " + formation.gamesCounter.bd
+                        });
                         formation.gamesCounter.bd++;
                         break;
                 }
                 if (formation.quizzTab[0].length>formation.maxGameInARow){
                     autoAdjustText(formation.maxGameInARowMessage, 0, 0, formation.graphCreaWidth, formation.graphCreaHeight, 20, null, formation.manipulator).text.color(myColors.red)
-                    .position(drawing.width - MARGIN, 0).anchor("end");
+                        .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
                     //formation.bib.jeux.forEach(function(game){
@@ -130,6 +129,7 @@ var Library = function (lib) {
         selected && formation && selected.color(myColors.white, 1, myColors.black);
     };
 
+
     self.display = function(x,y,w,h){
         x && (self.x = x);
         y && (self.y = y);
@@ -146,8 +146,8 @@ var Library = function (lib) {
 
         var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
         self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
-        var maxJeuxbyLine = 1;
-        self.libMargin2 = (w -(maxJeuxbyLine*w))/(maxJeuxbyLine+1)+2*MARGIN;
+        var maxJeuxPerLine = 1;
+        self.libMargin2 = (w -(maxJeuxPerLine*w))/(maxJeuxPerLine+1)+2*MARGIN;
         var tempY = (2/10*h);
 
         for (var i = 0; i<self.tabLib.length; i++) {
@@ -165,16 +165,15 @@ var Library = function (lib) {
             }
             else {
 
-                if (i % maxJeuxbyLine === 0 && i != 0) {
+                if (i % maxJeuxPerLine === 0 && i != 0) {
                     tempY += self.w / 2 + self.libMargin2;
                 }
 
                 var objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.bibManipulators[i]);
-                var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxbyLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+                var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
 
-                self.jeux[i] = {};
-                self.jeux[i].objectTotal = objectTotal;
+                self.jeux[i] = {objectTotal : objectTotal};
                 self.jeux[i].objectTotal.cadre.clicked = false;
             }
         }
@@ -190,18 +189,20 @@ var Library = function (lib) {
                     img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
                     img.srcDimension = elementCopy.srcDimension;
                 }else{
-                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip)
-                    manip.ordonator.set(1, img.content);
+                    img = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                    self.draggedObjectLabel = img.content.messageText;
                     img = img.cadre;
-                };
+                }
 
-                manip.ordonator.set(0,img);
-                manip.first.move(event.clientX,event.clientY);
+                manip.ordonator.set(0, img);
+                var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
+                var point2 = manip.first.globalPoint(0,0);
+                manip.first.move(point.x-point2.x, point.y-point2.y);
 
                 manageDnD(img,manip);
 
                 var mouseClickHandler = function (event){
-                    target = drawing.getTarget(event.clientX, event.clientY);
+                    var target = drawing.getTarget(event.clientX, event.clientY);
                     self.jeux.forEach(function(e){
                         if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                             if (!e.objectTotal.cadre.clicked){
@@ -237,6 +238,7 @@ var Library = function (lib) {
                         mouseClickHandler(event);
                         self.formation.clickToAdd();
                     }
+                    self.draggedObjectLabel = "";
 
                 };
 
@@ -247,6 +249,7 @@ var Library = function (lib) {
                 //img.component.eventHandlers.mouseup(event);
                 //img.component.eventHandlers.mousedown(event);
             });
+            console.log(e.ordonator.get(0));
             // manageDnD(e.ordonator.children[0],e);
 
         });

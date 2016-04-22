@@ -100,7 +100,7 @@ var Formation = function(formation){
             svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
         };
         selected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
-    }
+    };
 
     self.displayFormation = function (){
 
