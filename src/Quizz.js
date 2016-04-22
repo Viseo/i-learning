@@ -8,8 +8,8 @@
  * @param quizz
  * @param previewMode
  */
-function Quizz(quizz, previewMode) {
-    var self=this;
+function Quizz(quizz, previewMode, parentFormation) {
+    var self = this;
 
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
