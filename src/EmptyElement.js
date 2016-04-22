@@ -100,16 +100,16 @@ var AnswerElement = function (answer, parent) {
         answer.fontSize && (self.fontSize = answer.fontSize);
 
         if(typeof answer.correct !== 'undefined'){
-            self.bCorrect = answer.correct;
+            self.correct = answer.correct;
         }else{
-            self.bCorrect=false;
+            self.correct=false;
         }
         answer.font && (self.font = answer.font);
 
     }else {
         self.label = "";
         self.fontSize = 20;
-        self.bCorrect = false;
+        self.correct = false;
         self.font = "Arial";
         self.colorBordure = myColors.black;
         self.bgColor = myColors.white;
@@ -140,12 +140,12 @@ var AnswerElement = function (answer, parent) {
             var color = (self.label) ? myColors.black : myColors.grey;
             if(self.linkedAnswer.image){
                 self.img = self.linkedAnswer.image;
-                self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.rgbBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
                 //self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }
             else{
-                self.obj = displayText(text, w, h, self.linkedAnswer.rgbBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
 
             }

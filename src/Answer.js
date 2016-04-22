@@ -6,25 +6,25 @@
  *
  * @param label : texte à afficher pour la réponse
  * @param imageSrc : lien relatif vers l'image. Peut-être vide/null/indéfini si aucune image
- * @param bCorrect : booléen qui indique si la réponse est correcte
+ * @param correct : booléen qui indique si la réponse est correcte
  * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
  * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
  * @constructor
  */
-/*label, imageSrc, bCorrect, colorBordure, bgColor*/
+/*label, imageSrc, correct, colorBordure, bgColor*/
 var Answer = function (answerParameters, parent) {
     var self = this;
     self.parent = parent;
     var answer = {
         label:'',
         imageSrc:null,
-        bCorrect:false
+        correct:false
     };
     answerParameters && (answer = answerParameters);
-    self.answerManipulator = new Manipulator(self);
+    self.manipulator = new Manipulator(self);
     self.label = answer.label;
     self.imageSrc = answer.imageSrc;
-    self.correct = answer.bCorrect;
+    self.correct = answer.correct;
     self.selected = false;
 
     self.fontSize = answer.fontSize ? answer.fontSize : 20;
@@ -42,7 +42,7 @@ var Answer = function (answerParameters, parent) {
         self.imageLoaded = true;
     }
 
-    self.rgbBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
+    self.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
     self.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
 
     self.bordure = null;
@@ -71,7 +71,7 @@ var Answer = function (answerParameters, parent) {
 
         // Question avec Texte ET image
         if(self.label && self.imageSrc) {
-            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator,self.image);
+            var objectTotal = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator,self.image);
             self.bordure = objectTotal.cadre;
             self.content = objectTotal.text;
             self.image = objectTotal.image;
@@ -79,21 +79,21 @@ var Answer = function (answerParameters, parent) {
         }
         // Question avec Texte uniquement
         else if(self.label && !self.imageSrc) {
-            var object = displayText(self.label, self.w, self.h, self.rgbBordure, self.bgColor, self.fontSize, self.font, self.answerManipulator);
+            var object = displayText(self.label, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
             self.bordure = object.cadre;
             self.content = object.content;
 
         }
         // Question avec Image uniquement
         else if(self.imageSrc && !self.label) {
-            var obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.w, self.h, self.answerManipulator);
+            var obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.w, self.h, self.manipulator);
             self.image = obj.image;
             self.bordure = obj.cadre;
         }
         // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         else {
             self.bordure = new svg.Rect(self.w, self.h).color(self.bgColor, 1, myColors.black).corners(25, 25);
-            self.answerManipulator.last.add(self.bordure);
+            self.manipulator.last.add(self.bordure);
 
         }
         if(self.selected){// image pré-selectionnée
@@ -101,7 +101,7 @@ var Answer = function (answerParameters, parent) {
             self.bordure.color(self.bgColor, 5, SELECTION_COLOR);
 
         }
-        self.answerManipulator.translator.move(self.x,self.y);
+        self.manipulator.translator.move(self.x,self.y);
 
     };
 

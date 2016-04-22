@@ -26,19 +26,26 @@ var onclickFunction = function (event) {
     var target = drawing.getTarget(event.clientX, event.clientY);
     var sender = null;
     target.answerParent && (sender = target.answerParent);
-    sender.linkedAnswer.correct=!sender.bCorrect;
-    sender.bCorrect = !sender.bCorrect;
-    sender.bCorrect && drawPathChecked(sender, sender.x, sender.y, sender.size);
+    sender.linkedAnswer.correct=!sender.correct;
+    sender.correct = !sender.correct;
+    sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
     updateAllCheckBoxes(sender);
 };
 
 var checkAllCheckBoxes = function (sender) {
     var allNotChecked = true;
+    sender.parent.linkedQuestion.rightAnswers=[];
     sender.parent.tabAnswer.forEach(function(answer) {
         if(answer instanceof AnswerElement) {
-            answer.bCorrect && (allNotChecked = false);
+            if(answer.correct){
+                allNotChecked = false;
+                //rightAnswers.push(answer.linkedAnswer);
+                answer.linkedAnswer.correct=true;
+                sender.parent.linkedQuestion.rightAnswers.push(answer.linkedAnswer);
+            }
         }
     });
+
     return allNotChecked;
 };
 
@@ -59,7 +66,7 @@ var updateAllCheckBoxes = function (sender) {
     sender.parent.tabAnswer.forEach(function(answer){
         if(answer instanceof AnswerElement && answer.obj.checkbox) {
             var allNotChecked = checkAllCheckBoxes(sender);
-            if(answer.parent.simpleChoice && !answer.bCorrect && !allNotChecked) {
+            if(answer.parent.simpleChoice && !answer.correct && !allNotChecked) {
                 answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
                 //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
                 svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
@@ -67,7 +74,7 @@ var updateAllCheckBoxes = function (sender) {
                 answer.obj.checkbox.color(myColors.white, 2, myColors.black);
                 svg.addEvent(answer.obj.checkbox, "click", onclickFunction);
             }
-            !answer.bCorrect && answer.manipulator.ordonator.unset(8);
+            !answer.correct && answer.manipulator.ordonator.unset(8);
         }});
 };
 
@@ -88,15 +95,15 @@ var displayCheckbox = function (x, y, size, sender) {
     var allNotChecked = true;
 
     allNotChecked = checkAllCheckBoxes(sender);
-    if(sender.parent.simpleChoice && !sender.bCorrect && !allNotChecked) {
+    if(sender.parent.simpleChoice && !sender.correct && !allNotChecked) {
         sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
     } else {
         sender.obj.checkbox.color(myColors.white, 2, myColors.black);
         svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
     }
     sender.manipulator.ordonator.set(7, sender.obj.checkbox);
-    !sender.bCorrect && sender.manipulator.ordonator.unset(8);
-    sender.bCorrect && drawPathChecked(sender, x, y, size);
+    !sender.correct && sender.manipulator.ordonator.unset(8);
+    sender.correct && drawPathChecked(sender, x, y, size);
     return sender.obj;
 };
 
