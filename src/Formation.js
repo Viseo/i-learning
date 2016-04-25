@@ -30,9 +30,11 @@ var Formation = function(formation){
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
-    self.quizzTab = [];
-    self.quizzTab.push([]);
-    //self.quizzTab = myFormation.quizzTab;
+
+    self.targetLevelIndex=0;
+    self.gamesTab = [];
+    self.gamesTab.push([]);
+    //self.gamesTab = myFormation.gamesTab;
     self.marginRatio=0.03;
     self.globalMargin={
         height:self.marginRatio*drawing.height,
@@ -192,7 +194,7 @@ var Formation = function(formation){
 
         var onclickQuizzHandler = function(){
             var quizzManager;
-            //myFormation.quizzTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.quizzTab[/*TODO*/][/*TODO*/]);
+            //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
             quizzManager = new QuizzManager(defaultQuizz);
             quizzManager.display();
             mainManipulator.ordonator.unset(1);
@@ -209,21 +211,11 @@ var Formation = function(formation){
             newLevel.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             newLevel.content.position(newLevel.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
-            //self.quizzTab[self.quizzTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, self.newLevelManipulator));
-            //self.quizzTab[self.quizzTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
-            //console.log(self.quizzTab);
-            //var test = self.quizzTab[0][0].label;
-            var count = 1;
-            self.quizzTab[0].forEach(function(tabElement){
-                tabElement.manipulator = new Manipulator();
-                self.graphManipulator.last.add(tabElement.manipulator.first);
-                var testQuizz = displayTextWithCircle(tabElement.label, 100, 100, myColors.red, myColors.white, 20, null, tabElement.manipulator);
-                testQuizz.cadre.position(100*count, 0);
-                testQuizz.content.position(100*count, 0);
-                svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
-                svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
-                count ++;
-            })
+            //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, self.newLevelManipulator));
+            //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
+            //console.log(self.gamesTab);
+            //var test = self.gamesTab[0][0].label;
+
 
         };
 
@@ -237,12 +229,22 @@ var Formation = function(formation){
             self.graphManipulator.ordonator.set(4, self.graphBlock.rect);
             self.graphBlock.rect._acceptDrop = true;
 
+            var count = 1;
+            self.gamesTab[self.targetLevelIndex].forEach(function(tabElement){
+                tabElement.manipulator = new Manipulator();
+                self.graphManipulator.last.add(tabElement.manipulator.first);
+                var testQuizz = displayTextWithCircle(tabElement.label, 100, 100, myColors.red, myColors.white, 20, null, tabElement.manipulator);
+                tabElement.manipulator.first.move(100*count, 0);
+                svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
+                svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
+                count ++;
+            });
 
             //var clickHandler = function(event){
-            //    //self.quizzTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
+            //    //self.gamesTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
             //    var target = drawing.getTarget(event.clientX, event.clientY);
             //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
-            //    if (self.quizzTab[0].length>=self.maxGameInARow){
+            //    if (self.gamesTab[0].length>=self.maxGameInARow){
             //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
             //        .position(drawing.width - MARGIN, 0).anchor("end");
             //    }
