@@ -91,17 +91,17 @@ var Library = function (lib) {
             }
             else {
                 var formation = target.parent.parentManip.parentObject;
+                // déterminer le targetIndexLevel !_!
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        formation.levelsTab[0].push({
-                            type: objectToBeAddedLabel,
-                            label: objectToBeAddedLabel + " " + formation.gamesCounter.quizz
-                        });
+                        var newQuizz = new Quizz({},false,formation);
+                        newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         formation.gamesCounter.quizz++;
                         break;
                     case (myBibJeux.tabLib[1].label):
-                        formation.levelsTab[0].push({
+                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push({
                             type: objectToBeAddedLabel,
                             label: objectToBeAddedLabel + " " + formation.gamesCounter.bd
                         });
@@ -113,7 +113,7 @@ var Library = function (lib) {
                         .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
-                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[]);
+                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[0]);
                 }
             }
         }

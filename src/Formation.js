@@ -24,17 +24,20 @@ var Formation = function(formation){
     self.manipulator.last.add(self.formationInfoManipulator.first);
     self.labelDefault = "Entrer le nom de la formation";
 
+    self.graphElementSize = 100;
+    self.levelHeight = self.graphElementSize;
+    self.levelWidth;
     self.x = MARGIN;
     self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
-
+    self.quizzManager = new QuizzManager(defaultQuizz);
     self.targetLevelIndex = 0;
     self.levelsTab = [];
     var Level = function(index, gamesTab){
-        this.index = self.levelsTab[self.levelsTab.length-1].index++; // !! self.levelsTab[self.levelsTab.length\\-1 ou pas, ça dépend de comment on gère ça \\].index
+        this.index = (self.levelsTab[self.levelsTab.length]) ? (self.levelsTab[self.levelsTab.length].index++) : 1;
         gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
         this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
         this.y = this.index * self.levelHeight;
@@ -202,22 +205,24 @@ var Formation = function(formation){
 
         self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
 
-        var onclickQuizzHandler = function(){
-            var quizzManager;
+        var onclickQuizzHandler = function(event){
+            var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
             //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
-            quizzManager = new QuizzManager(defaultQuizz);
-            quizzManager.display();
+            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzManager.display();
+            // enlève le bandeau avant de display le quizzManager !_!
             mainManipulator.ordonator.unset(1);
         };
 
         self.displayLevel = function(w, h, level){
+            self.levelWidth = w;
             level.manipulator = new Manipulator();
             self.graphManipulator.last.add(level.manipulator.first);
 
             // .strokeDasharray(6)
             level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
             level.obj.line = new svg.Line(MARGIN, 2*self.messageDragDropMargin, w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
-            level.manipulator.ordonator.set(9,line);
+            level.manipulator.ordonator.set(9, level.obj.line);
             level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
@@ -225,9 +230,13 @@ var Formation = function(formation){
             //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.gamesTab);
             //var test = self.gamesTab[0][0].label;
+
+            self.displayGraph(w,h);
+
+
         };
 
-        var displayGraph = function (w, h){
+        self.displayGraph = function (w, h){
             self.graphManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
             self.borderSize = 3;
             self.messageDragDropMargin = h/20;
@@ -238,15 +247,20 @@ var Formation = function(formation){
             self.graphBlock.rect._acceptDrop = true;
 
             var count = 1;
-            self.levelsTab[self.targetLevelIndex].forEach(function(tabElement){
-                tabElement.manipulator = new Manipulator();
-                self.graphManipulator.last.add(tabElement.manipulator.first);
-                var testQuizz = displayTextWithCircle(tabElement.label, 100, 100, myColors.red, myColors.white, 20, null, tabElement.manipulator);
-                tabElement.manipulator.first.move(100*count, 0);
-                svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
-                svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
-                count ++;
-            });
+            for(var i = 0; i<self.levelsTab.length; i++){
+                self.adjustGamesPositions(self.levelsTab[i]);
+
+                self.levelsTab[i].gamesTab.forEach(function(tabElement){
+                    tabElement.miniatureManipulator = new Manipulator();
+                    self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+
+                    var testQuizz = tabElement.displayMiniature(self.graphElementSize);
+                    svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
+                    count ++;
+                });
+            }
+
 
             //var clickHandler = function(event){
             //    //self.levelsTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
@@ -266,8 +280,19 @@ var Formation = function(formation){
             //};
             //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
         };
-    displayGraph(self.graphCreaWidth, self.graphCreaHeight);
+    self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
+    self.adjustGamesPositions = function(levelTab){
+
+        levelTab.gamesTab.forEach(function(game){
+            var pos = game.getPositionInFormation();
+
+            game.miniaturePosition.x = self.levelWidth/2;
+            game.miniaturePosition.y = (pos.level+1)*self.levelHeight/2;
+
+        });
+
+    }
 };
 
 
