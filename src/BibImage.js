@@ -12,12 +12,12 @@ var Library = function (lib) {
     self.tabImgBib = [];
     self.tabLib = [];
     lib.tabLib && (self.tabLib = lib.tabLib);
-    self.bibManipulators=[];
+    self.bibManipulators = [];
 
     self.imageWidth = 50;
     self.imageHeight = 50;
     self.libMargin = 5;
-    self.jeux=[];
+    self.libraryGamesTab=[];
 
     for(var i = 0; i<self.tabLib.length; i++) {
         if (self.tabLib[i].imgSrc) {
@@ -166,8 +166,8 @@ var Library = function (lib) {
                 var X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
                 self.bibManipulators[i].first.move(X, tempY);
 
-                self.jeux[i] = {objectTotal : objectTotal};
-                self.jeux[i].objectTotal.cadre.clicked = false;
+                self.libraryGamesTab[i] = {objectTotal : objectTotal};
+                self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
             }
         }
         self.libraryManipulator.first.move(x, y);
@@ -196,7 +196,7 @@ var Library = function (lib) {
 
                 var mouseClickHandler = function (event){
                     var target = drawing.getTarget(event.clientX, event.clientY);
-                    self.jeux.forEach(function(e){
+                    self.libraryGamesTab.forEach(function(e){
                         if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                             if (e.objectTotal!==self.gameSelected){
                                 target.color(myColors.white, 3, SELECTION_COLOR);
