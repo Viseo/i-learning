@@ -228,14 +228,16 @@ var Formation = function(formation){
         };
 
         self.displayGraph = function (w, h){
-            self.graphManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
             self.borderSize = 3;
             self.messageDragDropMargin = h/20;
-            self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.grey).position(w / 2 - self.borderSize, 0 + h / 2)};
+            self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
+            self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
+
+
             self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(w/2, self.title.component.getBBox().height + self.messageDragDropMargin).color(myColors.grey);//.fontStyle("italic");
-            self.graphManipulator.ordonator.set(4, self.graphBlock.rect);
+            self.messageDragDrop.position(0,-h/3+ self.messageDragDropMargin).color(myColors.grey);//.fontStyle("italic");
             self.graphBlock.rect._acceptDrop = true;
+            self.graphManipulator.translator.move(w/2+self.bibWidth-self.borderSize, h/2+self.title.component.getBBox().height);
 
             var count = 1;
             for(var i= 0;i<self.gamesTab.length;i++){
@@ -245,7 +247,7 @@ var Formation = function(formation){
                     if(tabElement.miniatureManipulator){
                         self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
                     }
-                    tabElement.miniatureManipulator = new Manipulator();
+                    tabElement.miniatureManipulator = new Manipulator(tabElement);
                     self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
                     var testQuizz = tabElement.displayMiniature(self.graphElementSize);
@@ -283,7 +285,7 @@ var Formation = function(formation){
         levelTab.forEach(function(game){
             var pos=game.getPositionInFormation();
 
-            game.miniaturePosition.x=self.levelWidth/2;
+            game.miniaturePosition.x=0;
 
             if(pos.index<nbOfGames/2){
                 game.miniaturePosition.x-=(nbOfGames/2-pos.index)*spaceOccupied/nbOfGames;
