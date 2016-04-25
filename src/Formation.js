@@ -231,6 +231,7 @@ var Formation = function(formation){
             //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.gamesTab);
             //var test = self.gamesTab[0][0].label;
+            level.manipulator.first.move(-w/2,-h/2);
 
             self.displayGraph(w,h);
 
