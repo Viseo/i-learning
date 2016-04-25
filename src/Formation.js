@@ -216,7 +216,7 @@ var Formation = function(formation){
 
         self.displayLevel = function(w, h, level){
             self.levelWidth = w;
-            level.manipulator = new Manipulator();
+            level.manipulator = new Manipulator(level);
             self.graphManipulator.last.add(level.manipulator.first);
 
             // .strokeDasharray(6)
@@ -232,7 +232,6 @@ var Formation = function(formation){
             //var test = self.gamesTab[0][0].label;
 
             self.displayGraph(w,h);
-
 
         };
 
