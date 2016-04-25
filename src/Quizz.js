@@ -11,13 +11,14 @@
 function Quizz(quizz, previewMode, parentFormation) {
     var self = this;
 
+    self.parentFormation=parentFormation;
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
     mainManipulator.ordonator.set(0, self.quizzManipulator.first);
 
     //self.tabQuestions=[];
     self.loadQuestions=function(quizz){
-        if (quizz.tabQuestions !== null) {
+        if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             //self.tabQuestions=quizz.tabQuestions;
             self.tabQuestions=[];
             quizz.tabQuestions.forEach(function (it) {
@@ -27,7 +28,6 @@ function Quizz(quizz, previewMode, parentFormation) {
         }
     };
     self.loadQuestions(quizz);
-
     (previewMode) ? (self.previewMode = previewMode):(self.previewMode = false);
     quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows): (self.puzzleRows = 2);
     quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines):(self.puzzleLines = 2);
@@ -68,6 +68,9 @@ function Quizz(quizz, previewMode, parentFormation) {
         w:drawing.width,
         h:600
     };
+
+    self.miniaturePosition={x:0,y:0};
+
     self.questionsWithBadAnswers=[];
     self.score=0;
     self.drawing=drawing;
@@ -248,5 +251,29 @@ function Quizz(quizz, previewMode, parentFormation) {
         self.puzzle.display(0, self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
+
+    self.getPositionInFormation=function(){
+        var index,level;
+
+        for(var i=0;i<self.parentFormation.gamesTab.length;i++){
+
+            index=self.parentFormation.gamesTab[i].indexOf(self);
+            if(index !== -1){
+                break;
+            }
+        }
+
+        level=i;
+
+        return {level:level,index:index};
+    };
+
+    self.displayMiniature=function(size){
+        var obj=displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+        self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
+
+        return obj;
+    };
+
     //self.responseHeight/2
 }
