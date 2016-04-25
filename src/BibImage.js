@@ -94,26 +94,26 @@ var Library = function (lib) {
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        formation.gamesTab[0].push({
+                        formation.levelsTab[0].push({
                             type: objectToBeAddedLabel,
                             label: objectToBeAddedLabel + " " + formation.gamesCounter.quizz
                         });
                         formation.gamesCounter.quizz++;
                         break;
                     case (myBibJeux.tabLib[1].label):
-                        formation.gamesTab[0].push({
+                        formation.levelsTab[0].push({
                             type: objectToBeAddedLabel,
                             label: objectToBeAddedLabel + " " + formation.gamesCounter.bd
                         });
                         formation.gamesCounter.bd++;
                         break;
                 }
-                if (formation.gamesTab[0].length>formation.maxGameInARow){
+                if (formation.levelsTab[0].gamesTab.length>formation.maxGameInARow){
                     autoAdjustText(formation.maxGameInARowMessage, 0, 0, formation.graphCreaWidth, formation.graphCreaHeight, 20, null, formation.manipulator).text.color(myColors.red)
                         .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
-                    formation.displayNewLevel(formation.graphCreaWidth, formation.graphCreaHeight);
+                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[]);
                 }
             }
         }

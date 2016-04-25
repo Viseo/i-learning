@@ -15,8 +15,8 @@ var Formation = function(formation){
 
     //self.bib = new BibJeux(myQuizzTypeBib);
 
-    self.libraryJManipulator = self.bib.libraryManipulator;
-    self.manipulator.last.add(self.libraryJManipulator.first);
+    self.gamesLibraryManipulator = self.bib.libraryManipulator;
+    self.manipulator.last.add(self.gamesLibraryManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
 
 
@@ -31,12 +31,22 @@ var Formation = function(formation){
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
 
-    self.targetLevelIndex=0;
-    self.gamesTab = [];
-    self.gamesTab.push([]);
+    self.targetLevelIndex = 0;
+    self.levelsTab = [];
+    var Level = function(index, gamesTab){
+        this.index = self.levelsTab[self.levelsTab.length-1].index++; // !! self.levelsTab[self.levelsTab.length\\-1 ou pas, ça dépend de comment on gère ça \\].index
+        gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
+        this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
+        this.y = this.index * self.levelHeight;
+        this.obj = null;
+        return this;
+    };
+    var gamesTab = null;
+    self.levelsTab.push(new Level(0, gamesTab));
+
     //self.gamesTab = myFormation.gamesTab;
-    self.marginRatio=0.03;
-    self.globalMargin={
+    self.marginRatio = 0.03;
+    self.globalMargin = {
         height:self.marginRatio*drawing.height,
         width:self.marginRatio*drawing.width
     };
@@ -190,7 +200,7 @@ var Formation = function(formation){
         };
         showTitle();
 
-        self.libraryJManipulator.translator.move(0, self.title.component.getBBox().height);
+        self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
 
         var onclickQuizzHandler = function(){
             var quizzManager;
@@ -200,23 +210,21 @@ var Formation = function(formation){
             mainManipulator.ordonator.unset(1);
         };
 
-        self.displayNewLevel = function(w, h){
-            self.newLevelManipulator = new Manipulator();
-            self.graphManipulator.last.add(self.newLevelManipulator.first);
-            var line = new svg.Line(MARGIN,2*self.messageDragDropMargin,w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
-            self.newLevelManipulator.ordonator.set(9,line);
+        self.displayLevel = function(w, h, level){
+            level.manipulator = new Manipulator();
+            self.graphManipulator.last.add(level.manipulator.first);
 
             // .strokeDasharray(6)
-            var newLevel = displayTextWithoutCorners("Niveau 1", w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, self.newLevelManipulator);
-            newLevel.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
-            newLevel.content.position(newLevel.content.component.getBBox().width, self.messageDragDropMargin);
+            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+            level.obj.line = new svg.Line(MARGIN, 2*self.messageDragDropMargin, w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
+            level.manipulator.ordonator.set(9,line);
+            level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
+            level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
-            //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, self.newLevelManipulator));
+            //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
             //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.gamesTab);
             //var test = self.gamesTab[0][0].label;
-
-
         };
 
         var displayGraph = function (w, h){
@@ -230,7 +238,7 @@ var Formation = function(formation){
             self.graphBlock.rect._acceptDrop = true;
 
             var count = 1;
-            self.gamesTab[self.targetLevelIndex].forEach(function(tabElement){
+            self.levelsTab[self.targetLevelIndex].forEach(function(tabElement){
                 tabElement.manipulator = new Manipulator();
                 self.graphManipulator.last.add(tabElement.manipulator.first);
                 var testQuizz = displayTextWithCircle(tabElement.label, 100, 100, myColors.red, myColors.white, 20, null, tabElement.manipulator);
@@ -241,10 +249,10 @@ var Formation = function(formation){
             });
 
             //var clickHandler = function(event){
-            //    //self.gamesTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
+            //    //self.levelsTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
             //    var target = drawing.getTarget(event.clientX, event.clientY);
             //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
-            //    if (self.gamesTab[0].length>=self.maxGameInARow){
+            //    if (self.levelsTab[0].length>=self.maxGameInARow){
             //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
             //        .position(drawing.width - MARGIN, 0).anchor("end");
             //    }
@@ -253,7 +261,7 @@ var Formation = function(formation){
             //            game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
             //            game.objectTotal.cadre.clicked = false;
             //        });
-            //        self.displayNewLevel(w, h);
+            //        self.displayLevel(w, h);
             //    }
             //};
             //svg.addEvent(self.graphBlock.rect, "click", clickHandler);

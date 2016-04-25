@@ -19,7 +19,7 @@ if(typeof exports != "undefined") {
 
 var Manipulator = function(sourceObject){
     var self=this;
-    self.parentObject=sourceObject;
+    self.parentObject = sourceObject;
     self.translator = new svg.Translation(0,0);
     self.translator.parentManip=self;
     self.rotator = new svg.Rotation(0);
