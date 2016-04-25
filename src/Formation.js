@@ -27,6 +27,7 @@ var Formation = function(formation){
     self.graphElementSize = 100;
     self.levelHeight = self.graphElementSize;
     self.levelWidth;
+    self.minimalMarginBetweenGraphElements=self.graphElementSize/2;
     self.x = MARGIN;
     self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
@@ -250,6 +251,9 @@ var Formation = function(formation){
                 self.adjustGamesPositions(self.levelsTab[i]);
 
                 self.levelsTab[i].gamesTab.forEach(function(tabElement){
+                    if(tabElement.miniatureManipulator){
+                        self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
+                    }
                     tabElement.miniatureManipulator = new Manipulator();
                     self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
@@ -282,12 +286,21 @@ var Formation = function(formation){
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
     self.adjustGamesPositions = function(levelTab){
+        var nbOfGames = levelTab.length;
+        var spaceOccupied = (nbOfGames-1)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
 
         levelTab.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
             game.miniaturePosition.x = self.levelWidth/2;
-            game.miniaturePosition.y = (pos.level+1)*self.levelHeight/2;
+
+            if(pos.index<nbOfGames/2){
+                game.miniaturePosition.x-=(nbOfGames/2-pos.index)*spaceOccupied/nbOfGames;
+            }else{
+                game.miniaturePosition.x+=(pos.index-nbOfGames/2)*spaceOccupied/nbOfGames;
+            }
+
+            game.miniaturePosition.y=(pos.level+1)*self.levelHeight/2;
 
         });
 
