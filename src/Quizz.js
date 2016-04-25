@@ -252,12 +252,12 @@ function Quizz(quizz, previewMode, parentFormation) {
         //self.resultManipulator.last.add(self.puzzle.puzzleManipulator.translator);
     };
 
-    self.getPositionInFormation=function(){
+    self.getPositionInFormation = function(){
         var index,level;
 
-        for(var i=0;i<self.parentFormation.gamesTab.length;i++){
+        for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
 
-            index=self.parentFormation.gamesTab[i].indexOf(self);
+            index = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
             if(index !== -1){
                 break;
             }
@@ -268,8 +268,8 @@ function Quizz(quizz, previewMode, parentFormation) {
         return {level:level,index:index};
     };
 
-    self.displayMiniature=function(size){
-        var obj=displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+    self.displayMiniature = function(size){
+        var obj = displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
         self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
         return obj;
