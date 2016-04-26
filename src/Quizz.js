@@ -269,7 +269,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
     self.displayMiniature = function(size){
-        var obj = displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+        var obj = displayTextWithCircle(self.label, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
         self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
         return obj;
