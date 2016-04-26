@@ -13,6 +13,7 @@ var myColorsOld={
     white:{r:255, g:255, b:255}
 };
 
+var HEADER_SIZE = 0.05;
 var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
 var REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
 

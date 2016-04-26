@@ -1155,6 +1155,7 @@ function SVG(runtime) {
         this.fontSize = 12;
         this.lineSpacing = 24;
         this.anchorText = "middle";
+        this.fillColor = [true];
         this.lines = [];
         this._draw();
     }
@@ -1215,7 +1216,14 @@ function SVG(runtime) {
     Text.prototype.inside = function(x, y) {
         var local = this.localPoint(x, y);
         var box = svgr.boundingRect(this.component);
-        return (local.x>=-box.width/2 && local.x<=box.width/2 && local.y>=-box.height/2 && local.y<=box.height/2);
+        switch(this.anchorText) {
+            case "middle":
+                return (local.x>=-box.width/2 && local.x<=box.width/2 && local.y>=-box.height/2 && local.y<=box.height/2);
+            case "start":
+                return (local.x>=0 && local.x<=box.width && local.y>=-box.height/2 && local.y<=box.height/2);
+            case "end":
+                return (local.x>=-box.width && local.x<=0 && local.y>=-box.height/2 && local.y<=box.height/2);
+        }
     };
 
     function Line(x1, y1, x2, y2) {
