@@ -62,7 +62,7 @@ var Formation = function(formation){
 
 
     self.graphElementSize = 100;
-    self.levelHeight = self.graphElementSize;
+    self.levelHeight = (self.graphCreaHeight-3*MARGIN)/4;
     self.levelWidth = drawing.width - self.bibWidth;
     self.minimalMarginBetweenGraphElements = self.graphElementSize/2;
     self.x = MARGIN;
@@ -279,7 +279,7 @@ var Formation = function(formation){
 
 
             self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(0,-h/3 + self.messageDragDropMargin + self.levelsTab.length * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
+            self.messageDragDrop.position(0,-self.graphCreaHeight/2 +self.messageDragDropMargin + (self.levelsTab.length) * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
             self.graphBlock.rect._acceptDrop = true;
             self.graphManipulator.translator.move(w/2+self.bibWidth-self.borderSize, h/2+self.title.component.getBBox().height);
 
@@ -337,7 +337,7 @@ var Formation = function(formation){
                 game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y = (level.index)*self.levelHeight-self.graphCreaHeight/2;
+            game.miniaturePosition.y = -self.graphCreaHeight/2+(level.index-1/2)*self.levelHeight;
 
         });
     }
