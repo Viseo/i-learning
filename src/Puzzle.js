@@ -80,10 +80,6 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
      */
     self.display = function(x, y, w, h, startPosition) {
         self.startPosition = startPosition;
-        // Clear SetDisplay
-        //self.questionWithBadAnswersManipulator.last.children.forEach(function (el) {
-        //    self.questionWithBadAnswersManipulator.last.remove(el);
-        //});
         self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
         self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
@@ -91,15 +87,9 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
 
         var removeArrows = function (){
             if(self.leftArrowManipulator.last.children.length>1) {
-                //self.puzzleManipulator.last.remove(self.leftArrowManipulator.first);
-                //self.leftArrowManipulator = new Manipulator(self);
-                //self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
                 self.leftArrowManipulator.last.flush();
             }
             if (self.rightArrowManipulator.last.children.length>1){
-                //self.puzzleManipulator.last.remove(self.rightArrowManipulator.first);
-                //self.rightArrowManipulator=new Manipulator(self);
-                //self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
                 self.rightArrowManipulator.last.flush();
             }
         };
@@ -129,13 +119,8 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                 self.leftArrow.color(myColors.black);
                 svg.addEvent(self.leftArrow, "click",self.handlerLeftArrow);
             }
-
-            //self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
             self.leftArrowManipulator.rotator.rotate(180);
-            //self.leftArrowManipulator.translator.move(x+self.margin+75/2,y + (h/2)+75/2);
-            self.leftArrowManipulator.translator.move(-w/2-MARGIN+75/2, y+h/2);// marge post-rotation
-
-            // self.leftArrowManipulator.scalor.scale(self.leftArrowManipulator.scale);
+            self.leftArrowManipulator.translator.move(-w/2-MARGIN+75/2, y+h/2);
 
             self.handlerRightArrow = function (){
                 if(self.rows === 1 && startPosition !== self.totalRows -1) {
@@ -150,9 +135,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                     var newStartPosition = startPosition + self.rows - 1;
                     self.display(x, y, w, h, newStartPosition);
                 }
-
             };
-
 
             if(startPosition + self.rows>= self.totalRows) {
                self.rightArrow= drawArrow(0, 0, 75, 75,self.rightArrowManipulator);
@@ -165,22 +148,12 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                 self.rightArrow.color(myColors.black);
                 svg.addEvent(self.rightArrow, "click", self.handlerRightArrow);
             }
-
-
-            //self.puzzleManipulator.push(self.rightArrow);
-            //self.rightArrowManipulator=paper.set();
-            //self.rightArrowManipulator.push(self.rightArrow);
             self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y+h/2);
-            //self.rightArrowManipulator.manipulator.scalor.scale(self.rightArrowManipulator._scale);
-
             self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
         } else {
             self.initTiles(x, y, w, h, startPosition);
         }
-
-
     };
-
 
     self.initTiles=function(x, y, w, h, startPosition) {
         self.tileWidth=(w-(self.rows-1)*MARGIN)/self.rows;
@@ -188,11 +161,7 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
 
         var posX=0;
         var posY=y;
-
         var newTile = {};
-
-        //paper.setSize(paper.width, (MARGIN + self.tileHeight)*self.lines + y + 2*MARGIN+100);
-
         var count = startPosition*self.lines;
 
         if(self.reverseMode) {
@@ -214,7 +183,6 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             }
                         }
                         self.virtualTab[i][j].manipulator.first.move(posX+self.tileWidth/2+MARGIN,posY+MARGIN);
-
                         posX += self.tileWidth + MARGIN;
                         count++;
                     }
@@ -244,14 +212,12 @@ function Puzzle(lines, rows, questionsTab, cadreResult, reverseMode, parent) {
                             if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
                                 svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                             }
-                       // }
 
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
                     }else{
                         self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
                     }
-
 
                         posY += self.tileHeight + MARGIN;
                     count++;
