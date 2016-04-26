@@ -20,7 +20,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     self.loadQuestions=function(quizz){
         if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             //self.tabQuestions=quizz.tabQuestions;
-            self.tabQuestions=[];
+            self.tabQuestions = [];
             quizz.tabQuestions.forEach(function (it) {
                 var tmp = new Question(it, self);
                 self.tabQuestions.push(tmp);
@@ -244,7 +244,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
 
-    self.displayResult=function(color){
+    self.displayResult = function(color){
         //self.resultManipulator = new Manipulator(self);
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
@@ -253,19 +253,19 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
     self.getPositionInFormation = function(){
-        var index,level;
+        var gameIndex, levelIndex;
 
         for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
 
-            index = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
-            if(index !== -1){
+            gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
+            if(gameIndex !== -1){
                 break;
             }
         }
 
-        level=i;
+        levelIndex = i;
 
-        return {level:level,index:index};
+        return {levelIndex:levelIndex, gameIndex:gameIndex};
     };
 
     self.displayMiniature = function(size){
@@ -275,5 +275,4 @@ function Quizz(quizz, previewMode, parentFormation) {
         return obj;
     };
 
-    //self.responseHeight/2
 }

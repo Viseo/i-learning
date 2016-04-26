@@ -26,8 +26,8 @@ var Formation = function(formation){
 
     self.graphElementSize = 100;
     self.levelHeight = self.graphElementSize;
-    self.levelWidth;
-    self.minimalMarginBetweenGraphElements=self.graphElementSize/2;
+    self.levelWidth = drawing.width - self.bibWidth;
+    self.minimalMarginBetweenGraphElements = self.graphElementSize/2;
     self.x = MARGIN;
     self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
@@ -37,16 +37,28 @@ var Formation = function(formation){
     self.quizzManager = new QuizzManager(defaultQuizz);
     self.targetLevelIndex = 0;
     self.levelsTab = [];
-    var Level = function(index, gamesTab){
+    var Level = function(gamesTab){
         this.index = (self.levelsTab[self.levelsTab.length]) ? (self.levelsTab[self.levelsTab.length].index++) : 1;
         gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
         this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
         this.y = this.index * self.levelHeight;
         this.obj = null;
+        this.removeGame = function(index){
+            if(!index){
+                this.gamesTab.pop();
+            }else{
+                this.gamesTab[index].splice(index, 1);
+            }
+        };
+        this.addGame = function(game, index){
+            if(!index){
+                this.gamesTab.push(game);
+            }else{
+                this.gamesTab.splice(index, 0, game);
+            }
+        };
         return this;
     };
-    var gamesTab = null;
-    self.levelsTab.push(new Level(0, gamesTab));
 
     //self.gamesTab = myFormation.gamesTab;
     self.marginRatio = 0.03;
@@ -83,6 +95,19 @@ var Formation = function(formation){
                 myObj.remove();
             }
         }
+    };
+
+    self.addNewLevel = function(index){
+        var level = new Level();
+        if(!index){
+            self.levelsTab.push(level);
+        }else{
+            self.levelsTab.splice(index, 0, level);
+        }
+    };
+
+    self.removeLevel = function(index){
+        self.levelsTab.splice(index-1, 1);
     };
 
     self.displayMiniature = function (w,h) {
@@ -288,22 +313,22 @@ var Formation = function(formation){
         };
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
-    self.adjustGamesPositions = function(levelTab){
-        var nbOfGames = levelTab.length;
+    self.adjustGamesPositions = function(level){
+        var nbOfGames = level.gamesTab.length;
         var spaceOccupied = (nbOfGames-1)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
 
-        levelTab.gamesTab.forEach(function(game){
+        level.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
             game.miniaturePosition.x=0;
 
-            if(pos.index<nbOfGames/2){
-                game.miniaturePosition.x-=(nbOfGames/2-pos.index)*spaceOccupied/nbOfGames;
+            if(pos.gameIndex<nbOfGames/2){
+                game.miniaturePosition.x-=(nbOfGames/2-pos.gameIndex)*spaceOccupied/nbOfGames;
             }else{
-                game.miniaturePosition.x+=(pos.index-nbOfGames/2)*spaceOccupied/nbOfGames;
+                game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y=(pos.level+1)*self.levelHeight/2;
+            game.miniaturePosition.y=(pos.levelIndex+1)*self.levelHeight/2;
 
         });
 

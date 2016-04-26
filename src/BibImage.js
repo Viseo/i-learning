@@ -91,6 +91,7 @@ var Library = function (lib) {
             }
             else {
                 var formation = target.parent.parentManip.parentObject;
+                formation.addNewLevel();
                 // déterminer le targetIndexLevel !_!
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
