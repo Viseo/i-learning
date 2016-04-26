@@ -111,7 +111,7 @@ var Library = function (lib) {
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        var newQuizz = new Quizz({},false,formation);
+                        var newQuizz = new Quizz({}, false, formation);
                         newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                         formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         formation.gamesCounter.quizz++;
