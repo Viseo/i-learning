@@ -87,7 +87,6 @@ var Drawings = function (w, h, anchor) {
 
     var ondblclickHandler = function (event) {
         self.target = self.drawing.getTarget(event.clientX, event.clientY);
-        console.log(self.target);
         if(self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
             self.target.component.eventHandlers.dblclick(event);
         }

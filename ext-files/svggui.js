@@ -5,7 +5,7 @@
 function Gui() {
 
     function Canvas(width, height) {
-        this.drawing = new svg.Drawing(width, height);
+        this.drawing = new svg.Dra  wing(width, height);
         this.drawing.background = new svg.Translation();
         this.drawing.glass = new svg.Rect(width, height).position(width/2, height/2).opacity(0.001);
         this.drawing.add(this.drawing.background).add(this.drawing.glass);

@@ -9,7 +9,6 @@ var Header = function (additionalMessage) {
     self.label = "I-learning";
     self.size = HEADER_SIZE; // 5%
     mainManipulator.ordonator.set(0, self.manipulator.first);
-    console.log("uh");
 
     self.display = function () {
         self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
