@@ -11,20 +11,23 @@
 function Quizz(quizz, previewMode, parentFormation) {
     var self = this;
 
-    self.parentFormation=parentFormation;
+    self.parentFormation = parentFormation;
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
-    mainManipulator.ordonator.set(0, self.quizzManipulator.first);
 
     //self.tabQuestions=[];
     self.loadQuestions=function(quizz){
         if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             //self.tabQuestions=quizz.tabQuestions;
-            self.tabQuestions=[];
+            self.tabQuestions = [];
             quizz.tabQuestions.forEach(function (it) {
                 var tmp = new Question(it, self);
                 self.tabQuestions.push(tmp);
             });
+        }else{
+            self.tabQuestions = [];
+            self.tabQuestions.push(new Question(defaultQuestion, self));
+            self.tabQuestions.push(new Question(defaultQuestion, self));
         }
     };
     self.loadQuestions(quizz);
@@ -149,6 +152,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
     self.display = function(x,y,w,h) {
+        mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
         x && (self.x = x);
         y && (self.y = y);
@@ -244,7 +248,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
 
-    self.displayResult=function(color){
+    self.displayResult = function(color){
         //self.resultManipulator = new Manipulator(self);
         //self.puzzle.display(self.cadreResult.x, self.cadreResult.y+self.cadreResult.h+15, self.cadreResult.w, 600, 0);
         displayScore(color);
@@ -253,27 +257,26 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
     self.getPositionInFormation = function(){
-        var index,level;
+        var gameIndex, levelIndex;
 
         for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
 
-            index = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
-            if(index !== -1){
+            gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
+            if(gameIndex !== -1){
                 break;
             }
         }
 
-        level=i;
+        levelIndex = i;
 
-        return {level:level,index:index};
+        return {levelIndex:levelIndex, gameIndex:gameIndex};
     };
 
     self.displayMiniature = function(size){
-        var obj = displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+        var obj = displayTextWithCircle(self.label, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
         self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
         return obj;
     };
 
-    //self.responseHeight/2
 }

@@ -7,7 +7,7 @@ var Header = function (additionalMessage) {
     additionalMessage && (self.addMessage = additionalMessage);
     self.manipulator = new Manipulator(self);
     self.label = "I-learning";
-    self.size = 0.05; // 5%
+    self.size = HEADER_SIZE; // 5%
     mainManipulator.ordonator.set(0, self.manipulator.first);
 
     self.display = function () {

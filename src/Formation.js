@@ -2,6 +2,31 @@
  * Created by ABO3476 on 15/04/2016.
  */
 
+var Level = function(formation, gamesTab){
+    var self = this;
+    self.parentFormation = formation;
+    self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
+    gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+    self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
+    self.y = (self.index-1) * self.parentFormation.levelHeight;
+    self.obj = null;
+    self.removeGame = function(index){
+        if(!index){
+            self.gamesTab.pop();
+        }else{
+            self.gamesTab[index].splice(index, 1);
+        }
+    };
+    self.addGame = function(game, index){
+        if(!index){
+            self.gamesTab.push(game);
+        }else{
+            self.gamesTab.splice(index, 0, game);
+        }
+    };
+    return self;
+};
+
 var Formation = function(formation){
     var self = this;
     self.manipulatorMiniature = new Manipulator();
@@ -24,39 +49,6 @@ var Formation = function(formation){
     self.manipulator.last.add(self.formationInfoManipulator.first);
     self.labelDefault = "Entrer le nom de la formation";
 
-    self.graphElementSize = 100;
-    self.levelHeight = self.graphElementSize;
-    self.levelWidth;
-    self.minimalMarginBetweenGraphElements=self.graphElementSize/2;
-    self.x = MARGIN;
-    self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
-    self.maxGameInARow = 6;
-    self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-
-    self.quizzManager = new QuizzManager(defaultQuizz);
-    self.targetLevelIndex = 0;
-    self.levelsTab = [];
-    var Level = function(index, gamesTab){
-        this.index = (self.levelsTab[self.levelsTab.length]) ? (self.levelsTab[self.levelsTab.length].index++) : 1;
-        gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
-        this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
-        this.y = this.index * self.levelHeight;
-        this.obj = null;
-        return this;
-    };
-    var gamesTab = null;
-    self.levelsTab.push(new Level(0, gamesTab));
-
-    //self.gamesTab = myFormation.gamesTab;
-    self.marginRatio = 0.03;
-    self.globalMargin = {
-        height:self.marginRatio*drawing.height,
-        width:self.marginRatio*drawing.width
-    };
-
-    self.label = formation.label ? formation.label : "Nouvelle formation";
-    self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
     // WIDTH
     self.bibWidthRatio = 0.15;
@@ -67,6 +59,31 @@ var Formation = function(formation){
     // HEIGHT
     self.graphCreaHeightRatio = 0.85;
     self.graphCreaHeight = drawing.height*self.graphCreaHeightRatio;
+
+
+    self.graphElementSize = 100;
+    self.levelHeight = self.graphElementSize;
+    self.levelWidth = drawing.width - self.bibWidth;
+    self.minimalMarginBetweenGraphElements = self.graphElementSize/2;
+    self.x = MARGIN;
+    self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
+    self.maxGameInARow = 6;
+    self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
+
+    self.quizzManager = new QuizzManager(defaultQuizz);
+    self.targetLevelIndex = 0;
+    self.levelsTab = [];
+
+    //self.gamesTab = myFormation.gamesTab;
+    self.marginRatio = 0.03;
+    self.globalMargin = {
+        height:self.marginRatio*drawing.height,
+        width:self.marginRatio*drawing.width
+    };
+
+    self.label = formation.label ? formation.label : "Nouvelle formation";
+    self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
 
     self.checkInputTextArea = function (myObj) {
@@ -83,6 +100,19 @@ var Formation = function(formation){
                 myObj.remove();
             }
         }
+    };
+
+    self.addNewLevel = function(index){
+        var level = new Level(self);
+        if(!index){
+            self.levelsTab.push(level);
+        }else{
+            self.levelsTab.splice(index, 0, level);
+        }
+    };
+
+    self.removeLevel = function(index){
+        self.levelsTab.splice(index-1, 1);
     };
 
     self.displayMiniature = function (w,h) {
@@ -212,7 +242,7 @@ var Formation = function(formation){
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
             // enlève le bandeau avant de display le quizzManager !_!
-            mainManipulator.ordonator.unset(1);
+            //mainManipulator.ordonator.unset(0);
         };
 
         self.displayLevel = function(w, h, level){
@@ -220,18 +250,22 @@ var Formation = function(formation){
             level.manipulator = new Manipulator(level);
             self.graphManipulator.last.add(level.manipulator.first);
 
-            // .strokeDasharray(6)
-            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
-            level.obj.line = new svg.Line(MARGIN, 2*self.messageDragDropMargin, w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
+            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+            level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
+            level.obj.line.component.setAttribute("stroke-dasharray",6);
+
             level.manipulator.ordonator.set(9, level.obj.line);
             level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+
+            level.obj.cadre._acceptDrop = true;
+            level.obj.content._acceptDrop = true;
             //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
             //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.gamesTab);
             //var test = self.gamesTab[0][0].label;
-            level.manipulator.first.move(-w/2,-h/2);
+            level.manipulator.first.move(-w/2,-h/2+level.y);
 
             self.displayGraph(w,h);
 
@@ -239,13 +273,13 @@ var Formation = function(formation){
 
         self.displayGraph = function (w, h){
             self.borderSize = 3;
-            self.messageDragDropMargin = h/20;
+            self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
             self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
             self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
 
 
             self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(0,-h/3+ self.messageDragDropMargin).color(myColors.grey);//.fontStyle("italic");
+            self.messageDragDrop.position(0,-h/3 + self.messageDragDropMargin + self.levelsTab.length * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
             self.graphBlock.rect._acceptDrop = true;
             self.graphManipulator.translator.move(w/2+self.bibWidth-self.borderSize, h/2+self.title.component.getBBox().height);
 
@@ -288,30 +322,23 @@ var Formation = function(formation){
         };
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
-    self.adjustGamesPositions = function(levelTab){
-        var nbOfGames = levelTab.length;
+    self.adjustGamesPositions = function(level){
+        var nbOfGames = level.gamesTab.length;
         var spaceOccupied = (nbOfGames-1)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
 
-        levelTab.gamesTab.forEach(function(game){
+        level.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
             game.miniaturePosition.x=0;
 
-            if(pos.index<nbOfGames/2){
-                game.miniaturePosition.x-=(nbOfGames/2-pos.index)*spaceOccupied/nbOfGames;
+            if(pos.gameIndex<nbOfGames/2){
+                game.miniaturePosition.x-=(nbOfGames/2-pos.gameIndex)*spaceOccupied/nbOfGames;
             }else{
-                game.miniaturePosition.x+=(pos.index-nbOfGames/2)*spaceOccupied/nbOfGames;
+                game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y=(pos.level+1)*self.levelHeight/2;
+            game.miniaturePosition.y = (level.index)*self.levelHeight-self.graphCreaHeight/2;
 
         });
-
     }
 };
-
-
-
-
-
-

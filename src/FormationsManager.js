@@ -29,26 +29,26 @@ function FormationsManager(formations, additionalMessage) {
         count ++;
     });
 
-    self.manipulator = new Manipulator();
+    self.manipulator = new Manipulator(self);
     self.manipulator.first.move(0, drawing.height*0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
 
-    self.headerManipulator = new Manipulator();
+    self.headerManipulator = new Manipulator(self);
     self.manipulator.last.add(self.headerManipulator.first);
 
 
-    self.addButtonManipulator = new Manipulator();
+    self.addButtonManipulator = new Manipulator(self);
     self.headerManipulator.last.add(self.addButtonManipulator.first);
     self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
 
-    self.checkManipulator = new Manipulator();
+    self.checkManipulator = new Manipulator(self);
     self.headerManipulator.last.add(self.checkManipulator.first);
 
-    self.exclamationManipulator = new Manipulator();
+    self.exclamationManipulator = new Manipulator(self);
     self.headerManipulator.last.add(self.exclamationManipulator.first);
 
-    self.formationsManipulator = new Manipulator();
-    self.manipulator.last.add(self.formationsManipulator.first);
+    self.formationsManipulator = new Manipulator(self);
+    //self.manipulator.last.add(self.formationsManipulator.first);
 
     window.onkeydown = function (event) {
         if(hasKeyDownEvent(event)) {
@@ -61,24 +61,21 @@ function FormationsManager(formations, additionalMessage) {
         return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
     };
 
+    self.clippingManipulator = new Manipulator(self);
+    self.manipulator.last.add(self.clippingManipulator.first);
+    self.clippingManipulator.translator.move(0, self.headerHeightFormation-MARGIN);
+
     var gui = new Gui();
-    self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight, myColors.node);
     var totalLines = count%self.rows === 0 ? count/self.rows : count/self.rows+1;
+    self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+    self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, totalLines*(MARGIN+self.tileHeight), "anchorClipping");
+    //self.clipping.show("anchorClipping");
+    self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight, myColors.node);
     self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)-self.tileHeight+MARGIN);
+    self.clipping.drawing.manipulator.last.add(self.formationsManipulator.first);
     self.formationsManipulator.last.add(self.panel.translate);
-    //self.panel.translate.move(-self.tileWidth/2, -self.tileHeight/2);
-
-    //self.foreign = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
-    //self.foreign.setAttribute("style", "width: 900px; height: 900px;");
-    //self.div = document.createElement("div");
-    //self.div.setAttribute("id", "foreign");
-    //self.div.setAttribute("style", "width: 900px; height: 900px;");
-    //self.manipulator.last.component.appendChild(self.foreign);
-    //self.foreign.appendChild(self.div);
-    //self.svg = new svg.Drawing(900, 900).show("foreign").position(0,0);
-    //self.svg.add(self.formationsManipulator.first);
-
-    self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height*0.15+MARGIN);
+    self.formationsManipulator.translator.move(self.tileWidth / 2, self.tileHeight/2-2*MARGIN);
+    self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
 
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");

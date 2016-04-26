@@ -43,7 +43,6 @@ function QuizzManager(quizz){
     self.bib = new Library(myBibImage);
 
     self.quizzManagerManipulator = new Manipulator(self);
-    mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
 
     self.questionsPuzzleManipulator = new Manipulator(self);
     self.quizzInfoManipulator = new Manipulator(self);
@@ -92,6 +91,7 @@ function QuizzManager(quizz){
     };
 
     self.display = function(){
+        mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
         self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
             self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
