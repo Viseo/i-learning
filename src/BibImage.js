@@ -90,9 +90,24 @@ var Library = function (lib) {
                 target.parent.parentManip.ordonator.set(1, oldQuest.content);
             }
             else {
-                var formation = target.parent.parentManip.parentObject;
-                formation.addNewLevel();
-                // déterminer le targetIndexLevel !_!
+
+                var formation;
+                var dropLocation = target.parent.parentManip.parentObject;  // à renommer....
+                if(dropLocation instanceof Formation){
+                    formation = dropLocation;
+                    formation.addNewLevel();
+                    formation.targetLevelIndex = formation.levelsTab.length-1;
+                }else{
+                    if(dropLocation instanceof Level){
+                        var level = dropLocation;
+                        formation = level.parentFormation;
+                        formation.targetLevelIndex = formation.levelsTab.indexOf(level);
+                        console.log("e");
+                    }
+                }
+
+                // déterminer le targetLevelIndex !_!
+
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
@@ -114,7 +129,9 @@ var Library = function (lib) {
                         .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
-                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[0]);
+                    for(var i = 0 ; i<formation.levelsTab.length; i++){
+                        formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[i]);
+                    }
                 }
             }
         }

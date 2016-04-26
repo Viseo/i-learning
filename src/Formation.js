@@ -2,6 +2,31 @@
  * Created by ABO3476 on 15/04/2016.
  */
 
+var Level = function(formation, gamesTab){
+    var self = this;
+    self.parentFormation = formation;
+    self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
+    gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+    self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
+    self.y = (self.index-1) * self.parentFormation.levelHeight;
+    self.obj = null;
+    self.removeGame = function(index){
+        if(!index){
+            self.gamesTab.pop();
+        }else{
+            self.gamesTab[index].splice(index, 1);
+        }
+    };
+    self.addGame = function(game, index){
+        if(!index){
+            self.gamesTab.push(game);
+        }else{
+            self.gamesTab.splice(index, 0, game);
+        }
+    };
+    return self;
+};
+
 var Formation = function(formation){
     var self = this;
     self.manipulatorMiniature = new Manipulator();
@@ -37,28 +62,6 @@ var Formation = function(formation){
     self.quizzManager = new QuizzManager(defaultQuizz);
     self.targetLevelIndex = 0;
     self.levelsTab = [];
-    var Level = function(gamesTab){
-        this.index = (self.levelsTab[self.levelsTab.length]) ? (self.levelsTab[self.levelsTab.length].index++) : 1;
-        gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
-        this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
-        this.y = this.index * self.levelHeight;
-        this.obj = null;
-        this.removeGame = function(index){
-            if(!index){
-                this.gamesTab.pop();
-            }else{
-                this.gamesTab[index].splice(index, 1);
-            }
-        };
-        this.addGame = function(game, index){
-            if(!index){
-                this.gamesTab.push(game);
-            }else{
-                this.gamesTab.splice(index, 0, game);
-            }
-        };
-        return this;
-    };
 
     //self.gamesTab = myFormation.gamesTab;
     self.marginRatio = 0.03;
@@ -98,7 +101,7 @@ var Formation = function(formation){
     };
 
     self.addNewLevel = function(index){
-        var level = new Level();
+        var level = new Level(self);
         if(!index){
             self.levelsTab.push(level);
         }else{
@@ -252,11 +255,14 @@ var Formation = function(formation){
             level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
             self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+
+            level.obj.cadre._acceptDrop = true;
+            level.obj.content._acceptDrop = true;
             //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
             //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
             //console.log(self.gamesTab);
             //var test = self.gamesTab[0][0].label;
-            level.manipulator.first.move(-w/2,-h/2);
+            level.manipulator.first.move(-w/2,-h/2+level.y);
 
             self.displayGraph(w,h);
 
