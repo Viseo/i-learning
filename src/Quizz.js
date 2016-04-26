@@ -24,6 +24,10 @@ function Quizz(quizz, previewMode, parentFormation) {
                 var tmp = new Question(it, self);
                 self.tabQuestions.push(tmp);
             });
+        }else{
+            self.tabQuestions = [];
+            self.tabQuestions.push(new Question(defaultQuestion, self));
+            self.tabQuestions.push(new Question(defaultQuestion, self));
         }
     };
     self.loadQuestions(quizz);

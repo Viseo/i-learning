@@ -49,6 +49,18 @@ var Formation = function(formation){
     self.manipulator.last.add(self.formationInfoManipulator.first);
     self.labelDefault = "Entrer le nom de la formation";
 
+
+    // WIDTH
+    self.bibWidthRatio = 0.15;
+    self.graphWidthRatio = 1-self.bibWidthRatio;
+    self.bibWidth = drawing.width*self.bibWidthRatio;
+    self.graphCreaWidth = drawing.width*self.graphWidthRatio;
+
+    // HEIGHT
+    self.graphCreaHeightRatio = 0.85;
+    self.graphCreaHeight = drawing.height*self.graphCreaHeightRatio;
+
+
     self.graphElementSize = 100;
     self.levelHeight = self.graphElementSize;
     self.levelWidth = drawing.width - self.bibWidth;
@@ -72,16 +84,6 @@ var Formation = function(formation){
 
     self.label = formation.label ? formation.label : "Nouvelle formation";
     self.status = formation.status ? formation.status : statusEnum.NotPublished;
-
-    // WIDTH
-    self.bibWidthRatio = 0.15;
-    self.graphWidthRatio = 1-self.bibWidthRatio;
-    self.bibWidth = drawing.width*self.bibWidthRatio;
-    self.graphCreaWidth = drawing.width*self.graphWidthRatio;
-
-    // HEIGHT
-    self.graphCreaHeightRatio = 0.85;
-    self.graphCreaHeight = drawing.height*self.graphCreaHeightRatio;
 
 
     self.checkInputTextArea = function (myObj) {
@@ -248,8 +250,8 @@ var Formation = function(formation){
             level.manipulator = new Manipulator(level);
             self.graphManipulator.last.add(level.manipulator.first);
 
-            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
-            level.obj.line = new svg.Line(MARGIN, 2*self.messageDragDropMargin, w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
+            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+            level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
             level.obj.line.component.setAttribute("stroke-dasharray",6);
 
             level.manipulator.ordonator.set(9, level.obj.line);
@@ -277,7 +279,7 @@ var Formation = function(formation){
 
 
             self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(0,-h/3+ self.messageDragDropMargin).color(myColors.grey);//.fontStyle("italic");
+            self.messageDragDrop.position(0,-h/3 + self.messageDragDropMargin + self.levelsTab.length * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
             self.graphBlock.rect._acceptDrop = true;
             self.graphManipulator.translator.move(w/2+self.bibWidth-self.borderSize, h/2+self.title.component.getBBox().height);
 
@@ -335,7 +337,7 @@ var Formation = function(formation){
                 game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y=(pos.levelIndex+1)*self.levelHeight/2-self.graphCreaHeight/2;
+            game.miniaturePosition.y = (level.index)*self.levelHeight-self.graphCreaHeight/2;
 
         });
     }
