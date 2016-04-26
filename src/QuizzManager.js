@@ -43,7 +43,7 @@ function QuizzManager(quizz){
     self.bib = new Library(myBibImage);
 
     self.quizzManagerManipulator = new Manipulator(self);
-    mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
+    mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionsPuzzleManipulator = new Manipulator(self);
     self.quizzInfoManipulator = new Manipulator(self);

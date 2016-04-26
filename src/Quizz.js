@@ -14,7 +14,7 @@ function Quizz(quizz, previewMode, parentFormation) {
     self.parentFormation=parentFormation;
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
-    mainManipulator.ordonator.set(0, self.quizzManipulator.first);
+    mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     //self.tabQuestions=[];
     self.loadQuestions=function(quizz){

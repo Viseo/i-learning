@@ -29,7 +29,7 @@ var Formation = function(formation){
     self.levelWidth = drawing.width - self.bibWidth;
     self.minimalMarginBetweenGraphElements = self.graphElementSize/2;
     self.x = MARGIN;
-    self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
+    self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
     self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
@@ -237,7 +237,7 @@ var Formation = function(formation){
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
             // enlève le bandeau avant de display le quizzManager !_!
-            mainManipulator.ordonator.unset(1);
+            //mainManipulator.ordonator.unset(0);
         };
 
         self.displayLevel = function(w, h, level){
