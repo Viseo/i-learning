@@ -25,16 +25,7 @@ var ImageRuntime = {
     }
 };
 
-var ImageController = function (imageRuntime) {
-    return imageRuntime || {
-        getImage: function (imgUrl, onloadHandler) {
-            var image = new Image();
-            image.src = imgUrl;
-            image.onload = onloadHandler;
-            return image;
-        }
-    };
-};
+
 
 var onClickMock = function (obj, x, y) {
     obj.node.onclick({clientX:x, clientY:y});
@@ -75,16 +66,3 @@ var AsyncTimerRuntime = {
     }
 };
 
-var AsyncTimerController = function (asyncTimerRuntime) {
-    return asyncTimerRuntime || {
-        interval: function (handler, timer) {
-            return setInterval(handler, timer);
-        },
-        clearInterval: function (id) {
-            clearInterval(id);
-        },
-        timeout: function (handler, timer) {
-            return setTimeout(handler, timer);
-        }
-    };
-};
