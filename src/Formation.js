@@ -245,9 +245,10 @@ var Formation = function(formation){
             level.manipulator = new Manipulator(level);
             self.graphManipulator.last.add(level.manipulator.first);
 
-            // .strokeDasharray(6)
             level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, 2*self.messageDragDropMargin-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
             level.obj.line = new svg.Line(MARGIN, 2*self.messageDragDropMargin, w-self.borderSize-2*MARGIN/3, 2*self.messageDragDropMargin).color(myColors.black, 3, myColors.black);
+            level.obj.line.component.setAttribute("stroke-dasharray",6);
+
             level.manipulator.ordonator.set(9, level.obj.line);
             level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
             level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
@@ -264,7 +265,7 @@ var Formation = function(formation){
 
         self.displayGraph = function (w, h){
             self.borderSize = 3;
-            self.messageDragDropMargin = h/20;
+            self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
             self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
             self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
 
@@ -328,15 +329,8 @@ var Formation = function(formation){
                 game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y=(pos.levelIndex+1)*self.levelHeight/2;
+            game.miniaturePosition.y=(pos.levelIndex+1)*self.levelHeight/2-self.graphCreaHeight/2;
 
         });
-
     }
 };
-
-
-
-
-
-
