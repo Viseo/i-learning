@@ -53,7 +53,7 @@ function AnswerDisplay (x, y, w, h) {
 }
 
 function LibraryDisplay(x,y,w,h){
-    var self=this;
+    var self = this;
     x && (self.x = x);
     y && (self.y = y);
     w && (self.w = w);

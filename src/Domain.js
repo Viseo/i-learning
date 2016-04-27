@@ -421,17 +421,17 @@ var Formation = function(formation){
 
     self.adjustGamesPositions = function(level){
         var nbOfGames = level.gamesTab.length;
-        var spaceOccupied = (nbOfGames-1)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
+        var spaceOccupied = (nbOfGames)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
 
         level.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
-            game.miniaturePosition.x=0;
+            game.miniaturePosition.x = 0;
 
             if(pos.gameIndex<nbOfGames/2){
-                game.miniaturePosition.x-=(nbOfGames/2-pos.gameIndex)*spaceOccupied/nbOfGames;
+                game.miniaturePosition.x-= -self.minimalMarginBetweenGraphElements*(3/2) - self.borderSize + (nbOfGames/2-pos.gameIndex)*spaceOccupied/nbOfGames;
             }else{
-                game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
+                game.miniaturePosition.x+= +self.minimalMarginBetweenGraphElements*(3/2) + self.borderSize + (pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
             game.miniaturePosition.y = -self.graphCreaHeight/2+(level.index-1/2)*self.levelHeight;
