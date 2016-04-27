@@ -48,55 +48,49 @@ function FormationsManager(formations, additionalMessage) {
     self.headerManipulator.last.add(self.exclamationManipulator.first);
 
     self.formationsManipulator = new Manipulator(self);
-    //self.manipulator.last.add(self.formationsManipulator.first);
 
-    window.onkeydown = function (event) {
-        if(hasKeyDownEvent(event)) {
-            event.preventDefault();
-        }
+    var displayPanel = function () {
+        window.onkeydown = function (event) {
+            if(hasKeyDownEvent(event)) {
+                event.preventDefault();
+            }
+        };
+
+        hasKeyDownEvent = function (event) {
+            self.target = self.panel;
+            return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+        };
+
+        self.clippingManipulator = new Manipulator(self);
+        self.manipulator.last.add(self.clippingManipulator.first);
+        self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
+
+        var gui = new Gui();
+        var totalLines = count%self.rows === 0 ? count/self.rows : count/self.rows+1;
+        self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, 4*(2*MARGIN+self.tileHeight), "anchorClipping");
+        self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
+        self.panel.resizeContent(totalLines*(2*MARGIN+self.tileHeight));
+        self.clipping.drawing.manipulator.last.add(self.formationsManipulator.first);
+        self.clipping.drawing.manipulator.last.add(self.panel.translate);
+        self.formationsManipulator.last.add(self.panel.content);
+        self.clippingManipulator.last.add(self.panel.component);
+        self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
+        self.formationsManipulator.translator.move(self.tileWidth / 2, self.tileHeight/2);
+        self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
+
+        self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+
+        onScroll = function (event) {
+            var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+            if(delta === -1) {
+                self.panel.moveContent(self.panel.content.y-100);
+            } else {
+                self.panel.moveContent(self.panel.content.y+100);
+            }
+        };
     };
-
-
-    var onmousewheel = function (event) {
-        console.log("scroll");
-        onScroll(event);
-    };
-
-    hasKeyDownEvent = function (event) {
-        self.target = self.panel;
-        return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
-    };
-
-    self.clippingManipulator = new Manipulator(self);
-    self.manipulator.last.add(self.clippingManipulator.first);
-    self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
-
-    var gui = new Gui();
-    var totalLines = count%self.rows === 0 ? count/self.rows : count/self.rows+1;
-    self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
-    self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, totalLines*(MARGIN+self.tileHeight), "anchorClipping");
-    //self.clipping.show("anchorClipping");
-    self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight-2*MARGIN+self.tileHeight, myColors.none);
-    self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+2*MARGIN);
-    self.clipping.drawing.manipulator.last.add(self.formationsManipulator.first);
-    self.clipping.drawing.manipulator.last.add(self.panel.translate);
-    self.formationsManipulator.last.add(self.panel.content);
-    self.formationsManipulator.last.add(self.panel.component);
-    self.panel.component.move((drawing.width-2*MARGIN-2*self.tileWidth/2)/2, ((2*MARGIN+self.tileHeight)*(4)-self.tileHeight)/2);
-    self.formationsManipulator.translator.move(self.tileWidth / 2, self.tileHeight/2-MARGIN);
-    self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
-
-    //svg.addEvent(self.panel.translate, "DOMMouseScroll", onmousewheel);
-
-    onScroll = function (event) {
-        var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
-        if(delta === -1) {
-            self.panel.moveContent(self.panel.content.y-100);
-        } else {
-            self.panel.moveContent(self.panel.content.y+100);
-        }
-    };
-
 
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
@@ -111,7 +105,7 @@ function FormationsManager(formations, additionalMessage) {
 
     self.display = function() {
         self.header.display();
-
+        displayPanel();
         self.displayHeaderFormations = function () {
             self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
             self.headerManipulator.last.add(self.title);
