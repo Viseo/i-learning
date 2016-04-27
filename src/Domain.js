@@ -193,7 +193,6 @@ var Library = function (lib) {
                         }
                         break;
                 }
-
                 for(var i = 0 ; i<formation.levelsTab.length; i++){
                     formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[i]);
                 }
@@ -292,6 +291,7 @@ var AnswerElement = function (answer, parent) {
 var Level = function(formation, gamesTab){
     var self = this;
     self.parentFormation = formation;
+    self.manipulator = new Manipulator(self);
     self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
     gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
     self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr

@@ -255,7 +255,6 @@ var Formation = function(formation){
 
         self.displayLevel = function(w, h, level){
             self.levelWidth = w;
-            level.manipulator = new Manipulator(level);
             self.graphManipulator.last.add(level.manipulator.first);
 
             level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
