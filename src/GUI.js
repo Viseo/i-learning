@@ -489,15 +489,13 @@ function FormationDisplayFormation(){
         // enlève le bandeau avant de display le quizzManager !_!
         mainManipulator.ordonator.unset(0);
     };
-
-    self.displayLevel = function(w, h, level){
-        self.levelWidth = w;
-        level.manipulator = new Manipulator(level);
-        self.graphManipulator.last.add(level.manipulator.first);
+        self.displayLevel = function(w, h, level){
+            self.levelWidth = w;
+            self.graphManipulator.last.add(level.manipulator.first);
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
-        level.obj.line.component.setAttribute("stroke-dasharray",6);
+        level.obj.line.component.setAttribute("stroke-dasharray", 6);
 
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
@@ -549,32 +547,17 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator = new Manipulator(tabElement);
                 self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
-                var testQuizz = tabElement.displayMiniature(self.graphElementSize);
-                svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
-                svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
-                count ++;
-            });
-        }
-
-
-        //var clickHandler = function(event){
-        //    //self.levelsTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
-        //    var target = drawing.getTarget(event.clientX, event.clientY);
-        //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
-        //    if (self.levelsTab[0].length>=self.maxGameInARow){
-        //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
-        //        .position(drawing.width - MARGIN, 0).anchor("end");
-        //    }
-        //    else {
-        //        self.bib.jeux.forEach(function(game){
-        //            game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-        //            game.objectTotal.cadre.clicked = false;
-        //        });
-        //        self.displayLevel(w, h);
-        //    }
-        //};
-        //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
-    };
+                    var testGame = tabElement.displayMiniature(self.graphElementSize);
+                    if(tabElement instanceof Quizz){
+                        svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
+                        svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
+                    }else if(tabElement instanceof Bd){
+                        // Ouvrir le Bd creator du futur jeu Bd
+                    }
+                    count ++;
+                });
+            }
+        };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
 }
