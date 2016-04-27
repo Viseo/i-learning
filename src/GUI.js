@@ -381,85 +381,74 @@ function FormationDisplayMiniature (w,h) {
 function FormationDisplayFormation(){
     var self=this;
 
+    //self.bib = new BibJeux(myBibJeux);
 
-        //self.bib = new BibJeux(myBibJeux);
+    self.manipulator.first.move(0, drawing.height*0.075);
+    mainManipulator.ordonator.set(1, self.manipulator.first);
+    self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
+    self.manipulator.last.add(self.title);
 
-        self.manipulator.first.move(0, drawing.height*0.075);
-        mainManipulator.ordonator.set(1, self.manipulator.first);
-        self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.manipulator.last.add(self.title);
+    self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
 
-        self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
+    self.gamesCounter = myFormation.gamesCounter;
 
-        self.gamesCounter = myFormation.gamesCounter;
+    var showTitle = function() {
+        var text = (self.label) ? self.label : (self.label=self.labelDefault);
+        var color = (self.label) ? myColors.black : myColors.grey;
+        var bgcolor = myColors.grey;
+        self.formationLabelWidth = 400 ;
+        self.formationLabel = {};
+        self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
+        self.labelHeight = self.formationLabel.content.component.getBBox().height;
+        self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN;
+        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
+        self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
+        self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
+        svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
+        svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
+        self.formationCreator = formationValidation;
+    };
+    var dblclickEdition = function (event) {
+        var width = self.formationLabel.content.component.getBBox().width;
+        self.formationInfoManipulator.ordonator.unset(1);
 
-        var showTitle = function() {
-            var text = (self.label) ? self.label : (self.label=self.labelDefault);
-            var color = (self.label) ? myColors.black : myColors.grey;
-            var bgcolor = myColors.grey;
-            self.formationLabelWidth = 400 ;
-            self.formationLabel = {};
-            self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-            self.labelHeight = self.formationLabel.content.component.getBBox().height;
-            self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN;
-            self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-            self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-            self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-            self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
-            svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
-            svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
-            self.formationCreator = formationValidation;
+        var textarea = document.createElement("TEXTAREA");
+        textarea.value = self.label;
+        var contentareaStyle = {
+            toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
+            leftpx: (self.title.component.getBBox().width + 2 * MARGIN + 1),
+            width: 400,
+            height:(self.labelHeight+3)
         };
-        var dblclickEdition = function (event) {
-            var width = self.formationLabel.content.component.getBBox().width;
-            self.formationInfoManipulator.ordonator.unset(1);
+        textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        var body = document.getElementById("content");
+        body.appendChild(textarea).focus();
 
-            var textarea = document.createElement("TEXTAREA");
-            textarea.value = self.label;
-            var contentareaStyle = {
-                toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-                leftpx: (self.title.component.getBBox().width + 2 * MARGIN + 1),
-                width: 400,
-                height:(self.labelHeight+3)
-            };
-            textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-            var body = document.getElementById("content");
-            body.appendChild(textarea).focus();
+        var removeErrorMessage = function () {
+            self.formationCreator.formationNameValidInput = true;
+            self.formationCreator.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
+            self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
+        };
 
-            var removeErrorMessage = function () {
-                self.formationCreator.formationNameValidInput = true;
-                self.formationCreator.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
-                self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
-            };
-
-            var displayErrorMessage = function () {
-                removeErrorMessage();
-                self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
-                var position = (textarea.getBoundingClientRect().left - MARGIN);
-                var anchor = 'start';
-                self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
-                    .position(drawing.width/2, 0)
-                    .font("arial", 15).color(myColors.red).anchor(anchor);
-                self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
-                textarea.focus();
-                self.labelValidInput = false;
-            };
-            var onblur = function () {
-                self.formationCreator.formationNameValidInput && (self.label = textarea.value);
-                textarea.remove();
-                showTitle();
-            };
-            textarea.oninput = function () {
-                self.checkInputTextArea({
-                    textarea: textarea,
-                    border: self.formationLabel.cadre,
-                    onblur: onblur,
-                    remove: removeErrorMessage,
-                    display: displayErrorMessage
-                });
-                //self.formationCreator.checkInputTextArea(textarea, "formationNameValidInput", onblur, self.formationLabel.cadre);
-            };
-            textarea.onblur = onblur;
+        var displayErrorMessage = function () {
+            removeErrorMessage();
+            self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
+            var position = (textarea.getBoundingClientRect().left - MARGIN);
+            var anchor = 'start';
+            self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+                .position(drawing.width/2, 0)
+                .font("arial", 15).color(myColors.red).anchor(anchor);
+            self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
+            textarea.focus();
+            self.labelValidInput = false;
+        };
+        var onblur = function () {
+            self.formationCreator.formationNameValidInput && (self.label = textarea.value);
+            textarea.remove();
+            showTitle();
+        };
+        textarea.oninput = function () {
             self.checkInputTextArea({
                 textarea: textarea,
                 border: self.formationLabel.cadre,
@@ -467,101 +456,121 @@ function FormationDisplayFormation(){
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
+            //self.formationCreator.checkInputTextArea(textarea, "formationNameValidInput", onblur, self.formationLabel.cadre);
         };
-        showTitle();
+        textarea.onblur = onblur;
+        self.checkInputTextArea({
+            textarea: textarea,
+            border: self.formationLabel.cadre,
+            onblur: onblur,
+            remove: removeErrorMessage,
+            display: displayErrorMessage
+        });
+    };
+    showTitle();
 
-        self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
+    self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
 
-        var onclickQuizzHandler = function(event){
-            var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
-            //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
-            self.quizzManager.loadQuizz(targetQuizz);
-            self.quizzManager.display();
-            if (window.getSelection)
-                window.getSelection().removeAllRanges();
-            else if (document.selection)
-                document.selection.empty();
-            // enlève le bandeau avant de display le quizzManager !_!
-            mainManipulator.ordonator.unset(0);
-        };
+    var onclickQuizzHandler = function(event){
+        var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
+        self.quizzManager.loadQuizz(targetQuizz);
+        self.quizzManager.display();
+        if (window.getSelection)
+            window.getSelection().removeAllRanges();
+        else if (document.selection)
+            document.selection.empty();
+        // enlève le bandeau avant de display le quizzManager !_!
+        mainManipulator.ordonator.unset(0);
+    };
 
-        self.displayLevel = function(w, h, level){
-            self.levelWidth = w;
-            level.manipulator = new Manipulator(level);
-            self.graphManipulator.last.add(level.manipulator.first);
+    self.displayLevel = function(w, h, level){
+        self.levelWidth = w;
+        level.manipulator = new Manipulator(level);
+        self.graphManipulator.last.add(level.manipulator.first);
 
-            level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
-            level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
-            level.obj.line.component.setAttribute("stroke-dasharray",6);
+        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+        level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
+        level.obj.line.component.setAttribute("stroke-dasharray",6);
 
-            level.manipulator.ordonator.set(9, level.obj.line);
-            level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin);
-            level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
-            self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+        level.manipulator.ordonator.set(9, level.obj.line);
+        level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
+        level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
+        self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
 
-            level.obj.cadre._acceptDrop = true;
-            level.obj.content._acceptDrop = true;
-            //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
-            //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
-            //console.log(self.gamesTab);
-            //var test = self.gamesTab[0][0].label;
-            level.manipulator.first.move(-w/2,-h/2+level.y);
+        level.obj.cadre._acceptDrop = true;
+        level.obj.content._acceptDrop = true;
+        //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
+        //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
+        //console.log(self.gamesTab);
+        //var test = self.gamesTab[0][0].label;
+        level.manipulator.first.move(-w/2,-h/2+level.y);
 
-            self.displayGraph(w,h);
+        self.displayGraph(w,h);
 
-        };
+    };
 
-        self.displayGraph = function (w, h){
-            self.borderSize = 3;
-            self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-            self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
-            self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
+    self.displayFrame = function (w, h) {
+        var gui = new Gui();
+        self.clippingManipulator = new Manipulator(self);
+        self.manipulator.last.add(self.clippingManipulator.first);
+        self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+        self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.clipping = new Drawings(w, h, "anchorClipping");
+        self.frame = new gui.Frame(w, h);
+        self.clipping.drawing.manipulator.last.add(self.graphManipulator.first);
+        self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
+    };
+    
+    self.displayGraph = function (w, h){
+        self.borderSize = 3;
+        self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
+        self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
+        self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
+        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
+        self.messageDragDrop.position(0,-self.graphCreaHeight/2 +self.messageDragDropMargin + (self.levelsTab.length) * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
+        self.graphBlock.rect._acceptDrop = true;
+        self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
+
+        var count = 1;
+        for(var i = 0; i<self.levelsTab.length; i++){
+            self.adjustGamesPositions(self.levelsTab[i]);
+
+            self.levelsTab[i].gamesTab.forEach(function(tabElement){
+                if(tabElement.miniatureManipulator){
+                    self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
+                }
+                tabElement.miniatureManipulator = new Manipulator(tabElement);
+                self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+
+                var testQuizz = tabElement.displayMiniature(self.graphElementSize);
+                svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
+                svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
+                count ++;
+            });
+        }
 
 
-            self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-            self.messageDragDrop.position(0,-self.graphCreaHeight/2 +self.messageDragDropMargin + (self.levelsTab.length) * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
-            self.graphBlock.rect._acceptDrop = true;
-            self.graphManipulator.translator.move(w/2+self.bibWidth-self.borderSize, h/2+self.title.component.getBBox().height);
-
-            var count = 1;
-            for(var i = 0; i<self.levelsTab.length; i++){
-                self.adjustGamesPositions(self.levelsTab[i]);
-
-                self.levelsTab[i].gamesTab.forEach(function(tabElement){
-                    if(tabElement.miniatureManipulator){
-                        self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
-                    }
-                    tabElement.miniatureManipulator = new Manipulator(tabElement);
-                    self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
-
-                    var testQuizz = tabElement.displayMiniature(self.graphElementSize);
-                    svg.addEvent(testQuizz.cadre, "dblclick", onclickQuizzHandler);
-                    svg.addEvent(testQuizz.content, "dblclick", onclickQuizzHandler);
-                    count ++;
-                });
-            }
-
-
-            //var clickHandler = function(event){
-            //    //self.levelsTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
-            //    var target = drawing.getTarget(event.clientX, event.clientY);
-            //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
-            //    if (self.levelsTab[0].length>=self.maxGameInARow){
-            //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
-            //        .position(drawing.width - MARGIN, 0).anchor("end");
-            //    }
-            //    else {
-            //        self.bib.jeux.forEach(function(game){
-            //            game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-            //            game.objectTotal.cadre.clicked = false;
-            //        });
-            //        self.displayLevel(w, h);
-            //    }
-            //};
-            //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
-        };
-        self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-
+        //var clickHandler = function(event){
+        //    //self.levelsTab[0] = [0,1,2,3,4]; //JUSTE POUR TESTER
+        //    var target = drawing.getTarget(event.clientX, event.clientY);
+        //    /*TODO*/ // 0 à remplacer par l'indice du niveau où l'utilisateur à cliqué tâche gestion/ajout des niveaux
+        //    if (self.levelsTab[0].length>=self.maxGameInARow){
+        //        autoAdjustText(self.maxGameInARowMessage, 0, 0, w, h, 20, null, self.manipulator).text.color(myColors.red)
+        //        .position(drawing.width - MARGIN, 0).anchor("end");
+        //    }
+        //    else {
+        //        self.bib.jeux.forEach(function(game){
+        //            game.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+        //            game.objectTotal.cadre.clicked = false;
+        //        });
+        //        self.displayLevel(w, h);
+        //    }
+        //};
+        //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
+    };
+    self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
+    self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
 }
 
 function FormationDisplayErrorMessage(message){
