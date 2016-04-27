@@ -32,26 +32,43 @@ var runtime;
 var svg;
 
 describe('Quizz game', function () {
+    var util = require("../src/Util");
+    var gui = require("../src/GUI");
+    var domain = require("../src/Domain");
     var mainModule = require("../src/main");
-    var testUtil = require("../test/Test-util");
-    var globalHandler = require("../src/SVG-global-handler");
-    var bdd = require("../src/Bdd");
-    var quizz = require("../src/Quizz");
-    var toto = require("../src/Toto");
+
+    //var testUtil = require("../test/Test-util");
+    //var globalHandler = require("../src/SVG-global-handler");
+    //var bdd = require("../src/Bdd");
+    //var quizz = require("../src/Quizz");
+    //var toto = require("../src/Toto");
 
 
     beforeEach(function () {
         runtime = mock.mockRuntime();
         runtime.declareAnchor('content');
         svg = SVG(runtime);
-        globalHandler.setSvg(svg);
+        //globalHandler.setSvg(svg);
+        util.setSvg(svg);
+        //util.SVGGlobalHandler();
+        util.SVGUtil();
+        util.Bdd();
         mainModule.setSvg(svg);
-        mainModule.setGlobalHandler(globalHandler);
-        toto.setGlobalHandler(globalHandler);
-        mainModule.setToto(toto);
-
-        mainModule.setBdd(bdd);
-        mainModule.setQuizz(quizz);
+        mainModule.setUtil(util);
+        var globalVariables = mainModule.setGlobalVariable();
+        domain.setUtil(util);
+        domain.setGlobalVariables(globalVariables);
+        //domain.setDrawing(globalVariables.drawing);
+        //domain.setMainManipulator(globalVariables.mainManipulator);
+        domain.Domain();
+        gui.setDomain(domain);
+        gui.AdminGUI();
+        //mainModule.setGlobalHandler(globalHandler);
+        //toto.setGlobalHandler(globalHandler);
+        //mainModule.setToto(toto);
+        //
+        //mainModule.setBdd(bdd);
+        //mainModule.setQuizz(quizz);
         //svgHandler.setSvg(svg);
 
         //testUtil.set
@@ -73,7 +90,7 @@ describe('Quizz game', function () {
                 //    }
                 //});
             },
-            "./log/scenar1.json", 'content', runtime, done);
+            "./log/data.json", 'content', runtime, done);
     });
 });
 

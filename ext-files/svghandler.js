@@ -315,7 +315,7 @@ function SVG(runtime) {
         this._active = true;
         this.component = svgr.create("g");
         for (var i=0; i<layerCount; i++) {
-            this.children[i] = new svg.Rect(0, 0).opacity(0);
+            this.children[i] = new Rect(0, 0).opacity(0);
             svgr.add(this.component, this.children[i].component);
          }
     }
@@ -323,7 +323,7 @@ function SVG(runtime) {
     Ordered.prototype.order = function(layerCount) {
         this.clear();
         for (var i=0; i<layerCount; i++) {
-            this.children[i] = new svg.Rect(0, 0).opacity(0);
+            this.children[i] = new Rect(0, 0).opacity(0);
             svgr.add(this.component, this.children[i].component);
         }
         return this;

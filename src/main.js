@@ -2,16 +2,41 @@
  * Created by qde3485 on 25/02/16.
  */
 
-var imageController = ImageController();
-var asyncTimerController=AsyncTimerController();
-var drawings = new Drawings(document.body.clientWidth, document.documentElement.clientHeight);
-var drawing = drawings.drawing;
-var mainManipulator = drawing.manipulator;
+var svg, util;
 
+
+if(typeof SVG !== "undefined") {
+    if(!svg) {
+        svg = new SVG();
+        }
+    }
+
+
+function setSvg(_svg) {
+    svg = _svg;
+    // call setSvg on modules
+    }
+function setUtil(_util){
+    util = _util;
+}
+
+function setGlobalVariable() {
+    util && util.SVGGlobalHandler();
+    var wind;
+    clientWidth = wind ? document.body.clientWidth : 1500;
+    clientHeight = wind ? document.body.clientHeight : 1500;
+//var imageController = ImageController();
+//var asyncTimerController=AsyncTimerController();
+    var drawings = new Drawings(clientWidth, clientHeight);
+    drawing = drawings.drawing;
+    mainManipulator = drawing.manipulator;
+    return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:clientHeight, clientWidth:clientWidth};
+}
 
 //mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
 function main() {
+    setGlobalVariable();
 
   /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz=new Quizz(myQuizz);
@@ -33,7 +58,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1,document.body.clientWidth,drawing.height);
+    quizz.run(1,1, clientWidth,drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);
@@ -92,12 +117,18 @@ function main() {
         }
 
     }
-    window.oldWidth=window.innerWidth;
-    window.oldHeight=window.innerHeight;
+    //window.oldWidth=window.innerWidth;
+    //window.oldHeight=window.innerHeight;
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
 
 
 
+}
+if (typeof exports !== "undefined") {
+    exports.main = main;
+    exports.setSvg = setSvg;
+    exports.setUtil = setUtil;
+    exports.setGlobalVariable = setGlobalVariable;
 }

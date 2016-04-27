@@ -36,6 +36,7 @@ function checkScenario(play, scenario, root, runtime, done) {
     });
     rs.on('end', done);
 }
-
-exports.inspect = inspect;
-exports.checkScenario = checkScenario;
+if(typeof exports !== "undefined") {
+    exports.inspect = inspect;
+    exports.checkScenario = checkScenario;
+}
