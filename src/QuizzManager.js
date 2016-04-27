@@ -50,7 +50,7 @@ function QuizzManager(quizz){
     self.previewButtonManipulator = new Manipulator(self);
 
     self.libraryIManipulator = self.bib.libraryManipulator;
-    self.quizzManagerManipulator.last.add(self.libraryIManipulator.first); // La bibliothèque n'est pas removed lors de l'aperçu
+    self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
 
     self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
     self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
