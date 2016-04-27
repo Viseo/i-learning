@@ -6,7 +6,6 @@
 </head>
 <body style="overflow: visible;">
     <div id="content"></div>
-    <script src="Bdd.js"></script>
     <script src="../ext-files/targetruntime.js"></script>
     <script src="../ext-files/runtimemock.js"></script>
     <script src="../ext-files/svghandler.js"></script>
@@ -26,17 +25,17 @@
     </script>
     <script src="main.js"></script>
 <script>
-//    var param = {speed: 50, step: 10};
-//var imageController = ImageController();
-//var asyncTimerController=AsyncTimerController();
-//
-//var drawings = new Drawings(document.body.clientWidth, document.documentElement.clientHeight);
-//var drawing = drawings.drawing;
-//var mainManipulator = drawing.manipulator;
-//
-//var formationsManager = new FormationsManager(myFormations);
-//formationsManager.display();
-    main();
+var param = {speed: 50, step: 10};
+var imageController = ImageController();
+var asyncTimerController=AsyncTimerController();
+
+var drawings = new Drawings(document.body.clientWidth, document.documentElement.clientHeight);
+var drawing = drawings.drawing;
+var mainManipulator = drawing.manipulator;
+
+var formationsManager = new FormationsManager(myFormations);
+formationsManager.display();
+    //main();
 </script>
 </body>
 

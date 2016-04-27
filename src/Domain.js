@@ -5,13 +5,13 @@ var util, drawing, mainManipulator, iRuntime;
 
 setUtil = function(_util){
     util = _util;
-}
+};
 setGlobalVariables = function(gv){
     drawing = gv.drawing;
     mainManipulator = gv.mainManipulator;
     clientWidth = gv.clientWidth;
     clientHeight = gv.clientHeight;
-}
+};
 
 
 function Domain() {
@@ -953,7 +953,6 @@ var Level = function(formation, gamesTab){
         quizz.fontSize ? (self.fontSize = quizz.fontSize) : (self.fontSize = 20);
         quizz.colorBordure ? (self.colorBordure = quizz.colorBordure) : (self.colorBordure = myColors.black);
         quizz.bgColor ? (self.bgColor = quizz.bgColor) : (self.bgColor = myColors.none);
-
         self.cadreResult = {
             x: drawing.width / 2,
             y: 220,
@@ -1199,7 +1198,7 @@ var Level = function(formation, gamesTab){
         };
 
 
-    }
+    };
 
 ////////////////// end of QuizzManager.js //////////////////////////
 }

@@ -6,27 +6,26 @@
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
-<script src="../lib/d3.min.js"></script>
-<script src="../test/Test-util.js"></script>
 <script src="../ext-files/targetruntime.js"></script>
 <script src="../ext-files/runtimemock.js"></script>
 <script src="../ext-files/svghandler.js"></script>
 <script src="../ext-files/svggui.js"></script>
-<script src="Bdd.js"></script>
+<script src="Util.js"></script>
+<script src="Domain.js"></script>
+<script src="GUI.js"></script>
+<script src="main.js"></script>
 
-<script src="Answer.js"></script>
-<script src="Question.js"></script>
-<script src="Puzzle.js"></script>
-<script src="Quizz.js"></script>
-<script src="EmptyElement.js"></script>
-<script src="QuestionCreator.js"></script>
-<script src="BibImage.js"></script>
-<script src="SVG-global-handler.js"></script>
-<script src="SVG-util.js"></script>
-<script src="QuizzManager.js"></script>
-<script src="Header.js"></script>
-<script src="Formation.js"></script>
-<script src="FormationsManager.js"></script>
+<script>
+
+    SVGGlobalHandler();
+    Domain();
+    SVGUtil();
+    Bdd();
+    AdminGUI();
+    setGlobalVariable();
+
+</script>
+
 <script>
     var param = {speed: 50, step: 10};
     var imageController = ImageController();

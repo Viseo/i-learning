@@ -23,8 +23,8 @@ function setUtil(_util){
 function setGlobalVariable() {
     util && util.SVGGlobalHandler();
     var wind;
-    clientWidth = wind ? document.body.clientWidth : 1500;
-    clientHeight = wind ? document.body.clientHeight : 1500;
+    clientWidth = wind ? document.documentElement.clientWidth : 1500;
+    clientHeight = wind ? document.documentElement.clientHeight : 1500;
 //var imageController = ImageController();
 //var asyncTimerController=AsyncTimerController();
     var drawings = new Drawings(clientWidth, clientHeight);

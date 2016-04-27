@@ -688,6 +688,7 @@ function Bdd() {
         white: {r: 255, g: 255, b: 255}
     };
 
+    HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
 
