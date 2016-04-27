@@ -22,12 +22,13 @@ function setUtil(_util){
 
 function setGlobalVariable() {
     util && util.SVGGlobalHandler();
-    var wind;
-    clientWidth = wind ? document.documentElement.clientWidth : 1500;
+    var wind = window;
+    util && (wind=false);
+    clientWidth = wind ? document.body.clientWidth : 1500;
     clientHeight = wind ? document.documentElement.clientHeight : 1500;
 //var imageController = ImageController();
 //var asyncTimerController=AsyncTimerController();
-    var drawings = new Drawings(clientWidth, clientHeight);
+    drawings = new Drawings(clientWidth, clientHeight);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
     return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:clientHeight, clientWidth:clientWidth};
@@ -58,7 +59,7 @@ function main() {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1, clientWidth,drawing.height);
+    quizz.run(1,1, clientWidth, drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);
