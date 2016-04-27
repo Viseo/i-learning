@@ -1372,3 +1372,9 @@ function Bdd() {
     };
 }
 /////////////////// end of Bdd.js //////////////////////
+
+if (typeof exports !== "undefined") {
+    exports.SVGGlobalHandler = SVGGlobalHandler;
+    exports.SVGUtil = SVGUtil;
+    exports.Bdd = Bdd;
+}

@@ -2,6 +2,12 @@
  * Created by TDU3482 on 26/04/2016.
  */
 
+var domain;
+function setDomain(_domain) {
+    domain = _domain;
+    // call setSvg on modules
+}
+
 
 function AnswerDisplay (x, y, w, h) {
 
@@ -1753,6 +1759,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, index) {
 
 var AdminGUI = function (){
 
+    domain && domain.Domain();
     Answer.prototype.display = AnswerDisplay;
     Library.prototype.display = LibraryDisplay;
     Header.prototype.display = HeaderDisplay;
@@ -1785,6 +1792,7 @@ var AdminGUI = function (){
 };
 
 var LearningGUI=function (){
+    domain && domain.Domain();
     Answer.prototype.display = AnswerDisplay;
     Question.prototype.display = QuestionDisplay;
     Question.prototype.displayAnswers = QuestionDisplayAnswers;
@@ -1798,3 +1806,8 @@ var LearningGUI=function (){
     Quizz.prototype.displayScore = QuizzDisplayScore;
 
 };
+if (typeof exports !== "undefined") {
+    exports.AdminGUI = AdminGUI;
+    exports.LearningGUI = LearningGUI;
+    exports.setDomain = setDomain;
+}
