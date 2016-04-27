@@ -152,12 +152,28 @@ var Library = function (lib) {
                 target.parent.parentManip.ordonator.set(1, oldQuest.content);
             }
             else {
-                var formation = target.parent.parentManip.parentObject;
-                // déterminer le targetIndexLevel !_!
+
+                var formation;
+                var dropLocation = target.parent.parentManip.parentObject;  // à renommer....
+                if(dropLocation instanceof Formation){
+                    formation = dropLocation;
+                    formation.addNewLevel();
+                    formation.targetLevelIndex = formation.levelsTab.length-1;
+                }else{
+                    if(dropLocation instanceof Level){
+                        var level = dropLocation;
+                        formation = level.parentFormation;
+                        formation.targetLevelIndex = formation.levelsTab.indexOf(level);
+                        console.log("e");
+                    }
+                }
+
+                // déterminer le targetLevelIndex !_!
+
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        var newQuizz = new Quizz({},false,formation);
+                        var newQuizz = new Quizz({}, false, formation);
                         newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                         formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         formation.gamesCounter.quizz++;
@@ -175,7 +191,9 @@ var Library = function (lib) {
                         .position(drawing.width - MARGIN, 0).anchor("end");
                 }
                 else {
-                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[0]);
+                    for(var i = 0 ; i<formation.levelsTab.length; i++){
+                        formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[i]);
+                    }
                 }
             }
         }
@@ -269,9 +287,30 @@ var AnswerElement = function (answer, parent) {
 //////////////////////// end of EmptyElement.js //////////////////////
 
 /////////////////////// Formation.js /////////////////////
-/**
- * Created by ABO3476 on 15/04/2016.
- */
+var Level = function(formation, gamesTab){
+    var self = this;
+    self.parentFormation = formation;
+    self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
+    gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+    self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
+    self.y = (self.index-1) * self.parentFormation.levelHeight;
+    self.obj = null;
+    self.removeGame = function(index){
+        if(!index){
+            self.gamesTab.pop();
+        }else{
+            self.gamesTab[index].splice(index, 1);
+        }
+    };
+    self.addGame = function(game, index){
+        if(!index){
+            self.gamesTab.push(game);
+        }else{
+            self.gamesTab.splice(index, 0, game);
+        }
+    };
+    return self;
+};
 
 var Formation = function(formation){
     var self = this;
@@ -295,39 +334,6 @@ var Formation = function(formation){
     self.manipulator.last.add(self.formationInfoManipulator.first);
     self.labelDefault = "Entrer le nom de la formation";
 
-    self.graphElementSize = 100;
-    self.levelHeight = self.graphElementSize;
-    self.levelWidth;
-    self.minimalMarginBetweenGraphElements=self.graphElementSize/2;
-    self.x = MARGIN;
-    self.y = drawing.height * mainManipulator.ordonator.children[0].parentManip.parentObject.size + 3 * MARGIN;
-    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
-    self.maxGameInARow = 6;
-    self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-
-    self.quizzManager = new QuizzManager(defaultQuizz);
-    self.targetLevelIndex = 0;
-    self.levelsTab = [];
-    var Level = function(index, gamesTab){
-        this.index = (self.levelsTab[self.levelsTab.length]) ? (self.levelsTab[self.levelsTab.length].index++) : 1;
-        gamesTab? (this.gamesTab = gamesTab) : (this.gamesTab = []);
-        this.x = self.bibWidth ? self.bibWidth : null; // Juste pour être sûr
-        this.y = this.index * self.levelHeight;
-        this.obj = null;
-        return this;
-    };
-    var gamesTab = null;
-    self.levelsTab.push(new Level(0, gamesTab));
-
-    //self.gamesTab = myFormation.gamesTab;
-    self.marginRatio = 0.03;
-    self.globalMargin = {
-        height:self.marginRatio*drawing.height,
-        width:self.marginRatio*drawing.width
-    };
-
-    self.label = formation.label ? formation.label : "Nouvelle formation";
-    self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
     // WIDTH
     self.bibWidthRatio = 0.15;
@@ -338,6 +344,31 @@ var Formation = function(formation){
     // HEIGHT
     self.graphCreaHeightRatio = 0.85;
     self.graphCreaHeight = drawing.height*self.graphCreaHeightRatio;
+
+
+    self.graphElementSize = 100;
+    self.levelHeight = (self.graphCreaHeight-3*MARGIN)/4;
+    self.levelWidth = drawing.width - self.bibWidth;
+    self.minimalMarginBetweenGraphElements = self.graphElementSize/2;
+    self.x = MARGIN;
+    self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+    self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
+    self.maxGameInARow = 6;
+    self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
+
+    self.quizzManager = new QuizzManager(defaultQuizz);
+    self.targetLevelIndex = 0;
+    self.levelsTab = [];
+
+    //self.gamesTab = myFormation.gamesTab;
+    self.marginRatio = 0.03;
+    self.globalMargin = {
+        height:self.marginRatio*drawing.height,
+        width:self.marginRatio*drawing.width
+    };
+
+    self.label = formation.label ? formation.label : "Nouvelle formation";
+    self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
 
     self.checkInputTextArea = function (myObj) {
@@ -356,6 +387,19 @@ var Formation = function(formation){
         }
     };
 
+    self.addNewLevel = function(index){
+        var level = new Level(self);
+        if(!index){
+            self.levelsTab.push(level);
+        }else{
+            self.levelsTab.splice(index, 0, level);
+        }
+    };
+
+    self.removeLevel = function(index){
+        self.levelsTab.splice(index-1, 1);
+    };
+
     self.clickToAdd = function (){
 
         self.mouseUpGraphBlock = function(event){
@@ -367,25 +411,24 @@ var Formation = function(formation){
         self.bib.gameSelected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
     };
 
-    self.adjustGamesPositions = function(levelTab){
-        var nbOfGames = levelTab.length;
+    self.adjustGamesPositions = function(level){
+        var nbOfGames = level.gamesTab.length;
         var spaceOccupied = (nbOfGames-1)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
 
-        levelTab.gamesTab.forEach(function(game){
+        level.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
             game.miniaturePosition.x=0;
 
-            if(pos.index<nbOfGames/2){
-                game.miniaturePosition.x-=(nbOfGames/2-pos.index)*spaceOccupied/nbOfGames;
+            if(pos.gameIndex<nbOfGames/2){
+                game.miniaturePosition.x-=(nbOfGames/2-pos.gameIndex)*spaceOccupied/nbOfGames;
             }else{
-                game.miniaturePosition.x+=(pos.index-nbOfGames/2)*spaceOccupied/nbOfGames;
+                game.miniaturePosition.x+=(pos.gameIndex-nbOfGames/2)*spaceOccupied/nbOfGames;
             }
 
-            game.miniaturePosition.y=(pos.level+1)*self.levelHeight/2;
+            game.miniaturePosition.y = -self.graphCreaHeight/2+(level.index-1/2)*self.levelHeight;
 
         });
-
     }
 };
 
@@ -813,17 +856,20 @@ function Quizz(quizz, previewMode, parentFormation) {
     self.parentFormation=parentFormation;
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
-    mainManipulator.ordonator.set(0, self.quizzManipulator.first);
 
     //self.tabQuestions=[];
     self.loadQuestions=function(quizz){
         if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             //self.tabQuestions=quizz.tabQuestions;
-            self.tabQuestions=[];
+            self.tabQuestions = [];
             quizz.tabQuestions.forEach(function (it) {
                 var tmp = new Question(it, self);
                 self.tabQuestions.push(tmp);
             });
+        }else{
+            self.tabQuestions = [];
+            self.tabQuestions.push(new Question(defaultQuestion, self));
+            self.tabQuestions.push(new Question(defaultQuestion, self));
         }
     };
     self.loadQuestions(quizz);
@@ -957,21 +1003,20 @@ function Quizz(quizz, previewMode, parentFormation) {
     };
 
 
-
     self.getPositionInFormation = function(){
-        var index,level;
+        var gameIndex, levelIndex;
 
         for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
 
-            index = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
-            if(index !== -1){
+            gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
+            if(gameIndex !== -1){
                 break;
             }
         }
 
-        level=i;
+        levelIndex = i;
 
-        return {level:level,index:index};
+        return {levelIndex:levelIndex, gameIndex:gameIndex};
     };
 
 
@@ -1026,7 +1071,6 @@ function QuizzManager(quizz){
     self.bib = new Library(myBibImage);
 
     self.quizzManagerManipulator = new Manipulator(self);
-    mainManipulator.ordonator.set(0, self.quizzManagerManipulator.first);
 
     self.questionsPuzzleManipulator = new Manipulator(self);
     self.quizzInfoManipulator = new Manipulator(self);
