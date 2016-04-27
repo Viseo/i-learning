@@ -476,6 +476,10 @@ function FormationDisplayFormation(){
             //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
+            if (window.getSelection)
+                window.getSelection().removeAllRanges();
+            else if (document.selection)
+                document.selection.empty();
             // enlève le bandeau avant de display le quizzManager !_!
             mainManipulator.ordonator.unset(0);
         };
