@@ -136,6 +136,7 @@ function LibraryDisplay(x,y,w,h){
                         }
                         else{
                             e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                            self.gameSelected = null;
                         }
                     }
                     else{
@@ -158,6 +159,7 @@ function LibraryDisplay(x,y,w,h){
                 }
                 else {
                     mouseClickHandler(event);
+                    !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
                     self.formation.clickToAdd();
                 }
                 self.draggedObjectLabel = "";

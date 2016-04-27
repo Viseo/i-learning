@@ -198,7 +198,7 @@ var Library = function (lib) {
             }
         }
 
-        self.gameSelected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
+        //self.gameSelected && formation && svg.removeEvent(formation.graphBlock.rect, "mouseup", formation.mouseUpGraphBlock);
         self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
     };
 
