@@ -475,7 +475,7 @@ function FormationDisplayFormation(){
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
             // enlève le bandeau avant de display le quizzManager !_!
-            //mainManipulator.ordonator.unset(0);
+            mainManipulator.ordonator.unset(0);
         };
 
         self.displayLevel = function(w, h, level){
@@ -1428,7 +1428,7 @@ function QuizzDisplayResult (color){
 
 function QuizzDisplayMiniature(size){
     var self=this;
-    var obj = displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+    var obj = displayTextWithCircle(self.title, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
     self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
     return obj;

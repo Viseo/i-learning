@@ -729,11 +729,11 @@ function SVGUtil() {
                 colorBordure: myColors.black, bgColor: myColors.white
             }
         ],
-        rows: 2, colorBordure: myColors.black, bgColor: myColors.white
+        rows: 4, colorBordure: myColors.black, bgColor: myColors.white
     };
 
      defaultQuizz = {
-        title: "Quizz pas rempli",
+        title: "",
         bgColor: myColors.white,
         puzzleLines: 3,
         puzzleRows: 1,

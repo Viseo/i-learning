@@ -17,13 +17,16 @@ function QuizzManager(quizz){
 
     self.loadQuizz = function(quizz){
         self.indexOfEditedQuestion = 0;
-        self.quizz = new Quizz(quizz);
+        self.quizz =quizz;
+        self.quizz.tabQuestions[0].selected = true;
+        self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+        self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
     };
 
 
     if(!quizz){
         var initialQuizzObject = {
-            title: myQuizz.title,
+            title: defaultQuizz.title,
             bgColor: myColors.white,
             tabQuestions:self.tabQuestions,
             puzzleLines: 3,
@@ -36,11 +39,14 @@ function QuizzManager(quizz){
     }else {
         self.loadQuizz(quizz);
     }
-    self.quizz.tabQuestions[0].selected = true;
-    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
     self.bib = new Library(myBibImage);
+
+    self.quizz.tabQuestions[0].selected = true;
+    self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.quizzManagerManipulator = new Manipulator(self);
 

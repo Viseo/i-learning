@@ -173,8 +173,9 @@ var Library = function (lib) {
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        var newQuizz = new Quizz({}, false, formation);
-                        newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                        var newQuizz = new Quizz(defaultQuizz, false, formation);
+                        newQuizz.tabQuestions[0].parentQuizz=newQuizz;
+                        newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                         formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         formation.gamesCounter.quizz++;
                         break;
@@ -356,7 +357,7 @@ var Formation = function(formation){
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
-    self.quizzManager = new QuizzManager(defaultQuizz);
+    self.quizzManager = new QuizzManager();
     self.targetLevelIndex = 0;
     self.levelsTab = [];
 
@@ -1046,12 +1047,15 @@ function QuizzManager(quizz){
     self.loadQuizz = function(quizz){
         self.indexOfEditedQuestion = 0;
         self.quizz = new Quizz(quizz);
+        self.quizz.tabQuestions[0].selected = true;
+        self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+        self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
     };
 
 
     if(!quizz){
         var initialQuizzObject = {
-            title: myQuizz.title,
+            title: defaultQuizz.title,
             bgColor: myColors.white,
             tabQuestions:self.tabQuestions,
             puzzleLines: 3,
@@ -1064,11 +1068,14 @@ function QuizzManager(quizz){
     }else {
         self.loadQuizz(quizz);
     }
-    self.quizz.tabQuestions[0].selected = true;
-    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
     self.bib = new Library(myBibImage);
+
+    self.quizz.tabQuestions[0].selected = true;
+    self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.quizzManagerManipulator = new Manipulator(self);
 

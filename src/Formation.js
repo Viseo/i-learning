@@ -71,7 +71,7 @@ var Formation = function(formation){
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
-    self.quizzManager = new QuizzManager(defaultQuizz);
+    self.quizzManager = new QuizzManager();
     self.targetLevelIndex = 0;
     self.levelsTab = [];
 
@@ -242,7 +242,7 @@ var Formation = function(formation){
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
             // enlève le bandeau avant de display le quizzManager !_!
-            //mainManipulator.ordonator.unset(0);
+            mainManipulator.ordonator.unset(0);
         };
 
         self.displayLevel = function(w, h, level){

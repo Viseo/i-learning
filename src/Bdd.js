@@ -58,7 +58,7 @@ var defaultQuestion = {
         {label:"",imageSrc:null,correct:false,
             colorBordure:myColors.black,bgColor:myColors.white}
     ],
-    rows:2,colorBordure:myColors.black,bgColor:myColors.white};
+    rows:4,colorBordure:myColors.black,bgColor:myColors.white};
 
 var defaultQuizz = {
     title:"Quizz pas rempli",
