@@ -886,7 +886,7 @@ function Domain() {
 
 ////////////////// BD //////////////////////////
 
-    function Bd(bd, parentFormation){
+    Bd = function(bd, parentFormation){
         var self = this;
         self.parentFormation = parentFormation;
         self.title = "BD";
