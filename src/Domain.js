@@ -164,36 +164,37 @@ var Library = function (lib) {
                         var level = dropLocation;
                         formation = level.parentFormation;
                         formation.targetLevelIndex = formation.levelsTab.indexOf(level);
-                        console.log("e");
                     }
                 }
-
-                // déterminer le targetLevelIndex !_!
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
-                        var newQuizz = new Quizz({}, false, formation);
-                        newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
-                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
-                        formation.gamesCounter.quizz++;
+                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
+                            var newQuizz = new Quizz({}, false, formation);
+                            formation.gamesCounter.quizz++;
+                            newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
+                        }
+                        else{
+                            formation.displayErrorMessage(formation.maxGameInARowMessage);
+                        }
                         break;
                     case (myBibJeux.tabLib[1].label):
-                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push({
-                            type: objectToBeAddedLabel,
-                            label: objectToBeAddedLabel + " " + formation.gamesCounter.bd
-                        });
-                        formation.gamesCounter.bd++;
+                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
+                            var newBd = new Bd({}, formation);
+                            formation.gamesCounter.bd++;
+                            newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
+                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
+                        }
+                        else {
+                            formation.displayErrorMessage(formation.maxGameInARowMessage);
+                        }
                         break;
                 }
-                if (formation.levelsTab[0].gamesTab.length>formation.maxGameInARow){
-                    autoAdjustText(formation.maxGameInARowMessage, 0, 0, formation.graphCreaWidth, formation.graphCreaHeight, 20, null, formation.manipulator).text.color(myColors.red)
-                        .position(drawing.width - MARGIN, 0).anchor("end");
-                }
-                else {
-                    for(var i = 0 ; i<formation.levelsTab.length; i++){
-                        formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[i]);
-                    }
+
+                for(var i = 0 ; i<formation.levelsTab.length; i++){
+                    formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight, formation.levelsTab[i]);
                 }
             }
         }
@@ -369,7 +370,6 @@ var Formation = function(formation){
 
     self.label = formation.label ? formation.label : "Nouvelle formation";
     self.status = formation.status ? formation.status : statusEnum.NotPublished;
-
 
     self.checkInputTextArea = function (myObj) {
         if (myObj.textarea.value.match(self.regex)) {
@@ -846,6 +846,33 @@ var QuestionCreator = function (parent, question) {
 };
 ////////////////// end of QuestionCreator.js //////////////////////////
 
+////////////////// BD //////////////////////////
+
+function Bd(bd, parentFormation){
+    var self = this;
+    self.parentFormation = parentFormation;
+    self.title = "BD";
+    self.miniaturePosition = {x:0, y:0};
+
+    self.getPositionInFormation = function(){
+        var gameIndex, levelIndex;
+
+        for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
+
+            gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
+            if(gameIndex !== -1){
+                break;
+            }
+        }
+
+        levelIndex = i;
+
+        return {levelIndex:levelIndex, gameIndex:gameIndex};
+    };
+
+}
+
+////////////////// end of BD //////////////////////////
 
 ////////////////// Quizz.js //////////////////////////
 /**
@@ -861,7 +888,7 @@ var QuestionCreator = function (parent, question) {
 function Quizz(quizz, previewMode, parentFormation) {
     var self = this;
 
-    self.parentFormation=parentFormation;
+    self.parentFormation = parentFormation;
     self.quizzManipulator = new Manipulator(self);
     //mainManipulator.last.add(self.quizzManipulator.translator);
 
@@ -922,7 +949,7 @@ function Quizz(quizz, previewMode, parentFormation) {
         h:600
     };
 
-    self.miniaturePosition={x:0,y:0};
+    self.miniaturePosition = {x:0, y:0};
 
     self.questionsWithBadAnswers=[];
     self.score=0;
@@ -953,7 +980,7 @@ function Quizz(quizz, previewMode, parentFormation) {
      * @param color
      */
 
-  // !_! bof, y'a encore des display appelés ici
+        // !_! bof, y'a encore des display appelés ici
     self.nextQuestion=function(){
 
         if(self.currentQuestionIndex !== -1 && !self.previewMode){

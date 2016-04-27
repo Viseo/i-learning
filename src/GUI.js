@@ -104,6 +104,7 @@ function LibraryDisplay(x,y,w,h){
 
     self.bibManipulators.forEach(function(e){
         svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
+            e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
@@ -358,7 +359,7 @@ function AnswerElementDisplay(x, y, w, h) {
 }
 
 function FormationDisplayMiniature (w,h) {
-    var self=this;
+    var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
 
@@ -558,6 +559,16 @@ function FormationDisplayFormation(){
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
 
 }
+
+function FormationDisplayErrorMessage(message){
+    var self = this;
+    self.errorMessageDisplayed = autoAdjustText(message, 0, 0, self.graphCreaWidth, self.graphCreaHeight, 20, null, self.manipulator).text
+        .color(myColors.red).position(drawing.width - MARGIN, 0).anchor("end");
+};
+
+function FormationRemoveErrorMessage(message) {
+    message && message.parent && message.parent.remove(message);
+};
 
 function FormationsManagerDisplay() {
     var self=this;
@@ -970,7 +981,6 @@ function QuestionElementClicked(sourceElement) {
         }
     }
 }
-
 
 function QuestionDisplayAnswers(x, y, w, h) {
     var self=this;
@@ -1428,16 +1438,16 @@ function QuizzDisplayResult (color){
     //this.resultManipulator.last.add(this.puzzle.puzzleManipulator.translator);
 }
 
-function QuizzDisplayMiniature(size){
-    var self=this;
-    var obj = displayTextWithCircle(self.label, size, size, myColors.red, myColors.white, 20, null, self.miniatureManipulator);
+function GameDisplayMiniature(size){
+    var self = this;
+    var obj = displayTextWithCircle(self.label, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
     self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
     return obj;
 }
 
 function QuizzDisplayScore(color){
-    var self=this;
+    var self = this;
     var autoColor;
     switch(this.score) {
         case self.tabQuestions.length:
@@ -1679,7 +1689,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
 }
 
 function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, index) {
-    var self=this;
+    var self = this;
     var index = index ? index : 0;
     x && (self.qPuzzleX=x);
     y && (self.qPuzzleY=y);
@@ -1711,47 +1721,50 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, index) {
 
 }
 
-var AdminGUI=function (){
+var AdminGUI = function (){
 
-    Answer.prototype.display=AnswerDisplay;
-    Library.prototype.display=LibraryDisplay;
-    Header.prototype.display=HeaderDisplay;
-    AddEmptyElement.prototype.display=AddEmptyElementDisplay;
-    AnswerElement.prototype.display=AnswerElementDisplay;
-    Formation.prototype.displayMiniature=FormationDisplayMiniature;
-    Formation.prototype.displayFormation=FormationDisplayFormation;
-    FormationsManager.prototype.display=FormationsManagerDisplay;
-    Question.prototype.display=QuestionDisplay;
-    Question.prototype.displayAnswers=QuestionDisplayAnswers;
-    Question.prototype.selectedQuestion=QuestionSelectedQuestion;
-    Question.prototype.elementClicked=QuestionElementClicked;
-    QuestionCreator.prototype.display=QuestionCreatorDisplay;
-    QuestionCreator.prototype.displayToggleButton=QuestionCreatorDisplayToggleButton;
-    QuestionCreator.prototype.displayQuestionCreator=QuestionCreatorDisplayQuestionCreator;
-    Quizz.prototype.display=QuizzDisplay;
-    Quizz.prototype.displayResult=QuizzDisplayResult;
-    Quizz.prototype.displayMiniature=QuizzDisplayMiniature;
-    Quizz.prototype.displayScore=QuizzDisplayScore;
-    Puzzle.prototype.display=PuzzleDisplay;
-    Puzzle.prototype.initTiles=PuzzleInitTiles;
-    QuizzManager.prototype.display=QuizzManagerDisplay;
-    QuizzManager.prototype.displayQuizzInfo=QuizzManagerDisplayQuizzInfo;
-    QuizzManager.prototype.displayPreviewButton=QuizzManagerDisplayPreviewButton;
-    QuizzManager.prototype.displayQuestionsPuzzle=QuizzManagerDisplayQuestionPuzzle;
+    Answer.prototype.display = AnswerDisplay;
+    Library.prototype.display = LibraryDisplay;
+    Header.prototype.display = HeaderDisplay;
+    AddEmptyElement.prototype.display = AddEmptyElementDisplay;
+    AnswerElement.prototype.display = AnswerElementDisplay;
+    Formation.prototype.displayMiniature = FormationDisplayMiniature;
+    Formation.prototype.displayFormation = FormationDisplayFormation;
+    Formation.prototype.removeErrorMessage = FormationRemoveErrorMessage;
+    Formation.prototype.displayErrorMessage = FormationDisplayErrorMessage;
+    FormationsManager.prototype.display = FormationsManagerDisplay;
+    Question.prototype.display = QuestionDisplay;
+    Question.prototype.displayAnswers = QuestionDisplayAnswers;
+    Question.prototype.selectedQuestion = QuestionSelectedQuestion;
+    Question.prototype.elementClicked = QuestionElementClicked;
+    QuestionCreator.prototype.display = QuestionCreatorDisplay;
+    QuestionCreator.prototype.displayToggleButton = QuestionCreatorDisplayToggleButton;
+    QuestionCreator.prototype.displayQuestionCreator = QuestionCreatorDisplayQuestionCreator;
+    Quizz.prototype.display = QuizzDisplay;
+    Quizz.prototype.displayResult = QuizzDisplayResult;
+    Quizz.prototype.displayMiniature = GameDisplayMiniature;
+    Bd.prototype.displayMiniature = GameDisplayMiniature;
+    Quizz.prototype.displayScore = QuizzDisplayScore;
+    Puzzle.prototype.display = PuzzleDisplay;
+    Puzzle.prototype.initTiles = PuzzleInitTiles;
+    QuizzManager.prototype.display = QuizzManagerDisplay;
+    QuizzManager.prototype.displayQuizzInfo = QuizzManagerDisplayQuizzInfo;
+    QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
+    QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
 
 };
 
 var LearningGUI=function (){
-    Answer.prototype.display=AnswerDisplay;
-    Question.prototype.display=QuestionDisplay;
-    Question.prototype.displayAnswers=QuestionDisplayAnswers;
-    Question.prototype.elementClicked=QuestionElementClicked;
-    Question.prototype.selectedQuestion=QuestionSelectedQuestion;
-    Puzzle.prototype.display=PuzzleDisplay;
-    Puzzle.prototype.initTiles=PuzzleInitTiles;
-    Quizz.prototype.display=QuizzDisplay;
-    Quizz.prototype.displayResult=QuizzDisplayResult;
-    Quizz.prototype.displayMiniature=QuizzDisplayMiniature;
-    Quizz.prototype.displayScore=QuizzDisplayScore;
+    Answer.prototype.display = AnswerDisplay;
+    Question.prototype.display = QuestionDisplay;
+    Question.prototype.displayAnswers = QuestionDisplayAnswers;
+    Question.prototype.elementClicked = QuestionElementClicked;
+    Question.prototype.selectedQuestion = QuestionSelectedQuestion;
+    Puzzle.prototype.display = PuzzleDisplay;
+    Puzzle.prototype.initTiles = PuzzleInitTiles;
+    Quizz.prototype.display = QuizzDisplay;
+    Quizz.prototype.displayResult = QuizzDisplayResult;
+    Quizz.prototype.displayMiniature = GameDisplayMiniature;
+    Quizz.prototype.displayScore = QuizzDisplayScore;
 
 };
