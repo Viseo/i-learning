@@ -510,7 +510,7 @@ function SVGUtil() {
         }
 
         t.message(tempText.substring(1));
-        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || t.component.target.getBBox().height;
+        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || (t.component.target && t.component.target.getBBox().height);
         t.position(0, (finalHeight - fontSize / 2) / 2); // finalHeight/2 ??
         return {finalHeight: finalHeight, text: t};
     };
