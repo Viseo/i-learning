@@ -126,13 +126,13 @@ var Formation = function(formation){
             self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
         }
         else if (self.status === statusEnum.Edited) {
-                var iconExclamation = self.status.icon(self.parent.iconeSize);
-                self.iconManipulator.ordonator.set(5, iconExclamation.circle);
-                self.iconManipulator.ordonator.set(6, iconExclamation.exclamation);
-                self.iconManipulator.ordonator.set(7, iconExclamation.dot);
-                self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
-            }
-        };
+            var iconExclamation = self.status.icon(self.parent.iconeSize);
+            self.iconManipulator.ordonator.set(5, iconExclamation.circle);
+            self.iconManipulator.ordonator.set(6, iconExclamation.exclamation);
+            self.iconManipulator.ordonator.set(7, iconExclamation.dot);
+            self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+        }
+    };
     self.clickToAdd = function (){
 
         self.mouseUpGraphBlock = function(event){
@@ -140,8 +140,16 @@ var Formation = function(formation){
             self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
             self.bib.gameSelected = null;
             svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+            self.levelsTab.forEach(function(e) {
+                svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+            });
         };
-        self.bib.gameSelected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+        if(self.bib.gameSelected){
+            svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+            self.levelsTab.forEach(function(e) {
+                svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+            });
+        }
     };
 
     self.displayFormation = function (){
@@ -320,7 +328,7 @@ var Formation = function(formation){
             //};
             //svg.addEvent(self.graphBlock.rect, "click", clickHandler);
         };
-    self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
+        self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     };
     self.adjustGamesPositions = function(level){
         var nbOfGames = level.gamesTab.length;
