@@ -407,8 +407,16 @@ var Formation = function(formation){
             self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
             self.bib.gameSelected = null;
             svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+            self.levelsTab.forEach(function(e) {
+                svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+            });
         };
-        self.bib.gameSelected && svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+        if(self.bib.gameSelected){
+            svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+            self.levelsTab.forEach(function(e) {
+                svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+            });
+        }
     };
 
     self.adjustGamesPositions = function(level){
