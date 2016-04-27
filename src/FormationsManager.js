@@ -49,7 +49,7 @@ function FormationsManager(formations, additionalMessage) {
 
     self.formationsManipulator = new Manipulator(self);
 
-    var displayPanel = function () {
+    function displayPanel() {
         window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
@@ -90,7 +90,7 @@ function FormationsManager(formations, additionalMessage) {
                 self.panel.moveContent(self.panel.content.y+100);
             }
         };
-    };
+    }
 
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
