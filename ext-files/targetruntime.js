@@ -31,7 +31,7 @@ function targetRuntime() {
             parent.removeChild(child);
         },
         first: function(component) {
-            component.firstChild;
+            return component.firstChild;
         },
         replace: function(parent, who, byWhom) {
             parent.replaceChild(who, byWhom);
