@@ -171,9 +171,10 @@ var Library = function (lib) {
                 switch (objectToBeAddedLabel) {
                     case (myBibJeux.tabLib[0].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
-                            var newQuizz = new Quizz({}, false, formation);
+                            var newQuizz = new Quizz(defaultQuizz, false, formation);
                             formation.gamesCounter.quizz++;
-                            newQuizz.label = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                            newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                            newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                             formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         }
                         else{
@@ -357,7 +358,7 @@ var Formation = function(formation){
     self.maxGameInARow = 6;
     self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
-    self.quizzManager = new QuizzManager(defaultQuizz);
+    self.quizzManager = new QuizzManager();
     self.targetLevelIndex = 0;
     self.levelsTab = [];
 
@@ -468,10 +469,10 @@ function FormationsManager(formations, additionalMessage) {
     self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
 
     self.formations=[];
-    var count = 0;
+    self.count = 0;
     formations.tab.forEach(function (formation) {
-        self.formations[count] = new Formation(formation);
-        count ++;
+        self.formations[self.count] = new Formation(formation);
+        self.count ++;
     });
 
     self.manipulator = new Manipulator();
@@ -493,16 +494,15 @@ function FormationsManager(formations, additionalMessage) {
     self.headerManipulator.last.add(self.exclamationManipulator.first);
 
     self.formationsManipulator = new Manipulator();
-    self.manipulator.last.add(self.formationsManipulator.first);
 
 
 
-    var gui = new Gui();
-    self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight, myColors.node);
-    var totalLines = count%self.rows === 0 ? count/self.rows : count/self.rows+1;
-    self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)-self.tileHeight+MARGIN);
-    self.formationsManipulator.last.add(self.panel.translate);
-    //self.panel.translate.move(-self.tileWidth/2, -self.tileHeight/2);
+    //var gui = new Gui();
+    //self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2, (2*MARGIN+self.tileHeight)*(4)-self.tileHeight, myColors.node);
+    //var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
+    //self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)-self.tileHeight+MARGIN);
+    //self.formationsManipulator.last.add(self.panel.translate);
+    ////self.panel.translate.move(-self.tileWidth/2, -self.tileHeight/2);
 
     //self.foreign = document.createElementNS('http://www.w3.org/2000/svg', "foreignObject");
     //self.foreign.setAttribute("style", "width: 900px; height: 900px;");
@@ -1081,12 +1081,15 @@ function QuizzManager(quizz){
     self.loadQuizz = function(quizz){
         self.indexOfEditedQuestion = 0;
         self.quizz = new Quizz(quizz);
+        self.quizz.tabQuestions[0].selected = true;
+        self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+        self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
     };
 
 
     if(!quizz){
         var initialQuizzObject = {
-            title: myQuizz.title,
+            title: defaultQuizz.title,
             bgColor: myColors.white,
             tabQuestions:self.tabQuestions,
             puzzleLines: 3,
@@ -1099,11 +1102,14 @@ function QuizzManager(quizz){
     }else {
         self.loadQuizz(quizz);
     }
-    self.quizz.tabQuestions[0].selected = true;
-    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+
 
     self.questionCreator = new QuestionCreator(self,self.quizz.tabQuestions[self.indexOfEditedQuestion]);
     self.bib = new Library(myBibImage);
+
+    self.quizz.tabQuestions[0].selected = true;
+    self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
 
     self.quizzManagerManipulator = new Manipulator(self);
 

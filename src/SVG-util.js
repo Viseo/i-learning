@@ -125,7 +125,7 @@ var displayCheckbox = function (x, y, size, sender) {
 var displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
     var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-    var textHeight = text.component.getBBox().height;
+    var textHeight = (text.component.getBBox && text.component.getBBox().height) || text.component.target.getBBox().height;
     text.position(0,(h-textHeight)/2);//w*1/6
     var newWidth,newHeight;
     newWidth=w-2*MARGIN;
@@ -276,7 +276,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
         // set text to test the BBox.width
         t.message(tempText + " " + words[i]);
         // test if DOESN'T fit in the line
-        if (t.component.getBBox().width > w ) {
+        if ((t.component.getBBox && t.component.getBBox().width > w) || t.component.target.getBBox().width > w - MARGIN) {
             //Comment 2 next lines to add BreakLine
             tempText = tempText.substring(0, tempText.length-3) + "...";
             break;
@@ -324,7 +324,7 @@ var autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator)
     }
 
     t.message(tempText.substring(1));
-    var finalHeight = t.component.getBBox().height;
+    var finalHeight = (t.component.getBBox && t.component.getBBox().height) || t.component.target.getBBox().height;
     t.position(0,(finalHeight-fontSize/2)/2); // finalHeight/2 ??
     return {finalHeight: finalHeight, text:t};
 };

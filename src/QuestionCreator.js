@@ -256,7 +256,7 @@ var QuestionCreator = function (parent, question) {
             body.appendChild(textarea).focus();
 
             var onblur = function () {
-                console.log(textarea);
+               // console.log(textarea);
                 if(textarea.value){
                     self.label = textarea.value;
                     self.linkedQuestion.label=textarea.value;

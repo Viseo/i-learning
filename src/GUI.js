@@ -477,8 +477,12 @@ function FormationDisplayFormation(){
             //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
             self.quizzManager.loadQuizz(targetQuizz);
             self.quizzManager.display();
+            if (window.getSelection)
+                window.getSelection().removeAllRanges();
+            else if (document.selection)
+                document.selection.empty();
             // enlève le bandeau avant de display le quizzManager !_!
-            //mainManipulator.ordonator.unset(0);
+            mainManipulator.ordonator.unset(0);
         };
 
         self.displayLevel = function(w, h, level){
@@ -572,16 +576,50 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self=this;
-    window.onkeydown = function (event) {
-        if(hasKeyDownEvent(event)) {
-            event.preventDefault();
-        }
-    };
+    function displayPanel() {
+        window.onkeydown = function (event) {
+            if(hasKeyDownEvent(event)) {
+                event.preventDefault();
+            }
+        };
 
-    hasKeyDownEvent = function (event) {
-        self.target = self.panel;
-        return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
-    };
+        hasKeyDownEvent = function (event) {
+            self.target = self.panel;
+            return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+        };
+
+        self.clippingManipulator = new Manipulator(self);
+        self.manipulator.last.add(self.clippingManipulator.first);
+        self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
+
+        var gui = new Gui();
+        var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
+        totalLines = parseInt(totalLines);
+        self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, 4*(2*MARGIN+self.tileHeight), "anchorClipping");
+        self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
+        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
+        self.clipping.drawing.manipulator.last.add(self.formationsManipulator.first);
+        self.clipping.drawing.manipulator.last.add(self.panel.translate);
+        self.formationsManipulator.last.add(self.panel.content);
+        self.clippingManipulator.last.add(self.panel.component);
+        self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
+        self.formationsManipulator.translator.move(self.tileWidth / 2, self.tileHeight/2);
+        self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
+
+        self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+
+        onScroll = function (event) {
+            var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+            if(delta === -1) {
+                self.panel.moveContent(self.panel.content.y-100);
+            } else {
+                self.panel.moveContent(self.panel.content.y+100);
+            }
+        };
+    }
+
     function onClickFormation(formation) {
         console.log("Tu as bien cliqué");
         formation.displayFormation();
@@ -594,7 +632,7 @@ function FormationsManagerDisplay() {
     }
 
         self.header.display();
-
+        displayPanel();
         self.displayHeaderFormations = function () {
             self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
             self.headerManipulator.last.add(self.title);
@@ -1440,7 +1478,7 @@ function QuizzDisplayResult (color){
 
 function GameDisplayMiniature(size){
     var self = this;
-    var obj = displayTextWithCircle(self.label, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
+    var obj = displayTextWithCircle(self.title, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
     self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
 
     return obj;

@@ -33,6 +33,8 @@ var myColors = {
     white:[255, 255, 255],
     red:[255, 0, 0],
     yellow:[255,255,0],
+    pink:[255,20,147],
+    brown:[128,0,0],
     none:[]
 };
 
@@ -58,7 +60,7 @@ var defaultQuestion = {
         {label:"",imageSrc:null,correct:false,
             colorBordure:myColors.black,bgColor:myColors.white}
     ],
-    rows:2,colorBordure:myColors.black,bgColor:myColors.white};
+    rows:4,colorBordure:myColors.black,bgColor:myColors.white};
 
 var defaultQuizz = {
     title:"Quizz pas rempli",
