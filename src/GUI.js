@@ -266,7 +266,6 @@ function AnswerElementDisplay(x, y, w, h) {
         else{
             self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
             self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
-
         }
         self.obj.cadre.fillOpacity(0.001);
         self.obj.content.color(color);
