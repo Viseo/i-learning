@@ -1,7 +1,7 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg = null;
+var svg;
 
 if(typeof SVG != "undefined") {
     if(!svg) {
@@ -102,6 +102,13 @@ var Drawings = function (w, h, anchor) {
             if (self.target.component.eventHandlers && self.target.component.eventHandlers.click) {
                 self.target.component.eventHandlers.click(event);
             }
+            if (self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mouseup) {
+                self.target.component.target.eventHandlers.mouseup(event);
+                }
+            if (self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.click) {
+                self.target.component.target.eventHandlers.click(event);
+                }
+
         }
         self.drag = null;
     };

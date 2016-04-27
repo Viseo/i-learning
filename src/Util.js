@@ -7,7 +7,7 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg = null;
+var svg;
 
 if(typeof SVG != "undefined") {
     if(!svg) {
@@ -110,6 +110,12 @@ function SVGGlobalHandler() {
                 if (self.target.component.eventHandlers && self.target.component.eventHandlers.click) {
                     self.target.component.eventHandlers.click(event);
                 }
+                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mouseup) {
+                    self.target.component.target.eventHandlers.mouseup(event);
+                }
+                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.click) {
+                    self.target.component.target.eventHandlers.click(event);
+                }
             }
             self.drag = null;
         };
@@ -127,22 +133,22 @@ function SVGGlobalHandler() {
 
 
     svg.Handler.prototype.flush = function () {
-            var self = this;
-            self.children.forEach(function (e) {
-                if (e instanceof svg.Handler) {
-                    e.flush();
+        var self = this;
+        self.children.forEach(function (e) {
+            if (e instanceof svg.Handler) {
+                e.flush();
+            }
+            else {
+                if (self instanceof svg.Ordered) {
+                    var index = self.children.indexOf(e);
+                    self.unset(index);
                 }
                 else {
-                    if (self instanceof svg.Ordered) {
-                        var index = self.children.indexOf(e);
-                        self.unset(index);
-                    }
-                    else {
-                        self.remove(e);
-                    }
+                    self.remove(e);
                 }
-            });
-        };
+            }
+        });
+    };
 
     ImageController = function (imageRuntime) {
         return imageRuntime || {
@@ -181,9 +187,9 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-    //var clone = function (object) {
-    //    return JSON.parse(JSON.stringify(object));
-    //};
+        //var clone = function (object) {
+        //    return JSON.parse(JSON.stringify(object));
+        //};
 
 
     getComplementary = function (tab) {
@@ -201,7 +207,7 @@ function SVGUtil() {
 //    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
 //}
 
-     onclickFunction = function (event) {
+    onclickFunction = function (event) {
         var target = drawing.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
@@ -211,7 +217,7 @@ function SVGUtil() {
         updateAllCheckBoxes(sender);
     };
 
-     checkAllCheckBoxes = function (sender) {
+    checkAllCheckBoxes = function (sender) {
         var allNotChecked = true;
         sender.parent.linkedQuestion.rightAnswers = [];
         sender.parent.tabAnswer.forEach(function (answer) {
@@ -228,20 +234,20 @@ function SVGUtil() {
         return allNotChecked;
     };
 
-     drawCheck = function (x, y, size) {
+    drawCheck = function (x, y, size) {
         return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
             .line(x - .1 * size, y + .2 * size).line(x + .3 * size, y - .3 * size)
             .color(myColors.none, 3, myColors.black);
     };
 
-     drawPathChecked = function (sender, x, y, size) {
+    drawPathChecked = function (sender, x, y, size) {
         svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
         sender.obj.checked = drawCheck(x, y, size);
         svg.addEvent(sender.obj.checked, "click", onclickFunction);
         sender.manipulator.ordonator.set(8, sender.obj.checked);
     };
 
-     updateAllCheckBoxes = function (sender) {
+    updateAllCheckBoxes = function (sender) {
         sender.parent.tabAnswer.forEach(function (answer) {
             if (answer instanceof AnswerElement && answer.obj.checkbox) {
                 var allNotChecked = checkAllCheckBoxes(sender);
@@ -265,7 +271,7 @@ function SVGUtil() {
      * @param size
      * @param sender
      */
-     displayCheckbox = function (x, y, size, sender) {
+    displayCheckbox = function (x, y, size, sender) {
         var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
         sender.obj.checkbox = obj.checkbox;
         sender.x = x;
@@ -302,10 +308,10 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{cadre: *, image, text}}
      */
-     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
+    displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var textHeight = text.component.getBBox().height;
+        var textHeight = (text.component.getBBox && text.component.getBBox().height) || text.component.target.getBBox().height;
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth, newHeight;
         newWidth = w - 2 * MARGIN;
@@ -334,7 +340,7 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{image: *, height: *, cadre}}
      */
-     displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
+    displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
         var image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN
         var cadre = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
         manipulator.ordonator.set(0, cadre);
@@ -350,7 +356,7 @@ function SVGUtil() {
      * @param w
      * @param h
      */
-     displayImage = function (imageSrc, image, w, h) {
+    displayImage = function (imageSrc, image, w, h) {
         var width = image.width;
         var height = image.height;
         if (width > w) {
@@ -384,7 +390,7 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-     displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
         manipulator.ordonator.set(0, cadre);
@@ -403,7 +409,7 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         content.position(0, content.component.getBBox().height / 4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
@@ -423,7 +429,7 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-     displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
@@ -442,7 +448,7 @@ function SVGUtil() {
      * @param font
      * @param manipulator
      */
-     autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
+    autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
         var t = new svg.Text("text");
         manipulator.ordonator.set(1, t);
         var words = content.split(" ");
@@ -456,7 +462,7 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-            if (t.component.getBBox().width > w) {
+            if ((t.component.getBBox && t.component.getBBox().width > w) || (t.component.target && t.component.target.getBBox().width > w - MARGIN)) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -504,7 +510,7 @@ function SVGUtil() {
         }
 
         t.message(tempText.substring(1));
-        var finalHeight = t.component.getBBox().height;
+        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || t.component.target.getBBox().height;
         t.position(0, (finalHeight - fontSize / 2) / 2); // finalHeight/2 ??
         return {finalHeight: finalHeight, text: t};
     };
@@ -517,7 +523,7 @@ function SVGUtil() {
      * @param h
      */
 
-     drawPlus = function (x, y, w, h) {
+    drawPlus = function (x, y, w, h) {
         var baseWidth = w;
         var baseHeight = h;
         var thickness = (((baseHeight + baseWidth) / 2) * 0.3);
@@ -549,7 +555,7 @@ function SVGUtil() {
      * @param h
      */
 
-     drawPlusWithCircle = function (x, y, w, h) {
+    drawPlusWithCircle = function (x, y, w, h) {
         var circle = new svg.Circle(w / 2).color(myColors.black);
         var plus = drawPlus(x, y, w - 1.5 * MARGIN, h - 1.5 * MARGIN).color(myColors.lightgrey);
         return {circle: circle, plus: plus};
@@ -565,7 +571,7 @@ function SVGUtil() {
      * @param handler
      */
 
-     drawArrow = function (x, y, w, h, manipulator) {
+    drawArrow = function (x, y, w, h, manipulator) {
         // x [55;295] y [10;350]
         var baseWidth = 160;//295-55;
         var baseHeight = 300;//385-10;
@@ -634,7 +640,7 @@ function SVGUtil() {
     //}
 
 
-     manageDnD = function (svgItem, manipulator) {
+    manageDnD = function (svgItem, manipulator) {
         var ref;
         var mousedownHandler = function (event) {
             event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
@@ -669,8 +675,8 @@ function SVGUtil() {
 /**
  * Created by ABL3483 on 10/03/2016.
  */
-    function Bdd() {
-     myColorsOld = {
+function Bdd() {
+    myColorsOld = {
         blue: {r: 25, g: 122, b: 230},
         primaryBlue: {r: 0, g: 0, b: 255},
         grey: {r: 125, g: 122, b: 117},
@@ -682,12 +688,12 @@ function SVGUtil() {
         white: {r: 255, g: 255, b: 255}
     };
 
-     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
-     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
+    REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
+    REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
 
-     MARGIN = 10;
+    MARGIN = 10;
 
-     myColors = {
+    myColors = {
         darkBlue: [25, 25, 112],
         blue: [25, 122, 230],
         primaryBlue: [0, 0, 255],
@@ -704,9 +710,9 @@ function SVGUtil() {
         none: []
     };
 
-     SELECTION_COLOR = myColors.darkBlue;
+    SELECTION_COLOR = myColors.darkBlue;
 
-     myBibImage = {
+    myBibImage = {
         title: "Bibliotheque",
         tabLib: [
             {imgSrc: "../resource/littleCat.png"},
@@ -718,7 +724,7 @@ function SVGUtil() {
         font: "Courier New", fontSize: 20
     };
 
-     defaultQuestion = {
+    defaultQuestion = {
         label: "", imageSrc: "", multipleChoice: false,
         tabAnswer: [
             {
@@ -733,7 +739,7 @@ function SVGUtil() {
         rows: 4, colorBordure: myColors.black, bgColor: myColors.white
     };
 
-     defaultQuizz = {
+    defaultQuizz = {
         title: "",
         bgColor: myColors.white,
         puzzleLines: 3,
@@ -741,7 +747,7 @@ function SVGUtil() {
         tabQuestions: [defaultQuestion]
     };
 
-     questionWithLabelImageAndMultipleAnswers = {
+    questionWithLabelImageAndMultipleAnswers = {
         label: "Une divinité féminine est une...", imageSrc: "../resource/millions.png", multipleChoice: true,
         tabAnswer: [
             {
@@ -764,7 +770,7 @@ function SVGUtil() {
         rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
     };
 
-     myQuestion2 =
+    myQuestion2 =
     {
         label: "Parmi ces fruits, lequel possède un noyau?", imageSrc: null, multipleChoice: true,
         tabAnswer: [
@@ -788,7 +794,7 @@ function SVGUtil() {
         rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
     };
 
-     myQuizz = {
+    myQuizz = {
         title: "Qui veut gagner des millions ? Quizz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
@@ -1086,7 +1092,7 @@ function SVGUtil() {
         ]
     };
 
-     myQuizzDemo = {
+    myQuizzDemo = {
         title: "Qui veut gagner des millions ? Quizz n°1",
         tabQuestions: [
             {
@@ -1218,7 +1224,7 @@ function SVGUtil() {
         bgColor: myColors.raspberry, puzzleLines: 3, puzzleRows: 1
     };
 
-     uniqueAnswerValidationTab = [
+    uniqueAnswerValidationTab = [
         function (quiz) {
             // Check Quiz Name:
             var isValid = (quiz.quizzName !== "");
@@ -1260,7 +1266,7 @@ function SVGUtil() {
         }
     ];
 
-     multipleAnswerValidationTab = [
+    multipleAnswerValidationTab = [
         function (quiz) {
             // Check Quiz Name:
             var isValid = (quiz.quizzName !== "");
@@ -1287,7 +1293,7 @@ function SVGUtil() {
         }
     ];
 
-     formationValidation = [
+    formationValidation = [
         function (formation) {
             // Check Formation Name:
             var isValid = (formation.formationName !== "");
@@ -1296,7 +1302,7 @@ function SVGUtil() {
         }
     ];
 
-     myQuizzType = {
+    myQuizzType = {
         //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
         tab: [{
             label: "Réponse unique",
@@ -1305,7 +1311,7 @@ function SVGUtil() {
         }, {label: "Réponses multiples", default: false, validationTab: multipleAnswerValidationTab}]
     };
 
-     statusEnum = {
+    statusEnum = {
         Published: {
             icon: function (x, y, size) {
                 var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
@@ -1325,7 +1331,7 @@ function SVGUtil() {
         NotPublished: {icon: null}
     };
 
-     myFormations = {
+    myFormations = {
         tab: [{label: "Hibernate", status: statusEnum.NotPublished}, {
             label: "Perturbation Ordre Alphabétique",
             status: statusEnum.Published
@@ -1344,7 +1350,7 @@ function SVGUtil() {
             }, {label: "AA"}, {label: "ZEdernier"}]
     };
 
-     myBibJeux = {
+    myBibJeux = {
         title: "Type de jeux",
         tabLib: [
             {label: "Quiz"},
@@ -1353,7 +1359,7 @@ function SVGUtil() {
         font: "Courier New", fontSize: 20
     };
 
-     myFormation = {
+    myFormation = {
         gamesCounter: {
             quizz: 0,
             bd: 0

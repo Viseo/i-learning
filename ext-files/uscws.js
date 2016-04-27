@@ -58,7 +58,6 @@ app.post('/rest', function(req, res) {
 });
 
 app.post('/log', function(req, res) {
-    console.log("ici");
     fs.appendFileSync("../log/data.json", JSON.stringify(req.body)+"\n");
     res.header("Access-Controll-Allow-Headers", "Access-Controll-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept");
     res.send({ack:'ok'});
