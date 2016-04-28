@@ -404,12 +404,16 @@ function FormationDisplayFormation(){
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-        self.labelHeight = self.formationLabel.content.component.getBBox().height;
-        self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN;
+        self.formationLabel.content.component.getBBox && (self.labelHeight = self.formationLabel.content.component.getBBox().height);
+        self.formationLabel.content.component.getBBox && (self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN);
+        self.formationLabel.content.component.target.getBBox && (self.labelHeight = self.formationLabel.content.component.target.getBBox().height);
+        self.formationLabel.content.component.target.getBBox && (self.labelWidth = self.formationLabel.content.component.target.getBBox().width + 2 * MARGIN);
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.title.component.getBBox && self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.title.component.target.getBBox && self.formationLabel.cadre.position(self.title.component.target.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-        self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
+        self.title.component.getBBox && self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
+        self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
         self.formationCreator = formationValidation;
@@ -474,7 +478,8 @@ function FormationDisplayFormation(){
     };
     showTitle();
 
-    self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
+    self.title.component.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
+    self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.target.getBBox().height);
 
     var onclickQuizzHandler = function(event){
         var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
@@ -513,8 +518,10 @@ function FormationDisplayFormation(){
         var gui = new Gui();
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
-        self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+        self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
+        self.clippingManipulator.last.component.setAttribute && self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.clippingManipulator.last.component.target.setAttribute && self.clippingManipulator.last.component.target.setAttribute("id", "anchorClipping");
         self.clipping = new Drawings(w, h, "anchorClipping");
         self.frame = new gui.Frame(w, h);
         self.clipping.drawing.manipulator.last.add(self.graphManipulator.first);
@@ -588,7 +595,8 @@ function FormationsManagerDisplay() {
         var gui = new Gui();
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
-        self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        !self.clippingManipulator.last.component.target && self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
+        self.clippingManipulator.last.component.target && self.clippingManipulator.last.component.target.setAttribute("id", "anchorClipping");
         self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, 4*(2*MARGIN+self.tileHeight), "anchorClipping");
         self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
@@ -660,10 +668,13 @@ function FormationsManagerDisplay() {
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
 
-        self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width;
+        self.toPublish.component.getBBox && (self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width);
+        self.toPublish.component.target.getBBox && (self.legendWidth = self.toPublish.component.target.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.target.getBBox().width);
 
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
+        self.published.component.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
+        self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.target.getBBox().width, 30);
+
 
         //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
         //self.checkManipulator.translator.move(self.published.component.getBBox().width, 0);

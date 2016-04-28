@@ -56,7 +56,7 @@ describe('Quizz game', function () {
             function () {
                 mainModule.main();
             },
-            "./log/scenar1500.json", 'content', runtime, done);
+            "./log/scenarQuizz.json", 'content', runtime, done);
     });
     it('should instantiate correctly my answer', function() {
         var answerJSON={
