@@ -22,10 +22,12 @@ function setUtil(_util){
 
 function setGlobalVariable() {
     util && util.SVGGlobalHandler();
-    var wind = window;
-    util && (wind=false);
-    clientWidth = wind ? document.body.clientWidth : 1500;
-    clientHeight = wind ? document.documentElement.clientHeight : 1500;
+    //var wind = !util && window;
+    //util && (wind=false);
+    //clientWidth = wind ? document.body.clientWidth : 1500;
+    //clientHeight = wind ? document.documentElement.clientHeight : 1500;
+    clientWidth = 1500;
+    clientHeight = 1500;
     drawings = new Drawings(clientWidth, clientHeight);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
@@ -35,7 +37,7 @@ function setGlobalVariable() {
 //mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
 function main() {
-    setGlobalVariable();
+    !util && setGlobalVariable();
 
   /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
     var quizz=new Quizz(myQuizz);

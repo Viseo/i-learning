@@ -12,7 +12,7 @@ var svgHandler = require('../ext-files/svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
 
-describe('Array', function() {
+describe('Mocha marche bien', function() {
     describe('#indexOf()', function () {
         it('should return -1 when the value is not present', function () {
             assert.equal(-1, [1,2,3].indexOf(5));
@@ -24,10 +24,6 @@ describe('Array', function() {
 var inspect = testutils.inspect;
 var checkScenario = testutils.checkScenario;
 
-//var playScenar = globalHandler.play;
-//var main = require("../src/main");
-
-
 var runtime;
 var svg;
 
@@ -37,20 +33,11 @@ describe('Quizz game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
 
-    //var testUtil = require("../test/Test-util");
-    //var globalHandler = require("../src/SVG-global-handler");
-    //var bdd = require("../src/Bdd");
-    //var quizz = require("../src/Quizz");
-    //var toto = require("../src/Toto");
-
-
     beforeEach(function () {
         runtime = mock.mockRuntime();
         runtime.declareAnchor('content');
         svg = SVG(runtime);
-        //globalHandler.setSvg(svg);
         util.setSvg(svg);
-        //util.SVGGlobalHandler();
         util.SVGUtil();
         util.Bdd();
         mainModule.setSvg(svg);
@@ -58,20 +45,9 @@ describe('Quizz game', function () {
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
-        //domain.setDrawing(globalVariables.drawing);
-        //domain.setMainManipulator(globalVariables.mainManipulator);
         domain.Domain();
         gui.setDomain(domain);
         gui.AdminGUI();
-        //mainModule.setGlobalHandler(globalHandler);
-        //toto.setGlobalHandler(globalHandler);
-        //mainModule.setToto(toto);
-        //
-        //mainModule.setBdd(bdd);
-        //mainModule.setQuizz(quizz);
-        //svgHandler.setSvg(svg);
-
-        //testUtil.set
     });
 
     it("plays a complete quizz game", function (done) {
@@ -79,18 +55,28 @@ describe('Quizz game', function () {
         checkScenario(
             function () {
                 mainModule.main();
-                //playHorses({
-                //    speed: 20,
-                //    horsesCount: 2,
-                //    players: {
-                //        green: {type: "bot"},
-                //        red: {type: "bot"},
-                //        blue: {type: "bot"},
-                //        yellow: {type: "bot"}
-                //    }
-                //});
             },
-            "./log/data.json", 'content', runtime, done);
+            "./log/scenar1500.json", 'content', runtime, done);
+    });
+    it('should instantiate correctly my answer', function() {
+        var answerJSON={
+            label:"My first answer is...",
+            imageSrc: "../resource/pomme.jpg",
+            correct: false,
+            colorBordure: {r: 155, g: 222, b: 17},
+            bgColor: {r: 125, g: 122, b: 117},
+            fontSize:20,
+            font:"Courier New"
+        };
+        var answer = new Answer(answerJSON);
+        assert.strictEqual(answer.correct,false);
+        assert.strictEqual(answer.label, "My first answer is...");
+        assert.strictEqual(answer.imageSrc, "../resource/pomme.jpg");
+        assert.deepEqual(answer.colorBordure,  {r: 155, g: 222, b: 17});
+        assert.deepEqual(answer.bgColor, {r: 125, g: 122, b: 117});
+        assert.strictEqual(answer.fontSize, 20);
+        assert.strictEqual(answer.font, "Courier New");
+
     });
 });
 
