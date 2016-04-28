@@ -526,7 +526,8 @@ function FormationDisplayFormation(){
 
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+        self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+        self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
 
         var gui = new Gui();
 
