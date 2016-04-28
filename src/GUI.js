@@ -505,8 +505,6 @@ function FormationDisplayFormation(){
         level.obj.content._acceptDrop = true;
         level.manipulator.first.move(-w/2, -h/2+level.y);
 
-        self.displayGraph(w,h);
-
     };
 
     self.displayFrame = function (w, h) {
@@ -527,7 +525,9 @@ function FormationDisplayFormation(){
         self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        self.messageDragDrop.position(0,-self.graphCreaHeight/2 +self.messageDragDropMargin + (self.levelsTab.length) * self.levelHeight).color(myColors.grey);//.fontStyle("italic");
+        self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0;
+        self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
+        self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
         self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
 
