@@ -444,7 +444,6 @@ var Level = function(formation, gamesTab){
             level.parentFormation.maxGameInARow = 13; // Pour les besoins du test de comportement ne soyez pas étonné
             if(spaceOccupied > (self.levelWidth - (level.obj.content.x + textDimensions.width/2))){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
-
             }
             level.gamesTab.forEach(function (game) {
                 var pos = game.getPositionInFormation();

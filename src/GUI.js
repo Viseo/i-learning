@@ -532,7 +532,10 @@ function FormationDisplayFormation(){
         var gui = new Gui();
 
         self.panel = new gui.Panel(w, h-4);
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
+        if(self.levelHeight*(self.levelsTab.length+1) > h) {
+            self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
+        }
+        console.log(self.levelHeight);
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
@@ -546,7 +549,7 @@ function FormationDisplayFormation(){
         (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight);
         self.borderSize = 3;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-        self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
+        self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.green, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0;
