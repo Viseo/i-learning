@@ -35,7 +35,7 @@ describe('Quizz game', function () {
     var util = require("../src/Util");
     var gui = require("../src/GUI");
     var domain = require("../src/Domain");
-    var mainModule = require("../src/main");
+    var mainModule = require("../old_files/main");
 
     //var testUtil = require("../test/Test-util");
     //var globalHandler = require("../src/SVG-global-handler");

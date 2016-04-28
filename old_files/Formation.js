@@ -332,7 +332,7 @@ var Formation = function(formation){
     self.adjustGamesPositions = function(level){
         var nbOfGames = level.gamesTab.length;
         var spaceOccupied = (nbOfGames)*(self.minimalMarginBetweenGraphElements)+self.graphElementSize*nbOfGames;
-
+        //if(spaceOccupied > (self.levelWidth-))
         level.gamesTab.forEach(function(game){
             var pos = game.getPositionInFormation();
 
