@@ -503,11 +503,7 @@ function FormationDisplayFormation(){
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
-        //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
-        //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
-        //console.log(self.gamesTab);
-        //var test = self.gamesTab[0][0].label;
-        level.manipulator.first.move(-w/2,-h/2+level.y);
+        level.manipulator.first.move(-w/2, -h/2+level.y);
 
         self.displayGraph(w,h);
 
@@ -636,7 +632,7 @@ function FormationsManagerDisplay() {
         self.addFormationButton = new svg.Text("Ajouter une formation");
         self.addFormationButton.position(MARGIN + self.plusDim, MARGIN / 2).font("Arial", 20).anchor("start");
         self.addButtonManipulator.last.add(self.addFormationButton);
-        self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(+self.addButtonWidth / 2 - MARGIN, 0);
+        self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(self.addButtonWidth / 2 - MARGIN, 0);
         self.addButtonManipulator.ordonator.set(0, self.addFormationCadre);
 
         self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight, self.addButtonHeight);
