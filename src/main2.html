@@ -28,13 +28,6 @@
 
 <script>
     var param = {speed: 50, step: 10};
-    var imageController = ImageController();
-    var asyncTimerController=AsyncTimerController();
-
-    var drawings = new Drawings(document.body.clientWidth, document.documentElement.clientHeight);
-    var drawing = drawings.drawing;
-    var mainManipulator = drawing.manipulator;
-
     var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
 

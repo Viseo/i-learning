@@ -26,8 +26,6 @@ function setGlobalVariable() {
     util && (wind=false);
     clientWidth = wind ? document.body.clientWidth : 1500;
     clientHeight = wind ? document.documentElement.clientHeight : 1500;
-//var imageController = ImageController();
-//var asyncTimerController=AsyncTimerController();
     drawings = new Drawings(clientWidth, clientHeight);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
