@@ -360,7 +360,7 @@ var Level = function(formation, gamesTab){
         self.bibWidthRatio = 0.15;
         self.graphWidthRatio = 1 - self.bibWidthRatio;
         self.bibWidth = drawing.width * self.bibWidthRatio;
-        self.graphCreaWidth = drawing.width * self.graphWidthRatio;
+        self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
         // HEIGHT
         self.graphCreaHeightRatio = 0.85;
