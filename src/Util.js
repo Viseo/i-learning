@@ -694,7 +694,7 @@ function Bdd() {
 
     MARGIN = 10;
 
-    var myColors = {
+    myColors = {
         darkBlue: [25, 25, 112],
         blue:[25, 122, 230],
         primaryBlue:[0, 0, 255],
