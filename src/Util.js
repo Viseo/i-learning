@@ -696,19 +696,21 @@ function Bdd() {
 
     myColors = {
         darkBlue: [25, 25, 112],
-        blue: [25, 122, 230],
-        primaryBlue: [0, 0, 255],
-        grey: [125, 122, 117],
-        lightgrey: [242, 242, 241],
-        orange: [230, 122, 25],
-        purple: [170, 100, 170],
-        green: [155, 222, 17],
-        raspberry: [194, 46, 83],
-        black: [0, 0, 0],
-        white: [255, 255, 255],
-        red: [255, 0, 0],
-        yellow: [255, 255, 0],
-        none: []
+        blue:[25, 122, 230],
+        primaryBlue:[0, 0, 255],
+        grey:[125, 122, 117],
+        lightgrey:[242,242,241],
+        orange:[230, 122, 25],
+        purple:[170, 100, 170],
+        green:[155, 222, 17],
+        raspberry:[194, 46, 83],
+        black:[0, 0, 0],
+        white:[255, 255, 255],
+        red:[255, 0, 0],
+        yellow:[255,255,0],
+        pink:[255,20,147],
+        brown:[128,0,0],
+        none:[]
     };
 
     SELECTION_COLOR = myColors.darkBlue;

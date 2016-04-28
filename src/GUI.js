@@ -266,7 +266,6 @@ function AnswerElementDisplay(x, y, w, h) {
         else{
             self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
             self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
-
         }
         self.obj.cadre.fillOpacity(0.001);
         self.obj.content.color(color);
@@ -489,9 +488,9 @@ function FormationDisplayFormation(){
         // enlève le bandeau avant de display le quizzManager !_!
         mainManipulator.ordonator.unset(0);
     };
-        self.displayLevel = function(w, h, level){
-            self.levelWidth = w;
-            self.graphManipulator.last.add(level.manipulator.first);
+    self.displayLevel = function(w, h, level){
+        self.levelWidth = w;
+        self.graphManipulator.last.add(level.manipulator.first);
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
@@ -504,11 +503,7 @@ function FormationDisplayFormation(){
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
-        //self.gamesTab[self.gamesTab.length-1].push(displayTextWithCircle("toto", 50, 50, myColors.red, myColors.white, 20, null, level.manipulator));
-        //self.gamesTab[self.gamesTab.length-1].push({type: "Quiz", label: "Quiz " + self.gamesCounter.quizz});
-        //console.log(self.gamesTab);
-        //var test = self.gamesTab[0][0].label;
-        level.manipulator.first.move(-w/2,-h/2+level.y);
+        level.manipulator.first.move(-w/2, -h/2+level.y);
 
         self.displayGraph(w,h);
 
@@ -547,17 +542,17 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator = new Manipulator(tabElement);
                 self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
-                    var testGame = tabElement.displayMiniature(self.graphElementSize);
-                    if(tabElement instanceof Quizz){
-                        svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
-                        svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
-                    }else if(tabElement instanceof Bd){
-                        // Ouvrir le Bd creator du futur jeu Bd
-                    }
-                    count ++;
-                });
-            }
-        };
+                var testGame = tabElement.displayMiniature(self.graphElementSize);
+                if(tabElement instanceof Quizz){
+                    svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
+                }else if(tabElement instanceof Bd){
+                    // Ouvrir le Bd creator du futur jeu Bd
+                }
+                count ++;
+            });
+        }
+    };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
 }
@@ -566,11 +561,11 @@ function FormationDisplayErrorMessage(message){
     var self = this;
     self.errorMessageDisplayed = autoAdjustText(message, 0, 0, self.graphCreaWidth, self.graphCreaHeight, 20, null, self.manipulator).text
         .color(myColors.red).position(drawing.width - MARGIN, 0).anchor("end");
-};
+}
 
 function FormationRemoveErrorMessage(message) {
     message && message.parent && message.parent.remove(message);
-};
+}
 
 function FormationsManagerDisplay() {
     var self=this;
@@ -629,107 +624,107 @@ function FormationsManagerDisplay() {
         formation.displayFormation();
     }
 
-        self.header.display();
-        displayPanel();
-        self.displayHeaderFormations = function () {
-            self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-            self.headerManipulator.last.add(self.title);
-            self.addFormationButton = new svg.Text("Ajouter une formation");
-            self.addFormationButton.position(MARGIN + self.plusDim, MARGIN / 2).font("Arial", 20).anchor("start");
-            self.addButtonManipulator.last.add(self.addFormationButton);
-            self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(+self.addButtonWidth / 2 - MARGIN, 0);
-            self.addButtonManipulator.ordonator.set(0, self.addFormationCadre);
+    self.header.display();
+    displayPanel();
+    self.displayHeaderFormations = function () {
+        self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
+        self.headerManipulator.last.add(self.title);
+        self.addFormationButton = new svg.Text("Ajouter une formation");
+        self.addFormationButton.position(MARGIN + self.plusDim, MARGIN / 2).font("Arial", 20).anchor("start");
+        self.addButtonManipulator.last.add(self.addFormationButton);
+        self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(self.addButtonWidth / 2 - MARGIN, 0);
+        self.addButtonManipulator.ordonator.set(0, self.addFormationCadre);
 
-            self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight, self.addButtonHeight);
-            self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
-            self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
-            self.addFormationObject.circle.position(MARGIN, 0);
+        self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight, self.addButtonHeight);
+        self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
+        self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
+        self.addFormationObject.circle.position(MARGIN, 0);
 
-            svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
-            svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
-            svg.addEvent(self.addFormationCadre, "click", onClickNewFormation);
-            svg.addEvent(self.addFormationButton, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationCadre, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationButton, "click", onClickNewFormation);
 
-            self.legendDim = self.plusDim / 2;
+        self.legendDim = self.plusDim / 2;
 
-            self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
-            self.checkManipulator.ordonator.set(2, self.checkLegend.square);
-            self.checkManipulator.ordonator.set(3, self.checkLegend.check);
-            self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator).text.anchor("start");
-            self.published.position(25, self.published.y);
+        self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
+        self.checkManipulator.ordonator.set(2, self.checkLegend.square);
+        self.checkManipulator.ordonator.set(3, self.checkLegend.check);
+        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator).text.anchor("start");
+        self.published.position(25, self.published.y);
 
-            self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
-            self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
-            self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
-            self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
-            self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator).text.anchor("start");
-            self.toPublish.position(25, self.toPublish.y);
+        self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
+        self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
+        self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
+        self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
+        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator).text.anchor("start");
+        self.toPublish.position(25, self.toPublish.y);
 
-            self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width;
+        self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width;
 
-            self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-            self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
+        self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
+        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
 
-            //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
-            //self.checkManipulator.translator.move(self.published.component.getBBox().width, 0);
-            //self.exclamationManipulator.translator.move(2 * self.published.component.getBBox().width, 0);
-            //self.toPublish.position(self.toPublish.component.getBBox().width / 2 + self.legendDim, self.toPublish.y);
-        };
+        //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
+        //self.checkManipulator.translator.move(self.published.component.getBBox().width, 0);
+        //self.exclamationManipulator.translator.move(2 * self.published.component.getBBox().width, 0);
+        //self.toPublish.position(self.toPublish.component.getBBox().width / 2 + self.legendDim, self.toPublish.y);
+    };
 
-        self.formations.sort(function (a, b) {
-            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
-            if (nameA < nameB)
-                return -1;
-            if (nameA > nameB)
-                return 1;
-            return 0
-        });
+    self.formations.sort(function (a, b) {
+        var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
+        if (nameA < nameB)
+            return -1;
+        if (nameA > nameB)
+            return 1;
+        return 0
+    });
 
-        self.displayHeaderFormations();
-        self.displayFormations = function () {
-            var posx = self.initialFormationsPosX;
-            var posy = MARGIN;
-            var count = 0;
-            for (var i = 0; i < self.formations.length; i++) {
-                if (i !== 0) {
-                    posx += (self.tileWidth + 2 * MARGIN);
-                }
-                if (count > (self.rows - 1)) {
-                    count = 0;
-                    posy += (self.tileHeight + 2 * MARGIN);
-                    posx = self.initialFormationsPosX;
-                }
-
-                self.formations[i].parent = self;
-                self.panel.content.add(self.formations[i].manipulatorMiniature.first);
-                //self.formationsManipulator.translator.move(self.tileWidth / 2 - MARGIN, self.tileHeight / 2 + 3 * MARGIN);
-                self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-                self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
-                (function (element) {
-                    if (element.miniature.cadre) {
-                        svg.addEvent(element.miniature.cadre, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.content) {
-                        svg.addEvent(element.miniature.content, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.image) {
-                        svg.addEvent(element.miniature.image, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                })(self.formations[i]);
-                count++;
+    self.displayHeaderFormations();
+    self.displayFormations = function () {
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
+        var count = 0;
+        for (var i = 0; i < self.formations.length; i++) {
+            if (i !== 0) {
+                posx += (self.tileWidth + 2 * MARGIN);
             }
-        };
-        self.displayFormations();
+            if (count > (self.rows - 1)) {
+                count = 0;
+                posy += (self.tileHeight + 2 * MARGIN);
+                posx = self.initialFormationsPosX;
+            }
+
+            self.formations[i].parent = self;
+            self.panel.content.add(self.formations[i].manipulatorMiniature.first);
+            //self.formationsManipulator.translator.move(self.tileWidth / 2 - MARGIN, self.tileHeight / 2 + 3 * MARGIN);
+            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+
+            (function (element) {
+                if (element.miniature.cadre) {
+                    svg.addEvent(element.miniature.cadre, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.content) {
+                    svg.addEvent(element.miniature.content, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.image) {
+                    svg.addEvent(element.miniature.image, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+            })(self.formations[i]);
+            count++;
+        }
+    };
+    self.displayFormations();
 
 }
 
