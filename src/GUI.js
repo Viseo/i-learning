@@ -513,23 +513,39 @@ function FormationDisplayFormation(){
     };
 
     self.displayFrame = function (w, h) {
-        var gui = new Gui();
+        window.onkeydown = function (event) {
+            if(hasKeyDownEvent(event)) {
+                event.preventDefault();
+            }
+        };
+
+        hasKeyDownEvent = function (event) {
+            self.target = self.panel;
+            return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+        };
+
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
-        self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
-        self.clippingManipulator.last.component.setAttribute && self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
-        self.clippingManipulator.last.component.target.setAttribute && self.clippingManipulator.last.component.target.setAttribute("id", "anchorClipping");
-        self.clipping = new Drawings(w, h, "anchorClipping");
-        self.frame = new gui.Frame(w, h);
-        self.clipping.drawing.manipulator.last.add(self.graphManipulator.first);
-        self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
+        self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
+
+        var gui = new Gui();
+
+        self.panel = new gui.Panel(w, h-4);
+        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
+        self.panel.component.move(w/2, h/2);
+        self.clippingManipulator.last.add(self.panel.component);
+        self.panel.border.color(myColors.none, 3, myColors.black);
+        self.panel.content.add(self.graphManipulator.first);
+
+        self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     };
 
     self.displayGraph = function (w, h){
+        var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
+        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight);
         self.borderSize = 3;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-        self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.black)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
+        self.graphBlock = {rect: new svg.Rect(w-self.borderSize, h-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0;
@@ -537,6 +553,8 @@ function FormationDisplayFormation(){
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
         self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
+
+        //self.frame.resize(self.levelWidth, self.levelHeight);
 
         var count = 1;
         for(var i = 0; i<self.levelsTab.length; i++){
@@ -595,19 +613,12 @@ function FormationsManagerDisplay() {
         var gui = new Gui();
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
-        !self.clippingManipulator.last.component.target && self.clippingManipulator.last.component.setAttribute("id", "anchorClipping");
-        self.clippingManipulator.last.component.target && self.clippingManipulator.last.component.target.setAttribute("id", "anchorClipping");
-        self.clipping = new Drawings(6*(MARGIN+self.tileWidth)+self.tileWidth/2, 4*(2*MARGIN+self.tileHeight), "anchorClipping");
         self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
-        self.clipping.drawing.manipulator.last.add(self.formationsManipulator.first);
-        self.clipping.drawing.manipulator.last.add(self.panel.translate);
-        self.formationsManipulator.last.add(self.panel.content);
-        self.clippingManipulator.last.add(self.panel.component);
         self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
-        self.formationsManipulator.translator.move(self.tileWidth / 2, self.tileHeight/2);
-        self.clippingManipulator.last.children.push(self.clipping.drawing.manipulator.first);
-
+        self.clippingManipulator.last.add(self.panel.component);
+        self.panel.content.add(self.formationsManipulator.first);
+        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
 
@@ -707,7 +718,7 @@ function FormationsManagerDisplay() {
             }
 
             self.formations[i].parent = self;
-            self.panel.content.add(self.formations[i].manipulatorMiniature.first);
+            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
             //self.formationsManipulator.translator.move(self.tileWidth / 2 - MARGIN, self.tileHeight / 2 + 3 * MARGIN);
             self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
             self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
