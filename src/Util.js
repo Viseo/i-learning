@@ -103,6 +103,7 @@ function SVGGlobalHandler() {
 
         var onmouseupHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
+            console.log(self.target);
             if (self.target) {
                 if (self.target.component.eventHandlers && self.target.component.eventHandlers.mouseup) {
                     self.target.component.eventHandlers.mouseup(event);
