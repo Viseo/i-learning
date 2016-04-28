@@ -22,12 +22,12 @@ function setUtil(_util){
 
 function setGlobalVariable() {
     util && util.SVGGlobalHandler();
-    var wind = !util && window;
-    util && (wind=false);
-    clientWidth = wind ? document.body.clientWidth : 1500;
-    clientHeight = wind ? document.documentElement.clientHeight : 1500;
-    //clientWidth = 1500;
-    //clientHeight = 1500;
+    //var wind = !util && window;
+    //util && (wind=false);
+    //clientWidth = wind ? document.body.clientWidth : 1500;
+    //clientHeight = wind ? document.documentElement.clientHeight : 1500;
+    clientWidth = 1500;
+    clientHeight = 1000;
     drawings = new Drawings(clientWidth, clientHeight);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;

@@ -110,7 +110,7 @@ function LibraryDisplay(x,y,w,h){
 
     self.bibManipulators.forEach(function(e){
         svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
-            e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
+            e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
@@ -174,8 +174,11 @@ function LibraryDisplay(x,y,w,h){
             };
 
 
-            drawings.glass.component.eventHandlers.mousedown(event);
-            svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
+            drawings.glass.component.eventHandlers && drawings.glass.component.eventHandlers.mousedown(event);
+            drawings.glass.component.target.eventHandlers && drawings.glass.component.target.eventHandlers.mousedown(event);
+
+            img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
+            img.component.target.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
             //img.component.eventHandlers.mouseup(event);
             //img.component.eventHandlers.mousedown(event);
@@ -197,7 +200,8 @@ function AddEmptyElementDisplay(x, y, w, h) {
     self.obj.content.position(0,h*0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
-    self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
+    self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
+    self.obj.cadre.component.target.setAttribute && self.obj.cadre.component.target.setAttribute("stroke-dasharray", [10, 5]);
 
     var dblclickEdition = function () {
         switch (self.type) {
@@ -280,7 +284,8 @@ function AnswerElementDisplay(x, y, w, h) {
         var contentarea = document.createElement("TEXTAREA");
         contentarea.value = self.label;
         contentarea.width = w;
-        contentarea.height = self.obj.content.component.getBBox().height;
+        self.obj.content.component.getBBox && (contentarea.height = self.obj.content.component.getBBox().height);
+        self.obj.content.component.target.getBBox && (contentarea.height = self.obj.content.component.target.getBBox().height);
         contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
         self.manipulator.ordonator.unset(1, self.obj.content);
         var contentareaStyle = {
@@ -499,12 +504,16 @@ function FormationDisplayFormation(){
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
-        level.obj.line.component.setAttribute("stroke-dasharray", 6);
+        level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
+        level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
 
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-        level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
-        self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+
+        level.obj.content.component.getBBox && level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
+        level.obj.content.component.target.getBBox && level.obj.content.position(level.obj.content.component.target.getBBox().width, self.messageDragDropMargin);
+        self.title.component.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+        self.title.component.target.getBBox && self.messageDragDrop.position(w/2, self.title.component.target.getBBox().height + 3*self.messageDragDropMargin);
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
@@ -552,7 +561,8 @@ function FormationDisplayFormation(){
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.green, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0;
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0);
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -1599,7 +1609,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBBox().width;
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height;
+        self.quizzLabel.content.component.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height);
+        self.quizzLabel.content.component.target.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBBox().height);
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
@@ -1611,7 +1622,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     };
 
     var dblclickEdition = function (event) {
-        var width = self.quizzLabel.content.component.getBBox().width;
+        var width;
+        self.quizzLabel.content.component.getBBox && (width = self.quizzLabel.content.component.getBBox().width);
         //self.quizzInfoManipulator.ordonator.unset(0);
         self.quizzInfoManipulator.ordonator.unset(1);
 

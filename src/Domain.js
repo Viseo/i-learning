@@ -166,7 +166,7 @@ function Domain() {
                         oldQuest.cadre.width, oldQuest.cadre.height,
                         oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
                     );
-                    target.parent.children[0].add(newQuest);
+                    //target.parent.children[0].add && target.parent.children[0].add(newQuest);
                     oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
                     oldQuest.content.position(newQuest.content.x, newQuest.content.y);
 
@@ -440,7 +440,9 @@ var Level = function(formation, gamesTab){
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
-            var textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height};
+            var textDimensions;
+            level.obj.content.component.getBBox && (textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height});
+            level.obj.content.component.target.getBBox && (textDimensions = {width:level.obj.content.component.target.getBBox().width, height:level.obj.content.component.target.getBBox().height});
             level.parentFormation.maxGameInARow = 13; // Pour les besoins du test de comportement ne soyez pas étonné
             if(spaceOccupied > (self.levelWidth - (level.obj.content.x + textDimensions.width/2))){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);

@@ -58,6 +58,14 @@ describe('Quizz game', function () {
             },
             "./log/scenarQuizz.json", 'content', runtime, done);
     });
+    it("an admin use", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                mainModule.main();
+            },
+            "./log/scenarAdmin.json", 'content', runtime, done);
+    });
     it('should instantiate correctly my answer', function() {
         var answerJSON={
             label:"My first answer is...",

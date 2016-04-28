@@ -80,6 +80,9 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
                 self.target.component.eventHandlers.mousedown(event);
             }
+            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
+                self.target.component.target.eventHandlers.mousedown(event);
+            }
         };
 
         svg.addEvent(self.glass, "mousedown", onmousedownHandler);
@@ -89,6 +92,9 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousemove) {
                 self.target.component.eventHandlers.mousemove(event);
             }
+            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousemove) {
+                self.target.component.target.eventHandlers.mousemove(event);
+            }
         };
 
         svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
@@ -97,6 +103,9 @@ function SVGGlobalHandler() {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
                 self.target.component.eventHandlers.dblclick(event);
+            }
+            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
+                self.target.component.target.eventHandlers.dblclick(event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
