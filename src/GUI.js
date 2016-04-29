@@ -474,7 +474,7 @@ function FormationDisplayFormation(){
         mainManipulator.ordonator.unset(0);
     };
     self.displayLevel = function(w, h, level){
-        self.levelWidth = w;
+        //self.levelWidth = w;
         self.graphManipulator.last.add(level.manipulator.first);
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
