@@ -2,3 +2,5 @@
 .idea/workspace.xml
 
 coverage/
+log/data.json
+node_modules/

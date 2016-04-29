@@ -80,6 +80,9 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
                 self.target.component.eventHandlers.mousedown(event);
             }
+            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
+                self.target.component.target.eventHandlers.mousedown(event);
+            }
         };
 
         svg.addEvent(self.glass, "mousedown", onmousedownHandler);
@@ -88,6 +91,9 @@ function SVGGlobalHandler() {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousemove) {
                 self.target.component.eventHandlers.mousemove(event);
+            }
+            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousemove) {
+                self.target.component.target.eventHandlers.mousemove(event);
             }
         };
 
@@ -98,11 +104,15 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
                 self.target.component.eventHandlers.dblclick(event);
             }
+            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
+                self.target.component.target.eventHandlers.dblclick(event);
+            }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
+            console.log(self.target);
             if (self.target) {
                 if (self.target.component.eventHandlers && self.target.component.eventHandlers.mouseup) {
                     self.target.component.eventHandlers.mouseup(event);
@@ -411,7 +421,8 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.position(0, content.component.getBBox().height / 4);
+        content.component.getBBox && content.position(0, content.component.getBBox().height / 4);
+        content.component.target.getBBox && content.position(0, content.component.target.getBBox().height / 4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
