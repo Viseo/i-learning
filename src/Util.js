@@ -8,7 +8,7 @@
  * Created by ACA3502 on 23/03/2016.
  */
 var svg;
-
+var gui = new Gui();
 if(typeof SVG != "undefined") {
     if(!svg) {
         svg = new SVG();
@@ -80,7 +80,7 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
                 self.target.component.eventHandlers.mousedown(event);
             }
-            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
+            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
                 self.target.component.target.eventHandlers.mousedown(event);
             }
         };
@@ -160,6 +160,87 @@ function SVGGlobalHandler() {
         });
     };
 
+    gui.Panel.prototype.addhHandle = function () {
+        var self = this;
+        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
+        this.component.add(self.hHandle.component);
+        function hHandleCallback(position) {
+            var y = self.content.y;
+            var x = -position * self.content.width / self.view.width + self.view.width / 2;
+            self.content.move(x, y);
+        }
+    };
+    gui.Panel.prototype.resizeContentW = function (width) {
+        if (width>this.width) {
+            this.content.width = width;
+            var height = this.content.height;
+            this.back.position(width / 2, height / 2);
+            this.back.dimension(width, height);
+            this.updateHandleH();
+        }
+        return this;
+    };
+    gui.Panel.prototype.updateHandleH = function () {
+        this.hHandle.dimension(this.view.width, this.content.width)
+            .position((this.view.width/2-this.content.x)/(this.content.width)*this.view.width);
+        return this;
+    };
+    gui.Panel.prototype.moveContentH = function (x) {
+        var self=this;
+        if (!self.animation) {
+            self.animation = true;
+            var lx = this.controlPositionH(x);
+            this.content.onChannel().smoothy(param.speed, param.step)
+                .execute(completeMovement).moveTo(lx, this.content.y);
+        }
+        function completeMovement(progress) {
+            self.updateHandle();
+            if (progress===1) {
+                delete self.animation;
+            }
+        }
+        return this;
+    };
+    gui.Panel.prototype.controlPositionH = function(x) {
+        if (x > 0) {
+            x = 0;
+        }
+        if (x < -this.content.width + this.view.width) {
+            x = -this.content.width + this.view.width;
+        }
+        return x;
+    };
+    gui.Panel.prototype.processKeys = function(keycode) {
+        if (isUpArrow(keycode)) {
+            this.moveContent(this.content.y + 100);
+        }
+        else if (isDownArrow(keycode)) {
+            this.moveContent(this.content.y - 100);
+        }
+        else if(isLeftArrow(keycode)) {
+            this.moveContentH(this.content.x+100);
+        }
+        else if(isRightArrow(keycode)) {
+            this.moveContentH(this.content.x-100);
+        }
+        else {
+            return false;
+        }
+        return true;
+
+        function isUpArrow(keycode) {
+            return keycode === 38;
+        }
+        function isLeftArrow(keycode) {
+            return keycode === 37;
+        }
+        function isRightArrow(keycode) {
+            return keycode === 39;
+        }
+        function isDownArrow(keycode) {
+            return keycode === 40;
+        }
+    };
     ImageController = function (imageRuntime) {
         return imageRuntime || {
                 getImage: function (imgUrl, onloadHandler) {
@@ -422,7 +503,7 @@ function SVGUtil() {
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         content.component.getBBox && content.position(0, content.component.getBBox().height / 4);
-        content.component.target.getBBox && content.position(0, content.component.target.getBBox().height / 4);
+        content.component.target && content.component.target.getBBox && content.position(0, content.component.target.getBBox().height / 4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};

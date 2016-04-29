@@ -468,7 +468,7 @@ function Gui() {
             self.animation = true;
             var ly = this.controlPosition(y);
             this.content.onChannel().smoothy(param.speed, param.step)
-                .execute(completeMovement).moveTo(0, ly);
+                .execute(completeMovement).moveTo(this.content.x, ly);
         }
         function completeMovement(progress) {
             self.updateHandle();

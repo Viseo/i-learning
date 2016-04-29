@@ -450,7 +450,7 @@ var Level = function(formation, gamesTab){
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             var textDimensions;
             level.obj.content.component.getBBox && (textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height});
-            level.obj.content.component.target.getBBox && (textDimensions = {width:level.obj.content.component.target.getBBox().width, height:level.obj.content.component.target.getBBox().height});
+            level.obj.content.component.target && level.obj.content.component.target.getBBox && (textDimensions = {width:level.obj.content.component.target.getBBox().width, height:level.obj.content.component.target.getBBox().height});
 
             if((spaceOccupied > (self.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);

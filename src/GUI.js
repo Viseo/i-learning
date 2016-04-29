@@ -166,10 +166,10 @@ function LibraryDisplay(x,y,w,h){
             };
 
             drawings.glass.component.eventHandlers && drawings.glass.component.eventHandlers.mousedown(event);
-            drawings.glass.component.target.eventHandlers && drawings.glass.component.target.eventHandlers.mousedown(event);
+            drawings.glass.component.target && drawings.glass.component.target.eventHandlers && drawings.glass.component.target.eventHandlers.mousedown(event);
 
             img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
-            img.component.target.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
+            img.component.target && img.component.target.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
         });
     });
@@ -388,14 +388,14 @@ function FormationDisplayFormation(){
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.formationLabel.content.component.getBBox && (self.labelHeight = self.formationLabel.content.component.getBBox().height);
         self.formationLabel.content.component.getBBox && (self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN);
-        self.formationLabel.content.component.target.getBBox && (self.labelHeight = self.formationLabel.content.component.target.getBBox().height);
-        self.formationLabel.content.component.target.getBBox && (self.labelWidth = self.formationLabel.content.component.target.getBBox().width + 2 * MARGIN);
+        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelHeight = self.formationLabel.content.component.target.getBBox().height);
+        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelWidth = self.formationLabel.content.component.target.getBBox().width + 2 * MARGIN);
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
         self.title.component.getBBox && self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        self.title.component.target.getBBox && self.formationLabel.cadre.position(self.title.component.target.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.cadre.position(self.title.component.target.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.title.component.getBBox && self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
-        self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
+        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
         self.formationCreator = formationValidation;
@@ -460,7 +460,7 @@ function FormationDisplayFormation(){
     showTitle();
 
     self.title.component.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
-    self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.target.getBBox().height);
+    self.title.component.target && self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.target.getBBox().height);
 
     var onclickQuizzHandler = function(event){
         var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
@@ -480,7 +480,7 @@ function FormationDisplayFormation(){
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
-        level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
+        level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
         self.textLevelNumberDimensions = {
             width: level.obj.content.component.getBBox().width,
             height:level.obj.content.component.getBBox().height
@@ -489,9 +489,9 @@ function FormationDisplayFormation(){
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
 
         level.obj.content.component.getBBox && level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
-        level.obj.content.component.target.getBBox && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
+        level.obj.content.component.target && level.obj.content.component.target.getBBox && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
         self.title.component.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
-        self.title.component.target.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+        self.title.component.target && self.title.component.target.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
@@ -513,23 +513,25 @@ function FormationDisplayFormation(){
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
-        self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
-
-        var gui = new Gui();
+        self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
 
         self.panel = new gui.Panel(w, h-4);
+        self.panel.addhHandle();
         (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.content.add(self.graphManipulator.first);
-
+        self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     };
 
     self.displayGraph = function (w, h){
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(height);
+        var width = (self.levelWidth > w) ? self.levelWidth : w;
+        console.log(self.levelWidth);
+        self.panel.resizeContent(height);
+        self.panel.resizeContentW(width);
         self.borderSize = 3;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
@@ -537,7 +539,7 @@ function FormationDisplayFormation(){
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 :0);
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 :0);
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -599,7 +601,6 @@ function FormationsManagerDisplay() {
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
 
-        var gui = new Gui();
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
         self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
@@ -669,11 +670,11 @@ function FormationsManagerDisplay() {
         self.toPublish.position(25, self.toPublish.y);
 
         self.toPublish.component.getBBox && (self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width);
-        self.toPublish.component.target.getBBox && (self.legendWidth = self.toPublish.component.target.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.target.getBBox().width);
+        self.toPublish.component.target && self.toPublish.component.target.getBBox && (self.legendWidth = self.toPublish.component.target.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.target.getBBox().width);
 
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
         self.published.component.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
-        self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.target.getBBox().width, 30);
+        self.published.component.target && self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.target.getBBox().width, 30);
 
 
         //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
