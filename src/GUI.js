@@ -50,7 +50,6 @@ function AnswerDisplay (x, y, w, h) {
 
     }
     if(this.selected){// image pré-selectionnée
-        //this.bordure.color(null,5,myColors.red);
         this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
 
     }
@@ -139,7 +138,6 @@ function LibraryDisplay(x,y,w,h){
                             target.color(myColors.white, 3, SELECTION_COLOR);
                             e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
                             self.gameSelected = e.objectTotal;
-
                         }
                         else{
                             e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
@@ -149,17 +147,12 @@ function LibraryDisplay(x,y,w,h){
                     else{
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                     }
-
                 });
-                //svg.addEvent(target, 'mouseup', mouseupHandler);
-                //console.log(target);
-                //target.component.eventHandlers.mouseup();
             };
 
             var mouseupHandler = function(event){
                 var img = manip.ordonator.children.shift();
                 manip.first.parent.remove(manip.first);
-                // fonction qui accepte/refuse le drop
                 var target = drawing.getTarget(event.clientX, event.clientY);
                 if(!(target instanceof svg.Circle)){
                     self.dropAction(img, event);
@@ -170,19 +163,12 @@ function LibraryDisplay(x,y,w,h){
                     self.formation.clickToAdd();
                 }
                 self.draggedObjectLabel = "";
-
             };
-
 
             drawings.glass.component.eventHandlers.mousedown(event);
             svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
-            //img.component.eventHandlers.mouseup(event);
-            //img.component.eventHandlers.mousedown(event);
         });
-        console.log(e.ordonator.get(0));
-        // manageDnD(e.ordonator.children[0],e);
-
     });
 
 }
@@ -207,10 +193,10 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
                 self.plusManipulator.last.flush();
-                //self.manipulator.last.remove(self.plus);
-                self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
 
+                self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
                 self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
+
                 if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
                     self.parent.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
                 }
@@ -252,16 +238,14 @@ function AddEmptyElementDisplay(x, y, w, h) {
 }
 
 function AnswerElementDisplay(x, y, w, h) {
-    var self=this;
-    self.checkboxSize=h*0.2;
+    var self = this;
+    self.checkboxSize = h*0.2;
     var showTitle = function () {
         var text = (self.label) ? self.label : self.labelDefault;
         var color = (self.label) ? myColors.black : myColors.grey;
         if(self.linkedAnswer.image){
             self.img = self.linkedAnswer.image;
             self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
-            //self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
-
         }
         else{
             self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
@@ -325,9 +309,6 @@ function AnswerElementDisplay(x, y, w, h) {
                 self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
                 self.obj.checkbox.answerParent = self;
             }
-            /*if(self.checkbox.checked) {
-             self.checkbox.checked.toFront();
-             };*/
         };
         contentarea.oninput = function () {
             self.checkInputContentArea({
@@ -356,8 +337,6 @@ function AnswerElementDisplay(x, y, w, h) {
         self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
         self.obj.checkbox.answerParent = self;
     }
-    // self.cBLabel = new svg.Text("Bonne réponse").position(x+2*self.checkboxSize, y+h-self.checkboxSize).font("arial", 20).anchor("start");
-    // self.manipulator.ordonator.set(6, self.cBLabel);
     self.manipulator.ordonator.children.forEach(function(e) {
         e._acceptDrop = true;
     });
@@ -384,9 +363,7 @@ function FormationDisplayMiniature (w,h) {
 }
 
 function FormationDisplayFormation(){
-    var self=this;
-
-    //self.bib = new BibJeux(myBibJeux);
+    var self = this;
 
     self.manipulator.first.move(0, drawing.height*0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
@@ -461,7 +438,6 @@ function FormationDisplayFormation(){
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
-            //self.formationCreator.checkInputTextArea(textarea, "formationNameValidInput", onblur, self.formationLabel.cadre);
         };
         textarea.onblur = onblur;
         self.checkInputTextArea({
@@ -485,7 +461,6 @@ function FormationDisplayFormation(){
             window.getSelection().removeAllRanges();
         else if (document.selection)
             document.selection.empty();
-        // enlève le bandeau avant de display le quizzManager !_!
         mainManipulator.ordonator.unset(0);
     };
     self.displayLevel = function(w, h, level){
@@ -495,16 +470,19 @@ function FormationDisplayFormation(){
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, w-self.borderSize-2*MARGIN/3, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute("stroke-dasharray", 6);
+        self.textLevelNumberDimensions = {
+            width: level.obj.content.component.getBBox().width,
+            height:level.obj.content.component.getBBox().height
+        };
 
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-        level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
+        level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
         self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.manipulator.first.move(-w/2, -h/2+level.y);
-
     };
 
     self.displayFrame = function (w, h) {
@@ -568,7 +546,7 @@ function FormationRemoveErrorMessage(message) {
 }
 
 function FormationsManagerDisplay() {
-    var self=this;
+    var self = this;
     function displayPanel() {
         window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
@@ -1014,7 +992,7 @@ function QuestionElementClicked(sourceElement) {
 }
 
 function QuestionDisplayAnswers(x, y, w, h) {
-    var self=this;
+    var self = this;
     if (self.rows !== 0) {
 
         //self.answersManipulator.translator.move(0,0);

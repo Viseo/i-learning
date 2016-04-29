@@ -187,7 +187,7 @@ function Domain() {
                 }
                 else {
                     var formation;
-                    var dropLocation = target.parent.parentManip.parentObject;  // à renommer....
+                    var dropLocation = target.parent.parentManip.parentObject;
                     if(dropLocation instanceof Formation){
                         formation = dropLocation;
                         formation.addNewLevel();
@@ -209,6 +209,9 @@ function Domain() {
                             newQuizz.tabQuestions[0].parentQuizz = newQuizz;
                             newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                             formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
+                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
+                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                            }
                         }
                         else{
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
@@ -220,12 +223,16 @@ function Domain() {
                             formation.gamesCounter.bd++;
                             newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
                             formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
+                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
+                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                            }
                         }
                         else {
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
                         }
                         break;
                 }
+
                     formation.levelsTab.forEach(function(level){
                         formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight,level);
                     });
@@ -320,6 +327,7 @@ var Level = function(formation, gamesTab){
     self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
     self.y = (self.index-1) * self.parentFormation.levelHeight;
     self.obj = null;
+    self.deltaLevelWidthIncreased = 0;
     self.removeGame = function(index){
         if(!index){
             self.gamesTab.pop();
@@ -373,7 +381,7 @@ var Level = function(formation, gamesTab){
         self.x = MARGIN;
         self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
         self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
-        self.maxGameInARow = 6;
+        self.maxGameInARow = MAX_GAME_IN_A_ROW_GRAPH_FORMATION;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
         self.quizzManager = new QuizzManager();
@@ -441,14 +449,19 @@ var Level = function(formation, gamesTab){
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             var textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height};
-            level.parentFormation.maxGameInARow = 13; // Pour les besoins du test de comportement ne soyez pas étonné
-            if(spaceOccupied > (self.levelWidth - (level.obj.content.x + textDimensions.width/2))){
-                level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
 
+
+            if((spaceOccupied > (self.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
+                level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
+                level.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
+                if(level.gamesTab.length === level.parentFormation.maxGameInARow){
+                    level.addedLastGame = false;
+                }
             }
+
             level.gamesTab.forEach(function (game) {
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = textDimensions.width/2;
+                game.miniaturePosition.x = textDimensions.width/2 + level.deltaLevelWidthIncreased;
 
                 if (pos.gameIndex < nbOfGames / 2) {
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
@@ -1022,9 +1035,9 @@ var Level = function(formation, gamesTab){
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
 
-        self.loadQuizz = function (quizz) {
+        self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
-            self.quizz = new Quizz(quizz);
+            self.quizz = new Quizz(quizz, parentFormation);
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));

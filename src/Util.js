@@ -691,7 +691,7 @@ function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-
+    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 11;
     MARGIN = 10;
 
     myColors = {
