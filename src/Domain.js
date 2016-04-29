@@ -327,7 +327,6 @@ var Level = function(formation, gamesTab){
     self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
     self.y = (self.index-1) * self.parentFormation.levelHeight;
     self.obj = null;
-    self.deltaLevelWidthIncreased = 0;
     self.removeGame = function(index){
         if(!index){
             self.gamesTab.pop();
@@ -363,6 +362,8 @@ var Level = function(formation, gamesTab){
         self.manipulatorMiniature.last.add(self.iconManipulator.first);
         self.manipulator.last.add(self.formationInfoManipulator.first);
         self.labelDefault = "Entrer le nom de la formation";
+
+        self.deltaLevelWidthIncreased = 0;
 
         // WIDTH
         self.bibWidthRatio = 0.15;
@@ -454,7 +455,7 @@ var Level = function(formation, gamesTab){
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
-                level.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
+                level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
                 if(level.gamesTab.length === level.parentFormation.maxGameInARow){
                     level.addedLastGame = false;
                 }
@@ -462,7 +463,7 @@ var Level = function(formation, gamesTab){
 
             level.gamesTab.forEach(function (game) {
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = textDimensions.width/2 + level.deltaLevelWidthIncreased;
+                game.miniaturePosition.x = textDimensions.width/2 + level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
 
                 if (pos.gameIndex < nbOfGames / 2) {
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
