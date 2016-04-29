@@ -194,7 +194,7 @@ function SVGGlobalHandler() {
                 .execute(completeMovement).moveTo(lx, this.content.y);
         }
         function completeMovement(progress) {
-            self.updateHandle();
+            self.updateHandleH();
             if (progress===1) {
                 delete self.animation;
             }
@@ -783,7 +783,7 @@ function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 15;
+    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 21;
     MARGIN = 10;
 
     myColors = {
