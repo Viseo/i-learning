@@ -747,7 +747,8 @@ var Level = function(formation, gamesTab){
         self.questionHeight = 0.2;
         self.reponseHeight = 0.7;
 
-        var haut = (window.innerHeight);
+        //var haut = (window.innerHeight);
+        var haut = clientHeight;
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
 

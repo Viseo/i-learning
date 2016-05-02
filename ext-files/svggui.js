@@ -2,6 +2,12 @@
  * Created by HDA3014 on 06/02/2016.
  */
 
+var svg;
+function setSVG(_svg){
+    svg = _svg;
+}
+
+
 function Gui() {
 
     function Canvas(width, height) {
@@ -690,4 +696,7 @@ function Gui() {
         Tool:Tool
     }
 }
-exports.Gui = Gui;
+if (typeof exports !== "undefined") {
+    exports.Gui = Gui;
+    exports.setSVG = setSVG;
+}

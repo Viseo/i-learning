@@ -335,7 +335,7 @@ function SVG(runtime) {
         return this;
     };
     Ordered.prototype.unset = function(layer) {
-        var dummy = new svg.Rect(0, 0).opacity(0);
+        var dummy = new Rect(0, 0).opacity(0);
         svgr.replace(this.component, dummy.component, this.children[layer].component);
         this.children[layer] = dummy;
         return this;

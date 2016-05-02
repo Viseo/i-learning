@@ -2,7 +2,7 @@
  * Created by TDU3482 on 26/04/2016.
  */
 
-var domain, svg;
+var domain, svg, gui;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
@@ -12,6 +12,9 @@ function setSVG(_svg){
     svg = _svg;
 }
 
+function setGui(_gui){
+    gui = _gui;
+};
 
 function AnswerDisplay (x, y, w, h) {
 
@@ -587,11 +590,11 @@ function FormationRemoveErrorMessage(message) {
 function FormationsManagerDisplay() {
     var self = this;
     function displayPanel() {
-        window.onkeydown = function (event) {
+        !domain && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
-        };
+        });
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
@@ -1823,4 +1826,5 @@ if (typeof exports !== "undefined") {
     exports.LearningGUI = LearningGUI;
     exports.setDomain = setDomain;
     exports.setSVG = setSVG;
+    exports.setGui = setGui;
 }
