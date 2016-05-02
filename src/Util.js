@@ -104,7 +104,7 @@ function SVGGlobalHandler() {
             if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
                 self.target.component.eventHandlers.dblclick(event);
             }
-            if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
+            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
                 self.target.component.target.eventHandlers.dblclick(event);
             }
         };
@@ -402,7 +402,8 @@ function SVGUtil() {
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var textHeight = (text.component.getBBox && text.component.getBBox().height) || text.component.target.getBBox().height;
+        var textHeight = (text.component.getBBox && text.component.getBBox().height) || (text.component.target && text.component.target.getBBox().height);
+        (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth, newHeight;
         newWidth = w - 2 * MARGIN;
@@ -603,6 +604,7 @@ function SVGUtil() {
 
         t.message(tempText.substring(1));
         var finalHeight = (t.component.getBBox && t.component.getBBox().height) || (t.component.target && t.component.target.getBBox().height);
+        (typeof finalHeight === "undefined") && (finalHeight = fontSize+2);
         t.position(0, (finalHeight - fontSize / 2) / 2); // finalHeight/2 ??
         return {finalHeight: finalHeight, text: t};
     };

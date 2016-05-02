@@ -187,7 +187,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
-    self.obj.cadre.component.target.setAttribute && self.obj.cadre.component.target.setAttribute("stroke-dasharray", [10, 5]);
+    self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute("stroke-dasharray", [10, 5]);
 
     var dblclickEdition = function () {
         switch (self.type) {
@@ -269,7 +269,7 @@ function AnswerElementDisplay(x, y, w, h) {
         contentarea.value = self.label;
         contentarea.width = w;
         self.obj.content.component.getBBox && (contentarea.height = self.obj.content.component.getBBox().height);
-        self.obj.content.component.target.getBBox && (contentarea.height = self.obj.content.component.target.getBBox().height);
+        self.obj.content.component.target && (contentarea.height = self.obj.content.component.target.getBBox().height);
         contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
         self.manipulator.ordonator.unset(1, self.obj.content);
         var contentareaStyle = {
@@ -1586,7 +1586,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzLabel.content.component.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height);
-        self.quizzLabel.content.component.target.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBBox().height);
+        self.quizzLabel.content.component.target && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBBox().height);
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
