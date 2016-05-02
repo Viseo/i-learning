@@ -433,13 +433,13 @@ var Level = function(formation, gamesTab){
                 self.bib.dropAction(self.bib.gameSelected.cadre, event);
                 self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.bib.gameSelected = null;
-                svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+                svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });
             };
             if (self.bib.gameSelected) {
-                svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });

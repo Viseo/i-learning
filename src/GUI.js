@@ -536,7 +536,7 @@ function FormationDisplayFormation(){
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);
-        self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
+        //self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
@@ -544,9 +544,9 @@ function FormationDisplayFormation(){
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
         self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
-
+        self.panel.back._acceptDrop=true;
         //self.frame.resize(self.levelWidth, self.levelHeight);
-
+        self.panel.back.parent.parentManip=self.graphManipulator;
         var count = 1;
         for(var i = 0; i<self.levelsTab.length; i++){
             self.adjustGamesPositions(self.levelsTab[i]);
