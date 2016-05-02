@@ -2,10 +2,14 @@
  * Created by TDU3482 on 26/04/2016.
  */
 
-var domain;
+var domain, svg;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
+}
+
+function setSVG(_svg){
+    svg = _svg;
 }
 
 
@@ -19,7 +23,6 @@ function AnswerDisplay (x, y, w, h) {
     }
     w && (this.w=w);
     h && (this.h=h);
-
 
 
     // Question avec Texte ET image
@@ -1448,7 +1451,9 @@ function QuizzDisplay(x,y,w,h) {
     self.responsePercentageWithImage = 0.6;
     self.responsePercentage = 0.7;
 
-    var heightPage = document.documentElement.clientHeight;
+    //var heightPage = document.documentElement.clientHeight;
+    var heightPage = clientHeight;
+
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
     self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
@@ -1819,4 +1824,5 @@ if (typeof exports !== "undefined") {
     exports.AdminGUI = AdminGUI;
     exports.LearningGUI = LearningGUI;
     exports.setDomain = setDomain;
+    exports.setSVG = setSVG;
 }

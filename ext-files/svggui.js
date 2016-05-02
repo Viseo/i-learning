@@ -690,3 +690,4 @@ function Gui() {
         Tool:Tool
     }
 }
+exports.Gui = Gui;

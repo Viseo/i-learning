@@ -8,12 +8,21 @@
  * Created by ACA3502 on 23/03/2016.
  */
 var svg;
-var gui = new Gui();
+var gui;
+//var gui = new Gui();
 if(typeof SVG != "undefined") {
     if(!svg) {
         svg = new SVG();
     }
 }
+if(typeof Gui != "undefined") {
+    if(!gui) {
+        gui = new Gui();
+    }
+}
+function setGui(_gui){
+  gui = _gui;
+};
 
 function setSvg(_svg) {
     svg = _svg;
@@ -1474,4 +1483,5 @@ if (typeof exports !== "undefined") {
     exports.SVGGlobalHandler = SVGGlobalHandler;
     exports.SVGUtil = SVGUtil;
     exports.Bdd = Bdd;
+    exports.setGui = setGui;
 }

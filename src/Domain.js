@@ -939,7 +939,7 @@ var Level = function(formation, gamesTab){
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
-                self.tabQuestions.forEach(function (e) {
+                !util && self.tabQuestions.forEach(function (e) {
                     loaded = loaded && e.imageLoaded;
                     e.tabAnswer.forEach(function (el) {
                         loaded = loaded && el.imageLoaded;

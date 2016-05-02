@@ -11,6 +11,9 @@ mock.setTarget(targetRuntime);
 var svgHandler = require('../ext-files/svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
+var guiSvgModule = require("../ext-files/svggui");
+var guiSvg = guiSvgModule.Gui();
+
 
 describe('Mocha marche bien', function() {
     describe('#indexOf()', function () {
@@ -40,6 +43,7 @@ describe('Quizz game', function () {
         util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
+        util.setGui(guiSvg);
         mainModule.setSvg(svg);
         mainModule.setUtil(util);
         var globalVariables = mainModule.setGlobalVariable();
@@ -48,6 +52,7 @@ describe('Quizz game', function () {
         domain.Domain();
         gui.setDomain(domain);
         gui.AdminGUI();
+        gui.setSVG(svg);
     });
 
     it("plays a complete quizz game", function (done) {
