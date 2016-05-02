@@ -2,12 +2,19 @@
  * Created by TDU3482 on 26/04/2016.
  */
 
-var domain;
+var domain, svg, gui;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
 }
 
+function setSVG(_svg){
+    svg = _svg;
+}
+
+function setGui(_gui){
+    gui = _gui;
+};
 
 function AnswerDisplay (x, y, w, h) {
 
@@ -19,7 +26,6 @@ function AnswerDisplay (x, y, w, h) {
     }
     w && (this.w=w);
     h && (this.h=h);
-
 
 
     // Question avec Texte ET image
@@ -528,8 +534,6 @@ function FormationDisplayFormation(){
     self.displayGraph = function (w, h){
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
         var width = (self.levelWidth > w) ? self.levelWidth : w;
-        console.log(self.levelWidth + " ////// " + w);
-        console.log(self.levelWidth);
         self.panel.resizeContent(height);
         self.panel.resizeContentW(width);
         self.borderSize = 3;
@@ -586,11 +590,11 @@ function FormationRemoveErrorMessage(message) {
 function FormationsManagerDisplay() {
     var self = this;
     function displayPanel() {
-        window.onkeydown = function (event) {
+        !domain && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
-        };
+        });
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
@@ -1448,7 +1452,9 @@ function QuizzDisplay(x,y,w,h) {
     self.responsePercentageWithImage = 0.6;
     self.responsePercentage = 0.7;
 
-    var heightPage = document.documentElement.clientHeight;
+    //var heightPage = document.documentElement.clientHeight;
+    var heightPage = clientHeight;
+
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
     self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
@@ -1819,4 +1825,6 @@ if (typeof exports !== "undefined") {
     exports.AdminGUI = AdminGUI;
     exports.LearningGUI = LearningGUI;
     exports.setDomain = setDomain;
+    exports.setSVG = setSVG;
+    exports.setGui = setGui;
 }

@@ -24,10 +24,10 @@ function setGlobalVariable() {
     util && util.SVGGlobalHandler();
     var wind = !util && window;
     util && (wind=false);
-    clientWidth = wind ? document.body.clientWidth : 1500;
-    clientHeight = wind ? document.documentElement.clientHeight : 1500;
-    //clientWidth = 1500;
-    //clientHeight = 1000;
+    //clientWidth = wind ? document.body.clientWidth : 1500;
+    //clientHeight = wind ? document.documentElement.clientHeight : 1500;
+    clientWidth = 1500;
+    clientHeight = 1000;
     drawings = new Drawings(clientWidth, clientHeight);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
@@ -36,7 +36,7 @@ function setGlobalVariable() {
 
 //mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
-function main() {
+function admin() {
     !util && setGlobalVariable();
 
   /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
@@ -52,14 +52,9 @@ function main() {
     bib.run(0,0,document.body.clientWidth,drawing.height);
 */
 
-    var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
-    quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
-    var quizz = new Quizz(quizzCopy);
-
-    console.log('Length: '+quizz.tabQuestions.length);
-    quizz.puzzleLines=1;
-    quizz.puzzleRows=3;
-    quizz.run(1,1, clientWidth, drawing.height);
+    var param = {speed: 50, step: 10};
+    var formationsManager = new FormationsManager(myFormations);
+    formationsManager.display();
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);
@@ -128,7 +123,7 @@ function main() {
 
 }
 if (typeof exports !== "undefined") {
-    exports.main = main;
+    exports.admin = admin;
     exports.setSvg = setSvg;
     exports.setUtil = setUtil;
     exports.setGlobalVariable = setGlobalVariable;

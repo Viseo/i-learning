@@ -12,6 +12,8 @@ var svgHandler = require('../ext-files/svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
 
+
+
 describe('Mocha marche bien', function() {
     describe('#indexOf()', function () {
         it('should return -1 when the value is not present', function () {
@@ -28,26 +30,35 @@ var runtime;
 var svg;
 
 describe('Quizz game', function () {
+    var guiSvgModule = require("../ext-files/svggui");
     var util = require("../src/Util");
     var gui = require("../src/GUI");
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
+    var adminModule = require("../src/admin");
 
     beforeEach(function () {
         runtime = mock.mockRuntime();
         runtime.declareAnchor('content');
         svg = SVG(runtime);
+        guiSvgModule.setSVG(svg);
+        var guiSvg = guiSvgModule.Gui();
         util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
+        util.setGui(guiSvg);
         mainModule.setSvg(svg);
         mainModule.setUtil(util);
+        adminModule.setSvg(svg);
+        adminModule.setUtil(util);
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
         domain.Domain();
         gui.setDomain(domain);
         gui.AdminGUI();
+        gui.setSVG(svg);
+        gui.setGui(guiSvg);
     });
 
     it("plays a complete quizz game", function (done) {
@@ -62,7 +73,7 @@ describe('Quizz game', function () {
         this.timeout(100000);
         checkScenario(
             function () {
-                mainModule.main();
+                adminModule.admin();
             },
             "./log/scenarAdmin.json", 'content', runtime, done);
     });
