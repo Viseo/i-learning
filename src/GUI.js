@@ -528,8 +528,6 @@ function FormationDisplayFormation(){
     self.displayGraph = function (w, h){
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
         var width = (self.levelWidth > w) ? self.levelWidth : w;
-        console.log(self.levelWidth + " ////// " + w);
-        console.log(self.levelWidth);
         self.panel.resizeContent(height);
         self.panel.resizeContentW(width);
         self.borderSize = 3;
