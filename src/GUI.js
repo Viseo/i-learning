@@ -569,7 +569,7 @@ function FormationDisplayFormation(){
 
         self.panel.back._acceptDrop = true;
         self.panel.resizeContent(height);
-        self.panel.resizeContentW(self.levelWidth);
+        self.panel.resizeContentW(self.levelWidth-1);
         self.panel.back.parent.parentManip=self.graphManipulator;
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
