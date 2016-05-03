@@ -584,7 +584,7 @@ function FormationDisplayFormation(){
         self.panel.back._acceptDrop=true;
 
         self.panel.resizeContent(height);
-        self.panel.resizeContentW(self.levelWidth);
+        self.panel.resizeContentW(self.levelWidth-1); // fix for different OS/round values?
         //self.frame.resize(self.levelWidth, self.levelHeight);
         self.panel.back.parent.parentManip=self.graphManipulator;
 
