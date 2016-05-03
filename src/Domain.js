@@ -377,7 +377,7 @@ var Level = function(formation, gamesTab){
 
         self.graphElementSize = 100;
         self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
-        self.levelWidth = drawing.width - self.bibWidth;
+        self.levelWidth = drawing.width - self.bibWidth-MARGIN;
         self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
         self.x = MARGIN;
         self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;

@@ -71,8 +71,8 @@ function LibraryDisplay(x,y,w,h){
     h && (self.h = h);
     self.borderSize = 3;
 
-    self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
-    self.bordure.position(w/2,h/2);
+    self.bordure =  new svg.Rect(w,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
+    self.bordure.position(w/2+self.borderSize,h/2);
     self.libraryManipulator.last.add(self.bordure);
 
     self.title = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
@@ -385,7 +385,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
-
+    self.borderSize = 3;
     self.manipulator.first.move(0, drawing.height*0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
@@ -530,7 +530,7 @@ function FormationDisplayFormation(){
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
         self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
 
-        self.panel = new gui.Panel(w, h-4);
+        self.panel = new gui.Panel(w, h);
         self.panel.addhHandle();
         (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
         self.panel.component.move(w/2, h/2);
@@ -569,7 +569,7 @@ function FormationDisplayFormation(){
         }
 
 
-        self.borderSize = 3;
+
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);
