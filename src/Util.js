@@ -180,7 +180,7 @@ function SVGGlobalHandler() {
         }
     };
     gui.Panel.prototype.resizeContentW = function (width) {
-        this.back.color(myColors.green);
+        this.back.color(myColors.green).opacity(0.001);
         if (width>this.width) {
             this.content.width = width;
             var height = this.content.height;
