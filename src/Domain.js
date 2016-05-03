@@ -455,6 +455,10 @@ var Level = function(formation, gamesTab){
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
+                level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
+                level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
+                level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
+                level.manipulator.ordonator.set(9,level.obj.line);
                 level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
                 if(level.gamesTab.length === level.parentFormation.maxGameInARow){
                     level.addedLastGame = false;

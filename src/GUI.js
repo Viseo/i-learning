@@ -549,7 +549,7 @@ function FormationDisplayFormation(){
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
-            self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
+            //self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
                 if(tabElement.miniatureManipulator){
                     self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
