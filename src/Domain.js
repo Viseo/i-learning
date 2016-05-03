@@ -373,7 +373,7 @@ var Level = function(formation, gamesTab){
 
         // HEIGHT
         self.graphCreaHeightRatio = 0.85;
-        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio;
+        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
 
         self.graphElementSize = 100;
         self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
