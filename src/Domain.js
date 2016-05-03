@@ -1041,6 +1041,7 @@ var Level = function(formation, gamesTab){
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, parentFormation);
+            self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));

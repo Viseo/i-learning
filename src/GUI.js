@@ -124,9 +124,9 @@ function LibraryDisplay(x,y,w,h){
                 img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
                 img.srcDimension = elementCopy.srcDimension;
             }else{
-                img = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                self.draggedObjectLabel = img.content.messageText;
-                img = img.cadre;
+                var textObject = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                self.draggedObjectLabel = textObject.content.messageText;
+                img = textObject.cadre;
             }
 
             manip.ordonator.set(0, img);
@@ -135,13 +135,14 @@ function LibraryDisplay(x,y,w,h){
             manip.first.move(point.x-point2.x, point.y-point2.y);
 
             manageDnD(img, manip);
+            textObject.content && manageDnD(textObject.content, manip);
 
-            var mouseClickHandler = function (event){
+            var mouseClick = function (event){
                 var target = drawing.getTarget(event.clientX, event.clientY);
                 self.libraryGamesTab.forEach(function(e){
                     if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                         if (e.objectTotal!==self.gameSelected){
-                            target.color(myColors.white, 3, SELECTION_COLOR);
+                            //target.color(myColors.white, 3, SELECTION_COLOR);
                             e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
                             self.gameSelected = e.objectTotal;
                         }
@@ -160,14 +161,17 @@ function LibraryDisplay(x,y,w,h){
                 var img = manip.ordonator.children.shift();
                 manip.first.parent.remove(manip.first);
                 var target = drawing.getTarget(event.clientX, event.clientY);
-                if(!(target instanceof svg.Circle)){
-                    self.dropAction(img, event);
+                if(target && target.parent && target.parent.parentManip){
+                    if(!(target.parent.parentManip.parentObject instanceof Library)){
+                        self.dropAction(img, event);
+                    }
+                    else {
+                        mouseClick(event);
+                        !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
+                        self.formation.clickToAdd();
+                    }
                 }
-                else {
-                    mouseClickHandler(event);
-                    !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
-                    self.formation.clickToAdd();
-                }
+
                 self.draggedObjectLabel = "";
             };
 
@@ -177,7 +181,13 @@ function LibraryDisplay(x,y,w,h){
             img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
             img.component.target && img.component.target.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
+            if(textObject.content){
+                textObject.content.component.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.eventHandlers.mouseup);
+                textObject.content.component.target && textObject.content.component.target.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
+                svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
+            }
         });
+        svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.eventHandlers.mousedown);
     });
 
 }
@@ -534,27 +544,12 @@ function FormationDisplayFormation(){
     self.displayGraph = function (w, h){
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
         var width = (self.levelWidth > w) ? self.levelWidth : w;
-        self.panel.resizeContent(height);
-        self.panel.resizeContentW(width);
-        self.borderSize = 3;
-        self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-        self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
-        self.graphBlock.rect.position(0, height/2-h/2);
-        //self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
-        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
-        self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
-        self.graphBlock.rect._acceptDrop = true;
-        self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
-        self.panel.back._acceptDrop=true;
-        //self.frame.resize(self.levelWidth, self.levelHeight);
-        self.panel.back.parent.parentManip=self.graphManipulator;
+
         var count = 1;
         for(var i = 0; i<self.levelsTab.length; i++){
+            self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
-
+            self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
                 if(tabElement.miniatureManipulator){
                     self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
@@ -572,6 +567,27 @@ function FormationDisplayFormation(){
                 count ++;
             });
         }
+
+
+        self.borderSize = 3;
+        self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
+        self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
+        self.graphBlock.rect.position(0, height/2-h/2);
+        //self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
+        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
+        self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
+        self.graphBlock.rect._acceptDrop = true;
+        self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
+        self.panel.back._acceptDrop=true;
+
+        self.panel.resizeContent(height);
+        self.panel.resizeContentW(self.levelWidth);
+        //self.frame.resize(self.levelWidth, self.levelHeight);
+        self.panel.back.parent.parentManip=self.graphManipulator;
+
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
