@@ -71,8 +71,8 @@ function LibraryDisplay(x,y,w,h){
     h && (self.h = h);
     self.borderSize = 3;
 
-    self.bordure =  new svg.Rect(w-self.borderSize,h-self.borderSize,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
-    self.bordure.position(w/2,h/2);
+    self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
+    self.bordure.position(w/2+self.borderSize,h/2);
     self.libraryManipulator.last.add(self.bordure);
 
     self.title = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
@@ -133,7 +133,7 @@ function LibraryDisplay(x,y,w,h){
             manip.first.move(point.x-point2.x, point.y-point2.y);
 
             manageDnD(img, manip);
-            textObject.content && manageDnD(textObject.content, manip);
+            textObject && textObject.content && manageDnD(textObject.content, manip);
 
             var mouseClick = function (event){
                 var target = drawing.getTarget(event.clientX, event.clientY);
@@ -373,6 +373,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
+    self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
@@ -520,9 +521,9 @@ function FormationDisplayFormation(){
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
         self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
 
-        self.panel = new gui.Panel(w, h-4);
+        self.panel = new gui.Panel(w, h);
         self.panel.addhHandle();
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length+1));
+        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
@@ -555,7 +556,6 @@ function FormationDisplayFormation(){
             });
         }
 
-        self.borderSize = 3;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);

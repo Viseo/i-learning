@@ -233,9 +233,7 @@ function Domain() {
                         break;
                 }
 
-                    formation.levelsTab.forEach(function(level){
-                        formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight,level);
-                    });
+
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
         }
