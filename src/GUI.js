@@ -947,13 +947,13 @@ function QuestionDisplay(x, y, w, h) {
 
 function QuestionElementClicked(sourceElement) {
     var self = this;
-    if(self.multipleChoice===false){// question normale, une seule réponse possible
+    if(self.multipleChoice === false){// question normale, une seule réponse possible
         if(sourceElement.correct) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
         } else {
             self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
-            var reponseD="";
+            var reponseD = "";
             self.rightAnswers.forEach(function(e){
                 if(e.label)
                 {
@@ -961,8 +961,8 @@ function QuestionElementClicked(sourceElement) {
                 }
                 else if(e.imageSrc)
                 {
-                    var tab=e.imageSrc.split('/');
-                    reponseD+= tab[(tab.length-1)]+"\n";
+                    var tab = e.imageSrc.split('/');
+                    reponseD += tab[(tab.length-1)]+"\n";
                 }
             });
             console.log("Mauvaise réponse!\n  Bonnes réponses: \n"+reponseD);
@@ -970,18 +970,18 @@ function QuestionElementClicked(sourceElement) {
 
         self.parentQuizz.nextQuestion();
     }else{// question à choix multiples
-        if(sourceElement.selected===false){
+        if(sourceElement.selected === false){
             // on sélectionne une réponse
-            sourceElement.selected=true;
+            sourceElement.selected = true;
             self.selectedAnswers.push(sourceElement);
             sourceElement.colorBordure = sourceElement.bordure.strokeColor;
             sourceElement.bordure.color(sourceElement.bgColor, 5, SELECTION_COLOR);
-            self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
+            self.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
         }else{
-            sourceElement.selected=false;
-            self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement),1);
-            sourceElement.bordure.color(sourceElement.bgColor,1,sourceElement.colorBordure);
-            if(self.selectedAnswers.length==0){
+            sourceElement.selected = false;
+            self.selectedAnswers.splice(self.selectedAnswers.indexOf(sourceElement), 1);
+            sourceElement.bordure.color(sourceElement.bgColor, 1, sourceElement.colorBordure);
+            if(self.selectedAnswers.length === 0){
                 self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
             }
         }
@@ -1017,7 +1017,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
             }
         }
         self.questionManipulator.last.add(self.answersManipulator.first);
-        self.answersManipulator.translator.move(0,self.height/2+(self.tileHeight)/2);
+        self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
 
         var posx = 0;
         var posy = 0;
@@ -1067,15 +1067,15 @@ function QuestionDisplayAnswers(x, y, w, h) {
         validateX = 100 - 75;
         validateY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
 
-        var validateButton=displayText("Valider",w,h,myColors.green,myColors.yellow,20, self.font,self.validateManipulator);
-        self.validateManipulator.translator.move(validateX+w/2,validateY+h/2);
+        var validateButton = displayText("Valider", w, h, myColors.green, myColors.yellow, 20, self.font, self.validateManipulator);
+        self.validateManipulator.translator.move(validateX + w/2, validateY + h/2);
 
         //button. onclick
         var oclk = function(){
             // test des valeurs, en gros si selectedAnswers === rigthAnswers
             var allRight = false;
 
-            if(self.rightAnswers.length!=self.selectedAnswers.length){
+            if(self.rightAnswers.length !== self.selectedAnswers.length){
                 allRight = false;
             }else{
                 var subTotal = 0;
@@ -1084,13 +1084,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
                         subTotal++;
                     }
                 });
-
-                if(subTotal === self.rightAnswers.length){
-                    allRight = true;
-                }else{
-                    allRight = false;
-                }
-
+                allRight = (subTotal === self.rightAnswers.length) ? true : false;
             }
 
             if(allRight) {
@@ -1105,8 +1099,8 @@ function QuestionDisplayAnswers(x, y, w, h) {
                     }
                     else if(e.imageSrc)
                     {
-                        var tab=e.imageSrc.split('/');
-                        reponseD+= tab[(tab.length-1)]+"\n";
+                        var tab = e.imageSrc.split('/');
+                        reponseD += tab[(tab.length-1)] + "\n";
                     }
                 });
                 console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
@@ -1122,23 +1116,23 @@ function QuestionDisplayAnswers(x, y, w, h) {
         var h = 50;
         var resetX =- 75 -100;
         var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
-        self.resetButton=displayText("Reset",w,h,myColors.grey,myColors.grey,20, self.font,self.resetManipulator);
+        self.resetButton = displayText("Reset", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
         self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
-        if(self.selectedAnswers.length!=0){
-            self.resetButton.cadre.color(myColors.yellow,1,myColors.green);
+        if(self.selectedAnswers.length !== 0){
+            self.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
         }
         self.reset = function(){
-            if(self.selectedAnswers.length>0){
+            if(self.selectedAnswers.length > 0){
                 self.selectedAnswers.forEach(function(e){
                     e.selected = false;
-                    e.bordure.color(e.bgColor,1,e.colorBordure);
+                    e.bordure.color(e.bgColor, 1, e.colorBordure);
                 });
-                self.selectedAnswers.splice(0,self.selectedAnswers.length);
-                self.resetButton.cadre.color(myColors.grey,1,myColors.grey);
+                self.selectedAnswers.splice(0, self.selectedAnswers.length);
+                self.resetButton.cadre.color(myColors.grey, 1, myColors.grey);
             }
         };
-        svg.addEvent(self.resetButton.content,'click',self.reset);
-        svg.addEvent(self.resetButton.cadre,'click',self.reset);
+        svg.addEvent(self.resetButton.content, 'click', self.reset);
+        svg.addEvent(self.resetButton.cadre, 'click', self.reset);
     }
 }
 
@@ -1156,9 +1150,9 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
     self.questionCreatorManipulator.translator.move(x, 0);
     self.toggleButtonHeight = 40;
-    self.displayQuestionCreator(MARGIN+x, y, w, h);
-    var clickedButton= self.multipleChoice? myQuizzType.tab[1].label :myQuizzType.tab[0].label;
-    self.displayToggleButton(MARGIN+x, MARGIN/2+y, w,self.toggleButtonHeight-MARGIN, clickedButton);
+    self.displayQuestionCreator(MARGIN + x, y, w, h);
+    var clickedButton= self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    self.displayToggleButton(MARGIN + x, MARGIN/2+y, w, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
 function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
