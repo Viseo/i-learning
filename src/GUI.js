@@ -76,7 +76,7 @@ function LibraryDisplay(x,y,w,h){
     self.borderSize = 3;
 
     self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
-    self.bordure.position(w/2+self.borderSize,h/2);
+    self.bordure.position(w/2,h/2-self.borderSize);
     self.libraryManipulator.last.add(self.bordure);
 
     self.title = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
@@ -179,15 +179,17 @@ function LibraryDisplay(x,y,w,h){
             drawings.glass.component.target && drawings.glass.component.target.eventHandlers && drawings.glass.component.target.eventHandlers.mousedown(event);
 
             img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
-            img.component.target && img.component.target.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
+            img.component.target && img.component.target.eventHandlers && img.component.target.eventHandlers.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
-            if(textObject.content){
+            if(textObject && textObject.content){
                 textObject.content.component.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.eventHandlers.mouseup);
-                textObject.content.component.target && textObject.content.component.target.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
+                textObject.content.component.target && textObject.content.component.target.eventHandlers && textObject.content.component.target.eventHandlers.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
             }
         });
-        svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.eventHandlers.mousedown);
+        e.ordonator.children[0].component.eventHandlers && svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.eventHandlers.mousedown);
+        e.ordonator.children[0].component.target && svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.target.eventHandlers.mousedown);
+
     });
 }
 
@@ -584,7 +586,7 @@ function FormationDisplayFormation(){
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.bib.display(0, HEADER_SIZE*drawing.height/2,self.bibWidth, self.graphCreaHeight);
+    self.bib.display(0, (-HEADER_SIZE*drawing.height+self.parent.headerHeightFormation)/2,self.bibWidth, self.graphCreaHeight);
     //self.title.component.getBBox && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
@@ -674,77 +676,76 @@ function FormationsManagerDisplay() {
         self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
-        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize*3/4, null, self.checkManipulator).text.anchor("start");
+        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
         self.published.position(25, self.published.y);
 
         self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
         self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
         self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
-        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize*3/4, null, self.exclamationManipulator).text.anchor("start");
+        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
-        self.legendWidth = drawing.width*30/100;
-        self.legendItemLength = self.legendWidth /2;
+        self.legendWidth = drawing.width * 30 / 100;
+        self.legendItemLength = self.legendWidth / 2;
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-        self.published.component.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
-        self.published.component.target && self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.target.getBBox().width, 30);
-        self.exclamationManipulator.first.move(drawing.width - self.legendWidth +self.legendItemLength, 30);
+        self.published.component.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.getBBox().width, 30);
+        self.published.component.target && self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.target.getBBox().width, 30);
+        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
 
 
-    self.formations.sort(function (a, b) {
-        var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
-        if (nameA < nameB)
-            return -1;
-        if (nameA > nameB)
-            return 1;
-        return 0
-    });
+        self.formations.sort(function (a, b) {
+            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
+            if (nameA < nameB)
+                return -1;
+            if (nameA > nameB)
+                return 1;
+            return 0
+        });
+    }
+        self.displayHeaderFormations();
+        self.displayFormations = function () {
+            var posx = self.initialFormationsPosX;
+            var posy = MARGIN;
+            var count = 0;
+            for (var i = 0; i < self.formations.length; i++) {
+                if (i !== 0) {
+                    posx += (self.tileWidth + 2 * MARGIN);
+                }
+                if (count > (self.rows - 1)) {
+                    count = 0;
+                    posy += (self.tileHeight + 2 * MARGIN);
+                    posx = self.initialFormationsPosX;
+                }
 
-    self.displayHeaderFormations();
-    self.displayFormations = function () {
-        var posx = self.initialFormationsPosX;
-        var posy = MARGIN;
-        var count = 0;
-        for (var i = 0; i < self.formations.length; i++) {
-            if (i !== 0) {
-                posx += (self.tileWidth + 2 * MARGIN);
+                self.formations[i].parent = self;
+                self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+                self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+                self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+
+                (function (element) {
+                    if (element.miniature.cadre) {
+                        svg.addEvent(element.miniature.cadre, "click", function () {
+                            onClickFormation(element);
+                        });
+                    }
+
+                    if (element.miniature.content) {
+                        svg.addEvent(element.miniature.content, "click", function () {
+                            onClickFormation(element);
+                        });
+                    }
+
+                    if (element.miniature.image) {
+                        svg.addEvent(element.miniature.image, "click", function () {
+                            onClickFormation(element);
+                        });
+                    }
+
+                })(self.formations[i]);
+                count++;
             }
-            if (count > (self.rows - 1)) {
-                count = 0;
-                posy += (self.tileHeight + 2 * MARGIN);
-                posx = self.initialFormationsPosX;
-            }
-
-            self.formations[i].parent = self;
-            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
-            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
-            (function (element) {
-                if (element.miniature.cadre) {
-                    svg.addEvent(element.miniature.cadre, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-
-                if (element.miniature.content) {
-                    svg.addEvent(element.miniature.content, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-
-                if (element.miniature.image) {
-                    svg.addEvent(element.miniature.image, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-
-            })(self.formations[i]);
-            count++;
-        }
-    };
-    self.displayFormations();
-
+        };
+        self.displayFormations();
 }
 
 function HeaderDisplay () {

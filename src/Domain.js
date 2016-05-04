@@ -465,7 +465,7 @@ var Level = function(formation, gamesTab){
         self.clickToAdd = function () {
 
             self.mouseUpGraphBlock = function (event) {
-                self.bib.dropAction(self.bib.gameSelected.cadre, event);
+                self.bib.gameSelected && self.bib.dropAction(self.bib.gameSelected.cadre, event);
                 self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.bib.gameSelected = null;
                 svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
