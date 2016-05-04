@@ -68,4 +68,4 @@ app.get('/test', function (req, res) {
     res.header("Access-Controll-Allow-Origin", "http://localhost:63342/log");
     res.send({ack:'ok'});
 });
-app.listen(63343);
+app.listen(63341);

@@ -32,6 +32,10 @@ if (!Array.prototype.remove) {
 function SVG(runtime) {
     var svgr = runtime || targetRuntime();
 
+    function  getSvgr(){
+        return svgr;
+    }
+
     function print(points) {
         if (points.length==0) return "";
         var line = points[0].x+","+points[0].y;
@@ -329,14 +333,15 @@ function SVG(runtime) {
         return this;
     };
     Ordered.prototype.set = function(layer, svgObject) {
-        svgr.replace(this.component, svgObject.component, this.children[layer].component);
+        //svgr.replace(this.component, svgObject.component, this.children[layer].component);
+        svgr.replace(this.component, this.children[layer].component, svgObject.component);
         svgObject.parent = this;
         this.children[layer] = svgObject;
         return this;
     };
     Ordered.prototype.unset = function(layer) {
         var dummy = new Rect(0, 0).opacity(0);
-        svgr.replace(this.component, dummy.component, this.children[layer].component);
+        svgr.replace(this.component, this.children[layer].component, dummy.component);
         this.children[layer] = dummy;
         return this;
     };
@@ -1586,7 +1591,7 @@ function SVG(runtime) {
         var http = new XMLHttpRequest();
         http.open("POST", url, true);
         http.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Access-Controll-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept");
-        http.setRequestHeader("Access-Control-Allow-Origin", "http://localhost:63343/log");
+        http.setRequestHeader("Access-Control-Allow-Origin", "http://localhost:63341/log");
         //http.setRequestHeader("Access-Control-Request-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         http.send(JSON.stringify(data));
@@ -1682,7 +1687,8 @@ function SVG(runtime) {
         clearTimeout : clearTimeout,
         clearInterval : clearInterval,
 
-        request: request
+        request: request,
+        getSvgr: getSvgr
     }
 }
 

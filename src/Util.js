@@ -7,9 +7,8 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg;
-var gui;
-//var gui = new Gui();
+var svg, gui, runtime;
+
 if(typeof SVG != "undefined") {
     if(!svg) {
         svg = new SVG();
@@ -27,6 +26,9 @@ function setGui(_gui){
 function setSvg(_svg) {
     svg = _svg;
     // call setSvg on modules
+}
+function  setRuntime(_runtime){
+    runtime = _runtime;
 }
 
 if(typeof exports != "undefined") {
@@ -82,7 +84,7 @@ function SVGGlobalHandler() {
             //self.paper.forEach(function (el) {
             //    console.log(el.type);
             //});
-            document.activeElement.blur();
+            !runtime && document.activeElement.blur();
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
@@ -411,7 +413,7 @@ function SVGUtil() {
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var textHeight = (text.component.getBBox && text.component.getBBox().height) || (text.component.target && text.component.target.getBBox().height);
+        var textHeight = (text.component.getBBox && text.component.getBBox().height) || (text.component.target && Math.floor(text.component.target.getBBox().height));
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth, newHeight;
@@ -513,7 +515,8 @@ function SVGUtil() {
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         content.component.getBBox && content.position(0, content.component.getBBox().height / 4);
-        content.component.target && content.component.target.getBBox && content.position(0, content.component.target.getBBox().height / 4);
+        content.component.target && content.component.target.getBBox && content.position(0, Math.floor(content.component.target.getBBox().height) / 4);
+        runtime && content.position(0, Math.floor(runtime.boundingRect(content.component).height)/4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -564,7 +567,7 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-            if ((t.component.getBBox && t.component.getBBox().width > w) || (t.component.target && t.component.target.getBBox().width > w - MARGIN)) {
+            if ((t.component.getBBox && t.component.getBBox().width > w) || (t.component.target && Math.floor(t.component.target.getBBox().width) > w - MARGIN)|| (runtime && (Math.floor(runtime.boundingRect(t.component).width) > w - MARGIN))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -612,8 +615,8 @@ function SVGUtil() {
         }
 
         t.message(tempText.substring(1));
-        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || (t.component.target && t.component.target.getBBox().height);
-        (typeof finalHeight === "undefined") && (finalHeight = fontSize+2);
+        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || (t.component.target && Math.floor(t.component.target.getBBox().height));
+        (typeof finalHeight === "undefined" && t.messageText !== "") && (finalHeight = Math.floor(runtime.boundingRect(t.component).height));
         t.position(0, (finalHeight - fontSize / 2) / 2); // finalHeight/2 ??
         return {finalHeight: finalHeight, text: t};
     };
@@ -1484,4 +1487,5 @@ if (typeof exports !== "undefined") {
     exports.SVGUtil = SVGUtil;
     exports.Bdd = Bdd;
     exports.setGui = setGui;
+    exports.setRuntime = setRuntime;
 }

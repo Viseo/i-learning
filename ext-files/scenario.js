@@ -12,7 +12,7 @@
                         var fact = facts.shift();
                         if (fact) {
                             sending = true;
-                            svg.request("http://localhost:63343/log", fact)
+                            svg.request("http://localhost:63341/log", fact)
                                 .onSuccess(function () {
                                     send(true);
                                 })

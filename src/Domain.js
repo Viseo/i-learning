@@ -1,7 +1,7 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
-var util, drawing, mainManipulator, iRuntime;
+var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController;
 
 setUtil = function(_util){
     util = _util;
@@ -12,6 +12,10 @@ setGlobalVariables = function(gv){
     clientWidth = gv.clientWidth;
     clientHeight = gv.clientHeight;
 };
+
+setRuntime = function(_runtime){
+    runtime = _runtime;
+}
 
 function Domain() {
 
@@ -37,9 +41,42 @@ function Domain() {
             this.images[id].onload();
         }
     };
+    var AsyncTimerRuntime = {
+        timers: {},
+        count: 0,
+        interval: function (handler, timer) {
+            var interval = {
+                id:"interval"+this.count,
+                next: handler,
+                timer: timer
+            };
+            this.count++;
+            this.timers[interval.id] = interval;
+            return interval;
+        },
+        clearInterval: function (id) {
+            delete this.timers[id];
+        },
+        timeout: function (handler, timer) {
+            var timeout = {
+                id:"timeout"+this.count,
+                next: function () {
+                    handler();
+                    delete this;
+                },
+                timer:timer
+            };
+            this.count++;
+            this.timers[timeout.id] = timeout;
+            return timeout;
+        }
+    };
     util && (iRuntime = ImageRuntime);
+    util && (aRuntime = AsyncTimerRuntime);
     var imageController = ImageController(iRuntime);
-    var asyncTimerController=AsyncTimerController();
+    //var asyncTimerController=AsyncTimerController();
+    asyncTimerController = util ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
+
 
 ////////////// Answer.js /////////////////
 
@@ -451,7 +488,7 @@ var Level = function(formation, gamesTab){
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             var textDimensions;
             level.obj.content.component.getBBox && (textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height});
-            level.obj.content.component.target && level.obj.content.component.target.getBBox && (textDimensions = {width:level.obj.content.component.target.getBBox().width, height:level.obj.content.component.target.getBBox().height});
+            level.obj.content.component.target && level.obj.content.component.target.getBBox && (textDimensions = {width:Math.floor(level.obj.content.component.target.getBBox().width), height:Math.floor(level.obj.content.component.target.getBBox().height)});
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
@@ -940,7 +977,7 @@ var Level = function(formation, gamesTab){
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
-                !util && self.tabQuestions.forEach(function (e) {
+                self.tabQuestions.forEach(function (e) {
                     loaded = loaded && e.imageLoaded;
                     e.tabAnswer.forEach(function (el) {
                         loaded = loaded && el.imageLoaded;
@@ -951,6 +988,15 @@ var Level = function(formation, gamesTab){
                     self.display(x, y, w, h);
                 }
             }, 100);
+            util && self.tabQuestions.forEach(function(e){
+                e.image && imageController.imageLoaded(e.image.id, 238, 238);
+                e.tabAnswer.forEach(function(el){
+                    el.image && imageController.imageLoaded(el.image.id, 200, 5);
+                });
+
+            });
+            util && self.display(x, y, w, h);
+
         };
 
         /**
@@ -1123,4 +1169,5 @@ if(typeof exports !== "undefined") {
     exports.Domain = Domain;
     exports.setUtil = setUtil;
     exports.setGlobalVariables = setGlobalVariables;
+    exports.setRuntime = setRuntime;
 }

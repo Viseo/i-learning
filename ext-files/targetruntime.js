@@ -34,7 +34,9 @@ function targetRuntime() {
             return component.firstChild;
         },
         replace: function(parent, who, byWhom) {
-            parent.replaceChild(who, byWhom);
+            //parent.replaceChild(who, byWhom);
+            parent.replaceChild(byWhom, who);
+
         },
         boundingRect: function(component) {
             return component.getBoundingClientRect();

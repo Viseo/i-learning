@@ -47,6 +47,7 @@ describe('Quizz game', function () {
         util.SVGUtil();
         util.Bdd();
         util.setGui(guiSvg);
+        util.setRuntime(runtime);
         mainModule.setSvg(svg);
         mainModule.setUtil(util);
         adminModule.setSvg(svg);
@@ -55,10 +56,12 @@ describe('Quizz game', function () {
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
         domain.Domain();
+        domain.setRuntime(runtime);
         gui.setDomain(domain);
         gui.AdminGUI();
         gui.setSVG(svg);
         gui.setGui(guiSvg);
+        gui.setRuntime(runtime);
     });
 
     it("plays a complete quizz game", function (done) {
@@ -75,7 +78,7 @@ describe('Quizz game', function () {
             function () {
                 adminModule.admin();
             },
-            "./log/scenarAdmin.json", 'content', runtime, done);
+            "./log/testAdmin.json", 'content', runtime, done);
     });
     it('should instantiate correctly my answer', function() {
         var answerJSON={

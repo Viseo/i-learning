@@ -25,8 +25,9 @@ function Element(tag, id) {
                     return result;
                 }
             }
+            }
             return null;
-        }
+
     };
     this.event = function(eventName, event) {
         for (var listener in this.listeners[eventName]) {
@@ -64,6 +65,40 @@ var runtimeMock =  (function() {
             else if (tag==='ellipse') {
                 elem.getBoundingClientRect = function() {
                     return {left:-elem.rx, top:-elem.ry, width:elem.rx*2, height: elem.ry*2};
+                }
+            }
+            else if (tag==='text') {
+                function getBBoxMock(){
+                    var chaine=elem.text;
+                    var lineHeight=elem["font-size"];
+                    var characterSize=((168/26)/15)*elem["font-size"];
+                    var margin;
+                    var regex = /[ypqg]/;
+                    margin = regex.test(chaine.toLowerCase()) ? 0.11015625*lineHeight :0.1*lineHeight;
+                    var h=margin;
+                    var w;
+                    var tableau;
+                    var marginIn = ((2/6)/(13+1/3))*elem["font-size"];
+                    var marginWidth = 0.1*elem["font-size"];
+                    var reg=new RegExp('\n', "g");
+                    tableau=chaine.split(reg);
+                    var tableauLengths=[];
+                    for (var i=0; i<tableau.length; i++) {
+                        tableauLengths.push(tableau[i].length);
+                        h+=lineHeight; //hauteur d'une ligne (dépend de la police et de sa taille)
+                    }
+                    // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
+                    w=Math.max.apply(null,tableauLengths);
+                    var tt=w*(characterSize)+marginWidth;
+                    var box={
+                        width:(tt),
+                        height:Math.round(h)
+                    };
+
+                    return box;
+                }
+                elem.getBoundingClientRect = function(t) {
+                    return {left:elem.x, top:elem.y, width:getBBoxMock().width, height:getBBoxMock().height};
                 }
             }
             else if (tag==='path') {
@@ -198,6 +233,7 @@ var runtimeMock =  (function() {
             return timeouts.length===0;
         },
         json : function(component) {
+            var testtest = this.anchor('content').getElement(1615);
             return JSON.stringify(component, function(key, value) {return key==="parent" ? undefined : value;});
         },
         random: function() {

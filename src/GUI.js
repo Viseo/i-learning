@@ -2,7 +2,7 @@
  * Created by TDU3482 on 26/04/2016.
  */
 
-var domain, svg, gui;
+var domain, svg, gui, runtime;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
@@ -15,6 +15,10 @@ function setSVG(_svg){
 function setGui(_gui){
     gui = _gui;
 };
+
+function setRuntime(_runtime){
+    runtime = _runtime;
+}
 
 function AnswerDisplay (x, y, w, h) {
 
@@ -275,7 +279,8 @@ function AnswerElementDisplay(x, y, w, h) {
         contentarea.value = self.label;
         contentarea.width = w;
         self.obj.content.component.getBBox && (contentarea.height = self.obj.content.component.getBBox().height);
-        self.obj.content.component.target && (contentarea.height = self.obj.content.component.target.getBBox().height);
+        self.obj.content.component.target && (contentarea.height = Math.floor(self.obj.content.component.target.getBBox().height));
+        domain && (contentarea.height = Math.floor(runtime.boundingRect(self.obj.content.component).height));
         contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
         self.manipulator.ordonator.unset(1, self.obj.content);
         var contentareaStyle = {
@@ -381,7 +386,6 @@ function FormationDisplayFormation(){
     self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
     self.manipulator.last.add(self.title);
 
-    self.bib.display(0,0,self.bibWidth, self.graphCreaHeight);
 
     self.gamesCounter = myFormation.gamesCounter;
 
@@ -393,13 +397,17 @@ function FormationDisplayFormation(){
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.formationLabel.content.component.getBBox && (self.labelHeight = self.formationLabel.content.component.getBBox().height);
-        self.formationLabel.content.component.getBBox && (self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN);
-        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelHeight = self.formationLabel.content.component.target.getBBox().height);
-        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelWidth = self.formationLabel.content.component.target.getBBox().width + 2 * MARGIN);
+        //self.formationLabel.content.component.getBBox && (self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN);
+        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelHeight = Math.floor(self.formationLabel.content.component.target.getBBox().height));
+        //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBBox().width) + 2 * MARGIN);
+        domain && (self.labelHeight = Math.floor(runtime.boundingRect(self.formationLabel.content.component).height));
+
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
         self.title.component.getBBox && self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.title.component.target && self.title.component.target.getBBox && self.formationLabel.cadre.position(self.title.component.target.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        //domain && self.formationLabel.cadre.position(Math.floor(runtime.boundingRect(self.title.component).))
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
+
         self.title.component.getBBox && self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
         self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
@@ -465,8 +473,6 @@ function FormationDisplayFormation(){
     };
     showTitle();
 
-    self.title.component.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.getBBox().height);
-    self.title.component.target && self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.title.component.target.getBBox().height);
 
     var onclickQuizzHandler = function(event){
         var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
@@ -486,17 +492,21 @@ function FormationDisplayFormation(){
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
-        self.textLevelNumberDimensions = {
+        level.obj.content.component.getBBox && (self.textLevelNumberDimensions = {
             width: level.obj.content.component.getBBox().width,
             height:level.obj.content.component.getBBox().height
-        };
+        });
+        level.obj.content.component.target && (self.textLevelNumberDimensions = {
+            width: Math.floor(level.obj.content.component.target.getBBox().width),
+            height: Math.floor(level.obj.content.component.target.getBBox().height)
+        });
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
 
         level.obj.content.component.getBBox && level.obj.content.position(level.obj.content.component.getBBox().width, self.messageDragDropMargin);
         level.obj.content.component.target && level.obj.content.component.target.getBBox && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
         self.title.component.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
-        self.title.component.target && self.title.component.target.getBBox && self.messageDragDrop.position(w/2, self.title.component.getBBox().height + 3*self.messageDragDropMargin);
+        self.title.component.target && self.title.component.target.getBBox && self.messageDragDrop.position(w/2, Math.floor(self.title.component.target.getBBox().height) + 3*self.messageDragDropMargin);
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
@@ -504,11 +514,11 @@ function FormationDisplayFormation(){
     };
 
     self.displayFrame = function (w, h) {
-        window.onkeydown = function (event) {
+        !domain && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
-        };
+        });
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
@@ -518,7 +528,7 @@ function FormationDisplayFormation(){
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
-        self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBBox().height);
+        self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(self.title.component.target.getBBox().height));
 
         self.panel = new gui.Panel(w, h-4);
         self.panel.addhHandle();
@@ -543,7 +553,7 @@ function FormationDisplayFormation(){
         self.graphManipulator.ordonator.set(0, self.graphBlock.rect);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? Math.floor(self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width)/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -575,6 +585,9 @@ function FormationDisplayFormation(){
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
+    self.bib.display(0, HEADER_SIZE*drawing.height/2,self.bibWidth, self.graphCreaHeight);
+    //self.title.component.getBBox && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
+    //self.title.component.target && self.title.component.target.getBBox && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
 
 function FormationDisplayErrorMessage(message){
@@ -663,22 +676,19 @@ function FormationsManagerDisplay() {
         self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
-        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.checkManipulator).text.anchor("start");
+        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize*3/4, null, self.checkManipulator).text.anchor("start");
         self.published.position(25, self.published.y);
 
         self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
         self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
         self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
-        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize / 1.5, null, self.exclamationManipulator).text.anchor("start");
+        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize*3/4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
-
-        self.toPublish.component.getBBox && (self.legendWidth = self.toPublish.component.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.getBBox().width);
-        self.toPublish.component.target && self.toPublish.component.target.getBBox && (self.legendWidth = self.toPublish.component.target.getBBox().width + 4 * MARGIN + 2 * self.iconeSize + 2*self.published.component.target.getBBox().width);
-
+        self.legendWidth = drawing.width*30/100;
+        self.legendItemLength = self.legendWidth /2;
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-        self.published.component.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.getBBox().width, 30);
-        self.published.component.target && self.published.component.target.getBBox && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3*self.published.component.target.getBBox().width, 30);
+        self.exclamationManipulator.first.move(drawing.width - self.legendWidth +self.legendItemLength, 30);
 
 
         //self.headerManipulator.translator.move(drawing.width - self.legendWidth, 0);
@@ -1592,7 +1602,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzLabel.content.component.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height);
-        self.quizzLabel.content.component.target && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBBox().height);
+        self.quizzLabel.content.component.target && (self.quizzNameHeight = Math.floor(self.quizzLabel.content.component.target.getBBox().height));
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
@@ -1827,4 +1837,5 @@ if (typeof exports !== "undefined") {
     exports.setDomain = setDomain;
     exports.setSVG = setSVG;
     exports.setGui = setGui;
+    exports.setRuntime = setRuntime;
 }
