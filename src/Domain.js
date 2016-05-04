@@ -270,9 +270,7 @@ function Domain() {
                         break;
                 }
 
-                    formation.levelsTab.forEach(function(level){
-                        formation.displayLevel(formation.graphCreaWidth, formation.graphCreaHeight,level);
-                    });
+
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
         }
@@ -410,11 +408,11 @@ var Level = function(formation, gamesTab){
 
         // HEIGHT
         self.graphCreaHeightRatio = 0.85;
-        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio;
+        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
 
         self.graphElementSize = 100;
         self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
-        self.levelWidth = drawing.width - self.bibWidth;
+        self.levelWidth = drawing.width - self.bibWidth-MARGIN;
         self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
         self.x = MARGIN;
         self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
@@ -470,13 +468,13 @@ var Level = function(formation, gamesTab){
                 self.bib.dropAction(self.bib.gameSelected.cadre, event);
                 self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.bib.gameSelected = null;
-                svg.removeEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+                svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });
             };
             if (self.bib.gameSelected) {
-                svg.addEvent(self.graphBlock.rect, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });
@@ -492,6 +490,10 @@ var Level = function(formation, gamesTab){
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
+                level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
+                level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
+                level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
+                level.manipulator.ordonator.set(9,level.obj.line);
                 level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
                 if(level.gamesTab.length === level.parentFormation.maxGameInARow){
                     level.addedLastGame = false;
@@ -1087,6 +1089,7 @@ var Level = function(formation, gamesTab){
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, parentFormation);
+            self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
