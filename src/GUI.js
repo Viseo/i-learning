@@ -117,7 +117,7 @@ function LibraryDisplay(x,y,w,h){
     self.libraryManipulator.first.move(x, y);
 
     self.bibManipulators.forEach(function(e){
-        svg.addEvent(e.ordonator.children[0], 'mousedown', function(event){
+        var mouseDownAction = function(event){
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
@@ -186,9 +186,14 @@ function LibraryDisplay(x,y,w,h){
                 textObject.content.component.target && textObject.content.component.target.eventHandlers && textObject.content.component.target.eventHandlers.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
             }
-        });
-        e.ordonator.children[0].component.eventHandlers && svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.eventHandlers.mousedown);
-        e.ordonator.children[0].component.target && svg.addEvent(e.ordonator.children[1], 'mousedown',e.ordonator.children[0].component.target.eventHandlers.mousedown);
+        };
+        e.ordonator.children[0].component.eventHandlers && svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
+        e.ordonator.children[0].component.target && svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
+        domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
+
+        e.ordonator.children[1].component.eventHandlers && svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
+        e.ordonator.children[1].component.target && svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
+        domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
 
     });
 }
@@ -402,13 +407,13 @@ function FormationDisplayFormation(){
         self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelHeight = Math.floor(self.formationLabel.content.component.target.getBBox().height));
         //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBBox().width) + 2 * MARGIN);
         domain && (self.labelHeight = Math.floor(runtime.boundingRect(self.formationLabel.content.component).height));
-
+        self.formationTitleWidth = 102;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.title.component.getBBox && self.formationLabel.cadre.position(self.title.component.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.cadre.position(self.title.component.target.getBBox().width + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        //domain && self.formationLabel.cadre.position(Math.floor(runtime.boundingRect(self.title.component).))
+        self.title.component.getBBox && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-
+// VOIR ICI LUNDI
         self.title.component.getBBox && self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
         self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
 
