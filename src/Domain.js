@@ -475,8 +475,11 @@ var Level = function(formation, gamesTab){
             };
             if (self.bib.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
+                runtime && runtime.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+                    e.obj.cadre.component.target && svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+                    runtime && runtime.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });
             }
         };

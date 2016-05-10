@@ -52,7 +52,7 @@ function main() {
     bib.run(0,0,document.body.clientWidth,drawing.height);
 */
 
-    var quizzCopy=JSON.parse(JSON.stringify(myQuizz));
+    var quizzCopy=JSON.parse(JSON.stringify(myQuizzTest));
     quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 

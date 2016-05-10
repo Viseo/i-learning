@@ -180,11 +180,16 @@ function LibraryDisplay(x,y,w,h){
 
             img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
             img.component.target && img.component.target.eventHandlers && img.component.target.eventHandlers.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
+            domain && img.component.listeners.mouseup && runtime.removeEvent(img.component, 'mouseup', img.component.listeners.mouseup);
+
+
             svg.addEvent(img, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
                 textObject.content.component.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.eventHandlers.mouseup);
                 textObject.content.component.target && textObject.content.component.target.eventHandlers && textObject.content.component.target.eventHandlers.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
+                textObject.content.component.target && svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
+                domain && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
             }
         };
         e.ordonator.children[0].component.eventHandlers && svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
@@ -413,9 +418,9 @@ function FormationDisplayFormation(){
         self.title.component.target && self.title.component.target.getBBox && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-// VOIR ICI LUNDI
-        self.title.component.getBBox && self.formationLabel.content.position(self.title.component.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
-        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.title.component.target.getBBox().width + 2 * MARGIN, 0).color(color).anchor("start");
+        self.title.component.getBBox && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        domain && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
@@ -537,6 +542,8 @@ function FormationDisplayFormation(){
         self.manipulator.last.add(self.clippingManipulator.first);
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
         self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(self.title.component.target.getBBox().height));
+        domain && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(runtime.boundingRect(self.title.component).height));
+
 
         self.panel = new gui.Panel(w, h);
         self.panel.addhHandle();
@@ -887,9 +894,11 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
             for (var j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
+                        self.questionWithBadAnswersManipulator.ordonator.set(i+j, self.virtualTab[i][j].manipulator.first);
+                        self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }else{
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
+                        self.questionWithBadAnswersManipulator.ordonator.set(i+j, self.virtualTab[i][j].questionManipulator.first);
+                        self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }
                     self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                     if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
@@ -1034,7 +1043,9 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 self.tileHeight = tmpTileHeight;
             }
         }
-        self.questionManipulator.last.add(self.answersManipulator.first);
+        //self.questionManipulator.last.add(self.answersManipulator.first);
+        self.questionManipulator.ordonator.set(7, self.answersManipulator.first);
+
         self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
 
         var posx = 0;
@@ -1050,7 +1061,9 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 posx = self.initialAnswersPosX;
             }
 
-            self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
+            //self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
+            self.answersManipulator.ordonator.set(i, self.tabAnswer[i].manipulator.first);
+
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
