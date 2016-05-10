@@ -170,6 +170,7 @@ var runtimeMock =  (function() {
         removeEvent: function(component, event, handler) {
             if (component.listeners[event]) {
                 component.listeners[event].splice(component.listeners[event].indexOf(handler), 1);
+                delete component.listeners[event];
             }
         },
         event: function(component, eventName, event) {

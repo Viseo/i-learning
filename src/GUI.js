@@ -184,6 +184,7 @@ function LibraryDisplay(x,y,w,h){
 
 
             svg.addEvent(img, 'mouseup', mouseupHandler);
+            //runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
                 textObject.content.component.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.eventHandlers.mouseup);
                 textObject.content.component.target && textObject.content.component.target.eventHandlers && textObject.content.component.target.eventHandlers.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
@@ -893,7 +894,6 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
                 if (count < self.questionsTab.length) {
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                        self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }else{
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
                         self.virtualTab[i][j].questionManipulator.ordonator.unset(7);

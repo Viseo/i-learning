@@ -36,6 +36,7 @@ describe('Quizz game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
+    var quizzManagerModule = require("../src/quizzManager");
 
     beforeEach(function () {
         runtime = mock.mockRuntime();
@@ -52,6 +53,8 @@ describe('Quizz game', function () {
         mainModule.setUtil(util);
         adminModule.setSvg(svg);
         adminModule.setUtil(util);
+        quizzManagerModule.setSvg(svg);
+        quizzManagerModule.setUtil(util);
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
@@ -64,22 +67,32 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game", function (done) {
+    //it("plays a complete quizz game", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            mainModule.main(myQuizzTest);
+    //        },
+    //        "./log/testQuizzImages.json", 'content', runtime, done);
+    //});
+    //it("an admin use", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testAdmin.json", 'content', runtime, done);
+    //});
+
+    it("QuizzManager", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
-                mainModule.main(myQuizzTestLong);
+                quizzManagerModule.quizzManager();
             },
-            "./log/testQuizzLong.json", 'content', runtime, done);
+            "./log/testQuizzManager.json", 'content', runtime, done);
     });
-    it("an admin use", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testAdminCourt.json", 'content', runtime, done);
-    });
+
     it('should instantiate correctly my answer', function() {
         var answerJSON={
             label:"My first answer is...",

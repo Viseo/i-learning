@@ -8,7 +8,9 @@ var fs = require('fs');
 var app = express();
 
 app.use(express.static(__dirname));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
+//app.use(bodyParser.urlencoded({limit: '50mb'}));
+
 app.use(function (req, res, next)  {
     res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "POST");

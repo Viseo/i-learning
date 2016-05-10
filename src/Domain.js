@@ -184,6 +184,13 @@ function Domain() {
                     callback();
                 }
             }, 100);
+                util && self.tabImgBib.forEach(function(e){
+                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
+                });
+                if (util){
+                    self.display(x, y, w, h);
+                    callback();
+                }
         };
 
         self.dropAction = function (element, event) {
@@ -297,7 +304,7 @@ function Domain() {
                 break;
             case 'answer':
                 self.answerNameValidInput = true;
-                self.label = "Double-cliquez pour ajouter une réponse";
+                self.label = "Nouvelle réponse";
                 break;
         }
         self.fontSize = 20;
@@ -994,9 +1001,9 @@ var Level = function(formation, gamesTab){
                 }
             }, 100);
             util && self.tabQuestions.forEach(function(e){
-                e.image && imageController.imageLoaded(e.image.id, 238, 238);
+                e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.url].width, myImagesSourceDimensions[e.image.url].height);
                 e.tabAnswer.forEach(function(el){
-                    el.image && imageController.imageLoaded(el.image.id, 200, 5);
+                    el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.url].width, myImagesSourceDimensions[el.image.url].height);
                 });
 
             });
