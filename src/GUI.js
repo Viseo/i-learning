@@ -193,10 +193,10 @@ function LibraryDisplay(x,y,w,h){
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
-        domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
+        //domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
 
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-        domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
+        //domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
 
     });
 }
@@ -892,10 +892,10 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
             for (var j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
-                        self.questionWithBadAnswersManipulator.ordonator.set(i+j, self.virtualTab[i][j].manipulator.first);
+                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
                         self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }else{
-                        self.questionWithBadAnswersManipulator.ordonator.set(i+j, self.virtualTab[i][j].questionManipulator.first);
+                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
                         self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }
                     self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
@@ -1059,8 +1059,8 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 posx = self.initialAnswersPosX;
             }
 
-            //self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
-            self.answersManipulator.ordonator.set(i, self.tabAnswer[i].manipulator.first);
+            self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
+            //self.answersManipulator.ordonator.set(i, self.tabAnswer[i].manipulator.first);
 
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);

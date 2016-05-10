@@ -71,7 +71,8 @@ var runtimeMock =  (function() {
                 function getBBoxMock(){
                     var chaine=elem.text;
                     var lineHeight=elem["font-size"];
-                    var characterSize=((168/26)/15)*elem["font-size"];
+                    //var characterSize=((168/26)/15)*elem["font-size"];
+                    var characterSize=((965.17/109)/20)*elem["font-size"];
                     var margin;
                     var regex = /[ypqg]/;
                     margin = regex.test(chaine.toLowerCase()) ? 0.11015625*lineHeight :0.1*lineHeight;
@@ -89,7 +90,7 @@ var runtimeMock =  (function() {
                     }
                     // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
                     w=Math.max.apply(null,tableauLengths);
-                    var tt=w*(characterSize)+marginWidth;
+                    var tt=w*(characterSize);//+marginWidth;
                     var box={
                         width:(tt),
                         height:Math.round(h)

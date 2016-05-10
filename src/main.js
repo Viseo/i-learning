@@ -36,7 +36,7 @@ function setGlobalVariable() {
 
 //mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
-function main() {
+function main(targetQuizz) {
     !util && setGlobalVariable();
 
   /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
@@ -52,7 +52,7 @@ function main() {
     bib.run(0,0,document.body.clientWidth,drawing.height);
 */
 
-    var quizzCopy=JSON.parse(JSON.stringify(myQuizzTest));
+    var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 

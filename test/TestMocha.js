@@ -64,22 +64,13 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a short quizz game", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                mainModule.main();
-            },
-            "./log/testQuizzCourt.json", 'content', runtime, done);
-    });
-
     it("plays a complete quizz game", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
-                mainModule.main();
+                mainModule.main(myQuizzTestLong);
             },
-            "./log/testQuizzCourt.json", 'content', runtime, done);
+            "./log/testQuizzLong.json", 'content', runtime, done);
     });
     it("an admin use", function (done) {
         this.timeout(100000);
