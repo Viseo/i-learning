@@ -70,7 +70,7 @@ describe('Quizz game', function () {
             function () {
                 mainModule.main();
             },
-            "./log/testQuizzLong.json", 'content', runtime, done);
+            "./log/testQuizzCourt.json", 'content', runtime, done);
     });
     it("an admin use", function (done) {
         this.timeout(100000);
@@ -78,7 +78,7 @@ describe('Quizz game', function () {
             function () {
                 adminModule.admin();
             },
-            "./log/debutAdminQuiMarche.json", 'content', runtime, done);
+            "./log/testAdminCourt.json", 'content', runtime, done);
     });
     it('should instantiate correctly my answer', function() {
         var answerJSON={
