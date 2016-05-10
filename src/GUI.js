@@ -192,12 +192,10 @@ function LibraryDisplay(x,y,w,h){
                 domain && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
             }
         };
-        e.ordonator.children[0].component.eventHandlers && svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
-        e.ordonator.children[0].component.target && svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
+        svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
         domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
 
-        e.ordonator.children[1].component.eventHandlers && svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-        e.ordonator.children[1].component.target && svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
+        svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
         domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
 
     });
@@ -1115,7 +1113,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
                         subTotal++;
                     }
                 });
-                allRight = (subTotal === self.rightAnswers.length) ? true : false;
+                allRight = (subTotal === self.rightAnswers.length);
             }
 
             if(allRight) {
