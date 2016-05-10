@@ -1004,194 +1004,194 @@ function Bdd() {
                 rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
             },
 
-            {
-                label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Boïcotter", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Boycotter", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Boycoter", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-
-                ],
-                rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-            },
-
-            {
-                label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Un flandrois", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Un flamby", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Un flamand", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Un flanders", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-            },
-
-            {
-                label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Cyclades", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.orange
-                    },
-                    {
-                        label: "Antilles", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.purple
-                    },
-                    {
-                        label: "Baléares", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Canaries", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.green
-                    }
-                ],
-                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-            },
-
-            {
-                label: "Quel musée doit son nom à un dessinateur?", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Musée d'Orsay", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Musée Guimet", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Musée Grévin", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Le Louvre", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-            },
-
-            {
-                label: "Comment s'appelle le meilleur ami de Bob l'éponge?", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Luc", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Paul", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Patrick", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Albert", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-            },
-
-            {
-                label: "Le style 'rococo' était un style artistique en vogue au...",
-                imageSrc: null,
-                multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "XVIe siècle", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "XVIIe siècle", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "XVIIIe siècle", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "XIXe siècle", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 2,
-                colorBordure: myColors.primaryBlue,
-                bgColor: myColors.green
-            },
-
-            {
-                label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "Magnolias", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Lilas", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "Lavandes", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "Roses", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
-            },
-
-            {
-                label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
-                imageSrc: null,
-                multipleChoice: false,
-                tabAnswer: [
-                    {
-                        label: "1996", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "1998", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    },
-                    {
-                        label: "1994", imageSrc: null, correct: true,
-                        colorBordure: myColors.green, bgColor: myColors.blue
-                    },
-                    {
-                        label: "1999", imageSrc: null, correct: false,
-                        colorBordure: myColors.green, bgColor: myColors.grey
-                    }
-                ],
-                rows: 2,
-                colorBordure: myColors.primaryBlue,
-                bgColor: myColors.purple
-            }
+            //{
+            //    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Boïcotter", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Boycotter", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Boycoter", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //
+            //    ],
+            //    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            //},
+            //
+            //{
+            //    label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Un flandrois", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Un flamby", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Un flamand", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Un flanders", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            //},
+            //
+            //{
+            //    label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Cyclades", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.orange
+            //        },
+            //        {
+            //            label: "Antilles", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.purple
+            //        },
+            //        {
+            //            label: "Baléares", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Canaries", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.green
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            //},
+            //
+            //{
+            //    label: "Quel musée doit son nom à un dessinateur?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Musée d'Orsay", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Musée Guimet", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Musée Grévin", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Le Louvre", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
+            //},
+            //
+            //{
+            //    label: "Comment s'appelle le meilleur ami de Bob l'éponge?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Luc", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Paul", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Patrick", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Albert", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            //},
+            //
+            //{
+            //    label: "Le style 'rococo' était un style artistique en vogue au...",
+            //    imageSrc: null,
+            //    multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "XVIe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "XVIIe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "XVIIIe siècle", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "XIXe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2,
+            //    colorBordure: myColors.primaryBlue,
+            //    bgColor: myColors.green
+            //},
+            //
+            //{
+            //    label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Magnolias", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Lilas", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Lavandes", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Roses", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
+            //},
+            //
+            //{
+            //    label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
+            //    imageSrc: null,
+            //    multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "1996", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "1998", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "1994", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "1999", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2,
+            //    colorBordure: myColors.primaryBlue,
+            //    bgColor: myColors.purple
+            //}
 
         ]
     };
