@@ -2,6 +2,42 @@
  * Created by ABO3476 on 04/05/2016.
  */
 
+var FormationStructure =
+{
+    name: String,
+    lastVersion: objectId, //(FormationVersion)
+    lastVersionPublished: objectId //(FormationVersion)
+};
+
+
+
+/*LastVersion & LastVersionPublished permettent d'avoir la valeur de "status" ("non publié", "publié", "nouvelle version à publier") :
+ (LastVersion === LastVersionPublished) => Publiée
+ (!LastVersionPublished) => Non publiée
+ (LastVersionPubliée && LastVersion !== LastVersionPublished) => "Nouvelle version à publier"*/
+
+
+var FormationVersionStructure =
+{
+    parentFormation: objectId (Formation),
+    num: Number,
+    tabLevels: [
+    {
+        num: Number,
+        tabGames: [
+        {
+            _id: objectId,
+            parentsGame: [objectId],
+            childrenGame: [objectId],
+            tabQuestions: [
+            {
+                questionData: {1},
+                tabReponses: [{2}]
+            }]
+        }]
+    }]
+};
+
 var myColorsOld={
     blue:{r: 25, g: 122, b: 230},
     primaryBlue:{r: 0, g: 0, b: 255},
