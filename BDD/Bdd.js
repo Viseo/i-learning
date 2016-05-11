@@ -13,7 +13,6 @@ var myColorsOld={
     black:{r:0, g:0, b:0},
     white:{r:255, g:255, b:255}
 };
-db.BDD.insert(myColorsOld);
 
 var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
 var REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
@@ -38,7 +37,11 @@ var myColors = {
     brown:[128,0,0],
     none:[]
 };
-db.BDD.insert(myColors);
+db.BDD.insert(
+    {
+        myColorsOld:myColorsOld,
+        myColors:myColors
+    });
 
 
 var SELECTION_COLOR = myColors.darkBlue;
