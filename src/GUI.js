@@ -1146,7 +1146,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
         var h = 50;
         var resetX =- 75 -100;
         var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
-        self.resetButton = displayText("Reset", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
+        self.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
         self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
         if(self.selectedAnswers.length !== 0){
             self.resetButton.cadre.color(myColors.yellow, 1, myColors.green);

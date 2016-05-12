@@ -921,7 +921,7 @@ function Bdd() {
     };
 
     myQuizzTestLong = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
@@ -1211,7 +1211,7 @@ function Bdd() {
     };
 
     myQuizz = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
@@ -1509,7 +1509,7 @@ function Bdd() {
     };
 
     myQuizzTest = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
@@ -1778,7 +1778,7 @@ function Bdd() {
 
 
     myQuizzDemo = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         tabQuestions: [
             {
                 label: "Parmi ces divinités, lesquelles sont de sexe féminin?",
