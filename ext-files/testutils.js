@@ -16,6 +16,7 @@ function checkScenario(play, scenario, root, runtime, done) {
     var rl = readline.createInterface({input: rs});
     rl.on('line', function (line) {
         var fact = JSON.parse(line);
+        fact.event && (fact.event.preventDefault = function(){});
         for (var i = 0; i < fact.randoms.length; i++) {
             runtime.setRandom(fact.randoms[i]);
         }

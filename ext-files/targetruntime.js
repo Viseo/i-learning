@@ -42,24 +42,24 @@ function targetRuntime() {
             return component.getBoundingClientRect();
         },
         addEvent: function(component, eventName, handler) {
-            if (!component.eventHandlers) {
-                component.eventHandlers = {};
+            if (!component.listeners) {
+                component.listeners = {};
             }
-            else if (component.eventHandlers[eventName]) {
-                component.removeEventListener(eventName, component.eventHandlers[eventName]);
+            else if (component.listeners[eventName]) {
+                component.removeEventListener(eventName, component.listeners[eventName]);
             }
-            component.eventHandlers[eventName] = handler;
+            component.listeners[eventName] = handler;
             component.addEventListener(eventName, handler);
         },
         removeEvent: function(component, eventName, handler) {
-            if (component.eventHandlers && handler===component.eventHandlers[eventName]) {
-                delete component.eventHandlers[eventName];
+            if (component.listeners && handler===component.listeners[eventName]) {
+                delete component.listeners[eventName];
                 component.removeEventListener(eventName, handler);
             }
         },
         event: function(component, eventName, event) {
-            if (component.eventHandlers && component.eventHandlers[eventName]) {
-                component.eventHandlers[eventName](event);
+            if (component.listeners && component.listeners[eventName]) {
+                component.listeners[eventName](event);
             }
         },
         preventDefault: function(event) {

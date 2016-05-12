@@ -16,11 +16,6 @@ function setUtil(_util){
     util = _util;
 }
 
-function setGlobalVariable() {
-
-}
-
-
 function quizzManager() {
     !util && setGlobalVariable();
 
@@ -33,5 +28,5 @@ if (typeof exports !== "undefined") {
     exports.quizzManager = quizzManager;
     exports.setSvg = setSvg;
     exports.setUtil = setUtil;
-    exports.setGlobalVariable = setGlobalVariable;
+    //exports.setGlobalVariable = setGlobalVariable;
 }

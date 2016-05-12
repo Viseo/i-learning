@@ -61,7 +61,7 @@ function SVGGlobalHandler() {
         self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
         self.drawing.manipulator = new Manipulator(self);
 
-        //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
+        //self.piste = new svg.Drawing(w, h).doshow("content").position(-w, -h);
         //self.piste.manipulator = new Manipulator(self);
         //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
         //self.glass.manipulator = new Manipulator(self);
@@ -88,11 +88,11 @@ function SVGGlobalHandler() {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
-                self.target.component.eventHandlers.mousedown(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.mousedown) {
+                self.target.component.listeners.mousedown(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
-                self.target.component.target.eventHandlers.mousedown(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousedown) {
+                self.target.component.target.listeners.mousedown(event);
             }
         };
 
@@ -100,11 +100,11 @@ function SVGGlobalHandler() {
 
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousemove) {
-                self.target.component.eventHandlers.mousemove(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.mousemove) {
+                self.target.component.listeners.mousemove(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousemove) {
-                self.target.component.target.eventHandlers.mousemove(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousemove) {
+                self.target.component.target.listeners.mousemove(event);
             }
         };
 
@@ -112,11 +112,11 @@ function SVGGlobalHandler() {
 
         var ondblclickHandler = function (event) {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
-                self.target.component.eventHandlers.dblclick(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.dblclick) {
+                self.target.component.listeners.dblclick(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
-                self.target.component.target.eventHandlers.dblclick(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.dblclick) {
+                self.target.component.target.listeners.dblclick(event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
@@ -125,17 +125,17 @@ function SVGGlobalHandler() {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
             if (self.target) {
-                if (self.target.component.eventHandlers && self.target.component.eventHandlers.mouseup) {
-                    self.target.component.eventHandlers.mouseup(event);
+                if (self.target.component.listeners && self.target.component.listeners.mouseup) {
+                    self.target.component.listeners.mouseup(event);
                 }
-                if (self.target.component.eventHandlers && self.target.component.eventHandlers.click) {
-                    self.target.component.eventHandlers.click(event);
+                if (self.target.component.listeners && self.target.component.listeners.click) {
+                    self.target.component.listeners.click(event);
                 }
-                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mouseup) {
-                    self.target.component.target.eventHandlers.mouseup(event);
+                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mouseup) {
+                    self.target.component.target.listeners.mouseup(event);
                 }
-                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.click) {
-                    self.target.component.target.eventHandlers.click(event);
+                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.click) {
+                    self.target.component.target.listeners.click(event);
                 }
             }
             self.drag = null;
@@ -144,8 +144,8 @@ function SVGGlobalHandler() {
 
 
         var onmouseoutHandler = function (event) {
-            if (self.drag && self.drag.component.eventHandlers && self.drag.component.eventHandlers.mouseup) {
-                self.target.component.eventHandlers.mouseup(event);
+            if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
+                self.target.component.listeners.mouseup(event);
             }
             self.drag = null;
         };

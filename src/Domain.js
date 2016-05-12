@@ -1,7 +1,7 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
-var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController;
+var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg;
 
 setUtil = function(_util){
     util = _util;
@@ -15,6 +15,11 @@ setGlobalVariables = function(gv){
 
 setRuntime = function(_runtime){
     runtime = _runtime;
+}
+
+function setSvg(_svg) {
+    svg = _svg;
+    // call setSvg on modules
 }
 
 function Domain() {
@@ -71,11 +76,11 @@ function Domain() {
             return timeout;
         }
     };
-    util && (iRuntime = ImageRuntime);
-    util && (aRuntime = AsyncTimerRuntime);
+    runtime && (iRuntime = ImageRuntime);
+    runtime && (aRuntime = AsyncTimerRuntime);
     var imageController = ImageController(iRuntime);
     //var asyncTimerController=AsyncTimerController();
-    asyncTimerController = util ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
+    asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
 
 
 ////////////// Answer.js /////////////////
@@ -184,10 +189,10 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                util && self.tabImgBib.forEach(function(e){
+                runtime && self.tabImgBib.forEach(function(e){
                     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
                 });
-                if (util){
+                if (runtime){
                     self.display(x, y, w, h);
                     callback();
                 }
@@ -497,6 +502,7 @@ var Level = function(formation, gamesTab){
             var textDimensions;
             level.obj.content.component.getBBox && (textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height});
             level.obj.content.component.target && level.obj.content.component.target.getBBox && (textDimensions = {width:Math.floor(level.obj.content.component.target.getBBox().width), height:Math.floor(level.obj.content.component.target.getBBox().height)});
+            runtime && (textDimensions = {width:Math.floor(runtime.boundingRect(level.obj.content.component).width), height:Math.floor(runtime.boundingRect(level.obj.content.component).height)});
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
@@ -857,8 +863,8 @@ var Level = function(formation, gamesTab){
             if (myObj.textarea.value.match(REGEX)) {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.style.border = "none";
-                myObj.textarea.style.outline = "none";
+                !runtime && (myObj.textarea.style.border = "none");
+                !runtime && (myObj.textarea.style.outline = "none");
             } else {
                 myObj.display();
                 myObj.textarea.onblur = function () {
@@ -1000,14 +1006,14 @@ var Level = function(formation, gamesTab){
                     self.display(x, y, w, h);
                 }
             }, 100);
-            util && self.tabQuestions.forEach(function(e){
+            runtime && self.tabQuestions.forEach(function(e){
                 e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.url].width, myImagesSourceDimensions[e.image.url].height);
                 e.tabAnswer.forEach(function(el){
                     el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.url].width, myImagesSourceDimensions[el.image.url].height);
                 });
 
             });
-            util && self.display(x, y, w, h);
+            runtime && self.display(x, y, w, h);
 
         };
 
@@ -1183,4 +1189,5 @@ if(typeof exports !== "undefined") {
     exports.setUtil = setUtil;
     exports.setGlobalVariables = setGlobalVariables;
     exports.setRuntime = setRuntime;
+    exports.setSvg = setSvg;
 }

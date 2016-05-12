@@ -60,6 +60,7 @@ describe('Quizz game', function () {
         domain.setGlobalVariables(globalVariables);
         domain.Domain();
         domain.setRuntime(runtime);
+        domain.setSvg(svg);
         gui.setDomain(domain);
         gui.AdminGUI();
         gui.setSVG(svg);
@@ -75,23 +76,23 @@ describe('Quizz game', function () {
     //        },
     //        "./log/testQuizzImages.json", 'content', runtime, done);
     //});
-    //it("an admin use", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            adminModule.admin();
-    //        },
-    //        "./log/testAdmin.json", 'content', runtime, done);
-    //});
-
-    it("QuizzManager", function (done) {
+    it("an admin use", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
-                quizzManagerModule.quizzManager();
+                adminModule.admin();
             },
-            "./log/testQuizzManager.json", 'content', runtime, done);
+            "./log/testAdmin.json", 'content', runtime, done);
     });
+
+    //it("QuizzManager", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            quizzManagerModule.quizzManager();
+    //        },
+    //        "./log/testQuizzManager.json", 'content', runtime, done);
+    //});
 
     it('should instantiate correctly my answer', function() {
         var answerJSON={

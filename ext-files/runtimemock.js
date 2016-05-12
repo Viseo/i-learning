@@ -1,7 +1,7 @@
 /**
  * Created by HDA3014 on 03/03/2016.
  */
-var targetRuntime;
+var targetRuntime, util;
 function  setTarget(targetRtm) {
     targetRuntime = targetRtm;
 }
@@ -25,14 +25,12 @@ function Element(tag, id) {
                     return result;
                 }
             }
-            }
-            return null;
+        }
+        return null;
 
     };
     this.event = function(eventName, event) {
-        for (var listener in this.listeners[eventName]) {
-            this.listeners[eventName][listener](event);
-        }
+        this.listeners[eventName](event);
     }
 }
 
@@ -161,21 +159,15 @@ var runtimeMock =  (function() {
         boundingRect: function(component) {
             return component.getBoundingClientRect();
         },
-        addEvent: function(component, event, handler) {
-            if (!component.listeners[event]) {
-                component.listeners[event]=[];
-            }
-            component.listeners[event].push(handler);
+        addEvent: function(component, eventName, handler) {
+            component.listeners[eventName]=handler;
         },
-        removeEvent: function(component, event, handler) {
-            if (component.listeners[event]) {
-                component.listeners[event].splice(component.listeners[event].indexOf(handler), 1);
-                delete component.listeners[event];
-            }
+        removeEvent: function(component, eventName, handler) {
+            delete component.listeners[eventName];
         },
         event: function(component, eventName, event) {
-            if (component.listeners[event]) {
-                component.listeners[event](event);
+            if (component.listeners[eventName]) {
+                component.listeners[eventName](event);
             }
         },
         now: function() {
@@ -250,6 +242,19 @@ var runtimeMock =  (function() {
             result && result.event(eventName, event);
         },
         preventDefault: function(event) {
+        },
+        document: {
+            createElement: function(type){
+                var result = {};
+                switch (type) {
+                    case "TEXTAREA" :
+                        drawing.glass.onkeydown = function(event) {
+                            result.value += event.key;
+                        };
+                        break;
+                }
+                return result;
+            }
         }
 
     };
@@ -352,7 +357,13 @@ var runtimeRegister =  function(register) {
                     hEvent.clientX = event.clientX;
                     hEvent.clientY = event.clientY;
                 }
-                addHistory({type:'event', name:eventName, event:hEvent, component:component.mock.id});
+                if (!event.proc){
+                    addHistory({type:'event', name:eventName, event:hEvent, component:component.mock.id});
+                    event.proc = true;
+                }
+                else {
+                    console.log(component.mock.id);
+                }
                 handler(event);
             };
             mock.addEvent(component.mock, eventName, handler);

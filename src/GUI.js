@@ -175,22 +175,22 @@ function LibraryDisplay(x,y,w,h){
                 }
                 self.draggedObjectLabel = "";
             };
-            drawings.glass.component.eventHandlers && drawings.glass.component.eventHandlers.mousedown(event);
-            drawings.glass.component.target && drawings.glass.component.target.eventHandlers && drawings.glass.component.target.eventHandlers.mousedown(event);
+            drawings.glass.component.listeners && drawings.glass.component.listeners.mousedown(event);
+            drawings.glass.component.target && drawings.glass.component.target.listeners && drawings.glass.component.target.listeners.mousedown(event);
 
-            img.component.eventHandlers && svg.removeEvent(img, 'mouseup', img.component.eventHandlers.mouseup);
-            img.component.target && img.component.target.eventHandlers && img.component.target.eventHandlers.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.eventHandlers.mouseup);
-            domain && img.component.listeners.mouseup && runtime.removeEvent(img.component, 'mouseup', img.component.listeners.mouseup);
+            img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
+            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
+            runtime && img.component.listeners.mouseup && runtime.removeEvent(img.component, 'mouseup', img.component.listeners.mouseup);
 
 
             svg.addEvent(img, 'mouseup', mouseupHandler);
             //runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
-                textObject.content.component.eventHandlers && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.eventHandlers.mouseup);
-                textObject.content.component.target && textObject.content.component.target.eventHandlers && textObject.content.component.target.eventHandlers.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.eventHandlers.mouseup);
+                textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
+                textObject.content.component.target && textObject.content.component.target.listeners && textObject.content.component.target.listeners.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.listeners.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
                 textObject.content.component.target && svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                domain && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
+                runtime && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
@@ -291,7 +291,7 @@ function AnswerElementDisplay(x, y, w, h) {
         contentarea.width = w;
         self.obj.content.component.getBBox && (contentarea.height = self.obj.content.component.getBBox().height);
         self.obj.content.component.target && (contentarea.height = Math.floor(self.obj.content.component.target.getBBox().height));
-        domain && (contentarea.height = Math.floor(runtime.boundingRect(self.obj.content.component).height));
+        runtime && (contentarea.height = Math.floor(runtime.boundingRect(self.obj.content.component).height));
         contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
         self.manipulator.ordonator.unset(1, self.obj.content);
         var contentareaStyle = {
@@ -410,7 +410,7 @@ function FormationDisplayFormation(){
         //self.formationLabel.content.component.getBBox && (self.labelWidth = self.formationLabel.content.component.getBBox().width + 2 * MARGIN);
         self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelHeight = Math.floor(self.formationLabel.content.component.target.getBBox().height));
         //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBBox && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBBox().width) + 2 * MARGIN);
-        domain && (self.labelHeight = Math.floor(runtime.boundingRect(self.formationLabel.content.component).height));
+        runtime && (self.labelHeight = Math.floor(runtime.boundingRect(self.formationLabel.content.component).height));
         self.formationTitleWidth = 102;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
         self.title.component.getBBox && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
@@ -419,7 +419,7 @@ function FormationDisplayFormation(){
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.title.component.getBBox && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
         self.title.component.target && self.title.component.target.getBBox && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        domain && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        runtime && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
@@ -526,7 +526,7 @@ function FormationDisplayFormation(){
     };
 
     self.displayFrame = function (w, h) {
-        !domain && (window.onkeydown = function (event) {
+        !runtime && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -541,7 +541,7 @@ function FormationDisplayFormation(){
         self.manipulator.last.add(self.clippingManipulator.first);
         self.title.component.getBBox && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBBox().height);
         self.title.component.target && self.title.component.target.getBBox && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(self.title.component.target.getBBox().height));
-        domain && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(runtime.boundingRect(self.title.component).height));
+        runtime && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(runtime.boundingRect(self.title.component).height));
 
 
         self.panel = new gui.Panel(w, h);
@@ -585,6 +585,7 @@ function FormationDisplayFormation(){
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBBox().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        (self.levelsTab.length !== 0) && runtime && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? Math.floor(runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width)/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -615,7 +616,7 @@ function FormationRemoveErrorMessage(message) {
 function FormationsManagerDisplay() {
     var self = this;
     function displayPanel() {
-        !domain && (window.onkeydown = function (event) {
+        !runtime && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -1530,6 +1531,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzLabel.content.component.getBBox && (self.quizzNameHeight = self.quizzLabel.content.component.getBBox().height);
         self.quizzLabel.content.component.target && (self.quizzNameHeight = Math.floor(self.quizzLabel.content.component.target.getBBox().height));
+        runtime && (self.quizzNameHeight = Math.floor(runtime.boundingRect(self.quizzLabel.content.component).height));
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
@@ -1543,9 +1545,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var dblclickEdition = function (event) {
         var width;
         self.quizzLabel.content.component.getBBox && (width = self.quizzLabel.content.component.getBBox().width);
+        runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
         self.quizzInfoManipulator.ordonator.unset(1);
 
-        var textarea = document.createElement("TEXTAREA");
+        //var textarea = runtime ? runtime.document.createElement("TEXTAREA") : document.createElement("TEXTAREA");
+        var textarea = !runtime && document.createElement("TEXTAREA");
         textarea.value = self.quizzName;
         var contentareaStyle = {
             toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),
@@ -1553,14 +1557,15 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             width: 700,
             height:(self.quizzNameHeight+3)
         };
-        textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        var body = document.getElementById("content");
-        body.appendChild(textarea).focus();
+        !runtime && textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        var body = !runtime && document.getElementById("content");
+        !runtime && body.appendChild(textarea).focus();
+
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
             self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
-            self.quizzLabel.cadre.color(myColors.grey, 1, myColors.none);
+            self.quizzLabel.cadre.color(myColors.grey);
             self.quizzNameValidInput = true;
         };
 
