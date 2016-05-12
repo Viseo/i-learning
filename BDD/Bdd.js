@@ -2,6 +2,42 @@
  * Created by ABO3476 on 04/05/2016.
  */
 
+var FormationStructure =
+{
+    name: String,
+    lastVersion: objectId, //(FormationVersion)
+    lastVersionPublished: objectId //(FormationVersion)
+};
+
+
+
+/*LastVersion & LastVersionPublished permettent d'avoir la valeur de "status" ("non publié", "publié", "nouvelle version à publier") :
+ (LastVersion === LastVersionPublished) => Publiée
+ (!LastVersionPublished) => Non publiée
+ (LastVersionPubliée && LastVersion !== LastVersionPublished) => "Nouvelle version à publier"*/
+
+
+var FormationVersionStructure =
+{
+    parentFormation: objectId (Formation),
+    num: Number,
+    tabLevels: [
+    {
+        num: Number,
+        tabGames: [
+        {
+            _id: objectId,
+            parentsGame: [objectId],
+            childrenGame: [objectId],
+            tabQuestions: [
+            {
+                questionData: {1},
+                tabReponses: [{2}]
+            }]
+        }]
+    }]
+};
+
 var myColorsOld={
     blue:{r: 25, g: 122, b: 230},
     primaryBlue:{r: 0, g: 0, b: 255},
@@ -13,7 +49,6 @@ var myColorsOld={
     black:{r:0, g:0, b:0},
     white:{r:255, g:255, b:255}
 };
-db.BDD.insert(myColorsOld);
 
 var REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
 var REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
@@ -38,7 +73,11 @@ var myColors = {
     brown:[128,0,0],
     none:[]
 };
-db.BDD.insert(myColors);
+db.BDD.insert(
+    {
+        myColorsOld:myColorsOld,
+        myColors:myColors
+    });
 
 
 var SELECTION_COLOR = myColors.darkBlue;
