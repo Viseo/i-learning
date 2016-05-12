@@ -6,6 +6,9 @@ function targetRuntime() {
     var xlink = "http://www.w3.org/1999/xlink";
 
     return {
+        createDOM: function(tag){
+            return document.createElement(tag);
+        },
         create: function(tag) {
             return document.createElementNS(svgNS, tag);
         },
@@ -51,15 +54,37 @@ function targetRuntime() {
             component.listeners[eventName] = handler;
             component.addEventListener(eventName, handler);
         },
+        addGlobalEvent: function(eventName, handler) {
+            if (!window.listeners) {
+                window.listeners = {};
+            }
+            else if (window.listeners[eventName]) {
+                window.removeEventListener(eventName, window.listeners[eventName]);
+            }
+            window.listeners[eventName] = handler;
+            window.addEventListener(eventName, handler);
+        },
         removeEvent: function(component, eventName, handler) {
             if (component.listeners && handler===component.listeners[eventName]) {
                 delete component.listeners[eventName];
                 component.removeEventListener(eventName, handler);
             }
         },
+        removeGlobalEvent: function(eventName, handler) {
+            if (window.listeners && handler===window.listeners[eventName]) {
+                delete window.listeners[eventName];
+                window.removeEventListener(eventName, handler);
+            }
+        },
         event: function(component, eventName, event) {
             if (component.listeners && component.listeners[eventName]) {
                 component.listeners[eventName](event);
+            }
+        },
+        screenSize: function(){
+            return {
+                width: document.body.clientWidth,
+                height: document.documentElement.clientHeight
             }
         },
         preventDefault: function(event) {

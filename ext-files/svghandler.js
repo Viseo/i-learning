@@ -1641,12 +1641,23 @@ function SVG(runtime) {
     function addEvent(component, eventName, handler) {
         svgr.addEvent(component.component, eventName, handler);
     }
+    function addGlobalEvent(eventName, handler) {
+        svgr.addGlobalEvent(eventName, handler);
+    }
     function removeEvent(component, eventName, handler) {
         svgr.removeEvent(component.component, eventName, handler);
+    }
+    function removeGlobalEvent(eventName, handler) {
+        svgr.removeGlobalEvent(eventName, handler);
     }
     function event(component, eventName, event) {
         svgr.event(component.component, eventName, event);
     }
+    function screenSize(width, height){
+        return svgr.screenSize(width, height);
+    }
+
+
 
     return {
         Drawing : Drawing,
@@ -1681,6 +1692,7 @@ function SVG(runtime) {
         addEvent : addEvent,
         removeEvent : removeEvent,
         event : event,
+        screenSize: screenSize,
         random : random,
         timeout : timeout,
         interval : interval,

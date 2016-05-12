@@ -803,7 +803,7 @@ var Level = function(formation, gamesTab){
         self.reponseHeight = 0.7;
 
         //var haut = (window.innerHeight);
-        var haut = clientHeight;
+        var haut = drawing.height;
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
 
@@ -951,7 +951,7 @@ var Level = function(formation, gamesTab){
         self.cadreResult = {
             x: drawing.width / 2,
             y: 220,
-            w: clientWidth,
+            w: drawing.width,
             h: 200
         };
 

@@ -286,7 +286,7 @@ function AnswerElementDisplay(x, y, w, h) {
     };
 
     var dblclickEdition = function () {
-        var contentarea = document.createElement("TEXTAREA");
+        var contentarea = document.createElement("textarea");
         contentarea.value = self.label;
         contentarea.width = w;
         self.obj.content.component.getBBox && (contentarea.height = self.obj.content.component.getBBox().height);
@@ -426,14 +426,14 @@ function FormationDisplayFormation(){
         self.formationCreator = formationValidation;
     };
     var dblclickEdition = function (event) {
-        var width = self.formationLabel.content.component.getBBox().width;
+        var width = self.formationLabel.content.component.getBBox ? self.formationLabel.content.component.getBBox().width : self.formationLabel.content.component.target.getBBox().width;
         self.formationInfoManipulator.ordonator.unset(1);
 
-        var textarea = document.createElement("TEXTAREA");
+        var textarea = document.createElement("textarea");
         textarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            leftpx: (self.title.component.getBBox().width + 2 * MARGIN + 1),
+            leftpx: (self.title.component.getBBox ? self.title.component.getBBox().width : self.title.component.target.getBBox().width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
         };
@@ -452,7 +452,7 @@ function FormationDisplayFormation(){
             self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
             var position = (textarea.getBoundingClientRect().left - MARGIN);
             var anchor = 'start';
-            self.errorMessage = new svg.Text("Seuls les caractères avec accent et \" - \", \" ' \", \" . \" sont permis.")
+            self.errorMessage = new svg.Text(REGEXERROR)
                 .position(drawing.width/2, 0)
                 .font("arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
@@ -1292,7 +1292,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     var dblclickEdition = function () {
-        var textarea = document.createElement("TEXTAREA");
+        var textarea = document.createElement("textarea");
         textarea.textContent = self.label;
         textarea.width = self.w;
         textarea.height = (self.linkedQuestion.image) ? (self.questionBlock.title.content.component.getBBox().height) : ((self.h * .25)/2);
@@ -1398,7 +1398,7 @@ function QuizzDisplay(x,y,w,h) {
     self.responsePercentageWithImage = 0.6;
     self.responsePercentage = 0.7;
 
-    var heightPage = clientHeight;
+    var heightPage = drawing.height;
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
     self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
@@ -1548,8 +1548,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
         self.quizzInfoManipulator.ordonator.unset(1);
 
-        //var textarea = runtime ? runtime.document.createElement("TEXTAREA") : document.createElement("TEXTAREA");
-        var textarea = !runtime && document.createElement("TEXTAREA");
+        //var textarea = runtime ? runtime.document.createElement("textarea") : document.createElement("textarea");
+        var textarea = !runtime && document.createElement("textarea");
         textarea.value = self.quizzName;
         var contentareaStyle = {
             toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),

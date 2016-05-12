@@ -43,6 +43,20 @@ var runtimeMock =  (function() {
     var randoms = [];
 
     return {
+        createDOM: function(tag) {
+            var elem = new Element(tag, idGenerator++);
+            if (tag==='textarea') {
+                elem.enter = function(text){
+                    elem.value = text;
+                    elem.listeners && elem.listeners.input && elem.listeners.input({});
+                };
+
+                elem.getBoundingClientRect = function() {
+                    return {left:elem.x, top:elem.y, width:elem.width, height: elem.height};
+                }
+            }
+            return elem;
+        },
         create: function(tag) {
             var elem = new Element(tag, idGenerator++);
             if (tag==='rect') {
@@ -66,38 +80,22 @@ var runtimeMock =  (function() {
                 }
             }
             else if (tag==='text') {
-                function getBBoxMock(){
-                    var chaine=elem.text;
-                    var lineHeight=elem["font-size"];
-                    //var characterSize=((168/26)/15)*elem["font-size"];
-                    var characterSize=((965.17/109)/20)*elem["font-size"];
-                    var margin;
-                    var regex = /[ypqg]/;
-                    margin = regex.test(chaine.toLowerCase()) ? 0.11015625*lineHeight :0.1*lineHeight;
-                    var h=margin;
-                    var w;
-                    var tableau;
-                    var marginIn = ((2/6)/(13+1/3))*elem["font-size"];
-                    var marginWidth = 0.1*elem["font-size"];
-                    var reg=new RegExp('\n', "g");
-                    tableau=chaine.split(reg);
-                    var tableauLengths=[];
-                    for (var i=0; i<tableau.length; i++) {
-                        tableauLengths.push(tableau[i].length);
-                        h+=lineHeight; //hauteur d'une ligne (dépend de la police et de sa taille)
+                elem.setBoundingClientRect = function(width, height){
+                    elem.bbWidth = width;
+                    elem.bbHeight = height;
+                };
+                elem.bbWidth = 200;
+                elem.bbHeight = 50;
+                elem.sizes = [];
+                elem.getBoundingClientRect = function() {
+                    var size;
+                    if (elem.sizes && elem.sizes.length>0){
+                        size = elem.sizes.shift();
                     }
-                    // w=Math.max.apply(null,tableau); C'est pas ça mais vazy T-MO-T
-                    w=Math.max.apply(null,tableauLengths);
-                    var tt=w*(characterSize);//+marginWidth;
-                    var box={
-                        width:(tt),
-                        height:Math.round(h)
-                    };
-
-                    return box;
-                }
-                elem.getBoundingClientRect = function(t) {
-                    return {left:elem.x, top:elem.y, width:getBBoxMock().width, height:getBBoxMock().height};
+                    else {
+                        size = {width: elem.bbWidth, height: elem.bbHeight};
+                    }
+                    return {left:elem.x, top:elem.y, width:size.width, height:size.height};
                 }
             }
             else if (tag==='path') {
@@ -162,12 +160,27 @@ var runtimeMock =  (function() {
         addEvent: function(component, eventName, handler) {
             component.listeners[eventName]=handler;
         },
+        listeners: {},
+        addGlobalEvent: function(eventName, handler) {
+            this.listeners[eventName]=handler;
+        },
         removeEvent: function(component, eventName, handler) {
             delete component.listeners[eventName];
+        },
+        removeGlobalEvent: function(eventName, handler) {
+            delete this.listeners[eventName];
         },
         event: function(component, eventName, event) {
             if (component.listeners[eventName]) {
                 component.listeners[eventName](event);
+            }
+        },
+        screenSize: function(sWidth, sHeight){
+            this.screenWidth = sWidth || this.screenWidth;
+            this.screenHeight = sHeight || this.screenHeight;
+            return {
+                width: this.screenWidth,
+                height: this.screenHeight
             }
         },
         now: function() {
@@ -295,10 +308,31 @@ var runtimeRegister =  function(register) {
     }
 
     return {
+        createDOM: function(tag) {
+            var elem  = new Wrapper();
+            elem.target = target.createDOM(tag);
+            elem.mock = mock.createDOM(tag);
+            if (tag==="textarea"){
+                elem.target.addEventListener("input", function(event){
+                    elem.mock.enter(elem.target.value);
+                    addHistory({type:'event', name:"input", event:{text:elem.target.value}, component:component.mock.id});
+                });
+            }
+
+            return elem;
+        },
         create: function(tag) {
             var elem  = new Wrapper();
             elem.target = target.create(tag);
             elem.mock = mock.create(tag);
+            if (tag === "text"){
+                elem.target._getBoundingClientRect = elem.target.getBoundingClientRect;
+                elem.target.getBoundingClientRect = function(){
+                    var bbox = elem.target._getBoundingClientRect();
+                    elem.mock.sizes.push(bbox);
+                    return bbox;
+                }
+            }
             return elem;
         },
         attrNS: function(component, name, value) {
@@ -369,12 +403,31 @@ var runtimeRegister =  function(register) {
             mock.addEvent(component.mock, eventName, handler);
             target.addEvent(component.target, eventName, handler.wrapper); // :-(, un handler doit être à usage unique
         },
+        addGlobalEvent: function(eventName, handler) {
+            handler.wrapper = function(event) {
+                var hEvent = {};
+                if (!event.proc){
+                    addHistory({type:'event', name:eventName, event:hEvent, component:"global"});
+                    event.proc = true;
+                }
+                handler(event);
+            };
+            mock.addGlobalEvent(eventName, handler);
+            target.addGlobalEvent(eventName, handler.wrapper); // :-(, un handler doit être à usage unique
+        },
         removeEvent: function(component, eventName, handler) {
             mock.removeEvent(component.mock, eventName, handler);
             target.removeEvent(component.target, eventName, handler.wrapper);
         },
+        removeGlobalEvent: function(eventName, handler) {
+            mock.removeGlobalEvent(eventName, handler);
+            target.removeGlobalEvent(eventName, handler.wrapper);
+        },
         event: function(component, eventName, event) {
             target.event(component.target, eventName, event);
+        },
+        screenSize: function(){
+            return target.screenSize();
         },
         now: function() {
             return target.now();

@@ -68,14 +68,14 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    //it("plays a complete quizz game", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            mainModule.main(myQuizzTest);
-    //        },
-    //        "./log/testQuizzImages.json", 'content', runtime, done);
-    //});
+    it("plays a complete quizz game", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzImages.json", 'content', runtime, done);
+    });
     it("an admin use", function (done) {
         this.timeout(100000);
         checkScenario(
@@ -85,14 +85,14 @@ describe('Quizz game', function () {
             "./log/testAdmin.json", 'content', runtime, done);
     });
 
-    //it("QuizzManager", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            quizzManagerModule.quizzManager();
-    //        },
-    //        "./log/testQuizzManager.json", 'content', runtime, done);
-    //});
+    it("QuizzManager", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                quizzManagerModule.quizzManager();
+            },
+            "./log/testTextarea.json", 'content', runtime, done);
+    });
 
     it('should instantiate correctly my answer', function() {
         var answerJSON={

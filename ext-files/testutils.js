@@ -28,7 +28,12 @@ function checkScenario(play, scenario, root, runtime, done) {
             var snapshot = runtime.json(runtime.anchor(root));
             assert.equal(registeredSnapshot, snapshot);
             if (fact.type === 'event') {
-                runtime.fireEvent(root, fact.component, fact.name, fact.event);
+                if (fact.name==="input"){
+                    fact.component.enter(fact.event.text);
+                }
+                else {
+                    runtime.fireEvent(root, fact.component, fact.name, fact.event);
+                }
             }
             else if (fact.type === 'timeout') {
                 runtime.advance();
