@@ -19,7 +19,7 @@ var FormationStructure =
 
 var FormationVersionStructure =
 {
-    parentFormation: objectId (Formation),
+    parentFormation: objectId, //(Formation)
     num: Number,
     tabLevels: [
     {
@@ -38,6 +38,20 @@ var FormationVersionStructure =
     }]
 };
 
+var FormationVersion =
+{
+    parentFormation: "objectId", //(Formation)
+    num: "Number",
+    tabLevels: [
+        {
+            num: 1,
+            tabGames: [myQuizz]
+        },
+        {
+            num: 2,
+            tabGames: [myQuizz]
+        }]
+};
 var myColorsOld={
     blue:{r: 25, g: 122, b: 230},
     primaryBlue:{r: 0, g: 0, b: 255},
