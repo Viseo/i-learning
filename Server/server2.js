@@ -14,7 +14,7 @@ var myBibImageShema = mongoose.Schema({
 var myBibImage = mongoose.model("myBibImage",myBibImageShema);
 
 var bib = new myBibImage ({
-    title: "Bibliotheque",
+    title: "Bibliothèque",
     tabLib: [
         {imgSrc: "../resource/littleCat.png"},
         {imgSrc: "../resource/millions.png"},

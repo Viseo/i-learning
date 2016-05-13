@@ -42,7 +42,7 @@ myColors = {
 SELECTION_COLOR = myColors.darkBlue;
 
 myBibImage = {
-    title: "Bibliotheque",
+    title: "Bibliothèque",
     tabLib: [
         {imgSrc: "../resource/littleCat.png"},
         {imgSrc: "../resource/millions.png"},
