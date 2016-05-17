@@ -5,25 +5,21 @@
 var express = require('express');
 var app = express();
 
-var routes = require("./controllers/comments")(app);
+var routes = require("./controllers/roots")(app);
 
-app.use(express.static(__dirname));
 
 var db = require('./db');
 app.engine('jade', require('jade').__express);
 app.set('view engine', 'jade');
 
-var comments = require('./controllers/comments');
-//app.use('/comments', comments);
-
 // Connect to Mongo on start
-db.connect('mongodb://localhost:27017/petitTest', function(err) {
+db.connect('mongodb://localhost:27017/myDatabase', function(err) {
     if (err) {
         console.log('Unable to connect to Mongo.');
         process.exit(1);
     } else {
         app.listen(8080, function() {
-            console.log('Listening on port 3000...');
+            console.log('Listening on port 8080...');
         })
     }
 });
