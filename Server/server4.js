@@ -7,6 +7,48 @@ var assert = require('assert');
 var ObjectId = require('mongodb').ObjectID;
 var url = 'mongodb://localhost:27017/DATA';
 
+var insertFormation = function(db, callback) {
+    db.collection('Formation').insert(myFormation, function (err) {
+        assert.equal(err);
+        console.log("Inserted a document myFormation into the Formation collection.");
+        callback();
+    });
+};
+
+MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    console.log("Connected correctly to server.");
+
+    myColorsOld(db, function() {
+    });
+    myColors(db, function() {
+    });
+    myBibImage(db, function() {
+    });
+    defaultQuestion(db, function() {
+    });
+    defaultQuizz(db, function() {
+    });
+    questionWithLabelImageAndMultipleAnswers(db, function() {
+    });
+    myQuestion2(db, function() {
+    });
+    myQuizzTest(db, function() {
+    });
+    myQuizz(db, function() {
+    });
+    myQuizzDemo(db, function() {
+    });
+    myQuizzType(db, function() {
+    });
+    myFormations(db, function() {
+    });
+    myBibJeux(db, function() {
+    });
+    myFormation(db, function() {
+
+    });
+});
 
 var myColorsOld = function(db, callback) {
     db.collection('Formation').insert({
@@ -1061,8 +1103,7 @@ var myBibJeux = function(db, callback) {
 });
 };
 
-var myFormation = function(db, callback) {
-    db.collection('Formation').insert({
+var myFormation ={
     gamesCounter: {
         quizz: 0,
         bd: 0
@@ -1071,44 +1112,4 @@ var myFormation = function(db, callback) {
         type: "Quiz",
         label: "Le premier Quiz"
     }]]
-}, function (err) {
-    assert.equal(err);
-    console.log("Inserted a document myFormation into the Formation collection.");
-    callback();
-});
 };
-
-MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    console.log("Connected correctly to server.");
-
-    myColorsOld(db, function() {
-    });
-    myColors(db, function() {
-    });
-    myBibImage(db, function() {
-    });
-    defaultQuestion(db, function() {
-    });
-    defaultQuizz(db, function() {
-    });
-    questionWithLabelImageAndMultipleAnswers(db, function() {
-    });
-    myQuestion2(db, function() {
-    });
-    myQuizzTest(db, function() {
-    });
-    myQuizz(db, function() {
-    });
-    myQuizzDemo(db, function() {
-    });
-    myQuizzType(db, function() {
-    });
-    myFormations(db, function() {
-    });
-    myBibJeux(db, function() {
-    });
-    myFormation(db, function() {
-
-    });
-});

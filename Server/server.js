@@ -4,7 +4,7 @@
 
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
-MongoClient.connect('mongodb://localhost:27017/Structure', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017/myDatabase', function(err, db) {
     assert.equal(null, err);
     console.log("Connected correctly to server");
 
@@ -26,7 +26,7 @@ MongoClient.connect('mongodb://localhost:27017/Structure', function(err, db) {
         myFormation
     ], function(err, r) {
         assert.equal(null, err);
-        assert.equal(15, r.insertedCount);
+        assert.equal(14, r.insertedCount);
         console.log("Inserted a documents into the Formation collection.");
         db.close();
     });
