@@ -96,6 +96,9 @@ var runtimeMock =  (function() {
                             return {left:elem.x, top:elem.y, width:bbox.width, height:bbox.height};
                         }
                     }
+                    var size = {};
+                    size.width = 200;
+                    size.height = 22;
                     return {left:elem.x, top:elem.y, width:size.width, height:size.height};
                 }
             }

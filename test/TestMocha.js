@@ -59,7 +59,7 @@ describe('Quizz game', function () {
         testModule.setSvg(svg);
         quizzManagerModule.setSvg(svg);
         quizzManagerModule.setUtil(util);
-        svg.screenSize(1500,1000);
+        svg.screenSize(1904,971);
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
@@ -73,12 +73,14 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    //it("plays a complete quizz game", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        testModule.test(),
-    //        "./log/testQuizzImages.json", 'content', runtime, done);
-    //});
+    it("plays a complete quizz game", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function(){
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzComplet.json", 'content', runtime, done);
+    });
     //it("an admin use", function (done) {
     //    this.timeout(100000);
     //    checkScenario(
@@ -97,19 +99,19 @@ describe('Quizz game', function () {
     //        "./log/testQuizzManager.json", 'content', runtime, done);
     //});
 
-    it("Test test", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function(){
-                //var textarea = new svg.getSvgr().createDOM("textarea");
-                var textPourGetBBox = new svg.Text("Le texte");
-                mainManipulator.ordonator.set(0, textPourGetBBox);
-                var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
-                var rect = new svg.Rect(dim.width, dim.height);
-                mainManipulator.ordonator.set(1, rect);
-            },
-            "./log/new.json", 'content', runtime, done);
-    });
+    //it("Test test", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function(){
+    //            //var textarea = new svg.getSvgr().createDOM("textarea");
+    //            var textPourGetBBox = new svg.Text("Le texte");
+    //            mainManipulator.ordonator.set(0, textPourGetBBox);
+    //            var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
+    //            var rect = new svg.Rect(dim.width, dim.height);
+    //            mainManipulator.ordonator.set(1, rect);
+    //        },
+    //        "./log/new.json", 'content', runtime, done);
+    //});
 
 
     it('should instantiate correctly my answer', function() {
