@@ -30,7 +30,7 @@
 //        expect(bibimage.tabImgBib[3].imageLoaded).toEqual(true);
 //
 //        paper.r0.test(10,10,200,500);
-//        paper.t1.test(110,60,"Bibliotheque");
+//        paper.t1.test(110,60,"Bibliothèque");
 //        paper.i2.test("../resource/millions.png",22.5,100,50,50);
 //        paper.i3.test("../resource/pomme.jpg",86.875,100,46.25,50);
 //        paper.i4.test("../resource/cerise.jpg",147.5,102.2310405643739,50,45.5379188712522);

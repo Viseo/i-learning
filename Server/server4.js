@@ -61,7 +61,7 @@ SELECTION_COLOR = myColors.darkBlue;
 
 var myBibImage = function(db, callback) {
     db.collection('Formation').insert({
-        title: "Bibliotheque",
+        title: "Bibliothèque",
         tabLib: [
             {imgSrc: "../resource/littleCat.png"},
             {imgSrc: "../resource/millions.png"},

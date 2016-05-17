@@ -2,6 +2,37 @@
  * Created by ABO3476 on 11/05/2016.
  */
 
+var MongoClient = require('mongodb').MongoClient,
+    assert = require('assert');
+MongoClient.connect('mongodb://localhost:27017/Structure', function(err, db) {
+    assert.equal(null, err);
+    console.log("Connected correctly to server");
+
+    db.collection('Formation').insertMany([
+        //myColorsOld,
+        myColors,
+        myBibImage,
+        defaultQuestion,
+        defaultQuizz,
+        questionWithLabelImageAndMultipleAnswers,
+        myQuestion2,
+        myQuizzTest,
+        myQuizz,
+        myQuizzDemo,
+        myQuizzType,
+        statusEnum,
+        myFormations,
+        myBibJeux,
+        myFormation
+    ], function(err, r) {
+        assert.equal(null, err);
+        assert.equal(15, r.insertedCount);
+        console.log("Inserted a documents into the Formation collection.");
+        db.close();
+    });
+});
+
+
 myColorsOld = {
     blue: {r: 25, g: 122, b: 230},
     primaryBlue: {r: 0, g: 0, b: 255},
@@ -42,7 +73,7 @@ myColors = {
 SELECTION_COLOR = myColors.darkBlue;
 
 myBibImage = {
-    title: "Bibliotheque",
+    title: "Bibliothèque",
     tabLib: [
         {imgSrc: "../resource/littleCat.png"},
         {imgSrc: "../resource/millions.png"},
@@ -711,6 +742,57 @@ myQuizz = {
     ]
 };
 
+/*FormationStructure =
+{
+    name: String,
+    lastVersion: objectId,
+    lastVersionPublished: objectId //(FormationVersion)
+};*/
+
+
+
+/*LastVersion & LastVersionPublished permettent d'avoir la valeur de "status" ("non publié", "publié", "nouvelle version à publier") :
+ (LastVersion === LastVersionPublished) => Publiée
+ (!LastVersionPublished) => Non publiée
+ (LastVersionPubliée && LastVersion !== LastVersionPublished) => "Nouvelle version à publier"*/
+
+
+/*FormationVersionStructure =
+{
+    parentFormation: objectId,
+    num: Number,
+    tabLevels: [
+        {
+            num: Number,
+            tabGames: [
+                {
+                    _id: objectId,
+                    parentsGame: [objectId],
+                    childrenGame: [objectId],
+                    tabQuestions: [
+                        {
+                            questionData: 1,
+                            tabReponses: [2]
+                        }]
+                }]
+        }]
+};*/
+
+var FormationVersion =
+{
+    parentFormation: "objectId", //(Formation)
+    num: "Number",
+    tabLevels: [
+        {
+            num: 1,
+            tabGames: [myQuizz]
+        },
+        {
+            num: 2,
+            tabGames: [myQuizz]
+        }]
+};
+
 myQuizzDemo = {
     title: "Qui veut gagner des millions ? Quizz n°1",
     tabQuestions: [
@@ -990,33 +1072,5 @@ myFormation = {
     }]]
 };
 
-var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
-MongoClient.connect('mongodb://localhost:27017/DATA', function(err, db) {
-    assert.equal(null, err);
-    console.log("Connected correctly to server");
 
-    db.collection('Formation').insertMany([
-        myColorsOld,
-        myColors,
-        myBibImage,
-        defaultQuestion,
-        defaultQuizz,
-        questionWithLabelImageAndMultipleAnswers,
-        myQuestion2,
-        myQuizzTest,
-        myQuizz,
-        myQuizzDemo,
-        myQuizzType,
-        statusEnum,
-        myFormations,
-        myBibJeux,
-        myFormation
-    ], function(err, r) {
-        assert.equal(null, err);
-        assert.equal(15, r.insertedCount);
-        console.log("Inserted a documents into the Formation collection.");
-        db.close();
-    });
-});
 
