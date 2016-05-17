@@ -159,7 +159,7 @@ function SVGGlobalHandler() {
         };
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
     };
-    
+
     Manipulator.prototype.flush = function () {
         var self = this;
         function clean(handler){
@@ -574,7 +574,9 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-            if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && Math.floor(t.component.target.getBoundingClientRect().width) > w)|| (runtime && (Math.floor(runtime.boundingRect(t.component).width) > w))) {
+            if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) ||
+                (t.component.target && Math.floor(t.component.target.getBoundingClientRect().width) > w)||
+                (runtime && (Math.floor(runtime.boundingRect(t.component).width) > w))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
