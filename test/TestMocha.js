@@ -73,22 +73,30 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game", function (done) {
+    it("plays a complete quizz game with few errors", function (done) {
         this.timeout(100000);
         checkScenario(
             function(){
                 mainModule.main(myQuizzTest);
             },
-            "./log/testQuizzComplet.json", 'content', runtime, done);
+            "./log/testQuizzCompletPuzzleSimple.json", 'content', runtime, done);
     });
-    //it("an admin use", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            adminModule.admin();
-    //        },
-    //        "./log/testAdmin.json", 'content', runtime, done);
-    //});
+    it("plays a complete quizz game with a lot of errors", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function(){
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzCompletBcpFaux.json", 'content', runtime, done);
+    });
+    it("an admin use", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testAdminPost.json", 'content', runtime, done);
+    });
     //
     //it("QuizzManager", function (done) {
     //    this.timeout(100000);

@@ -57,7 +57,7 @@ function main(targetQuizz) {
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1, drawing.width, drawing.height);
+    quizz.run(0,0, drawing.width, drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);

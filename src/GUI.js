@@ -289,9 +289,11 @@ function AnswerElementDisplay(x, y, w, h) {
         var contentarea = document.createElement("textarea");
         contentarea.value = self.label;
         contentarea.width = w;
-        self.obj.content.component.getBoundingClientRect && (contentarea.height = self.obj.content.component.getBoundingClientRect().height);
-        self.obj.content.component.target && (contentarea.height = Math.floor(self.obj.content.component.target.getBoundingClientRect().height));
-        runtime && (contentarea.height = Math.floor(runtime.boundingRect(self.obj.content.component).height));
+        //self.obj.content.component.getBoundingClientRect && (contentarea.height = self.obj.content.component.getBoundingClientRect().height);
+        //self.obj.content.component.target && (contentarea.height = self.obj.content.component.target.getBoundingClientRect().height);
+        //runtime && (contentarea.height = runtime.boundingRect(self.obj.content.component).height);
+        contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
+
         contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
         self.manipulator.ordonator.unset(1, self.obj.content);
         var contentareaStyle = {
@@ -406,34 +408,42 @@ function FormationDisplayFormation(){
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-        self.formationLabel.content.component.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.getBoundingClientRect().height);
-        //self.formationLabel.content.component.getBoundingClientRect && (self.labelWidth = self.formationLabel.content.component.getBoundingClientRect().width + 2 * MARGIN);
-        self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelHeight = Math.floor(self.formationLabel.content.component.target.getBoundingClientRect().height));
-        //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBoundingClientRect().width) + 2 * MARGIN);
-        runtime && (self.labelHeight = Math.floor(runtime.boundingRect(self.formationLabel.content.component).height));
+        //self.formationLabel.content.component.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.getBoundingClientRect().height);
+        ////self.formationLabel.content.component.getBoundingClientRect && (self.labelWidth = self.formationLabel.content.component.getBoundingClientRect().width + 2 * MARGIN);
+        //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.target.getBoundingClientRect().height);
+        ////self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBoundingClientRect().width) + 2 * MARGIN);
+        //runtime && (self.labelHeight = runtime.boundingRect(self.formationLabel.content.component).height);
+        self.labelHeight = svg.getSvgr().boundingRect(self.formationLabel.content.component).height;
+
         self.formationTitleWidth = 102;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.title.component.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        //self.title.component.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        //domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-        self.title.component.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        runtime && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        //self.title.component.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        //runtime && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
         self.formationCreator = formationValidation;
     };
     var dblclickEdition = function (event) {
-        var width = self.formationLabel.content.component.getBoundingClientRect ? self.formationLabel.content.component.getBoundingClientRect().width : self.formationLabel.content.component.target.getBoundingClientRect().width;
+        //var width = self.formationLabel.content.component.getBoundingClientRect ? self.formationLabel.content.component.getBoundingClientRect().width : self.formationLabel.content.component.target.getBoundingClientRect().width;
+        var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
+
         self.formationInfoManipulator.ordonator.unset(1);
 
         var textarea = document.createElement("textarea");
         textarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            leftpx: (self.title.component.getBoundingClientRect ? self.title.component.getBoundingClientRect().width : self.title.component.target.getBoundingClientRect().width+ 2 * MARGIN + 1),
+            //leftpx: (self.title.component.getBoundingClientRect ? self.title.component.getBoundingClientRect().width : self.title.component.target.getBoundingClientRect().width+ 2 * MARGIN + 1),
+            leftpx: (svg.getSvgr().boundingRect(self.title.component).width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
         };
@@ -504,21 +514,27 @@ function FormationDisplayFormation(){
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
-        level.obj.content.component.getBoundingClientRect && (self.textLevelNumberDimensions = {
-            width: level.obj.content.component.getBoundingClientRect().width,
-            height:level.obj.content.component.getBoundingClientRect().height
+        (self.textLevelNumberDimensions = {
+            width: svg.getSvgr().boundingRect(level.obj.content.component).width,
+            height: svg.getSvgr().boundingRect(level.obj.content.component).height
         });
-        level.obj.content.component.target && (self.textLevelNumberDimensions = {
-            width: Math.floor(level.obj.content.component.target.getBoundingClientRect().width),
-            height: Math.floor(level.obj.content.component.target.getBoundingClientRect().height)
-        });
+        //level.obj.content.component.getBoundingClientRect && (self.textLevelNumberDimensions = {
+        //    width: level.obj.content.component.getBoundingClientRect().width,
+        //    height:level.obj.content.component.getBoundingClientRect().height
+        //});
+        //level.obj.content.component.target && (self.textLevelNumberDimensions = {
+        //    width: level.obj.content.component.target.getBoundingClientRect().width,
+        //    height: level.obj.content.component.target.getBoundingClientRect().height
+        //});
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
 
-        level.obj.content.component.getBoundingClientRect && level.obj.content.position(level.obj.content.component.getBoundingClientRect().width, self.messageDragDropMargin);
-        level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
-        self.title.component.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.getBoundingClientRect().height + 3*self.messageDragDropMargin);
-        self.title.component.target && self.title.component.target.getBoundingClientRect && self.messageDragDrop.position(w/2, Math.floor(self.title.component.target.getBoundingClientRect().height) + 3*self.messageDragDropMargin);
+        level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, self.messageDragDropMargin);
+        //level.obj.content.component.getBoundingClientRect && level.obj.content.position(level.obj.content.component.getBoundingClientRect().width, self.messageDragDropMargin);
+        //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
+        self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
+        //self.title.component.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.getBoundingClientRect().height + 3*self.messageDragDropMargin);
+        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.target.getBoundingClientRect().height + 3*self.messageDragDropMargin);
 
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
@@ -539,9 +555,10 @@ function FormationDisplayFormation(){
 
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBoundingClientRect().height);
-        self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(self.title.component.target.getBoundingClientRect().height));
-        runtime && self.clippingManipulator.translator.move(self.bibWidth, Math.floor(runtime.boundingRect(self.title.component).height));
+        //self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBoundingClientRect().height);
+        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBoundingClientRect().height);
+        //runtime && self.clippingManipulator.translator.move(self.bibWidth, runtime.boundingRect(self.title.component).height);
+        self.clippingManipulator.translator.move(self.bibWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
 
         self.panel = new gui.Panel(w, h);
@@ -583,9 +600,11 @@ function FormationDisplayFormation(){
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        (self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        (self.levelsTab.length !== 0) && runtime && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? Math.floor(runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width)/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        //(self.levelsTab.length !== 0) && runtime && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -700,8 +719,9 @@ function FormationsManagerDisplay() {
         self.legendWidth = drawing.width * 30 / 100;
         self.legendItemLength = self.legendWidth / 2;
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-        self.published.component.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.getBoundingClientRect().width, 30);
-        self.published.component.target && self.published.component.target.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.target.getBoundingClientRect().width, 30);
+        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * svg.getSvgr().boundingRect(self.published.component).width, 30);
+        //self.published.component.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.getBoundingClientRect().width, 30);
+        //self.published.component.target && self.published.component.target.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.target.getBoundingClientRect().width, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
 
 
@@ -1529,9 +1549,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        self.quizzLabel.content.component.getBoundingClientRect && (self.quizzNameHeight = self.quizzLabel.content.component.getBoundingClientRect().height);
-        self.quizzLabel.content.component.target && (self.quizzNameHeight = Math.floor(self.quizzLabel.content.component.target.getBoundingClientRect().height));
-        runtime && (self.quizzNameHeight = Math.floor(runtime.boundingRect(self.quizzLabel.content.component).height));
+        //self.quizzLabel.content.component.getBoundingClientRect && (self.quizzNameHeight = self.quizzLabel.content.component.getBoundingClientRect().height);
+        //self.quizzLabel.content.component.target && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBoundingClientRect().height);
+        //runtime && (self.quizzNameHeight = runtime.boundingRect(self.quizzLabel.content.component).height);
+        self.quizzNameHeight = svg.getSvgr().boundingRect(self.quizzLabel.content.component).height;
+
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
@@ -1544,8 +1566,10 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var dblclickEdition = function (event) {
         var width;
-        self.quizzLabel.content.component.getBoundingClientRect && (width = self.quizzLabel.content.component.getBoundingClientRect().width);
-        runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
+        //self.quizzLabel.content.component.getBoundingClientRect && (width = self.quizzLabel.content.component.getBoundingClientRect().width);
+        //runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
+        width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
+
         self.quizzInfoManipulator.ordonator.unset(1);
 
         //var textarea = runtime ? runtime.document.createElement("textarea") : document.createElement("textarea");

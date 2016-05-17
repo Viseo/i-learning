@@ -500,9 +500,11 @@ var Level = function(formation, gamesTab){
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             var textDimensions;
-            level.obj.content.component.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.getBoundingClientRect().width, height:level.obj.content.component.getBoundingClientRect().height});
-            level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && (textDimensions = {width:Math.floor(level.obj.content.component.target.getBoundingClientRect().width), height:Math.floor(level.obj.content.component.target.getBoundingClientRect().height)});
-            runtime && (textDimensions = {width:Math.floor(runtime.boundingRect(level.obj.content.component).width), height:Math.floor(runtime.boundingRect(level.obj.content.component).height)});
+            //level.obj.content.component.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.getBoundingClientRect().width, height:level.obj.content.component.getBoundingClientRect().height});
+            //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.target.getBoundingClientRect().width, height:level.obj.content.component.target.getBoundingClientRect().height});
+            //runtime && (textDimensions = {width:runtime.boundingRect(level.obj.content.component).width, height:runtime.boundingRect(level.obj.content.component).height});
+            textDimensions = {width:svg.getSvgr().boundingRect(level.obj.content.component).width, height:svg.getSvgr().boundingRect(level.obj.content.component).height};
+
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
@@ -710,7 +712,7 @@ var Level = function(formation, gamesTab){
         if (!question) {
             self.label = "";
             self.imageSrc = "";
-            self.rows = 2;
+            self.rows = 4;
             self.rightAnswers = [];
             self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
             self.selectedAnswers = [];
