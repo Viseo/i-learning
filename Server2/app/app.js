@@ -2,9 +2,10 @@
  * Created by ABL3483 on 13/05/2016.
  */
 
-var express = require('express')
-    , app = express();
-var router = express.Router();
+var express = require('express');
+var app = express();
+
+var routes = require("./controllers/comments")(app);
 
 app.use(express.static(__dirname));
 
@@ -21,7 +22,7 @@ db.connect('mongodb://localhost:27017/petitTest', function(err) {
         console.log('Unable to connect to Mongo.');
         process.exit(1);
     } else {
-        app.listen(3000, function() {
+        app.listen(8080, function() {
             console.log('Listening on port 3000...');
         })
     }

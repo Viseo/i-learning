@@ -1,21 +1,21 @@
-var express = require('express');
-var router = express.Router();
+module.exports = function (app) {
+    console.log("qqc");
 
-console.log("qqc");
-var db = require('../db');
-router.get('/all', function(req, res) {
-    res.send('hello world');
-    var collection = db.get().collection('banane');
-    collection.insert({bllrlrlrr:"bllrlrlrr"},function(err, docs) {
+    var db = require('../db');
+
+    app.get('/all', function(req, res) {
+        console.log("/all");
+        res.send('hello world');
+        var collection = db.get().collection('banane');
+        collection.insert({bllrlrlrr:"bllrlrlrr"},function(err, docs) {
+        });
     });
-});
 
-router.get('/recent', function(req, res) {
-    var collection = db.get().collection('comments');
+    app.get('/recent', function(req, res) {
+        var collection = db.get().collection('comments');
 
-    collection.find().sort({'date': -1}).limit(100).toArray(function(err, docs) {
-        res.render('comments', {comments: docs})
-    })
-});
-
-module.exports = router;
+        collection.find().sort({'date': -1}).limit(100).toArray(function(err, docs) {
+            res.render('comments', {comments: docs})
+        })
+    });
+};
