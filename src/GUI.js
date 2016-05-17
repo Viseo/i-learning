@@ -220,7 +220,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 var newAnswer = new Answer(null, self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion]);
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
-                self.plusManipulator.last.flush();
+                self.plusManipulator.flush();
 
                 self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
                 self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
@@ -235,7 +235,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
             case 'question':
                 self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(0);
                 self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(1);
-                self.plusManipulator.last.flush();
+                self.plusManipulator.flush();
 
                 self.parent.quizz.tabQuestions.pop();
 
@@ -252,7 +252,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition);
                 }
                 self.parent.questionCreator.loadQuestion(newQuestion);
-                self.parent.questionCreatorManipulator.last.flush();
+                self.parent.questionCreatorManipulator.flush();
                 self.parent.questionCreator.display(self.parent.questionCreator.previousX, self.parent.questionCreator.previousY, self.parent.questionCreator.previousW, self.parent.questionCreator.previousH);
         }
     };
@@ -356,7 +356,7 @@ function AnswerElementDisplay(x, y, w, h) {
         });
     };
 
-    self.manipulator.last.flush();
+    self.manipulator.flush();
     showTitle();
     if(typeof self.obj.checkbox === 'undefined') {
         self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
@@ -779,10 +779,10 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
 
     var removeArrows = function (){
         if(self.leftArrowManipulator.last.children.length>1) {
-            self.leftArrowManipulator.last.flush();
+            self.leftArrowManipulator.flush();
         }
         if (self.rightArrowManipulator.last.children.length>1){
-            self.rightArrowManipulator.last.flush();
+            self.rightArrowManipulator.flush();
         }
     };
 
@@ -1366,7 +1366,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     // bloc Question
-    self.questionCreatorManipulator.last.flush();
+    self.questionCreatorManipulator.flush();
     self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([], 1, myColors.black).position(self.w / 2, y + self.h / 2)};
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
 
@@ -1498,7 +1498,7 @@ function QuizzManagerDisplay(){
         var index = self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion = index;
         self.questionCreator.loadQuestion(element);
-        self.questionCreatorManipulator.last.flush();
+        self.questionCreatorManipulator.flush();
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 
@@ -1642,7 +1642,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
                 puzzleRows: 3
             };
 
-            self.quizzManagerManipulator.last.flush();
+            self.quizzManagerManipulator.flush();
 
             var tmpQuizz = new Quizz(tmpQuizzObject, true);
             tmpQuizz.run(1, 1, document.body.clientWidth, drawing.height);

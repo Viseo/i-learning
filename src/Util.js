@@ -122,8 +122,16 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
+            if(self.drawing.getTarget(event.clientX, event.clientY)===null){
+                console.log('null');
+            }
+
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
+            if(self.target===null)
+            {
+                console.log("err");
+            }
             if (self.target) {
                 if (self.target.component.listeners && self.target.component.listeners.mouseup) {
                     self.target.component.listeners.mouseup(event);
@@ -151,26 +159,24 @@ function SVGGlobalHandler() {
         };
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
     };
-
-
-    svg.Handler.prototype.flush = function () {
+    
+    Manipulator.prototype.flush = function () {
         var self = this;
-        self.children.forEach(function (e) {
-            if (e instanceof svg.Handler) {
-                e.flush();
-            }
-            else {
-                if (self instanceof svg.Ordered) {
-                    var index = self.children.indexOf(e);
-                    self.unset(index);
-                }
-                else {
-                    self.remove(e);
+        function clean(handler){
+            for(i=0;i<handler.children.length;i++){
+                if(!(handler.children[i] instanceof svg.Handler)){
+                    handler.remove(handler.children[i]);
                 }
             }
-        });
-    };
+        }
+        clean(self.translator);
+        clean(self.rotator);
+        clean(self.scalor);
+        for(var i =0 ; i<self.ordonator.children.length;i++){
+            self.ordonator.unset(i);
+        }
 
+    };
     gui.Panel.prototype.addhHandle = function () {
         var self = this;
         this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);

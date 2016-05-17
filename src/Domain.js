@@ -667,7 +667,7 @@ var Level = function(formation, gamesTab){
                     if (count < self.questionsTab.length) {
                         self.virtualTab[i][j] = self.questionsTab[count];
                         if ((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first) {
-                            self.virtualTab[i][j].questionManipulator.first.flush();
+                            self.virtualTab[i][j].questionManipulator.flush();
                         }
                         count++;
                     } else {
@@ -1040,7 +1040,7 @@ var Level = function(formation, gamesTab){
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithoutImage);
 
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                    self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.flush();
+                    self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
 
                     self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
                         self.cadreQuestion.w, self.questionHeight);
