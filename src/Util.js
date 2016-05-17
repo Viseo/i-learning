@@ -2074,9 +2074,6 @@ function httpGetAsync(theUrl, callback) {
             callback(xmlHttp.responseText);
     };
     xmlHttp.open("GET", theUrl, true); // true for asynchronous
-    xmlHttp.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Access-Controll-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept");
-    xmlHttp.setRequestHeader("Access-Control-Allow-Origin", theUrl);
-    xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xmlHttp.send(null);
 }
 
@@ -2087,8 +2084,6 @@ function httpPostAsync(theUrl, body, callback) {
             callback(xmlHttp.responseText);
     };
     xmlHttp.open("POST", theUrl, true); // true for asynchronous
-    xmlHttp.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Access-Controll-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept");
-    xmlHttp.setRequestHeader("Access-Control-Allow-Origin", theUrl);
-    xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlHttp.send(body);
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    xmlHttp.send(JSON.stringify(body));
 }
