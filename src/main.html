@@ -24,7 +24,11 @@
     AdminGUI();
 </script>
 <script>
-        main(myQuizz);
+    var thing = function (data) {
+        console.log(data);
+    };
+    var result = httpGetAsync("http://localhost:8080/all", thing);
+    main(myQuizz);
 </script>
 </body>
 

@@ -1591,7 +1591,7 @@ function SVG(runtime) {
         var http = new XMLHttpRequest();
         http.open("POST", url, true);
         http.setRequestHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Access-Controll-Allow-Headers, Origin, X-Requested-With, Content-Type, Accept");
-        http.setRequestHeader("Access-Control-Allow-Origin", "http://localhost:63343/log");
+        http.setRequestHeader("Access-Control-Allow-Origin", url);
         //http.setRequestHeader("Access-Control-Request-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         http.send(JSON.stringify(data));
