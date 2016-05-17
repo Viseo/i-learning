@@ -41,6 +41,7 @@ var runtimeMock =  (function() {
     var time=0;
     var anchors = {};
     var randoms = [];
+    var bboxes = [];
 
     return {
         createDOM: function(tag) {
@@ -84,16 +85,16 @@ var runtimeMock =  (function() {
                     elem.bbWidth = width;
                     elem.bbHeight = height;
                 };
-                elem.bbWidth = 200;
-                elem.bbHeight = 50;
+                //elem.bbWidth = 200;
+                //elem.bbHeight = 50;
                 elem.sizes = [];
                 elem.getBoundingClientRect = function() {
-                    var size;
-                    if (elem.sizes && elem.sizes.length>0){
-                        size = elem.sizes.shift();
-                    }
-                    else {
-                        size = {width: elem.bbWidth, height: elem.bbHeight};
+                    for (var i = 0; i<bboxes.length; i++){
+                        var bbox = bboxes[i];
+                        if(bbox.id===elem.id){
+                            bboxes.splice(i,1);
+                            return {left:elem.x, top:elem.y, width:bbox.width, height:bbox.height};
+                        }
                     }
                     return {left:elem.x, top:elem.y, width:size.width, height:size.height};
                 }
@@ -130,7 +131,9 @@ var runtimeMock =  (function() {
             component[name] = value;
         },
         declareAnchor : function(key) {
-            anchors[key] = new Element('anchor', key);
+            if (!anchors[key]){
+                anchors[key] = new Element('anchor', key);
+            }
         },
         anchor: function(key) {
             return anchors[key];
@@ -175,6 +178,8 @@ var runtimeMock =  (function() {
                 component.listeners[eventName](event);
             }
         },
+        screenWidth: 1500,
+        screenHeight:1000,
         screenSize: function(sWidth, sHeight){
             this.screenWidth = sWidth || this.screenWidth;
             this.screenHeight = sHeight || this.screenHeight;
@@ -240,8 +245,7 @@ var runtimeMock =  (function() {
             return timeouts.length===0;
         },
         json : function(component) {
-            var testtest = this.anchor('content').getElement(1615);
-            return JSON.stringify(component, function(key, value) {return key==="parent" ? undefined : value;});
+            return JSON.stringify(component, function(key, value) {return key==="parent" || key==="sizes" ? undefined : value;});
         },
         random: function() {
             var value = randoms.shift();
@@ -249,6 +253,9 @@ var runtimeMock =  (function() {
         },
         setRandom: function(value) {
             randoms.push(value);
+        },
+        setBbox: function(value){
+            bboxes.push(value);
         },
         fireEvent: function(anchorKey, id, eventName, event) {
             var result = this.anchor(anchorKey).getElement(id);
@@ -260,7 +267,7 @@ var runtimeMock =  (function() {
             createElement: function(type){
                 var result = {};
                 switch (type) {
-                    case "TEXTAREA" :
+                    case "textarea" :
                         drawing.glass.onkeydown = function(event) {
                             result.value += event.key;
                         };
@@ -298,9 +305,14 @@ var runtimeRegister =  function(register) {
         lastFact = fact;
         fact.randoms = [];
         fact.anchors = {};
+        fact.bboxes = [];
         for (var key in anchors) {
             fact.anchors[key] = mock.json(anchors[key].mock);
         }
+    }
+
+    function addBBox(id, width, height){
+        lastFact.bboxes.push({id:id, width:width, height:height});
     }
 
     function addRandom(rand) {
@@ -329,7 +341,7 @@ var runtimeRegister =  function(register) {
                 elem.target._getBoundingClientRect = elem.target.getBoundingClientRect;
                 elem.target.getBoundingClientRect = function(){
                     var bbox = elem.target._getBoundingClientRect();
-                    elem.mock.sizes.push(bbox);
+                    addBBox(elem.mock.id, bbox.width, bbox.height);
                     return bbox;
                 }
             }
@@ -352,11 +364,14 @@ var runtimeRegister =  function(register) {
             mock.text(component.mock, message);
         },
         anchor: function(key) {
-            mock.declareAnchor(key);
-            var elem = new Wrapper('anchor:'+key);
-            anchors[key] = elem;
-            elem.target = target.anchor(key);
-            elem.mock = mock.anchor(key);
+            var elem = anchors[key];
+            if (!elem){
+                mock.declareAnchor(key);
+                var elem = new Wrapper('anchor:'+key);
+                anchors[key] = elem;
+                elem.target = target.anchor(key);
+                elem.mock = mock.anchor(key);
+            }
             return elem;
         },
         add: function(parent, child) {
@@ -394,9 +409,6 @@ var runtimeRegister =  function(register) {
                 if (!event.proc){
                     addHistory({type:'event', name:eventName, event:hEvent, component:component.mock.id});
                     event.proc = true;
-                }
-                else {
-                    console.log(component.mock.id);
                 }
                 handler(event);
             };

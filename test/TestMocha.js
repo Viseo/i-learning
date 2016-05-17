@@ -37,6 +37,8 @@ describe('Quizz game', function () {
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
     var quizzManagerModule = require("../src/quizzManager");
+    var testModule = require("../test/testTest");
+
 
     beforeEach(function () {
         runtime = mock.mockRuntime();
@@ -53,8 +55,11 @@ describe('Quizz game', function () {
         mainModule.setUtil(util);
         adminModule.setSvg(svg);
         adminModule.setUtil(util);
+        testModule.setUtil(util);
+        testModule.setSvg(svg);
         quizzManagerModule.setSvg(svg);
         quizzManagerModule.setUtil(util);
+        svg.screenSize(1500,1000);
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
@@ -68,31 +73,44 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game", function (done) {
+    //it("plays a complete quizz game", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        testModule.test(),
+    //        "./log/testQuizzImages.json", 'content', runtime, done);
+    //});
+    //it("an admin use", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testAdmin.json", 'content', runtime, done);
+    //});
+    //
+    //it("QuizzManager", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            quizzManagerModule.quizzManager();
+    //        },
+    //        "./log/testQuizzManager.json", 'content', runtime, done);
+    //});
+
+    it("Test test", function (done) {
         this.timeout(100000);
         checkScenario(
-            function () {
-                mainModule.main(myQuizzTest);
+            function(){
+                //var textarea = new svg.getSvgr().createDOM("textarea");
+                var textPourGetBBox = new svg.Text("Le texte");
+                mainManipulator.ordonator.set(0, textPourGetBBox);
+                var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
+                var rect = new svg.Rect(dim.width, dim.height);
+                mainManipulator.ordonator.set(1, rect);
             },
-            "./log/testQuizzImages.json", 'content', runtime, done);
-    });
-    it("an admin use", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testAdmin.json", 'content', runtime, done);
+            "./log/new.json", 'content', runtime, done);
     });
 
-    it("QuizzManager", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                quizzManagerModule.quizzManager();
-            },
-            "./log/testTextarea.json", 'content', runtime, done);
-    });
 
     it('should instantiate correctly my answer', function() {
         var answerJSON={

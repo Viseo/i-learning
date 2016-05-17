@@ -4,3 +4,5 @@
 coverage/
 log/data.json
 node_modules/
+html-report/
+npm-debug.log

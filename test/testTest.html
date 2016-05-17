@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test test</title>
+</head>
+<body style="background-color: #4dc71f">
+<div id="content"></div>
+<div id ="form"></div>
+<script src="../ext-files/targetruntime.js"></script>
+<script src="../ext-files/runtimemock.js"></script>
+<script src="../ext-files/svghandler.js"></script>
+<script src="../ext-files/svggui.js"></script>
+<script src="../ext-files/scenario.js"></script>
+<script src="../src/Util.js"></script>
+
+<script>
+    SVGGlobalHandler();
+    Bdd();
+    drawings = new Drawings(1500, 1000);
+    drawing = drawings.drawing;
+    mainManipulator = drawing.manipulator;
+//    var textarea = new svg.getSvgr().createDOM("textarea");
+//    svg.getSvgr().add(svg.getSvgr().anchor("form"), textarea);
+    var textPourGetBBox = new svg.Text("Le texte");
+    mainManipulator.ordonator.set(0, textPourGetBBox);
+    var dim = textPourGetBBox.component.target.getBoundingClientRect();
+    var rect = new svg.Rect(dim.width, dim.height);
+    mainManipulator.ordonator.set(1, rect);
+</script>
+</body>
+</html>

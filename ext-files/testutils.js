@@ -20,13 +20,18 @@ function checkScenario(play, scenario, root, runtime, done) {
         for (var i = 0; i < fact.randoms.length; i++) {
             runtime.setRandom(fact.randoms[i]);
         }
+        for (i = 0; i < fact.bboxes.length; i++) {
+            runtime.setBbox(fact.bboxes[i]);
+        }
         if (fact.type === 'init') {
             play();
         }
         else {
+
             var registeredSnapshot = fact.anchors.content;
             var snapshot = runtime.json(runtime.anchor(root));
             assert.equal(registeredSnapshot, snapshot);
+
             if (fact.type === 'event') {
                 if (fact.name==="input"){
                     fact.component.enter(fact.event.text);

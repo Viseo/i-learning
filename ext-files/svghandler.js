@@ -1455,6 +1455,8 @@ function SVG(runtime) {
         }
     }
 
+
+
     function Animator(handler) {
         this.handler = handler;
         this.handler.prepareAnimator(this);
