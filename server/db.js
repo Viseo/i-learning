@@ -20,9 +20,6 @@ exports.connect = function(url, done) {
             console.log("Successfully connected");
         }
         state.db = db;
-        state.db.collection('formations').insert({connect:"CONNECTED"}, function(){
-            console.log("Database populated");
-        });
         done();
     });
 };
