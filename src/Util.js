@@ -61,7 +61,7 @@ function SVGGlobalHandler() {
         self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
         self.drawing.manipulator = new Manipulator(self);
 
-        //self.piste = new svg.Drawing(w, h).show("content").position(-w, -h);
+        //self.piste = new svg.Drawing(w, h).doshow("content").position(-w, -h);
         //self.piste.manipulator = new Manipulator(self);
         //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
         //self.glass.manipulator = new Manipulator(self);
@@ -88,11 +88,11 @@ function SVGGlobalHandler() {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousedown) {
-                self.target.component.eventHandlers.mousedown(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.mousedown) {
+                self.target.component.listeners.mousedown(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousedown) {
-                self.target.component.target.eventHandlers.mousedown(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousedown) {
+                self.target.component.target.listeners.mousedown(event);
             }
         };
 
@@ -100,11 +100,11 @@ function SVGGlobalHandler() {
 
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.mousemove) {
-                self.target.component.eventHandlers.mousemove(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.mousemove) {
+                self.target.component.listeners.mousemove(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mousemove) {
-                self.target.component.target.eventHandlers.mousemove(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousemove) {
+                self.target.component.target.listeners.mousemove(event);
             }
         };
 
@@ -112,30 +112,53 @@ function SVGGlobalHandler() {
 
         var ondblclickHandler = function (event) {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.eventHandlers && self.target.component.eventHandlers.dblclick) {
-                self.target.component.eventHandlers.dblclick(event);
+            if (self.target && self.target.component.listeners && self.target.component.listeners.dblclick) {
+                self.target.component.listeners.dblclick(event);
             }
-            if (self.target && self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.dblclick) {
-                self.target.component.target.eventHandlers.dblclick(event);
+            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.dblclick) {
+                self.target.component.target.listeners.dblclick(event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
+            if(self.drawing.getTarget(event.clientX, event.clientY)===null){
+                console.log('null');
+            }
+
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
+            if(self.target===null)
+            {
+                console.log("err");
+            }
             if (self.target) {
-                if (self.target.component.eventHandlers && self.target.component.eventHandlers.mouseup) {
-                    self.target.component.eventHandlers.mouseup(event);
+                //if (self.target.component.mock){
+                //    console.log("mock");
+                //    console.log("target : " + self.target.component.mock.tag);
+                //}
+                //else {
+                //    console.log("normal");
+                //    console.log("target : " + self.target.component.tag);
+                //
+                //}
+                //console.log("clic x : " + event.clientX);
+                //console.log("clic y : " + event.clientY);
+                //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
+                //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
+
+
+                if (self.target.component.listeners && self.target.component.listeners.mouseup) {
+                    self.target.component.listeners.mouseup(event);
                 }
-                if (self.target.component.eventHandlers && self.target.component.eventHandlers.click) {
-                    self.target.component.eventHandlers.click(event);
+                if (self.target.component.listeners && self.target.component.listeners.click) {
+                    self.target.component.listeners.click(event);
                 }
-                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.mouseup) {
-                    self.target.component.target.eventHandlers.mouseup(event);
+                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mouseup) {
+                    self.target.component.target.listeners.mouseup(event);
                 }
-                if (self.target.component.target && self.target.component.target.eventHandlers && self.target.component.target.eventHandlers.click) {
-                    self.target.component.target.eventHandlers.click(event);
+                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.click) {
+                    self.target.component.target.listeners.click(event);
                 }
             }
             self.drag = null;
@@ -144,33 +167,31 @@ function SVGGlobalHandler() {
 
 
         var onmouseoutHandler = function (event) {
-            if (self.drag && self.drag.component.eventHandlers && self.drag.component.eventHandlers.mouseup) {
-                self.target.component.eventHandlers.mouseup(event);
+            if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
+                self.target.component.listeners.mouseup(event);
             }
             self.drag = null;
         };
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
     };
 
-
-    svg.Handler.prototype.flush = function () {
+    Manipulator.prototype.flush = function () {
         var self = this;
-        self.children.forEach(function (e) {
-            if (e instanceof svg.Handler) {
-                e.flush();
-            }
-            else {
-                if (self instanceof svg.Ordered) {
-                    var index = self.children.indexOf(e);
-                    self.unset(index);
-                }
-                else {
-                    self.remove(e);
+        function clean(handler){
+            for(i=0;i<handler.children.length;i++){
+                if(!(handler.children[i] instanceof svg.Handler)){
+                    handler.remove(handler.children[i]);
                 }
             }
-        });
-    };
+        }
+        clean(self.translator);
+        clean(self.rotator);
+        clean(self.scalor);
+        for(var i =0 ; i<self.ordonator.children.length;i++){
+            self.ordonator.unset(i);
+        }
 
+    };
     gui.Panel.prototype.addhHandle = function () {
         var self = this;
         this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
@@ -414,7 +435,7 @@ function SVGUtil() {
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var textHeight = (text.component.getBBox && text.component.getBBox().height) || (text.component.target && Math.floor(text.component.target.getBBox().height));
+        var textHeight = svg.getSvgr().boundingRect(text.component).height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth, newHeight;
@@ -515,9 +536,12 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.component.getBBox && content.position(0, content.component.getBBox().height / 4);
-        content.component.target && content.component.target.getBBox && content.position(0, Math.floor(content.component.target.getBBox().height) / 4);
-        runtime && content.position(0, Math.floor(runtime.boundingRect(content.component).height)/4);
+        //content.component.getBoundingClientRect && content.position(0, content.component.getBoundingClientRect().height / 4);
+        //content.component.target && content.component.target.getBoundingClientRect && content.position(0, Math.floor(content.component.target.getBoundingClientRect().height) / 4);
+        //runtime && content.position(0, Math.floor(runtime.boundingRect(content.component).height)/4);
+        content.position(0, Math.floor(svg.getSvgr().boundingRect(content.component).height)/4);
+
+
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -568,7 +592,8 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-            if ((t.component.getBBox && t.component.getBBox().width > w) || (t.component.target && Math.floor(t.component.target.getBBox().width) > w - MARGIN)|| (runtime && (Math.floor(runtime.boundingRect(t.component).width) > w - MARGIN))) {
+                if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
+            //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -576,7 +601,7 @@ function SVGUtil() {
                 var tmpStr = tempText + "\n" + words[i];
                 t.message(tmpStr);
                 // test if the whole word can fit in a line
-                if (t.component.getBBox().width > w) {
+                if (t.component.getBoundingClientRect().width > w) {
                     // we don't need the tmpStr anymore
                     // add a space before the problematic word
                     tempText += " ";
@@ -587,7 +612,7 @@ function SVGUtil() {
                         // set text to test the BBox.width
                         t.message(tempText + " " + longWord.charAt(j));
                         // check if we can add an additional character in this line
-                        if (t.component.getBBox().width > w) {
+                        if (t.component.getBoundingClientRect().width > w) {
                             // we can't: break line, add the character
                             tempText += "-\n" + longWord.charAt(j);
                         } else {
@@ -603,7 +628,7 @@ function SVGUtil() {
                     tempText += "\n" + words[i];
                     t.message(tmpStr);
                     // test if it fits in height
-                    if (t.component.getBBox().height > h - MARGIN) {
+                    if (t.component.getBoundingClientRect().height > h - MARGIN) {
                         // it doesn't : break
                         tempText = tmpText.substring(0, tmpText.length - 3) + "...";
                         break;
@@ -616,9 +641,10 @@ function SVGUtil() {
         }
 
         t.message(tempText.substring(1));
-        var finalHeight = (t.component.getBBox && t.component.getBBox().height) || (t.component.target && Math.floor(t.component.target.getBBox().height));
-        (typeof finalHeight === "undefined" && t.messageText !== "") && (finalHeight = Math.floor(runtime.boundingRect(t.component).height));
-        t.position(0, (finalHeight - fontSize / 2) / 2); // finalHeight/2 ??
+        var finalHeight = svg.getSvgr().boundingRect(t.component).height;
+        (typeof finalHeight === "undefined" && t.messageText !== "") && (finalHeight = runtime.boundingRect(t.component).height);
+        (typeof finalHeight === "undefined" && t.messageText === "") && (finalHeight = 0);
+        t.position(0, Math.round((finalHeight - fontSize / 2) / 2)); // finalHeight/2 ??
         return {finalHeight: finalHeight, text: t};
     };
 
@@ -822,10 +848,23 @@ function Bdd() {
         none:[]
     };
 
+    myImagesSourceDimensions = {
+        "../resource/littleCat.png" : {width: 80, height: 50},
+        "../resource/millions.png" : {width:1024, height: 1024},
+        "../resource/pomme.jpg" : {width: 925, height: 1000},
+        "../resource/hollandeContent.jpg" : {width: 166, height: 200},
+        "../resource/folder.png" : {width: 256, height: 256},
+        "../resource/flanders.png" : {width: 225, height: 225},
+        "../resource/flamantRose.jpg" : {width: 183, height: 262},
+        "../resource/ChatTim.jpg" : {width: 480, height: 640},
+        "../resource/cerise.jpg" : {width: 2835, height: 2582},
+        "../resource/cat.png" : {width: 1920, height: 1200},
+    }
+
     SELECTION_COLOR = myColors.darkBlue;
 
     myBibImage = {
-        title: "Bibliotheque",
+        title: "Bibliothèque",
         tabLib: [
             {imgSrc: "../resource/littleCat.png"},
             {imgSrc: "../resource/millions.png"},
@@ -906,35 +945,35 @@ function Bdd() {
         rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
     };
 
-    myQuizzTest = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+    myQuizzTestLong = {
+        title: "Qui veut gagner des millions ? Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
         tabQuestions: [
-            {label: "Une divinité féminine est une...", imageSrc:null, multipleChoice: true,
+            {label: "Question 1", imageSrc:null, multipleChoice: true,
                 tabAnswer: [
-                {
-                    label: "Comtesse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                },
-                {
-                    label: "Déesse", imageSrc: null, correct: true,
-                    colorBordure: myColors.green, bgColor: myColors.blue
-                },
-                {
-                    label: "Bougresse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                },
-                {
-                    label: "Diablesse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                }],
+                    {
+                        label: "Comtesse", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Déesse", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Bougresse", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Diablesse", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }],
                 rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
             },
 
             {
-                label: "Traditionnellement, le justaucorps est porté par...", imageSrc: null, multipleChoice: false,
+                label: "Question 2", imageSrc: null, multipleChoice: false,
                 tabAnswer: [
                     {
                         label: "Les danseuses", imageSrc: null, correct: true,
@@ -959,7 +998,7 @@ function Bdd() {
 
 
             {
-                label: "Un terrain où on n'a rien planté est une terre...", imageSrc: null, multipleChoice: false,
+                label: "Question 3", imageSrc: null, multipleChoice: false,
                 tabAnswer: [
                     {
                         label: "Stupide", imageSrc: null, correct: false,
@@ -982,7 +1021,7 @@ function Bdd() {
             },
 
             {
-                label: "Un galurin est un...", imageSrc: null, multipleChoice: false,
+                label: "Question 0", imageSrc: null, multipleChoice: false,
                 tabAnswer: [
                     {
                         label: "Manteau", imageSrc: null, correct: false,
@@ -1004,200 +1043,200 @@ function Bdd() {
                 rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
             },
 
-            //{
-            //    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Boïcotter", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Boycotter", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Boycoter", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //
-            //    ],
-            //    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-            //},
-            //
-            //{
-            //    label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Un flandrois", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Un flamby", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Un flamand", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Un flanders", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-            //},
-            //
-            //{
-            //    label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Cyclades", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.orange
-            //        },
-            //        {
-            //            label: "Antilles", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.purple
-            //        },
-            //        {
-            //            label: "Baléares", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Canaries", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.green
-            //        }
-            //    ],
-            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-            //},
-            //
-            //{
-            //    label: "Quel musée doit son nom à un dessinateur?", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Musée d'Orsay", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Musée Guimet", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Musée Grévin", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Le Louvre", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-            //},
-            //
-            //{
-            //    label: "Comment s'appelle le meilleur ami de Bob l'éponge?", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Luc", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Paul", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Patrick", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Albert", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-            //},
-            //
-            //{
-            //    label: "Le style 'rococo' était un style artistique en vogue au...",
-            //    imageSrc: null,
-            //    multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "XVIe siècle", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "XVIIe siècle", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "XVIIIe siècle", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "XIXe siècle", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 2,
-            //    colorBordure: myColors.primaryBlue,
-            //    bgColor: myColors.green
-            //},
-            //
-            //{
-            //    label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "Magnolias", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Lilas", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "Lavandes", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "Roses", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
-            //},
-            //
-            //{
-            //    label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
-            //    imageSrc: null,
-            //    multipleChoice: false,
-            //    tabAnswer: [
-            //        {
-            //            label: "1996", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "1998", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        },
-            //        {
-            //            label: "1994", imageSrc: null, correct: true,
-            //            colorBordure: myColors.green, bgColor: myColors.blue
-            //        },
-            //        {
-            //            label: "1999", imageSrc: null, correct: false,
-            //            colorBordure: myColors.green, bgColor: myColors.grey
-            //        }
-            //    ],
-            //    rows: 2,
-            //    colorBordure: myColors.primaryBlue,
-            //    bgColor: myColors.purple
-            //}
+            {
+                label: "Question 4", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Boïcotter", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Boycotter", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Boycoter", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+
+                ],
+                rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            },
+
+            {
+                label: "Question -1", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Un flandrois", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Un flamby", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Un flamand", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Un flanders", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            },
+
+            {
+                label: "Question 5", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Cyclades", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.orange
+                    },
+                    {
+                        label: "Antilles", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.purple
+                    },
+                    {
+                        label: "Baléares", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Canaries", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.green
+                    }
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            },
+
+            {
+                label: "Question 6", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Musée d'Orsay", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Musée Guimet", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Musée Grévin", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Le Louvre", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
+            },
+
+            {
+                label: "Question 7", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Luc", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Paul", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Patrick", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Albert", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            },
+
+            {
+                label: "Question 8",
+                imageSrc: null,
+                multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "XVIe siècle", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "XVIIe siècle", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "XVIIIe siècle", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "XIXe siècle", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2,
+                colorBordure: myColors.primaryBlue,
+                bgColor: myColors.green
+            },
+
+            {
+                label: "Question 9", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Magnolias", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Lilas", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Lavandes", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Roses", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
+            },
+
+            {
+                label: "Question 10",
+                imageSrc: null,
+                multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "1996", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "1998", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "1994", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "1999", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2,
+                colorBordure: myColors.primaryBlue,
+                bgColor: myColors.purple
+            }
 
         ]
     };
 
     myQuizz = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
@@ -1494,8 +1533,277 @@ function Bdd() {
         ]
     };
 
+    myQuizzTest = {
+        title: "Qui veut gagner des millions ? Quiz n°1",
+        bgColor: myColors.raspberry,
+        puzzleLines: 3,
+        puzzleRows: 1,
+        tabQuestions: [
+            questionWithLabelImageAndMultipleAnswers, myQuestion2,
+            {
+                label: "Traditionnellement, le justaucorps est porté par...", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Les danseuses", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Les boxeurs", imageSrc: null, correct: false,
+                        colorBordure: myColors.blue, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Les rugbymen", imageSrc: null, correct: false,
+                        colorBordure: myColors.grey, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Les sumos", imageSrc: null, correct: false,
+                        colorBordure: myColors.orange, bgColor: myColors.grey
+                    }
+
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            },
+            {
+                label: "Un terrain où on n'a rien planté est une terre...", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Stupide", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Inculte", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Idiote", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Ignare", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.blue
+            },
+
+            {
+                label: "Un galurin est un...", imageSrc: null, multipleChoice: false,
+                tabAnswer: [
+                    {
+                        label: "Manteau", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Chapeau", imageSrc: null, correct: true,
+                        colorBordure: myColors.green, bgColor: myColors.blue
+                    },
+                    {
+                        label: "Gâteau", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    },
+                    {
+                        label: "Château", imageSrc: null, correct: false,
+                        colorBordure: myColors.green, bgColor: myColors.grey
+                    }
+                ],
+                rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            },
+            //
+            //{
+            //    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Boïcotter", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Boycotter", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Boycoter", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //
+            //    ],
+            //    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            //},
+            //
+            //{
+            //    label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Un flandrois", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Un flamby", imageSrc: "../resource/hollandeContent.jpg", correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Un flamand", imageSrc: "../resource/flamantRose.jpg", correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Un flanders", imageSrc: "../resource/flanders.png", correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            //},
+            //
+            //{
+            //    label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Cyclades", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.orange
+            //        },
+            //        {
+            //            label: "Antilles", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.purple
+            //        },
+            //        {
+            //            label: "Baléares", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Canaries", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.green
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
+            //},
+            //
+            //{
+            //    label: "Question x", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Musée d'Orsay", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Musée Guimet", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Musée Grévin", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Le Louvre", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
+            //},
+            //
+            //{
+            //    label: "Question y", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Luc", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Paul", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Patrick", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Albert", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
+            //},
+            //
+            //{
+            //    label: "Question z",
+            //    imageSrc: null,
+            //    multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "XVIe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "XVIIe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "XVIIIe siècle", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "XIXe siècle", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2,
+            //    colorBordure: myColors.primaryBlue,
+            //    bgColor: myColors.green
+            //},
+            //
+            //{
+            //    label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "Magnolias", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Lilas", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "Lavandes", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "Roses", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
+            //},
+            //
+            //{
+            //    label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
+            //    imageSrc: null,
+            //    multipleChoice: false,
+            //    tabAnswer: [
+            //        {
+            //            label: "1996", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "1998", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        },
+            //        {
+            //            label: "1994", imageSrc: null, correct: true,
+            //            colorBordure: myColors.green, bgColor: myColors.blue
+            //        },
+            //        {
+            //            label: "1999", imageSrc: null, correct: false,
+            //            colorBordure: myColors.green, bgColor: myColors.grey
+            //        }
+            //    ],
+            //    rows: 2,
+            //    colorBordure: myColors.primaryBlue,
+            //    bgColor: myColors.purple
+            //}
+
+        ]
+    };
+
+
     myQuizzDemo = {
-        title: "Qui veut gagner des millions ? Quizz n°1",
+        title: "Qui veut gagner des millions ? Quiz n°1",
         tabQuestions: [
             {
                 label: "Parmi ces divinités, lesquelles sont de sexe féminin?",
@@ -1735,21 +2043,21 @@ function Bdd() {
 
     myFormations = {
         tab: [{label: "Hibernate", status: statusEnum.NotPublished}, {
-            label: "Perturbation Ordre Alphabétique",
+            label: "Hibernate 2",
             status: statusEnum.Published
         }, {label: "HTML3", status: statusEnum.Edited}, {label: "Javascript"},
-            {label: "Nouvelle formation"}, {
-                label: "Une autre formation",
+            {label: "HTML5"}, {
+                label: "HTML5 2",
                 status: statusEnum.Edited
-            }, {label: "Formation suivante"}, {label: "AA"}, {label: "Hibernate"}, {label: "Perturbation Ordre Alphabétique"}, {label: "HTML3"}, {label: "Javascript"},
-            {label: "Nouvelle formation"}, {label: "Une autre formation"}, {label: "Formation suivante"}, {
-                label: "AA",
+            }, {label: "MongoDB"}, {label: "Node Js"}, {label: "Hibernate 3"}, {label: "Hibernate 4"}, {label: "HTML3 2"}, {label: "Php"},
+            {label: "Javascript 2"}, {label: "Javascript 3"}, {label: "Javascript 4"}, {
+                label: "Javascript 5",
                 status: statusEnum.Published
-            }, {label: "Hibernate"}, {label: "Perturbation Ordre Alphabétique"}, {label: "HTML3"}, {label: "Javascript"},
-            {label: "Nouvelle formation"}, {label: "Une autre formation"}, {
-                label: "Formation suivante",
+            }, {label: "Angular js"}, {label: "Angular js 2"}, {label: "Angular js 3"}, {label: "Angular js 4"},
+            {label: "Angular js 5"}, {label: "Angular js 6"}, {
+                label: "Angular js 7",
                 status: statusEnum.Edited
-            }, {label: "AA"}, {label: "ZEdernier"}]
+            }, {label: "Angular js 8"}, {label: "ZEdernier"}]
     };
 
     myBibJeux = {
@@ -1781,4 +2089,26 @@ if (typeof exports !== "undefined") {
     exports.Bdd = Bdd;
     exports.setGui = setGui;
     exports.setRuntime = setRuntime;
+}
+
+///////////////////// Requests ////////////////////////////
+function httpGetAsync(theUrl, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    };
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+}
+
+function httpPostAsync(theUrl, body, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    };
+    xmlHttp.open("POST", theUrl, true); // true for asynchronous
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    xmlHttp.send(JSON.stringify(body));
 }

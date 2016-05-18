@@ -24,19 +24,17 @@ function setGlobalVariable() {
     util && util.SVGGlobalHandler();
     var wind = !util && window;
     util && (wind=false);
-    clientWidth = wind ? document.body.clientWidth : 1500;
-    clientHeight = wind ? document.documentElement.clientHeight : 1500;
-    //clientWidth = 1500;
-    //clientHeight = 1000;
-    drawings = new Drawings(clientWidth, clientHeight);
+    //clientWidth = svg.screenSize().width;
+    //clientHeight = svg.screenSize().height;
+    drawings = new Drawings(svg.screenSize().width, svg.screenSize().height);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
-    return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:clientHeight, clientWidth:clientWidth};
+    return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:svg.screenSize().height, clientWidth:svg.screenSize().width};
 }
 
 //mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
-function main() {
+function main(targetQuizz) {
     !util && setGlobalVariable();
 
   /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
@@ -52,14 +50,14 @@ function main() {
     bib.run(0,0,document.body.clientWidth,drawing.height);
 */
 
-    var quizzCopy=JSON.parse(JSON.stringify(myQuizzTest));
+    var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
-    quizz.run(1,1, clientWidth, drawing.height);
+    quizz.run(0,0, drawing.width, drawing.height);
 
     //setTimeout(function(){
     //    quizz.displaySet.getTarget(0,0);

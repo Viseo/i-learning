@@ -1,7 +1,7 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
-var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController;
+var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg;
 
 setUtil = function(_util){
     util = _util;
@@ -15,6 +15,11 @@ setGlobalVariables = function(gv){
 
 setRuntime = function(_runtime){
     runtime = _runtime;
+}
+
+function setSvg(_svg) {
+    svg = _svg;
+    // call setSvg on modules
 }
 
 function Domain() {
@@ -71,11 +76,11 @@ function Domain() {
             return timeout;
         }
     };
-    util && (iRuntime = ImageRuntime);
-    util && (aRuntime = AsyncTimerRuntime);
+    runtime && (iRuntime = ImageRuntime);
+    runtime && (aRuntime = AsyncTimerRuntime);
     var imageController = ImageController(iRuntime);
     //var asyncTimerController=AsyncTimerController();
-    asyncTimerController = util ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
+    asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
 
 
 ////////////// Answer.js /////////////////
@@ -184,6 +189,13 @@ function Domain() {
                     callback();
                 }
             }, 100);
+                runtime && self.tabImgBib.forEach(function(e){
+                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
+                });
+                if (runtime){
+                    self.display(x, y, w, h);
+                    callback();
+                }
         };
 
         self.dropAction = function (element, event) {
@@ -297,7 +309,7 @@ function Domain() {
                 break;
             case 'answer':
                 self.answerNameValidInput = true;
-                self.label = "Double-cliquez pour ajouter une réponse";
+                self.label = "Nouvelle réponse";
                 break;
         }
         self.fontSize = 20;
@@ -488,8 +500,11 @@ var Level = function(formation, gamesTab){
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             var textDimensions;
-            level.obj.content.component.getBBox && (textDimensions = {width:level.obj.content.component.getBBox().width, height:level.obj.content.component.getBBox().height});
-            level.obj.content.component.target && level.obj.content.component.target.getBBox && (textDimensions = {width:Math.floor(level.obj.content.component.target.getBBox().width), height:Math.floor(level.obj.content.component.target.getBBox().height)});
+            //level.obj.content.component.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.getBoundingClientRect().width, height:level.obj.content.component.getBoundingClientRect().height});
+            //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.target.getBoundingClientRect().width, height:level.obj.content.component.target.getBoundingClientRect().height});
+            //runtime && (textDimensions = {width:runtime.boundingRect(level.obj.content.component).width, height:runtime.boundingRect(level.obj.content.component).height});
+            textDimensions = {width:svg.getSvgr().boundingRect(level.obj.content.component).width, height:svg.getSvgr().boundingRect(level.obj.content.component).height};
+
 
             if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
@@ -654,7 +669,7 @@ var Level = function(formation, gamesTab){
                     if (count < self.questionsTab.length) {
                         self.virtualTab[i][j] = self.questionsTab[count];
                         if ((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first) {
-                            self.virtualTab[i][j].questionManipulator.first.flush();
+                            self.virtualTab[i][j].questionManipulator.flush();
                         }
                         count++;
                     } else {
@@ -697,7 +712,7 @@ var Level = function(formation, gamesTab){
         if (!question) {
             self.label = "";
             self.imageSrc = "";
-            self.rows = 2;
+            self.rows = 4;
             self.rightAnswers = [];
             self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
             self.selectedAnswers = [];
@@ -790,7 +805,7 @@ var Level = function(formation, gamesTab){
         self.reponseHeight = 0.7;
 
         //var haut = (window.innerHeight);
-        var haut = clientHeight;
+        var haut = drawing.height;
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
 
@@ -850,8 +865,8 @@ var Level = function(formation, gamesTab){
             if (myObj.textarea.value.match(REGEX)) {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.style.border = "none";
-                myObj.textarea.style.outline = "none";
+                !runtime && (myObj.textarea.style.border = "none");
+                !runtime && (myObj.textarea.style.outline = "none");
             } else {
                 myObj.display();
                 myObj.textarea.onblur = function () {
@@ -938,7 +953,7 @@ var Level = function(formation, gamesTab){
         self.cadreResult = {
             x: drawing.width / 2,
             y: 220,
-            w: clientWidth,
+            w: drawing.width,
             h: 200
         };
 
@@ -993,14 +1008,14 @@ var Level = function(formation, gamesTab){
                     self.display(x, y, w, h);
                 }
             }, 100);
-            util && self.tabQuestions.forEach(function(e){
-                e.image && imageController.imageLoaded(e.image.id, 238, 238);
+            runtime && self.tabQuestions.forEach(function(e){
+                e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.url].width, myImagesSourceDimensions[e.image.url].height);
                 e.tabAnswer.forEach(function(el){
-                    el.image && imageController.imageLoaded(el.image.id, 200, 5);
+                    el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.url].width, myImagesSourceDimensions[el.image.url].height);
                 });
 
             });
-            util && self.display(x, y, w, h);
+            runtime && self.display(x, y, w, h);
 
         };
 
@@ -1027,7 +1042,7 @@ var Level = function(formation, gamesTab){
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithoutImage);
 
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                    self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.flush();
+                    self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
 
                     self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
                         self.cadreQuestion.w, self.questionHeight);
@@ -1176,4 +1191,5 @@ if(typeof exports !== "undefined") {
     exports.setUtil = setUtil;
     exports.setGlobalVariables = setGlobalVariables;
     exports.setRuntime = setRuntime;
+    exports.setSvg = setSvg;
 }

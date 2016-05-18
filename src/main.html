@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
-<script src="../ext-files/targetruntime.js"></script>
-<script src="../ext-files/runtimemock.js"></script>
-<script src="../ext-files/svghandler.js"></script>
-<script src="../ext-files/svggui.js"></script>
-<!--<script src="../ext-files/scenario.js"></script>-->
+<script src="../lib/targetruntime.js"></script>
+<script src="../lib/runtimemock.js"></script>
+<script src="../lib/svghandler.js"></script>
+<script src="../lib/svggui.js"></script>
+<!--<script src="../lib/scenario.js"></script>-->
 
 <script src="Util.js"></script>
 <script src="Domain.js"></script>
@@ -24,7 +24,14 @@
     AdminGUI();
 </script>
 <script>
-        main();
+    var thing = function (data) {
+        console.log(data);
+    };
+    var body = {size: 45, owner: "Quentin"};
+    var result = httpGetAsync("http://54.229.14.93:8080/id", thing);
+    //var result = httpGetAsync("http://localhost:8080/getAllFormations", thing);
+    //var result = httpPostAsync("http://localhost:8080/insert", body, thing);
+    main(myQuizz);
 </script>
 </body>
 

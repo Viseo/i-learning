@@ -3,12 +3,12 @@
  */
 
 var assert = require('assert');
-var testutils = require('../ext-files/testutils');
+var testutils = require('./testutils');
 
-var targetRuntime = require('../ext-files/targetRuntime').targetRuntime;
-var mock = require('../ext-files/runtimemock');
+var targetRuntime = require('./targetRuntime').targetRuntime;
+var mock = require('./runtimemock');
 mock.setTarget(targetRuntime);
-var svgHandler = require('../ext-files/svghandler');
+var svgHandler = require('./svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
 
@@ -30,12 +30,15 @@ var runtime;
 var svg;
 
 describe('Quizz game', function () {
-    var guiSvgModule = require("../ext-files/svggui");
+    var guiSvgModule = require("./svggui");
     var util = require("../src/Util");
     var gui = require("../src/GUI");
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
+    var quizzManagerModule = require("../src/quizzManager");
+    var testModule = require("../test/testTest");
+
 
     beforeEach(function () {
         runtime = mock.mockRuntime();
@@ -52,11 +55,17 @@ describe('Quizz game', function () {
         mainModule.setUtil(util);
         adminModule.setSvg(svg);
         adminModule.setUtil(util);
+        testModule.setUtil(util);
+        testModule.setSvg(svg);
+        quizzManagerModule.setSvg(svg);
+        quizzManagerModule.setUtil(util);
+        svg.screenSize(1904,971);
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
         domain.Domain();
         domain.setRuntime(runtime);
+        domain.setSvg(svg);
         gui.setDomain(domain);
         gui.AdminGUI();
         gui.setSVG(svg);
@@ -64,22 +73,21 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a short quizz game", function (done) {
+    it("plays a complete quizz game with few errors", function (done) {
         this.timeout(100000);
         checkScenario(
-            function () {
-                mainModule.main();
+            function(){
+                mainModule.main(myQuizzTest);
             },
-            "./log/testQuizzCourt.json", 'content', runtime, done);
+            "./log/testQuizzCompletPuzzleSimple.json", 'content', runtime, done);
     });
-
-    it("plays a complete quizz game", function (done) {
+    it("plays a complete quizz game with a lot of errors", function (done) {
         this.timeout(100000);
         checkScenario(
-            function () {
-                mainModule.main();
+            function(){
+                mainModule.main(myQuizzTest);
             },
-            "./log/testQuizzCourt.json", 'content', runtime, done);
+            "./log/testQuizzCompletBcpFaux.json", 'content', runtime, done);
     });
     it("an admin use", function (done) {
         this.timeout(100000);
@@ -87,8 +95,33 @@ describe('Quizz game', function () {
             function () {
                 adminModule.admin();
             },
-            "./log/testAdminCourt.json", 'content', runtime, done);
+            "./log/testAdminPost.json", 'content', runtime, done);
     });
+    //
+    //it("QuizzManager", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            quizzManagerModule.quizzManager();
+    //        },
+    //        "./log/testQuizzManager.json", 'content', runtime, done);
+    //});
+
+    //it("Test test", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function(){
+    //            //var textarea = new svg.getSvgr().createDOM("textarea");
+    //            var textPourGetBBox = new svg.Text("Le texte");
+    //            mainManipulator.ordonator.set(0, textPourGetBBox);
+    //            var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
+    //            var rect = new svg.Rect(dim.width, dim.height);
+    //            mainManipulator.ordonator.set(1, rect);
+    //        },
+    //        "./log/new.json", 'content', runtime, done);
+    //});
+
+
     it('should instantiate correctly my answer', function() {
         var answerJSON={
             label:"My first answer is...",

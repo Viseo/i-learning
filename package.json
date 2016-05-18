@@ -2,18 +2,32 @@
   "name": "I-learning",
   "description": "Intern project @ Viseo",
   "version": "0.0.1",
-  "author": {
-    "name": "Viseo I-learning",
-    "website": "github.com/anacho/i-learning"
-  },
+  "author": "Viseo I-learning",
   "website": "i-learning.com",
   "dependencies": {
-    },
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "method-override": "^2.3.5",
+    "mongodb": "^2.1.19"
+  },
   "devDependencies": {
     "test-module": "*"
   },
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive test/TestMocha.js "
-
-  }
+  },
+  "main": "karma.conf.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anacho/i-learning.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Anacho/i-learning/issues"
+  },
+  "homepage": "https://github.com/Anacho/i-learning#readme"
 }
