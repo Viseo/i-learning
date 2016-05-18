@@ -3,12 +3,12 @@
  */
 
 var assert = require('assert');
-var testutils = require('../ext-files/testutils');
+var testutils = require('./testutils');
 
-var targetRuntime = require('../ext-files/targetRuntime').targetRuntime;
-var mock = require('../ext-files/runtimemock');
+var targetRuntime = require('./targetRuntime').targetRuntime;
+var mock = require('./runtimemock');
 mock.setTarget(targetRuntime);
-var svgHandler = require('../ext-files/svghandler');
+var svgHandler = require('./svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
 
@@ -30,7 +30,7 @@ var runtime;
 var svg;
 
 describe('Quizz game', function () {
-    var guiSvgModule = require("../ext-files/svggui");
+    var guiSvgModule = require("./svggui");
     var util = require("../src/Util");
     var gui = require("../src/GUI");
     var domain = require("../src/Domain");
