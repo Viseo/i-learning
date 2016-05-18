@@ -1215,46 +1215,38 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
                 if(answer instanceof AnswerElement){
                     answer.multipleAnswer = answer.correct;
                     answer.linkedAnswer.parent.multipleChoice=answer.correct;
-                    answer.linkedAnswer.parent.simpleChoice=!answer.correct;
                     (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
                     answer.correct = answer.simpleAnswer;
                     answer.linkedAnswer.correct = answer.simpleAnswer;
-                }});
-        }
-        else if (self.simpleChoice){
+                }
+            });
+        } else {
             self.tabAnswer.forEach(function(answer){
                 if(answer instanceof AnswerElement){
                     answer.simpleAnswer = answer.correct;
-                    answer.linkedAnswer.parent.simpleChoice=answer.correct;
                     answer.linkedAnswer.parent.multipleChoice=!answer.correct;
                     (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
                     answer.correct = answer.multipleAnswer;
                     answer.linkedAnswer.correct = answer.multipleAnswer;
-                }});
+                }
+            });
         }
 
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
-        (questionType === "Réponse unique") ? (self.simpleChoice = true) : (self.simpleChoice = false);
-        self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
+
+        self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
 
-        self.tabAnswer.forEach(function(answer) {
-            if (answer.obj.checkbox) {
-                self.simpleChoice && (answer.correct = false);
-                self.multipleChoice && (answer.correct = false);
-                self.simpleChoice && (answer.linkedAnswer.correct = false);
-                self.multipleChoice && (answer.linkedAnswer.correct = false);
-            }
-        });
         self.tabAnswer.forEach(function(answer){
             var xCheckBox, yCheckBox = 0;
             if (answer.obj.checkbox) {
                 xCheckBox = answer.obj.checkbox.x;
                 yCheckBox = answer.obj.checkbox.y;
-                if (self.simpleChoice || self.multipleChoice){
-                    answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer).checkbox;
-                    answer.obj.checkbox.answerParent = answer;
-                }
+                answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer).checkbox;
+                answer.obj.checkbox.answerParent = answer;
+
+                answer.correct = false;
+                answer.linkedAnswer.correct = false;
             }
         });
         self.displayToggleButton(x, y, w, h, questionType);
@@ -1281,7 +1273,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
         i++;
     });
-    self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
+    self.activeQuizzType = (self.multipleChoice) ? self.quizzType[1] : self.quizzType[0];
     self.toggleButtonManipulator.translator.move(0, y);
 }
 

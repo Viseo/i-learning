@@ -379,7 +379,7 @@ function SVGUtil() {
         sender.parent.tabAnswer.forEach(function (answer) {
             if (answer instanceof AnswerElement && answer.obj.checkbox) {
                 var allNotChecked = checkAllCheckBoxes(sender);
-                if (answer.parent.simpleChoice && !answer.correct && !allNotChecked) {
+                if (!answer.parent.multipleChoice && !answer.correct && !allNotChecked) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
                     //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
                     svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
@@ -409,7 +409,7 @@ function SVGUtil() {
         var allNotChecked = true;
 
         allNotChecked = checkAllCheckBoxes(sender);
-        if (sender.parent.simpleChoice && !sender.correct && !allNotChecked) {
+        if (!sender.parent.multipleChoice && !sender.correct && !allNotChecked) {
             sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
         } else {
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);

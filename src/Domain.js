@@ -717,7 +717,6 @@ var Level = function(formation, gamesTab){
             self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
             self.selectedAnswers = [];
             self.multipleChoice = false;
-            self.simpleChoice = true;
             self.font = "Arial";
             self.bgColor = myColors.white;
             self.colorBordure = myColors.black;
@@ -729,7 +728,6 @@ var Level = function(formation, gamesTab){
             self.rightAnswers = [];
             self.selectedAnswers = [];
             self.multipleChoice = question.multipleChoice;
-            self.simpleChoice = question.simpleChoice;
 
             question.colorBordure && (self.colorBordure = question.colorBordure);
             question.bgColor && (self.bgColor = question.bgColor);
@@ -819,11 +817,6 @@ var Level = function(formation, gamesTab){
             } else {
                 self.multipleChoice = false;
             }
-            if (typeof quest.simpleChoice !== 'undefined') {
-                self.simpleChoice = quest.simpleChoice;
-            } else {
-                self.simpleChoice = (!self.multipleChoice);
-            }
             self.tabAnswer = [];
             quest.tabAnswer.forEach(function (answer) {
                 self.tabAnswer.push(new AnswerElement(answer, self));
@@ -854,7 +847,6 @@ var Level = function(formation, gamesTab){
             self.rightAnswers = [];
             self.fontSize = 20;
             self.multipleChoice = false;
-            self.simpleChoice = true;
         } else {
             self.loadQuestion(question);
         }
