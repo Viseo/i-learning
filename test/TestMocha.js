@@ -36,7 +36,7 @@ describe('Quizz game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
-    var quizzManagerModule = require("../src/quizzManager");
+    //var quizzManagerModule = require("../src/quizzManager");
     var testModule = require("../test/testTest");
 
 
@@ -57,8 +57,8 @@ describe('Quizz game', function () {
         adminModule.setUtil(util);
         testModule.setUtil(util);
         testModule.setSvg(svg);
-        quizzManagerModule.setSvg(svg);
-        quizzManagerModule.setUtil(util);
+        //quizzManagerModule.setSvg(svg);
+        //quizzManagerModule.setUtil(util);
         svg.screenSize(1904,971); //Chrome
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
@@ -67,19 +67,19 @@ describe('Quizz game', function () {
         domain.setRuntime(runtime);
         domain.setSvg(svg);
         gui.setDomain(domain);
-        gui.AdminGUI();
+        gui.LearningGUI();
         gui.setSVG(svg);
         gui.setGui(guiSvg);
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game with few errors", function (done) {
+    it("plays a complete quizz game with 2 Answers Right", function (done) {
         this.timeout(100000);
         checkScenario(
             function(){
                 mainModule.main(myQuizzTest);
             },
-            "./log/testQuizzCompletPuzzleSimple.json", 'content', runtime, done);
+            "./log/testQuizzTwoRightAnswers.json", 'content', runtime, done);
     });
     it("plays a complete quizz game with a lot of errors", function (done) {
         this.timeout(100000);
@@ -88,6 +88,30 @@ describe('Quizz game', function () {
                 mainModule.main(myQuizzTest);
             },
             "./log/testQuizzCompletBcpFaux.json", 'content', runtime, done);
+    });
+    it("plays a complete quizz game with all just but one", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function(){
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzToutesSaufUne.json", 'content', runtime, done);
+    });
+    it("plays a complete quizz game with all right", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function(){
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzToutesBonnes.json", 'content', runtime, done);
+    });
+    it("plays a complete quizz game with only one right answer", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function(){
+                mainModule.main(myQuizzTest);
+            },
+            "./log/testQuizzUneSeuleJuste.json", 'content', runtime, done);
     });
     //it("an admin use", function (done) {
     //    this.timeout(100000);
@@ -150,7 +174,7 @@ describe('Firefox game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
-    var quizzManagerModule = require("../src/quizzManager");
+    //var quizzManagerModule = require("../src/quizzManager");
     var testModule = require("../test/testTest");
 
 
@@ -171,8 +195,8 @@ describe('Firefox game', function () {
         adminModule.setUtil(util);
         testModule.setUtil(util);
         testModule.setSvg(svg);
-        quizzManagerModule.setSvg(svg);
-        quizzManagerModule.setUtil(util);
+        //quizzManagerModule.setSvg(svg);
+        //quizzManagerModule.setUtil(util);
         svg.screenSize(1520,754); //Firefox
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);

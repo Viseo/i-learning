@@ -9,11 +9,13 @@
  */
 var svg, gui, runtime;
 
+/* istanbul ignore next */
 if(typeof SVG != "undefined") {
     if(!svg) {
         svg = new SVG();
     }
 }
+/* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
         gui = new Gui();
@@ -2094,6 +2096,7 @@ if (typeof exports !== "undefined") {
 }
 
 ///////////////////// Requests ////////////////////////////
+/* istanbul ignore next */
 function httpGetAsync(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
@@ -2103,7 +2106,7 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.open("GET", theUrl, true); // true for asynchronous
     xmlHttp.send(null);
 }
-
+/* istanbul ignore next */
 function httpPostAsync(theUrl, body, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {

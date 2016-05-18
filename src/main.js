@@ -4,7 +4,7 @@
 
 var svg, util;
 
-
+/* istanbul ignore next */
 if(typeof SVG !== "undefined") {
     if(!svg) {
         svg = new SVG();
@@ -51,7 +51,7 @@ function main(targetQuizz) {
 */
 
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
-    quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
+    //quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 
     console.log('Length: '+quizz.tabQuestions.length);
