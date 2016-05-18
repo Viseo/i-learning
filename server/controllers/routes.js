@@ -16,4 +16,11 @@ module.exports = function (app) {
             res.send({myCollection: docs});
         });
     });
+
+    app.get('/id', function (req, res) {
+        var collection = db.get().collection('exists');
+        collection.find().toArray(function (err, docs) {
+            res.send({id: docs})
+        })
+    });
 };
