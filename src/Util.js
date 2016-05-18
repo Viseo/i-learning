@@ -105,6 +105,7 @@ function SVGGlobalHandler() {
             }
             if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousemove) {
                 self.target.component.target.listeners.mousemove(event);
+
             }
         };
 
@@ -122,16 +123,8 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
-            if(self.drawing.getTarget(event.clientX, event.clientY)===null){
-                console.log('null');
-            }
-
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
-            if(self.target===null)
-            {
-                console.log("err");
-            }
             if (self.target) {
                 //if (self.target.component.mock){
                 //    console.log("mock");
@@ -179,8 +172,17 @@ function SVGGlobalHandler() {
         var self = this;
         function clean(handler){
             for(i=0;i<handler.children.length;i++){
-                if(!(handler.children[i] instanceof svg.Handler)){
+                if((handler instanceof svg.Ordered)){
+                    for(var i =0; i<handler.children.length;i++){
+                        handler.unset(i);
+                    }
+                }
+                else if (handler.children[i] instanceof svg.Handler){
+                    clean(handler.children[i]);
+                }
+                else {
                     handler.remove(handler.children[i]);
+
                 }
             }
         }

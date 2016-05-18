@@ -13,7 +13,7 @@
     "test-module": "*"
   },
   "scripts": {
-    "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive test/TestMocha.js "
+    "test": "istanbul cover -x '**/ext-files/**' node_modules/mocha/bin/_mocha -- -R spec --recursive test/TestMocha.js "
 
   }
 }

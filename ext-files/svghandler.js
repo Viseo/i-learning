@@ -6,7 +6,6 @@ var targetRuntime;
 function setTarget(target) {
     targetRuntime = target;
 }
-
 if (!Array.prototype.add) {
     Object.defineProperty(Array.prototype, "add", {
         enumerable: false,
@@ -17,7 +16,6 @@ if (!Array.prototype.add) {
         }
     });
 }
-
 if (!Array.prototype.remove) {
     Object.defineProperty(Array.prototype, "remove", {
         enumerable: false,
@@ -28,7 +26,7 @@ if (!Array.prototype.remove) {
         }
     });
 }
-
+/* istanbul ignore next */
 function SVG(runtime) {
     var svgr = runtime || targetRuntime();
 

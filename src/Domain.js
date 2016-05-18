@@ -301,7 +301,7 @@ function Domain() {
         var self = this;
         self.manipulator = new Manipulator(self);
         self.plusManipulator = new Manipulator(self);
-        self.manipulator.last.add(self.plusManipulator.first);
+        self.manipulator.ordonator.set(7, self.plusManipulator.first);
         type && (self.type = type);
         switch (type) {
             case 'question':

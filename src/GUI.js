@@ -221,6 +221,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
                 self.plusManipulator.flush();
+                //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
 
                 self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
                 self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
@@ -500,11 +501,10 @@ function FormationDisplayFormation(){
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.quizzManager.loadQuizz(targetQuizz);
         self.quizzManager.display();
-        if (window.getSelection)
+        if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
-        else if (document.selection)
+        else if (!runtime && document.selection)
             document.selection.empty();
-        mainManipulator.ordonator.unset(0);
     };
 
     self.displayLevel = function(w, h, level){
@@ -671,13 +671,12 @@ function FormationsManagerDisplay() {
     }
 
     function onClickFormation(formation) {
-        console.log("Tu as bien cliqué");
         formation.displayFormation();
     }
 
     function onClickNewFormation() {
         var formation = new Formation({});
-        console.log("Tu as bien cliqué pour ajouter une formation");
+        formation.parent = self;
         formation.displayFormation();
     }
 
@@ -1530,6 +1529,7 @@ function QuizzManagerDisplay(){
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
                 150, self.previewButtonHeight-self.globalMargin.height);
+            mainManipulator.ordonator.unset(0);
         });
 }
 
@@ -1639,7 +1639,6 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
         self.toggleButtonHeight = 40;
 
         var validation = true;
-        console.log(self.questionCreator.activeQuizzType);
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
             if(!result.isValid) {

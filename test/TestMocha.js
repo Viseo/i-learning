@@ -59,7 +59,7 @@ describe('Quizz game', function () {
         testModule.setSvg(svg);
         quizzManagerModule.setSvg(svg);
         quizzManagerModule.setUtil(util);
-        svg.screenSize(1904,971);
+        svg.screenSize(1904,971); //Chrome
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
@@ -89,22 +89,22 @@ describe('Quizz game', function () {
             },
             "./log/testQuizzCompletBcpFaux.json", 'content', runtime, done);
     });
-    it("an admin use", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testAdminPost.json", 'content', runtime, done);
-    });
-    //
+    //it("an admin use", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testFirefoxAdmin.json", 'content', runtime, done);
+    //});
+
     //it("QuizzManager", function (done) {
     //    this.timeout(100000);
     //    checkScenario(
     //        function () {
     //            quizzManagerModule.quizzManager();
     //        },
-    //        "./log/testQuizzManager.json", 'content', runtime, done);
+    //        "./log/testQuizzManagerAccueil.json", 'content', runtime, done);
     //});
 
     //it("Test test", function (done) {
@@ -141,6 +141,69 @@ describe('Quizz game', function () {
         assert.strictEqual(answer.fontSize, 20);
         assert.strictEqual(answer.font, "Courier New");
 
+    });
+});
+describe('Firefox game', function () {
+    var guiSvgModule = require("../ext-files/svggui");
+    var util = require("../src/Util");
+    var gui = require("../src/GUI");
+    var domain = require("../src/Domain");
+    var mainModule = require("../src/main");
+    var adminModule = require("../src/admin");
+    var quizzManagerModule = require("../src/quizzManager");
+    var testModule = require("../test/testTest");
+
+
+    beforeEach(function () {
+        runtime = mock.mockRuntime();
+        runtime.declareAnchor('content');
+        svg = SVG(runtime);
+        guiSvgModule.setSVG(svg);
+        var guiSvg = guiSvgModule.Gui();
+        util.setSvg(svg);
+        util.SVGUtil();
+        util.Bdd();
+        util.setGui(guiSvg);
+        util.setRuntime(runtime);
+        mainModule.setSvg(svg);
+        mainModule.setUtil(util);
+        adminModule.setSvg(svg);
+        adminModule.setUtil(util);
+        testModule.setUtil(util);
+        testModule.setSvg(svg);
+        quizzManagerModule.setSvg(svg);
+        quizzManagerModule.setUtil(util);
+        svg.screenSize(1520,754); //Firefox
+        var globalVariables = mainModule.setGlobalVariable();
+        domain.setUtil(util);
+        domain.setGlobalVariables(globalVariables);
+        domain.Domain();
+        domain.setRuntime(runtime);
+        domain.setSvg(svg);
+        gui.setDomain(domain);
+        gui.AdminGUI();
+        gui.setSVG(svg);
+        gui.setGui(guiSvg);
+        gui.setRuntime(runtime);
+    });
+
+
+    it("a short admin use (to QuizzManager)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminMarche.json", 'content', runtime, done);
+    });
+
+    it("an admin use", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdmin.json", 'content', runtime, done);
     });
 });
 
