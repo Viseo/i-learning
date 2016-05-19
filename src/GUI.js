@@ -85,7 +85,8 @@ function AnswerDisplay (x, y, w, h) {
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
-            self.editor.puzzle.puzzleManipulator.translator.move(0, self.editor.toggleButtonHeight-MARGIN);
+            var editor = (self.editor.puzzle ? self.editor : self.editor.parent);
+            editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
         };
@@ -280,7 +281,8 @@ function LibraryDisplay(x,y,w,h){
                 self.draggedObjectLabel = "";
             };
             svg.event(drawings.glass,"mousedown",event);
-            img.component.listeners ? svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup):svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
+            img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
+            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
                 textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
