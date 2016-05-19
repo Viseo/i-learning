@@ -391,9 +391,9 @@ function FormationDisplayFormation(){
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.labelHeight = svg.getSvgr().boundingRect(self.formationLabel.content.component).height;
 
-        self.formationTitleWidth = 102;
+        self.formationTitleWidth = svg.getSvgr().boundingRect(self.title.component).width;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2).fillOpacity(0.1);
 
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
@@ -403,7 +403,6 @@ function FormationDisplayFormation(){
         self.formationCreator = formationValidation;
     };
     var dblclickEdition = function (event) {
-        //var width = self.formationLabel.content.component.getBoundingClientRect ? self.formationLabel.content.component.getBoundingClientRect().width : self.formationLabel.content.component.target.getBoundingClientRect().width;
         var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
@@ -422,7 +421,7 @@ function FormationDisplayFormation(){
 
         var removeErrorMessage = function () {
             self.formationCreator.formationNameValidInput = true;
-            self.formationCreator.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
+            self.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
             self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
         };
 
