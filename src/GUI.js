@@ -174,10 +174,10 @@ function AnswerDisplay (x, y, w, h) {
 
 function LibraryDisplay(x,y,w,h){
     var self = this;
-    x && (self.x = x);
-    y && (self.y = y);
-    w && (self.w = w);
-    h && (self.h = h);
+    if(typeof x !=="undefined")(self.x = x);
+    if(typeof y !=="undefined")(self.y = y);
+    if(typeof w !=="undefined")(self.w = w);
+    if(typeof h !=="undefined")(self.h = h);
     self.borderSize = 3;
 
     self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
@@ -189,31 +189,30 @@ function LibraryDisplay(x,y,w,h){
 
     var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
-    var maxJeuxPerLine = 1;
-    self.libMargin2 = (w -(maxJeuxPerLine*w))/(maxJeuxPerLine+1)+2*MARGIN;
+    var maxGamesPerLine = 1;
+    self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
     var tempY = (2/10*h);
 
     for (var i = 0; i<self.tabLib.length; i++) {
-        if (i % maxImagesPerLine === 0 && i != 0) {
+        if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
-        self.bibManipulators[i] = new Manipulator(self);
-        self.libraryManipulator.last.add(self.bibManipulators[i].first);
+        self.libraryManipulators[i] = new Manipulator(self);
+        self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.tabLib[i].imgSrc) {
-            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.bibManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.tabImgBib[i].width, height: self.tabImgBib[i].height};
-            self.bibManipulators[i].ordonator.set(0, objectTotal.image);
+            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
+            self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
-            self.bibManipulators[i].first.move(X, tempY);
-        }
-        else {
-            if (i % maxJeuxPerLine === 0 && i != 0) {
+            self.libraryManipulators[i].first.move(X, tempY);
+        } else {
+            if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.w / 2 + self.libMargin2;
             }
 
-            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.bibManipulators[i]);
-            X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
-            self.bibManipulators[i].first.move(X, tempY);
+            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+            self.libraryManipulators[i].first.move(X, tempY);
 
             self.libraryGamesTab[i] = {objectTotal : objectTotal};
             self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
@@ -221,7 +220,7 @@ function LibraryDisplay(x,y,w,h){
     }
     self.libraryManipulator.first.move(x, y);
 
-    self.bibManipulators.forEach(function(e){
+    self.libraryManipulators.forEach(function(e){
         var mouseDownAction = function(event){
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
@@ -537,10 +536,10 @@ function FormationDisplayFormation(){
 
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        //self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBoundingClientRect().height);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBoundingClientRect().height);
-        //runtime && self.clippingManipulator.translator.move(self.bibWidth, runtime.boundingRect(self.title.component).height);
-        self.clippingManipulator.translator.move(self.bibWidth, svg.getSvgr().boundingRect(self.title.component).height);
+        //self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.libraryWidth, self.title.component.getBoundingClientRect().height);
+        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.libraryWidth, self.title.component.target.getBoundingClientRect().height);
+        //runtime && self.clippingManipulator.translator.move(self.libraryWidth, runtime.boundingRect(self.title.component).height);
+        self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
 
         self.panel = new gui.Panel(w, h);
@@ -599,7 +598,7 @@ function FormationDisplayFormation(){
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.bib.display(0, (-HEADER_SIZE*drawing.height+self.parent.headerHeightFormation)/2,self.bibWidth, self.graphCreaHeight);
+    self.library.display(0, (-HEADER_SIZE*drawing.height+self.parent.headerHeightFormation)/2,self.libraryWidth, self.graphCreaHeight);
     //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
@@ -1380,35 +1379,35 @@ function QuizzDisplay(x,y,w,h) {
 
     x && (self.x = x);
     y && (self.y = y);
-    w && (self.cadreQuestion.w = w);
-    (w && x) && (self.cadreResult.w = w );
-    x && (self.cadreResult.x = x);
-    w && (self.cadreTitle.w = w);
+    w && (self.questionArea.w = w);
+    (w && x) && (self.resultArea.w = w );
+    x && (self.resultArea.x = x);
+    w && (self.titleArea.w = w);
     x && (self.quizzMarginX = x);
     self.headerPercentage = 0.1;
     self.questionPercentageWithImage = 0.3;
     self.questionPercentage = 0.2;
-    self.responsePercentageWithImage = 0.6;
-    self.responsePercentage = 0.7;
+    self.answerPercentageWithImage = 0.6;
+    self.answerPercentage = 0.7;
 
     var heightPage = drawing.height;
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
     self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
-    self.responseHeight = heightPage * self.responsePercentage -  MARGIN;
+    self.answerHeight = heightPage * self.answerPercentage -  MARGIN;
     self.questionHeightWithoutImage = heightPage * self.questionPercentage -  MARGIN;
-    self.responseHeightWithoutImage = heightPage * self.responsePercentage -  MARGIN;
+    self.answerHeightWithoutImage = heightPage * self.answerPercentage -  MARGIN;
     self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
-    self.responseHeightWithImage = heightPage * self.responsePercentageWithImage -  MARGIN;
+    self.answerHeightWithImage = heightPage * self.answerPercentageWithImage -  MARGIN;
 
-    var object = displayText(self.title, (self.cadreTitle.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
+    var object = displayText(self.title, (self.titleArea.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
     self.titleBox = object.cadre;
     self.titleText = object.content;
 
     self.quizzManipulator.ordonator.set(1,self.titleText);
 
     self.quizzManipulator.ordonator.set(0,self.titleBox);
-    self.quizzManipulator.translator.move(self.cadreQuestion.w/2,self.headerHeight/2);
+    self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
@@ -1418,7 +1417,7 @@ function QuizzDisplay(x,y,w,h) {
 function QuizzDisplayResult (color){
     var self = this;
     self.displayScore(color);
-    self.puzzle.display(0, self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
+    self.puzzle.display(0, self.questionHeight/2, drawing.width,self.answerHeight, self.puzzle.startPosition);
 }
 
 function GameDisplayMiniature(size){
@@ -1474,7 +1473,7 @@ function QuizzDisplayScore(color){
     self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
 
-    var object = displayText(self.finalMessage,self.cadreTitle.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
+    var object = displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
 
 }
 
@@ -1495,11 +1494,11 @@ function QuizzManagerDisplay(){
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 
-    self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
-        self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
+    self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+        self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
-            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
+            self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
                 150, self.previewButtonHeight-self.globalMargin.height);

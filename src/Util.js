@@ -827,12 +827,12 @@ function Bdd() {
         "../resource/flamantRose.jpg" : {width: 183, height: 262},
         "../resource/ChatTim.jpg" : {width: 480, height: 640},
         "../resource/cerise.jpg" : {width: 2835, height: 2582},
-        "../resource/cat.png" : {width: 1920, height: 1200},
-    }
+        "../resource/cat.png" : {width: 1920, height: 1200}
+    };
 
     SELECTION_COLOR = myColors.darkBlue;
 
-    myBibImage = {
+    myLibraryImage = {
         title: "Bibliothèque",
         tabLib: [
             {imgSrc: "../resource/littleCat.png"},
@@ -2037,7 +2037,7 @@ function Bdd() {
             }, {label: "Angular js 8"}, {label: "ZEdernier"}]
     };
 
-    myBibJeux = {
+    myLibraryGames = {
         title: "Type de jeux",
         tabLib: [
             {label: "Quiz"},
