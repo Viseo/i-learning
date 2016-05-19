@@ -91,7 +91,7 @@ function SVGGlobalHandler() {
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (self.target) {
-                svg.getSvgr().event(self.target.component, "mousedown", event);
+                svg.event(self.target, "mousedown", event);
             }
         };
 
@@ -100,7 +100,7 @@ function SVGGlobalHandler() {
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             if (self.target) {
-                svg.getSvgr().event(self.target.component, "mousemove", event);
+                svg.event(self.target, "mousemove", event);
             }
         };
 
@@ -109,7 +109,7 @@ function SVGGlobalHandler() {
         var ondblclickHandler = function (event) {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             if (self.target) {
-                svg.getSvgr().event(self.target.component, "dblclick", event);
+                svg.event(self.target, "dblclick", event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
@@ -132,8 +132,8 @@ function SVGGlobalHandler() {
                 //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
                 //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
 
-                svg.getSvgr().event(self.target.component, "mouseup", event);
-                svg.getSvgr().event(self.target.component, "click", event);
+                svg.event(self.target, "mouseup", event);
+                svg.event(self.target, "click", event);
             }
             self.drag = null;
         };
@@ -142,7 +142,7 @@ function SVGGlobalHandler() {
 
         var onmouseoutHandler = function (event) {
             if (self.drag) {
-                svg.getSvgr().event(self.target.component, "mouseup", event);
+                svg.event(self.target, "mouseup", event);
             }
             //if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
             //    self.target.component.listeners.mouseup(event);
