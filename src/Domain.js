@@ -268,7 +268,7 @@ function Domain() {
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
-                    case (myLibraryGame.tabLib[0].label):
+                    case (formation.library.tabLib[0].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
                             var newQuizz = new Quizz(defaultQuizz, false, formation);
                             formation.gamesCounter.quizz++;
@@ -283,7 +283,7 @@ function Domain() {
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
                         }
                         break;
-                    case (myLibraryGame.tabLib[1].label):
+                    case (formation.library.tabLib[1].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
                             var newBd = new Bd({}, formation);
                             formation.gamesCounter.bd++;
@@ -370,7 +370,7 @@ function Domain() {
         self.formationInfoManipulator = new Manipulator();
         self.graphManipulator = new Manipulator(self);
 
-        self.library = new Library(myLibraryGame);
+        self.library = new Library(myLibraryGames);
         self.library.formation = self;
 
         self.gamesLibraryManipulator = self.library.libraryManipulator;
