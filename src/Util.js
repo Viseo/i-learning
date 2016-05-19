@@ -339,7 +339,6 @@ function SVGUtil() {
         var target = drawing.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
-        sender.linkedAnswer.correct = !sender.correct;
         sender.correct = !sender.correct;
         sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
         updateAllCheckBoxes(sender);
@@ -347,14 +346,13 @@ function SVGUtil() {
 
     checkAllCheckBoxes = function (sender) {
         var allNotChecked = true;
-        sender.parent.linkedQuestion.rightAnswers = [];
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement) {
+        sender.editor.linkedQuestion.rightAnswers = [];
+        sender.editor.tabAnswer.forEach(function (answer) {
+            if (answer.editable) {
                 if (answer.correct) {
                     allNotChecked = false;
-                    //rightAnswers.push(answer.linkedAnswer);
-                    answer.linkedAnswer.correct = true;
-                    sender.parent.linkedQuestion.rightAnswers.push(answer.linkedAnswer);
+                    answer.correct = true;
+                    sender.editor.linkedQuestion.rightAnswers.push(answer);
                 }
             }
         });
@@ -376,10 +374,10 @@ function SVGUtil() {
     };
 
     updateAllCheckBoxes = function (sender) {
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement && answer.obj.checkbox) {
+        sender.editor.tabAnswer.forEach(function (answer) {
+            if (answer.editable && answer.obj.checkbox) {
                 var allNotChecked = checkAllCheckBoxes(sender);
-                if (!answer.parent.multipleChoice && !answer.correct && !allNotChecked) {
+                if (!answer.editor.multipleChoice && !answer.correct && !allNotChecked) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
                     //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
                     svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
@@ -409,7 +407,7 @@ function SVGUtil() {
         var allNotChecked = true;
 
         allNotChecked = checkAllCheckBoxes(sender);
-        if (!sender.parent.multipleChoice && !sender.correct && !allNotChecked) {
+        if (!sender.editor.multipleChoice && !sender.correct && !allNotChecked) {
             sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
         } else {
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);
@@ -1955,7 +1953,7 @@ function Bdd() {
             // Check 1 Correct Answer:
             var correctAnswers = 0;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     if (el.correct) {
                         correctAnswers++;
                     }
@@ -1970,7 +1968,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });
@@ -1997,7 +1995,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });
