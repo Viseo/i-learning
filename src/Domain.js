@@ -89,12 +89,9 @@ function Domain() {
 
     /**
      *
-     * @param label : texte à afficher pour la réponse
-     * @param imageSrc : lien relatif vers l'image. Peut-être vide/null/indéfini si aucune image
-     * @param correct : booléen qui indique si la réponse est correcte
-     * @param colorBordure : objet de 3 éléments (r, g, b) correspondant aux composantes couleur de la bordure associée à la réponse
-     * @param bgColor : objet de 3 élements (r, g, b) correspondant aux composantes couleur du fond
      * @constructor
+     * @param answerParameters
+     * @param parent
      */
     Answer = function (answerParameters, parent) {
         var self = this;
@@ -131,6 +128,29 @@ function Domain() {
 
         self.bordure = null;
         self.content = null;
+
+        self.isEditable = function(editor, editable = true) {
+            self.editable = editable;
+            self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
+            self._acceptDrop = editable;
+            self.editor = editor;
+            self.checkInputContentArea = editable ? function (objCont) {
+                if (objCont.contentarea.value.match(REGEX)) {
+                    self.label = objCont.contentarea.value;
+                    objCont.remove();
+                    objCont.contentarea.onblur = objCont.onblur;
+                    objCont.contentarea.style.border = "none";
+                    objCont.contentarea.style.outline = "none";
+                } else {
+                    objCont.display();
+                    objCont.contentarea.onblur = function () {
+                        objCont.contentarea.value = "";
+                        objCont.onblur();
+                        objCont.remove();
+                    }
+                }
+            } : null;
+        };
     };
 
 //////////////////// end of Answer.js ////////////////
@@ -224,15 +244,14 @@ function Domain() {
                             target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
                             target.parent.parentManip.parentObject.parent.displayQuestionsPuzzle(null, null, null, null, target.parent.parentManip.parentObject.parent.questionPuzzle.startPosition);
                             break;
-                        case target.parent.parentManip.parentObject instanceof AnswerElement:
-                            target.parent.parentManip.parentObject.linkedAnswer.image = newQuest.image;
-                            target.parent.parentManip.parentObject.linkedAnswer.imageSrc = newQuest.image.src;
+                        case target.parent.parentManip.parentObject.editable:
+                            target.parent.parentManip.parentObject.image = newQuest.image;
+                            target.parent.parentManip.parentObject.imageSrc = newQuest.image.src;
                             break;
                     }
                     target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                     target.parent.parentManip.ordonator.set(1, oldQuest.content);
-                }
-                else {
+                } else {
                     var formation;
                     var dropLocation = target.parent.parentManip.parentObject;
                     if(dropLocation instanceof Formation){
@@ -244,8 +263,8 @@ function Domain() {
                             var level = dropLocation;
                             formation = level.parentFormation;
                             formation.targetLevelIndex = formation.levelsTab.indexOf(level);
+                        }
                     }
-                }
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
@@ -283,7 +302,7 @@ function Domain() {
 
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
-        }
+            }
             self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
         };
     };
@@ -314,80 +333,34 @@ function Domain() {
         self.parent = parent;
     };
 
-    AnswerElement = function (answer, parent) {
-        var self = this;
-
-        self.manipulator = new Manipulator(self);
-        self.linkedAnswer = answer;
-        self.isValidInput = true;
-        self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
-        self._acceptDrop = true;
-
-        if (answer) {
-            self.label = answer.label;
-            answer.fontSize && (self.fontSize = answer.fontSize);
-            if (typeof answer.correct !== 'undefined') {
-                self.correct = answer.correct;
-            } else {
-                self.correct = false;
-            }
-            answer.font && (self.font = answer.font);
-        } else {
-            self.label = "";
-            self.fontSize = 20;
-            self.correct = false;
-            self.font = "Arial";
-            self.colorBordure = myColors.black;
-            self.bgColor = myColors.white;
-        }
-        self.parent = parent;
-
-        self.checkInputContentArea = function (objCont) {
-            if (objCont.contentarea.value.match(REGEX)) {
-                self.label = objCont.contentarea.value;
-                objCont.remove();
-                objCont.contentarea.onblur = objCont.onblur;
-                objCont.contentarea.style.border = "none";
-                objCont.contentarea.style.outline = "none";
-            } else {
-                objCont.display();
-                objCont.contentarea.onblur = function () {
-                    objCont.contentarea.value = "";
-                    objCont.onblur();
-                    objCont.remove();
-                }
-            }
-        };
-    };
-
 //////////////////////// end of EmptyElement.js //////////////////////
 
 /////////////////////// Formation.js /////////////////////
-var Level = function(formation, gamesTab){
-    var self = this;
-    self.parentFormation = formation;
-    self.manipulator = new Manipulator(self);
-    self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
-    gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
-    self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
-    self.y = (self.index-1) * self.parentFormation.levelHeight;
-    self.obj = null;
-    self.removeGame = function(index){
-        if(!index){
-            self.gamesTab.pop();
-        }else{
-            self.gamesTab[index].splice(index, 1);
-        }
+    var Level = function(formation, gamesTab){
+        var self = this;
+        self.parentFormation = formation;
+        self.manipulator = new Manipulator(self);
+        self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
+        gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+        self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
+        self.y = (self.index-1) * self.parentFormation.levelHeight;
+        self.obj = null;
+        self.removeGame = function(index){
+            if(!index){
+                self.gamesTab.pop();
+            }else{
+                self.gamesTab[index].splice(index, 1);
+            }
+        };
+        self.addGame = function(game, index){
+            if(!index){
+                self.gamesTab.push(game);
+            }else{
+                self.gamesTab.splice(index, 0, game);
+            }
+        };
+        return self;
     };
-    self.addGame = function(game, index){
-        if(!index){
-            self.gamesTab.push(game);
-        }else{
-            self.gamesTab.splice(index, 0, game);
-        }
-    };
-    return self;
-};
 
     Formation = function (formation) {
         var self = this;
@@ -811,7 +784,8 @@ var Level = function(formation, gamesTab){
             }
             self.tabAnswer = [];
             quest.tabAnswer.forEach(function (answer) {
-                self.tabAnswer.push(new AnswerElement(answer, self));
+                answer.isEditable(self);
+                self.tabAnswer.push(answer);
             });
             self.quizzName = quest.parentQuizz.title;
             self.label = quest.label;
@@ -833,7 +807,10 @@ var Level = function(formation, gamesTab){
         if (!question) {
             // init default : 2 empty answers
 
-            self.tabAnswer = [new AnswerElement(null, self), new AnswerElement(null, self)];
+            self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
+            self.tabAnswer.forEach(function (answer) {
+                answer.isEditable(self);
+            });
             self.quizzName = "";
             self.label = "";
             self.rightAnswers = [];
@@ -995,7 +972,7 @@ var Level = function(formation, gamesTab){
          * @param color
          */
 
-            // !_! bof, y'a encore des display appelés ici
+        // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
 
             if (self.currentQuestionIndex !== -1 && !self.previewMode) {
