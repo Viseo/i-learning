@@ -22,7 +22,7 @@ if(typeof Gui != "undefined") {
     }
 }
 function setGui(_gui){
-  gui = _gui;
+    gui = _gui;
 };
 
 function setSvg(_svg) {
@@ -315,9 +315,9 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-        //var clone = function (object) {
-        //    return JSON.parse(JSON.stringify(object));
-        //};
+    //var clone = function (object) {
+    //    return JSON.parse(JSON.stringify(object));
+    //};
 
 
     getComplementary = function (tab) {
@@ -339,7 +339,6 @@ function SVGUtil() {
         var target = drawing.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
-        sender.linkedAnswer.correct = !sender.correct;
         sender.correct = !sender.correct;
         sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
         updateAllCheckBoxes(sender);
@@ -347,14 +346,13 @@ function SVGUtil() {
 
     checkAllCheckBoxes = function (sender) {
         var allNotChecked = true;
-        sender.parent.linkedQuestion.rightAnswers = [];
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement) {
+        sender.editor.linkedQuestion.rightAnswers = [];
+        sender.editor.tabAnswer.forEach(function (answer) {
+            if (answer.editable) {
                 if (answer.correct) {
                     allNotChecked = false;
-                    //rightAnswers.push(answer.linkedAnswer);
-                    answer.linkedAnswer.correct = true;
-                    sender.parent.linkedQuestion.rightAnswers.push(answer.linkedAnswer);
+                    answer.correct = true;
+                    sender.editor.linkedQuestion.rightAnswers.push(answer);
                 }
             }
         });
@@ -376,10 +374,10 @@ function SVGUtil() {
     };
 
     updateAllCheckBoxes = function (sender) {
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement && answer.obj.checkbox) {
+        sender.editor.tabAnswer.forEach(function (answer) {
+            if (answer.editable && answer.obj.checkbox) {
                 var allNotChecked = checkAllCheckBoxes(sender);
-                if (!answer.parent.multipleChoice && !answer.correct && !allNotChecked) {
+                if (!answer.editor.multipleChoice && !answer.correct && !allNotChecked) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
                     //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
                     svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
@@ -409,7 +407,7 @@ function SVGUtil() {
         var allNotChecked = true;
 
         allNotChecked = checkAllCheckBoxes(sender);
-        if (!sender.parent.multipleChoice && !sender.correct && !allNotChecked) {
+        if (!sender.editor.multipleChoice && !sender.correct && !allNotChecked) {
             sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
         } else {
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);
@@ -596,8 +594,8 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-                if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
-            //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
+            if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
+                //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -749,54 +747,21 @@ function SVGUtil() {
         return chevron;
     };
 
-    //Function.prototype.clone = function () {
-    //    var that = this;
-    //    var temp = function temporary() {
-    //        return that.apply(this, arguments);
-    //    };
-    //    for (var key in this) {
-    //        if (this.hasOwnProperty(key)) {
-    //            temp[key] = this[key];
-    //        }
-    //    }
-    //    return temp;
-    //};
-
-/// Modifying Raphael.js prototype to add Local/GlobalPoint to various elements
-
-/// Shape, commun à tout le monde
-
-
-    //function getPoint(args) {
-    //    if (args[0] !== undefined && (typeof args[0] === 'number')) {
-    //        return {x: args[0], y: args[1]}
-    //    }
-    //    else {
-    //        return arguments[0];
-    //    }
-    //}
-
-
     manageDnD = function (svgItem, manipulator) {
         var ref;
         var mousedownHandler = function (event) {
-            event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
+            event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
             ref = svgItem.localPoint(event.clientX, event.clientY);
-            svg.addEvent(svgItem, "mousemove", mousemoveHandler);// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
+            svg.addEvent(svgItem, "mousemove", mousemoveHandler);
 
             svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //svgItem.component.target && svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //runtime && runtime.addEvent(svgItem, "mouseup", mouseupHandler);
         };
         var mousemoveHandler = function (event) {
             var mouse = svgItem.localPoint(event.clientX, event.clientY);
             var dx = mouse.x - ref.x;
             var dy = mouse.y - ref.y;
 
-            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
-            //if (self.callback) {
-            //    self.callback(/*self.point*/);
-            //}
+            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
             return true;
         };
         var mouseupHandler = function (event) {
@@ -1955,7 +1920,7 @@ function Bdd() {
             // Check 1 Correct Answer:
             var correctAnswers = 0;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     if (el.correct) {
                         correctAnswers++;
                     }
@@ -1970,7 +1935,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });
@@ -1997,7 +1962,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });

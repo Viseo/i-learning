@@ -21,7 +21,11 @@ function setRuntime(_runtime){
 }
 
 function AnswerDisplay (x, y, w, h) {
-
+    var self = this;
+    if(this.editable) {
+        answerEditableDisplay(x, y, w, h);
+        return;
+    }
     if(typeof x !=='undefined'){
         this.x=x;
     }
@@ -65,6 +69,107 @@ function AnswerDisplay (x, y, w, h) {
     }
     this.manipulator.translator.move(this.x,this.y);
 
+    function answerEditableDisplay(x, y, w, h) {
+        self.checkboxSize = h*0.2;
+        var showTitle = function () {
+            var text = (self.label) ? self.label : self.labelDefault;
+            var color = (self.label) ? myColors.black : myColors.grey;
+            if(self.image){
+                self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+            }
+            else{
+                self.obj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
+            }
+            self.obj.cadre.fillOpacity(0.001);
+            self.obj.content.color(color);
+            self.obj.cadre._acceptDrop = true;
+            self.obj.content._acceptDrop = true;
+            self.editor.puzzle.puzzleManipulator.translator.move(0, self.editor.toggleButtonHeight-MARGIN);
+            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+        };
+
+        var dblclickEdition = function () {
+            var contentarea = document.createElement("textarea");
+            contentarea.value = self.label;
+            contentarea.width = w;
+            contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
+
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
+            self.manipulator.ordonator.unset(1, self.obj.content);
+            var contentareaStyle = {
+                toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
+                leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
+                height:(self.image) ? contentarea.height : (h*.5),
+                width:self.obj.cadre.width*5/6
+            };
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
+
+            var body = document.getElementById("content");
+            body.appendChild(contentarea).focus();
+
+            var removeErrorMessage = function () {
+                self.answerNameValidInput = true;
+                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(5);
+                self.obj.cadre.color(myColors.white, 1, myColors.black);
+            };
+
+            var displayErrorMessage = function () {
+                removeErrorMessage();
+                self.obj.cadre.color(myColors.white, 2, myColors.red);
+                var bibRatio = 0.2;
+                var previewButtonHeightRatio = 0.1;
+                var marginErrorMessagePreviewButton = 0.03;
+                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
+                var anchor = 'middle';
+                self.errorMessage = new svg.Text(REGEXERROR)
+                    .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
+                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                self.editor.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
+                contentarea.focus();
+                self.answerNameValidInput = false;
+            };
+
+            var onblur = function () {
+                self.answerNameValidInput && (self.label = contentarea.value);
+                contentarea.remove();
+                showTitle();
+                if(typeof self.obj.checkbox === 'undefined') {
+                    self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+                    self.obj.checkbox.answerParent = self;
+                }
+            };
+            contentarea.oninput = function () {
+                self.checkInputContentArea({
+                    contentarea: contentarea,
+                    border: self.obj.cadre,
+                    onblur: onblur,
+                    remove: removeErrorMessage,
+                    display: displayErrorMessage
+                });
+            };
+
+            contentarea.onblur = onblur;
+            self.checkInputContentArea({
+                contentarea: contentarea,
+                border: self.label.cadre,
+                onblur: onblur,
+                remove: removeErrorMessage,
+                display: displayErrorMessage
+            });
+        };
+
+        self.manipulator.flush();
+        showTitle();
+        if(typeof self.obj.checkbox === 'undefined') {
+            self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.obj.checkbox.answerParent = self;
+        }
+        self.manipulator.ordonator.children.forEach(function(e) {
+            e._acceptDrop = true;
+        });
+    }
 }
 
 function LibraryDisplay(x,y,w,h){
@@ -224,7 +329,8 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
 
                 self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
-                self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
+                newAnswer.isEditable(self);
+                self.parent.tabAnswer.push(newAnswer);
 
                 if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
                     self.parent.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
@@ -261,113 +367,6 @@ function AddEmptyElementDisplay(x, y, w, h) {
     svg.addEvent(self.plus, "dblclick", dblclickEdition);
     svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
     svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
-}
-
-function AnswerElementDisplay(x, y, w, h) {
-    var self = this;
-    self.checkboxSize = h*0.2;
-    var showTitle = function () {
-        var text = (self.label) ? self.label : self.labelDefault;
-        var color = (self.label) ? myColors.black : myColors.grey;
-        if(self.linkedAnswer.image){
-            self.img = self.linkedAnswer.image;
-            self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
-        }
-        else{
-            self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
-            self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
-        }
-        self.obj.cadre.fillOpacity(0.001);
-        self.obj.content.color(color);
-        self.obj.cadre._acceptDrop = true;
-        self.obj.content._acceptDrop = true;
-        self.parent.puzzle.puzzleManipulator.translator.move(0, self.parent.toggleButtonHeight-MARGIN);
-        svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
-    };
-
-    var dblclickEdition = function () {
-        var contentarea = document.createElement("textarea");
-        contentarea.value = self.label;
-        contentarea.width = w;
-        //self.obj.content.component.getBoundingClientRect && (contentarea.height = self.obj.content.component.getBoundingClientRect().height);
-        //self.obj.content.component.target && (contentarea.height = self.obj.content.component.target.getBoundingClientRect().height);
-        //runtime && (contentarea.height = runtime.boundingRect(self.obj.content.component).height);
-        contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
-
-        contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-        self.manipulator.ordonator.unset(1, self.obj.content);
-        var contentareaStyle = {
-            toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
-            leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
-            height:(self.linkedAnswer.image) ? contentarea.height : (h*.5),
-            width:self.obj.cadre.width*5/6
-        };
-        contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
-
-        var body = document.getElementById("content");
-        body.appendChild(contentarea).focus();
-
-        var removeErrorMessage = function () {
-            self.answerNameValidInput = true;
-            self.errorMessage && self.parent.questionCreatorManipulator.ordonator.unset(5);
-            self.obj.cadre.color(myColors.white, 1, myColors.black);
-        };
-
-        var displayErrorMessage = function () {
-            removeErrorMessage();
-            self.obj.cadre.color(myColors.white, 2, myColors.red);
-            var bibRatio = 0.2;
-            var previewButtonHeightRatio = 0.1;
-            var marginErrorMessagePreviewButton = 0.03;
-            var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
-            var anchor = 'middle';
-            self.errorMessage = new svg.Text(REGEXERROR)
-                .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
-            self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
-            contentarea.focus();
-            self.answerNameValidInput = false;
-        };
-
-        var onblur = function () {
-            self.answerNameValidInput && (self.linkedAnswer.label = contentarea.value);
-            contentarea.remove();
-            showTitle();
-            if(typeof self.obj.checkbox === 'undefined') {
-                self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-                self.obj.checkbox.answerParent = self;
-            }
-        };
-        contentarea.oninput = function () {
-            self.checkInputContentArea({
-                contentarea: contentarea,
-                border: self.obj.cadre,
-                onblur: onblur,
-                remove: removeErrorMessage,
-                display: displayErrorMessage
-            });
-        };
-
-        contentarea.onblur = onblur;
-        self.checkInputContentArea({
-            contentarea: contentarea,
-            border: self.label.cadre,
-            onblur: onblur,
-            remove: removeErrorMessage,
-            display: displayErrorMessage
-        });
-    };
-
-    self.manipulator.flush();
-    showTitle();
-    if(typeof self.obj.checkbox === 'undefined') {
-        self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-        self.obj.checkbox.answerParent = self;
-    }
-    self.manipulator.ordonator.children.forEach(function(e) {
-        e._acceptDrop = true;
-    });
 }
 
 function FormationDisplayMiniature (w,h) {
@@ -716,50 +715,50 @@ function FormationsManagerDisplay() {
             return 0
         });
     }
-        self.displayHeaderFormations();
-        self.displayFormations = function () {
-            var posx = self.initialFormationsPosX;
-            var posy = MARGIN;
-            var count = 0;
-            for (var i = 0; i < self.formations.length; i++) {
-                if (i !== 0) {
-                    posx += (self.tileWidth + 2 * MARGIN);
-                }
-                if (count > (self.rows - 1)) {
-                    count = 0;
-                    posy += (self.tileHeight + 2 * MARGIN);
-                    posx = self.initialFormationsPosX;
-                }
-
-                self.formations[i].parent = self;
-                self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
-                self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-                self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
-                (function (element) {
-                    if (element.miniature.cadre) {
-                        svg.addEvent(element.miniature.cadre, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.content) {
-                        svg.addEvent(element.miniature.content, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.image) {
-                        svg.addEvent(element.miniature.image, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                })(self.formations[i]);
-                count++;
+    self.displayHeaderFormations();
+    self.displayFormations = function () {
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
+        var count = 0;
+        for (var i = 0; i < self.formations.length; i++) {
+            if (i !== 0) {
+                posx += (self.tileWidth + 2 * MARGIN);
             }
-        };
-        self.displayFormations();
+            if (count > (self.rows - 1)) {
+                count = 0;
+                posy += (self.tileHeight + 2 * MARGIN);
+                posx = self.initialFormationsPosX;
+            }
+
+            self.formations[i].parent = self;
+            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+
+            (function (element) {
+                if (element.miniature.cadre) {
+                    svg.addEvent(element.miniature.cadre, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.content) {
+                    svg.addEvent(element.miniature.content, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.image) {
+                    svg.addEvent(element.miniature.image, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+            })(self.formations[i]);
+            count++;
+        }
+    };
+    self.displayFormations();
 }
 
 function HeaderDisplay () {
@@ -1195,22 +1194,22 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         var questionType = self.target.parent.children[1].messageText;
         if (self.multipleChoice){
             self.tabAnswer.forEach(function(answer){
-                if(answer instanceof AnswerElement){
+                if(answer.editable){
                     answer.multipleAnswer = answer.correct;
-                    answer.linkedAnswer.parent.multipleChoice=answer.correct;
+                    answer.parent.multipleChoice=answer.correct;
                     (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
                     answer.correct = answer.simpleAnswer;
-                    answer.linkedAnswer.correct = answer.simpleAnswer;
+                    answer.correct = answer.simpleAnswer;
                 }
             });
         } else {
             self.tabAnswer.forEach(function(answer){
-                if(answer instanceof AnswerElement){
+                if(answer.editable){
                     answer.simpleAnswer = answer.correct;
-                    answer.linkedAnswer.parent.multipleChoice=!answer.correct;
+                    answer.parent.multipleChoice=!answer.correct;
                     (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
                     answer.correct = answer.multipleAnswer;
-                    answer.linkedAnswer.correct = answer.multipleAnswer;
+                    answer.correct = answer.multipleAnswer;
                 }
             });
         }
@@ -1229,7 +1228,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
                 answer.obj.checkbox.answerParent = answer;
 
                 answer.correct = false;
-                answer.linkedAnswer.correct = false;
+                answer.correct = false;
             }
         });
         self.displayToggleButton(x, y, w, h, questionType);
@@ -1689,7 +1688,6 @@ var AdminGUI = function (){
     Library.prototype.display = LibraryDisplay;
     Header.prototype.display = HeaderDisplay;
     AddEmptyElement.prototype.display = AddEmptyElementDisplay;
-    AnswerElement.prototype.display = AnswerElementDisplay;
     Formation.prototype.displayMiniature = FormationDisplayMiniature;
     Formation.prototype.displayFormation = FormationDisplayFormation;
     Formation.prototype.removeErrorMessage = FormationRemoveErrorMessage;
