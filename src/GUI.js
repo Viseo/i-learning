@@ -374,20 +374,14 @@ function FormationDisplayMiniature (w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
+    var icon = self.status.icon(self.parent.iconeSize);
 
-    if (self.status === statusEnum.Published) {
-        var icon = self.status.icon(0, 0, self.parent.iconeSize);
-        self.iconManipulator.ordonator.set(5, icon.square);
-        self.iconManipulator.ordonator.set(6, icon.check);
-        self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+    for(var i=0; i<icon.elements.length; i++)
+    {
+        self.iconManipulator.ordonator.set(i+5,icon.elements[i]);
     }
-    else if (self.status === statusEnum.Edited) {
-        var iconExclamation = self.status.icon(self.parent.iconeSize);
-        self.iconManipulator.ordonator.set(5, iconExclamation.circle);
-        self.iconManipulator.ordonator.set(6, iconExclamation.exclamation);
-        self.iconManipulator.ordonator.set(7, iconExclamation.dot);
-        self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
-    }
+    self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+
 }
 
 function FormationDisplayFormation(){
@@ -409,24 +403,13 @@ function FormationDisplayFormation(){
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-        //self.formationLabel.content.component.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.getBoundingClientRect().height);
-        ////self.formationLabel.content.component.getBoundingClientRect && (self.labelWidth = self.formationLabel.content.component.getBoundingClientRect().width + 2 * MARGIN);
-        //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.target.getBoundingClientRect().height);
-        ////self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBoundingClientRect().width) + 2 * MARGIN);
-        //runtime && (self.labelHeight = runtime.boundingRect(self.formationLabel.content.component).height);
         self.labelHeight = svg.getSvgr().boundingRect(self.formationLabel.content.component).height;
 
         self.formationTitleWidth = 102;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        //self.title.component.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        //domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
         self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
 
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-        //self.title.component.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        //runtime && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
