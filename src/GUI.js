@@ -279,29 +279,17 @@ function LibraryDisplay(x,y,w,h){
                 }
                 self.draggedObjectLabel = "";
             };
-            drawings.glass.component.listeners && drawings.glass.component.listeners.mousedown(event);
-            drawings.glass.component.target && drawings.glass.component.target.listeners && drawings.glass.component.target.listeners.mousedown(event);
-
-            img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
-            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
-            runtime && img.component.listeners.mouseup && runtime.removeEvent(img.component, 'mouseup', img.component.listeners.mouseup);
-
-
+            svg.event(drawings.glass,"mousedown",event);
+            img.component.listeners ? svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup):svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
             svg.addEvent(img, 'mouseup', mouseupHandler);
-            //runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
                 textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
                 textObject.content.component.target && textObject.content.component.target.listeners && textObject.content.component.target.listeners.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.listeners.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                textObject.content.component.target && svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                runtime && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
-        //domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
-
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-        //domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
 
     });
 }
@@ -424,7 +412,6 @@ function FormationDisplayFormation(){
         textarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            //leftpx: (self.title.component.getBoundingClientRect ? self.title.component.getBoundingClientRect().width : self.title.component.target.getBoundingClientRect().width+ 2 * MARGIN + 1),
             leftpx: (svg.getSvgr().boundingRect(self.title.component).width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
@@ -499,24 +486,10 @@ function FormationDisplayFormation(){
             width: svg.getSvgr().boundingRect(level.obj.content.component).width,
             height: svg.getSvgr().boundingRect(level.obj.content.component).height
         });
-        //level.obj.content.component.getBoundingClientRect && (self.textLevelNumberDimensions = {
-        //    width: level.obj.content.component.getBoundingClientRect().width,
-        //    height:level.obj.content.component.getBoundingClientRect().height
-        //});
-        //level.obj.content.component.target && (self.textLevelNumberDimensions = {
-        //    width: level.obj.content.component.target.getBoundingClientRect().width,
-        //    height: level.obj.content.component.target.getBoundingClientRect().height
-        //});
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-
         level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, self.messageDragDropMargin);
-        //level.obj.content.component.getBoundingClientRect && level.obj.content.position(level.obj.content.component.getBoundingClientRect().width, self.messageDragDropMargin);
-        //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
         self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
-        //self.title.component.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.getBoundingClientRect().height + 3*self.messageDragDropMargin);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.target.getBoundingClientRect().height + 3*self.messageDragDropMargin);
-
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.manipulator.first.move(-w/2, -h/2+level.y);
@@ -536,9 +509,6 @@ function FormationDisplayFormation(){
 
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        //self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.libraryWidth, self.title.component.getBoundingClientRect().height);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.libraryWidth, self.title.component.target.getBoundingClientRect().height);
-        //runtime && self.clippingManipulator.translator.move(self.libraryWidth, runtime.boundingRect(self.title.component).height);
         self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
 
@@ -581,9 +551,6 @@ function FormationDisplayFormation(){
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        //(self.levelsTab.length !== 0) && runtime && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
 
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
@@ -1031,7 +998,6 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 self.tileHeight = tmpTileHeight;
             }
         }
-        //self.questionManipulator.last.add(self.answersManipulator.first);
         self.questionManipulator.ordonator.set(7, self.answersManipulator.first);
 
         self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
@@ -1050,8 +1016,6 @@ function QuestionDisplayAnswers(x, y, w, h) {
             }
 
             self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
-            //self.answersManipulator.ordonator.set(i, self.tabAnswer[i].manipulator.first);
-
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
@@ -1511,9 +1475,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        //self.quizzLabel.content.component.getBoundingClientRect && (self.quizzNameHeight = self.quizzLabel.content.component.getBoundingClientRect().height);
-        //self.quizzLabel.content.component.target && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBoundingClientRect().height);
-        //runtime && (self.quizzNameHeight = runtime.boundingRect(self.quizzLabel.content.component).height);
         self.quizzNameHeight = svg.getSvgr().boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
@@ -1528,8 +1489,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var dblclickEdition = function (event) {
         var width;
-        //self.quizzLabel.content.component.getBoundingClientRect && (width = self.quizzLabel.content.component.getBoundingClientRect().width);
-        //runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
         width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
 
         self.quizzInfoManipulator.ordonator.unset(1);
