@@ -15,7 +15,7 @@ setGlobalVariables = function(gv){
 
 setRuntime = function(_runtime){
     runtime = _runtime;
-}
+};
 
 function setSvg(_svg) {
     svg = _svg;
@@ -51,7 +51,7 @@ function Domain() {
         count: 0,
         interval: function (handler, timer) {
             var interval = {
-                id:"interval"+this.count,
+                id:"interval" + this.count,
                 next: handler,
                 timer: timer
             };
@@ -64,7 +64,7 @@ function Domain() {
         },
         timeout: function (handler, timer) {
             var timeout = {
-                id:"timeout"+this.count,
+                id:"timeout" + this.count,
                 next: function () {
                     handler();
                     delete this;
@@ -79,9 +79,7 @@ function Domain() {
     runtime && (iRuntime = ImageRuntime);
     runtime && (aRuntime = AsyncTimerRuntime);
     var imageController = ImageController(iRuntime);
-    //var asyncTimerController=AsyncTimerController();
     asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
-
 
 ////////////// Answer.js /////////////////
 
@@ -137,7 +135,7 @@ function Domain() {
 
 //////////////////// end of Answer.js ////////////////
 
-/////////////////// BibImage.js //////////////////
+/////////////////// LibraryImage.js //////////////////
 
     /**
      * Created by ABO3476 on 15/03/2016.
@@ -149,10 +147,10 @@ function Domain() {
         self.libraryManipulator = new Manipulator(self);
         self.title = lib.title;
 
-        self.tabImgBib = [];
+        self.tabImgLibrary = [];
         self.tabLib = [];
         lib.tabLib && (self.tabLib = lib.tabLib);
-        self.bibManipulators = [];
+        self.libraryManipulators = [];
 
         self.imageWidth = 50;
         self.imageHeight = 50;
@@ -164,7 +162,7 @@ function Domain() {
                 var img = imageController.getImage(self.tabLib[i].imgSrc, function () {
                     this.imageLoaded = true;
                 });
-                self.tabImgBib[i] = img;
+                self.tabImgLibrary[i] = img;
             }
         }
 
@@ -180,7 +178,7 @@ function Domain() {
         self.run = function (x, y, w, h, callback) {
             self.intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
-                self.tabImgBib.forEach(function (e) {
+                self.tabImgLibrary.forEach(function (e) {
                     loaded = loaded && e.imageLoaded;
                 });
                 if (loaded) {
@@ -189,7 +187,7 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                runtime && self.tabImgBib.forEach(function(e){
+                runtime && self.tabImgLibrary.forEach(function(e){
                     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
                 });
                 if (runtime){
@@ -251,7 +249,7 @@ function Domain() {
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
-                    case (myBibJeux.tabLib[0].label):
+                    case (myLibraryGame.tabLib[0].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
                             var newQuizz = new Quizz(defaultQuizz, false, formation);
                             formation.gamesCounter.quizz++;
@@ -266,7 +264,7 @@ function Domain() {
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
                         }
                         break;
-                    case (myBibJeux.tabLib[1].label):
+                    case (myLibraryGame.tabLib[1].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
                             var newBd = new Bd({}, formation);
                             formation.gamesCounter.bd++;
@@ -290,7 +288,7 @@ function Domain() {
         };
     };
 
-/////////////////// end of BibImage.js ///////////////
+/////////////////// end of LibraryImage.js ///////////////
 
 ////////////////// EmptyElement.js ///////////////
     /**
@@ -371,7 +369,7 @@ var Level = function(formation, gamesTab){
     self.manipulator = new Manipulator(self);
     self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
     gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
-    self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
+    self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
     self.y = (self.index-1) * self.parentFormation.levelHeight;
     self.obj = null;
     self.removeGame = function(index){
@@ -399,10 +397,10 @@ var Level = function(formation, gamesTab){
         self.formationInfoManipulator = new Manipulator();
         self.graphManipulator = new Manipulator(self);
 
-        self.bib = new Library(myBibJeux);
-        self.bib.formation = self;
+        self.library = new Library(myLibraryGame);
+        self.library.formation = self;
 
-        self.gamesLibraryManipulator = self.bib.libraryManipulator;
+        self.gamesLibraryManipulator = self.library.libraryManipulator;
         self.manipulator.last.add(self.gamesLibraryManipulator.first);
         self.manipulator.last.add(self.graphManipulator.first);
 
@@ -413,9 +411,9 @@ var Level = function(formation, gamesTab){
         self.deltaLevelWidthIncreased = 0;
 
         // WIDTH
-        self.bibWidthRatio = 0.15;
-        self.graphWidthRatio = 1 - self.bibWidthRatio;
-        self.bibWidth = drawing.width * self.bibWidthRatio;
+        self.libraryWidthRatio = 0.15;
+        self.graphWidthRatio = 1 - self.libraryWidthRatio;
+        self.libraryWidth = drawing.width * self.libraryWidthRatio;
         self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
         // HEIGHT
@@ -424,7 +422,7 @@ var Level = function(formation, gamesTab){
 
         self.graphElementSize = 100;
         self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
-        self.levelWidth = drawing.width - self.bibWidth-MARGIN;
+        self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
         self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
         self.x = MARGIN;
         self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
@@ -477,15 +475,15 @@ var Level = function(formation, gamesTab){
         self.clickToAdd = function () {
 
             self.mouseUpGraphBlock = function (event) {
-                self.bib.gameSelected && self.bib.dropAction(self.bib.gameSelected.cadre, event);
-                self.bib.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-                self.bib.gameSelected = null;
+                self.library.gameSelected && self.library.dropAction(self.library.gameSelected.cadre, event);
+                self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                self.library.gameSelected = null;
                 svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                 });
             };
-            if (self.bib.gameSelected) {
+            if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
@@ -620,7 +618,7 @@ var Level = function(formation, gamesTab){
      * Created by ABL3483 on 29/02/2016.
      */
 
-    Puzzle = function (lines, rows, questionsTab, cadreResult, reverseMode, parent) {
+    Puzzle = function (lines, rows, questionsTab, resultArea, reverseMode, parent) {
         var self = this;
 
         self.lines = lines;
@@ -798,12 +796,6 @@ var Level = function(formation, gamesTab){
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);
 
-        self.headerHeight = 0.1;
-        self.questionHeight = 0.2;
-        self.reponseHeight = 0.7;
-
-        //var haut = (window.innerHeight);
-        var haut = drawing.height;
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
 
@@ -942,39 +934,26 @@ var Level = function(formation, gamesTab){
         quizz.colorBordure ? (self.colorBordure = quizz.colorBordure) : (self.colorBordure = myColors.black);
         quizz.bgColor ? (self.bgColor = quizz.bgColor) : (self.bgColor = myColors.none);
 
-        self.cadreResult = {
+        self.resultArea= {
             x: drawing.width / 2,
             y: 220,
             w: drawing.width,
             h: 200
         };
 
-        self.cadreTitle = {
+        self.titleArea = {
             x: 0,
             y: 0,
             w: drawing.width,
             h: 200
         };
-        self.cadreQuestion = {
+        self.questionArea = {
             x: 0,
             y: 210,
             w: drawing.width,
             h: 200
         };
 
-        self.cadreBibImages = {
-            x: 0,
-            y: 210,
-            w: drawing.width,
-            h: 600
-        };
-
-        self.cadreBibJeux = {
-            x: 0,
-            y: 210,
-            w: drawing.width,
-            h: 600
-        };
 
         self.miniaturePosition = {x:0, y:0};
 
@@ -1030,33 +1009,33 @@ var Level = function(formation, gamesTab){
                     self.currentQuestionIndex = 0;//numéro de la question affichée
                     self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithImage);
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithoutImage);
-                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithImage);
-                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithoutImage);
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithImage);
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithoutImage);
 
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
 
                     self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
-                        self.cadreQuestion.w, self.questionHeight);
+                        self.questionArea.w, self.questionHeight);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
-                        self.cadreQuestion.w, self.responseHeight);
+                        self.questionArea.w, self.answerHeight);
                 }
             } else {
                 if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
                     self.currentQuestionIndex++;
                     self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithImage);
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithoutImage);
-                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithImage);
-                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.responseHeight = self.responseHeightWithoutImage);
+                    self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithImage);
+                    !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithoutImage);
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                     self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
-                        self.cadreQuestion.w, self.questionHeight);
+                        self.questionArea.w, self.questionHeight);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
-                        self.cadreQuestion.w, self.responseHeight);
+                        self.questionArea.w, self.answerHeight);
                 } else {//--> fin du tableau, dernière question
                     console.log("Final score: " + self.score);
-                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.cadreResult, null, self);
+                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
 
                     self.displayResult();
                 }
@@ -1122,7 +1101,7 @@ var Level = function(formation, gamesTab){
         }
 
         self.questionCreator = new QuestionCreator(self, self.quizz.tabQuestions[self.indexOfEditedQuestion]);
-        self.bib = new Library(myBibImage);
+        self.library = new Library(myLibraryImage);
 
         self.quizz.tabQuestions[0].selected = true;
         self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
@@ -1135,7 +1114,7 @@ var Level = function(formation, gamesTab){
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
 
-        self.libraryIManipulator = self.bib.libraryManipulator;
+        self.libraryIManipulator = self.library.libraryManipulator;
         self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
 
         self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
@@ -1144,22 +1123,22 @@ var Level = function(formation, gamesTab){
         self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
 
         // WIDTH
-        self.bibWidthRatio = 0.15;
-        self.questCreaWidthRatio = 1 - self.bibWidthRatio;
+        self.libraryWidthRatio = 0.15;
+        self.questCreaWidthRatio = 1 - self.libraryWidthRatio;
 
-        self.bibWidth = drawing.width * self.bibWidthRatio;
+        self.libraryWidth = drawing.width * self.libraryWidthRatio;
         self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
 
         // HEIGHT
         self.quizzInfoHeightRatio = 0.05;
         self.questionsPuzzleHeightRatio = 0.25;
         self.questCreaHeightRatio = 0.57;
-        self.bibHeightRatio = self.questCreaHeightRatio;
+        self.libraryHeightRatio = self.questCreaHeightRatio;
         self.previewButtonHeightRatio = 0.1;
 
         self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
         self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-        self.bibHeight = drawing.height * self.bibHeightRatio;
+        self.libraryHeight = drawing.height * self.libraryHeightRatio;
         self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
         self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
 

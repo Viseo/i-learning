@@ -48,8 +48,8 @@ function admin() {
    quizz.run(50,10,1200,1200);*/
 
     /*
-    var bib=new Library(myBibImage);
-    bib.run(0,0,document.body.clientWidth,drawing.height);
+    var library=new Library(myBibImage);
+    library.run(0,0,document.body.clientWidth,drawing.height);
 */
 
     var param = {speed: 50, step: 10};

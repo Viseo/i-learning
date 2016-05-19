@@ -46,8 +46,8 @@ function main(targetQuizz) {
    quizz.run(50,10,1200,1200);*/
 
     /*
-    var bib=new Library(myBibImage);
-    bib.run(0,0,document.body.clientWidth,drawing.height);
+    var library=new Library(myBibImage);
+    library.run(0,0,document.body.clientWidth,drawing.height);
 */
 
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
@@ -105,14 +105,14 @@ function main(targetQuizz) {
 
         if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
             quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
-                quizz.cadreQuestion.w , quizz.questionHeight);
+                quizz.questionArea.w , quizz.questionHeight);
             quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
-                quizz.cadreQuestion.w , quizz.responseHeight);
+                quizz.questionArea.w , quizz.answerHeight);
         }else{
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
-            //quizz.puzzle.display(0, quizz.responseHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.responseHeight, quizz.puzzle.startPosition);
+            //quizz.puzzle.display(0, quizz.answerHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.answerHeight, quizz.puzzle.startPosition);
         }
 
     }
