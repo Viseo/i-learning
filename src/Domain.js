@@ -129,7 +129,7 @@ function Domain() {
         self.bordure = null;
         self.content = null;
 
-        self.isEditable = function(editor, editable = true) {
+        self.isEditable = function(editor, editable) {
             self.editable = editable;
             self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
             self._acceptDrop = editable;
@@ -784,7 +784,7 @@ function Domain() {
             }
             self.tabAnswer = [];
             quest.tabAnswer.forEach(function (answer) {
-                answer.isEditable(self);
+                answer.isEditable(self, true);
                 self.tabAnswer.push(answer);
             });
             self.quizzName = quest.parentQuizz.title;
@@ -809,7 +809,7 @@ function Domain() {
 
             self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
             self.tabAnswer.forEach(function (answer) {
-                answer.isEditable(self);
+                answer.isEditable(self, true);
             });
             self.quizzName = "";
             self.label = "";

@@ -328,7 +328,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
 
                 self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
-                newAnswer.isEditable(self);
+                newAnswer.isEditable(self, true);
                 self.parent.tabAnswer.push(newAnswer);
 
                 if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
