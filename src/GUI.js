@@ -715,50 +715,50 @@ function FormationsManagerDisplay() {
             return 0
         });
     }
-        self.displayHeaderFormations();
-        self.displayFormations = function () {
-            var posx = self.initialFormationsPosX;
-            var posy = MARGIN;
-            var count = 0;
-            for (var i = 0; i < self.formations.length; i++) {
-                if (i !== 0) {
-                    posx += (self.tileWidth + 2 * MARGIN);
-                }
-                if (count > (self.rows - 1)) {
-                    count = 0;
-                    posy += (self.tileHeight + 2 * MARGIN);
-                    posx = self.initialFormationsPosX;
-                }
-
-                self.formations[i].parent = self;
-                self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
-                self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-                self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
-                (function (element) {
-                    if (element.miniature.cadre) {
-                        svg.addEvent(element.miniature.cadre, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.content) {
-                        svg.addEvent(element.miniature.content, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.image) {
-                        svg.addEvent(element.miniature.image, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                })(self.formations[i]);
-                count++;
+    self.displayHeaderFormations();
+    self.displayFormations = function () {
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
+        var count = 0;
+        for (var i = 0; i < self.formations.length; i++) {
+            if (i !== 0) {
+                posx += (self.tileWidth + 2 * MARGIN);
             }
-        };
-        self.displayFormations();
+            if (count > (self.rows - 1)) {
+                count = 0;
+                posy += (self.tileHeight + 2 * MARGIN);
+                posx = self.initialFormationsPosX;
+            }
+
+            self.formations[i].parent = self;
+            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+
+            (function (element) {
+                if (element.miniature.cadre) {
+                    svg.addEvent(element.miniature.cadre, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.content) {
+                    svg.addEvent(element.miniature.content, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+                if (element.miniature.image) {
+                    svg.addEvent(element.miniature.image, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+
+            })(self.formations[i]);
+            count++;
+        }
+    };
+    self.displayFormations();
 }
 
 function HeaderDisplay () {

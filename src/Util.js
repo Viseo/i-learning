@@ -22,7 +22,7 @@ if(typeof Gui != "undefined") {
     }
 }
 function setGui(_gui){
-  gui = _gui;
+    gui = _gui;
 };
 
 function setSvg(_svg) {
@@ -315,9 +315,9 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-        //var clone = function (object) {
-        //    return JSON.parse(JSON.stringify(object));
-        //};
+    //var clone = function (object) {
+    //    return JSON.parse(JSON.stringify(object));
+    //};
 
 
     getComplementary = function (tab) {
@@ -594,8 +594,8 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-                if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
-            //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
+            if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
+                //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -747,54 +747,21 @@ function SVGUtil() {
         return chevron;
     };
 
-    //Function.prototype.clone = function () {
-    //    var that = this;
-    //    var temp = function temporary() {
-    //        return that.apply(this, arguments);
-    //    };
-    //    for (var key in this) {
-    //        if (this.hasOwnProperty(key)) {
-    //            temp[key] = this[key];
-    //        }
-    //    }
-    //    return temp;
-    //};
-
-/// Modifying Raphael.js prototype to add Local/GlobalPoint to various elements
-
-/// Shape, commun à tout le monde
-
-
-    //function getPoint(args) {
-    //    if (args[0] !== undefined && (typeof args[0] === 'number')) {
-    //        return {x: args[0], y: args[1]}
-    //    }
-    //    else {
-    //        return arguments[0];
-    //    }
-    //}
-
-
     manageDnD = function (svgItem, manipulator) {
         var ref;
         var mousedownHandler = function (event) {
-            event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
+            event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
             ref = svgItem.localPoint(event.clientX, event.clientY);
-            svg.addEvent(svgItem, "mousemove", mousemoveHandler);// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
+            svg.addEvent(svgItem, "mousemove", mousemoveHandler);
 
             svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //svgItem.component.target && svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //runtime && runtime.addEvent(svgItem, "mouseup", mouseupHandler);
         };
         var mousemoveHandler = function (event) {
             var mouse = svgItem.localPoint(event.clientX, event.clientY);
             var dx = mouse.x - ref.x;
             var dy = mouse.y - ref.y;
 
-            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
-            //if (self.callback) {
-            //    self.callback(/*self.point*/);
-            //}
+            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
             return true;
         };
         var mouseupHandler = function (event) {

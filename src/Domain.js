@@ -209,13 +209,13 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                runtime && self.tabImgBib.forEach(function(e){
-                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
-                });
-                if (runtime){
-                    self.display(x, y, w, h);
-                    callback();
-                }
+            runtime && self.tabImgBib.forEach(function(e){
+                imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
+            });
+            if (runtime){
+                self.display(x, y, w, h);
+                callback();
+            }
         };
 
         self.dropAction = function (element, event) {
@@ -251,10 +251,9 @@ function Domain() {
                             target.parent.parentManip.parentObject.imageSrc = newQuest.image.src;
                             break;
                     }
-                    target.parent.parentManip.ordonator.set(0, oldQuest.cadre); 
+                    target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                     target.parent.parentManip.ordonator.set(1, oldQuest.content);
-                }
-                else {
+                } else {
                     var formation;
                     var dropLocation = target.parent.parentManip.parentObject;
                     if(dropLocation instanceof Formation){
@@ -266,46 +265,46 @@ function Domain() {
                             var level = dropLocation;
                             formation = level.parentFormation;
                             formation.targetLevelIndex = formation.levelsTab.indexOf(level);
+                        }
                     }
-                }
 
-                var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
-                switch (objectToBeAddedLabel) {
-                    case (myBibJeux.tabLib[0].label):
-                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
-                            var newQuizz = new Quizz(defaultQuizz, false, formation);
-                            formation.gamesCounter.quizz++;
-                            newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                            newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
-                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
-                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                    var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
+                    switch (objectToBeAddedLabel) {
+                        case (myBibJeux.tabLib[0].label):
+                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
+                                var newQuizz = new Quizz(defaultQuizz, false, formation);
+                                formation.gamesCounter.quizz++;
+                                newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                                newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                                formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
+                                if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
+                                    formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                                }
                             }
-                        }
-                        else{
-                            formation.displayErrorMessage(formation.maxGameInARowMessage);
-                        }
-                        break;
-                    case (myBibJeux.tabLib[1].label):
-                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
-                            var newBd = new Bd({}, formation);
-                            formation.gamesCounter.bd++;
-                            newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
-                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
-                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                            else{
+                                formation.displayErrorMessage(formation.maxGameInARowMessage);
                             }
-                        }
-                        else {
-                            formation.displayErrorMessage(formation.maxGameInARowMessage);
-                        }
-                        break;
-                }
+                            break;
+                        case (myBibJeux.tabLib[1].label):
+                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
+                                var newBd = new Bd({}, formation);
+                                formation.gamesCounter.bd++;
+                                newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
+                                formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
+                                if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
+                                    formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
+                                }
+                            }
+                            else {
+                                formation.displayErrorMessage(formation.maxGameInARowMessage);
+                            }
+                            break;
+                    }
 
 
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
-        }
+            }
             self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
         };
     };
@@ -339,31 +338,31 @@ function Domain() {
 //////////////////////// end of EmptyElement.js //////////////////////
 
 /////////////////////// Formation.js /////////////////////
-var Level = function(formation, gamesTab){
-    var self = this;
-    self.parentFormation = formation;
-    self.manipulator = new Manipulator(self);
-    self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
-    gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
-    self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
-    self.y = (self.index-1) * self.parentFormation.levelHeight;
-    self.obj = null;
-    self.removeGame = function(index){
-        if(!index){
-            self.gamesTab.pop();
-        }else{
-            self.gamesTab[index].splice(index, 1);
-        }
+    var Level = function(formation, gamesTab){
+        var self = this;
+        self.parentFormation = formation;
+        self.manipulator = new Manipulator(self);
+        self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
+        gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+        self.x = self.parentFormation.bibWidth ? self.parentFormation.bibWidth : null; // Juste pour être sûr
+        self.y = (self.index-1) * self.parentFormation.levelHeight;
+        self.obj = null;
+        self.removeGame = function(index){
+            if(!index){
+                self.gamesTab.pop();
+            }else{
+                self.gamesTab[index].splice(index, 1);
+            }
+        };
+        self.addGame = function(game, index){
+            if(!index){
+                self.gamesTab.push(game);
+            }else{
+                self.gamesTab.splice(index, 0, game);
+            }
+        };
+        return self;
     };
-    self.addGame = function(game, index){
-        if(!index){
-            self.gamesTab.push(game);
-        }else{
-            self.gamesTab.splice(index, 0, game);
-        }
-    };
-    return self;
-};
 
     Formation = function (formation) {
         var self = this;
@@ -994,7 +993,7 @@ var Level = function(formation, gamesTab){
          * @param color
          */
 
-            // !_! bof, y'a encore des display appelés ici
+        // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
 
             if (self.currentQuestionIndex !== -1 && !self.previewMode) {
