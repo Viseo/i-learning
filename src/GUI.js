@@ -684,7 +684,7 @@ function FormationsManagerDisplay() {
 
         self.legendDim = self.plusDim / 2;
 
-        self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
+        self.checkLegend = statusEnum.Published.icon(self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
         self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
@@ -700,10 +700,7 @@ function FormationsManagerDisplay() {
         self.legendItemLength = self.legendWidth / 2;
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * svg.getSvgr().boundingRect(self.published.component).width, 30);
-        //self.published.component.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.getBoundingClientRect().width, 30);
-        //self.published.component.target && self.published.component.target.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.target.getBoundingClientRect().width, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
-
 
         self.formations.sort(function (a, b) {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -713,7 +710,7 @@ function FormationsManagerDisplay() {
                 return 1;
             return 0
         });
-    }
+    };
     self.displayHeaderFormations();
     self.displayFormations = function () {
         var posx = self.initialFormationsPosX;
@@ -728,31 +725,26 @@ function FormationsManagerDisplay() {
                 posy += (self.tileHeight + 2 * MARGIN);
                 posx = self.initialFormationsPosX;
             }
-
             self.formations[i].parent = self;
             self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
             self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
             self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
             (function (element) {
                 if (element.miniature.cadre) {
                     svg.addEvent(element.miniature.cadre, "click", function () {
                         onClickFormation(element);
                     });
                 }
-
                 if (element.miniature.content) {
                     svg.addEvent(element.miniature.content, "click", function () {
                         onClickFormation(element);
                     });
                 }
-
                 if (element.miniature.image) {
                     svg.addEvent(element.miniature.image, "click", function () {
                         onClickFormation(element);
                     });
                 }
-
             })(self.formations[i]);
             count++;
         }
@@ -841,7 +833,6 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
             self.rightArrow.color(myColors.black);
             svg.addEvent(self.rightArrow, "click", self.handlerRightArrow);
         }
-
         self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y+h/2);
         self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
     } else {
@@ -853,10 +844,8 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     var self = this;
     self.tileWidth=(w-(self.rows-1)*MARGIN)/self.rows;
     self.tileHeight=(h-(self.lines+1)*MARGIN)/self.lines;
-
     var posX = 0;
     var posY = y;
-
     var count = startPosition*self.lines;
 
     if(self.reverseMode) {
