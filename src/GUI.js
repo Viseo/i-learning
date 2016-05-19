@@ -684,7 +684,7 @@ function FormationsManagerDisplay() {
 
         self.legendDim = self.plusDim / 2;
 
-        self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
+        self.checkLegend = statusEnum.Published.icon(self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
         self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
