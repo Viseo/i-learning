@@ -90,11 +90,8 @@ function SVGGlobalHandler() {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (self.target && self.target.component.listeners && self.target.component.listeners.mousedown) {
-                self.target.component.listeners.mousedown(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousedown) {
-                self.target.component.target.listeners.mousedown(event);
+            if (self.target) {
+                svg.event(self.target, "mousedown", event);
             }
         };
 
@@ -102,12 +99,8 @@ function SVGGlobalHandler() {
 
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.listeners && self.target.component.listeners.mousemove) {
-                self.target.component.listeners.mousemove(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousemove) {
-                self.target.component.target.listeners.mousemove(event);
-
+            if (self.target) {
+                svg.event(self.target, "mousemove", event);
             }
         };
 
@@ -115,11 +108,8 @@ function SVGGlobalHandler() {
 
         var ondblclickHandler = function (event) {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.listeners && self.target.component.listeners.dblclick) {
-                self.target.component.listeners.dblclick(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.dblclick) {
-                self.target.component.target.listeners.dblclick(event);
+            if (self.target) {
+                svg.event(self.target, "dblclick", event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
@@ -142,19 +132,8 @@ function SVGGlobalHandler() {
                 //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
                 //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
 
-
-                if (self.target.component.listeners && self.target.component.listeners.mouseup) {
-                    self.target.component.listeners.mouseup(event);
-                }
-                if (self.target.component.listeners && self.target.component.listeners.click) {
-                    self.target.component.listeners.click(event);
-                }
-                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mouseup) {
-                    self.target.component.target.listeners.mouseup(event);
-                }
-                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.click) {
-                    self.target.component.target.listeners.click(event);
-                }
+                svg.event(self.target, "mouseup", event);
+                svg.event(self.target, "click", event);
             }
             self.drag = null;
         };
@@ -162,9 +141,12 @@ function SVGGlobalHandler() {
 
 
         var onmouseoutHandler = function (event) {
-            if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
-                self.target.component.listeners.mouseup(event);
+            if (self.drag) {
+                svg.event(self.target, "mouseup", event);
             }
+            //if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
+            //    self.target.component.listeners.mouseup(event);
+            //}
             self.drag = null;
         };
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
@@ -315,49 +297,21 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-    //var clone = function (object) {
-    //    return JSON.parse(JSON.stringify(object));
-    //};
-
-
     getComplementary = function (tab) {
         return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
     };
-
-    /**
-     *
-     * @param x
-     * @param y
-     * @param size
-     * @param sender
-     */
-//var displayCheckbox = function (x, y, size, sender) {
-//    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
-//}
 
     onclickFunction = function (event) {
         var target = drawing.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
+        var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+        !editor.multipleChoice && editor.tabAnswer.forEach(function(answer) {
+            answer.correct = (answer !== sender) ? false : answer.correct;
+        });
         sender.correct = !sender.correct;
         sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-        updateAllCheckBoxes(sender);
-    };
-
-    checkAllCheckBoxes = function (sender) {
-        var allNotChecked = true;
-        sender.editor.linkedQuestion.rightAnswers = [];
-        sender.editor.tabAnswer.forEach(function (answer) {
-            if (answer.editable) {
-                if (answer.correct) {
-                    allNotChecked = false;
-                    answer.correct = true;
-                    sender.editor.linkedQuestion.rightAnswers.push(answer);
-                }
-            }
-        });
-
-        return allNotChecked;
+        updateAllCheckBoxes(sender)
     };
 
     drawCheck = function (x, y, size) {
@@ -374,17 +328,10 @@ function SVGUtil() {
     };
 
     updateAllCheckBoxes = function (sender) {
-        sender.editor.tabAnswer.forEach(function (answer) {
+        var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+        editor.tabAnswer.forEach(function (answer) {
             if (answer.editable && answer.obj.checkbox) {
-                var allNotChecked = checkAllCheckBoxes(sender);
-                if (!answer.editor.multipleChoice && !answer.correct && !allNotChecked) {
-                    answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
-                    //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
-                    svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
-                } else {
-                    answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                    svg.addEvent(answer.obj.checkbox, "click", onclickFunction);
-                }
+                answer.obj.checkbox.color(myColors.white, 2, myColors.black);
                 !answer.correct && answer.manipulator.ordonator.unset(8);
             }
         });
@@ -404,15 +351,9 @@ function SVGUtil() {
         sender.y = y;
         sender.size = size;
 
-        var allNotChecked = true;
+        sender.obj.checkbox.color(myColors.white, 2, myColors.black);
+        svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
 
-        allNotChecked = checkAllCheckBoxes(sender);
-        if (!sender.editor.multipleChoice && !sender.correct && !allNotChecked) {
-            sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
-        } else {
-            sender.obj.checkbox.color(myColors.white, 2, myColors.black);
-            svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
-        }
         sender.manipulator.ordonator.set(7, sender.obj.checkbox);
         !sender.correct && sender.manipulator.ordonator.unset(8);
         sender.correct && drawPathChecked(sender, x, y, size);
@@ -440,11 +381,10 @@ function SVGUtil() {
         var textHeight = svg.getSvgr().boundingRect(text.component).height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
-        var newWidth, newHeight;
-        newWidth = w - 2 * MARGIN;
+        var newWidth = w - 2 * MARGIN;
         previousImage && (w === previousImage.width) && (newWidth = w);
 
-        newHeight = h - textHeight - 3 * MARGIN;
+        var newHeight = h - textHeight - 3 * MARGIN;
         previousImage && (h === previousImage.height) && (newHeight = h);
 
 

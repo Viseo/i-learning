@@ -229,5 +229,13 @@ describe('Firefox game', function () {
             },
             "./log/testFirefoxAdmin.json", 'content', runtime, done);
     });
+    it("an admin use Textarea test", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testAdminTextArea.json", 'content', runtime, done);
+    });
 });
 
