@@ -297,11 +297,6 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-    //var clone = function (object) {
-    //    return JSON.parse(JSON.stringify(object));
-    //};
-
-
     getComplementary = function (tab) {
         return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
     };
@@ -386,11 +381,10 @@ function SVGUtil() {
         var textHeight = svg.getSvgr().boundingRect(text.component).height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
-        var newWidth, newHeight;
-        newWidth = w - 2 * MARGIN;
+        var newWidth = w - 2 * MARGIN;
         previousImage && (w === previousImage.width) && (newWidth = w);
 
-        newHeight = h - textHeight - 3 * MARGIN;
+        var newHeight = h - textHeight - 3 * MARGIN;
         previousImage && (h === previousImage.height) && (newHeight = h);
 
 
