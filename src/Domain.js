@@ -167,9 +167,9 @@ function Domain() {
         self.libraryManipulator = new Manipulator(self);
         self.title = lib.title;
 
-        self.tabImgLibrary = [];
-        self.tabLib = [];
-        lib.tabLib && (self.tabLib = lib.tabLib);
+        //self.tabImgLibrary = [];
+        self.itemsTab = [];
+        lib.tab && (self.itemsTab = lib.tab);
         self.libraryManipulators = [];
 
         self.imageWidth = 50;
@@ -177,12 +177,12 @@ function Domain() {
         self.libMargin = 5;
         self.libraryGamesTab = [];
 
-        for (var i = 0; i < self.tabLib.length; i++) {
-            if (self.tabLib[i].imgSrc) {
-                var img = imageController.getImage(self.tabLib[i].imgSrc, function () {
+        for (var i = 0; i < self.itemsTab.length; i++) {
+            if (self.itemsTab[i].imgSrc) {
+                var img = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
                 });
-                self.tabImgLibrary[i] = img;
+                self.itemsTab[i] = img;
             }
         }
 
@@ -198,7 +198,7 @@ function Domain() {
         self.run = function (x, y, w, h, callback) {
             self.intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
-                self.tabImgLibrary.forEach(function (e) {
+                self.itemsTab.forEach(function (e) {
                     loaded = loaded && e.imageLoaded;
                 });
                 if (loaded) {
@@ -207,7 +207,7 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                runtime && self.tabImgLibrary.forEach(function(e){
+                runtime && self.itemsTab.forEach(function(e){
                     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
                 });
                 if (runtime){
@@ -268,7 +268,7 @@ function Domain() {
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
-                    case (formation.library.tabLib[0].label):
+                    case (formation.library.tab[0].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
                             var newQuizz = new Quizz(defaultQuizz, false, formation);
                             formation.gamesCounter.quizz++;
@@ -283,7 +283,7 @@ function Domain() {
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
                         }
                         break;
-                    case (formation.library.tabLib[1].label):
+                    case (formation.library.tab[1].label):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
                             var newBd = new Bd({}, formation);
                             formation.gamesCounter.bd++;

@@ -118,10 +118,10 @@ function AnswerDisplay (x, y, w, h) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var bibRatio = 0.2;
+                var libraryRatio = 0.2;
                 var previewButtonHeightRatio = 0.1;
                 var marginErrorMessagePreviewButton = 0.03;
-                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
+                var position = (window.innerWidth/2 - 0.5 * libraryRatio*drawing.width+2*MARGIN);
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
@@ -172,7 +172,7 @@ function AnswerDisplay (x, y, w, h) {
     }
 }
 
-function LibraryDisplay(x,y,w,h){
+function LibraryDisplay(x, y, w, h){
     var self = this;
     if(typeof x !=="undefined")(self.x = x);
     if(typeof y !=="undefined")(self.y = y);
@@ -180,8 +180,8 @@ function LibraryDisplay(x,y,w,h){
     if(typeof h !=="undefined")(self.h = h);
     self.borderSize = 3;
 
-    self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
-    self.bordure.position(w/2,h/2-self.borderSize);
+    self.bordure = new svg.Rect(w-self.borderSize, h, self.libraryManipulator).color(myColors.none, self.borderSize, myColors.black);
+    self.bordure.position(w/2, h/2-self.borderSize);
     self.libraryManipulator.last.add(self.bordure);
 
     self.title = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
@@ -193,14 +193,14 @@ function LibraryDisplay(x,y,w,h){
     self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
     var tempY = (2/10*h);
 
-    for (var i = 0; i<self.tabLib.length; i++) {
+    for (var i = 0; i<self.itemsTab.length; i++) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
         self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-        if (self.tabLib[i].imgSrc) {
-            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+        if (self.itemsTab[i].imgSrc) {
+            var objectTotal = displayImage(self.itemsTab[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
             objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
@@ -210,7 +210,7 @@ function LibraryDisplay(x,y,w,h){
                 tempY += self.w / 2 + self.libMargin2;
             }
 
-            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            objectTotal = displayTextWithCircle(self.itemsTab[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);
 
@@ -224,16 +224,25 @@ function LibraryDisplay(x,y,w,h){
         var mouseDownAction = function(event){
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
+            if(e.parentObject.itemsTab && e.parentObject.itemsTab.length !==0){
+                var index = e.parentObject.itemsTab.indexOf(e);
+                if((e.parentObject.itemsTab[0] instanceof Quizz) || (e.parentObject.itemsTab[0] instanceof BD)){
+
+                }else{
+                    var img;
+
+                }
+            }
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
-            var img;
+
             if (e.ordonator.children[0] instanceof svg.Image){
                 img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
                 img.srcDimension = elementCopy.srcDimension;
             }else{
-                var textObject = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                self.draggedObjectLabel = textObject.content.messageText;
-                img = textObject.cadre;
+                var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                self.draggedObjectLabel = gameMiniature.content.messageText;
+                img = gameMiniature.cadre;
             }
             manip.ordonator.set(0, img);
             var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
@@ -241,7 +250,7 @@ function LibraryDisplay(x,y,w,h){
             manip.first.move(point.x-point2.x, point.y-point2.y);
 
             manageDnD(img, manip);
-            textObject && textObject.content && manageDnD(textObject.content, manip);
+            gameMiniature && gameMiniature.content && manageDnD(gameMiniature.content, manip);
 
             var mouseClick = function (event){
                 var target = drawing.getTarget(event.clientX, event.clientY);
@@ -288,13 +297,13 @@ function LibraryDisplay(x,y,w,h){
 
 
             svg.addEvent(img, 'mouseup', mouseupHandler);
-            //runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
-            if(textObject && textObject.content){
-                textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
-                textObject.content.component.target && textObject.content.component.target.listeners && textObject.content.component.target.listeners.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.listeners.mouseup);
-                svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                textObject.content.component.target && svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                runtime && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
+            // runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
+            if(gameMiniature && gameMiniature.content){
+                gameMiniature.content.component.listeners && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.listeners.mouseup);
+                gameMiniature.content.component.target && gameMiniature.content.component.target.listeners && gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.target.listeners.mouseup);
+                svg.addEvent(gameMiniature.content, 'mouseup', mouseupHandler);
+                gameMiniature.content.component.target && svg.addEvent(gameMiniature.content, 'mouseup', mouseupHandler);
+                runtime && runtime.addEvent(gameMiniature.content.component, 'mouseup', mouseupHandler);
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
@@ -713,7 +722,7 @@ function FormationsManagerDisplay() {
                 return 1;
             return 0
         });
-    }
+    };
     self.displayHeaderFormations();
     self.displayFormations = function () {
         var posx = self.initialFormationsPosX;
