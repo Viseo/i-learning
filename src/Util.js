@@ -328,13 +328,14 @@ function SVGUtil() {
 
     checkAllCheckBoxes = function (sender) {
         var allNotChecked = true;
-        sender.editor.linkedQuestion.rightAnswers = [];
-        sender.editor.tabAnswer.forEach(function (answer) {
+        var editor = (sender.editor.linkedQuestion ? sender.editor.linkedQuestion : sender.editor.parent);
+        editor.rightAnswers = [];
+        editor.tabAnswer.forEach(function (answer) {
             if (answer.editable) {
                 if (answer.correct) {
                     allNotChecked = false;
                     answer.correct = true;
-                    sender.editor.linkedQuestion.rightAnswers.push(answer);
+                    editor.linkedQuestion.rightAnswers.push(answer);
                 }
             }
         });

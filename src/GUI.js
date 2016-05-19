@@ -85,7 +85,8 @@ function AnswerDisplay (x, y, w, h) {
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
-            self.editor.puzzle.puzzleManipulator.translator.move(0, self.editor.toggleButtonHeight-MARGIN);
+            var editor = (self.editor.puzzle ? self.editor : self.editor.parent);
+            editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
             svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
             svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
         };
