@@ -1287,7 +1287,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         var textarea = document.createElement("textarea");
         textarea.textContent = self.label;
         textarea.width = self.w;
-        textarea.height = (self.linkedQuestion.image) ? (self.questionBlock.title.content.component.getBoundingClientRect().height) : ((self.h * .25)/2);
+        textarea.height = (self.linkedQuestion.image) ? svg.getSvgr().boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
 
         self.questionManipulator.ordonator.unset(1);
         textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
