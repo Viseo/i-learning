@@ -248,30 +248,24 @@ describe('Firefox game', function () {
             "./log/testFirefoxAdminAddElementsSmall.json", 'content', runtime, done);
     });
 
-    it("a short admin use (to QuizzManager, with checkbox use and toggle button)", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
-    });
+    //it("a short admin use (to QuizzManager, with checkbox use and toggle button)", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
+    //});
+    //
+    //it("a short admin use (edit formation title)", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testFirefoxAdminTextarea.json", 'content', runtime, done);
+    //});
 
-    it("an admin use", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdmin.json", 'content', runtime, done);
-    });
-    it("an admin use Textarea test", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testAdminTextArea.json", 'content', runtime, done);
-    });
+
 });
 
