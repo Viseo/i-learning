@@ -1046,7 +1046,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
     if(self.multipleChoice){
         //affichage d'un bouton "valider"
         var w = 0.1 * drawing.width;
-        var h = self.tileHeight;
+        var h = Math.min(self.tileHeight, 50);
         var validateX,validateY;
         validateX = 0.08 * drawing.width - w/2;
         validateY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
@@ -1097,7 +1097,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
 
         //Button reset
         var w = 0.1 * drawing.width;
-        var h = self.tileHeight;
+        var h = Math.min(self.tileHeight, 50);
         var resetX = - w/2 - 0.08 * drawing.width;
         var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
         self.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
