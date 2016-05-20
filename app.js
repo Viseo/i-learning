@@ -9,7 +9,7 @@ var fs = require('fs');
 var app = express();
 
 app.use(express.static(__dirname));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({limit: '500mb'}));
 
 var routes = require("./server/controllers/routes")(app);
 var db = require('./server/db');

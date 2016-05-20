@@ -212,13 +212,49 @@ describe('Firefox game', function () {
     });
 
 
+    it("a short admin use (to Formation)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminShort.json", 'content', runtime, done);
+    });
+
+    it("a short admin use (to Formation, with Games)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminShortGames.json", 'content', runtime, done);
+    });
+
     it("a short admin use (to QuizzManager)", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
                 adminModule.admin();
             },
-            "./log/testFirefoxAdminMarche.json", 'content', runtime, done);
+            "./log/testFirefoxAdminQuizzManager.json", 'content', runtime, done);
+    });
+
+    it("a short admin use (to QuizzManager, with new questions and answers)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminAddElementsSmall.json", 'content', runtime, done);
+    });
+
+    it("a short admin use (to QuizzManager, with checkbox use and toggle button)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
     });
 
     it("an admin use", function (done) {
