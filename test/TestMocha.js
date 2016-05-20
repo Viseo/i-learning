@@ -5,7 +5,7 @@
 var assert = require('assert');
 var testutils = require('../lib/testutils');
 
-var targetRuntime = require('../lib/targetRuntime').targetRuntime;
+var targetRuntime = require('../lib/targetruntime').targetRuntime;
 var mock = require('../lib/runtimemock');
 mock.setTarget(targetRuntime);
 var svgHandler = require('../lib/svghandler');
