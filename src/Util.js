@@ -9,18 +9,20 @@
  */
 var svg, gui, runtime;
 
+/* istanbul ignore next */
 if(typeof SVG != "undefined") {
     if(!svg) {
         svg = new SVG();
     }
 }
+/* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
         gui = new Gui();
     }
 }
 function setGui(_gui){
-  gui = _gui;
+    gui = _gui;
 };
 
 function setSvg(_svg) {
@@ -88,11 +90,8 @@ function SVGGlobalHandler() {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (self.target && self.target.component.listeners && self.target.component.listeners.mousedown) {
-                self.target.component.listeners.mousedown(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousedown) {
-                self.target.component.target.listeners.mousedown(event);
+            if (self.target) {
+                svg.event(self.target, "mousedown", event);
             }
         };
 
@@ -100,11 +99,8 @@ function SVGGlobalHandler() {
 
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.listeners && self.target.component.listeners.mousemove) {
-                self.target.component.listeners.mousemove(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mousemove) {
-                self.target.component.target.listeners.mousemove(event);
+            if (self.target) {
+                svg.event(self.target, "mousemove", event);
             }
         };
 
@@ -112,26 +108,15 @@ function SVGGlobalHandler() {
 
         var ondblclickHandler = function (event) {
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
-            if (self.target && self.target.component.listeners && self.target.component.listeners.dblclick) {
-                self.target.component.listeners.dblclick(event);
-            }
-            if (self.target && self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.dblclick) {
-                self.target.component.target.listeners.dblclick(event);
+            if (self.target) {
+                svg.event(self.target, "dblclick", event);
             }
         };
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
-            if(self.drawing.getTarget(event.clientX, event.clientY)===null){
-                console.log('null');
-            }
-
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
-            if(self.target===null)
-            {
-                console.log("err");
-            }
             if (self.target) {
                 //if (self.target.component.mock){
                 //    console.log("mock");
@@ -147,19 +132,8 @@ function SVGGlobalHandler() {
                 //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
                 //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
 
-
-                if (self.target.component.listeners && self.target.component.listeners.mouseup) {
-                    self.target.component.listeners.mouseup(event);
-                }
-                if (self.target.component.listeners && self.target.component.listeners.click) {
-                    self.target.component.listeners.click(event);
-                }
-                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.mouseup) {
-                    self.target.component.target.listeners.mouseup(event);
-                }
-                if (self.target.component.target && self.target.component.target.listeners && self.target.component.target.listeners.click) {
-                    self.target.component.target.listeners.click(event);
-                }
+                svg.event(self.target, "mouseup", event);
+                svg.event(self.target, "click", event);
             }
             self.drag = null;
         };
@@ -167,9 +141,12 @@ function SVGGlobalHandler() {
 
 
         var onmouseoutHandler = function (event) {
-            if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
-                self.target.component.listeners.mouseup(event);
+            if (self.drag) {
+                svg.event(self.target, "mouseup", event);
             }
+            //if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
+            //    self.target.component.listeners.mouseup(event);
+            //}
             self.drag = null;
         };
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
@@ -179,8 +156,17 @@ function SVGGlobalHandler() {
         var self = this;
         function clean(handler){
             for(i=0;i<handler.children.length;i++){
-                if(!(handler.children[i] instanceof svg.Handler)){
+                if((handler instanceof svg.Ordered)){
+                    for(var i =0; i<handler.children.length;i++){
+                        handler.unset(i);
+                    }
+                }
+                else if (handler.children[i] instanceof svg.Handler){
+                    clean(handler.children[i]);
+                }
+                else {
                     handler.remove(handler.children[i]);
+
                 }
             }
         }
@@ -311,51 +297,21 @@ function SVGUtil() {
      * Created by qde3485 on 29/02/16.
      */
 
-        //var clone = function (object) {
-        //    return JSON.parse(JSON.stringify(object));
-        //};
-
-
     getComplementary = function (tab) {
         return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
     };
-
-    /**
-     *
-     * @param x
-     * @param y
-     * @param size
-     * @param sender
-     */
-//var displayCheckbox = function (x, y, size, sender) {
-//    var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
-//}
 
     onclickFunction = function (event) {
         var target = drawing.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
-        sender.linkedAnswer.correct = !sender.correct;
+        var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+        !editor.multipleChoice && editor.tabAnswer.forEach(function(answer) {
+            answer.correct = (answer !== sender) ? false : answer.correct;
+        });
         sender.correct = !sender.correct;
         sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-        updateAllCheckBoxes(sender);
-    };
-
-    checkAllCheckBoxes = function (sender) {
-        var allNotChecked = true;
-        sender.parent.linkedQuestion.rightAnswers = [];
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement) {
-                if (answer.correct) {
-                    allNotChecked = false;
-                    //rightAnswers.push(answer.linkedAnswer);
-                    answer.linkedAnswer.correct = true;
-                    sender.parent.linkedQuestion.rightAnswers.push(answer.linkedAnswer);
-                }
-            }
-        });
-
-        return allNotChecked;
+        updateAllCheckBoxes(sender)
     };
 
     drawCheck = function (x, y, size) {
@@ -372,17 +328,10 @@ function SVGUtil() {
     };
 
     updateAllCheckBoxes = function (sender) {
-        sender.parent.tabAnswer.forEach(function (answer) {
-            if (answer instanceof AnswerElement && answer.obj.checkbox) {
-                var allNotChecked = checkAllCheckBoxes(sender);
-                if (answer.parent.simpleChoice && !answer.correct && !allNotChecked) {
-                    answer.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
-                    //svg.addEvent(answer.checkbox.checkbox, "click", onclickFunction);
-                    svg.removeEvent(answer.obj.checkbox, "click", onclickFunction);
-                } else {
-                    answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                    svg.addEvent(answer.obj.checkbox, "click", onclickFunction);
-                }
+        var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+        editor.tabAnswer.forEach(function (answer) {
+            if (answer.editable && answer.obj.checkbox) {
+                answer.obj.checkbox.color(myColors.white, 2, myColors.black);
                 !answer.correct && answer.manipulator.ordonator.unset(8);
             }
         });
@@ -402,15 +351,9 @@ function SVGUtil() {
         sender.y = y;
         sender.size = size;
 
-        var allNotChecked = true;
+        sender.obj.checkbox.color(myColors.white, 2, myColors.black);
+        svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
 
-        allNotChecked = checkAllCheckBoxes(sender);
-        if (sender.parent.simpleChoice && !sender.correct && !allNotChecked) {
-            sender.obj.checkbox.color(myColors.white, 2, myColors.lightgrey);
-        } else {
-            sender.obj.checkbox.color(myColors.white, 2, myColors.black);
-            svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
-        }
         sender.manipulator.ordonator.set(7, sender.obj.checkbox);
         !sender.correct && sender.manipulator.ordonator.unset(8);
         sender.correct && drawPathChecked(sender, x, y, size);
@@ -438,11 +381,10 @@ function SVGUtil() {
         var textHeight = svg.getSvgr().boundingRect(text.component).height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
-        var newWidth, newHeight;
-        newWidth = w - 2 * MARGIN;
+        var newWidth = w - 2 * MARGIN;
         previousImage && (w === previousImage.width) && (newWidth = w);
 
-        newHeight = h - textHeight - 3 * MARGIN;
+        var newHeight = h - textHeight - 3 * MARGIN;
         previousImage && (h === previousImage.height) && (newHeight = h);
 
 
@@ -592,8 +534,8 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-                if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
-            //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
+            if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
+                //    if ((t.component.getBoundingClientRect && t.component.getBoundingClientRect().width > w) || (t.component.target && t.component.target.getBoundingClientRect().width > w)|| (runtime && (runtime.boundingRect(t.component).width > w))) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -745,54 +687,21 @@ function SVGUtil() {
         return chevron;
     };
 
-    //Function.prototype.clone = function () {
-    //    var that = this;
-    //    var temp = function temporary() {
-    //        return that.apply(this, arguments);
-    //    };
-    //    for (var key in this) {
-    //        if (this.hasOwnProperty(key)) {
-    //            temp[key] = this[key];
-    //        }
-    //    }
-    //    return temp;
-    //};
-
-/// Modifying Raphael.js prototype to add Local/GlobalPoint to various elements
-
-/// Shape, commun à tout le monde
-
-
-    //function getPoint(args) {
-    //    if (args[0] !== undefined && (typeof args[0] === 'number')) {
-    //        return {x: args[0], y: args[1]}
-    //    }
-    //    else {
-    //        return arguments[0];
-    //    }
-    //}
-
-
     manageDnD = function (svgItem, manipulator) {
         var ref;
         var mousedownHandler = function (event) {
-            event.preventDefault();// permet de s'assurer que l'event mouseup sera bien déclenché
+            event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
             ref = svgItem.localPoint(event.clientX, event.clientY);
-            svg.addEvent(svgItem, "mousemove", mousemoveHandler);// potentiellement mettre la piste ici, au cas ou on sort de l'objet en cours de drag
+            svg.addEvent(svgItem, "mousemove", mousemoveHandler);
 
             svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //svgItem.component.target && svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            //runtime && runtime.addEvent(svgItem, "mouseup", mouseupHandler);
         };
         var mousemoveHandler = function (event) {
             var mouse = svgItem.localPoint(event.clientX, event.clientY);
             var dx = mouse.x - ref.x;
             var dy = mouse.y - ref.y;
 
-            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
-            //if (self.callback) {
-            //    self.callback(/*self.point*/);
-            //}
+            manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
             return true;
         };
         var mouseupHandler = function (event) {
@@ -858,12 +767,12 @@ function Bdd() {
         "../resource/flamantRose.jpg" : {width: 183, height: 262},
         "../resource/ChatTim.jpg" : {width: 480, height: 640},
         "../resource/cerise.jpg" : {width: 2835, height: 2582},
-        "../resource/cat.png" : {width: 1920, height: 1200},
-    }
+        "../resource/cat.png" : {width: 1920, height: 1200}
+    };
 
     SELECTION_COLOR = myColors.darkBlue;
 
-    myBibImage = {
+    myLibraryImage = {
         title: "Bibliothèque",
         tabLib: [
             {imgSrc: "../resource/littleCat.png"},
@@ -1951,7 +1860,7 @@ function Bdd() {
             // Check 1 Correct Answer:
             var correctAnswers = 0;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     if (el.correct) {
                         correctAnswers++;
                     }
@@ -1966,7 +1875,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });
@@ -1993,7 +1902,7 @@ function Bdd() {
             // Check at least 1 valid answer:
             var isFilled = false;
             quiz.questionCreator.tabAnswer.forEach(function (el) {
-                if (el instanceof AnswerElement) {
+                if (el.editable) {
                     isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
             });
@@ -2023,22 +1932,30 @@ function Bdd() {
 
     statusEnum = {
         Published: {
-            icon: function (x, y, size) {
-                var check = drawCheck(x, y, size).color(myColors.none, 5, myColors.white);
+            icon: function (size) {
+                var check = drawCheck(0, 0, size).color(myColors.none, 5, myColors.white);
                 var square = new svg.Rect(size, size).color(myColors.green);
-                return {check: check, square: square};
+                var elems = [];
+                elems.push(square,check);
+                return {check: check, square: square, elements: elems };
             }
+            
         },
         Edited: {
             icon: function (size) {
                 var self = this;
-                self.circle = new svg.Circle(size / 2).color(myColors.orange);
-                self.exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white);
-                self.dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
-                return self;
+                var circle = new svg.Circle(size / 2).color(myColors.orange);
+                var exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white);
+                var dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
+                var elems = [];
+                elems.push(circle, exclamation, dot);
+                return {circle: circle, exclamation: exclamation, dot:dot, elements: elems };
             }
+            
         },
-        NotPublished: {icon: null}
+        NotPublished: {
+            icon: function (){return {elements:[]}}
+        }
     };
 
     myFormations = {
@@ -2060,7 +1977,7 @@ function Bdd() {
             }, {label: "Angular js 8"}, {label: "ZEdernier"}]
     };
 
-    myBibJeux = {
+    myLibraryGames = {
         title: "Type de jeux",
         tabLib: [
             {label: "Quiz"},
@@ -2092,6 +2009,7 @@ if (typeof exports !== "undefined") {
 }
 
 ///////////////////// Requests ////////////////////////////
+/* istanbul ignore next */
 function httpGetAsync(theUrl, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
@@ -2101,7 +2019,7 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.open("GET", theUrl, true); // true for asynchronous
     xmlHttp.send(null);
 }
-
+/* istanbul ignore next */
 function httpPostAsync(theUrl, body, callback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {

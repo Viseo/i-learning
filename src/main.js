@@ -4,7 +4,7 @@
 
 var svg, util;
 
-
+/* istanbul ignore next */
 if(typeof SVG !== "undefined") {
     if(!svg) {
         svg = new SVG();
@@ -24,45 +24,22 @@ function setGlobalVariable() {
     util && util.SVGGlobalHandler();
     var wind = !util && window;
     util && (wind=false);
-    //clientWidth = svg.screenSize().width;
-    //clientHeight = svg.screenSize().height;
     drawings = new Drawings(svg.screenSize().width, svg.screenSize().height);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
     return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:svg.screenSize().height, clientWidth:svg.screenSize().width};
 }
 
-//mainManipulator.translator.move(document.body.clientWidth/4, document.documentElement.clientHeight/4);
 
 function main(targetQuizz) {
     !util && setGlobalVariable();
-
-  /*  myQuizz.tabQuestions[0].tabAnswer[0].bCorrect=true;
-    var quizz=new Quizz(myQuizz);
-   // Navigation Puzzle
-   quizz.puzzleLines=1;
-   quizz.puzzleRows=3;
-
-   quizz.run(50,10,1200,1200);*/
-
-    /*
-    var bib=new Library(myBibImage);
-    bib.run(0,0,document.body.clientWidth,drawing.height);
-*/
-
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
-    quizzCopy.tabQuestions[0].tabAnswer[0].correct=true;
     var quizz = new Quizz(quizzCopy);
 
     console.log('Length: '+quizz.tabQuestions.length);
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
     quizz.run(0,0, drawing.width, drawing.height);
-
-    //setTimeout(function(){
-    //    quizz.displaySet.getTarget(0,0);
-    //},2000);
-
 
     function resizePaper(){
         //zoom
@@ -105,14 +82,14 @@ function main(targetQuizz) {
 
         if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
             quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
-                quizz.cadreQuestion.w , quizz.questionHeight);
+                quizz.questionArea.w , quizz.questionHeight);
             quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
-                quizz.cadreQuestion.w , quizz.responseHeight);
+                quizz.questionArea.w , quizz.answerHeight);
         }else{
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
-            //quizz.puzzle.display(0, quizz.responseHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.responseHeight, quizz.puzzle.startPosition);
+            //quizz.puzzle.display(0, quizz.answerHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.answerHeight, quizz.puzzle.startPosition);
         }
 
     }

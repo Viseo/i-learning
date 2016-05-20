@@ -21,7 +21,11 @@ function setRuntime(_runtime){
 }
 
 function AnswerDisplay (x, y, w, h) {
-
+    var self = this;
+    if(this.editable) {
+        answerEditableDisplay(x, y, w, h);
+        return;
+    }
     if(typeof x !=='undefined'){
         this.x=x;
     }
@@ -65,14 +69,116 @@ function AnswerDisplay (x, y, w, h) {
     }
     this.manipulator.translator.move(this.x,this.y);
 
+    function answerEditableDisplay(x, y, w, h) {
+        self.checkboxSize = h*0.2;
+        var showTitle = function () {
+            var text = (self.label) ? self.label : self.labelDefault;
+            var color = (self.label) ? myColors.black : myColors.grey;
+            if(self.image){
+                self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+            }
+            else{
+                self.obj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
+            }
+            self.obj.cadre.fillOpacity(0.001);
+            self.obj.content.color(color);
+            self.obj.cadre._acceptDrop = true;
+            self.obj.content._acceptDrop = true;
+            var editor = (self.editor.puzzle ? self.editor : self.editor.parent);
+            editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
+            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+        };
+
+        var dblclickEdition = function () {
+            var contentarea = document.createElement("textarea");
+            contentarea.value = self.label;
+            contentarea.width = w;
+            contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
+
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
+            self.manipulator.ordonator.unset(1, self.obj.content);
+            var contentareaStyle = {
+                toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
+                leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
+                height:(self.image) ? contentarea.height : (h*.5),
+                width:self.obj.cadre.width*5/6
+            };
+            contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
+
+            var body = document.getElementById("content");
+            body.appendChild(contentarea).focus();
+
+            var removeErrorMessage = function () {
+                self.answerNameValidInput = true;
+                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(5);
+                self.obj.cadre.color(myColors.white, 1, myColors.black);
+            };
+
+            var displayErrorMessage = function () {
+                removeErrorMessage();
+                self.obj.cadre.color(myColors.white, 2, myColors.red);
+                var bibRatio = 0.2;
+                var previewButtonHeightRatio = 0.1;
+                var marginErrorMessagePreviewButton = 0.03;
+                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
+                var anchor = 'middle';
+                self.errorMessage = new svg.Text(REGEXERROR)
+                    .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
+                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                self.editor.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
+                contentarea.focus();
+                self.answerNameValidInput = false;
+            };
+
+            var onblur = function () {
+                self.answerNameValidInput && (self.label = contentarea.value);
+                contentarea.remove();
+                showTitle();
+                if(typeof self.obj.checkbox === 'undefined') {
+                    self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+                    self.obj.checkbox.answerParent = self;
+                }
+            };
+            contentarea.oninput = function () {
+                self.checkInputContentArea({
+                    contentarea: contentarea,
+                    border: self.obj.cadre,
+                    onblur: onblur,
+                    remove: removeErrorMessage,
+                    display: displayErrorMessage
+                });
+            };
+
+            contentarea.onblur = onblur;
+            self.checkInputContentArea({
+                contentarea: contentarea,
+                border: self.label.cadre,
+                onblur: onblur,
+                remove: removeErrorMessage,
+                display: displayErrorMessage
+            });
+        };
+
+        self.manipulator.flush();
+        showTitle();
+        if(typeof self.obj.checkbox === 'undefined') {
+            self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.obj.checkbox.answerParent = self;
+        }
+        self.manipulator.ordonator.children.forEach(function(e) {
+            e._acceptDrop = true;
+        });
+    }
 }
 
 function LibraryDisplay(x,y,w,h){
     var self = this;
-    x && (self.x = x);
-    y && (self.y = y);
-    w && (self.w = w);
-    h && (self.h = h);
+    if(typeof x !=="undefined")(self.x = x);
+    if(typeof y !=="undefined")(self.y = y);
+    if(typeof w !=="undefined")(self.w = w);
+    if(typeof h !=="undefined")(self.h = h);
     self.borderSize = 3;
 
     self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
@@ -84,31 +190,30 @@ function LibraryDisplay(x,y,w,h){
 
     var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
-    var maxJeuxPerLine = 1;
-    self.libMargin2 = (w -(maxJeuxPerLine*w))/(maxJeuxPerLine+1)+2*MARGIN;
+    var maxGamesPerLine = 1;
+    self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
     var tempY = (2/10*h);
 
     for (var i = 0; i<self.tabLib.length; i++) {
-        if (i % maxImagesPerLine === 0 && i != 0) {
+        if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
-        self.bibManipulators[i] = new Manipulator(self);
-        self.libraryManipulator.last.add(self.bibManipulators[i].first);
+        self.libraryManipulators[i] = new Manipulator(self);
+        self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.tabLib[i].imgSrc) {
-            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgBib[i], self.imageWidth, self.imageHeight, self.bibManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.tabImgBib[i].width, height: self.tabImgBib[i].height};
-            self.bibManipulators[i].ordonator.set(0, objectTotal.image);
+            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
+            self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
-            self.bibManipulators[i].first.move(X, tempY);
-        }
-        else {
-            if (i % maxJeuxPerLine === 0 && i != 0) {
+            self.libraryManipulators[i].first.move(X, tempY);
+        } else {
+            if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.w / 2 + self.libMargin2;
             }
 
-            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.bibManipulators[i]);
-            X = x + self.libMargin2 - 2 * MARGIN + ((i % maxJeuxPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
-            self.bibManipulators[i].first.move(X, tempY);
+            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+            self.libraryManipulators[i].first.move(X, tempY);
 
             self.libraryGamesTab[i] = {objectTotal : objectTotal};
             self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
@@ -116,7 +221,7 @@ function LibraryDisplay(x,y,w,h){
     }
     self.libraryManipulator.first.move(x, y);
 
-    self.bibManipulators.forEach(function(e){
+    self.libraryManipulators.forEach(function(e){
         var mouseDownAction = function(event){
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
@@ -175,29 +280,18 @@ function LibraryDisplay(x,y,w,h){
                 }
                 self.draggedObjectLabel = "";
             };
-            drawings.glass.component.listeners && drawings.glass.component.listeners.mousedown(event);
-            drawings.glass.component.target && drawings.glass.component.target.listeners && drawings.glass.component.target.listeners.mousedown(event);
-
+            svg.event(drawings.glass,"mousedown",event);
             img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
             img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
-            runtime && img.component.listeners.mouseup && runtime.removeEvent(img.component, 'mouseup', img.component.listeners.mouseup);
-
-
             svg.addEvent(img, 'mouseup', mouseupHandler);
-            //runtime && runtime.addEvent(img.component, 'mouseup', mouseupHandler);
             if(textObject && textObject.content){
                 textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
                 textObject.content.component.target && textObject.content.component.target.listeners && textObject.content.component.target.listeners.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.listeners.mouseup);
                 svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                textObject.content.component.target && svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
-                runtime && runtime.addEvent(textObject.content.component, 'mouseup', mouseupHandler);
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
-        //domain && runtime.addEvent(e.ordonator.children[0].component, 'mousedown', mouseDownAction);
-
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-        //domain && runtime.addEvent(e.ordonator.children[1].component, 'mousedown', mouseDownAction);
 
     });
 }
@@ -221,9 +315,11 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
                 self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
                 self.plusManipulator.flush();
+                //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
 
                 self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
-                self.parent.tabAnswer.push(new AnswerElement(newAnswer, self.parent));
+                newAnswer.isEditable(self, true);
+                self.parent.tabAnswer.push(newAnswer);
 
                 if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
                     self.parent.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
@@ -262,131 +358,18 @@ function AddEmptyElementDisplay(x, y, w, h) {
     svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
 }
 
-function AnswerElementDisplay(x, y, w, h) {
-    var self = this;
-    self.checkboxSize = h*0.2;
-    var showTitle = function () {
-        var text = (self.label) ? self.label : self.labelDefault;
-        var color = (self.label) ? myColors.black : myColors.grey;
-        if(self.linkedAnswer.image){
-            self.img = self.linkedAnswer.image;
-            self.obj = displayImageWithTitle(text, self.img.src, self.img, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
-        }
-        else{
-            self.obj = displayText(text, w, h, self.linkedAnswer.colorBordure, self.linkedAnswer.bgColor, self.fontSize, self.font, self.manipulator);
-            self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
-        }
-        self.obj.cadre.fillOpacity(0.001);
-        self.obj.content.color(color);
-        self.obj.cadre._acceptDrop = true;
-        self.obj.content._acceptDrop = true;
-        self.parent.puzzle.puzzleManipulator.translator.move(0, self.parent.toggleButtonHeight-MARGIN);
-        svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
-    };
-
-    var dblclickEdition = function () {
-        var contentarea = document.createElement("textarea");
-        contentarea.value = self.label;
-        contentarea.width = w;
-        //self.obj.content.component.getBoundingClientRect && (contentarea.height = self.obj.content.component.getBoundingClientRect().height);
-        //self.obj.content.component.target && (contentarea.height = self.obj.content.component.target.getBoundingClientRect().height);
-        //runtime && (contentarea.height = runtime.boundingRect(self.obj.content.component).height);
-        contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
-
-        contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-        self.manipulator.ordonator.unset(1, self.obj.content);
-        var contentareaStyle = {
-            toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
-            leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
-            height:(self.linkedAnswer.image) ? contentarea.height : (h*.5),
-            width:self.obj.cadre.width*5/6
-        };
-        contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
-
-        var body = document.getElementById("content");
-        body.appendChild(contentarea).focus();
-
-        var removeErrorMessage = function () {
-            self.answerNameValidInput = true;
-            self.errorMessage && self.parent.questionCreatorManipulator.ordonator.unset(5);
-            self.obj.cadre.color(myColors.white, 1, myColors.black);
-        };
-
-        var displayErrorMessage = function () {
-            removeErrorMessage();
-            self.obj.cadre.color(myColors.white, 2, myColors.red);
-            var bibRatio = 0.2;
-            var previewButtonHeightRatio = 0.1;
-            var marginErrorMessagePreviewButton = 0.03;
-            var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
-            var anchor = 'middle';
-            self.errorMessage = new svg.Text(REGEXERROR)
-                .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
-            self.parent.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
-            contentarea.focus();
-            self.answerNameValidInput = false;
-        };
-
-        var onblur = function () {
-            self.answerNameValidInput && (self.linkedAnswer.label = contentarea.value);
-            contentarea.remove();
-            showTitle();
-            if(typeof self.obj.checkbox === 'undefined') {
-                self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-                self.obj.checkbox.answerParent = self;
-            }
-        };
-        contentarea.oninput = function () {
-            self.checkInputContentArea({
-                contentarea: contentarea,
-                border: self.obj.cadre,
-                onblur: onblur,
-                remove: removeErrorMessage,
-                display: displayErrorMessage
-            });
-        };
-
-        contentarea.onblur = onblur;
-        self.checkInputContentArea({
-            contentarea: contentarea,
-            border: self.label.cadre,
-            onblur: onblur,
-            remove: removeErrorMessage,
-            display: displayErrorMessage
-        });
-    };
-
-    self.manipulator.flush();
-    showTitle();
-    if(typeof self.obj.checkbox === 'undefined') {
-        self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-        self.obj.checkbox.answerParent = self;
-    }
-    self.manipulator.ordonator.children.forEach(function(e) {
-        e._acceptDrop = true;
-    });
-}
-
 function FormationDisplayMiniature (w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
+    var icon = self.status.icon(self.parent.iconeSize);
 
-    if (self.status === statusEnum.Published) {
-        var icon = self.status.icon(0, 0, self.parent.iconeSize);
-        self.iconManipulator.ordonator.set(5, icon.square);
-        self.iconManipulator.ordonator.set(6, icon.check);
-        self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+    for(var i=0; i<icon.elements.length; i++)
+    {
+        self.iconManipulator.ordonator.set(i+5,icon.elements[i]);
     }
-    else if (self.status === statusEnum.Edited) {
-        var iconExclamation = self.status.icon(self.parent.iconeSize);
-        self.iconManipulator.ordonator.set(5, iconExclamation.circle);
-        self.iconManipulator.ordonator.set(6, iconExclamation.exclamation);
-        self.iconManipulator.ordonator.set(7, iconExclamation.dot);
-        self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
-    }
+    self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+
 }
 
 function FormationDisplayFormation(){
@@ -408,24 +391,13 @@ function FormationDisplayFormation(){
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-        //self.formationLabel.content.component.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.getBoundingClientRect().height);
-        ////self.formationLabel.content.component.getBoundingClientRect && (self.labelWidth = self.formationLabel.content.component.getBoundingClientRect().width + 2 * MARGIN);
-        //self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelHeight = self.formationLabel.content.component.target.getBoundingClientRect().height);
-        ////self.formationLabel.content.component.target && self.formationLabel.content.component.target.getBoundingClientRect && (self.labelWidth = Math.floor(self.formationLabel.content.component.target.getBoundingClientRect().width) + 2 * MARGIN);
-        //runtime && (self.labelHeight = runtime.boundingRect(self.formationLabel.content.component).height);
         self.labelHeight = svg.getSvgr().boundingRect(self.formationLabel.content.component).height;
 
-        self.formationTitleWidth = 102;
+        self.formationTitleWidth = svg.getSvgr().boundingRect(self.title.component).width;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        //self.title.component.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        //domain && self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
-        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 + MARGIN + MARGIN/2, -MARGIN/2).fillOpacity(0.1);
+        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2).fillOpacity(0.1);
 
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-        //self.title.component.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-        //runtime && self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
@@ -433,7 +405,6 @@ function FormationDisplayFormation(){
         self.formationCreator = formationValidation;
     };
     var dblclickEdition = function (event) {
-        //var width = self.formationLabel.content.component.getBoundingClientRect ? self.formationLabel.content.component.getBoundingClientRect().width : self.formationLabel.content.component.target.getBoundingClientRect().width;
         var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
@@ -442,7 +413,6 @@ function FormationDisplayFormation(){
         textarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            //leftpx: (self.title.component.getBoundingClientRect ? self.title.component.getBoundingClientRect().width : self.title.component.target.getBoundingClientRect().width+ 2 * MARGIN + 1),
             leftpx: (svg.getSvgr().boundingRect(self.title.component).width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
@@ -453,7 +423,7 @@ function FormationDisplayFormation(){
 
         var removeErrorMessage = function () {
             self.formationCreator.formationNameValidInput = true;
-            self.formationCreator.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
+            self.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
             self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
         };
 
@@ -500,11 +470,10 @@ function FormationDisplayFormation(){
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.quizzManager.loadQuizz(targetQuizz);
         self.quizzManager.display();
-        if (window.getSelection)
+        if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
-        else if (document.selection)
+        else if (!runtime && document.selection)
             document.selection.empty();
-        mainManipulator.ordonator.unset(0);
     };
 
     self.displayLevel = function(w, h, level){
@@ -518,24 +487,10 @@ function FormationDisplayFormation(){
             width: svg.getSvgr().boundingRect(level.obj.content.component).width,
             height: svg.getSvgr().boundingRect(level.obj.content.component).height
         });
-        //level.obj.content.component.getBoundingClientRect && (self.textLevelNumberDimensions = {
-        //    width: level.obj.content.component.getBoundingClientRect().width,
-        //    height:level.obj.content.component.getBoundingClientRect().height
-        //});
-        //level.obj.content.component.target && (self.textLevelNumberDimensions = {
-        //    width: level.obj.content.component.target.getBoundingClientRect().width,
-        //    height: level.obj.content.component.target.getBoundingClientRect().height
-        //});
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-
         level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, self.messageDragDropMargin);
-        //level.obj.content.component.getBoundingClientRect && level.obj.content.position(level.obj.content.component.getBoundingClientRect().width, self.messageDragDropMargin);
-        //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && level.obj.content.position(self.textLevelNumberDimensions.width, self.messageDragDropMargin);
         self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
-        //self.title.component.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.getBoundingClientRect().height + 3*self.messageDragDropMargin);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.messageDragDrop.position(w/2, self.title.component.target.getBoundingClientRect().height + 3*self.messageDragDropMargin);
-
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.manipulator.first.move(-w/2, -h/2+level.y);
@@ -555,10 +510,7 @@ function FormationDisplayFormation(){
 
         self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
-        //self.title.component.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.getBoundingClientRect().height);
-        //self.title.component.target && self.title.component.target.getBoundingClientRect && self.clippingManipulator.translator.move(self.bibWidth, self.title.component.target.getBoundingClientRect().height);
-        //runtime && self.clippingManipulator.translator.move(self.bibWidth, runtime.boundingRect(self.title.component).height);
-        self.clippingManipulator.translator.move(self.bibWidth, svg.getSvgr().boundingRect(self.title.component).height);
+        self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
 
         self.panel = new gui.Panel(w, h);
@@ -600,9 +552,6 @@ function FormationDisplayFormation(){
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.graphBlock.rect.position(0, height/2-h/2);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
-        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        //(self.levelsTab.length !== 0) && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target && self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? self.levelsTab[self.levelsTab.length - 1].obj.content.component.target.getBoundingClientRect().width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-        //(self.levelsTab.length !== 0) && runtime && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
 
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
@@ -617,7 +566,7 @@ function FormationDisplayFormation(){
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.bib.display(0, (-HEADER_SIZE*drawing.height+self.parent.headerHeightFormation)/2,self.bibWidth, self.graphCreaHeight);
+    self.library.display(0, (-HEADER_SIZE*drawing.height+self.parent.headerHeightFormation)/2,self.libraryWidth, self.graphCreaHeight);
     //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
@@ -671,13 +620,12 @@ function FormationsManagerDisplay() {
     }
 
     function onClickFormation(formation) {
-        console.log("Tu as bien cliqué");
         formation.displayFormation();
     }
 
     function onClickNewFormation() {
         var formation = new Formation({});
-        console.log("Tu as bien cliqué pour ajouter une formation");
+        formation.parent = self;
         formation.displayFormation();
     }
 
@@ -704,7 +652,7 @@ function FormationsManagerDisplay() {
 
         self.legendDim = self.plusDim / 2;
 
-        self.checkLegend = statusEnum.Published.icon(0, 0, self.iconeSize);
+        self.checkLegend = statusEnum.Published.icon(self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
         self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
@@ -720,10 +668,7 @@ function FormationsManagerDisplay() {
         self.legendItemLength = self.legendWidth / 2;
         self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * svg.getSvgr().boundingRect(self.published.component).width, 30);
-        //self.published.component.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.getBoundingClientRect().width, 30);
-        //self.published.component.target && self.published.component.target.getBoundingClientRect && self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * self.published.component.target.getBoundingClientRect().width, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
-
 
         self.formations.sort(function (a, b) {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -733,51 +678,46 @@ function FormationsManagerDisplay() {
                 return 1;
             return 0
         });
-    }
-        self.displayHeaderFormations();
-        self.displayFormations = function () {
-            var posx = self.initialFormationsPosX;
-            var posy = MARGIN;
-            var count = 0;
-            for (var i = 0; i < self.formations.length; i++) {
-                if (i !== 0) {
-                    posx += (self.tileWidth + 2 * MARGIN);
-                }
-                if (count > (self.rows - 1)) {
-                    count = 0;
-                    posy += (self.tileHeight + 2 * MARGIN);
-                    posx = self.initialFormationsPosX;
-                }
-
-                self.formations[i].parent = self;
-                self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
-                self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-                self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
-
-                (function (element) {
-                    if (element.miniature.cadre) {
-                        svg.addEvent(element.miniature.cadre, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.content) {
-                        svg.addEvent(element.miniature.content, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                    if (element.miniature.image) {
-                        svg.addEvent(element.miniature.image, "click", function () {
-                            onClickFormation(element);
-                        });
-                    }
-
-                })(self.formations[i]);
-                count++;
+    };
+    self.displayHeaderFormations();
+    self.displayFormations = function () {
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
+        var count = 0;
+        for (var i = 0; i < self.formations.length; i++) {
+            if (i !== 0) {
+                posx += (self.tileWidth + 2 * MARGIN);
             }
-        };
-        self.displayFormations();
+            if (count > (self.rows - 1)) {
+                count = 0;
+                posy += (self.tileHeight + 2 * MARGIN);
+                posx = self.initialFormationsPosX;
+            }
+            self.formations[i].parent = self;
+            self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
+            self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+            (function (element) {
+                if (element.miniature.cadre) {
+                    svg.addEvent(element.miniature.cadre, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+                if (element.miniature.content) {
+                    svg.addEvent(element.miniature.content, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+                if (element.miniature.image) {
+                    svg.addEvent(element.miniature.image, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+            })(self.formations[i]);
+            count++;
+        }
+    };
+    self.displayFormations();
 }
 
 function HeaderDisplay () {
@@ -861,7 +801,6 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
             self.rightArrow.color(myColors.black);
             svg.addEvent(self.rightArrow, "click", self.handlerRightArrow);
         }
-
         self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y+h/2);
         self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
     } else {
@@ -873,10 +812,8 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     var self = this;
     self.tileWidth=(w-(self.rows-1)*MARGIN)/self.rows;
     self.tileHeight=(h-(self.lines+1)*MARGIN)/self.lines;
-
     var posX = 0;
     var posY = y;
-
     var count = startPosition*self.lines;
 
     if(self.reverseMode) {
@@ -1062,7 +999,6 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 self.tileHeight = tmpTileHeight;
             }
         }
-        //self.questionManipulator.last.add(self.answersManipulator.first);
         self.questionManipulator.ordonator.set(7, self.answersManipulator.first);
 
         self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
@@ -1081,8 +1017,6 @@ function QuestionDisplayAnswers(x, y, w, h) {
             }
 
             self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
-            //self.answersManipulator.ordonator.set(i, self.tabAnswer[i].manipulator.first);
-
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
@@ -1111,10 +1045,10 @@ function QuestionDisplayAnswers(x, y, w, h) {
 
     if(self.multipleChoice){
         //affichage d'un bouton "valider"
-        var w = 150;
-        var h = 50;
+        var w = 0.1 * drawing.width;
+        var h = Math.min(self.tileHeight, 50);
         var validateX,validateY;
-        validateX = 100 - 75;
+        validateX = 0.08 * drawing.width - w/2;
         validateY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
 
         var validateButton = displayText("Valider", w, h, myColors.green, myColors.yellow, 20, self.font, self.validateManipulator);
@@ -1162,9 +1096,9 @@ function QuestionDisplayAnswers(x, y, w, h) {
         svg.addEvent(validateButton.content, 'click', oclk);
 
         //Button reset
-        var w = 150;
-        var h = 50;
-        var resetX =- 75 -100;
+        var w = 0.1 * drawing.width;
+        var h = Math.min(self.tileHeight, 50);
+        var resetX = - w/2 - 0.08 * drawing.width;
         var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
         self.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
         self.resetManipulator.translator.move(resetX+w/2,resetY+h/2);
@@ -1213,49 +1147,41 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         var questionType = self.target.parent.children[1].messageText;
         if (self.multipleChoice){
             self.tabAnswer.forEach(function(answer){
-                if(answer instanceof AnswerElement){
+                if(answer.editable){
                     answer.multipleAnswer = answer.correct;
-                    answer.linkedAnswer.parent.multipleChoice=answer.correct;
-                    answer.linkedAnswer.parent.simpleChoice=!answer.correct;
+                    answer.parent.multipleChoice=answer.correct;
                     (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
                     answer.correct = answer.simpleAnswer;
-                    answer.linkedAnswer.correct = answer.simpleAnswer;
-                }});
-        }
-        else if (self.simpleChoice){
+                    answer.correct = answer.simpleAnswer;
+                }
+            });
+        } else {
             self.tabAnswer.forEach(function(answer){
-                if(answer instanceof AnswerElement){
+                if(answer.editable){
                     answer.simpleAnswer = answer.correct;
-                    answer.linkedAnswer.parent.simpleChoice=answer.correct;
-                    answer.linkedAnswer.parent.multipleChoice=!answer.correct;
+                    answer.parent.multipleChoice=!answer.correct;
                     (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
                     answer.correct = answer.multipleAnswer;
-                    answer.linkedAnswer.correct = answer.multipleAnswer;
-                }});
+                    answer.correct = answer.multipleAnswer;
+                }
+            });
         }
 
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
-        (questionType === "Réponse unique") ? (self.simpleChoice = true) : (self.simpleChoice = false);
-        self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
+
+        self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
 
-        self.tabAnswer.forEach(function(answer) {
-            if (answer.obj.checkbox) {
-                self.simpleChoice && (answer.correct = false);
-                self.multipleChoice && (answer.correct = false);
-                self.simpleChoice && (answer.linkedAnswer.correct = false);
-                self.multipleChoice && (answer.linkedAnswer.correct = false);
-            }
-        });
         self.tabAnswer.forEach(function(answer){
             var xCheckBox, yCheckBox = 0;
             if (answer.obj.checkbox) {
                 xCheckBox = answer.obj.checkbox.x;
                 yCheckBox = answer.obj.checkbox.y;
-                if (self.simpleChoice || self.multipleChoice){
-                    answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer).checkbox;
-                    answer.obj.checkbox.answerParent = answer;
-                }
+                answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer).checkbox;
+                answer.obj.checkbox.answerParent = answer;
+
+                answer.correct = false;
+                answer.correct = false;
             }
         });
         self.displayToggleButton(x, y, w, h, questionType);
@@ -1282,7 +1208,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
         i++;
     });
-    self.activeQuizzType = (self.simpleChoice === true) ? self.quizzType[0] : self.quizzType[1];
+    self.activeQuizzType = (self.multipleChoice) ? self.quizzType[1] : self.quizzType[0];
     self.toggleButtonManipulator.translator.move(0, y);
 }
 
@@ -1315,7 +1241,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         var textarea = document.createElement("textarea");
         textarea.textContent = self.label;
         textarea.width = self.w;
-        textarea.height = (self.linkedQuestion.image) ? (self.questionBlock.title.content.component.getBoundingClientRect().height) : ((self.h * .25)/2);
+        textarea.height = (self.linkedQuestion.image) ? svg.getSvgr().boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
 
         self.questionManipulator.ordonator.unset(1);
         textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
@@ -1407,35 +1333,35 @@ function QuizzDisplay(x,y,w,h) {
 
     x && (self.x = x);
     y && (self.y = y);
-    w && (self.cadreQuestion.w = w);
-    (w && x) && (self.cadreResult.w = w );
-    x && (self.cadreResult.x = x);
-    w && (self.cadreTitle.w = w);
+    w && (self.questionArea.w = w);
+    (w && x) && (self.resultArea.w = w );
+    x && (self.resultArea.x = x);
+    w && (self.titleArea.w = w);
     x && (self.quizzMarginX = x);
     self.headerPercentage = 0.1;
     self.questionPercentageWithImage = 0.3;
     self.questionPercentage = 0.2;
-    self.responsePercentageWithImage = 0.6;
-    self.responsePercentage = 0.7;
+    self.answerPercentageWithImage = 0.6;
+    self.answerPercentage = 0.7;
 
     var heightPage = drawing.height;
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
     self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
-    self.responseHeight = heightPage * self.responsePercentage -  MARGIN;
+    self.answerHeight = heightPage * self.answerPercentage -  MARGIN;
     self.questionHeightWithoutImage = heightPage * self.questionPercentage -  MARGIN;
-    self.responseHeightWithoutImage = heightPage * self.responsePercentage -  MARGIN;
+    self.answerHeightWithoutImage = heightPage * self.answerPercentage -  MARGIN;
     self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
-    self.responseHeightWithImage = heightPage * self.responsePercentageWithImage -  MARGIN;
+    self.answerHeightWithImage = heightPage * self.answerPercentageWithImage -  MARGIN;
 
-    var object = displayText(self.title, (self.cadreTitle.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
+    var object = displayText(self.title, (self.titleArea.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
     self.titleBox = object.cadre;
     self.titleText = object.content;
 
     self.quizzManipulator.ordonator.set(1,self.titleText);
 
     self.quizzManipulator.ordonator.set(0,self.titleBox);
-    self.quizzManipulator.translator.move(self.cadreQuestion.w/2,self.headerHeight/2);
+    self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
@@ -1445,7 +1371,7 @@ function QuizzDisplay(x,y,w,h) {
 function QuizzDisplayResult (color){
     var self = this;
     self.displayScore(color);
-    self.puzzle.display(0, self.questionHeight/2, drawing.width,self.responseHeight, self.puzzle.startPosition);
+    self.puzzle.display(0, self.questionHeight/2, drawing.width,self.answerHeight, self.puzzle.startPosition);
 }
 
 function GameDisplayMiniature(size){
@@ -1501,7 +1427,7 @@ function QuizzDisplayScore(color){
     self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
 
-    var object = displayText(self.finalMessage,self.cadreTitle.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
+    var object = displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
 
 }
 
@@ -1522,14 +1448,15 @@ function QuizzManagerDisplay(){
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 
-    self.bib.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
-        self.bibWidth-self.globalMargin.width/2, self.bibHeight-self.globalMargin.height, function(){
+    self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+        self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
-            self.questionCreator.display(self.bib.x + self.bibWidth, self.bib.y,
+            self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
                 150, self.previewButtonHeight-self.globalMargin.height);
+            mainManipulator.ordonator.unset(0);
         });
 }
 
@@ -1549,9 +1476,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        //self.quizzLabel.content.component.getBoundingClientRect && (self.quizzNameHeight = self.quizzLabel.content.component.getBoundingClientRect().height);
-        //self.quizzLabel.content.component.target && (self.quizzNameHeight = self.quizzLabel.content.component.target.getBoundingClientRect().height);
-        //runtime && (self.quizzNameHeight = runtime.boundingRect(self.quizzLabel.content.component).height);
         self.quizzNameHeight = svg.getSvgr().boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
@@ -1566,8 +1490,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var dblclickEdition = function (event) {
         var width;
-        //self.quizzLabel.content.component.getBoundingClientRect && (width = self.quizzLabel.content.component.getBoundingClientRect().width);
-        //runtime && (width = runtime.boundingRect(self.quizzLabel.content.component).width);
         width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
 
         self.quizzInfoManipulator.ordonator.unset(1);
@@ -1639,7 +1561,6 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
         self.toggleButtonHeight = 40;
 
         var validation = true;
-        console.log(self.questionCreator.activeQuizzType);
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
             if(!result.isValid) {
@@ -1715,7 +1636,6 @@ var AdminGUI = function (){
     Library.prototype.display = LibraryDisplay;
     Header.prototype.display = HeaderDisplay;
     AddEmptyElement.prototype.display = AddEmptyElementDisplay;
-    AnswerElement.prototype.display = AnswerElementDisplay;
     Formation.prototype.displayMiniature = FormationDisplayMiniature;
     Formation.prototype.displayFormation = FormationDisplayFormation;
     Formation.prototype.removeErrorMessage = FormationRemoveErrorMessage;
