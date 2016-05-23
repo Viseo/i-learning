@@ -306,7 +306,7 @@ function SVGUtil() {
         var sender = null;
         target.answerParent && (sender = target.answerParent);
         var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
-        !editor.multipleChoice && editor.tabAnswer.forEach(function(answer) {
+        !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(function(answer) {
             answer.correct = (answer !== sender) ? false : answer.correct;
         });
         sender.correct = !sender.correct;
@@ -329,7 +329,7 @@ function SVGUtil() {
 
     updateAllCheckBoxes = function (sender) {
         var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
-        editor.tabAnswer.forEach(function (answer) {
+        editor.linkedQuestion.tabAnswer.forEach(function (answer) {
             if (answer.editable && answer.obj.checkbox) {
                 answer.obj.checkbox.color(myColors.white, 2, myColors.black);
                 !answer.correct && answer.manipulator.ordonator.unset(8);

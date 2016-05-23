@@ -317,8 +317,8 @@ function Domain() {
     AddEmptyElement = function (parent, type) {
         var self = this;
         self.manipulator = new Manipulator(self);
-        self.plusManipulator = new Manipulator(self);
-        self.manipulator.ordonator.set(7, self.plusManipulator.first);
+        //self.plusManipulator = new Manipulator(self);
+        //self.manipulator.ordonator.set(7, self.plusManipulator.first);
         type && (self.type = type);
         switch (type) {
             case 'question':
@@ -784,23 +784,25 @@ function Domain() {
             } else {
                 self.multipleChoice = false;
             }
-            self.tabAnswer = [];
+            //self.tabAnswer = [];
             quest.tabAnswer.forEach(function (answer) {
-                answer.isEditable(self, true);
-                self.tabAnswer.push(answer);
+                if(answer instanceof Answer){
+                    answer.isEditable(self, true);
+                }
+                //self.tabAnswer.push(answer);
             });
-            self.quizzName = quest.parentQuizz.title;
-            self.label = quest.label;
-            self.rightAnswers = [];
-            self.fontSize = quest.fontSize;
-            self.font = quest.font;
-            self.bgColor = quest.bgColor;
-            self.colorBordure = quest.colorBordure;
-            self.questionNum = quest.questionNum;
+            //self.quizzName = quest.parentQuizz.title;
+            //self.label = quest.label;
+            //self.rightAnswers = [];
+            //self.fontSize = quest.fontSize;
+            //self.font = quest.font;
+            //self.bgColor = quest.bgColor;
+            //self.colorBordure = quest.colorBordure;
+            //self.questionNum = quest.questionNum;
 
-            self.tabAnswer.forEach(function (el) {
+            quest.tabAnswer.forEach(function (el) {
                 if (el.correct) {
-                    self.rightAnswers.push(el);
+                    quest.rightAnswers.push(el);
                 }
             });
 
@@ -808,16 +810,8 @@ function Domain() {
 
         if (!question) {
             // init default : 2 empty answers
+            self.linkedQuestion=new Question(defaultQuestion,self.parent.quizz);
 
-            self.tabAnswer = [new Answer(null, self), new Answer(null, self)];
-            self.tabAnswer.forEach(function (answer) {
-                answer.isEditable(self, true);
-            });
-            self.quizzName = "";
-            self.label = "";
-            self.rightAnswers = [];
-            self.fontSize = 20;
-            self.multipleChoice = false;
         } else {
             self.loadQuestion(question);
         }
