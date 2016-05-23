@@ -384,6 +384,21 @@ function FormationDisplayFormation(){
 
     self.gamesCounter = myFormation.gamesCounter;
 
+    var createLink = function(parentGame, childGame){
+        parentGame.childrenGames.push(childGame);
+        childGame.parentsGames.push(parentGame);
+        var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+        var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+        var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+        var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+        var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+        parentGame.parentFormation.graphManipulator.last.add(arrow);
+        // TEST Que ca marche
+        //var arrow = new svg.Arrow(5, 15, 20).position(50, 50, 200, 50);
+        //mainManipulator.ordonator.set(6, arrow);
+    }
+
+
     var showTitle = function() {
         var text = (self.label) ? self.label : (self.label=self.labelDefault);
         var color = (self.label) ? myColors.black : myColors.grey;
@@ -525,6 +540,7 @@ function FormationDisplayFormation(){
     };
 
     self.displayGraph = function (w, h){
+        self.graphManipulator.flush();
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
         var width = (self.levelWidth > w) ? self.levelWidth : w;
         for(var i = 0; i<self.levelsTab.length; i++){
@@ -538,7 +554,12 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator = new Manipulator(tabElement);
                 self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
+
+
                 var testGame = tabElement.displayMiniature(self.graphElementSize);
+                /* TEST */
+                (self.levelsTab[1] && self.levelsTab[0].gamesTab.length + self.levelsTab[1].gamesTab.length>= 2 && self.levelsTab[0].gamesTab[0]!==tabElement) && createLink( self.levelsTab[0].gamesTab[0], tabElement);
+
                 if(tabElement instanceof Quizz){
                     svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
                     svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
