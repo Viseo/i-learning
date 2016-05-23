@@ -1483,11 +1483,18 @@ function QuizzManagerDisplay(){
 
 function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
-
-    self.formationLabel = new svg.Text("Formation : " + self.formationName);
-    self.formationLabel.font("arial", 20).anchor("start");
+    self.returnButtonManipulator=new Manipulator(self);
+    self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
+    self.returnText=new svg.Text("Retour");
+    self.quizzInfoManipulator.first.add(self.returnText);
+    self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
+    var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
+    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("arial", 20).anchor("start");
+    self.returnButtonManipulator.translator.move(0,returnButtonHeight);
+    self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
+    self.formationLabel.font("arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
-
+    self.returnButtonManipulator.rotator.rotate(180);
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
         var color = (self.quizzName) ? myColors.black : myColors.grey;
