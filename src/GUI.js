@@ -300,38 +300,39 @@ function AddEmptyElementDisplay(x, y, w, h) {
     var self = this;
     self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
     self.plus = drawPlus(0,0, h*.3, h*0.3);
-    self.plusManipulator.ordonator.set(0, self.plus);
+    self.manipulator.ordonator.set(3, self.plus);
     self.obj.content.position(0,h*0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
     self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute("stroke-dasharray", [10, 5]);
 
-    var dblclickEdition = function () {
+    var dblclickAdd = function () {
         switch (self.type) {
             case 'answer':
-                self.parent.tabAnswer.pop();
-                var newAnswer = new Answer(null, self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion]);
-                self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
-                self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
-                self.plusManipulator.flush();
+                self.parent.linkedQuestion.tabAnswer.pop();
+                var newAnswer = new Answer(null, self.parent.linkedQuestion);
+                //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
+                //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
+                self.manipulator.flush();
                 //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
 
-                self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
+                //self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
                 newAnswer.isEditable(self, true);
-                self.parent.tabAnswer.push(newAnswer);
+                self.parent.linkedQuestion.tabAnswer.push(newAnswer);
 
-                if(self.parent.tabAnswer.length !== self.parent.MAX_ANSWERS) {
-                    self.parent.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
+                if(self.parent.linkedQuestion.tabAnswer.length < self.parent.MAX_ANSWERS) {
+                    self.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
                 }
-                self.parent.puzzle = new Puzzle(2, 4, self.parent.tabAnswer, self.parent.coordinatesAnswers, true, self);
+                self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, self.parent.coordinatesAnswers, true, self);
                 self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
                 self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
                 break;
             case 'question':
-                self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(0);
-                self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(1);
-                self.plusManipulator.flush();
+                //self.manipulator.ordonator.unset(0);
+                //self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(1);
+                ////self.plusManipulator.flush();
+                self.manipulator.flush();
 
                 self.parent.quizz.tabQuestions.pop();
 
@@ -353,9 +354,9 @@ function AddEmptyElementDisplay(x, y, w, h) {
         }
     };
 
-    svg.addEvent(self.plus, "dblclick", dblclickEdition);
-    svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-    svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+    svg.addEvent(self.plus, "dblclick", dblclickAdd);
+    svg.addEvent(self.obj.content, "dblclick", dblclickAdd);
+    svg.addEvent(self.obj.cadre, "dblclick", dblclickAdd);
 }
 
 function FormationDisplayMiniature (w,h) {
@@ -1146,7 +1147,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         self.target = drawing.getTarget(event.clientX, event.clientY);
         var questionType = self.target.parent.children[1].messageText;
         if (self.multipleChoice){
-            self.tabAnswer.forEach(function(answer){
+            self.linkedQuestion.tabAnswer.forEach(function(answer){
                 if(answer.editable){
                     answer.multipleAnswer = answer.correct;
                     answer.parent.multipleChoice=answer.correct;
@@ -1156,7 +1157,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
                 }
             });
         } else {
-            self.tabAnswer.forEach(function(answer){
+            self.linkedQuestion.tabAnswer.forEach(function(answer){
                 if(answer.editable){
                     answer.simpleAnswer = answer.correct;
                     answer.parent.multipleChoice=!answer.correct;
@@ -1166,22 +1167,20 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
                 }
             });
         }
-
+        
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
 
         self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
 
-        self.tabAnswer.forEach(function(answer){
+        self.linkedQuestion.tabAnswer.forEach(function(answer){
             var xCheckBox, yCheckBox = 0;
             if (answer.obj.checkbox) {
                 xCheckBox = answer.obj.checkbox.x;
                 yCheckBox = answer.obj.checkbox.y;
+                answer.correct = false;
                 answer.obj.checkbox = displayCheckbox(xCheckBox, yCheckBox, size, answer).checkbox;
                 answer.obj.checkbox.answerParent = answer;
-
-                answer.correct = false;
-                answer.correct = false;
             }
         });
         self.displayToggleButton(x, y, w, h, questionType);
@@ -1219,17 +1218,17 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         var text = (self.label) ? self.label : self.labelDefault;
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
-            self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
+            self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
             self.questionBlock.title.image._acceptDrop = true;
         } else {
-            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.fontSize, self.font, self.questionManipulator);
+            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
         }
         var fontSize = Math.min(20, self.h*0.1);
-        self.questNum = new svg.Text(self.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
+        self.questNum = new svg.Text(self.linkedQuestion.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.linkedQuestion.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
         self.questionManipulator.ordonator.set(6, self.questNum);
         self.questionBlock.title.content.color(color);
         self.questionBlock.title.content._acceptDrop = true;
-        self.questionBlock.title.cadre.color(self.bgColor, 1, self.colorBordure);
+        self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure);
         self.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
         svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
@@ -1319,10 +1318,12 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     showTitle();
 
     // bloc Answers
-    if (self.tabAnswer.length !== self.MAX_ANSWERS) {
-        self.tabAnswer.push(new AddEmptyElement(self, 'answer'));
+    if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
+
+        self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
-    self.puzzle = new Puzzle(2, 4, self.tabAnswer, self.coordinatesAnswers, true, self);
+    self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.puzzleManipulator.first);
+    self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, self.coordinatesAnswers, true, self);
     self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
 }
