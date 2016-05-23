@@ -490,9 +490,11 @@ function Domain() {
             }
 
             level.gamesTab.forEach(function (game) {
+                !game.parentsGames  && (game.parentsGames = []);
+                !game.childrenGames  && (game.childrenGames = []);
+
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x = textDimensions.width/2 + level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
-
                 if (pos.gameIndex < nbOfGames / 2) {
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
