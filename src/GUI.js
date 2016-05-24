@@ -194,6 +194,8 @@ function LibraryDisplay(x,y,w,h){
     self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
     var tempY = (2/10*h);
 
+    var displayArrowModeButton = true;
+
     for (var i = 0; i<self.tabLib.length; i++) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
@@ -201,11 +203,14 @@ function LibraryDisplay(x,y,w,h){
         self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.tabLib[i].imgSrc) {
+            displayArrowModeButton = false;
             var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
             objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
+
+
         } else {
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.w / 2 + self.libMargin2;
@@ -217,8 +222,10 @@ function LibraryDisplay(x,y,w,h){
 
             self.libraryGamesTab[i] = {objectTotal : objectTotal};
             self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
+
         }
     }
+
     self.libraryManipulator.first.move(x, y);
 
     self.libraryManipulators.forEach(function(e){
@@ -294,6 +301,24 @@ function LibraryDisplay(x,y,w,h){
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
 
     });
+
+    if(displayArrowModeButton) {
+        self.arrowModeManipulator = new Manipulator(self);
+        self.libraryManipulator.last.add(self.arrowModeManipulator.first);
+        self.arrowModeManipulator.first.move(w / 2, (11 / 20) * h);
+
+        self.arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
+        self.arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
+        self.arrowModeManipulator.ordonator.set(6, self.arrow);
+
+        var arrowMode = false;
+
+        svg.addEvent(self.arrowModeButton.cadre, 'click', function () {
+            arrowMode = true;
+            console.log('Mode flèche !');
+        });
+
+    }
 }
 
 function AddEmptyElementDisplay(x, y, w, h) {
@@ -1484,11 +1509,18 @@ function QuizzManagerDisplay(){
 
 function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
-
-    self.formationLabel = new svg.Text("Formation : " + self.formationName);
-    self.formationLabel.font("arial", 20).anchor("start");
+    self.returnButtonManipulator=new Manipulator(self);
+    self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
+    self.returnText=new svg.Text("Retour");
+    self.quizzInfoManipulator.first.add(self.returnText);
+    self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
+    var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
+    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("arial", 20).anchor("start");
+    self.returnButtonManipulator.translator.move(0,returnButtonHeight);
+    self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
+    self.formationLabel.font("arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
-
+    self.returnButtonManipulator.rotator.rotate(180);
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
         var color = (self.quizzName) ? myColors.black : myColors.grey;
