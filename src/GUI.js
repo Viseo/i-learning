@@ -185,8 +185,8 @@ function LibraryDisplay(x,y,w,h){
     self.bordure.position(w/2,h/2-self.borderSize);
     self.libraryManipulator.last.add(self.bordure);
 
-    self.title = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
-    self.title.position(w/2, (1/20)*h);
+    self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
+    self.titleSvg.position(w/2, (1/20)*h);
 
     var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
@@ -1513,6 +1513,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
     self.returnText=new svg.Text("Retour");
     self.quizzInfoManipulator.first.add(self.returnText);
+
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("arial", 20).anchor("start");
@@ -1521,6 +1522,27 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.formationLabel.font("arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
+    var textSize = svg.getSvgr().boundingRect(self.returnText.component);
+    self.returnTextCadre = new svg.Rect(textSize.width + svg.getSvgr().boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
+    self.returnTextCadre.position(textSize.width/2 + svg.getSvgr().boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
+    self.quizzInfoManipulator.first.add(self.returnTextCadre);
+    self.returnTextCadre.parentFormation=self.parentFormation;
+    self.returnText.parentFormation=self.parentFormation;
+    self.returnButton.parentFormation=self.parentFormation;
+
+    var returnHandler = function(event){
+        console.log("click");
+        var target=drawing.getTarget(event.clientX,event.clientY);
+        console.log(target);
+        target.parentFormation.displayFormation();
+        self.header=new Header ();
+        self.header.display();
+    };
+
+    svg.addEvent(self.returnButton, "click", returnHandler);
+    svg.addEvent(self.returnText, "click", returnHandler);
+    svg.addEvent(self.returnTextCadre, "click", returnHandler);
+
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
         var color = (self.quizzName) ? myColors.black : myColors.grey;
