@@ -404,6 +404,7 @@ function Domain() {
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
         self.quizzManager = new QuizzManager();
+        self.quizzManager.parentFormation=self;
         self.targetLevelIndex = 0;
         self.levelsTab = [];
 
