@@ -311,14 +311,16 @@ function LibraryDisplay(x,y,w,h){
 
             parentGame.childrenGames.push(childGame);
             childGame.parentsGames.push(parentGame);
-
-            var arrow= new Arrow(parentGame,childGame);
-            parentGame.parentFormation.graphManipulator.last.add(arrow);
+            var arrow = new Arrow(parentGame,childGame);
+            parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
         };
 
+
         var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
-        var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
-        arrowModeManipulator.ordonator.set(6, arrow);
+        //var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeButton.arrow=drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeButton.arrow.color(myColors.black,1,myColors.black);
+        arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
 
         var toggleArrowMode = function() {
             var arrowMode = false;
@@ -327,6 +329,7 @@ function LibraryDisplay(x,y,w,h){
                 arrowMode = !arrowMode;
                 if(arrowMode) {
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                    arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
                     self.formation.levelsTab.forEach(function (level, levelNumber) {
                         level.gamesTab.forEach(function (game) {
                             var parentGame = game;
@@ -353,15 +356,18 @@ function LibraryDisplay(x,y,w,h){
                     })
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                    arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
                     // TODO remove events
                 }
             }
         }();
 
         svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
+        svg.addEvent(arrowModeButton.arrow, 'click', toggleArrowMode)
 
     }
 }
+
 
 function AddEmptyElementDisplay(x, y, w, h) {
     var self = this;
@@ -591,7 +597,18 @@ function FormationDisplayFormation(){
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     };
+    self.updateAllLinks=function(){
+        self.levelsTab.forEach(function(level){
+           level.gamesTab.forEach(function(parentGame){
+               parentGame.childrenGames.forEach(function(game){
+                   var arrow= new Arrow(parentGame,game);
+                   parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
+               });
+           }) ;
+        });
 
+
+    };
     self.displayGraph = function (w, h){
         self.graphManipulator.flush();
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
@@ -632,6 +649,8 @@ function FormationDisplayFormation(){
         self.panel.resizeContent(height);
         self.panel.resizeContentW(self.levelWidth-1);
         self.panel.back.parent.parentManip=self.graphManipulator;
+
+        self.updateAllLinks();
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
