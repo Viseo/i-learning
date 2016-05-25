@@ -308,6 +308,7 @@ function LibraryDisplay(x,y,w,h){
         arrowModeManipulator.first.move(w / 2, (11 / 20) * h);
 
         var createLink = function(parentGame, childGame){
+            if(parentGame.childrenGames.indexOf(childGame) != -1) return;
 
             parentGame.childrenGames.push(childGame);
             childGame.parentsGames.push(parentGame);
