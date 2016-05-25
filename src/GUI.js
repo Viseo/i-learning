@@ -252,7 +252,7 @@ function LibraryDisplay(x,y,w,h){
             textObject && textObject.content && manageDnD(textObject.content, manip);
 
             var mouseClick = function (event){
-                var target = drawing.getTarget(event.clientX, event.clientY);
+                var target = drawings.background.getTarget(event.clientX, event.clientY);
                 self.libraryGamesTab.forEach(function(e){
                     if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
                         if (e.objectTotal!==self.gameSelected){
@@ -274,7 +274,7 @@ function LibraryDisplay(x,y,w,h){
             var mouseupHandler = function(event){
                 var img = manip.ordonator.children.shift();
                 manip.first.parent.remove(manip.first);
-                var target = drawing.getTarget(event.clientX, event.clientY);
+                var target = drawings.background.getTarget(event.clientX, event.clientY);
                 if(target && target.parent && target.parent.parentManip){
                     if(!(target.parent.parentManip.parentObject instanceof Library)){
                         self.dropAction(img, event);
@@ -507,7 +507,7 @@ function FormationDisplayFormation(){
 
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.quizzManager.loadQuizz(targetQuizz);
         self.quizzManager.display();
@@ -1189,8 +1189,9 @@ function QuestionCreatorDisplay (x, y, w, h) {
 function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var self = this;
     var size = self.puzzle.tileHeight*0.2;
+    self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
     var toggleHandler = function(event){
-        self.target = drawing.getTarget(event.clientX, event.clientY);
+        self.target = drawings.background.getTarget(event.clientX, event.clientY);
         var questionType = self.target.parent.children[1].messageText;
         if (self.multipleChoice){
             self.linkedQuestion.tabAnswer.forEach(function(answer){
@@ -1265,6 +1266,11 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
 function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
+    // bloc Question
+    self.questionCreatorManipulator.flush();
+    self.questionBlock = {rect: new svg.Rect(w, h).color([], 1, myColors.black).position(w / 2, y + h / 2)};
+    self.questionCreatorManipulator.last.add(self.questionBlock.rect);
+    self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
         var color = (self.label) ? myColors.black : myColors.grey;
         var text = (self.label) ? self.label : self.labelDefault;
@@ -1362,10 +1368,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
     };
 
-    // bloc Question
-    self.questionCreatorManipulator.flush();
-    self.questionBlock = {rect: new svg.Rect(self.w, self.h).color([], 1, myColors.black).position(self.w / 2, y + self.h / 2)};
-    self.questionCreatorManipulator.last.add(self.questionBlock.rect);
+
 
     showTitle();
 
@@ -1489,7 +1492,7 @@ function QuizzManagerDisplay(){
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
-        var target=drawing.getTarget(event.clientX,event.clientY);
+        var target=drawings.background.getTarget(event.clientX,event.clientY);
         var element=target.parent.parentManip.parentObject;
         self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         element.selected = true;
@@ -1538,7 +1541,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var returnHandler = function(event){
         console.log("click");
-        var target=drawing.getTarget(event.clientX,event.clientY);
+        var target=drawings.background.getTarget(event.clientX,event.clientY);
         console.log(target);
         target.parentFormation.displayFormation();
         self.header=new Header ();

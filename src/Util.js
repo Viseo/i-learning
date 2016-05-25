@@ -18,7 +18,7 @@ if(typeof SVG != "undefined") {
 /* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
-        gui = new Gui();
+        gui = new Gui({speed: 50, step: 10});
     }
 }
 function setGui(_gui){
@@ -62,24 +62,12 @@ function SVGGlobalHandler() {
         !anchor && (anchor = "content");
         self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
         self.drawing.manipulator = new Manipulator(self);
-
-        //self.piste = new svg.Drawing(w, h).doshow("content").position(-w, -h);
-        //self.piste.manipulator = new Manipulator(self);
-        //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
-        //self.glass.manipulator = new Manipulator(self);
-
-        //self.glass.add(self.glass.manipulator.translator);
-        //self.glass.manipulator.last.add(self.glass.area);
-        //self.piste.add(self.piste.manipulator.translator);
-        //self.drawing.manipulator.last.add(self.piste).add(self.glass);
-        //self.glass.area.color([255,255,255]).opacity(0.001);
-
-        //Pour la glace et la piste apres Refactor
-        //self.piste = new svg.Drawing(w, h).show("content").position(0, 0);
         self.piste = new Manipulator(self);
-        self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001);
+        self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
         self.drawing.add(self.drawing.manipulator.translator);
-        self.drawing.manipulator.ordonator.set(8, self.piste.first).set(9, self.glass);
+        self.background = self.drawing.manipulator.translator;
+        self.drawing.manipulator.ordonator.set(8, self.piste.first);
+        self.drawing.add(self.glass);
 
 
         var onmousedownHandler = function (event) {
@@ -87,7 +75,7 @@ function SVGGlobalHandler() {
             //    console.log(el.type);
             //});
             !runtime && document.activeElement.blur();
-            self.target = self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.background.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (self.target) {
@@ -98,7 +86,7 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "mousedown", onmousedownHandler);
 
         var onmousemoveHandler = function (event) {
-            self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
                 svg.event(self.target, "mousemove", event);
             }
@@ -107,7 +95,7 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
 
         var ondblclickHandler = function (event) {
-            self.target = self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
                 svg.event(self.target, "dblclick", event);
             }
@@ -115,7 +103,7 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
-            self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
             if (self.target) {
                 //if (self.target.component.mock){
@@ -302,7 +290,7 @@ function SVGUtil() {
     };
 
     onclickFunction = function (event) {
-        var target = drawing.getTarget(event.clientX, event.clientY);
+        var target = drawings.background.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
         var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);

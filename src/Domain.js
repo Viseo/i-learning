@@ -217,7 +217,7 @@ function Domain() {
         };
 
         self.dropAction = function (element, event) {
-            var target = drawing.getTarget(event.clientX, event.clientY);
+            var target = drawings.background.getTarget(event.clientX, event.clientY);
             if (target && target._acceptDrop) {
                 if (element instanceof svg.Image) {
                     var oldQuest = {
@@ -764,10 +764,8 @@ function Domain() {
         self.manipulator.last.add(self.questionCreatorManipulator.first);
 
         self.questionManipulator = new Manipulator(self);
-        self.questionCreatorManipulator.last.add(self.questionManipulator.first);
 
         self.toggleButtonManipulator = new Manipulator(self);
-        self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
 
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);
