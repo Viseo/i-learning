@@ -98,7 +98,6 @@ function SVGGlobalHandler() {
 
         var onmouseupHandler = function (event) {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
-            //console.log(self.target);
             if (self.target) {
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
@@ -146,7 +145,7 @@ function SVGGlobalHandler() {
         }
 
     };
-    gui.Panel.prototype.addhHandle = function () {
+    gui.Panel.prototype.addhHandle = function (callback) {
         var self = this;
         this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
         this.component.add(self.hHandle.component);
@@ -154,6 +153,7 @@ function SVGGlobalHandler() {
             var y = self.content.y;
             var x = -position * self.content.width / self.view.width + self.view.width / 2;
             self.content.move(x, y);
+            callback(x);
         }
     };
     gui.Panel.prototype.resizeContentW = function (width) {
@@ -194,6 +194,25 @@ function SVGGlobalHandler() {
             x = -this.content.width + this.view.width;
         }
         return x;
+    };
+    gui.Panel.prototype.functionOnMoveH = function (callback) {
+        this.moveContentH = function (x) {
+            var self=this;
+            if (!self.animation) {
+                self.animation = true;
+                var lx = this.controlPositionH(x);
+                this.content.onChannel().smoothy(param.speed, param.step)
+                    .execute(completeMovement).moveTo(lx, this.content.y);
+                callback(x);
+            }
+            function completeMovement(progress) {
+                self.updateHandleH();
+                if (progress===1) {
+                    delete self.animation;
+                }
+            }
+            return this;
+        }
     };
     gui.Panel.prototype.processKeys = function(keycode) {
         if (isUpArrow(keycode)) {

@@ -564,7 +564,7 @@ function FormationDisplayFormation(){
     self.displayLevel = function(w, h, level){
         self.graphManipulator.last.add(level.manipulator.first);
 
-        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-self.borderSize-2*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
@@ -578,6 +578,8 @@ function FormationDisplayFormation(){
         self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
+        level.w = w;
+        level.h = h;
         level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
     };
 
@@ -597,9 +599,36 @@ function FormationDisplayFormation(){
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
-
         self.panel = new gui.Panel(w, h);
-        self.panel.addhHandle();
+        self.panel.addhHandle(function () {
+            self.levelsTab.forEach(function (level) {
+                level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
+            });
+        });
+
+        function controlPositionH(x) {
+            if (x > 0) {
+                x = 0;
+            }
+            if (x < -self.panel.content.width + self.panel.view.width) {
+                x = -self.panel.content.width + self.panel.view.width;
+            }
+            return x;
+        }
+        self.panel.functionOnMoveH(function (x) {
+            self.levelsTab.forEach(function (level) {
+                if(!level.animation) {
+                    level.animation = true;
+                    level.manipulator.first.onChannel("level"+level.index).smoothy(param.speed, param.step)
+                        .execute(completeMovement).moveTo(-w/2-controlPositionH(x), -h/2+level.y);
+                }
+                function completeMovement(progress) {
+                    if (progress===1) {
+                        delete level.animation;
+                    }
+                }
+            });
+        });
         (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
