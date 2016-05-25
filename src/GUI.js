@@ -305,7 +305,7 @@ function LibraryDisplay(x,y,w,h){
     if (displayArrowModeButton) {
         var arrowModeManipulator = new Manipulator(self);
         self.libraryManipulator.last.add(arrowModeManipulator.first);
-        arrowModeManipulator.first.move(w / 2, (11 / 20) * h);
+        arrowModeManipulator.first.move(w / 2, tempY + (2/10) * h);
 
         var createLink = function(parentGame, childGame){
             if(parentGame.childrenGames.indexOf(childGame) != -1) return;
