@@ -368,6 +368,7 @@ function LibraryDisplay(x,y,w,h){
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                     // TODO remove events
+                    svg.getSvgr().addGlobalEvent('keydown', function (event) {});
                 }
             }
         }();
