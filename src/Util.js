@@ -157,12 +157,10 @@ function SVGGlobalHandler() {
         }
     };
     gui.Panel.prototype.resizeContentW = function (width) {
-        this.back.color(myColors.green).opacity(0.001);
+        this.back.color(myColors.white).opacity(0.001);
         if (width>this.width) {
             this.content.width = width;
             var height = this.content.height;
-            this.back.position(width / 2, height / 2);
-            this.back.dimension(width, height);
             this.updateHandleH();
         }
         return this;

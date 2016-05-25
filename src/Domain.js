@@ -452,9 +452,7 @@ function Domain() {
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
-            var textDimensions;
-            textDimensions = {width:svg.getSvgr().boundingRect(level.obj.content.component).width, height:svg.getSvgr().boundingRect(level.obj.content.component).height};
-            if(spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))){
+            if(spaceOccupied > (level.parentFormation.levelWidth)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
                 level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
                 level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
@@ -467,7 +465,7 @@ function Domain() {
                 !game.childrenGames  && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = textDimensions.width/2 + level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
+                game.miniaturePosition.x = level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
                 if (pos.gameIndex < nbOfGames / 2) {
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {

@@ -571,7 +571,7 @@ function FormationDisplayFormation(){
         self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
-        level.manipulator.first.move(-w/2, -h/2+level.y);
+        level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
     };
 
     self.displayFrame = function (w, h) {
@@ -593,7 +593,7 @@ function FormationDisplayFormation(){
 
         self.panel = new gui.Panel(w, h);
         self.panel.addhHandle();
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelWidth, self.levelHeight*(self.levelsTab.length));
+        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
