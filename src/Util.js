@@ -18,7 +18,7 @@ if(typeof SVG != "undefined") {
 /* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
-        gui = new Gui({speed: 50, step:10});
+        gui = new Gui({speed: 50, step: 10});
     }
 }
 function setGui(_gui){
@@ -52,8 +52,6 @@ function SVGGlobalHandler() {
         self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
         self.last = self.scalor;
         self.first = self.translator;
-
-
     };
 
     Drawings = function (w, h, anchor) {
@@ -62,32 +60,16 @@ function SVGGlobalHandler() {
         !anchor && (anchor = "content");
         self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
         self.drawing.manipulator = new Manipulator(self);
-
-        //self.piste = new svg.Drawing(w, h).doshow("content").position(-w, -h);
-        //self.piste.manipulator = new Manipulator(self);
-        //self.glass = new svg.Drawing(w, h).show("content").position(w, h);
-        //self.glass.manipulator = new Manipulator(self);
-
-        //self.glass.add(self.glass.manipulator.translator);
-        //self.glass.manipulator.last.add(self.glass.area);
-        //self.piste.add(self.piste.manipulator.translator);
-        //self.drawing.manipulator.last.add(self.piste).add(self.glass);
-        //self.glass.area.color([255,255,255]).opacity(0.001);
-
-        //Pour la glace et la piste apres Refactor
-        //self.piste = new svg.Drawing(w, h).show("content").position(0, 0);
         self.piste = new Manipulator(self);
-        self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001);
+        self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
         self.drawing.add(self.drawing.manipulator.translator);
-        self.drawing.manipulator.ordonator.set(8, self.piste.first).set(9, self.glass);
-
+        self.background = self.drawing.manipulator.translator;
+        self.drawing.manipulator.ordonator.set(8, self.piste.first);
+        self.drawing.add(self.glass);
 
         var onmousedownHandler = function (event) {
-            //self.paper.forEach(function (el) {
-            //    console.log(el.type);
-            //});
             !runtime && document.activeElement.blur();
-            self.target = self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.background.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (self.target) {
@@ -98,7 +80,7 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "mousedown", onmousedownHandler);
 
         var onmousemoveHandler = function (event) {
-            self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
                 svg.event(self.target, "mousemove", event);
             }
@@ -107,7 +89,7 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
 
         var ondblclickHandler = function (event) {
-            self.target = self.drawing.getTarget(event.clientX, event.clientY);
+            self.target = self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
                 svg.event(self.target, "dblclick", event);
             }
@@ -115,23 +97,8 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "dblclick", ondblclickHandler);
 
         var onmouseupHandler = function (event) {
-            self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
-            //console.log(self.target);
+            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
-                //if (self.target.component.mock){
-                //    console.log("mock");
-                //    console.log("target : " + self.target.component.mock.tag);
-                //}
-                //else {
-                //    console.log("normal");
-                //    console.log("target : " + self.target.component.tag);
-                //
-                //}
-                //console.log("clic x : " + event.clientX);
-                //console.log("clic y : " + event.clientY);
-                //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
-                //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
-
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
             }
@@ -178,7 +145,7 @@ function SVGGlobalHandler() {
         }
 
     };
-    gui.Panel.prototype.addhHandle = function () {
+    gui.Panel.prototype.addhHandle = function (callback) {
         var self = this;
         this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
         this.component.add(self.hHandle.component);
@@ -186,15 +153,14 @@ function SVGGlobalHandler() {
             var y = self.content.y;
             var x = -position * self.content.width / self.view.width + self.view.width / 2;
             self.content.move(x, y);
+            callback(x);
         }
     };
     gui.Panel.prototype.resizeContentW = function (width) {
-        this.back.color(myColors.green).opacity(0.001);
+        this.back.color(myColors.white).opacity(0.001);
         if (width>this.width) {
             this.content.width = width;
             var height = this.content.height;
-            this.back.position(width / 2, height / 2);
-            this.back.dimension(width, height);
             this.updateHandleH();
         }
         return this;
@@ -228,6 +194,25 @@ function SVGGlobalHandler() {
             x = -this.content.width + this.view.width;
         }
         return x;
+    };
+    gui.Panel.prototype.functionOnMoveH = function (callback) {
+        this.moveContentH = function (x) {
+            var self=this;
+            if (!self.animation) {
+                self.animation = true;
+                var lx = this.controlPositionH(x);
+                this.content.onChannel().smoothy(param.speed, param.step)
+                    .execute(completeMovement).moveTo(lx, this.content.y);
+                callback(x);
+            }
+            function completeMovement(progress) {
+                self.updateHandleH();
+                if (progress===1) {
+                    delete self.animation;
+                }
+            }
+            return this;
+        }
     };
     gui.Panel.prototype.processKeys = function(keycode) {
         if (isUpArrow(keycode)) {
@@ -302,7 +287,7 @@ function SVGUtil() {
     };
 
     onclickFunction = function (event) {
-        var target = drawing.getTarget(event.clientX, event.clientY);
+        var target = drawings.background.getTarget(event.clientX, event.clientY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
         var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
@@ -714,6 +699,18 @@ function SVGUtil() {
 
 //////////////// end of SVG-util.js ///////////////////////////
 
+var Arrow=function(parentGame,childGame){
+    var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+    var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+    var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+    var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+    var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+    arrow.origin=parentGame;
+    arrow.target=childGame;
+    return arrow;
+};
+
+
 
 /////////////// Bdd.js //////////////////
 /**
@@ -735,7 +732,6 @@ function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 21;
     MARGIN = 10;
 
     myColors = {
@@ -2030,3 +2026,5 @@ function httpPostAsync(theUrl, body, callback) {
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(body));
 }
+
+

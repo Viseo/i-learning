@@ -217,7 +217,7 @@ function Domain() {
         };
 
         self.dropAction = function (element, event) {
-            var target = drawing.getTarget(event.clientX, event.clientY);
+            var target = drawings.background.getTarget(event.clientX, event.clientY);
             if (target && target._acceptDrop) {
                 if (element instanceof svg.Image) {
                     var oldQuest = {
@@ -269,37 +269,19 @@ function Domain() {
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
                     case (formation.library.tabLib[0].label):
-                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
-                            var newQuizz = new Quizz(defaultQuizz, false, formation);
-                            formation.gamesCounter.quizz++;
-                            newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                            newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
-                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
-                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
-                            }
-                        }
-                        else{
-                            formation.displayErrorMessage(formation.maxGameInARowMessage);
-                        }
+                        var newQuizz = new Quizz(defaultQuizz, false, formation);
+                        formation.gamesCounter.quizz++;
+                        newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                        newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         break;
                     case (formation.library.tabLib[1].label):
-                        if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
-                            var newBd = new Bd({}, formation);
-                            formation.gamesCounter.bd++;
-                            newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
-                            if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length === formation.maxGameInARow){
-                                formation.levelsTab[formation.targetLevelIndex].addedLastGame = true;
-                            }
-                        }
-                        else {
-                            formation.displayErrorMessage(formation.maxGameInARowMessage);
-                        }
+                        var newBd = new Bd({}, formation);
+                        formation.gamesCounter.bd++;
+                        newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
+                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
                         break;
                 }
-
-
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
             }
@@ -401,7 +383,6 @@ function Domain() {
         self.x = MARGIN;
         self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
         self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
-        self.maxGameInARow = MAX_GAME_IN_A_ROW_GRAPH_FORMATION;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
         self.quizzManager = new QuizzManager();
@@ -498,31 +479,20 @@ function Domain() {
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
-            var textDimensions;
-            //level.obj.content.component.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.getBoundingClientRect().width, height:level.obj.content.component.getBoundingClientRect().height});
-            //level.obj.content.component.target && level.obj.content.component.target.getBoundingClientRect && (textDimensions = {width:level.obj.content.component.target.getBoundingClientRect().width, height:level.obj.content.component.target.getBoundingClientRect().height});
-            //runtime && (textDimensions = {width:runtime.boundingRect(level.obj.content.component).width, height:runtime.boundingRect(level.obj.content.component).height});
-            textDimensions = {width:svg.getSvgr().boundingRect(level.obj.content.component).width, height:svg.getSvgr().boundingRect(level.obj.content.component).height};
-
-
-            if((spaceOccupied > (level.parentFormation.levelWidth - (level.obj.content.x + textDimensions.width/2))) && (level.gamesTab.length < level.parentFormation.maxGameInARow || level.addedLastGame)){
+            if(spaceOccupied > (level.parentFormation.levelWidth)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
                 level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
                 level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
                 level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
                 level.manipulator.ordonator.set(9,level.obj.line);
                 level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
-                if(level.gamesTab.length === level.parentFormation.maxGameInARow){
-                    level.addedLastGame = false;
-                }
             }
-
             level.gamesTab.forEach(function (game) {
                 !game.parentsGames  && (game.parentsGames = []);
                 !game.childrenGames  && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = textDimensions.width/2 + level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
+                game.miniaturePosition.x = level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
                 if (pos.gameIndex < nbOfGames / 2) {
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
@@ -800,10 +770,8 @@ function Domain() {
         self.manipulator.last.add(self.questionCreatorManipulator.first);
 
         self.questionManipulator = new Manipulator(self);
-        self.questionCreatorManipulator.last.add(self.questionManipulator.first);
 
         self.toggleButtonManipulator = new Manipulator(self);
-        self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
 
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);

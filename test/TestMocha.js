@@ -183,7 +183,7 @@ describe('Firefox game', function () {
         runtime.declareAnchor('content');
         svg = SVG(runtime);
         guiSvgModule.setSVG(svg);
-        var guiSvg = guiSvgModule.Gui();
+        var guiSvg = guiSvgModule.Gui({speed: 50, step: 10});
         util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
@@ -230,14 +230,14 @@ describe('Firefox game', function () {
             "./log/testFirefoxAdminShortGames.json", 'content', runtime, done);
     });
 
-    it("a short admin use (to QuizzManager)", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminQuizzManager.json", 'content', runtime, done);
-    });
+    //it("a short admin use (to QuizzManager)", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testFirefoxAdminQuizzManager.json", 'content', runtime, done);
+    //});
 
     it("a short admin use (to QuizzManager, with new questions and answers)", function (done) {
         this.timeout(100000);
@@ -252,6 +252,7 @@ describe('Firefox game', function () {
         this.timeout(100000);
         checkScenario(
             function () {
+                var param = {speed: 50, step: 10};
                 adminModule.admin();
             },
             "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
@@ -263,7 +264,7 @@ describe('Firefox game', function () {
             function () {
                 adminModule.admin();
             },
-            "./log/testFirefoxAdminTextarea.json", 'content', runtime, done);
+            "./log/testTextarea.json", 'content', runtime, done);
     });
 });
 
