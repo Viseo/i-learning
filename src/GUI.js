@@ -538,7 +538,7 @@ function FormationDisplayFormation(){
     };
 
     self.displayFrame = function (w, h) {
-        !runtime && (window.onkeydown = function (event) {
+        svg.getSvgr().addGlobalEvent("keydown", function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -631,7 +631,7 @@ function FormationRemoveErrorMessage(message) {
 function FormationsManagerDisplay() {
     var self = this;
     function displayPanel() {
-        !runtime && (window.onkeydown = function (event) {
+        svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
