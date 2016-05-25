@@ -330,6 +330,10 @@ function LibraryDisplay(x,y,w,h){
             return function() {
                 arrowMode = !arrowMode;
                 self.arrowMode = arrowMode;
+
+                var panel = self.formation.panel;
+                var glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
+
                 if(arrowMode) {
 
                     self.libraryGamesTab.forEach(function(e) {
@@ -338,35 +342,40 @@ function LibraryDisplay(x,y,w,h){
                     });
 
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                    self.formation.levelsTab.forEach(function (level, levelNumber) {
-                        level.gamesTab.forEach(function (game) {
-                            var parentGame = game;
 
-                            var mouseDownAction = function () {
-                                self.formation.levelsTab.slice(levelNumber + 1).forEach(function (level) {
-                                    level.gamesTab.forEach(function (game) {
-                                        var mouseUpAction = function () {
-                                            console.log('mouseUp !');
-                                            createLink(parentGame, game)
-                                        };
-                                        svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mouseup', mouseUpAction);
-                                        svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mouseup', mouseUpAction);
-                                        console.log('added mouseUp event', mouseUpAction);
-                                        // TODO remove mouseUp events
-                                    })
-                                });
-                                console.log('finished mouseDownAction');
-                            };
+                    self.formation.graphManipulator.last.add(glass);
 
-                            svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
-                            svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
-                        })
-                    });
+                    var mouseDownAction = function (event) {
+                        var graph = self.formation.graphManipulator.last;
+                        graph.remove(graph.children[graph.children.length - 1]);
+                        var targetParent = drawings.background.getTarget(event.clientX, event.clientY);
+
+                        var mouseUpAction = function(event) {
+                            var targetChild = drawings.background.getTarget(event.clientX, event.clientY);
+                            if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
+                                (targetParent.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetParent.parent.parentManip.parentObject instanceof Bd) &&
+                                targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
+                                (targetChild.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetChild.parent.parentManip.parentObject instanceof Bd)
+                            ) {
+                                createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                            }
+                            self.formation.graphManipulator.last.add(glass);
+
+                        };
+                        svg.addEvent(glass, 'mouseup', mouseUpAction);
+                    };
+
+                    svg.addEvent(glass, 'mousedown', mouseDownAction);
+
                     svg.getSvgr().addGlobalEvent('keydown', function (event) {
                         if(event.keyCode === 27) toggleArrowMode();
                     });
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                    var graph = self.formation.graphManipulator.last;
+                    graph.remove(graph.children[graph.children.length - 1]);
                     // TODO remove events
                     svg.getSvgr().addGlobalEvent('keydown', function (event) {});
                 }
