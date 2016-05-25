@@ -328,7 +328,7 @@ function LibraryDisplay(x,y,w,h){
             return function() {
                 arrowMode = !arrowMode;
                 if(arrowMode) {
-                    // TODO color button
+                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     self.formation.levelsTab.forEach(function (level, levelNumber) {
                         level.gamesTab.forEach(function (game) {
                             var parentGame = game;
@@ -354,7 +354,7 @@ function LibraryDisplay(x,y,w,h){
                         })
                     })
                 } else {
-                    // TODO color button
+                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                     // TODO remove events
                 }
             }
