@@ -96,7 +96,7 @@ function main(targetQuizz) {
     //window.oldWidth=window.innerWidth;
     //window.oldHeight=window.innerHeight;
     setTimeout(function(){
-        //window.onresize = resizePaper;
+        window.onresize = resizePaper;
     },200);
 
 

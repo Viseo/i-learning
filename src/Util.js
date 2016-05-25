@@ -52,8 +52,6 @@ function SVGGlobalHandler() {
         self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
         self.last = self.scalor;
         self.first = self.translator;
-
-
     };
 
     Drawings = function (w, h, anchor) {
@@ -69,11 +67,7 @@ function SVGGlobalHandler() {
         self.drawing.manipulator.ordonator.set(8, self.piste.first);
         self.drawing.add(self.glass);
 
-
         var onmousedownHandler = function (event) {
-            //self.paper.forEach(function (el) {
-            //    console.log(el.type);
-            //});
             !runtime && document.activeElement.blur();
             self.target = self.background.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
@@ -106,20 +100,6 @@ function SVGGlobalHandler() {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
             if (self.target) {
-                //if (self.target.component.mock){
-                //    console.log("mock");
-                //    console.log("target : " + self.target.component.mock.tag);
-                //}
-                //else {
-                //    console.log("normal");
-                //    console.log("target : " + self.target.component.tag);
-                //
-                //}
-                //console.log("clic x : " + event.clientX);
-                //console.log("clic y : " + event.clientY);
-                //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
-                //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
-
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
             }
@@ -702,6 +682,18 @@ function SVGUtil() {
 
 //////////////// end of SVG-util.js ///////////////////////////
 
+var Arrow=function(parentGame,childGame){
+    var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+    var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+    var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+    var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+    var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+    arrow.origin=parentGame;
+    arrow.target=childGame;
+    return arrow;
+};
+
+
 
 /////////////// Bdd.js //////////////////
 /**
@@ -723,7 +715,6 @@ function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 21;
     MARGIN = 10;
 
     myColors = {
@@ -2018,3 +2009,5 @@ function httpPostAsync(theUrl, body, callback) {
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(body));
 }
+
+

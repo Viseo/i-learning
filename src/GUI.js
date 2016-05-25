@@ -302,21 +302,64 @@ function LibraryDisplay(x,y,w,h){
 
     });
 
-    if(displayArrowModeButton) {
-        self.arrowModeManipulator = new Manipulator(self);
-        self.libraryManipulator.last.add(self.arrowModeManipulator.first);
-        self.arrowModeManipulator.first.move(w / 2, (11 / 20) * h);
+    if (displayArrowModeButton) {
+        var arrowModeManipulator = new Manipulator(self);
+        self.libraryManipulator.last.add(arrowModeManipulator.first);
+        arrowModeManipulator.first.move(w / 2, tempY + (2/10) * h);
 
-        self.arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
-        self.arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
-        self.arrowModeManipulator.ordonator.set(6, self.arrow);
+        var createLink = function(parentGame, childGame){
+            if(parentGame.childrenGames.indexOf(childGame) != -1) return;
 
-        var arrowMode = false;
+            parentGame.childrenGames.push(childGame);
+            childGame.parentsGames.push(parentGame);
 
-        svg.addEvent(self.arrowModeButton.cadre, 'click', function () {
-            arrowMode = true;
-            console.log('Mode flèche !');
-        });
+            var arrow= new Arrow(parentGame,childGame);
+            parentGame.parentFormation.graphManipulator.last.add(arrow);
+        };
+
+        var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
+        var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeManipulator.ordonator.set(6, arrow);
+
+        var toggleArrowMode = function() {
+            var arrowMode = false;
+
+            return function() {
+                arrowMode = !arrowMode;
+                if(arrowMode) {
+                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                    self.formation.levelsTab.forEach(function (level, levelNumber) {
+                        level.gamesTab.forEach(function (game) {
+                            var parentGame = game;
+
+                            var mouseDownAction = function () {
+                                self.formation.levelsTab.slice(levelNumber + 1).forEach(function (level) {
+                                    level.gamesTab.forEach(function (game) {
+                                        var mouseUpAction = function () {
+                                            console.log('mouseUp !');
+                                            createLink(parentGame, game)
+                                        };
+                                        svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mouseup', mouseUpAction);
+                                        svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mouseup', mouseUpAction);
+                                        console.log('added mouseUp event', mouseUpAction);
+                                        // TODO remove mouseUp events
+                                    })
+                                });
+                                console.log('finished mouseDownAction');
+                            };
+
+                            svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
+                            svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+                        })
+                    })
+                } else {
+                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                    // TODO remove events
+                }
+            }
+        }();
+
+        svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
 
     }
 }
@@ -409,21 +452,6 @@ function FormationDisplayFormation(){
 
 
     self.gamesCounter = myFormation.gamesCounter;
-
-    var createLink = function(parentGame, childGame){
-        parentGame.childrenGames.push(childGame);
-        childGame.parentsGames.push(parentGame);
-        var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
-        var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-        var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
-        var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-        var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
-        parentGame.parentFormation.graphManipulator.last.add(arrow);
-        // TEST Que ca marche
-        //var arrow = new svg.Arrow(5, 15, 20).position(50, 50, 200, 50);
-        //mainManipulator.ordonator.set(6, arrow);
-    }
-
 
     var showTitle = function() {
         var text = (self.label) ? self.label : (self.label=self.labelDefault);
@@ -530,7 +558,7 @@ function FormationDisplayFormation(){
         });
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-        level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, self.messageDragDropMargin);
+        level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, svg.getSvgr().boundingRect(level.obj.content.component).height);
         self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
@@ -580,12 +608,7 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator = new Manipulator(tabElement);
                 self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
-
-
                 var testGame = tabElement.displayMiniature(self.graphElementSize);
-                /* TEST */
-                (self.levelsTab[1] && self.levelsTab[0].gamesTab.length + self.levelsTab[1].gamesTab.length>= 2 && self.levelsTab[0].gamesTab[0]!==tabElement) && createLink( self.levelsTab[0].gamesTab[0], tabElement);
-
                 if(tabElement instanceof Quizz){
                     svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
                     svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
