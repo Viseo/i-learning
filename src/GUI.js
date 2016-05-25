@@ -269,6 +269,9 @@ function LibraryDisplay(x,y,w,h){
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                     }
                 });
+
+                if(self.arrowMode)
+                    self.toggleArrowMode();
             };
 
             var mouseupHandler = function(event){
@@ -326,6 +329,7 @@ function LibraryDisplay(x,y,w,h){
 
             return function() {
                 arrowMode = !arrowMode;
+                self.arrowMode = arrowMode;
                 if(arrowMode) {
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     self.formation.levelsTab.forEach(function (level, levelNumber) {
@@ -351,13 +355,18 @@ function LibraryDisplay(x,y,w,h){
                             svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
                             svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
                         })
-                    })
+                    });
+                    svg.getSvgr().addGlobalEvent('keydown', function (event) {
+                        if(event.keyCode === 27) toggleArrowMode();
+                    });
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                     // TODO remove events
                 }
             }
         }();
+
+        self.toggleArrowMode = toggleArrowMode;
 
         svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
 
