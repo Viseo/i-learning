@@ -52,8 +52,6 @@ function SVGGlobalHandler() {
         self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
         self.last = self.scalor;
         self.first = self.translator;
-
-
     };
 
     Drawings = function (w, h, anchor) {
@@ -81,11 +79,7 @@ function SVGGlobalHandler() {
         self.drawing.add(self.drawing.manipulator.translator);
         self.drawing.manipulator.ordonator.set(8, self.piste.first).set(9, self.glass);
 
-
         var onmousedownHandler = function (event) {
-            //self.paper.forEach(function (el) {
-            //    console.log(el.type);
-            //});
             !runtime && document.activeElement.blur();
             self.target = self.drawing.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
@@ -118,20 +112,6 @@ function SVGGlobalHandler() {
             self.target = self.drag || self.drawing.getTarget(event.clientX, event.clientY);
             //console.log(self.target);
             if (self.target) {
-                //if (self.target.component.mock){
-                //    console.log("mock");
-                //    console.log("target : " + self.target.component.mock.tag);
-                //}
-                //else {
-                //    console.log("normal");
-                //    console.log("target : " + self.target.component.tag);
-                //
-                //}
-                //console.log("clic x : " + event.clientX);
-                //console.log("clic y : " + event.clientY);
-                //console.log("local Point : " + self.target.localPoint(event.clientX, event.clientY).x + " " + self.target.localPoint(event.clientX, event.clientY).y);
-                //console.log("global Point : " + self.target.globalPoint(event.clientX, event.clientY).x + " " + self.target.globalPoint(event.clientX, event.clientY).y);
-
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
             }
@@ -735,7 +715,6 @@ function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-    MAX_GAME_IN_A_ROW_GRAPH_FORMATION = 21;
     MARGIN = 10;
 
     myColors = {
