@@ -510,6 +510,7 @@ function FormationDisplayFormation(){
         var targetQuizz=drawing.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.quizzManager.loadQuizz(targetQuizz);
+        self.quizzDisplayed=targetQuizz;
         self.quizzManager.display();
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
@@ -549,7 +550,6 @@ function FormationDisplayFormation(){
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
         };
 
-        self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
 
@@ -630,6 +630,15 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
+    self.manipulator.first.move(0, drawing.height * 0.075);
+    mainManipulator.ordonator.set(1, self.manipulator.first);
+    self.manipulator.last.add(self.headerManipulator.first);
+    self.headerManipulator.last.add(self.addButtonManipulator.first);
+    self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
+    self.headerManipulator.last.add(self.checkManipulator.first);
+    self.headerManipulator.last.add(self.exclamationManipulator.first);
+    self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
+
     function displayPanel() {
         !runtime && (window.onkeydown = function (event) {
             if(hasKeyDownEvent(event)) {
@@ -642,7 +651,6 @@ function FormationsManagerDisplay() {
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
         };
 
-        self.clippingManipulator = new Manipulator(self);
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
 
@@ -667,11 +675,13 @@ function FormationsManagerDisplay() {
     }
 
     function onClickFormation(formation) {
+        self.formationDisplayed=formation;
         formation.displayFormation();
     }
 
     function onClickNewFormation() {
         var formation = new Formation({});
+        self.formationDisplayed=formation;
         formation.parent = self;
         formation.displayFormation();
     }
@@ -681,11 +691,9 @@ function FormationsManagerDisplay() {
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
         self.headerManipulator.last.add(self.title);
-        self.addFormationButton = new svg.Text("Ajouter une formation");
-        self.addFormationButton.position(MARGIN + self.plusDim, MARGIN / 2).font("Arial", 20).anchor("start");
-        self.addButtonManipulator.last.add(self.addFormationButton);
-        self.addFormationCadre = new svg.Rect(self.addButtonWidth, self.addButtonHeight).color(myColors.lightgrey).position(self.addButtonWidth / 2 - MARGIN, 0);
-        self.addButtonManipulator.ordonator.set(0, self.addFormationCadre);
+        self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
+        self.addFormationButton.cadre.position(MARGIN +svg.getSvgr().boundingRect(self.addFormationButton.cadre.component).width/2,0).corners(0,0);
+        self.addFormationButton.content.position(MARGIN + self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, MARGIN/2);
 
         self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight, self.addButtonHeight);
         self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
@@ -694,8 +702,8 @@ function FormationsManagerDisplay() {
 
         svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
         svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
-        svg.addEvent(self.addFormationCadre, "click", onClickNewFormation);
-        svg.addEvent(self.addFormationButton, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationButton.content, "click", onClickNewFormation);
+        svg.addEvent(self.addFormationButton.cadre, "click", onClickNewFormation);
 
         self.legendDim = self.plusDim / 2;
 
@@ -712,10 +720,10 @@ function FormationsManagerDisplay() {
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
         self.legendWidth = drawing.width * 30 / 100;
-        self.legendItemLength = self.legendWidth / 2;
-        self.checkManipulator.first.move(drawing.width - self.legendWidth, 30);
-        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + 3 * svg.getSvgr().boundingRect(self.published.component).width, 30);
-        self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
+        self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN
+        self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
+        self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
+       // self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
 
         self.formations.sort(function (a, b) {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -765,10 +773,12 @@ function FormationsManagerDisplay() {
         }
     };
     self.displayFormations();
+    console.log("display Formations");
 }
 
 function HeaderDisplay () {
     var self =this;
+    mainManipulator.ordonator.set(0, self.manipulator.first);
     self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
     self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
     self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
@@ -1535,6 +1545,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var target=drawing.getTarget(event.clientX,event.clientY);
         console.log(target);
         target.parentFormation.displayFormation();
+        target.parentFormation.quizzDisplayed=null;
         self.header=new Header ();
         self.header.display();
     };

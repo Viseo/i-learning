@@ -10,7 +10,7 @@
 <script src="../lib/runtimemock.js"></script>
 <script src="../lib/svghandler.js"></script>
 <script src="../lib/svggui.js"></script>
-<script src="../lib/scenario.js"></script>
+<!--<script src="../lib/scenario.js"></script>-->
 
 <script src="Util.js"></script>
 <script src="Domain.js"></script>
@@ -28,6 +28,47 @@
     var param = {speed: 50, step: 10};
     var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
+    function resizePaper(){
+        drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
+        drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);
+        //mainManipulator.flush();
+        var formation= formationsManager.formationDisplayed;
+        if(!formation && !formation.quizzDisplayed){
+            formationsManager.redim();
+            formationsManager.display()
+        }
+        else if(formation && !formation.quizzDisplayed){
+            formation.gamesLibraryManipulator.flush();
+            formation.redim();
+            formation.displayFormation();
+        }
+        else
+        {
+            formation.quizzManager.loadQuizz(formation.quizzDisplayed);
+            formation.quizzManager.redim();
+            formation.quizzManager.display();
+        }
+
+
+
+        /** for( var i = 0;i<qManip.ordonator.children.length;i++) {
+            qManip.ordonator.unset(i);
+        }
+         if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
+                quizz.questionArea.w , quizz.questionHeight);
+            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
+                quizz.questionArea.w , quizz.answerHeight);
+        }else{
+            quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
+            quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
+            quizz.displayResult();
+        }**/
+
+    }
+    setTimeout(function(){
+        window.onresize = resizePaper;
+    },200);
 </script>
 </body>
 
