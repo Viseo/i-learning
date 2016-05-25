@@ -199,11 +199,8 @@ function LibraryDisplay(x,y,w,h){
     var createLink = function(parentGame, childGame){
         parentGame.childrenGames.push(childGame);
         childGame.parentsGames.push(parentGame);
-        var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
-        var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-        var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
-        var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-        var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+
+        var arrow= new Arrow(parentGame,childGame);
         parentGame.parentFormation.graphManipulator.last.add(arrow);
     };
 

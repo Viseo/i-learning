@@ -694,6 +694,18 @@ function SVGUtil() {
 
 //////////////// end of SVG-util.js ///////////////////////////
 
+var Arrow=function(parentGame,childGame){
+    var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+    var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+    var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+    var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+    var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+    arrow.origin=parentGame;
+    arrow.target=childGame;
+    return arrow;
+};
+
+
 
 /////////////// Bdd.js //////////////////
 /**
@@ -2009,3 +2021,5 @@ function httpPostAsync(theUrl, body, callback) {
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(body));
 }
+
+
