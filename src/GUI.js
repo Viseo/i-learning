@@ -1238,9 +1238,15 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     self.margin = (w-lengthToUse)/2;
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
-    self.virtualTab = [];
+    (!self.virtualTab) && (self.virtualTab = []);
     self.quizzType.forEach(function(type){
+
+        if(self.virtualTab[i] && self.virtualTab[i].manipulator){
+            self.toggleButtonManipulator.last.remove(self.virtualTab[i].manipulator.first);
+        }
+
         self.virtualTab[i] = {};
+
         self.virtualTab[i].manipulator = new Manipulator(self);
         self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
         (type.label == clicked) ? (self.virtualTab[i].color = SELECTION_COLOR) : (self.virtualTab[i].color = myColors.white);
