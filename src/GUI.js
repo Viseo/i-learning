@@ -230,6 +230,9 @@ function LibraryDisplay(x,y,w,h){
 
     self.libraryManipulators.forEach(function(e){
         var mouseDownAction = function(event){
+            if(self.arrowMode)
+                self.toggleArrowMode();
+
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
@@ -269,9 +272,6 @@ function LibraryDisplay(x,y,w,h){
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                     }
                 });
-
-                if(self.arrowMode)
-                    self.toggleArrowMode();
             };
 
             var mouseupHandler = function(event){
@@ -331,6 +331,12 @@ function LibraryDisplay(x,y,w,h){
                 arrowMode = !arrowMode;
                 self.arrowMode = arrowMode;
                 if(arrowMode) {
+
+                    self.libraryGamesTab.forEach(function(e) {
+                        self.gameSelected = null;
+                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                    });
+
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     self.formation.levelsTab.forEach(function (level, levelNumber) {
                         level.gamesTab.forEach(function (game) {
