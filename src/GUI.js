@@ -313,17 +313,20 @@ function LibraryDisplay(x,y,w,h){
 
         var createLink = function(parentGame, childGame){
             if(parentGame.childrenGames.indexOf(childGame) != -1) return;
+            if(parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
 
             parentGame.childrenGames.push(childGame);
             childGame.parentsGames.push(parentGame);
-
-            var arrow= new Arrow(parentGame,childGame);
-            parentGame.parentFormation.graphManipulator.last.add(arrow);
+            var arrow = new Arrow(parentGame,childGame);
+            parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
         };
 
+
         var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
-        var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
-        arrowModeManipulator.ordonator.set(6, arrow);
+        //var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeButton.arrow=drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeButton.arrow.color(myColors.black,1,myColors.black);
+        arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
 
         var toggleArrowMode = function() {
             var arrowMode = false;
@@ -331,6 +334,10 @@ function LibraryDisplay(x,y,w,h){
             return function() {
                 arrowMode = !arrowMode;
                 self.arrowMode = arrowMode;
+
+                var panel = self.formation.panel;
+                var glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
+
                 if(arrowMode) {
 
                     self.libraryGamesTab.forEach(function(e) {
@@ -339,37 +346,43 @@ function LibraryDisplay(x,y,w,h){
                     });
 
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                    self.formation.levelsTab.forEach(function (level, levelNumber) {
-                        level.gamesTab.forEach(function (game) {
-                            var parentGame = game;
+                    arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
+                    self.formation.graphManipulator.last.add(glass);
 
-                            var mouseDownAction = function () {
-                                self.formation.levelsTab.slice(levelNumber + 1).forEach(function (level) {
-                                    level.gamesTab.forEach(function (game) {
-                                        var mouseUpAction = function () {
-                                            console.log('mouseUp !');
-                                            createLink(parentGame, game)
-                                        };
-                                        svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mouseup', mouseUpAction);
-                                        svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mouseup', mouseUpAction);
-                                        console.log('added mouseUp event', mouseUpAction);
-                                        // TODO remove mouseUp events
-                                    })
-                                });
-                                console.log('finished mouseDownAction');
-                            };
+                    var mouseDownAction = function (event) {
+                        var graph = self.formation.graphManipulator.last;
+                        graph.remove(graph.children[graph.children.length - 1]);
+                        var targetParent = drawings.background.getTarget(event.clientX, event.clientY);
 
-                            svg.addEvent(game.miniatureManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
-                            svg.addEvent(game.miniatureManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
-                        })
-                    });
-                    svg.getSvgr().addGlobalEvent('keydown', function (event) {
+                        var mouseUpAction = function(event) {
+                            var targetChild = drawings.background.getTarget(event.clientX, event.clientY);
+                            if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
+                                (targetParent.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetParent.parent.parentManip.parentObject instanceof Bd) &&
+                                targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
+                                (targetChild.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetChild.parent.parentManip.parentObject instanceof Bd)
+                            ) {
+                                createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                            }
+                            self.formation.graphManipulator.last.add(glass);
+
+                        };
+                        svg.addEvent(glass, 'mouseup', mouseUpAction);
+                    };
+
+                    svg.addEvent(glass, 'mousedown', mouseDownAction);
+
+                    // Problème : ce comportement enlève le contrôle des scrollbars avec les flèches
+                    /* svg.getSvgr().addGlobalEvent('keydown', function (event) {
                         if(event.keyCode === 27) toggleArrowMode();
-                    });
+                    });*/
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
-                    // TODO remove events
-                    svg.getSvgr().addGlobalEvent('keydown', function (event) {});
+                    arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
+                    var graph = self.formation.graphManipulator.last;
+                    graph.remove(graph.children[graph.children.length - 1]);
+                    //svg.getSvgr().addGlobalEvent('keydown', function (event) {});
                 }
             }
         }();
@@ -377,9 +390,11 @@ function LibraryDisplay(x,y,w,h){
         self.toggleArrowMode = toggleArrowMode;
 
         svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
+        svg.addEvent(arrowModeButton.arrow, 'click', toggleArrowMode)
 
     }
 }
+
 
 function AddEmptyElementDisplay(x, y, w, h) {
     var self = this;
@@ -639,7 +654,18 @@ function FormationDisplayFormation(){
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     };
+    self.updateAllLinks=function(){
+        self.levelsTab.forEach(function(level){
+           level.gamesTab.forEach(function(parentGame){
+               parentGame.childrenGames.forEach(function(game){
+                   var arrow= new Arrow(parentGame,game);
+                   parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
+               });
+           }) ;
+        });
 
+
+    };
     self.displayGraph = function (w, h){
         self.graphManipulator.flush();
         var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
@@ -680,6 +706,8 @@ function FormationDisplayFormation(){
         self.panel.resizeContent(height);
         self.panel.resizeContentW(self.levelWidth-1);
         self.panel.back.parent.parentManip=self.graphManipulator;
+
+        self.updateAllLinks();
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
@@ -727,12 +755,13 @@ function FormationsManagerDisplay() {
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
         self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
-        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
         self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.content.add(self.formationsManipulator.first);
-        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
+        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
 
         onScroll = function (event) {
             var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));

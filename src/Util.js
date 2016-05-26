@@ -698,16 +698,73 @@ function SVGUtil() {
 }
 
 //////////////// end of SVG-util.js ///////////////////////////
-
+function drawStraightArrow(x1,y1,x2,y2){
+    var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
+    var arrowPath=new svg.Path(x1,y1);
+    arrow.points.forEach(function(point){
+        arrowPath.line(point.x, point.y);
+    });
+    arrowPath.line(x1,y1);
+    return arrowPath;
+}
 var Arrow=function(parentGame,childGame){
+    var self=this;
+    self.origin=parentGame;
+    self.target=childGame;
     var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
     var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
     var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
     var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-    var arrow = new svg.Arrow(3, 9, 15).position(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
-    arrow.origin=parentGame;
-    arrow.target=childGame;
-    return arrow;
+
+    self.redCross=drawPlus(0,0,20,20);
+    self.redCrossManipulator=new Manipulator(self);
+    self.redCrossManipulator.last.add(self.redCross);
+    self.redCross.color(myColors.red,1,myColors.black);
+    self.redCrossManipulator.rotator.rotate(45);
+    //self.redCrossManipulator.scalor.scale(0.5);
+    self.redCrossManipulator.translator.move((parentLocalPoint.x+childLocalPoint.x)/2,(parentLocalPoint.y+childLocalPoint.y)/2);
+
+    var removeLink=function(parentGame,childGame){
+        parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
+        childGame.parentsGames.splice(childGame.parentsGames.indexOf(parentGame),1);
+    };
+    function redCrossClickHandler(){
+        //parentGame.parentFormation.selectedArrow.selected=false;
+        removeLink(parentGame,childGame);
+        parentGame.parentFormation.graphManipulator.last.remove(self.arrowPath);
+        parentGame.parentFormation.graphManipulator.last.remove(self.redCrossManipulator.first);
+        parentGame.parentFormation.selectedArrow=null;
+
+    }
+
+    svg.addEvent(self.redCross,'click',redCrossClickHandler);
+
+    self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+    self.selected=false;
+    function arrowClickHandler(){
+        if(!self.selected){
+            if(parentGame.parentFormation.selectedArrow){
+                parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black,1,myColors.black);
+                parentGame.parentFormation.selectedArrow.selected=false;
+                parentGame.parentFormation.graphManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
+
+            }
+            parentGame.parentFormation.selectedArrow=self;
+            parentGame.parentFormation.graphManipulator.last.add(self.redCrossManipulator.first);
+            self.arrowPath.color(myColors.blue,2,myColors.black);
+        }else{
+            self.arrowPath.color(myColors.black,1,myColors.black);
+            parentGame.parentFormation.graphManipulator.last.remove(self.redCrossManipulator.first);
+            parentGame.parentFormation.selectedArrow=null;
+        }
+        self.selected= !self.selected;
+    }
+
+    svg.addEvent(self.arrowPath,'click',arrowClickHandler);
+
+    self.arrowPath.color(myColors.black,1,myColors.black);
+
+    return self;
 };
 
 
