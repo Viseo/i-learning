@@ -188,7 +188,8 @@ function LibraryDisplay(x,y,w,h){
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w/2, (1/20)*h);
 
-    var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
+    var maxImagesPerLine = 2;
+    //var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
     var maxGamesPerLine = 1;
     self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
@@ -200,7 +201,7 @@ function LibraryDisplay(x,y,w,h){
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
-        self.libraryManipulators[i] = new Manipulator(self);
+        //self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.tabLib[i].imgSrc) {
             displayArrowModeButton = false;
@@ -848,12 +849,17 @@ function FormationsManagerDisplay() {
 function HeaderDisplay () {
     var self =this;
     mainManipulator.ordonator.set(0, self.manipulator.first);
-    self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
     self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
+    self.redim = function(){
+        self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
+
+    }
+    self.redim();
     self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
     self.manipulator.ordonator.set(1, self.text);
     self.manipulator.ordonator.set(0, self.line);
+
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
@@ -1346,7 +1352,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
 function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
-    //self.questionCreatorManipulator.flush();
+    self.questionCreatorManipulator.flush();
     self.questionBlock = {rect: new svg.Rect(w, h).color([], 1, myColors.black).position(w / 2, y + h / 2)};
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.add(self.questionManipulator.first);
@@ -1597,10 +1603,9 @@ function QuizzManagerDisplay(){
 
 function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
-    self.returnButtonManipulator=new Manipulator(self);
     self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
     self.returnText=new svg.Text("Retour");
-    self.quizzInfoManipulator.first.add(self.returnText);
+    self.quizzInfoManipulator.ordonator.set(5, self.returnText);
 
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
@@ -1613,7 +1618,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var textSize = svg.getSvgr().boundingRect(self.returnText.component);
     self.returnTextCadre = new svg.Rect(textSize.width + svg.getSvgr().boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
     self.returnTextCadre.position(textSize.width/2 + svg.getSvgr().boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
-    self.quizzInfoManipulator.first.add(self.returnTextCadre);
+    self.quizzInfoManipulator.ordonator.set(6, self.returnTextCadre);
     self.returnTextCadre.parentFormation=self.parentFormation;
     self.returnText.parentFormation=self.parentFormation;
     self.returnButton.parentFormation=self.parentFormation;

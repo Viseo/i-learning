@@ -71,7 +71,6 @@ function SVGGlobalHandler() {
             !runtime && document.activeElement.blur();
             self.target = self.background.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
-            console.log(self.target);
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (self.target) {
                 svg.event(self.target, "mousedown", event);
