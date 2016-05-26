@@ -203,14 +203,13 @@ function LibraryDisplay(x, y, w, h) {
         }
         //self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-        if (self.itemsTab[i].imgSrc) {
+        if (self.itemsTab[i].src) {
             displayArrowModeButton = false;
-            var objectTotal = displayImage(self.itemsTab[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.itemsTab[i].height};
+            var objectTotal = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+            objectTotal.image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
-
 
         } else {
             if (i % maxGamesPerLine === 0 && i !== 0) {
@@ -223,7 +222,6 @@ function LibraryDisplay(x, y, w, h) {
 
             self.itemsTab[i] = {objectTotal: objectTotal};
             self.itemsTab[i].objectTotal.cadre.clicked = false;
-
         }
     }
 
