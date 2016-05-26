@@ -1981,7 +1981,7 @@ function Bdd() {
         function (quiz) {
             // Check 1 Correct Answer:
             var correctAnswers = 0;
-            quiz.questionCreator.tabAnswer.forEach(function (el) {
+            quiz.questionCreator.tabAnswer && quiz.questionCreator.tabAnswer.forEach(function (el) {
                 if (el.editable) {
                     if (el.correct) {
                         correctAnswers++;

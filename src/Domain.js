@@ -167,9 +167,8 @@ function Domain() {
         self.libraryManipulator = new Manipulator(self);
         self.title = lib.title;
 
-        //self.tabImgLibrary = [];
         self.itemsTab = [];
-        lib.tab && (self.itemsTab = lib.tab);
+        lib.tab && (self.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
         self.libraryManipulators = [];
 
         self.imageWidth = 50;
@@ -545,7 +544,7 @@ function Domain() {
             self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
             self.clippingManipulator.flush();
 
-        }
+        };
         self.manipulator = new Manipulator();
         // self.manipulator.first.move(0, drawing.height * 0.075);
         // mainManipulator.ordonator.set(1, self.manipulator.first);

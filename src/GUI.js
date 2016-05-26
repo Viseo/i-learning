@@ -215,8 +215,8 @@ function LibraryDisplay(x, y, w, h) {
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.w / 2 + self.libMargin2;
             }
-
-            objectTotal = displayTextWithCircle(self.itemsTab[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+           var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
+            objectTotal = displayTextWithCircle(label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);
 
@@ -261,7 +261,7 @@ function LibraryDisplay(x, y, w, h) {
                 var mouseClick = function (event) {
                     var target = drawing.getTarget(event.clientX, event.clientY);
                     var target = drawings.background.getTarget(event.clientX, event.clientY);
-                    self.libraryGamesTab.forEach(function (e) {
+                    self.itemsTab.forEach(function (e) {
                         if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
                             if (e.objectTotal !== self.gameSelected) {
                                 e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
@@ -887,8 +887,7 @@ function HeaderDisplay () {
     self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
     self.redim = function(){
         self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
-
-    }
+    };
     self.redim();
     self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
@@ -1661,8 +1660,9 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         console.log("click");
         var target=drawings.background.getTarget(event.clientX,event.clientY);
         console.log(target);
+        target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        target.parentFormation.quizzDisplayed=null;
+        target.parentFormation.quizzDisplayed= null;
         self.header=new Header ();
         self.header.display();
     };
