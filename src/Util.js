@@ -512,7 +512,7 @@ function SVGUtil() {
         var tempText = "";
         var w = w * 5 / 6;
 
-        t.font(font ? font : "arial", fontSize ? fontSize : 20);
+        t.font(font ? font : "Arial", fontSize ? fontSize : 20);
 
         // add text word by word
         for (var i = 0; i < words.length; i++) {
