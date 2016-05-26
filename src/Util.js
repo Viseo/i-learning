@@ -888,12 +888,21 @@ function Bdd() {
 
     myLibraryImage = {
         title: "Bibliothèque",
-        tabLib: [
+        tab: [
             {imgSrc: "../resource/littleCat.png"},
             {imgSrc: "../resource/millions.png"},
             {imgSrc: "../resource/folder.png"},
             {imgSrc: "../resource/cerise.jpg"},
             {imgSrc: "../resource/ChatTim.jpg"}
+        ],
+        font: "Courier New", fontSize: 20
+    };
+
+    myLibraryGames = {
+        title: "Type de jeux",
+        tab: [
+            {label: "Quiz"},
+            {label: "Bd"}
         ],
         font: "Courier New", fontSize: 20
     };
@@ -1824,7 +1833,6 @@ function Bdd() {
         ]
     };
 
-
     myQuizzDemo = {
         title: "Qui veut gagner des millions ? Quiz n°1",
         tabQuestions: [
@@ -1957,7 +1965,7 @@ function Bdd() {
         bgColor: myColors.raspberry, puzzleLines: 3, puzzleRows: 1
     };
 
-    uniqueAnswerValidationTab = [
+    singleAnswerValidationTab = [
         function (quiz) {
             // Check Quiz Name:
             var isValid = (quiz.quizzName !== "");
@@ -2036,11 +2044,10 @@ function Bdd() {
     ];
 
     myQuizzType = {
-        //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
         tab: [{
             label: "Réponse unique",
             default: true,
-            validationTab: uniqueAnswerValidationTab
+            validationTab: singleAnswerValidationTab
         }, {label: "Réponses multiples", default: false, validationTab: multipleAnswerValidationTab}]
     };
 
@@ -2089,15 +2096,6 @@ function Bdd() {
                 label: "Angular js 7",
                 status: statusEnum.Edited
             }, {label: "Angular js 8"}, {label: "ZEdernier"}]
-    };
-
-    myLibraryGames = {
-        title: "Type de jeux",
-        tabLib: [
-            {label: "Quiz"},
-            {label: "BD"}
-        ],
-        font: "Courier New", fontSize: 20
     };
 
     myFormation = {

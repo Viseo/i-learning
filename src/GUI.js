@@ -119,10 +119,10 @@ function AnswerDisplay (x, y, w, h) {
             var displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var bibRatio = 0.2;
+                var libraryRatio = 0.2;
                 var previewButtonHeightRatio = 0.1;
                 var marginErrorMessagePreviewButton = 0.03;
-                var position = (window.innerWidth/2 - 0.5 * bibRatio*drawing.width+2*MARGIN);
+                var position = (window.innerWidth/2 - 0.5 * libraryRatio*drawing.width+2*MARGIN);
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
@@ -173,40 +173,40 @@ function AnswerDisplay (x, y, w, h) {
     }
 }
 
-function LibraryDisplay(x,y,w,h){
+function LibraryDisplay(x, y, w, h) {
     var self = this;
-    if(typeof x !=="undefined")(self.x = x);
-    if(typeof y !=="undefined")(self.y = y);
-    if(typeof w !=="undefined")(self.w = w);
-    if(typeof h !=="undefined")(self.h = h);
+    if (typeof x !== "undefined")(self.x = x);
+    if (typeof y !== "undefined")(self.y = y);
+    if (typeof w !== "undefined")(self.w = w);
+    if (typeof h !== "undefined")(self.h = h);
     self.borderSize = 3;
 
-    self.bordure =  new svg.Rect(w-self.borderSize,h,self.libraryManipulator).color(myColors.none,self.borderSize,myColors.black);
-    self.bordure.position(w/2,h/2-self.borderSize);
+    self.bordure = new svg.Rect(w - self.borderSize, h, self.libraryManipulator).color(myColors.none, self.borderSize, myColors.black);
+    self.bordure.position(w / 2, h / 2 - self.borderSize);
     self.libraryManipulator.last.add(self.bordure);
 
-    self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
-    self.titleSvg.position(w/2, (1/20)*h);
+    self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
+    self.titleSvg.position(w / 2, (1 / 20) * h);
 
     var maxImagesPerLine = 2;
     //var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
-    self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
+    self.libMargin = (w - (maxImagesPerLine * self.imageWidth)) / (maxImagesPerLine + 1);
     var maxGamesPerLine = 1;
-    self.libMargin2 = (w -(maxGamesPerLine*w))/(maxGamesPerLine+1)+2*MARGIN;
-    var tempY = (2/10*h);
+    self.libMargin2 = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN;
+    var tempY = (2 / 10 * h);
 
     var displayArrowModeButton = true;
 
-    for (var i = 0; i<self.tabLib.length; i++) {
+    for (var i = 0; i < self.itemsTab.length; i++) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
         //self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-        if (self.tabLib[i].imgSrc) {
+        if (self.itemsTab[i].imgSrc) {
             displayArrowModeButton = false;
-            var objectTotal = displayImage(self.tabLib[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
+            var objectTotal = displayImage(self.itemsTab[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.itemsTab[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
@@ -217,178 +217,186 @@ function LibraryDisplay(x,y,w,h){
                 tempY += self.w / 2 + self.libMargin2;
             }
 
-            objectTotal = displayTextWithCircle(self.tabLib[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            objectTotal = displayTextWithCircle(self.itemsTab[i].label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);
 
-            self.libraryGamesTab[i] = {objectTotal : objectTotal};
-            self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
+            self.itemsTab[i] = {objectTotal: objectTotal};
+            self.itemsTab[i].objectTotal.cadre.clicked = false;
 
         }
     }
 
     self.libraryManipulator.first.move(x, y);
 
-    self.libraryManipulators.forEach(function(e){
-        var mouseDownAction = function(event){
-            if(self.arrowMode)
-                self.toggleArrowMode();
+    self.libraryManipulators.forEach(function (e) {
+        var mouseDownAction = function (event) {
+            self.arrowMode && self.toggleArrowMode();
 
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
-            var img;
-            if (e.ordonator.children[0] instanceof svg.Image){
-                img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
-                img.srcDimension = elementCopy.srcDimension;
-            }else{
-                var textObject = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                self.draggedObjectLabel = textObject.content.messageText;
-                img = textObject.cadre;
-            }
-            manip.ordonator.set(0, img);
+            self.formation && self.formation.removeErrorMessage(self.formation.errorMessageDisplayed);
+            var elementCopy = e.ordonator.children[0];
+
             var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
-            var point2 = manip.first.globalPoint(0,0);
-            manip.first.move(point.x-point2.x, point.y-point2.y);
+            var point2 = manip.first.globalPoint(0, 0);
+            manip.first.move(point.x - point2.x, point.y - point2.y);
 
-            manageDnD(img, manip);
-            textObject && textObject.content && manageDnD(textObject.content, manip);
-
-            var mouseClick = function (event){
-                var target = drawings.background.getTarget(event.clientX, event.clientY);
-                self.libraryGamesTab.forEach(function(e){
-                    if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
-                        if (e.objectTotal!==self.gameSelected){
-                            //target.color(myColors.white, 3, SELECTION_COLOR);
-                            e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                            self.gameSelected = e.objectTotal;
-                        }
-                        else{
-                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                            self.gameSelected = null;
-                        }
-                    }
-                    else{
-                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                    }
-                });
-            };
-
-            var mouseupHandler = function(event){
-                var img = manip.ordonator.children.shift();
-                manip.first.parent.remove(manip.first);
-                var target = drawings.background.getTarget(event.clientX, event.clientY);
-                if(target && target.parent && target.parent.parentManip){
-                    if(!(target.parent.parentManip.parentObject instanceof Library)){
-                        self.dropAction(img, event);
-                    }
-                    else {
-                        mouseClick(event);
-                        !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
-                        self.formation.clickToAdd();
-                    }
+            if (self.itemsTab && self.itemsTab.length !== 0) {
+                var index = e.parentObject.itemsTab.indexOf(e);
+                if (self.itemsTab[0].objectTotal && ((self.itemsTab[0].objectTotal.content.messageText === "Quiz") || (self.itemsTab[0].objectTotal.content.messageText === "Quiz"))) {
+                    var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                    self.draggedObjectLabel = gameMiniature.content.messageText;
+                    manip.ordonator.set(0, gameMiniature.cadre);
+                    manageDnD(gameMiniature.cadre, manip);
+                } else {
+                    var img;
+                    img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
+                    img.srcDimension = elementCopy.srcDimension;
+                    manip.ordonator.set(0, img);
+                    manageDnD(img, manip);
+                    img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
+                    img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup', img.image.component.target.listeners.mouseup);
                 }
-                self.draggedObjectLabel = "";
-            };
-            svg.event(drawings.glass,"mousedown",event);
-            img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
-            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
-            svg.addEvent(img, 'mouseup', mouseupHandler);
-            if(textObject && textObject.content){
-                textObject.content.component.listeners && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.listeners.mouseup);
-                textObject.content.component.target && textObject.content.component.target.listeners && textObject.content.component.target.listeners.mouseup && svg.removeEvent(textObject.content, 'mouseup', textObject.content.component.target.listeners.mouseup);
-                svg.addEvent(textObject.content, 'mouseup', mouseupHandler);
+                var mouseClick = function (event) {
+                    var target = drawing.getTarget(event.clientX, event.clientY);
+                    var target = drawings.background.getTarget(event.clientX, event.clientY);
+                    self.libraryGamesTab.forEach(function (e) {
+                        if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
+                            if (e.objectTotal !== self.gameSelected) {
+                                e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                self.gameSelected = e.objectTotal;
+                            }
+                            else {
+                                e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                self.gameSelected = null;
+                            }
+                        }
+                        else {
+                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                        }
+                    });
+                };
+
+                var mouseupHandler = function (event) {
+                    var svgObj = manip.ordonator.children.shift();
+                    manip.first.parent.remove(manip.first);
+                    var target = drawings.background.getTarget(event.clientX, event.clientY);
+                    if (target && target.parent && target.parent.parentManip) {
+                        if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                            self.dropAction(svgObj, event);
+                        }
+                        else {
+                            mouseClick(event);
+                            !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
+                            self.formation.clickToAdd();
+                        }
+                    }
+                    self.draggedObjectLabel = "";
+                };
+
+                gameMiniature && gameMiniature.cadre.component.listeners && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.listeners.mouseup);
+                gameMiniature && gameMiniature.cadre.component.target && gameMiniature.cadre.component.target.listeners && gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.target.listeners.mouseup);
+
+                svg.event(drawings.glass, "mousedown", event);
+                gameMiniature && gameMiniature.cadre && svg.addEvent(gameMiniature.cadre, 'mouseup', mouseupHandler);
+                img && svg.addEvent(img, 'mouseup', mouseupHandler);
+
+                if (gameMiniature && gameMiniature.content) {
+                    gameMiniature.content.component.listeners && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.listeners.mouseup);
+                    gameMiniature.content.component.target && gameMiniature.content.component.target.listeners && gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.target.listeners.mouseup);
+                    svg.addEvent(gameMiniature.content, 'mouseup', mouseupHandler);
+                }
             }
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
 
-    });
+        if (displayArrowModeButton) {
+            var arrowModeManipulator = new Manipulator(self);
+            self.libraryManipulator.last.add(arrowModeManipulator.first);
+            arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
 
-    if (displayArrowModeButton) {
-        var arrowModeManipulator = new Manipulator(self);
-        self.libraryManipulator.last.add(arrowModeManipulator.first);
-        arrowModeManipulator.first.move(w / 2, tempY + (2/10) * h);
+            var createLink = function (parentGame, childGame) {
+                if (parentGame.childrenGames.indexOf(childGame) != -1) return;
+                if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
 
-        var createLink = function(parentGame, childGame){
-            if(parentGame.childrenGames.indexOf(childGame) != -1) return;
-            if(parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
-
-            parentGame.childrenGames.push(childGame);
-            childGame.parentsGames.push(parentGame);
-            var arrow = new Arrow(parentGame,childGame);
-            parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
-        };
+                parentGame.childrenGames.push(childGame);
+                childGame.parentsGames.push(parentGame);
+                var arrow = new Arrow(parentGame, childGame);
+                parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
+            };
 
 
-        var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
-        //var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
-        arrowModeButton.arrow=drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
-        arrowModeButton.arrow.color(myColors.black,1,myColors.black);
-        arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
+            var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
+            //var arrow = new svg.Arrow(3, 9, 15).position(-0.3 * w, 0, 0.3 * w, 0);
+            arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
+            arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
+            arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
 
-        var toggleArrowMode = function() {
-            var arrowMode = false;
+            var toggleArrowMode = function () {
+                var arrowMode = false;
 
-            return function() {
-                arrowMode = !arrowMode;
-                self.arrowMode = arrowMode;
+                return function () {
+                    arrowMode = !arrowMode;
+                    self.arrowMode = arrowMode;
 
-                var panel = self.formation.panel;
-                var glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
+                    var panel = self.formation.panel;
+                    var glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-                if(arrowMode) {
-                    self.libraryGamesTab.forEach(function(e) {
-                        self.gameSelected = null;
-                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                    });
+                    if (arrowMode) {
+                        self.libraryGamesTab.forEach(function (e) {
+                            self.gameSelected = null;
+                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                        });
 
-                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                    arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
-                    self.formation.graphManipulator.last.add(glass);
+                        arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                        arrowModeButton.arrow.color(myColors.blue, 2, myColors.black);
+                        self.formation.graphManipulator.last.add(glass);
 
-                    var mouseDownAction = function (event) {
+                        var mouseDownAction = function (event) {
+                            var graph = self.formation.graphManipulator.last;
+                            graph.remove(graph.children[graph.children.length - 1]);
+                            var targetParent = drawings.background.getTarget(event.clientX, event.clientY);
+
+                            var mouseUpAction = function (event) {
+                                var targetChild = drawings.background.getTarget(event.clientX, event.clientY);
+                                if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
+                                    (targetParent.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetParent.parent.parentManip.parentObject instanceof Bd) &&
+                                    targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
+                                    (targetChild.parent.parentManip.parentObject instanceof Quizz ||
+                                    targetChild.parent.parentManip.parentObject instanceof Bd)
+                                ) {
+                                    createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                                }
+                                self.formation.graphManipulator.last.add(glass);
+
+                            };
+
+                            svg.addEvent(glass, 'mouseup', mouseUpAction);
+                        };
+
+                        svg.addEvent(glass, 'mousedown', mouseDownAction);
+                    } else {
+                        arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                        arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
                         var graph = self.formation.graphManipulator.last;
                         graph.remove(graph.children[graph.children.length - 1]);
-                        var targetParent = drawings.background.getTarget(event.clientX, event.clientY);
-
-                        var mouseUpAction = function(event) {
-                            var targetChild = drawings.background.getTarget(event.clientX, event.clientY);
-                            if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
-                                (targetParent.parent.parentManip.parentObject instanceof Quizz ||
-                                    targetParent.parent.parentManip.parentObject instanceof Bd) &&
-                                targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
-                                (targetChild.parent.parentManip.parentObject instanceof Quizz ||
-                                    targetChild.parent.parentManip.parentObject instanceof Bd)
-                            ) {
-                                createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
-                            }
-                            self.formation.graphManipulator.last.add(glass);
-
-                        };
-                        
-                        svg.addEvent(glass, 'mouseup', mouseUpAction);
-                    };
-
-                    svg.addEvent(glass, 'mousedown', mouseDownAction);
-                } else {
-                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
-                    arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
-                    var graph = self.formation.graphManipulator.last;
-                    graph.remove(graph.children[graph.children.length - 1]);
+                    }
                 }
-            }
-        }();
+            }();
 
-        self.toggleArrowMode = toggleArrowMode;
+            self.toggleArrowMode = toggleArrowMode;
 
-        svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
-        svg.addEvent(arrowModeButton.arrow, 'click', toggleArrowMode)
+            svg.addEvent(arrowModeButton.cadre, 'click', toggleArrowMode);
+            svg.addEvent(arrowModeButton.arrow, 'click', toggleArrowMode)
 
-    }
+        }
+    });
 }
-
 
 function AddEmptyElementDisplay(x, y, w, h) {
     var self = this;
@@ -1301,7 +1309,7 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.questionCreatorManipulator.translator.move(x, 0);
     self.toggleButtonHeight = 40;
     self.displayQuestionCreator(MARGIN + x, y, w, h);
-    var clickedButton= self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    var clickedButton = self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
     self.displayToggleButton(MARGIN + x, MARGIN/2+y, w, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
@@ -1333,7 +1341,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
                 }
             });
         }
-        
+
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
 
         self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
