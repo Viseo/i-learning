@@ -312,6 +312,7 @@ function LibraryDisplay(x,y,w,h){
 
         var createLink = function(parentGame, childGame){
             if(parentGame.childrenGames.indexOf(childGame) != -1) return;
+            if(parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
 
             parentGame.childrenGames.push(childGame);
             childGame.parentsGames.push(parentGame);
@@ -369,15 +370,15 @@ function LibraryDisplay(x,y,w,h){
 
                     svg.addEvent(glass, 'mousedown', mouseDownAction);
 
-                    svg.getSvgr().addGlobalEvent('keydown', function (event) {
+                    // Problème : ce comportement enlève le contrôle des scrollbars avec les flèches
+                    /* svg.getSvgr().addGlobalEvent('keydown', function (event) {
                         if(event.keyCode === 27) toggleArrowMode();
-                    });
+                    });*/
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                     var graph = self.formation.graphManipulator.last;
                     graph.remove(graph.children[graph.children.length - 1]);
-                    // TODO remove events
-                    svg.getSvgr().addGlobalEvent('keydown', function (event) {});
+                    //svg.getSvgr().addGlobalEvent('keydown', function (event) {});
                 }
             }
         }();
