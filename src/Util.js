@@ -729,7 +729,7 @@ var Arrow=function(parentGame,childGame){
         parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
         childGame.parentsGames.splice(childGame.parentsGames.indexOf(parentGame),1);
     };
-    function redCrossClickHandler(){
+    self.redCrossClickHandler =function (){
         //parentGame.parentFormation.selectedArrow.selected=false;
         removeLink(parentGame,childGame);
         parentGame.parentFormation.graphManipulator.last.remove(self.arrowPath);
@@ -738,7 +738,7 @@ var Arrow=function(parentGame,childGame){
 
     }
 
-    svg.addEvent(self.redCross,'click',redCrossClickHandler);
+    svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
 
     self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
     self.selected=false;

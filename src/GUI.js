@@ -609,7 +609,11 @@ function FormationDisplayFormation(){
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
+            if(event.keyCode===46 && self.selectedArrow){
+                self.selectedArrow.redCrossClickHandler();
+            }
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+
         };
 
         self.manipulator.last.add(self.clippingManipulator.first);
