@@ -188,7 +188,7 @@ function LibraryDisplay(x,y,w,h){
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1/10)*h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w/2, (1/20)*h);
 
-    var maxImagesPerLine = 2;
+    var maxImagesPerLine = Math.floor((w-MARGIN)/(self.imageWidth+MARGIN)) || 1; //||1 pour le cas de resize très petit
     //var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w -(maxImagesPerLine*self.imageWidth))/(maxImagesPerLine+1);
     var maxGamesPerLine = 1;
@@ -571,6 +571,7 @@ function FormationDisplayFormation(){
         var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.quizzManager.loadQuizz(targetQuizz);
+        self.quizzManager.redim();
         self.quizzDisplayed=targetQuizz;
         self.quizzManager.display();
         if (!runtime && window.getSelection)
@@ -775,11 +776,14 @@ function FormationsManagerDisplay() {
 
     function onClickFormation(formation) {
         self.formationDisplayed=formation;
+        self.header.redim();
+        formation.redim();
         formation.displayFormation();
     }
 
     function onClickNewFormation() {
         var formation = new Formation({});
+        self.header.redim();
         self.formationDisplayed=formation;
         formation.parent = self;
         formation.displayFormation();
@@ -881,10 +885,9 @@ function HeaderDisplay () {
     self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
     self.redim = function(){
         self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
-
+        self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     }
     self.redim();
-    self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
     self.manipulator.ordonator.set(1, self.text);
     self.manipulator.ordonator.set(0, self.line);
@@ -1347,7 +1350,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         self.displayToggleButton(x, y, w, h, questionType);
     };
 
-    self.toggleButtonWidth = 300;
+    self.toggleButtonWidth = drawing.width/5;
     var length = self.quizzType.length;
     var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
     self.margin = (w-lengthToUse)/2;
@@ -1618,7 +1621,19 @@ function QuizzManagerDisplay(){
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 
-    self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+    if (self.resizing){
+        self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+            self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height);
+        self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
+        self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
+        self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
+            self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
+        self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+            150, self.previewButtonHeight-self.globalMargin.height);
+        mainManipulator.ordonator.unset(0);
+    }
+
+    !self.resizing && self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
         self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
@@ -1655,7 +1670,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var returnHandler = function(event){
         console.log("click");
         var target=drawings.background.getTarget(event.clientX,event.clientY);
-        console.log(target);
+        target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
         target.parentFormation.quizzDisplayed=null;
         self.header=new Header ();

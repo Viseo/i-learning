@@ -165,12 +165,15 @@ function Domain() {
     Library = function (lib) {
         var self = this;
         self.libraryManipulator = new Manipulator(self);
+        self.arrowModeManipulator = new Manipulator(self);
+
         self.title = lib.title;
 
         self.tabImgLibrary = [];
         self.tabLib = [];
         lib.tabLib && (self.tabLib = lib.tabLib);
         self.libraryManipulators = [];
+        self.manip = [];
 
         self.imageWidth = 50;
         self.imageHeight = 50;
@@ -179,6 +182,7 @@ function Domain() {
 
         for (var i = 0; i < self.tabLib.length; i++) {
             self.libraryManipulators[i] = new Manipulator(self);
+            //self.libraryManipulators[i].manip = new Manipulator(self);
             if (self.tabLib[i].imgSrc) {
                 var img = imageController.getImage(self.tabLib[i].imgSrc, function () {
                     this.imageLoaded = true;
@@ -357,12 +361,6 @@ function Domain() {
         self.library = new Library(myLibraryGames);
         self.library.formation = self;
 
-        self.gamesLibraryManipulator = self.library.libraryManipulator;
-        self.manipulator.last.add(self.gamesLibraryManipulator.first);
-        self.manipulator.last.add(self.graphManipulator.first);
-
-        self.manipulatorMiniature.last.add(self.iconManipulator.first);
-        self.manipulator.last.add(self.formationInfoManipulator.first);
         self.labelDefault = "Entrer le nom de la formation";
 
         self.deltaLevelWidthIncreased = 0;
@@ -370,19 +368,11 @@ function Domain() {
         // WIDTH
         self.libraryWidthRatio = 0.15;
         self.graphWidthRatio = 1 - self.libraryWidthRatio;
-        self.libraryWidth = drawing.width * self.libraryWidthRatio;
-        self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
         // HEIGHT
         self.graphCreaHeightRatio = 0.85;
-        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
 
-        self.graphElementSize = drawing.width/15;
-        self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
-        self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
-        self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
         self.x = MARGIN;
-        self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
         self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
 
@@ -392,10 +382,6 @@ function Domain() {
         self.levelsTab = [];
 
         self.marginRatio = 0.03;
-        self.globalMargin = {
-            height: self.marginRatio * drawing.height,
-            width: self.marginRatio * drawing.width
-        };
 
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
@@ -415,6 +401,7 @@ function Domain() {
             self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
             self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
             self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
+            self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
             self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
 
             self.globalMargin = {
@@ -425,6 +412,7 @@ function Domain() {
             self.clippingManipulator.flush();
 
         }
+        self.redim();
 
         self.checkInputTextArea = function (myObj) {
             if (myObj.textarea.value.match(self.regex)) {
@@ -516,20 +504,20 @@ function Domain() {
 
         self.header = new Header(additionalMessage);
         self.x = MARGIN;
-        self.y = drawing.height * self.header.size + 3 * MARGIN;
+        //self.y = drawing.height * self.header.size + 3 * MARGIN;
         self.addButtonWidth = 330;
         self.addButtonHeight = 40;
         self.fontSize = 20;
         self.plusDim = self.fontSize * 2;
         self.iconeSize = self.plusDim / 1.5;
 
-        self.headerHeightFormation = drawing.height * self.header.size * 2;
+        //self.headerHeightFormation = drawing.height * self.header.size * 2;
         self.puzzleRows = 6;
         self.initialFormationsPosX = MARGIN;
         self.rows = 6;
         self.lines = 4;
-        self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
-        self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
+        //self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
+        //self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
 
         self.formations = [];
         self.count = 0;
@@ -546,26 +534,15 @@ function Domain() {
 
         }
         self.manipulator = new Manipulator();
-        // self.manipulator.first.move(0, drawing.height * 0.075);
-        // mainManipulator.ordonator.set(1, self.manipulator.first);
-
         self.headerManipulator = new Manipulator();
-        // self.manipulator.last.add(self.headerManipulator.first);
-
         self.addButtonManipulator = new Manipulator();
-        // self.headerManipulator.last.add(self.addButtonManipulator.first);
-        // self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
-
         self.checkManipulator = new Manipulator();
-        // self.headerManipulator.last.add(self.checkManipulator.first);
-
         self.exclamationManipulator = new Manipulator();
-        // self.headerManipulator.last.add(self.exclamationManipulator.first);
-
         self.formationsManipulator = new Manipulator();
         self.clippingManipulator = new Manipulator(self);
+        self.redim();
 
-        //self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
+
     };
 
 /////////////////// end of FormationManager.js ///////////////////
@@ -582,7 +559,7 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.label = "I-learning";
         self.size = 0.05; // 5%
-        mainManipulator.ordonator.set(0, self.manipulator.first);
+        //mainManipulator.ordonator.set(0, self.manipulator.first);
 
 
         self.setMessage = function (additionalMessage) {
@@ -1095,19 +1072,11 @@ function Domain() {
         self.returnButtonManipulator=new Manipulator(self);
 
         self.libraryIManipulator = self.library.libraryManipulator;
-        self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
-
-        self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
-        self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
 
         // WIDTH
         self.libraryWidthRatio = 0.15;
         self.questCreaWidthRatio = 1 - self.libraryWidthRatio;
 
-        self.libraryWidth = drawing.width * self.libraryWidthRatio;
-        self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
 
         // HEIGHT
         self.quizzInfoHeightRatio = 0.05;
@@ -1115,24 +1084,7 @@ function Domain() {
         self.questCreaHeightRatio = 0.57;
         self.libraryHeightRatio = self.questCreaHeightRatio;
         self.previewButtonHeightRatio = 0.1;
-
-        self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
-        self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-        self.libraryHeight = drawing.height * self.libraryHeightRatio;
-        self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
-        self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
-
         self.marginRatio = 0.03;
-        self.globalMargin = {
-            height: self.marginRatio * drawing.height,
-            width: self.marginRatio * drawing.width
-        };
-        self.questionPuzzleCoordinates = {
-            x: self.globalMargin.width / 2,
-            y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
-            w: (drawing.width - self.globalMargin.width),
-            h: (self.questionsPuzzleHeight - self.globalMargin.height)
-        };
 
         self.redim=function () {
             self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
@@ -1160,6 +1112,7 @@ function Domain() {
 
             //self.quizzManagerManipulator.flush();
         }
+        self.redim();
     };
 
 
