@@ -468,6 +468,7 @@ function Domain() {
             };
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.messageDragDrop.content, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
