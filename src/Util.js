@@ -789,13 +789,16 @@ var Miniature=function(game,size){
     };
 
     self.redCrossClickHandler =function (){
-        //parentGame.parentFormation.selectedArrow.selected=false;
         removeAllLinks();
         game.miniatureManipulator.ordonator.unset(0);
         game.miniatureManipulator.ordonator.unset(1);
         game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
         var indexes = game.getPositionInFormation();
         game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
+        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1)
+        {
+            game.parentFormation.levelsTab.pop();
+        }
         game.parentFormation.selectedGame=null;
         game.parentFormation.displayGraph();
 

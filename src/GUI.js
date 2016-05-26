@@ -885,7 +885,6 @@ function FormationsManagerDisplay() {
         }
     };
     self.displayFormations();
-    console.log("display Formations");
 }
 
 function HeaderDisplay () {
