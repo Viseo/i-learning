@@ -433,7 +433,8 @@ function AddEmptyElementDisplay(x, y, w, h) {
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition);
                 }
                 self.parent.questionCreator.loadQuestion(newQuestion);
-                self.parent.questionCreatorManipulator.flush();
+                //self.parent.questionCreatorManipulator.flush();
+
                 self.parent.questionCreator.display(self.parent.questionCreator.previousX, self.parent.questionCreator.previousY, self.parent.questionCreator.previousW, self.parent.questionCreator.previousH);
         }
     };
@@ -1255,7 +1256,7 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.previousY = y;
     self.previousW = w;
     self.previousH = h;
-
+    self.manipulator.last.add(self.questionCreatorManipulator.first);
     self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
     self.questionCreatorManipulator.translator.move(x, 0);
     self.toggleButtonHeight = 40;
@@ -1345,7 +1346,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
 function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
-    self.questionCreatorManipulator.flush();
+    //self.questionCreatorManipulator.flush();
     self.questionBlock = {rect: new svg.Rect(w, h).color([], 1, myColors.black).position(w / 2, y + h / 2)};
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.add(self.questionManipulator.first);
@@ -1578,7 +1579,7 @@ function QuizzManagerDisplay(){
         var index = self.quizz.tabQuestions.indexOf(element);
         self.indexOfEditedQuestion = index;
         self.questionCreator.loadQuestion(element);
-        self.questionCreatorManipulator.flush();
+        //self.questionCreatorManipulator.flush();
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 

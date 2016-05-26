@@ -33,7 +33,7 @@
         drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);
         //mainManipulator.flush();
         var formation= formationsManager.formationDisplayed;
-        if(!formation && !formation.quizzDisplayed){
+        if(!formation || (formation && formation.quizzDisplayed)){
             formationsManager.redim();
             formationsManager.display()
         }

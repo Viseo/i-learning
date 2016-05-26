@@ -764,10 +764,10 @@ function Domain() {
         self.manipulator = new Manipulator(self);
 
         self.manipulatorQuizzInfo = new Manipulator(self);
-        self.manipulator.last.add(self.manipulatorQuizzInfo.first);
+        //self.manipulator.last.add(self.manipulatorQuizzInfo.first);
 
         self.questionCreatorManipulator = new Manipulator(self);
-        self.manipulator.last.add(self.questionCreatorManipulator.first);
+        //self.manipulator.last.add(self.questionCreatorManipulator.first);
 
         self.questionManipulator = new Manipulator(self);
 
