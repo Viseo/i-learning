@@ -566,10 +566,11 @@ function FormationDisplayFormation(){
     };
     showTitle();
 
-
     var onclickQuizzHandler = function(event){
         var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
+        self.selectedArrow=null;
+        self.selectedGame=null;
         self.quizzManager.loadQuizz(targetQuizz);
         self.quizzDisplayed=targetQuizz;
         self.quizzManager.display();
@@ -671,9 +672,11 @@ function FormationDisplayFormation(){
 
     };
     self.displayGraph = function (w, h){
+        if(typeof w !== "undefined"){self.graphW=w};
+        if(typeof h !== "undefined"){self.graphH=h};
         self.graphManipulator.flush();
-        var height = (self.levelHeight*(self.levelsTab.length+1) > h) ? (self.levelHeight*(self.levelsTab.length+1)) : h;
-        var width = (self.levelWidth > w) ? self.levelWidth : w;
+        var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
+        var width = (self.levelWidth > self.graphW) ? self.levelWidth : self.graphW;
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
@@ -687,8 +690,8 @@ function FormationDisplayFormation(){
 
                 var testGame = tabElement.displayMiniature(self.graphElementSize);
                 if(tabElement instanceof Quizz){
-                    svg.addEvent(testGame.cadre, "dblclick", onclickQuizzHandler);
-                    svg.addEvent(testGame.content, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(testGame.icon.cadre, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(testGame.icon.content, "dblclick", onclickQuizzHandler);
                 }else if(tabElement instanceof Bd){
                     // Ouvrir le Bd creator du futur jeu Bd
                 }
@@ -697,14 +700,14 @@ function FormationDisplayFormation(){
 
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
-        self.graphBlock.rect.position(0, height/2-h/2);
-        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, w, h, 20, null, self.graphManipulator).text;
+        self.graphBlock.rect.position(0, height/2-self.graphH/2);
+        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
 
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
-        self.graphManipulator.translator.move(w/2-self.borderSize, h/2);
+        self.graphManipulator.translator.move(self.graphW/2-self.borderSize, self.graphH/2);
 
         self.panel.back._acceptDrop = true;
         self.panel.resizeContent(height);
@@ -1550,8 +1553,7 @@ function QuizzDisplayResult (color){
 
 function GameDisplayMiniature(size){
     var self = this;
-    var obj = displayTextWithCircle(self.title, size, size, myColors.black, myColors.white, 20, null, self.miniatureManipulator);
-    self.miniatureManipulator.first.move(self.miniaturePosition.x, self.miniaturePosition.y);
+    var obj = new Miniature(self,size);
     return obj;
 }
 

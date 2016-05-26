@@ -767,7 +767,68 @@ var Arrow=function(parentGame,childGame){
     return self;
 };
 
+var Miniature=function(game,size){
+    var self=this;
+    self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+    game.miniatureManipulator.first.move(game.miniaturePosition.x, game.miniaturePosition.y);
+    self.redCross=drawPlus(0,0,20,20);
+    self.redCrossManipulator=new Manipulator(self);
+    self.redCrossManipulator.last.add(self.redCross);
+    self.redCross.color(myColors.red,1,myColors.black);
+    self.redCrossManipulator.rotator.rotate(45);
+    //self.redCrossManipulator.scalor.scale(0.5);
+    self.redCrossManipulator.translator.move(size/2,-size/2);
 
+    var removeAllLinks=function(){
+        game.childrenGames.forEach(function(childGame){
+            childGame.parentsGames.splice(childGame.parentsGames.indexOf(game),1);
+        });
+        game.parentsGames.forEach(function(parentGame){
+            parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game),1);
+        });
+    };
+
+    self.redCrossClickHandler =function (){
+        //parentGame.parentFormation.selectedArrow.selected=false;
+        removeAllLinks();
+        game.miniatureManipulator.ordonator.unset(0);
+        game.miniatureManipulator.ordonator.unset(1);
+        game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
+        var indexes = game.getPositionInFormation();
+        game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
+        game.parentFormation.selectedGame=null;
+        game.parentFormation.displayGraph();
+
+    }
+
+    svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
+
+    self.selected=false;
+    function miniatureClickHandler(){
+        if(!self.selected){
+            if(game.parentFormation.selectedGame){
+                game.parentFormation.selectedGame.icon.cadre.color(myColors.white,1,myColors.black);
+                game.parentFormation.selectedGame.selected=false;
+                game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
+
+            }
+            game.parentFormation.selectedGame=self;
+            game.miniatureManipulator.last.add(self.redCrossManipulator.first);
+            self.icon.cadre.color(myColors.white,2,SELECTION_COLOR);
+        }else{
+            self.icon.cadre.color(myColors.white,1,myColors.black);
+            game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
+            game.parentFormation.selectedGame=null;
+        }
+        self.selected= !self.selected;
+    }
+
+    svg.addEvent(self.icon.cadre,'click',miniatureClickHandler);
+    svg.addEvent(self.icon.content,'click',miniatureClickHandler);
+    self.icon.cadre.color(myColors.white,1,myColors.black);
+
+    return self;
+};
 
 /////////////// Bdd.js //////////////////
 /**

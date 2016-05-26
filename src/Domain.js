@@ -332,7 +332,7 @@ function Domain() {
             if(!index){
                 self.gamesTab.pop();
             }else{
-                self.gamesTab[index].splice(index, 1);
+                self.gamesTab.splice(index, 1);
             }
         };
         self.addGame = function(game, index){
