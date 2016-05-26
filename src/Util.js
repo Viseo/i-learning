@@ -795,7 +795,7 @@ var Miniature=function(game,size){
         game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
         var indexes = game.getPositionInFormation();
         game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1)
+        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0)
         {
             game.parentFormation.levelsTab.pop();
         }
