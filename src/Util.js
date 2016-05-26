@@ -18,7 +18,7 @@ if(typeof SVG != "undefined") {
 /* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
-        gui = new Gui({speed: 50, step: 10});
+        gui = new Gui({speed: 5, step: 100});
     }
 }
 function setGui(_gui){
