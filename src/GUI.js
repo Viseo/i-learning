@@ -726,12 +726,13 @@ function FormationsManagerDisplay() {
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
         self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
-        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
         self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.content.add(self.formationsManipulator.first);
-        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
+        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
 
         onScroll = function (event) {
             var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
