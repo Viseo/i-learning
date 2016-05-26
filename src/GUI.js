@@ -605,9 +605,12 @@ function FormationDisplayFormation(){
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
-            if(event.keyCode===46 && self.selectedArrow){
+            if(event.keyCode===46 && self.selectedArrow) {
                 self.selectedArrow.redCrossClickHandler();
-            } else if(event.keyCode === 27 && self.library && self.library.arrowMode) {
+            }else if(event.keyCode===46 && self.selectedGame)
+             {
+                    self.selectedGame.redCrossClickHandler();
+             }else if(event.keyCode === 27 && self.library && self.library.arrowMode) {
                 self.library.toggleArrowMode();
             }
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
@@ -699,7 +702,6 @@ function FormationDisplayFormation(){
         self.graphBlock.rect.position(0, height/2-self.graphH/2);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
-
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
