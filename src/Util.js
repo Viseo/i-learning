@@ -902,7 +902,7 @@ function Bdd() {
         title: "Type de jeux",
         tab: [
             {label: "Quiz"},
-            {label: "BD"}
+            {label: "Bd"}
         ],
         font: "Courier New", fontSize: 20
     };
