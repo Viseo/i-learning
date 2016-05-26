@@ -18,7 +18,7 @@ if(typeof SVG != "undefined") {
 /* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
-        gui = new Gui({speed: 50, step: 10});
+        gui = new Gui({speed: 5, step: 100});
     }
 }
 function setGui(_gui){
@@ -71,7 +71,6 @@ function SVGGlobalHandler() {
             !runtime && document.activeElement.blur();
             self.target = self.background.getTarget(event.clientX, event.clientY);
             self.drag = self.target;
-            console.log(self.target);
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (self.target) {
                 svg.event(self.target, "mousedown", event);

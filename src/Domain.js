@@ -178,6 +178,7 @@ function Domain() {
         self.libraryGamesTab = [];
 
         for (var i = 0; i < self.tabLib.length; i++) {
+            self.libraryManipulators[i] = new Manipulator(self);
             if (self.tabLib[i].imgSrc) {
                 var img = imageController.getImage(self.tabLib[i].imgSrc, function () {
                     this.imageLoaded = true;
@@ -1091,6 +1092,7 @@ function Domain() {
         self.quizzInfoManipulator = new Manipulator(self);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
+        self.returnButtonManipulator=new Manipulator(self);
 
         self.libraryIManipulator = self.library.libraryManipulator;
         self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
@@ -1131,34 +1133,36 @@ function Domain() {
             w: (drawing.width - self.globalMargin.width),
             h: (self.questionsPuzzleHeight - self.globalMargin.height)
         };
+
+        self.redim=function () {
+            self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
+            self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
+            self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
+            self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
+            self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
+            self.libraryWidth = drawing.width * self.libraryWidthRatio;
+            self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
+            self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
+            self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
+            self.libraryHeight = drawing.height * self.libraryHeightRatio;
+            self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
+            self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
+            self.globalMargin = {
+                height: self.marginRatio * drawing.height,
+                width: self.marginRatio * drawing.width
+            };
+            self.questionPuzzleCoordinates = {
+                x: self.globalMargin.width / 2,
+                y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
+                w: (drawing.width - self.globalMargin.width),
+                h: (self.questionsPuzzleHeight - self.globalMargin.height)
+            };
+
+            //self.quizzManagerManipulator.flush();
+        }
     };
 
-    self.redim=function () {
-        self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
-        self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
-        self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
-        self.libraryWidth = drawing.width * self.libraryWidthRatio;
-        self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
-        self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
-        self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-        self.libraryHeight = drawing.height * self.libraryHeightRatio;
-        self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
-        self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
-        self.globalMargin = {
-            height: self.marginRatio * drawing.height,
-            width: self.marginRatio * drawing.width
-        };
-        self.questionPuzzleCoordinates = {
-            x: self.globalMargin.width / 2,
-            y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
-            w: (drawing.width - self.globalMargin.width),
-            h: (self.questionsPuzzleHeight - self.globalMargin.height)
-        };
 
-        //self.quizzManagerManipulator.flush();
-    }
 
 
 ////////////////// end of QuizzManager.js //////////////////////////
