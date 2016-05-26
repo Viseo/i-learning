@@ -169,41 +169,33 @@ function Domain() {
 
         self.title = lib.title;
 
-        self.tabImgLibrary = [];
-        self.tabLib = [];
-        lib.tabLib && (self.tabLib = lib.tabLib);
+        //self.tabImgLibrary = [];
+        self.itemsTab = [];
+        lib.tab && (self.itemsTab = lib.tab);
         self.libraryManipulators = [];
-        self.manip = [];
 
         self.imageWidth = 50;
         self.imageHeight = 50;
         self.libMargin = 5;
         self.libraryGamesTab = [];
 
-        for (var i = 0; i < self.tabLib.length; i++) {
+        for (var i = 0; i < self.itemsTab.length; i++) {
             self.libraryManipulators[i] = new Manipulator(self);
-            //self.libraryManipulators[i].manip = new Manipulator(self);
-            if (self.tabLib[i].imgSrc) {
-                var img = imageController.getImage(self.tabLib[i].imgSrc, function () {
+            if (self.itemsTab[i].imgSrc) {
+                var img = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
                 });
-                self.tabImgLibrary[i] = img;
+                self.itemsTab[i] = img;
             }
         }
 
-        if (lib.font) {
-            self.font = lib.font;
-        }
-        if (lib.fontSize) {
-            self.fontSize = lib.fontSize;
-        } else {
-            self.fontSize = 20;
-        }
+        lib.font ? (self.font = lib.font) : self.font = "Arial";
+        lib.fontSize ? (self.fontSize = lib.fontSize) : self.fontSize = 20;
 
         self.run = function (x, y, w, h, callback) {
             self.intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
-                self.tabImgLibrary.forEach(function (e) {
+                self.itemsTab.forEach(function (e) {
                     loaded = loaded && e.imageLoaded;
                 });
                 if (loaded) {
@@ -212,7 +204,7 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                runtime && self.tabImgLibrary.forEach(function(e){
+                runtime && self.itemsTab.forEach(function(e){
                     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
                 });
                 if (runtime){
@@ -273,14 +265,14 @@ function Domain() {
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
-                    case (formation.library.tabLib[0].label):
+                    case ("Quiz"):
                         var newQuizz = new Quizz(defaultQuizz, false, formation);
                         formation.gamesCounter.quizz++;
                         newQuizz.tabQuestions[0].parentQuizz = newQuizz;
                         newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
                         formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
                         break;
-                    case (formation.library.tabLib[1].label):
+                    case ("Bd"):
                         var newBd = new Bd({}, formation);
                         formation.gamesCounter.bd++;
                         newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
@@ -328,7 +320,7 @@ function Domain() {
         self.parentFormation = formation;
         self.manipulator = new Manipulator(self);
         self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
-        gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+        gamesTab ? (self.gamesTab = gamesTab) : (self.gamesTab = []);
         self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
         self.y = (self.index-1) * self.parentFormation.levelHeight;
         self.obj = null;
@@ -336,7 +328,7 @@ function Domain() {
             if(!index){
                 self.gamesTab.pop();
             }else{
-                self.gamesTab[index].splice(index, 1);
+                self.gamesTab.splice(index, 1);
             }
         };
         self.addGame = function(game, index){
@@ -456,6 +448,7 @@ function Domain() {
             };
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.messageDragDrop.content, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
@@ -541,8 +534,6 @@ function Domain() {
         self.formationsManipulator = new Manipulator();
         self.clippingManipulator = new Manipulator(self);
         self.redim();
-
-
     };
 
 /////////////////// end of FormationManager.js ///////////////////

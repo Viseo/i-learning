@@ -18,7 +18,7 @@ if(typeof SVG != "undefined") {
 /* istanbul ignore next */
 if(typeof Gui != "undefined") {
     if(!gui) {
-        gui = new Gui({speed: 50, step: 10});
+        gui = new Gui({speed: 5, step: 100});
     }
 }
 function setGui(_gui){
@@ -512,7 +512,7 @@ function SVGUtil() {
         var tempText = "";
         var w = w * 5 / 6;
 
-        t.font(font ? font : "arial", fontSize ? fontSize : 20);
+        t.font(font ? font : "Arial", fontSize ? fontSize : 20);
 
         // add text word by word
         for (var i = 0; i < words.length; i++) {
@@ -728,7 +728,7 @@ var Arrow=function(parentGame,childGame){
         parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
         childGame.parentsGames.splice(childGame.parentsGames.indexOf(parentGame),1);
     };
-    function redCrossClickHandler(){
+    self.redCrossClickHandler =function (){
         //parentGame.parentFormation.selectedArrow.selected=false;
         removeLink(parentGame,childGame);
         parentGame.parentFormation.graphManipulator.last.remove(self.arrowPath);
@@ -737,7 +737,7 @@ var Arrow=function(parentGame,childGame){
 
     }
 
-    svg.addEvent(self.redCross,'click',redCrossClickHandler);
+    svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
 
     self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
     self.selected=false;
@@ -767,7 +767,72 @@ var Arrow=function(parentGame,childGame){
     return self;
 };
 
+var Miniature=function(game,size){
+    var self=this;
+    self.game=game;
+    self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+    game.miniatureManipulator.first.move(game.miniaturePosition.x, game.miniaturePosition.y);
+    self.redCross=drawPlus(0,0,20,20);
+    self.redCrossManipulator=new Manipulator(self);
+    self.redCrossManipulator.last.add(self.redCross);
+    self.redCross.color(myColors.red,1,myColors.black);
+    self.redCrossManipulator.rotator.rotate(45);
+    //self.redCrossManipulator.scalor.scale(0.5);
+    self.redCrossManipulator.translator.move(size/2,-size/2);
 
+    var removeAllLinks=function(){
+        game.childrenGames.forEach(function(childGame){
+            childGame.parentsGames.splice(childGame.parentsGames.indexOf(game),1);
+        });
+        game.parentsGames.forEach(function(parentGame){
+            parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game),1);
+        });
+    };
+
+    self.redCrossClickHandler =function (){
+        removeAllLinks();
+        game.miniatureManipulator.ordonator.unset(0);
+        game.miniatureManipulator.ordonator.unset(1);
+        game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
+        var indexes = game.getPositionInFormation();
+        game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
+        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0)
+        {
+            game.parentFormation.levelsTab.pop();
+        }
+        game.parentFormation.selectedGame=null;
+        game.parentFormation.displayGraph();
+
+    }
+
+    svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
+
+    self.selected=false;
+    function miniatureClickHandler(){
+        if(!self.selected){
+            if(game.parentFormation.selectedGame){
+                game.parentFormation.selectedGame.icon.cadre.color(myColors.white,1,myColors.black);
+                game.parentFormation.selectedGame.selected=false;
+                game.parentFormation.selectedGame.game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
+
+            }
+            game.parentFormation.selectedGame=self;
+            game.miniatureManipulator.last.add(self.redCrossManipulator.first);
+            self.icon.cadre.color(myColors.white,2,SELECTION_COLOR);
+        }else{
+            self.icon.cadre.color(myColors.white,1,myColors.black);
+            game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
+            game.parentFormation.selectedGame=null;
+        }
+        self.selected= !self.selected;
+    }
+
+    svg.addEvent(self.icon.cadre,'click',miniatureClickHandler);
+    svg.addEvent(self.icon.content,'click',miniatureClickHandler);
+    self.icon.cadre.color(myColors.white,1,myColors.black);
+
+    return self;
+};
 
 /////////////// Bdd.js //////////////////
 /**
@@ -827,12 +892,21 @@ function Bdd() {
 
     myLibraryImage = {
         title: "Bibliothèque",
-        tabLib: [
+        tab: [
             {imgSrc: "../resource/littleCat.png"},
             {imgSrc: "../resource/millions.png"},
             {imgSrc: "../resource/folder.png"},
             {imgSrc: "../resource/cerise.jpg"},
             {imgSrc: "../resource/ChatTim.jpg"}
+        ],
+        font: "Courier New", fontSize: 20
+    };
+
+    myLibraryGames = {
+        title: "Type de jeux",
+        tab: [
+            {label: "Quiz"},
+            {label: "Bd"}
         ],
         font: "Courier New", fontSize: 20
     };
@@ -1763,7 +1837,6 @@ function Bdd() {
         ]
     };
 
-
     myQuizzDemo = {
         title: "Qui veut gagner des millions ? Quiz n°1",
         tabQuestions: [
@@ -1896,7 +1969,7 @@ function Bdd() {
         bgColor: myColors.raspberry, puzzleLines: 3, puzzleRows: 1
     };
 
-    uniqueAnswerValidationTab = [
+    singleAnswerValidationTab = [
         function (quiz) {
             // Check Quiz Name:
             var isValid = (quiz.quizzName !== "");
@@ -1975,11 +2048,10 @@ function Bdd() {
     ];
 
     myQuizzType = {
-        //tab: [{label:"Réponse unique"}, {label:"Réponses multiples"}, {label:"test"}]
         tab: [{
             label: "Réponse unique",
             default: true,
-            validationTab: uniqueAnswerValidationTab
+            validationTab: singleAnswerValidationTab
         }, {label: "Réponses multiples", default: false, validationTab: multipleAnswerValidationTab}]
     };
 
@@ -2028,15 +2100,6 @@ function Bdd() {
                 label: "Angular js 7",
                 status: statusEnum.Edited
             }, {label: "Angular js 8"}, {label: "ZEdernier"}]
-    };
-
-    myLibraryGames = {
-        title: "Type de jeux",
-        tabLib: [
-            {label: "Quiz"},
-            {label: "BD"}
-        ],
-        font: "Courier New", fontSize: 20
     };
 
     myFormation = {
