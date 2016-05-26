@@ -769,6 +769,7 @@ var Arrow=function(parentGame,childGame){
 
 var Miniature=function(game,size){
     var self=this;
+    self.game=game;
     self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
     game.miniatureManipulator.first.move(game.miniaturePosition.x, game.miniaturePosition.y);
     self.redCross=drawPlus(0,0,20,20);
@@ -812,7 +813,7 @@ var Miniature=function(game,size){
             if(game.parentFormation.selectedGame){
                 game.parentFormation.selectedGame.icon.cadre.color(myColors.white,1,myColors.black);
                 game.parentFormation.selectedGame.selected=false;
-                game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
+                game.parentFormation.selectedGame.game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
 
             }
             game.parentFormation.selectedGame=self;
