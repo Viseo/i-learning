@@ -126,7 +126,7 @@ function AnswerDisplay (x, y, w, h) {
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
-                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                    .font("Arial", 15).color(myColors.red).anchor(anchor);
                 self.editor.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
@@ -188,7 +188,7 @@ function LibraryDisplay(x, y, w, h) {
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w / 2, (1 / 20) * h);
 
-    var maxImagesPerLine = 2;
+    var maxImagesPerLine = Math.floor((w-MARGIN)/(self.imageWidth+MARGIN)) || 1; //||1 pour le cas de resize très petit
     //var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
     self.libMargin = (w - (maxImagesPerLine * self.imageWidth)) / (maxImagesPerLine + 1);
     var maxGamesPerLine = 1;
@@ -345,11 +345,11 @@ function LibraryDisplay(x, y, w, h) {
                     clip = self.formation.clippingManipulator.last,
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-                    if (arrowMode) {
-                        self.libraryGamesTab.forEach(function (e) {
-                            self.gameSelected = null;
-                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                        });
+                if (arrowMode) {
+                    self.libraryGamesTab.forEach(function (e) {
+                        self.gameSelected = null;
+                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                    });
 
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
@@ -531,7 +531,7 @@ function FormationDisplayFormation(){
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(drawing.width/2, 0)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.labelValidInput = false;
@@ -567,6 +567,7 @@ function FormationDisplayFormation(){
         self.selectedArrow=null;
         self.selectedGame=null;
         self.quizzManager.loadQuizz(targetQuizz);
+        self.quizzManager.redim();
         self.quizzDisplayed=targetQuizz;
         self.quizzManager.display();
         if (!runtime && window.getSelection)
@@ -651,7 +652,7 @@ function FormationDisplayFormation(){
                 }
             });
         });
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
+        self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
@@ -781,11 +782,14 @@ function FormationsManagerDisplay() {
 
     function onClickFormation(formation) {
         self.formationDisplayed=formation;
+        self.header.redim();
+        formation.redim();
         formation.displayFormation();
     }
 
     function onClickNewFormation() {
         var formation = new Formation({});
+        self.header.redim();
         self.formationDisplayed=formation;
         formation.parent = self;
         formation.displayFormation();
@@ -824,7 +828,7 @@ function FormationsManagerDisplay() {
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
-        self.legendWidth = drawing.width * 30 / 100;
+        self.legendWidth = drawing.width * 0.3;
         self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN
         self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
@@ -878,7 +882,6 @@ function FormationsManagerDisplay() {
         }
     };
     self.displayFormations();
-    console.log("display Formations");
 }
 
 function HeaderDisplay () {
@@ -887,9 +890,9 @@ function HeaderDisplay () {
     self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
     self.redim = function(){
         self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
+        self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     };
     self.redim();
-    self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
     self.manipulator.ordonator.set(1, self.text);
     self.manipulator.ordonator.set(0, self.line);
@@ -1352,7 +1355,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         self.displayToggleButton(x, y, w, h, questionType);
     };
 
-    self.toggleButtonWidth = 300;
+    self.toggleButtonWidth = drawing.width/5;
     var length = self.quizzType.length;
     var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
     self.margin = (w-lengthToUse)/2;
@@ -1458,7 +1461,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             var questionsPuzzleHeightRatio = 0.25;
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.questionNameValidInput = false;
@@ -1622,7 +1625,19 @@ function QuizzManagerDisplay(){
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
     };
 
-    self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+    if (self.resizing){
+        self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+            self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height);
+        self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
+        self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
+        self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
+            self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
+        self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+            150, self.previewButtonHeight-self.globalMargin.height);
+        mainManipulator.ordonator.unset(0);
+    }
+
+    !self.resizing && self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
         self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height, function(){
             self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
@@ -1642,10 +1657,10 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
-    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("arial", 20).anchor("start");
+    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
     self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
-    self.formationLabel.font("arial", 20).anchor("middle");
+    self.formationLabel.font("Arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
     var textSize = svg.getSvgr().boundingRect(self.returnText.component);
@@ -1659,7 +1674,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var returnHandler = function(event){
         console.log("click");
         var target=drawings.background.getTarget(event.clientX,event.clientY);
-        console.log(target);
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
         target.parentFormation.quizzDisplayed= null;
@@ -1725,7 +1739,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.quizzNameValidInput = false;
@@ -1771,7 +1785,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                 self.questionCreator.errorMessagePreview = new svg.Text(result.message)
                     .position(0,-self.toggleButtonHeight)
-                    .font("arial", 20)
+                    .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
             }
