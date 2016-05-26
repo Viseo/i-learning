@@ -200,9 +200,9 @@ function LibraryDisplay(x, y, w, h){
         }
         self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-        if (self.itemsTab[i].imgSrc) {
-            var objectTotal = displayImage(self.itemsTab[i].imgSrc, self.tabImgLibrary[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.tabImgLibrary[i].width, height: self.tabImgLibrary[i].height};
+        if (self.itemsTab[i].src) {
+            var objectTotal = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
+            objectTotal.image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
             var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
@@ -215,93 +215,93 @@ function LibraryDisplay(x, y, w, h){
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);
 
-            self.libraryGamesTab[i] = {objectTotal : objectTotal};
-            self.libraryGamesTab[i].objectTotal.cadre.clicked = false;
+            self.itemsTab[i] = {objectTotal : objectTotal};
+            self.itemsTab[i].objectTotal.cadre.clicked = false;
         }
     }
     self.libraryManipulator.first.move(x, y);
 
     self.libraryManipulators.forEach(function(e){
         var mouseDownAction = function(event){
-            e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
-            var elementCopy = e.ordonator.children[0];
-            if(e.parentObject.itemsTab && e.parentObject.itemsTab.length !==0){
-                var index = e.parentObject.itemsTab.indexOf(e);
-                if((e.parentObject.itemsTab[0] instanceof Quizz) || (e.parentObject.itemsTab[0] instanceof BD)){
-
-                }else{
-                    var img;
-
-                }
-            }
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
+            self.formation && self.formation.removeErrorMessage(self.formation.errorMessageDisplayed);
+            var elementCopy = e.ordonator.children[0];
 
-            if (e.ordonator.children[0] instanceof svg.Image){
-                img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
-                img.srcDimension = elementCopy.srcDimension;
-            }else{
-                var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                self.draggedObjectLabel = gameMiniature.content.messageText;
-                img = gameMiniature.cadre;
-            }
-            manip.ordonator.set(0, img);
             var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
             var point2 = manip.first.globalPoint(0,0);
             manip.first.move(point.x-point2.x, point.y-point2.y);
 
-            manageDnD(img, manip);
-            gameMiniature && gameMiniature.content && manageDnD(gameMiniature.content, manip);
-
-            var mouseClick = function (event){
-                var target = drawing.getTarget(event.clientX, event.clientY);
-                self.libraryGamesTab.forEach(function(e){
-                    if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
-                        if (e.objectTotal!==self.gameSelected){
-                            //target.color(myColors.white, 3, SELECTION_COLOR);
-                            e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                            self.gameSelected = e.objectTotal;
+            if(self.itemsTab && self.itemsTab.length !==0){
+                var index = e.parentObject.itemsTab.indexOf(e);
+                if(self.itemsTab[0].objectTotal && ((self.itemsTab[0].objectTotal.content.messageText === "Quiz") || (self.itemsTab[0].objectTotal.content.messageText === "Quiz"))){
+                    var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w/2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                    self.draggedObjectLabel = gameMiniature.content.messageText;
+                    manip.ordonator.set(0, gameMiniature.cadre);
+                    manageDnD(gameMiniature.cadre, manip);
+                }else{
+                    var img;
+                    img = displayImage(elementCopy.src,elementCopy.srcDimension,elementCopy.width,elementCopy.height).image;
+                    img.srcDimension = elementCopy.srcDimension;
+                    manip.ordonator.set(0, img);
+                    manageDnD(img, manip);
+                    img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
+                    img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup', img.image.component.target.listeners.mouseup);
+                }
+                var mouseClick = function (event){
+                    var target = drawing.getTarget(event.clientX, event.clientY);
+                    self.libraryGamesTab.forEach(function(e){
+                        if(e.objectTotal.content.messageText === target.parent.children[1].messageText){
+                            if (e.objectTotal!==self.gameSelected){
+                                e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                self.gameSelected = e.objectTotal;
+                            }
+                            else{
+                                e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                self.gameSelected = null;
+                            }
                         }
                         else{
                             e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                            self.gameSelected = null;
+                        }
+                    });
+                };
+
+                var mouseupHandler = function(event){
+
+                    var svgObj = manip.ordonator.children.shift();// svgObj => Circle ou Image
+                    manip.first.parent.remove(manip.first);
+                    var target = drawing.getTarget(event.clientX, event.clientY);
+                    if(target && target.parent && target.parent.parentManip){
+                        if(!(target.parent.parentManip.parentObject instanceof Library)){
+                            self.dropAction(svgObj, event);
+                        }
+                        else {
+                            mouseClick(event);
+                            !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
+                            self.formation.clickToAdd();
                         }
                     }
-                    else{
-                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                    }
-                });
-            };
+                    self.draggedObjectLabel = "";
+                };
+            }
 
-            var mouseupHandler = function(event){
-                var img = manip.ordonator.children.shift();
-                manip.first.parent.remove(manip.first);
-                var target = drawing.getTarget(event.clientX, event.clientY);
-                if(target && target.parent && target.parent.parentManip){
-                    if(!(target.parent.parentManip.parentObject instanceof Library)){
-                        self.dropAction(img, event);
-                    }
-                    else {
-                        mouseClick(event);
-                        !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
-                        self.formation.clickToAdd();
-                    }
-                }
-                self.draggedObjectLabel = "";
-            };
+            gameMiniature && gameMiniature.cadre.component.listeners && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.listeners.mouseup);
+            gameMiniature && gameMiniature.cadre.component.target && gameMiniature.cadre.component.target.listeners && gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.target.listeners.mouseup);
+
             svg.event(drawings.glass,"mousedown",event);
-            img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
-            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img, 'mouseup', img.component.target.listeners.mouseup);
-            svg.addEvent(img, 'mouseup', mouseupHandler);
+            gameMiniature && gameMiniature.cadre && svg.addEvent(gameMiniature.cadre, 'mouseup', mouseupHandler);
+            img && svg.addEvent(img, 'mouseup', mouseupHandler);
+
             if(gameMiniature && gameMiniature.content){
                 gameMiniature.content.component.listeners && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.listeners.mouseup);
                 gameMiniature.content.component.target && gameMiniature.content.component.target.listeners && gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.target.listeners.mouseup);
                 svg.addEvent(gameMiniature.content, 'mouseup', mouseupHandler);
             }
+
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-
     });
 }
 
@@ -1144,7 +1144,7 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.questionCreatorManipulator.translator.move(x, 0);
     self.toggleButtonHeight = 40;
     self.displayQuestionCreator(MARGIN + x, y, w, h);
-    var clickedButton= self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    var clickedButton = self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
     self.displayToggleButton(MARGIN + x, MARGIN/2+y, w, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 

@@ -268,7 +268,7 @@ function Domain() {
 
                 var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
                 switch (objectToBeAddedLabel) {
-                    case (formation.library.tab[0].label):
+                    case ("Quiz"):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow){
                             var newQuizz = new Quizz(defaultQuizz, false, formation);
                             formation.gamesCounter.quizz++;
@@ -283,7 +283,7 @@ function Domain() {
                             formation.displayErrorMessage(formation.maxGameInARowMessage);
                         }
                         break;
-                    case (formation.library.tab[1].label):
+                    case ("Bd"):
                         if(formation.levelsTab[formation.targetLevelIndex].gamesTab.length < formation.maxGameInARow) {
                             var newBd = new Bd({}, formation);
                             formation.gamesCounter.bd++;
@@ -341,7 +341,7 @@ function Domain() {
         self.parentFormation = formation;
         self.manipulator = new Manipulator(self);
         self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
-        gamesTab? (self.gamesTab = gamesTab) : (self.gamesTab = []);
+        gamesTab ? (self.gamesTab = gamesTab) : (self.gamesTab = []);
         self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
         self.y = (self.index-1) * self.parentFormation.levelHeight;
         self.obj = null;
