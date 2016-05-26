@@ -5,7 +5,7 @@
 var assert = require('assert');
 var testutils = require('../lib/testutils');
 
-var targetRuntime = require('../lib/targetRuntime').targetRuntime;
+var targetRuntime = require('../lib/targetruntime').targetRuntime;
 var mock = require('../lib/runtimemock');
 mock.setTarget(targetRuntime);
 var svgHandler = require('../lib/svghandler');
@@ -183,7 +183,7 @@ describe('Firefox game', function () {
         runtime.declareAnchor('content');
         svg = SVG(runtime);
         guiSvgModule.setSVG(svg);
-        var guiSvg = guiSvgModule.Gui();
+        var guiSvg = guiSvgModule.Gui({speed: 50, step: 10});
         util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
@@ -212,30 +212,59 @@ describe('Firefox game', function () {
     });
 
 
-    it("a short admin use (to QuizzManager)", function (done) {
+    it("a short admin use (to Formation)", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
                 adminModule.admin();
             },
-            "./log/testFirefoxAdminMarche.json", 'content', runtime, done);
+            "./log/testFirefoxAdminShort.json", 'content', runtime, done);
     });
 
-    it("an admin use", function (done) {
+    it("a short admin use (to Formation, with Games)", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
                 adminModule.admin();
             },
-            "./log/testFirefoxAdmin.json", 'content', runtime, done);
+            "./log/testFirefoxAdminShortGames.json", 'content', runtime, done);
     });
-    it("an admin use Textarea test", function (done) {
+
+    //it("a short admin use (to QuizzManager)", function (done) {
+    //    this.timeout(100000);
+    //    checkScenario(
+    //        function () {
+    //            adminModule.admin();
+    //        },
+    //        "./log/testFirefoxAdminQuizzManager.json", 'content', runtime, done);
+    //});
+
+    it("a short admin use (to QuizzManager, with new questions and answers)", function (done) {
         this.timeout(100000);
         checkScenario(
             function () {
                 adminModule.admin();
             },
-            "./log/testAdminTextArea.json", 'content', runtime, done);
+            "./log/testFirefoxAdminAddElementsSmall.json", 'content', runtime, done);
+    });
+
+    it("a short admin use (to QuizzManager, with checkbox use and toggle button)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                var param = {speed: 50, step: 10};
+                adminModule.admin();
+            },
+            "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
+    });
+
+    it("a short admin use (edit formation title)", function (done) {
+        this.timeout(100000);
+        checkScenario(
+            function () {
+                adminModule.admin();
+            },
+            "./log/testTextarea.json", 'content', runtime, done);
     });
 });
 
