@@ -343,7 +343,7 @@ function LibraryDisplay(x, y, w, h) {
                 var panel = self.formation.panel,
                     graph = self.formation.graphManipulator.last,
                     clip = self.formation.clippingManipulator.last,
-                    glass = new svg.Rect(panel.width, panel.height).opacity(0.5).color(myColors.pink);
+                    glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
                     if (arrowMode) {
                         self.libraryGamesTab.forEach(function (e) {
