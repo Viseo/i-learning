@@ -339,7 +339,6 @@ function LibraryDisplay(x,y,w,h){
                 var glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
                 if(arrowMode) {
-
                     self.libraryGamesTab.forEach(function(e) {
                         self.gameSelected = null;
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
@@ -368,21 +367,16 @@ function LibraryDisplay(x,y,w,h){
                             self.formation.graphManipulator.last.add(glass);
 
                         };
+                        
                         svg.addEvent(glass, 'mouseup', mouseUpAction);
                     };
 
                     svg.addEvent(glass, 'mousedown', mouseDownAction);
-
-                    // Problème : ce comportement enlève le contrôle des scrollbars avec les flèches
-                    /* svg.getSvgr().addGlobalEvent('keydown', function (event) {
-                        if(event.keyCode === 27) toggleArrowMode();
-                    });*/
                 } else {
                     arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                     arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
                     var graph = self.formation.graphManipulator.last;
                     graph.remove(graph.children[graph.children.length - 1]);
-                    //svg.getSvgr().addGlobalEvent('keydown', function (event) {});
                 }
             }
         }();
@@ -612,6 +606,8 @@ function FormationDisplayFormation(){
             self.target = self.panel;
             if(event.keyCode===46 && self.selectedArrow){
                 self.selectedArrow.redCrossClickHandler();
+            } else if(event.keyCode === 27 && self.library && self.library.arrowMode) {
+                self.library.toggleArrowMode();
             }
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
 
