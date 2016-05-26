@@ -187,14 +187,8 @@ function Domain() {
             }
         }
 
-        if (lib.font) {
-            self.font = lib.font;
-        }
-        if (lib.fontSize) {
-            self.fontSize = lib.fontSize;
-        } else {
-            self.fontSize = 20;
-        }
+        lib.font ? (self.font = lib.font) : self.font = "Arial";
+        lib.fontSize ? (self.fontSize = lib.fontSize) : self.fontSize = 20;
 
         self.run = function (x, y, w, h, callback) {
             self.intervalToken = asyncTimerController.interval(function () {
@@ -545,25 +539,25 @@ function Domain() {
             self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
             self.clippingManipulator.flush();
 
-        }
-        self.manipulator = new Manipulator();
+        };
+        self.manipulator = new Manipulator(self);
         // self.manipulator.first.move(0, drawing.height * 0.075);
         // mainManipulator.ordonator.set(1, self.manipulator.first);
 
-        self.headerManipulator = new Manipulator();
+        self.headerManipulator = new Manipulator(self);
         // self.manipulator.last.add(self.headerManipulator.first);
 
-        self.addButtonManipulator = new Manipulator();
+        self.addButtonManipulator = new Manipulator(self);
         // self.headerManipulator.last.add(self.addButtonManipulator.first);
         // self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
 
-        self.checkManipulator = new Manipulator();
+        self.checkManipulator = new Manipulator(self);
         // self.headerManipulator.last.add(self.checkManipulator.first);
 
-        self.exclamationManipulator = new Manipulator();
+        self.exclamationManipulator = new Manipulator(self);
         // self.headerManipulator.last.add(self.exclamationManipulator.first);
 
-        self.formationsManipulator = new Manipulator();
+        self.formationsManipulator = new Manipulator(self);
         self.clippingManipulator = new Manipulator(self);
 
         //self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);

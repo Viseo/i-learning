@@ -126,7 +126,7 @@ function AnswerDisplay (x, y, w, h) {
                 var anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
-                    .font("arial", 15).color(myColors.red).anchor(anchor);
+                    .font("Arial", 15).color(myColors.red).anchor(anchor);
                 self.editor.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
@@ -531,7 +531,7 @@ function FormationDisplayFormation(){
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(drawing.width/2, 0)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.labelValidInput = false;
@@ -651,7 +651,7 @@ function FormationDisplayFormation(){
                 }
             });
         });
-        (self.levelHeight*(self.levelsTab.length+1) > h) && self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
+        self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
@@ -824,7 +824,7 @@ function FormationsManagerDisplay() {
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
-        self.legendWidth = drawing.width * 30 / 100;
+        self.legendWidth = drawing.width * 0.3;
         self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN
         self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
@@ -1458,7 +1458,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             var questionsPuzzleHeightRatio = 0.25;
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.questionNameValidInput = false;
@@ -1642,10 +1642,10 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
-    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("arial", 20).anchor("start");
+    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
     self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
-    self.formationLabel.font("arial", 20).anchor("middle");
+    self.formationLabel.font("Arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
     var textSize = svg.getSvgr().boundingRect(self.returnText.component);
@@ -1724,7 +1724,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
-                .font("arial", 15).color(myColors.red).anchor(anchor);
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.quizzNameValidInput = false;
@@ -1770,7 +1770,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                 self.questionCreator.errorMessagePreview = new svg.Text(result.message)
                     .position(0,-self.toggleButtonHeight)
-                    .font("arial", 20)
+                    .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
             }
