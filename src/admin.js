@@ -56,9 +56,7 @@ function admin() {
     var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
 
-    //setTimeout(function(){
-    //    quizz.displaySet.getTarget(0,0);
-    //},2000);
+
 
 }
 if (typeof exports !== "undefined") {
