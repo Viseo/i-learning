@@ -345,11 +345,11 @@ function LibraryDisplay(x, y, w, h) {
                     clip = self.formation.clippingManipulator.last,
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-                    if (arrowMode) {
-                        self.libraryGamesTab.forEach(function (e) {
-                            self.gameSelected = null;
-                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                        });
+                if (arrowMode) {
+                    self.libraryGamesTab.forEach(function (e) {
+                        self.gameSelected = null;
+                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                    });
 
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
