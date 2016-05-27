@@ -324,7 +324,7 @@ function Domain() {
         self.y = (self.index-1) * self.parentFormation.levelHeight;
         self.obj = null;
         self.removeGame = function(index){
-            if(!index){
+            if(typeof index==='undefined'){
                 self.gamesTab.pop();
             }else{
                 self.gamesTab.splice(index, 1);
@@ -438,7 +438,7 @@ function Domain() {
 
             self.mouseUpGraphBlock = function (event) {
                 self.library.gameSelected && self.library.dropAction(self.library.gameSelected.cadre, event);
-                self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                self.library.gameSelected && self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.library.gameSelected = null;
                 svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {

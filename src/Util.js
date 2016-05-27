@@ -122,10 +122,10 @@ function SVGGlobalHandler() {
     Manipulator.prototype.flush = function () {
         var self = this;
         function clean(handler){
-            for(i=0;i<handler.children.length;i++){
+            for(var i=0;i<handler.children.length;i++){
                 if((handler instanceof svg.Ordered)){
-                    for(var i =0; i<handler.children.length;i++){
-                        handler.unset(i);
+                    for(var j =0; j<handler.children.length;j++){
+                        handler.unset(j);
                     }
                 }
                 else if (handler.children[i] instanceof svg.Handler){
@@ -133,7 +133,7 @@ function SVGGlobalHandler() {
                 }
                 else {
                     handler.remove(handler.children[i]);
-
+                    i--;
                 }
             }
         }
@@ -796,14 +796,14 @@ var Miniature=function(game,size){
         game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
         var indexes = game.getPositionInFormation();
         game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0)
-        {
+        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0){
             game.parentFormation.levelsTab.pop();
         }
+        game.parentFormation.selectedGame.selected=false;
         game.parentFormation.selectedGame=null;
         game.parentFormation.displayGraph();
 
-    }
+    };
 
     svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
 
