@@ -567,17 +567,22 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz
+        var targetQuizz;
         var thing = function (data) {
             var obj=JSON.parse(data);
             targetQuizz=obj.myCollection[0];
+            console.log("TargetQuizz 1" + targetQuizz);
+
         };
         var result = httpGetAsync("/getAllFormations", thing);
+        console.log("TargetQuizz 2" +targetQuizz);
         //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.selectedArrow=null;
         self.selectedGame=null;
-        self.quizzManager.loadQuizz(targetQuizz);
+        //while(!targetQuizz);
+        setTimeout(function(){self.quizzManager.loadQuizz(targetQuizz);},1500);
+        //self.quizzManager.loadQuizz(targetQuizz);
         self.quizzManager.redim();
         self.quizzDisplayed=targetQuizz;
         self.quizzManager.display();
