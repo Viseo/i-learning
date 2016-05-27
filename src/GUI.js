@@ -476,6 +476,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
+    currentPageDisplayed = "Formation";
     self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
@@ -741,6 +742,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
+    currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
@@ -751,6 +753,11 @@ function FormationsManagerDisplay() {
     self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
 
     function displayPanel() {
+        self.y = drawing.height * self.header.size + 3 * MARGIN;
+        self.headerHeightFormation = drawing.height * self.header.size * 2;
+        self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
+        self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
+
         svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
@@ -805,7 +812,7 @@ function FormationsManagerDisplay() {
     displayPanel();
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.headerManipulator.last.add(self.title);
+        self.headerManipulator.ordonator.set(1, self.title);
         self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         self.addFormationButton.cadre.position(MARGIN +svg.getSvgr().boundingRect(self.addFormationButton.cadre.component).width/2,0).corners(0,0);
         self.addFormationButton.content.position(MARGIN + self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, MARGIN/2);
@@ -1616,6 +1623,7 @@ function QuizzDisplayScore(color){
 
 function QuizzManagerDisplay(){
     var self = this;
+    currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
@@ -1686,7 +1694,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var target=drawings.background.getTarget(event.clientX,event.clientY);
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        target.parentFormation.quizzDisplayed= null;
         self.header=new Header ();
         self.header.display();
     };
@@ -1792,7 +1799,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     var previewFunction = function () {
         self.toggleButtonHeight = 40;
-
+        currentPageDisplayed = "QuizPreview";
         var validation = true;
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
@@ -1811,7 +1818,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
             var tabAnswer = [];
 
             self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
-
+            (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
             var tmpQuizzObject = {
                 title: self.quizzName,
                 bgColor: myColors.white,

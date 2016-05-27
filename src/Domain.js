@@ -517,14 +517,6 @@ function Domain() {
             self.formations[self.count] = new Formation(formation);
             self.count++;
         });
-        self.redim=function(){
-            self.y = drawing.height * self.header.size + 3 * MARGIN;
-            self.headerHeightFormation = drawing.height * self.header.size * 2;
-            self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
-            self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
-            self.clippingManipulator.flush();
-
-        };
         self.manipulator = new Manipulator();
         self.headerManipulator = new Manipulator();
         self.addButtonManipulator = new Manipulator();
@@ -532,8 +524,8 @@ function Domain() {
         self.exclamationManipulator = new Manipulator();
         self.formationsManipulator = new Manipulator();
         self.clippingManipulator = new Manipulator(self);
-        self.redim();
-    };
+
+        };
 
 /////////////////// end of FormationManager.js ///////////////////
 
@@ -1082,7 +1074,7 @@ function Domain() {
 
         self.marginRatio = 0.03;
 
-        self.redim=function () {
+        self.redim = function () {
             self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
             self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
             self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
@@ -1108,9 +1100,7 @@ function Domain() {
                 w: (drawing.width - self.globalMargin.width),
                 h: (self.questionsPuzzleHeight - self.globalMargin.height)
             };
-
-            //self.quizzManagerManipulator.flush();
-        }
+        };
         self.redim();
     };
 
