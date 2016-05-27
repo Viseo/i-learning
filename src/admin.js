@@ -52,11 +52,9 @@ function admin() {
     library.run(0,0,document.body.clientWidth,drawing.height);
 */
 
-    var param = {speed: 50, step: 10};
+    //var param = {speed: 50, step: 10};
     var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
-
-
 
 }
 if (typeof exports !== "undefined") {

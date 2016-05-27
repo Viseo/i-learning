@@ -19,7 +19,7 @@ function setUtil(_util){
 function quizzManager() {
     !util && setGlobalVariable();
 
-    var param = {speed: 50, step: 10};
+    //var param = {speed: 50, step: 10};
     var quizzManager = new QuizzManager();
     quizzManager.display();
 

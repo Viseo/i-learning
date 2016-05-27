@@ -31,12 +31,11 @@
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
         drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);
         //mainManipulator.flush();
-        var formation= formationsManager.formationDisplayed;
-        if(!formation || (formationsManagerdisplayed)){
+        var formation = formationsManager.formationDisplayed;
+        if(!formation){
             formationsManager.redim();
             formationsManager.header.redim();
-            formationsManager.display()
-            var formationsManagerdisplayed = false;
+            formationsManager.display();
         }
         else if(formation && !formation.quizzDisplayed){
             formation.gamesLibraryManipulator.flush();
