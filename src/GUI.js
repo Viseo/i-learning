@@ -348,6 +348,8 @@ function LibraryDisplay(x, y, w, h) {
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                     });
 
+                    self.formation.selectedGame && self.formation.selectedGame.icon.cadre.component.listeners.click();
+
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
 
