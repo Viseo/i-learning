@@ -307,85 +307,93 @@ function LibraryDisplay(x, y, w, h) {
         };
         svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-
-        if (displayArrowModeButton) {
-            var arrowModeManipulator = new Manipulator(self);
-            self.libraryManipulator.last.add(arrowModeManipulator.first);
-            arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
-
-            var createLink = function (parentGame, childGame) {
-                if (parentGame.childrenGames.indexOf(childGame) != -1) return;
-                if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
-
-                parentGame.childrenGames.push(childGame);
-                childGame.parentsGames.push(parentGame);
-                var arrow = new Arrow(parentGame, childGame);
-                parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
-            };
-
-
-            var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
-            arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
-            arrowModeButton.arrow.color(myColors.black,1,myColors.black);
-            arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
-
-            self.toggleArrowMode = function() {
-                var arrowMode = false;
-
-                    return function () {
-                        arrowMode = !arrowMode;
-                        self.arrowMode = arrowMode;
-
-                    var panel = self.formation.panel,
-                        graph = self.formation.graphManipulator.last,
-                        clip = self.formation.clippingManipulator.last,
-                        glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
-
-                    if (arrowMode) {
-                        self.gameSelected = null;
-                        self.itemsTab.forEach(function (e) {
-                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                        });
-
-                        arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                        arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
-
-                        clip.add(glass);
-                        glass.position(glass.width/2, glass.height/2);
-
-                        var mouseDownAction = function (event) {
-                            event.preventDefault();
-                            var targetParent = graph.getTarget(event.clientX, event.clientY);
-
-                            var mouseUpAction = function(event) {
-                                var targetChild = graph.getTarget(event.clientX, event.clientY);
-                                if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
-                                    (targetParent.parent.parentManip.parentObject instanceof Quizz ||
-                                        targetParent.parent.parentManip.parentObject instanceof Bd) &&
-                                    targetChild && targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
-                                    (targetChild.parent.parentManip.parentObject instanceof Quizz ||
-                                        targetChild.parent.parentManip.parentObject instanceof Bd)
-                                ) {
-                                    createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
-                                }
-                            };
-                            svg.addEvent(glass, 'mouseup', mouseUpAction);
-                        };
-
-                        svg.addEvent(glass, 'mousedown', mouseDownAction);
-                    } else {
-                        arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
-                        arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
-                        clip.remove(clip.children[clip.children.length - 1]);
-                    }
-                }
-            }();
-
-            svg.addEvent(arrowModeButton.cadre, 'click', self.toggleArrowMode);
-            svg.addEvent(arrowModeButton.arrow, 'click', self.toggleArrowMode)
-
-        }
     });
+
+    if (displayArrowModeButton) {
+        var arrowModeManipulator = new Manipulator(self);
+        self.libraryManipulator.last.add(arrowModeManipulator.first);
+        arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
+
+        var createLink = function (parentGame, childGame) {
+            if (parentGame.childrenGames.indexOf(childGame) != -1) return;
+            if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
+
+            parentGame.childrenGames.push(childGame);
+            childGame.parentsGames.push(parentGame);
+            var arrow = new Arrow(parentGame, childGame);
+            parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
+        };
+
+
+        var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, arrowModeManipulator);
+        arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
+        arrowModeButton.arrow.color(myColors.black,1,myColors.black);
+        arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
+
+        self.toggleArrowMode = function() {
+            var arrowMode = false;
+
+            return function () {
+                arrowMode = !arrowMode;
+                self.arrowMode = arrowMode;
+
+                var panel = self.formation.panel,
+                    graph = self.formation.graphManipulator.last,
+                    clip = self.formation.clippingManipulator.last,
+                    glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
+
+                if (arrowMode) {
+                    self.gameSelected = null;
+                    self.itemsTab.forEach(function (e) {
+                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                    });
+
+                    self.formation.selectedGame && self.formation.selectedGame.icon.cadre.component.listeners.click();
+
+                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                    arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
+
+                    clip.add(glass);
+                    glass.position(glass.width/2, glass.height/2);
+
+                    var mouseDownAction = function (event) {
+                        event.preventDefault();
+                        var targetParent = graph.getTarget(event.clientX, event.clientY);
+
+                        var mouseUpAction = function(event) {
+                            var targetChild = graph.getTarget(event.clientX, event.clientY);
+                            if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
+                                (targetParent.parent.parentManip.parentObject instanceof Quizz ||
+                                targetParent.parent.parentManip.parentObject instanceof Bd) &&
+                                targetChild && targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
+                                (targetChild.parent.parentManip.parentObject instanceof Quizz ||
+                                targetChild.parent.parentManip.parentObject instanceof Bd)
+                            ) {
+                                createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                            }
+                        };
+                        svg.addEvent(glass, 'mouseup', mouseUpAction);
+                    };
+
+                    var clickAction = function(event) {
+                        var target = graph.getTarget(event.clientX, event.clientY);
+                        (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
+                    };
+
+                    svg.addEvent(glass, 'mousedown', mouseDownAction);
+                    svg.addEvent(glass, 'click', clickAction);
+                } else {
+                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                    arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
+                    clip.remove(clip.children[clip.children.length - 1]);
+                }
+            }
+        }();
+
+        svg.addEvent(arrowModeButton.cadre, 'click', self.toggleArrowMode);
+        svg.addEvent(arrowModeButton.arrow, 'click', self.toggleArrowMode)
+
+    }
 }
 
 function AddEmptyElementDisplay(x, y, w, h) {
@@ -1630,8 +1638,10 @@ function QuizzManagerDisplay(){
         self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
         self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
-        self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
-            150, self.previewButtonHeight-self.globalMargin.height);
+        self.displayPreviewButton(drawing.width/2-self.ButtonWidth, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+            self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
+        self.displaySaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+            self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
     }
 
@@ -1641,8 +1651,10 @@ function QuizzManagerDisplay(){
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
             self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
-            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
-                150, self.previewButtonHeight-self.globalMargin.height);
+            self.displayPreviewButton(drawing.width/2-150, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+                self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
+            self.displaySaveButton(drawing.width/2+150, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+                self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
             mainManipulator.ordonator.unset(0);
         });
 }
@@ -1768,6 +1780,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
+function QuizzManagerDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+    self.saveButtonManipulator.translator.move(x, y);
+}
 function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
@@ -1782,7 +1799,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
             if(!result.isValid) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                 self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                    .position(0,-self.toggleButtonHeight)
+                    .position(self.ButtonWidth,-self.toggleButtonHeight)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
@@ -1874,6 +1891,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.display = QuizzManagerDisplay;
     QuizzManager.prototype.displayQuizzInfo = QuizzManagerDisplayQuizzInfo;
     QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
+    QuizzManager.prototype.displaySaveButton = QuizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
 };
 

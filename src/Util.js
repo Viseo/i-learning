@@ -122,10 +122,10 @@ function SVGGlobalHandler() {
     Manipulator.prototype.flush = function () {
         var self = this;
         function clean(handler){
-            for(i=0;i<handler.children.length;i++){
+            for(var i=0;i<handler.children.length;i++){
                 if((handler instanceof svg.Ordered)){
-                    for(var i =0; i<handler.children.length;i++){
-                        handler.unset(i);
+                    for(var j =0; j<handler.children.length;j++){
+                        handler.unset(j);
                     }
                 }
                 else if (handler.children[i] instanceof svg.Handler){
@@ -133,7 +133,7 @@ function SVGGlobalHandler() {
                 }
                 else {
                     handler.remove(handler.children[i]);
-
+                    i--;
                 }
             }
         }
@@ -742,6 +742,7 @@ var Arrow=function(parentGame,childGame){
     self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
     self.selected=false;
     function arrowClickHandler(){
+        parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
         if(!self.selected){
             if(parentGame.parentFormation.selectedArrow){
                 parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black,1,myColors.black);
@@ -796,10 +797,10 @@ var Miniature=function(game,size){
         game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
         var indexes = game.getPositionInFormation();
         game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0)
-        {
+        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0){
             game.parentFormation.levelsTab.pop();
         }
+        game.parentFormation.selectedGame.selected=false;
         game.parentFormation.selectedGame=null;
         game.parentFormation.displayGraph();
 
@@ -809,6 +810,7 @@ var Miniature=function(game,size){
 
     self.selected=false;
     function miniatureClickHandler(){
+        self.game.parentFormation.selectedArrow && self.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
         if(!self.selected){
             if(game.parentFormation.selectedGame){
                 game.parentFormation.selectedGame.icon.cadre.color(myColors.white,1,myColors.black);
@@ -2148,3 +2150,37 @@ function httpPostAsync(theUrl, body, callback) {
 }
 
 
+/*var FormationVersionStructure =
+{
+    parentFormation: objectId, //(Formation)
+    num: Number,
+    tabLevels: [
+    {
+        num: Number,
+        tabGames: [
+        {
+            _id: objectId,
+            parentsGame: [objectId],
+            childrenGame: [objectId],
+            tabQuestions: [
+            {
+                questionData: {1},
+                tabReponses: [{2}]
+            }]
+        }]
+    }]
+};
+var FormationVersion =
+{
+    parentFormation: "objectId", //(Formation)
+    num: "Number",
+    tabLevels: [
+        {
+            num: 1,
+            tabGames: [myQuizz]
+    },
+    {
+        num: 2,
+            tabGames: [myQuizz]
+    }]
+};*/
