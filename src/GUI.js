@@ -358,6 +358,7 @@ function LibraryDisplay(x, y, w, h) {
                     glass.position(glass.width/2, glass.height/2);
 
                     var mouseDownAction = function (event) {
+                        event.preventDefault();
                         var targetParent = graph.getTarget(event.clientX, event.clientY);
 
                         var mouseUpAction = function(event) {
