@@ -2150,7 +2150,7 @@ function httpPostAsync(theUrl, body, callback) {
 }
 
 
-var FormationVersionStructure =
+/*var FormationVersionStructure =
 {
     parentFormation: objectId, //(Formation)
     num: Number,
@@ -2183,4 +2183,4 @@ var FormationVersion =
         num: 2,
             tabGames: [myQuizz]
     }]
-};
+};*/
