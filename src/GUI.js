@@ -1800,7 +1800,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
             if(!result.isValid) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                 self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                    .position(0,-self.toggleButtonHeight)
+                    .position(self.ButtonWidth,-self.toggleButtonHeight)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
