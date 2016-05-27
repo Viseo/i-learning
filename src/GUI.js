@@ -573,7 +573,10 @@ function FormationDisplayFormation(){
         var thing = function (data) {
             var obj=JSON.parse(data);
             targetQuizz=obj.myCollection[0];
-            console.log("TargetQuizz 1" + targetQuizz);
+            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzManager.redim();
+            self.quizzDisplayed=targetQuizz;
+            self.quizzManager.display();
 
         };
         var result = httpGetAsync("/getAllFormations", thing);
@@ -583,11 +586,8 @@ function FormationDisplayFormation(){
         self.selectedArrow=null;
         self.selectedGame=null;
         //while(!targetQuizz);
-        setTimeout(function(){self.quizzManager.loadQuizz(targetQuizz);},1500);
         //self.quizzManager.loadQuizz(targetQuizz);
-        self.quizzManager.redim();
-        self.quizzDisplayed=targetQuizz;
-        self.quizzManager.display();
+
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
         else if (!runtime && document.selection)
