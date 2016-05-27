@@ -346,7 +346,7 @@ function LibraryDisplay(x, y, w, h) {
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
                 if (arrowMode) {
-                    self.libraryGamesTab.forEach(function (e) {
+                    self.itemsTab.forEach(function (e) {
                         self.gameSelected = null;
                         e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                     });
@@ -608,13 +608,15 @@ function FormationDisplayFormation(){
 
         hasKeyDownEvent = function (event) {
             self.target = self.panel;
-            if(event.keyCode===46 && self.selectedArrow) {
+            if(event.keyCode===46 && self.selectedArrow) { // suppr
                 self.selectedArrow.redCrossClickHandler();
-            }else if(event.keyCode===46 && self.selectedGame)
-             {
+            }else if(event.keyCode===46 && self.selectedGame) { // suppr
                     self.selectedGame.redCrossClickHandler();
-             }else if(event.keyCode === 27 && self.library && self.library.arrowMode) {
+             }else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
                 self.library.toggleArrowMode();
+            }else if(event.keyCode === 27 && self.library && self.library.gameSelected) {
+                self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                self.library.gameSelected = null;
             }
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
 
