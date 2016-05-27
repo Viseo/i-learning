@@ -1774,11 +1774,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
-function QuizzManagerDisplaySaveButton(x, y, w, h) {
-    var self = this;
-    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
-    self.saveButtonManipulator.translator.move(x, y);
-}
+
 function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
@@ -1821,6 +1817,27 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     svg.addEvent(self.previewButton.cadre, "click", previewFunction);
     svg.addEvent(self.previewButton.content, "click", previewFunction);
     self.previewButtonManipulator.translator.move(x, y);
+}
+
+function QuizzManagerDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+
+    var saveFunction = function () {
+        var thing = function (data) {
+        };
+        var tmpQuizzObject = {
+            title: self.quizzName,
+            tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+        };
+        var result = httpGetAsync("/id", thing);
+        var result = httpPostAsync("/insert", tmpQuizzObject, thing);
+        console.log("Bingoooo");
+
+    };
+    svg.addEvent(self.saveButton.cadre, "click", saveFunction);
+    svg.addEvent(self.saveButton.content, "click", saveFunction);
+    self.saveButtonManipulator.translator.move(x, y);
 }
 
 function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
