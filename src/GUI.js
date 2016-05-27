@@ -1637,8 +1637,10 @@ function QuizzManagerDisplay(){
         self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
         self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
-        self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
-            150, self.previewButtonHeight-self.globalMargin.height);
+        self.displayPreviewButton(drawing.width/2-self.ButtonWidth, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+            self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
+        self.displaySaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+            self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
     }
 
@@ -1648,8 +1650,10 @@ function QuizzManagerDisplay(){
             self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
             self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
-            self.displayPreviewButton(drawing.width/2, drawing.height - self.previewButtonHeight/2-MARGIN/2,
-                150, self.previewButtonHeight-self.globalMargin.height);
+            self.displayPreviewButton(drawing.width/2-150, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+                self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
+            self.displaySaveButton(drawing.width/2+150, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+                self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
             mainManipulator.ordonator.unset(0);
         });
 }
@@ -1775,6 +1779,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
+function QuizzManagerDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+    self.saveButtonManipulator.translator.move(x, y);
+}
 function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
@@ -1881,6 +1890,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.display = QuizzManagerDisplay;
     QuizzManager.prototype.displayQuizzInfo = QuizzManagerDisplayQuizzInfo;
     QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
+    QuizzManager.prototype.displaySaveButton = QuizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
 };
 

@@ -744,6 +744,9 @@ function Domain() {
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);
 
+        self.saveButtonManipulator = new Manipulator(self);
+        self.manipulator.last.add(self.saveButtonManipulator.first);
+
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
 
@@ -1059,6 +1062,7 @@ function Domain() {
         self.quizzInfoManipulator = new Manipulator(self);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
+        self.saveButtonManipulator = new Manipulator(self);
         self.returnButtonManipulator=new Manipulator(self);
 
         self.libraryIManipulator = self.library.libraryManipulator;
@@ -1074,6 +1078,8 @@ function Domain() {
         self.questCreaHeightRatio = 0.57;
         self.libraryHeightRatio = self.questCreaHeightRatio;
         self.previewButtonHeightRatio = 0.1;
+        self.saveButtonHeightRatio = 0.1;
+
         self.marginRatio = 0.03;
 
         self.redim=function () {
@@ -1082,13 +1088,16 @@ function Domain() {
             self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
             self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
             self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
+            self.quizzManagerManipulator.last.add(self.saveButtonManipulator.first);
             self.libraryWidth = drawing.width * self.libraryWidthRatio;
             self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
             self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
             self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
             self.libraryHeight = drawing.height * self.libraryHeightRatio;
             self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
+            self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
             self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
+            self.ButtonWidth = 150;
             self.globalMargin = {
                 height: self.marginRatio * drawing.height,
                 width: self.marginRatio * drawing.width
