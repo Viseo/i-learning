@@ -342,8 +342,8 @@ function LibraryDisplay(x, y, w, h) {
                         glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
                     if (arrowMode) {
+                        self.gameSelected = null;
                         self.libraryGamesTab.forEach(function (e) {
-                            self.gameSelected = null;
                             e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
                         });
 
