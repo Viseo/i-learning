@@ -1,7 +1,8 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
-var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg;
+var util, drawing, clientWidth, clientHeight, mainManipulator, iRuntime, aRuntime, runtime, asyncTimerController, svg,
+    Answer, Library, AddEmptyElement, Formation, FormationsManager, Header, Puzzle, Question, QuestionCreator, Bd, Quizz, QuizzManager;
 
 setUtil = function(_util){
     util = _util;
@@ -181,10 +182,9 @@ function Domain() {
         for (var i = 0; i < self.itemsTab.length; i++) {
             self.libraryManipulators[i] = new Manipulator(self);
             if (self.itemsTab[i].imgSrc) {
-                var img = imageController.getImage(self.itemsTab[i].imgSrc, function () {
+                self.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
                 });
-                self.itemsTab[i] = img;
             }
         }
 
@@ -377,7 +377,7 @@ function Domain() {
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
-        self.redim=function(){
+        self.redim = function() {
             self.graphElementSize = drawing.width/15;
             self.gamesLibraryManipulator = self.library.libraryManipulator;
             self.manipulator.last.add(self.gamesLibraryManipulator.first);
@@ -402,7 +402,7 @@ function Domain() {
 
             self.clippingManipulator.flush();
 
-        }
+        };
         self.redim();
 
         self.checkInputTextArea = function (myObj) {
@@ -463,8 +463,8 @@ function Domain() {
             if(spaceOccupied > (level.parentFormation.levelWidth)){
                 level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
                 level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
-                level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
-                level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
+                level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
+                level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
                 level.manipulator.ordonator.set(9,level.obj.line);
                 level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
             }
@@ -603,9 +603,9 @@ function Domain() {
                 }
             }
         } else {
-            for (var i = 0; i < self.totalRows; i++) {
+            for (i = 0; i < self.totalRows; i++) {
                 self.virtualTab[i] = [];
-                for (var j = 0; j < self.lines; j++) {
+                for (j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
                         self.virtualTab[i][j] = self.questionsTab[count];
                         if ((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first) {
@@ -845,6 +845,7 @@ function Domain() {
      * @constructor
      * @param quizz
      * @param previewMode
+     * @param parentFormation
      */
     Quizz = function (quizz, previewMode, parentFormation) {
         var self = this;
@@ -930,11 +931,6 @@ function Domain() {
             runtime && self.display(x, y, w, h);
 
         };
-
-        /**
-         *
-         * @param color
-         */
 
         // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){

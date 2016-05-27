@@ -7,7 +7,7 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg, gui, runtime;
+var svg, gui, runtime, Manipulator, Drawings;
 
 /* istanbul ignore next */
 if(typeof SVG != "undefined") {
@@ -21,9 +21,10 @@ if(typeof Gui != "undefined") {
         gui = new Gui({speed: 5, step: 100});
     }
 }
-function setGui(_gui){
+
+function setGui(_gui) {
     gui = _gui;
-};
+}
 
 function setSvg(_svg) {
     svg = _svg;
@@ -160,7 +161,6 @@ function SVGGlobalHandler() {
         this.back.color(myColors.white).opacity(0.001);
         if (width>this.width) {
             this.content.width = width;
-            var height = this.content.height;
             this.updateHandleH();
         }
         return this;
@@ -276,6 +276,10 @@ function SVGGlobalHandler() {
 
 
 //////////// SVG-util.js ////////////////////////
+var getComplementary, onclickFunction, drawCheck, drawPathChecked, updateAllCheckBoxes, displayCheckbox,
+    displayImage,    displayImageWithTitle, displayImageWithBorder,
+    displayText, displayTextWithCircle, displayTextWithoutCorners, autoAdjustText,
+    drawArrow, drawPlus, drawPlusWithCircle, manageDnD;
 
 function SVGUtil() {
     /**
@@ -358,6 +362,7 @@ function SVGUtil() {
      * @param fontSize
      * @param font
      * @param manipulator
+     * @param previousImage
      * @returns {{cadre: *, image, text}}
      */
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
@@ -366,12 +371,9 @@ function SVGUtil() {
         var textHeight = svg.getSvgr().boundingRect(text.component).height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
-        var newWidth = w - 2 * MARGIN;
-        previousImage && (w === previousImage.width) && (newWidth = w);
+        var newWidth = previousImage && w === previousImage.width ? w : w - 2 * MARGIN;
 
-        var newHeight = h - textHeight - 3 * MARGIN;
-        previousImage && (h === previousImage.height) && (newHeight = h);
-
+        var newHeight = previousImage && h === previousImage.height ? h : h - textHeight - 3 * MARGIN;
 
         var image = displayImage(imageSrc, imageObj, newWidth, newHeight);//
         image.image.position(0, -textHeight / 2);
@@ -383,6 +385,7 @@ function SVGUtil() {
 
         return {cadre: cadre, image: image.image, content: text};
     };
+
     /**
      *
      * @param imageSrc
@@ -463,9 +466,6 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        //content.component.getBoundingClientRect && content.position(0, content.component.getBoundingClientRect().height / 4);
-        //content.component.target && content.component.target.getBoundingClientRect && content.position(0, Math.floor(content.component.target.getBoundingClientRect().height) / 4);
-        //runtime && content.position(0, Math.floor(runtime.boundingRect(content.component).height)/4);
         content.position(0, Math.floor(svg.getSvgr().boundingRect(content.component).height)/4);
 
 
@@ -628,9 +628,8 @@ function SVGUtil() {
      * @param y
      * @param w
      * @param h
-     * @param handler
+     * @param manipulator
      */
-
     drawArrow = function (x, y, w, h, manipulator) {
         // x [55;295] y [10;350]
         var baseWidth = 160;//295-55;
@@ -689,7 +688,7 @@ function SVGUtil() {
             manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
             return true;
         };
-        var mouseupHandler = function (event) {
+        var mouseupHandler = function () {
             svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
             svg.removeEvent(svgItem, 'mouseup', mouseupHandler);
         };
@@ -698,6 +697,9 @@ function SVGUtil() {
 }
 
 //////////////// end of SVG-util.js ///////////////////////////
+
+var Arrow, Miniature;
+
 function drawStraightArrow(x1,y1,x2,y2){
     var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
     var arrowPath=new svg.Path(x1,y1);
@@ -707,7 +709,8 @@ function drawStraightArrow(x1,y1,x2,y2){
     arrowPath.line(x1,y1);
     return arrowPath;
 }
-var Arrow=function(parentGame,childGame){
+
+Arrow = function(parentGame,childGame) {
     var self=this;
     self.origin=parentGame;
     self.target=childGame;
@@ -724,18 +727,19 @@ var Arrow=function(parentGame,childGame){
     //self.redCrossManipulator.scalor.scale(0.5);
     self.redCrossManipulator.translator.move((parentLocalPoint.x+childLocalPoint.x)/2,(parentLocalPoint.y+childLocalPoint.y)/2);
 
-    var removeLink=function(parentGame,childGame){
+    var removeLink=function(parentGame,childGame) {
         parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
         childGame.parentsGames.splice(childGame.parentsGames.indexOf(parentGame),1);
     };
-    self.redCrossClickHandler =function (){
+
+    self.redCrossClickHandler = function () {
         //parentGame.parentFormation.selectedArrow.selected=false;
         removeLink(parentGame,childGame);
         parentGame.parentFormation.graphManipulator.last.remove(self.arrowPath);
         parentGame.parentFormation.graphManipulator.last.remove(self.redCrossManipulator.first);
         parentGame.parentFormation.selectedArrow=null;
 
-    }
+    };
 
     svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
 
@@ -768,7 +772,7 @@ var Arrow=function(parentGame,childGame){
     return self;
 };
 
-var Miniature=function(game,size){
+Miniature = function(game,size){
     var self=this;
     self.game=game;
     self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
@@ -797,7 +801,8 @@ var Miniature=function(game,size){
         game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
         var indexes = game.getPositionInFormation();
         game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-        if(indexes.levelIndex===game.parentFormation.levelsTab.length-1 && game.parentFormation.levelsTab[indexes.levelIndex].gamesTab.length===0){
+        var levelsTab = game.parentFormation.levelsTab;
+        while (levelsTab.length > 0 && levelsTab[levelsTab.length-1].gamesTab.length === 0) {
             game.parentFormation.levelsTab.pop();
         }
         game.parentFormation.selectedGame.selected=false;
@@ -840,19 +845,13 @@ var Miniature=function(game,size){
 /**
  * Created by ABL3483 on 10/03/2016.
  */
+var HEADER_SIZE, REGEX, REGEXERROR, MARGIN, SELECTION_COLOR,
+    myColors, myImagesSourceDimensions, myLibraryImage, myLibraryGames,
+    defaultQuestion, defaultQuizz, questionWithLabelImageAndMultipleAnswers,
+    singleAnswerValidationTab, multipleAnswerValidationTab,
+    formationValidation, statusEnum, myQuizzType, myFormation, myFormations,
+    myQuestion2, myQuizzTestLong, myQuizz, myQuizzTest, myQuizzDemo;
 function Bdd() {
-    myColorsOld = {
-        blue: {r: 25, g: 122, b: 230},
-        primaryBlue: {r: 0, g: 0, b: 255},
-        grey: {r: 125, g: 122, b: 117},
-        orange: {r: 230, g: 122, b: 25},
-        purple: {r: 170, g: 100, b: 170},
-        green: {r: 155, g: 222, b: 17},
-        raspberry: {r: 194, g: 46, b: 83},
-        black: {r: 0, g: 0, b: 0},
-        white: {r: 255, g: 255, b: 255}
-    };
-
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
@@ -2070,7 +2069,6 @@ function Bdd() {
         },
         Edited: {
             icon: function (size) {
-                var self = this;
                 var circle = new svg.Circle(size / 2).color(myColors.orange);
                 var exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white);
                 var dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);

@@ -2,7 +2,7 @@
  * Created by qde3485 on 25/02/16.
  */
 
-var svg, util;
+var svg, util, drawings;
 
 /* istanbul ignore next */
 if(typeof SVG !== "undefined") {
@@ -22,8 +22,6 @@ function setUtil(_util){
 
 function setGlobalVariable() {
     util && util.SVGGlobalHandler();
-    var wind = !util && window;
-    util && (wind=false);
     drawings = new Drawings(svg.screenSize().width, svg.screenSize().height);
     drawing = drawings.drawing;
     mainManipulator = drawing.manipulator;
