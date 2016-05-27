@@ -201,7 +201,6 @@ function LibraryDisplay(x, y, w, h) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
-        //self.libraryManipulators[i] = new Manipulator(self);
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.itemsTab[i].src) {
             displayArrowModeButton = false;
@@ -232,7 +231,6 @@ function LibraryDisplay(x, y, w, h) {
             self.arrowMode && self.toggleArrowMode();
 
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
-            var elementCopy = e.ordonator.children[0];
             var manip = new Manipulator(self);
             drawings.piste.last.add(manip.first);
             self.formation && self.formation.removeErrorMessage(self.formation.errorMessageDisplayed);
@@ -243,7 +241,6 @@ function LibraryDisplay(x, y, w, h) {
             manip.first.move(point.x - point2.x, point.y - point2.y);
 
             if (self.itemsTab && self.itemsTab.length !== 0) {
-                var index = e.parentObject.itemsTab.indexOf(e);
                 if (self.itemsTab[0].objectTotal && ((self.itemsTab[0].objectTotal.content.messageText === "Quiz") || (self.itemsTab[0].objectTotal.content.messageText === "Quiz"))) {
                     var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
                     self.draggedObjectLabel = gameMiniature.content.messageText;
@@ -259,7 +256,6 @@ function LibraryDisplay(x, y, w, h) {
                     img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup', img.image.component.target.listeners.mouseup);
                 }
                 var mouseClick = function (event) {
-                    var target = drawing.getTarget(event.clientX, event.clientY);
                     var target = drawings.background.getTarget(event.clientX, event.clientY);
                     self.itemsTab.forEach(function (e) {
                         if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
