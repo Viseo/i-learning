@@ -742,7 +742,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
-    currentPageDisplayed = "FormationsManager";
+    window.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
