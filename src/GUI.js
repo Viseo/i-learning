@@ -567,7 +567,13 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        var targetQuizz
+        var thing = function (data) {
+            var obj=JSON.parse(data);
+            targetQuizz=obj.myCollection[0];
+        };
+        var result = httpGetAsync("/getAllFormations", thing);
+        //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.selectedArrow=null;
         self.selectedGame=null;

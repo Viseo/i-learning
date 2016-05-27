@@ -75,6 +75,14 @@
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
+
+
+    var thing = function (data) {
+        var obj=JSON.parse(data);
+        console.log(obj.myCollection[0]);
+    };
+    var result = httpGetAsync("/getAllFormations", thing);
+
 </script>
 </body>
 
