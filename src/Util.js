@@ -742,6 +742,7 @@ var Arrow=function(parentGame,childGame){
     self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
     self.selected=false;
     function arrowClickHandler(){
+        parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
         if(!self.selected){
             if(parentGame.parentFormation.selectedArrow){
                 parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black,1,myColors.black);
@@ -809,6 +810,7 @@ var Miniature=function(game,size){
 
     self.selected=false;
     function miniatureClickHandler(){
+        self.game.parentFormation.selectedArrow && self.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
         if(!self.selected){
             if(game.parentFormation.selectedGame){
                 game.parentFormation.selectedGame.icon.cadre.color(myColors.white,1,myColors.black);
