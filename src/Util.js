@@ -803,7 +803,7 @@ var Miniature=function(game,size){
         game.parentFormation.selectedGame=null;
         game.parentFormation.displayGraph();
 
-    }
+    };
 
     svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
 
@@ -1643,7 +1643,7 @@ function Bdd() {
                     }
                 ],
                 rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-            },
+            }//,
             //
             //{
             //    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
@@ -1985,7 +1985,7 @@ function Bdd() {
         function (quiz) {
             // Check 1 Correct Answer:
             var correctAnswers = 0;
-            quiz.questionCreator.tabAnswer && quiz.questionCreator.tabAnswer.forEach(function (el) {
+            quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
                 if (el.editable) {
                     if (el.correct) {
                         correctAnswers++;
@@ -2000,7 +2000,7 @@ function Bdd() {
         function (quiz) {
             // Check at least 1 valid answer:
             var isFilled = false;
-            quiz.questionCreator.tabAnswer.forEach(function (el) {
+            quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
                 if (el.editable) {
                     isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
@@ -2027,7 +2027,7 @@ function Bdd() {
         function (quiz) {
             // Check at least 1 valid answer:
             var isFilled = false;
-            quiz.questionCreator.tabAnswer.forEach(function (el) {
+            quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
                 if (el.editable) {
                     isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
                 }
