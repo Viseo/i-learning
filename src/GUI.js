@@ -372,7 +372,13 @@ function LibraryDisplay(x, y, w, h) {
                             svg.addEvent(glass, 'mouseup', mouseUpAction);
                         };
 
+                        var clickAction = function(event) {
+                            var target = graph.getTarget(event.clientX, event.clientY);
+                            (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
+                        };
+
                         svg.addEvent(glass, 'mousedown', mouseDownAction);
+                        svg.addEvent(glass, 'click', clickAction);
                     } else {
                         arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
                         arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
