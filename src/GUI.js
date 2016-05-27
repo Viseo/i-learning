@@ -1,6 +1,7 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
+'use strict';
 
 var domain, svg, gui, runtime;
 function setDomain(_domain) {
@@ -14,7 +15,7 @@ function setSVG(_svg){
 
 function setGui(_gui){
     gui = _gui;
-};
+}
 
 function setRuntime(_runtime){
     runtime = _runtime;
@@ -404,8 +405,8 @@ function AddEmptyElementDisplay(x, y, w, h) {
     self.obj.content.position(0,h*0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
-    self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute("stroke-dasharray", [10, 5]);
-    self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute("stroke-dasharray", [10, 5]);
+    self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '[10, 5]');
+    self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute('stroke-dasharray', '[10, 5]');
 
     var dblclickAdd = function () {
         switch (self.type) {
@@ -476,6 +477,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
+    currentPageDisplayed = "Formation";
     self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
@@ -506,7 +508,8 @@ function FormationDisplayFormation(){
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
         self.formationCreator = formationValidation;
     };
-    var dblclickEdition = function (event) {
+
+    var dblclickEdition = function () {
         var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
@@ -532,7 +535,6 @@ function FormationDisplayFormation(){
         var displayErrorMessage = function () {
             removeErrorMessage();
             self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
-            var position = (textarea.getBoundingClientRect().left - MARGIN);
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(drawing.width/2, 0)
@@ -597,8 +599,8 @@ function FormationDisplayFormation(){
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
-        level.obj.line.component.setAttribute && level.obj.line.component.setAttribute("stroke-dasharray", 6);
-        level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute("stroke-dasharray", 6);
+        level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
+        level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
         (self.textLevelNumberDimensions = {
             width: svg.getSvgr().boundingRect(level.obj.content.component).width,
             height: svg.getSvgr().boundingRect(level.obj.content.component).height
@@ -621,7 +623,7 @@ function FormationDisplayFormation(){
             }
         });
 
-        hasKeyDownEvent = function (event) {
+        var hasKeyDownEvent = function (event) {
             self.target = self.panel;
             if(event.keyCode===46 && self.selectedArrow) { // suppr
                 self.selectedArrow.redCrossClickHandler();
@@ -691,11 +693,10 @@ function FormationDisplayFormation(){
 
     };
     self.displayGraph = function (w, h){
-        if(typeof w !== "undefined"){self.graphW=w};
-        if(typeof h !== "undefined"){self.graphH=h};
+        if (typeof w !== "undefined") self.graphW = w;
+        if (typeof h !== "undefined") self.graphH = h;
         self.graphManipulator.flush();
         var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
-        var width = (self.levelWidth > self.graphW) ? self.levelWidth : self.graphW;
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
@@ -752,6 +753,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
+    window.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
@@ -762,13 +764,18 @@ function FormationsManagerDisplay() {
     self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
 
     function displayPanel() {
+        self.y = drawing.height * self.header.size + 3 * MARGIN;
+        self.headerHeightFormation = drawing.height * self.header.size * 2;
+        self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
+        self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
+
         svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
         });
 
-        hasKeyDownEvent = function (event) {
+        var hasKeyDownEvent = function (event) {
             self.target = self.panel;
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
         };
@@ -786,15 +793,6 @@ function FormationsManagerDisplay() {
 
         self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
-
-        onScroll = function (event) {
-            var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
-            if(delta === -1) {
-                self.panel.moveContent(self.panel.content.y-100);
-            } else {
-                self.panel.moveContent(self.panel.content.y+100);
-            }
-        };
     }
 
     function onClickFormation(formation) {
@@ -816,7 +814,7 @@ function FormationsManagerDisplay() {
     displayPanel();
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.headerManipulator.last.add(self.title);
+        self.headerManipulator.ordonator.set(1, self.title);
         self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         self.addFormationButton.cadre.position(MARGIN +svg.getSvgr().boundingRect(self.addFormationButton.cadre.component).width/2,0).corners(0,0);
         self.addFormationButton.content.position(MARGIN + self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, MARGIN/2);
@@ -1002,21 +1000,21 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     var posY = y;
     var count = startPosition*self.lines;
 
-    if(self.reverseMode) {
+    if (self.reverseMode) {
         // Valable pour 2 lignes 4 col
-        for(var i = startPosition; i<(startPosition+self.lines); i++) {
-            for(var j = 0; j<self.rows; j++) {
-                if(count < self.questionsTab.length) {
+        for (var i = startPosition; i<(startPosition+self.lines); i++) {
+            for (var j = 0; j<self.rows; j++) {
+                if (count < self.questionsTab.length) {
                     self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                    if(!(self.virtualTab[i][j].bordure)){
+                    if (!(self.virtualTab[i][j].bordure)) {
                         self.virtualTab[i][j].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
-                        if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
+                        if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
                             svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
                         }
-                        if(self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler){
+                        if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
                             svg.addEvent(self.virtualTab[i][j].content,'click',self.virtualTab[i][j].contentEventHandler);
                         }
-                        if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
+                        if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
                             svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                         }
                     }
@@ -1033,8 +1031,8 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
             posX = 0;
         }
     } else {
-        for (var i = startPosition; i < (startPosition + self.rows); i++) {
-            for (var j = 0; j < self.lines; j++) {
+        for (i = startPosition; i < (startPosition + self.rows); i++) {
+            for (j = 0; j < self.lines; j++) {
                 if (count < self.questionsTab.length) {
                     if(self.virtualTab[i][j] instanceof AddEmptyElement){
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
@@ -1043,26 +1041,25 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
                         self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
                     }
                     self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
-                    if(self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler){
+                    if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
                         svg.addEvent(self.virtualTab[i][j].bordure,'click',self.virtualTab[i][j].bordureEventHandler);
                     }
-                    if(self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler){
+                    if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
                         svg.addEvent(self.virtualTab[i][j].content,'click',self.virtualTab[i][j].contentEventHandler);
                     }
-                    if(self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler){
+                    if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
                         svg.addEvent(self.virtualTab[i][j].raphImage,'click',self.virtualTab[i][j].imageEventHandler);
                     }
 
-                    if(self.virtualTab[i][j] instanceof AddEmptyElement){
+                    if (self.virtualTab[i][j] instanceof AddEmptyElement) {
                         self.virtualTab[i][j].manipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
-                    }else{
+                    } else {
                         self.virtualTab[i][j].questionManipulator.translator.move(posX+self.tileWidth/2-w/2,posY+self.tileHeight/2+MARGIN);
                     }
 
                     posY += self.tileHeight + MARGIN;
                     count++;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -1231,8 +1228,8 @@ function QuestionDisplayAnswers(x, y, w, h) {
 
     if(self.multipleChoice){
         //affichage d'un bouton "valider"
-        var w = 0.1 * drawing.width;
-        var h = Math.min(self.tileHeight, 50);
+        w = 0.1 * drawing.width;
+        h = Math.min(self.tileHeight, 50);
         var validateX,validateY;
         validateX = 0.08 * drawing.width - w/2;
         validateY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
@@ -1282,8 +1279,8 @@ function QuestionDisplayAnswers(x, y, w, h) {
         svg.addEvent(validateButton.content, 'click', oclk);
 
         //Button reset
-        var w = 0.1 * drawing.width;
-        var h = Math.min(self.tileHeight, 50);
+        w = 0.1 * drawing.width;
+        h = Math.min(self.tileHeight, 50);
         var resetX = - w/2 - 0.08 * drawing.width;
         var resetY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
         self.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, self.font, self.resetManipulator);
@@ -1321,7 +1318,7 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.questionCreatorManipulator.translator.move(x, 0);
     self.toggleButtonHeight = 40;
     self.displayQuestionCreator(MARGIN + x, y, w, h);
-    var clickedButton = self.multipleChoice? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    var clickedButton = self.multipleChoice ? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
     self.displayToggleButton(MARGIN + x, MARGIN/2+y, w, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
@@ -1571,8 +1568,7 @@ function QuizzDisplayResult (color){
 
 function GameDisplayMiniature(size){
     var self = this;
-    var obj = new Miniature(self,size);
-    return obj;
+    return new Miniature(self,size);
 }
 
 function QuizzDisplayScore(color){
@@ -1621,12 +1617,12 @@ function QuizzDisplayScore(color){
     self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
 
-    var object = displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
-
+    displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
 }
 
 function QuizzManagerDisplay(){
     var self = this;
+    currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
@@ -1635,8 +1631,7 @@ function QuizzManagerDisplay(){
         self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         element.selected = true;
         self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
-        var index = self.quizz.tabQuestions.indexOf(element);
-        self.indexOfEditedQuestion = index;
+        self.indexOfEditedQuestion = self.quizz.tabQuestions.indexOf(element);
         self.questionCreator.loadQuestion(element);
         //self.questionCreatorManipulator.flush();
         self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
@@ -1697,7 +1692,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var target=drawings.background.getTarget(event.clientX,event.clientY);
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        target.parentFormation.quizzDisplayed= null;
         self.header=new Header ();
         self.header.display();
     };
@@ -1727,7 +1721,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         svg.addEvent(self.quizzLabel.cadre, "dblclick", dblclickEdition);
     };
 
-    var dblclickEdition = function (event) {
+    var dblclickEdition = function () {
         var width;
         width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
 
@@ -1803,7 +1797,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     var previewFunction = function () {
         self.toggleButtonHeight = 40;
-
+        currentPageDisplayed = "QuizPreview";
         var validation = true;
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
@@ -1819,10 +1813,8 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
         });
 
         if(validation) {
-            var tabAnswer = [];
-
             self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
-
+            (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
             var tmpQuizzObject = {
                 title: self.quizzName,
                 bgColor: myColors.white,
@@ -1842,9 +1834,9 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.previewButtonManipulator.translator.move(x, y);
 }
 
-function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, index) {
+function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     var self = this;
-    var index = index ? index : 0;
+    var index = ind ? ind : 0;
     x && (self.qPuzzleX=x);
     y && (self.qPuzzleY=y);
     w && (self.qPuzzleW=w);

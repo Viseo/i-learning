@@ -27,34 +27,47 @@
     var param = {speed: 5, step: 100};
     var formationsManager = new FormationsManager(myFormations);
     formationsManager.display();
+
     function resizePaper(){
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
         drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);
-        //mainManipulator.flush();
-        var formation= formationsManager.formationDisplayed;
-        if(!formation || (formationsManagerdisplayed)){
-            formationsManager.redim();
-            formationsManager.header.redim();
-            formationsManager.display()
-            var formationsManagerdisplayed = false;
-        }
-        else if(formation && !formation.quizzDisplayed){
-            formation.gamesLibraryManipulator.flush();
-            formation.redim();
-            formationsManager.header.redim();
-            formation.displayFormation();
-        }
-        else
-        {
-            formation.library.libraryManipulator.flush();
-            formation.quizzManager.library.libraryManipulator.flush();
-            formation.quizzManager.redim();
-            formationsManager.header.redim();
-            formation.quizzManager.loadQuizz(formation.quizzDisplayed);
-            formation.quizzManager.resizing = true;
-            formation.quizzManager.display();
-        }
+        var formation = formationsManager.formationDisplayed;
 
+        switch(currentPageDisplayed){
+            case "FormationsManager":
+//                formationsManager.redim();
+//                formationsManager.header.redim();
+
+                mainManipulator.flush();
+                    //formation.headerManipulator.flush();
+                    //formationsManager.headerManipulator.flush();
+                    //formationsManager.clippingManipulator.flush();
+                    mainManipulator.flush();
+                    formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
+                formationsManager.header.display();
+                formationsManager.display();
+                //var formationsManagerdisplayed = false;
+                break;
+            case "Formation":
+                formation.gamesLibraryManipulator.flush();
+                formation.redim();
+                formationsManager.header.redim();
+                formation.displayFormation();
+                break;
+            case "QuizManager":
+                formation.library.libraryManipulator.flush();
+                formation.quizzManager.library.libraryManipulator.flush();
+                formation.quizzManager.redim();
+                formationsManager.header.redim();
+                formation.quizzManager.loadQuizz(formation.quizzDisplayed);
+                formation.quizzManager.resizing = true;
+                formation.quizzManager.display();
+                break;
+            case "QuizPreview":
+                //formation.quizzManager.manipulator.flush();
+
+                break;
+        }
 
 
         /** for( var i = 0;i<qManip.ordonator.children.length;i++) {
@@ -72,6 +85,7 @@
         }**/
 
     }
+
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
