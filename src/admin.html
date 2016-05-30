@@ -44,21 +44,24 @@
                 break;
             case "Formation":
                 formation.gamesLibraryManipulator.flush();
-                formation.redim();
-                formationsManager.header.redim();
+                //formation.redim();
+                formation.clippingManipulator.last.remove(formation.panel.component);
+                formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
+                formationsManager.header.display();
                 formation.displayFormation();
                 break;
             case "QuizManager":
                 formation.library.libraryManipulator.flush();
                 formation.quizzManager.library.libraryManipulator.flush();
-                formation.quizzManager.redim();
-                formationsManager.header.redim();
+                //formation.quizzManager.redim();
+                //formationsManager.header.redim();
                 formation.quizzManager.loadQuizz(formation.quizzDisplayed);
                 formation.quizzManager.resizing = true;
                 formation.quizzManager.display();
                 break;
             case "QuizPreview":
                 //formation.quizzManager.manipulator.flush();
+                formation.quizzManager.displayEditedQuestion();
 
                 break;
         }

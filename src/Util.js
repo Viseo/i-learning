@@ -655,7 +655,7 @@ function SVGUtil() {
 
         chevron.tempWidth = baseWidth;
         chevron.tempHeight = baseHeight;
-        arrowManipulator.last.add(chevron);
+        arrowManipulator.ordonator.set(6,chevron);
 
 
         if (chevron.tempWidth > w) {
