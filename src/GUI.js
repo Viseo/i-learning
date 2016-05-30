@@ -1408,8 +1408,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
-        var color = (self.label) ? myColors.black : myColors.grey;
-        var text = (self.label) ? self.label : self.labelDefault;
+        var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
+        var text = (self.linkedQuestion.label) ? self.linkedQuestion.label : self.labelDefault;
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
