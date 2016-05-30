@@ -1837,40 +1837,28 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
-        function parcours(parentElement){
-            for (var child in parentElement) {
-                if (parentElement[child] instanceof Manipulator){
-                    parentElement[child]=null;
-                    console.log("da");
-                }
-                if (child === "content" || child === "bordure"){
-                    parentElement[child]=null;
-                }
-            }
-        }
-        self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
-        (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
-
+    for(var i =0;i<self.quizz.tabQuestions.length-1;i++){
+              typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
+              (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
+    }
         var tmpQuizzObject = {
             title: self.quizzName,
-            tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+            tabQuestions: self.tabQuestions,
         };
-
         var aDefinir = function (key, value) {
             var notToBeStringify = false;
             myParentsList.forEach(function(parent){
                 if (key=== parent){
                     notToBeStringify = true;
                 }
-            })
+            });
             return notToBeStringify ? undefined : value;
-        }
-
+        };
         var result = httpGetAsync("/id", thing);
         var result = httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
-        console.log("Bingoooo");
-
+        console.log("Votre travail a été bien enregistré");
     };
+
     svg.addEvent(self.saveButton.cadre, "click", saveFunction);
     svg.addEvent(self.saveButton.content, "click", saveFunction);
     self.saveButtonManipulator.translator.move(x, y);
