@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="overflow: hidden;">
+<div id="content"></div>
+<script src="../lib/targetruntime.js"></script>
+<script src="../lib/runtimemock.js"></script>
+<script src="../lib/svghandler.js"></script>
+<script src="../lib/svggui.js"></script>
+<!--<script src="../lib/scenario.js"></script>-->
+<script src="Util.js"></script>
+<script src="Domain.js"></script>
+<script src="GUI.js"></script>
+<script src="main.js"></script>
+<script src="app.js"></script>
+<script>
+    SVGGlobalHandler();
+    Domain();
+    SVGUtil();
+    Bdd();
+    AdminGUI();
+    setGlobalVariable();
+</script>
+<script>
+   /**var AngularJS =
+    {
+        parentFormation: "AngularJS", //(Formation)
+        num: 0,
+        tabLevels: [
+            {
+                num: 0,
+                tabGames: [
+                    {
+                        _id: objectId,
+                        parentsGame: [objectId],
+                        childrenGame: [objectId],
+                        tabQuestions: [
+                            {
+                                questionData: {1},
+                                tabReponses: [{2}]
+                            }]
+                    }]
+            }]
+    };**/
+
+   /**myFormations = {
+       tab: [{label: "Hibernate", status: statusEnum.NotPublished}, {
+           label: "Hibernate 2",
+           status: statusEnum.Published
+       }, {label: "HTML3", status: statusEnum.Edited}, {label: "Javascript"},
+           {label: "HTML5"}, {
+               label: "HTML5 2",
+               status: statusEnum.Edited
+           }, {label: "MongoDB"}, {label: "Node Js"}, {label: "Hibernate 3"}, {label: "Hibernate 4"}, {label: "HTML3 2"}, {label: "Php"},
+           {label: "Javascript 2"}, {label: "Javascript 3"}, {label: "Javascript 4"}, {
+               label: "Javascript 5",
+               status: statusEnum.Published
+           }, {label: "Angular js"}, {label: "Angular js 2"}, {label: "Angular js 3"}, {label: "Angular js 4"},
+           {label: "Angular js 5"}, {label: "Angular js 6"}, {
+               label: "Angular js 7",
+               status: statusEnum.Edited
+           }, {label: "Angular js 8"}, {label: "ZEdernier"}]
+   };**/
+
+
+   var thing = function (data) {
+        console.log(data);
+    };
+    var result = httpPostAsync("/insert", myQuizz, thing);
+
+</script>
+</body>
+
+</html>
