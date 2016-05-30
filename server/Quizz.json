@@ -1,0 +1,385 @@
+{
+	"title": "Qui veut gagner des millions ? Quiz n°1",
+	"bgColor": [194, 46, 83],
+	"puzzleLines": 3,
+	"puzzleRows": 1,
+	"tabQuestions": [{
+		"label": "Question 1",
+		"imageSrc": null,
+		"multipleChoice": true,
+		"tabAnswer": [{
+			"label": "Comtesse",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Déesse",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Bougresse",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Diablesse",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [155, 222, 17]
+	}, {
+		"label": "Question 2",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Les danseuses",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Les boxeurs",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [25, 122, 230],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Les rugbymen",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [125, 122, 117],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Les sumos",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [230, 122, 25],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [230, 122, 25]
+	}, {
+		"label": "Question 3",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Stupide",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Inculte",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Idiote",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Ignare",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 3,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [25, 122, 230]
+	}, {
+		"label": "Question 0",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Manteau",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Chapeau",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Gâteau",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Château",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [170, 100, 170]
+	}, {
+		"label": "Question 4",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Boïcotter",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Boycotter",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Boycoter",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 1,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [230, 122, 25]
+	}, {
+		"label": "Question -1",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Un flandrois",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Un flamby",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Un flamand",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Un flanders",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 3,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [170, 100, 170]
+	}, {
+		"label": "Question 5",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Cyclades",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [230, 122, 25]
+		}, {
+			"label": "Antilles",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [170, 100, 170]
+		}, {
+			"label": "Baléares",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Canaries",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [155, 222, 17]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [230, 122, 25]
+	}, {
+		"label": "Question 6",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Musée d'Orsay",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Musée Guimet",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Musée Grévin",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Le Louvre",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [155, 222, 17]
+	}, {
+		"label": "Question 7",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Luc",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Paul",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Patrick",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Albert",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [170, 100, 170]
+	}, {
+		"label": "Question 8",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "XVIe siècle",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "XVIIe siècle",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "XVIIIe siècle",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "XIXe siècle",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [155, 222, 17]
+	}, {
+		"label": "Question 9",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "Magnolias",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Lilas",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "Lavandes",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "Roses",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [125, 122, 117]
+	}, {
+		"label": "Question 10",
+		"imageSrc": null,
+		"multipleChoice": false,
+		"tabAnswer": [{
+			"label": "1996",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "1998",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}, {
+			"label": "1994",
+			"imageSrc": null,
+			"correct": true,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [25, 122, 230]
+		}, {
+			"label": "1999",
+			"imageSrc": null,
+			"correct": false,
+			"colorBordure": [155, 222, 17],
+			"bgColor": [125, 122, 117]
+		}],
+		"rows": 2,
+		"colorBordure": [0, 0, 255],
+		"bgColor": [170, 100, 170]
+	}]
+}

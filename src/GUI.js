@@ -575,14 +575,25 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        var targetQuizz;
+        var thing = function (data) {
+            var obj=JSON.parse(data);
+            targetQuizz=obj.myCollection[0];
+            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzManager.redim();
+            self.quizzDisplayed=targetQuizz;
+            self.quizzManager.display();
+
+        };
+        var result = httpGetAsync("/getAllFormations", thing);
+        console.log("TargetQuizz 2" +targetQuizz);
+        //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.selectedArrow=null;
         self.selectedGame=null;
-        self.quizzManager.loadQuizz(targetQuizz);
-        self.quizzManager.redim();
-        self.quizzDisplayed=targetQuizz;
-        self.quizzManager.display();
+        //while(!targetQuizz);
+        //self.quizzManager.loadQuizz(targetQuizz);
+
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
         else if (!runtime && document.selection)
@@ -1552,8 +1563,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
-        var color = (self.label) ? myColors.black : myColors.grey;
-        var text = (self.label) ? self.label : self.labelDefault;
+        var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
+        var text = (self.linkedQuestion.label) ? self.linkedQuestion.label : self.labelDefault;
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
@@ -1981,15 +1992,28 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
+    for(var i =0;i<self.quizz.tabQuestions.length-1;i++){
+              typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
+              (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
+    }
         var tmpQuizzObject = {
             title: self.quizzName,
-            tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+            tabQuestions: self.tabQuestions,
+        };
+        var aDefinir = function (key, value) {
+            var notToBeStringify = false;
+            myParentsList.forEach(function(parent){
+                if (key=== parent){
+                    notToBeStringify = true;
+                }
+            });
+            return notToBeStringify ? undefined : value;
         };
         var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpQuizzObject, thing);
-        console.log("Bingoooo");
-
+        var result = httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
+        console.log("Votre travail a été bien enregistré");
     };
+
     svg.addEvent(self.saveButton.cadre, "click", saveFunction);
     svg.addEvent(self.saveButton.content, "click", saveFunction);
     self.saveButtonManipulator.translator.move(x, y);

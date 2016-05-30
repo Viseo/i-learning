@@ -844,6 +844,15 @@ function Bdd() {
     REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
     MARGIN = 10;
 
+    myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "questionManipulator",
+        "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
+        "previewButtonManipulator", "saveButtonManipulator", "toggleButtonManipulator", "puzzleManipulator",
+        "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
+        "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
+        "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
+        "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
+        "editor"];
+
     myColors = {
         darkBlue: [25, 25, 112],
         blue:[25, 122, 230],
@@ -2123,7 +2132,7 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.send(null);
 }
 /* istanbul ignore next */
-function httpPostAsync(theUrl, body, callback) {
+function httpPostAsync(theUrl, body, callback, aDefinir) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -2131,7 +2140,7 @@ function httpPostAsync(theUrl, body, callback) {
     };
     xmlHttp.open("POST", theUrl, true); // true for asynchronous
     xmlHttp.setRequestHeader("Content-type", "application/json");
-    xmlHttp.send(JSON.stringify(body));
+    xmlHttp.send(JSON.stringify(body, aDefinir));
 }
 
 
