@@ -7,7 +7,7 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg, gui, runtime, Manipulator, Drawings;
+var svg, gui, runtime;
 
 /* istanbul ignore next */
 if(typeof SVG != "undefined") {
@@ -276,11 +276,6 @@ function SVGGlobalHandler() {
 
 
 //////////// SVG-util.js ////////////////////////
-var getComplementary, onclickFunction, drawCheck, drawPathChecked, updateAllCheckBoxes, displayCheckbox,
-    displayImage,    displayImageWithTitle, displayImageWithBorder,
-    displayText, displayTextWithCircle, displayTextWithoutCorners, autoAdjustText,
-    drawArrow, drawPlus, drawPlusWithCircle, manageDnD;
-
 function SVGUtil() {
     /**
      * Created by qde3485 on 29/02/16.
@@ -698,8 +693,6 @@ function SVGUtil() {
 
 //////////////// end of SVG-util.js ///////////////////////////
 
-var Arrow, Miniature;
-
 function drawStraightArrow(x1,y1,x2,y2){
     var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
     var arrowPath=new svg.Path(x1,y1);
@@ -845,12 +838,6 @@ Miniature = function(game,size){
 /**
  * Created by ABL3483 on 10/03/2016.
  */
-var HEADER_SIZE, REGEX, REGEXERROR, MARGIN, SELECTION_COLOR,
-    myColors, myImagesSourceDimensions, myLibraryImage, myLibraryGames,
-    defaultQuestion, defaultQuizz, questionWithLabelImageAndMultipleAnswers,
-    singleAnswerValidationTab, multipleAnswerValidationTab,
-    formationValidation, statusEnum, myQuizzType, myFormation, myFormations,
-    myQuestion2, myQuizzTestLong, myQuizz, myQuizzTest, myQuizzDemo;
 function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
