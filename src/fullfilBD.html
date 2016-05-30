@@ -46,30 +46,30 @@
             }]
     };**/
 
-   /**myFormations = {
-       tab: [{label: "Hibernate", status: statusEnum.NotPublished}, {
+   myFormations = {
+       tab: [{label: "Hibernate", status: "statusEnum.NotPublished"}, {
            label: "Hibernate 2",
-           status: statusEnum.Published
-       }, {label: "HTML3", status: statusEnum.Edited}, {label: "Javascript"},
+           status: "statusEnum.Published"
+       }, {label: "HTML3", status: "statusEnum.Edited"}, {label: "Javascript"},
            {label: "HTML5"}, {
                label: "HTML5 2",
-               status: statusEnum.Edited
+               status: "statusEnum.Edited"
            }, {label: "MongoDB"}, {label: "Node Js"}, {label: "Hibernate 3"}, {label: "Hibernate 4"}, {label: "HTML3 2"}, {label: "Php"},
            {label: "Javascript 2"}, {label: "Javascript 3"}, {label: "Javascript 4"}, {
                label: "Javascript 5",
-               status: statusEnum.Published
+               status: "statusEnum.Published"
            }, {label: "Angular js"}, {label: "Angular js 2"}, {label: "Angular js 3"}, {label: "Angular js 4"},
            {label: "Angular js 5"}, {label: "Angular js 6"}, {
                label: "Angular js 7",
-               status: statusEnum.Edited
+               status: "statusEnum.Edited"
            }, {label: "Angular js 8"}, {label: "ZEdernier"}]
-   };**/
+   };
 
 
    var thing = function (data) {
         console.log(data);
     };
-    var result = httpPostAsync("/insert", myQuizz, thing);
+    var result = httpPostAsync("/insert", myFormations, thing);
 
 </script>
 </body>

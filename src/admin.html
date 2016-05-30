@@ -24,9 +24,15 @@
     setGlobalVariable();
 </script>
 <script>
+    var formationsManager;
     var param = {speed: 5, step: 100};
-    var formationsManager = new FormationsManager(myFormations);
-    formationsManager.display();
+    var thing = function (data) {
+        var myFormations=JSON.parse(data).myCollection;
+        console.log(myFormations);
+        formationsManager = new FormationsManager(myFormations[0]);
+        formationsManager.display();
+    };
+    var result = httpGetAsync("/getAllFormations", thing);
 
     function resizePaper(){
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
@@ -83,13 +89,6 @@
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
-
-
-    var thing = function (data) {
-        var obj=JSON.parse(data);
-        console.log(obj.myCollection[0]);
-    };
-    var result = httpGetAsync("/getAllFormations", thing);
 
 </script>
 </body>

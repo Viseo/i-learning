@@ -465,6 +465,16 @@ function FormationDisplayMiniature (w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
+    if(self.status==="statusEnum.Published") {
+        self.status=statusEnum.Published;
+    }
+    else if(self.status==="statusEnum.Edited"){
+        self.status=statusEnum.Edited;
+
+    }
+    else if(self.status==="statusEnum.NotPublished"){
+        self.status=statusEnum.Edited;
+    }
     var icon = self.status.icon(self.parent.iconeSize);
 
     for(var i=0; i<icon.elements.length; i++)
