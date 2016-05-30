@@ -477,7 +477,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
-    currentPageDisplayed = "Formation";
+    drawing.currentPageDisplayed = "Formation";
     self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
@@ -753,7 +753,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
-    window.currentPageDisplayed = "FormationsManager";
+    drawing.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
@@ -1622,7 +1622,7 @@ function QuizzDisplayScore(color){
 
 function QuizzManagerDisplay(){
     var self = this;
-    currentPageDisplayed = "QuizManager";
+    drawing.currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
@@ -1785,11 +1785,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
-function QuizzManagerDisplaySaveButton(x, y, w, h) {
-    var self = this;
-    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
-    self.saveButtonManipulator.translator.move(x, y);
-}
+
 function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
@@ -1797,7 +1793,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     var previewFunction = function () {
         self.toggleButtonHeight = 40;
-        currentPageDisplayed = "QuizPreview";
+        drawing.currentPageDisplayed = "QuizPreview";
         var validation = true;
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
@@ -1832,6 +1828,27 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     svg.addEvent(self.previewButton.cadre, "click", previewFunction);
     svg.addEvent(self.previewButton.content, "click", previewFunction);
     self.previewButtonManipulator.translator.move(x, y);
+}
+
+function QuizzManagerDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+
+    var saveFunction = function () {
+        var thing = function (data) {
+        };
+        var tmpQuizzObject = {
+            title: self.quizzName,
+            tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+        };
+        var result = httpGetAsync("/id", thing);
+        var result = httpPostAsync("/insert", tmpQuizzObject, thing);
+        console.log("Bingoooo");
+
+    };
+    svg.addEvent(self.saveButton.cadre, "click", saveFunction);
+    svg.addEvent(self.saveButton.content, "click", saveFunction);
+    self.saveButtonManipulator.translator.move(x, y);
 }
 
 function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
