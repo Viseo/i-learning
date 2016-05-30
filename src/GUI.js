@@ -1432,7 +1432,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
 
     var dblclickEdition = function () {
         var textarea = document.createElement("textarea");
-        textarea.textContent = self.label;
+        textarea.textContent = self.linkedQuestion.label;
         textarea.width = self.w;
         textarea.height = (self.linkedQuestion.image) ? svg.getSvgr().boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
 
