@@ -2,7 +2,7 @@
  * Created by qde3485 on 25/02/16.
  */
 
-var svg, util, drawings;
+var svg, util;
 
 /* istanbul ignore next */
 if(typeof SVG !== "undefined") {
