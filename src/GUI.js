@@ -477,7 +477,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
-    currentPageDisplayed = "Formation";
+    drawing.currentPageDisplayed = "Formation";
     self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
@@ -742,7 +742,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
-    window.currentPageDisplayed = "FormationsManager";
+    drawing.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
@@ -1611,7 +1611,7 @@ function QuizzDisplayScore(color){
 
 function QuizzManagerDisplay(){
     var self = this;
-    currentPageDisplayed = "QuizManager";
+    drawing.currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
@@ -1782,7 +1782,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     var previewFunction = function () {
         self.toggleButtonHeight = 40;
-        currentPageDisplayed = "QuizPreview";
+        drawing.currentPageDisplayed = "QuizPreview";
         var validation = true;
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
