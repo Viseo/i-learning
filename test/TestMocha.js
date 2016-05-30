@@ -59,7 +59,7 @@ describe('Quizz game', function () {
         testModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
-        svg.screenSize(1904,971); //Chrome
+        svg.screenSize(1904,949); //Chrome
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
@@ -73,13 +73,13 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game with 2 Answers Right", function (done) {
+    it("plays a complete quizz game with 2 Answers Right and a resize", function (done) {
         this.timeout(100000);
         checkScenario(
             function(){
                 mainModule.main(myQuizzTest);
             },
-            "./log/testQuizzTwoRightAnswers.json", 'content', runtime, done);
+            "./log/testQuizzTwoRightAnswersResize.json", 'content', runtime, done);
     });
     it("plays a complete quizz game with a lot of errors", function (done) {
         this.timeout(100000);
@@ -197,7 +197,7 @@ describe('Firefox game', function () {
         testModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
-        svg.screenSize(1520,754); //Firefox
+        svg.screenSize(1904,949); //Firefox
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
