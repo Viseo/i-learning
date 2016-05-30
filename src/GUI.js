@@ -477,7 +477,7 @@ function FormationDisplayMiniature (w,h) {
 
 function FormationDisplayFormation(){
     var self = this;
-    currentPageDisplayed = "Formation";
+    drawing.currentPageDisplayed = "Formation";
     self.borderSize = 3;
 
     self.manipulator.first.move(0, drawing.height*0.075);
@@ -569,14 +569,25 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        var targetQuizz;
+        var thing = function (data) {
+            var obj=JSON.parse(data);
+            targetQuizz=obj.myCollection[0];
+            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzManager.redim();
+            self.quizzDisplayed=targetQuizz;
+            self.quizzManager.display();
+
+        };
+        var result = httpGetAsync("/getAllFormations", thing);
+        console.log("TargetQuizz 2" +targetQuizz);
+        //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.selectedArrow=null;
         self.selectedGame=null;
-        self.quizzManager.loadQuizz(targetQuizz);
-        self.quizzManager.redim();
-        self.quizzDisplayed=targetQuizz;
-        self.quizzManager.display();
+        //while(!targetQuizz);
+        //self.quizzManager.loadQuizz(targetQuizz);
+
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
         else if (!runtime && document.selection)
@@ -742,7 +753,7 @@ function FormationRemoveErrorMessage(message) {
 
 function FormationsManagerDisplay() {
     var self = this;
-    window.currentPageDisplayed = "FormationsManager";
+    drawing.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * 0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
@@ -1397,8 +1408,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
-        var color = (self.label) ? myColors.black : myColors.grey;
-        var text = (self.label) ? self.label : self.labelDefault;
+        var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
+        var text = (self.linkedQuestion.label) ? self.linkedQuestion.label : self.labelDefault;
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
@@ -1611,7 +1622,7 @@ function QuizzDisplayScore(color){
 
 function QuizzManagerDisplay(){
     var self = this;
-    currentPageDisplayed = "QuizManager";
+    drawing.currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler=function(event){
@@ -1782,7 +1793,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     var previewFunction = function () {
         self.toggleButtonHeight = 40;
-        currentPageDisplayed = "QuizPreview";
+        drawing.currentPageDisplayed = "QuizPreview";
         var validation = true;
         self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);

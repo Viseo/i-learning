@@ -33,17 +33,11 @@
         drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);
         var formation = formationsManager.formationDisplayed;
 
-        switch(currentPageDisplayed){
+        switch(drawing.currentPageDisplayed){
             case "FormationsManager":
-//                formationsManager.redim();
-//                formationsManager.header.redim();
-
+//
                 mainManipulator.flush();
-                    //formation.headerManipulator.flush();
-                    //formationsManager.headerManipulator.flush();
-                    //formationsManager.clippingManipulator.flush();
-                    mainManipulator.flush();
-                    formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
+                formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
                 formationsManager.header.display();
                 formationsManager.display();
                 //var formationsManagerdisplayed = false;
@@ -89,6 +83,14 @@
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
+
+
+    var thing = function (data) {
+        var obj=JSON.parse(data);
+        console.log(obj.myCollection[0]);
+    };
+    var result = httpGetAsync("/getAllFormations", thing);
+
 </script>
 </body>
 
