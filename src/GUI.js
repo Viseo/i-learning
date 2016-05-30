@@ -475,6 +475,12 @@ function FormationDisplayMiniature (w,h) {
 
 }
 
+function FormationDisplayMiniaturePlayer(w,h) {
+    var self = this;
+    self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
+    self.miniature.cadre.corners(50, 50);
+}
+
 function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
@@ -730,6 +736,17 @@ function FormationDisplayFormation(){
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
 
+function FormationDisplayFormationPlayer(){
+    var self = this;
+    drawing.currentPageDisplayed = "Formation";
+    self.borderSize = 3;
+
+    self.manipulator.first.move(0, drawing.height*0.075);
+    mainManipulator.ordonator.set(1, self.manipulator.first);
+    self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
+    self.manipulator.last.add(self.title);
+}
+
 function FormationDisplayErrorMessage(message){
     var self = this;
     self.errorMessageDisplayed = autoAdjustText(message, 0, 0, self.graphCreaWidth, self.graphCreaHeight, 20, null, self.manipulator).text
@@ -886,6 +903,144 @@ function FormationsManagerDisplay() {
         }
     };
     self.displayFormations();
+}
+
+function FormationsManagerDisplayPlayer() {
+    var self = this;
+    drawing.currentPageDisplayed = "FormationsManager";
+    self.manipulator.first.move(0, drawing.height * 0.075);
+    mainManipulator.ordonator.set(1, self.manipulator.first);
+
+    self.manipulator.last.add(self.headerManipulator.first);
+    self.headerManipulator.last.add(self.addButtonManipulator.first);
+
+    self.headerManipulator.last.add(self.checkManipulator.first);
+    self.headerManipulator.last.add(self.exclamationManipulator.first);
+    self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
+
+    function displayPanel() {
+        self.y = drawing.height * self.header.size + 3 * MARGIN;
+        self.headerHeightFormation = drawing.height * self.header.size * 2;
+        self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
+        self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
+
+        svg.getSvgr().addGlobalEvent('keydown', function (event) {
+            if(hasKeyDownEvent(event)) {
+                event.preventDefault();
+            }
+        });
+
+        var hasKeyDownEvent = function (event) {
+            self.target = self.panel;
+            return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+        };
+
+        self.manipulator.last.add(self.clippingManipulator.first);
+        self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
+
+        var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
+        totalLines = parseInt(totalLines);
+        self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
+        self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
+        self.clippingManipulator.last.add(self.panel.component);
+        self.panel.content.add(self.formationsManipulator.first);
+        self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
+        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
+    }
+
+    function onClickFormation(formation) {
+        self.formationDisplayed=formation;
+        self.header.redim();
+        formation.redim();
+        formation.displayFormation();
+    }
+
+    self.header.display();
+    displayPanel();
+
+    self.displayHeaderFormations = function () {
+        self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
+        self.headerManipulator.ordonator.set(1, self.title);
+
+        var toggleFormationsManipulator = new Manipulator(self);
+        self.headerManipulator.last.add(toggleFormationsManipulator.first);
+        var toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+        toggleFormationsManipulator.last.add(toggleFormationsCheck);
+        var toggleFormationsText = displayText("Formations en cours", 215, 20, myColors.none, myColors.white, 20, null, toggleFormationsManipulator);
+        toggleFormationsText.cadre.position(MARGIN*1.5 + svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width/2, 0);
+        toggleFormationsText.content.position(svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width/2, MARGIN/2);
+        toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width + 20), 0);
+
+        var toggleFormations = function() {
+            var all = false;
+
+            return function() {
+                all = !all;
+                var check = drawCheck(0, 0, 20),
+                    manip = toggleFormationsManipulator.last;
+                svg.addEvent(manip, "click", toggleFormations);
+                if (all) {
+                    manip.add(check);
+                } else {
+                    manip.remove(manip.children[manip.children.length - 1]);
+                }
+            }
+        }();
+
+        svg.addEvent(toggleFormationsCheck, "click", toggleFormations);
+        svg.addEvent(toggleFormationsText.content, "click", toggleFormations);
+        svg.addEvent(toggleFormationsText.cadre, "click", toggleFormations);
+
+        self.formations.sort(function (a, b) {
+            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
+            if (nameA < nameB)
+                return -1;
+            if (nameA > nameB)
+                return 1;
+            return 0
+        });
+    }();
+
+    self.displayFormations = function () {
+        var posx = self.initialFormationsPosX;
+        var posy = MARGIN;
+        var count = 0;
+        self.formations.forEach(function(formation) {
+            if(formation.status !== statusEnum.Published) return;
+
+            if (count > (self.rows - 1)) {
+                count = 0;
+                posy += (self.tileHeight + 2 * MARGIN);
+                posx = self.initialFormationsPosX;
+            }
+            formation.parent = self;
+            self.formationsManipulator.last.add(formation.manipulatorMiniature.first);
+            formation.displayMiniature(self.tileWidth, self.tileHeight);
+            formation.manipulatorMiniature.translator.move(posx, posy + MARGIN);
+            (function (element) {
+                if (element.miniature.cadre) {
+                    svg.addEvent(element.miniature.cadre, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+                if (element.miniature.content) {
+                    svg.addEvent(element.miniature.content, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+                if (element.miniature.image) {
+                    svg.addEvent(element.miniature.image, "click", function () {
+                        onClickFormation(element);
+                    });
+                }
+            })(formation);
+            count++;
+
+            posx += (self.tileWidth + 2 * MARGIN);
+        });
+    }();
 }
 
 function HeaderDisplay () {
@@ -1907,6 +2062,11 @@ var AdminGUI = function (){
 var LearningGUI = function (){
     domain && domain.Domain();
     Answer.prototype.display = AnswerDisplay;
+    Library.prototype.display = LibraryDisplay;
+    Header.prototype.display = HeaderDisplay;
+    Formation.prototype.displayFormation = FormationDisplayFormationPlayer;
+    Formation.prototype.displayMiniature = FormationDisplayMiniaturePlayer;
+    FormationsManager.prototype.display = FormationsManagerDisplayPlayer;
     Question.prototype.display = QuestionDisplay;
     Question.prototype.displayAnswers = QuestionDisplayAnswers;
     Question.prototype.elementClicked = QuestionElementClicked;
