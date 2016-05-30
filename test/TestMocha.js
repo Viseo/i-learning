@@ -3,8 +3,9 @@
  */
 
 var assert = require('assert');
+var fs = require("fs");
+var readline = require("readline");
 var testutils = require('../lib/testutils');
-
 var targetRuntime = require('../lib/targetruntime').targetRuntime;
 var mock = require('../lib/runtimemock');
 mock.setTarget(targetRuntime);
@@ -12,7 +13,21 @@ var svgHandler = require('../lib/svghandler');
 svgHandler.setTarget(targetRuntime);
 var SVG = svgHandler.SVG;
 
+var runTest = function (file, exec) {
+    var lineReader = require('readline').createInterface({
+        input: require('fs').createReadStream(file)
+    });
 
+    var first = false;
+    lineReader.on('line', function (line) {
+        var data = JSON.parse(line);
+        if(data.screenSize && !first) {
+            svg.screenSize(data.screenSize.width, data.screenSize.height);
+            first = true;
+            exec();
+        }
+    });
+};
 
 describe('Mocha marche bien', function() {
     describe('#indexOf()', function () {
@@ -45,7 +60,7 @@ describe('Quizz game', function () {
         runtime.declareAnchor('content');
         svg = SVG(runtime);
         guiSvgModule.setSVG(svg);
-        var guiSvg = guiSvgModule.Gui();
+        guiSvg = guiSvgModule.Gui();
         util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
@@ -59,10 +74,7 @@ describe('Quizz game', function () {
         testModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
-        svg.screenSize(1904,949); //Chrome
-        var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
-        domain.setGlobalVariables(globalVariables);
         domain.Domain();
         domain.setRuntime(runtime);
         domain.setSvg(svg);
@@ -75,96 +87,71 @@ describe('Quizz game', function () {
 
     it("plays a complete quizz game with 2 Answers Right and a resize", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function(){
-                mainModule.main(myQuizzTest);
-            },
-            "./log/testQuizzTwoRightAnswersResize.json", 'content', runtime, done);
+        var jsonFile = "./log/testQuizzTwoRightAnswersResize.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
     });
-    it("plays a complete quizz game with a lot of errors", function (done) {
+
+    it("plays a complete quizz game with all wrong", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function(){
-                mainModule.main(myQuizzTest);
-            },
-            "./log/testQuizzCompletBcpFaux.json", 'content', runtime, done);
+        var jsonFile = "./log/testQuizzAllWrong.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
     });
-    it("plays a complete quizz game with all just but one", function (done) {
+
+    it("plays a complete quizz game with all correct but one", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function(){
-                mainModule.main(myQuizzTest);
-            },
-            "./log/testQuizzToutesSaufUne.json", 'content', runtime, done);
+        var jsonFile = "./log/testQuizzAllCorrectButOne.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
     });
-    it("plays a complete quizz game with all right", function (done) {
+
+    it("plays a complete quizz game with all correct", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function(){
-                mainModule.main(myQuizzTest);
-            },
-            "./log/testQuizzToutesBonnes.json", 'content', runtime, done);
+        var jsonFile = "./log/testQuizzAllCorrect.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
     });
     it("plays a complete quizz game with only one right answer", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function(){
-                mainModule.main(myQuizzTest);
-            },
-            "./log/testQuizzUneSeuleJuste.json", 'content', runtime, done);
-    });
-    //it("an admin use", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            adminModule.admin();
-    //        },
-    //        "./log/testFirefoxAdmin.json", 'content', runtime, done);
-    //});
-
-    //it("QuizzManager", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            quizzManagerModule.quizzManager();
-    //        },
-    //        "./log/testQuizzManagerAccueil.json", 'content', runtime, done);
-    //});
-
-    //it("Test test", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function(){
-    //            //var textarea = new svg.getSvgr().createDOM("textarea");
-    //            var textPourGetBBox = new svg.Text("Le texte");
-    //            mainManipulator.ordonator.set(0, textPourGetBBox);
-    //            var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
-    //            var rect = new svg.Rect(dim.width, dim.height);
-    //            mainManipulator.ordonator.set(1, rect);
-    //        },
-    //        "./log/new.json", 'content', runtime, done);
-    //});
-
-
-    it('should instantiate correctly my answer', function() {
-        var answerJSON={
-            label:"My first answer is...",
-            imageSrc: "../resource/pomme.jpg",
-            correct: false,
-            colorBordure: {r: 155, g: 222, b: 17},
-            bgColor: {r: 125, g: 122, b: 117},
-            fontSize:20,
-            font:"Courier New"
+        var jsonFile = "./log/testQuizzAllWrongButOne.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
         };
-        var answer = new Answer(answerJSON);
-        assert.strictEqual(answer.correct,false);
-        assert.strictEqual(answer.label, "My first answer is...");
-        assert.strictEqual(answer.imageSrc, "../resource/pomme.jpg");
-        assert.deepEqual(answer.colorBordure,  {r: 155, g: 222, b: 17});
-        assert.deepEqual(answer.bgColor, {r: 125, g: 122, b: 117});
-        assert.strictEqual(answer.fontSize, 20);
-        assert.strictEqual(answer.font, "Courier New");
-
+        runTest(jsonFile, execute);
     });
 });
 describe('Firefox game', function () {
@@ -174,7 +161,6 @@ describe('Firefox game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
-    //var quizzManagerModule = require("../src/quizzManager");
     var testModule = require("../test/testTest");
 
 
@@ -197,7 +183,6 @@ describe('Firefox game', function () {
         testModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
-        svg.screenSize(1904,949); //Firefox
         var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
         domain.setGlobalVariables(globalVariables);
