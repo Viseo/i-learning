@@ -1826,12 +1826,37 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
+        function parcours(parentElement){
+            for (var child in parentElement) {
+                if (parentElement[child] instanceof Manipulator){
+                    parentElement[child]=null;
+                    console.log("da");
+                }
+                if (child === "content" || child === "bordure"){
+                    parentElement[child]=null;
+                }
+            }
+        }
+        self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
+        (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
+
         var tmpQuizzObject = {
             title: self.quizzName,
             tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
         };
+
+        var aDefinir = function (key, value) {
+            var notToBeStringify = false;
+            myParentsList.forEach(function(parent){
+                if (key=== parent){
+                    notToBeStringify = true;
+                }
+            })
+            return notToBeStringify ? undefined : value;
+        }
+
         var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpQuizzObject, thing);
+        var result = httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
         console.log("Bingoooo");
 
     };
