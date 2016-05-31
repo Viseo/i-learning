@@ -35,10 +35,11 @@
     var thing = function (data) {
         var myFormations=JSON.parse(data).myCollection;
         console.log(myFormations);
-        formationsManager = new FormationsManager(myFormations);
+        formationsManager = new FormationsManager(myFormations[0]);
         formationsManager.display();
     };
-    var result1 = httpGetAsync("/getAllFormationsNames", thing);
+    var result = httpGetAsync("/getAllFormations", thing);
+
     function resizePaper(){
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
         drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2,drawing.height/2);

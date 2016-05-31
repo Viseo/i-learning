@@ -17,17 +17,6 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/getAllFormationsNames', function(req, res) {
-        var collection = db.get().collection('formations');
-        var result= [];
-        var obj = collection.find({name:"Formations"}).toArray(function(err, docs) {
-            docs[0].tab.forEach(function(formation){
-                result.push({label: formation.label, status: formation.status});
-            });
-            res.send({myCollection: result});
-        });
-    });
-
     app.get('/id', function (req, res) {
         var collection = db.get().collection('exists');
         collection.find().toArray(function (err, docs) {
