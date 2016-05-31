@@ -183,7 +183,7 @@ function LibraryDisplay(x, y, w, h) {
     self.borderSize = 3;
 
     self.bordure = new svg.Rect(w - self.borderSize, h, self.libraryManipulator).color(myColors.none, self.borderSize, myColors.black);
-    self.bordure.position(w / 2, h / 2 - self.borderSize);
+    self.bordure.position(w / 2, h / 2 );
     self.libraryManipulator.last.add(self.bordure);
 
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
@@ -678,7 +678,7 @@ function FormationDisplayFormation(){
         };
 
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(self.libraryWidth, svg.getSvgr().boundingRect(self.title.component).height);
+        self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
 
         self.panel = new gui.Panel(w, h);
         self.panel.addhHandle(function () {
@@ -774,7 +774,7 @@ function FormationDisplayFormation(){
     };
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.library.display(0,self.graphCreaHeight/2,self.libraryWidth, self.graphCreaHeight);
+    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
     //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
 }
