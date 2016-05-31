@@ -491,19 +491,6 @@ function FormationDisplayMiniature (w,h) {
 
 }
 
-function FormationDisplaySaveButton(x, y, w, h) {
-    var self = this;
-    self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
-
-    var saveFormationFunction = function () {
-        console.log("Votre travail a été bien enregistré");
-    };
-
-    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
-    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
-    self.saveFormationButtonManipulator.translator.move(x, y);
-};
-
 function FormationDisplayMiniaturePlayer(w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
@@ -822,6 +809,37 @@ function FormationDisplayErrorMessage(message){
 
 function FormationRemoveErrorMessage(message) {
     message && message.parent && message.parent.remove(message);
+}
+
+function FormationDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
+
+    var saveFormationFunction = function () {
+        var thing = function (data) {
+        };
+        console.log("okokoko",self.levelsTab);
+
+        var tmpFormationObject = {
+            title: self.label,
+            levels: self.levelsTab,
+        };
+        var aDefinir = function (key, value) {
+            var notToBeStringify = false;
+            myParentsList.forEach(function(parent){
+                if (key=== parent){
+                    notToBeStringify = true;
+                }
+            });
+            return notToBeStringify ? undefined : value;
+        };
+        var result = httpGetAsync("/id", thing);
+        var result = httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
+        console.log("Votre travail a été bien enregistré");
+    };
+    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
+    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
+    self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
 function FormationsManagerDisplay() {

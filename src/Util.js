@@ -851,7 +851,7 @@ function Bdd() {
         "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
-        "editor"];
+        "editor","miniatureManipulator","parentFormation","formationInfoManipulator","parentsGames"];
 
     myColors = {
         darkBlue: [25, 25, 112],
