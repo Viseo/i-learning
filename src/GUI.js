@@ -480,6 +480,7 @@ function FormationDisplayMiniature (w,h) {
     else if(self.status==="statusEnum.NotPublished"){
         self.status=statusEnum.Edited;
     }
+
     var icon = self.status.icon(self.parent.iconeSize);
 
     for(var i=0; i<icon.elements.length; i++)
@@ -518,7 +519,6 @@ function FormationDisplayFormation(){
     self.manipulator.last.add(self.gamesLibraryManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
 
-    self.manipulatorMiniature.last.add(self.iconManipulator.first);
     self.manipulator.last.add(self.formationInfoManipulator.first);
 
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
@@ -951,6 +951,8 @@ function FormationsManagerDisplay() {
             self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
             self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
             self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+            self.formations[i].manipulatorMiniature.last.add(self.formations[i].iconManipulator.first);
+
             (function (element) {
                 if (element.miniature.cadre) {
                     svg.addEvent(element.miniature.cadre, "click", function () {
