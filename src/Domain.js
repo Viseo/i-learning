@@ -531,6 +531,9 @@ function Domain() {
         self.formationsManipulator = new Manipulator();
         self.clippingManipulator = new Manipulator(self);
 
+        /* for Player */
+        self.toggleFormationsManipulator = new Manipulator(self);
+
         };
 
 /////////////////// end of FormationManager.js ///////////////////

@@ -986,12 +986,15 @@ function FormationsManagerDisplayPlayer() {
     self.headerManipulator.last.add(self.checkManipulator.first);
     self.headerManipulator.last.add(self.exclamationManipulator.first);
     self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
+    self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
 
     function displayPanel() {
-        self.y = drawing.height * self.header.size + 3 * MARGIN;
-        self.headerHeightFormation = drawing.height * self.header.size * 2;
-        self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
-        self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
+        self.heightAllocatedToPanel=0.80*drawing.height;
+        self.headerHeightFormation = drawing.height * self.header.size ;
+        self.y =self.addButtonHeight*2;//drawing.height * self.header.size;
+        self.spaceBetweenElements=self.panel?0.015*self.panel.width:0.013*drawing.width;
+        self.tileWidth = (drawing.width -  self.spaceBetweenElements * (self.rows+1 )) / self.rows;
+        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements * (self.lines+1 ))) / self.lines);
 
         svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
@@ -1005,12 +1008,12 @@ function FormationsManagerDisplayPlayer() {
         };
 
         self.manipulator.last.add(self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(MARGIN/2, self.headerHeightFormation);
+        self.clippingManipulator.translator.move(MARGIN/2, self.y);
 
         var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
         totalLines = parseInt(totalLines);
-        self.panel = new gui.Panel(drawing.width-2*MARGIN-2*self.tileWidth/2+self.tileWidth, (2*MARGIN+self.tileHeight)*4, myColors.none);
-        self.panel.component.move((drawing.width-2*MARGIN)/2, ((2*MARGIN+self.tileHeight)*4)/2);
+        self.panel = new gui.Panel(drawing.width-2*MARGIN,self.heightAllocatedToPanel , myColors.none);
+        self.panel.component.move((drawing.width-2*MARGIN)/2, self.heightAllocatedToPanel /2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.content.add(self.formationsManipulator.first);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -1021,26 +1024,34 @@ function FormationsManagerDisplayPlayer() {
 
     function onClickFormation(formation) {
         self.formationDisplayed=formation;
-        self.header.redim();
-        formation.redim();
         formation.displayFormation();
     }
-
-    self.header.display();
-    displayPanel();
 
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
         self.headerManipulator.ordonator.set(1, self.title);
 
-        var toggleFormationsManipulator = new Manipulator(self);
-        self.headerManipulator.last.add(toggleFormationsManipulator.first);
+        self.formations.sort(function (a, b) {
+            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
+            if (nameA < nameB)
+                return -1;
+            if (nameA > nameB)
+                return 1;
+            return 0
+        });
+    };
+    self.header.display();
+    self.displayHeaderFormations();
+    displayPanel();
+
+    function displayFormationsCheck() {
         var toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-        toggleFormationsManipulator.last.add(toggleFormationsCheck);
-        var toggleFormationsText = displayText("Formations en cours", 215, 20, myColors.none, myColors.white, 20, null, toggleFormationsManipulator);
-        toggleFormationsText.cadre.position(MARGIN*1.5 + svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width/2, 0);
-        toggleFormationsText.content.position(svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width/2, MARGIN/2);
-        toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.cadre.component).width + 20), 0);
+        self.toggleFormationsManipulator.ordonator.set(3, toggleFormationsCheck);
+        var toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
+        self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
+        toggleFormationsText.position(svg.getSvgr().boundingRect(toggleFormationsText.component).width/2 + 2*MARGIN, 6);
+        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.component).width + 2*MARGIN +
+            svg.getSvgr().boundingRect(toggleFormationsCheck.component).width ), 0);
 
         var toggleFormations = function() {
             var all = false;
@@ -1048,7 +1059,7 @@ function FormationsManagerDisplayPlayer() {
             return function() {
                 all = !all;
                 var check = drawCheck(0, 0, 20),
-                    manip = toggleFormationsManipulator.last;
+                    manip = self.toggleFormationsManipulator.last;
                 svg.addEvent(manip, "click", toggleFormations);
                 if (all) {
                     manip.add(check);
@@ -1059,18 +1070,10 @@ function FormationsManagerDisplayPlayer() {
         }();
 
         svg.addEvent(toggleFormationsCheck, "click", toggleFormations);
-        svg.addEvent(toggleFormationsText.content, "click", toggleFormations);
-        svg.addEvent(toggleFormationsText.cadre, "click", toggleFormations);
+        svg.addEvent(toggleFormationsText, "click", toggleFormations);
+    }
 
-        self.formations.sort(function (a, b) {
-            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
-            if (nameA < nameB)
-                return -1;
-            if (nameA > nameB)
-                return 1;
-            return 0
-        });
-    }();
+    displayFormationsCheck();
 
     self.displayFormations = function () {
         var posx = self.initialFormationsPosX;
@@ -1081,7 +1084,7 @@ function FormationsManagerDisplayPlayer() {
 
             if (count > (self.rows - 1)) {
                 count = 0;
-                posy += (self.tileHeight + 2 * MARGIN);
+                posy += (self.tileHeight + self.spaceBetweenElements );
                 posx = self.initialFormationsPosX;
             }
             formation.parent = self;
@@ -1106,10 +1109,9 @@ function FormationsManagerDisplayPlayer() {
                 }
             })(formation);
             count++;
-
-            posx += (self.tileWidth + 2 * MARGIN);
         });
-    }();
+    };
+    self.displayFormations();
 }
 
 function HeaderDisplay () {
