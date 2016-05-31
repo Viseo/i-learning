@@ -1105,7 +1105,7 @@ function FormationsManagerDisplayPlayer() {
         var posx = self.initialFormationsPosX;
         var posy = MARGIN;
         var count = 0;
-        self.formations.forEach(function(formation) {
+        self.formations.forEach(formation => {
             if(formation.status !== statusEnum.Published) return;
 
             if (count > (self.rows - 1)) {
