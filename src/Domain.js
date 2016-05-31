@@ -347,6 +347,7 @@ function Domain() {
         self.formationInfoManipulator = new Manipulator();
         self.graphManipulator = new Manipulator(self);
         self.clippingManipulator = new Manipulator(self);
+        self.saveFormationButtonManipulator = new Manipulator(self);
 
         self.library = new Library(myLibraryGames);
         self.library.formation = self;
@@ -371,11 +372,44 @@ function Domain() {
         self.targetLevelIndex = 0;
         self.levelsTab = [];
 
+        self.saveButtonHeightRatio = 0.1;
         self.marginRatio = 0.03;
 
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
+        self.redim = function() {
+            self.graphElementSize = drawing.width/15;
+            self.gamesLibraryManipulator = self.library.libraryManipulator;
+            self.manipulator.last.add(self.gamesLibraryManipulator.first);
+            self.manipulator.last.add(self.graphManipulator.first);
+
+            self.manipulatorMiniature.last.add(self.iconManipulator.first);
+            self.manipulator.last.add(self.formationInfoManipulator.first);
+
+            self.manipulator.last.add(self.saveFormationButtonManipulator.first);
+
+            self.libraryWidth = drawing.width * self.libraryWidthRatio;
+            self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
+
+            self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
+            self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
+            self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
+            self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
+            self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+
+            self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
+            self.ButtonWidth = 150;
+
+            self.globalMargin = {
+                height: self.marginRatio * drawing.height,
+                width: self.marginRatio * drawing.width
+            };
+
+            self.clippingManipulator.flush();
+
+        };
+        self.redim();
 
         self.checkInputTextArea = function (myObj) {
             if (myObj.textarea.value.match(self.regex)) {
@@ -474,8 +508,6 @@ function Domain() {
         self.fontSize = 20;
         self.plusDim = self.fontSize * 2;
         self.iconeSize = self.plusDim / 1.5;
-
-
 
         //self.headerHeightFormation = drawing.height * self.header.size * 2;
         self.puzzleRows = 6;
@@ -710,8 +742,8 @@ function Domain() {
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);
 
-        self.saveButtonManipulator = new Manipulator(self);
-        self.manipulator.last.add(self.saveButtonManipulator.first);
+        self.saveQuizButtonManipulator = new Manipulator(self);
+        self.manipulator.last.add(self.saveQuizButtonManipulator.first);
 
         self.questionNameValidInput = true;
         self.quizzNameValidInput = true;
@@ -1024,7 +1056,7 @@ function Domain() {
         self.quizzInfoManipulator = new Manipulator(self);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
-        self.saveButtonManipulator = new Manipulator(self);
+        self.saveQuizButtonManipulator = new Manipulator(self);
         self.returnButtonManipulator=new Manipulator(self);
 
         self.libraryIManipulator = self.library.libraryManipulator;
@@ -1044,7 +1076,34 @@ function Domain() {
 
         self.marginRatio = 0.03;
 
-
+        self.redim = function () {
+            self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
+            self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
+            self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
+            self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
+            self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
+            self.quizzManagerManipulator.last.add(self.saveQuizButtonManipulator.first);
+            self.libraryWidth = drawing.width * self.libraryWidthRatio;
+            self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
+            self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
+            self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
+            self.libraryHeight = drawing.height * self.libraryHeightRatio;
+            self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
+            self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
+            self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
+            self.ButtonWidth = 150;
+            self.globalMargin = {
+                height: self.marginRatio * drawing.height,
+                width: self.marginRatio * drawing.width
+            };
+            self.questionPuzzleCoordinates = {
+                x: self.globalMargin.width / 2,
+                y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
+                w: (drawing.width - self.globalMargin.width),
+                h: (self.questionsPuzzleHeight - self.globalMargin.height)
+            };
+        };
+        self.redim();
     };
 
 

@@ -490,6 +490,19 @@ function FormationDisplayMiniature (w,h) {
 
 }
 
+function FormationDisplaySaveButton(x, y, w, h) {
+    var self = this;
+    self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
+
+    var saveFormationFunction = function () {
+        console.log("Votre travail a été bien enregistré");
+    };
+
+    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
+    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
+    self.saveFormationButtonManipulator.translator.move(x, y);
+};
+
 function FormationDisplayMiniaturePlayer(w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
@@ -782,11 +795,12 @@ function FormationDisplayFormation(){
 
         self.updateAllLinks();
     };
-    self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
+    self.displayFrame(self.graphCreaWidth, self.graphCreaHeight-15-MARGIN-self.saveButtonHeight); //15: Height Message Error
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
+    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight-15-MARGIN-self.saveButtonHeight);//15: Height Message Error
     //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
+    self.displayFormationSaveButton(self.graphCreaWidth/2,self.graphCreaHeight ,self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
 }
 
 function FormationDisplayFormationPlayer(){
@@ -1873,7 +1887,7 @@ function QuizzManagerDisplay(){
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
         self.displayPreviewButton(drawing.width/2-self.ButtonWidth, drawing.height - self.previewButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
-        self.displaySaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+        self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
     }
@@ -1886,7 +1900,7 @@ function QuizzManagerDisplay(){
                 self.questCreaWidth-self.globalMargin.width, self.questCreaHeight-self.globalMargin.height);
             self.displayPreviewButton(drawing.width/2-self.ButtonWidth, drawing.height - self.previewButtonHeight/2-MARGIN/2,
                 self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
-            self.displaySaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+            self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
                 self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
             mainManipulator.ordonator.unset(0);
         });
@@ -2062,7 +2076,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
 
 function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var self = this;
-    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
 
     var saveFunction = function () {
         var thing = function (data) {
@@ -2091,7 +2105,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
 
     svg.addEvent(self.saveButton.cadre, "click", saveFunction);
     svg.addEvent(self.saveButton.content, "click", saveFunction);
-    self.saveButtonManipulator.translator.move(x, y);
+    self.saveQuizButtonManipulator.translator.move(x, y);
 }
 
 function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
@@ -2136,6 +2150,7 @@ var AdminGUI = function (){
     Formation.prototype.displayFormation = FormationDisplayFormation;
     Formation.prototype.removeErrorMessage = FormationRemoveErrorMessage;
     Formation.prototype.displayErrorMessage = FormationDisplayErrorMessage;
+    Formation.prototype.displayFormationSaveButton = FormationDisplaySaveButton;
     FormationsManager.prototype.display = FormationsManagerDisplay;
     Question.prototype.display = QuestionDisplay;
     Question.prototype.displayAnswers = QuestionDisplayAnswers;
@@ -2154,7 +2169,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.display = QuizzManagerDisplay;
     QuizzManager.prototype.displayQuizzInfo = QuizzManagerDisplayQuizzInfo;
     QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
-    QuizzManager.prototype.displaySaveButton = QuizzManagerDisplaySaveButton;
+    QuizzManager.prototype.displayQuizSaveButton = QuizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
 };
 
