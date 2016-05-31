@@ -5,11 +5,11 @@
 var svg, util;
 
 /* istanbul ignore next */
-if(typeof SVG !== "undefined") {
+if(typeof exports.SVG !== "undefined") {
     if(!svg) {
-        svg = new SVG();
-        }
+        svg = new exports.SVG();
     }
+}
 
 
 function setSvg(_svg) {

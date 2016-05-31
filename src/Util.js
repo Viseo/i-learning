@@ -16,9 +16,9 @@ if(typeof SVG != "undefined") {
     }
 }
 /* istanbul ignore next */
-if(typeof Gui != "undefined") {
+if(typeof exports.Gui != "undefined") {
     if(!gui) {
-        gui = new Gui({speed: 5, step: 100});
+        gui = new exports.Gui(svg, {speed: 5, step: 100});
     }
 }
 

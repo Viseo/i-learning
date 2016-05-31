@@ -2127,7 +2127,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 
 var AdminGUI = function (){
 
-    domain && domain.Domain();
+    //domain && domain.Domain();
     Answer.prototype.display = AnswerDisplay;
     Library.prototype.display = LibraryDisplay;
     Header.prototype.display = HeaderDisplay;
