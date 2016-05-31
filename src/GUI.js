@@ -245,11 +245,11 @@ function LibraryDisplay(x, y, w, h) {
             manip.first.move(point.x - point2.x, point.y - point2.y);
 
             if (self.itemsTab && self.itemsTab.length !== 0) {
-                if (self.itemsTab[0].objectTotal && ((self.itemsTab[0].objectTotal.content.messageText === "Quiz") || (self.itemsTab[0].objectTotal.content.messageText === "Quiz"))) {
-                    var gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                    self.draggedObjectLabel = gameMiniature.content.messageText;
-                    manip.ordonator.set(0, gameMiniature.cadre);
-                    manageDnD(gameMiniature.cadre, manip);
+                if (self.itemsTab[0].objectTotal && (self.itemsTab[0].objectTotal.content.messageText !== "")) {
+                    self.gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
+                    self.draggedObjectLabel = self.gameMiniature.content.messageText;
+                    manip.ordonator.set(0, self.gameMiniature.cadre);
+                    manageDnD(self.gameMiniature.cadre, manip);
                 } else {
                     var img;
                     img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
@@ -295,17 +295,18 @@ function LibraryDisplay(x, y, w, h) {
                     self.draggedObjectLabel = "";
                 };
 
-                gameMiniature && gameMiniature.cadre.component.listeners && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.listeners.mouseup);
-                gameMiniature && gameMiniature.cadre.component.target && gameMiniature.cadre.component.target.listeners && gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.cadre, 'mouseup', gameMiniature.cadre.component.target.listeners.mouseup);
+                self.gameMiniature && self.gameMiniature.cadre.component.listeners && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.listeners.mouseup);
+                self.gameMiniature && self.gameMiniature.cadre.component.target && self.gameMiniature.cadre.component.target.listeners && self.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.target.listeners.mouseup);
+                console.log(self.gameMiniature.cadre.component.listeners["mousedown"]);
 
                 svg.event(drawings.glass, "mousedown", event);
-                gameMiniature && gameMiniature.cadre && svg.addEvent(gameMiniature.cadre, 'mouseup', mouseupHandler);
+                self.gameMiniature && self.gameMiniature.cadre && svg.addEvent(self.gameMiniature.cadre, 'mouseup', mouseupHandler);
                 img && svg.addEvent(img, 'mouseup', mouseupHandler);
 
-                if (gameMiniature && gameMiniature.content) {
-                    gameMiniature.content.component.listeners && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.listeners.mouseup);
-                    gameMiniature.content.component.target && gameMiniature.content.component.target.listeners && gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(gameMiniature.content, 'mouseup', gameMiniature.content.component.target.listeners.mouseup);
-                    svg.addEvent(gameMiniature.content, 'mouseup', mouseupHandler);
+                if (self.gameMiniature && self.gameMiniature.content) {
+                    self.gameMiniature.content.component.listeners && svg.removeEvent(self.gameMiniature.content, 'mouseup', self.gameMiniature.content.component.listeners.mouseup);
+                    self.gameMiniature.content.component.target && self.gameMiniature.content.component.target.listeners && self.gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(self.gameMiniature.content, 'mouseup', self.gameMiniature.content.component.target.listeners.mouseup);
+                    svg.addEvent(self.gameMiniature.content, 'mouseup', mouseupHandler);
                 }
             }
         };
@@ -845,22 +846,26 @@ function FormationDisplaySaveButton(x, y, w, h) {
 function FormationsManagerDisplay() {
     var self = this;
     drawing.currentPageDisplayed = "FormationsManager";
-    self.manipulator.first.move(0, drawing.height * 0.075);
+    self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
     self.headerManipulator.last.add(self.addButtonManipulator.first);
     self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
     self.headerManipulator.last.add(self.checkManipulator.first);
     self.headerManipulator.last.add(self.exclamationManipulator.first);
-    self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
 
     function displayPanel() {
-        self.heightAllocatedToPanel=0.80*drawing.height;
+        self.heightAllocatedToPanel = drawing.height - self.addFormationButton.cadre.globalPoint(0,0).y - self.addFormationButton.cadre.height;
         self.headerHeightFormation = drawing.height * self.header.size ;
-        self.y =self.addButtonHeight*2;//drawing.height * self.header.size;
-        self.spaceBetweenElements=self.panel?0.015*self.panel.width:0.013*drawing.width;
-        self.tileWidth = (drawing.width -  self.spaceBetweenElements * (self.rows+1 )) / self.rows;
-        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements * (self.lines+1 ))) / self.lines);
+        self.y = self.addButtonHeight*2;//drawing.height * self.header.size;
+
+        self.spaceBetweenElements={
+            width:self.panel?0.015*self.panel.width:0.015*drawing.width,
+            height: self.panel?0.030*self.panel.height:0.030*drawing.height
+        };
+
+        self.tileWidth = (drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
+        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
 
         svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
@@ -884,7 +889,7 @@ function FormationsManagerDisplay() {
         self.panel.content.add(self.formationsManipulator.first);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
-        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2);
+        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
     }
 
@@ -906,14 +911,16 @@ function FormationsManagerDisplay() {
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
         self.headerManipulator.ordonator.set(1, self.title);
+        self.headerManipulator.translator.move(0,2*MARGIN);
         self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
-        self.addFormationButton.cadre.position(MARGIN +svg.getSvgr().boundingRect(self.addFormationButton.cadre.component).width/2,0).corners(0,0);
-        self.addFormationButton.content.position(MARGIN + self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, MARGIN/2);
+        var addFormationButtonTextBr = svg.getSvgr().boundingRect(self.addFormationButton.content.component);
+        self.addFormationButton.cadre.position(MARGIN +addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
+        self.addFormationButton.content.position(self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
 
-        self.addFormationObject = drawPlusWithCircle(MARGIN, 0, self.addButtonHeight, self.addButtonHeight);
+        self.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, self.addButtonHeight, self.addButtonHeight);
         self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
         self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
-        self.addFormationObject.circle.position(MARGIN, 0);
+        self.addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height/2);
 
         svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
         svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
@@ -951,24 +958,24 @@ function FormationsManagerDisplay() {
     };
     self.header.display();
     self.displayHeaderFormations();
-    displayPanel();
+    (!self.tileHeight || self.tileHeight > 0) && displayPanel();
     self.displayFormations = function () {
         var posx = self.initialFormationsPosX;
         var posy = MARGIN;
         var count = 0;
         for (var i = 0; i < self.formations.length; i++) {
             if (i !== 0) {
-                posx += (self.tileWidth+ self.spaceBetweenElements );
+                posx += (self.tileWidth+ self.spaceBetweenElements.width);
             }
             if (count > (self.rows - 1)) {
                 count = 0;
-                posy += (self.tileHeight + self.spaceBetweenElements );
+                posy += (self.tileHeight + self.spaceBetweenElements.height);
                 posx = self.initialFormationsPosX;
             }
             self.formations[i].parent = self;
             self.formationsManipulator.last.add(self.formations[i].manipulatorMiniature.first);
             self.formations[i].displayMiniature(self.tileWidth, self.tileHeight);
-            self.formations[i].manipulatorMiniature.translator.move(posx, posy + MARGIN);
+            self.formations[i].manipulatorMiniature.translator.move(posx, posy);
             self.formations[i].manipulatorMiniature.last.add(self.formations[i].iconManipulator.first);
 
             (function (element) {
@@ -991,7 +998,7 @@ function FormationsManagerDisplay() {
             count++;
         }
     };
-    self.displayFormations();
+    (self.tileHeight > 0) && self.displayFormations();
 }
 
 function FormationsManagerDisplayPlayer() {
@@ -1005,7 +1012,6 @@ function FormationsManagerDisplayPlayer() {
 
     self.headerManipulator.last.add(self.checkManipulator.first);
     self.headerManipulator.last.add(self.exclamationManipulator.first);
-    self.formationsManipulator.translator.move(self.tileWidth / 2, drawing.height * 0.15 + MARGIN);
     self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
 
     function displayPanel() {
