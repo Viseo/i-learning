@@ -88,11 +88,11 @@ function AnswerDisplay (x, y, w, h) {
             self.obj.content._acceptDrop = true;
             var editor = (self.editor.puzzle ? self.editor : self.editor.parent);
             editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
-            svg.addEvent(self.obj.content, "dblclick", dblclickEdition);
-            svg.addEvent(self.obj.cadre, "dblclick", dblclickEdition);
+            svg.addEvent(self.obj.content, "dblclick", dblclickEditionAnswer);
+            svg.addEvent(self.obj.cadre, "dblclick", dblclickEditionAnswer);
         };
 
-        var dblclickEdition = function () {
+        var dblclickEditionAnswer = function () {
             var contentarea = document.createElement("textarea");
             contentarea.value = self.label;
             contentarea.width = w;
@@ -550,12 +550,12 @@ function FormationDisplayFormation(){
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
 
-        svg.addEvent(self.formationLabel.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEdition);
+        svg.addEvent(self.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
+        svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
         self.formationCreator = formationValidation;
     };
 
-    var dblclickEdition = function () {
+    var dblclickEditionFormationLabel = function () {
         var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
@@ -1625,13 +1625,13 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         self.questionBlock.title.content._acceptDrop = true;
         self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure);
         self.questionBlock.title.cadre._acceptDrop = true;
-        svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEdition);
+        svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
+        svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
 
         self.questionManipulator.first.move(w/2, y + self.toggleButtonHeight + 2 * MARGIN + self.questionBlock.title.cadre.height/2);
     };
 
-    var dblclickEdition = function () {
+    var dblclickEditionQuestionBlock = function () {
         var textarea = document.createElement("textarea");
         textarea.textContent = self.linkedQuestion.label;
         textarea.width = self.w;
@@ -1944,11 +1944,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
         self.quizzInfoManipulator.first.move(x, y);
-        svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEdition);
-        svg.addEvent(self.quizzLabel.cadre, "dblclick", dblclickEdition);
+        svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEditionQuizz);
+        svg.addEvent(self.quizzLabel.cadre, "dblclick", dblclickEditionQuizz);
     };
 
-    var dblclickEdition = function () {
+    var dblclickEditionQuizz = function () {
         var width;
         width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
 
