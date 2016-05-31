@@ -1847,7 +1847,7 @@ function QuizzManagerDisplay(){
     self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
     self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
     self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
-    self.quizzManagerManipulator.last.add(self.saveButtonManipulator.first);
+    self.quizzManagerManipulator.last.add(self.saveQuizButtonManipulator.first);
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
     self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
     self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
