@@ -2,7 +2,7 @@
  * Created by qde3485 on 25/02/16.
  */
 
-var svg, util, drawings;
+var svg, util;
 
 /* istanbul ignore next */
 if(typeof SVG !== "undefined") {
@@ -40,43 +40,14 @@ function main(targetQuizz) {
     quizz.run(0,0, drawing.width, drawing.height);
 
     function resizePaper(){
-        //zoom
-        //var scale =1;
-        //var scaleY=window.oldHeight/window.innerHeight;
-        //window.oldHeight=window.innerHeight;
-        //var scaleX=window.oldWidth/window.innerWidth;
-        //window.oldWidth=window.innerWidth;
-        //
-        //
-        //scale=Math.min(scaleX,scaleY);
-        //
-        ////quizz.tabQuestions[0].tabAnswer[1].answerManipulator.scalor.scale(scale);
-        //quizz.quizzManipulator.scalor.scale(scale);
-        //quizz.quizzManipulator.translator.move((document.body.clientWidth/2)*scale,(document.documentElement.clientHeight/2)*scale);
-        //console.log(scale);
-
-        //changement de taille de la fenêtre
-        //quizz.quizzManipulator.first.remove();
-
-        drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
-
-       // drawings.piste.dimension(drawing.width,drawing.height); N'a plus de dimension !!!
+        drawing.dimension(svg.screenSize().width,svg.screenSize().height);//attr("preserveAspectRatio", "xMinYMin meet") ;
         drawings.glass.dimension(drawing.width,drawing.height);
 
         quizz.display(0,0,drawing.width,drawing.height);
         var qManip=quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
-        //qManip.last.remove(qManip.ordonator);
-        //qManip.ordonator=new svg.Ordered(10);
         for( var i = 0;i<qManip.ordonator.children.length;i++) {
             qManip.ordonator.unset(i);
         }
-
-
-        //qManip.last.children.forEach(function(e){
-        //   if(e.children.length!==10){
-        //       qManip.last.children.remove(e);
-        //   }
-        //});
 
         if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
             quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
@@ -93,8 +64,8 @@ function main(targetQuizz) {
     }
     //window.oldWidth=window.innerWidth;
     //window.oldHeight=window.innerHeight;
-    setTimeout(function(){
-        window.onresize = resizePaper;
+    setTimeout(function() {
+        svg.getSvgr().addGlobalEvent("resize", resizePaper);
     },200);
 
 

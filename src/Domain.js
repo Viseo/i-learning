@@ -1,8 +1,7 @@
 /**
  * Created by TDU3482 on 26/04/2016.
  */
-var util, drawing, clientWidth, clientHeight, mainManipulator, iRuntime, aRuntime, runtime, asyncTimerController, svg,
-    Answer, Library, AddEmptyElement, Formation, FormationsManager, Header, Puzzle, Question, QuestionCreator, Bd, Quizz, QuizzManager;
+var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg;
 
 setUtil = function(_util){
     util = _util;
