@@ -6,11 +6,17 @@
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
+<script src="../lib/module.js"></script>
 <script src="../lib/targetruntime.js"></script>
 <script src="../lib/runtimemock.js"></script>
 <script src="../lib/svghandler.js"></script>
 <script src="../lib/svggui.js"></script>
-<script src="../lib/scenario.js"></script>
+<!--<script src="../lib/scenario.js"></script>-->
+<script>
+    let targetRuntime = require("../lib/targetruntime").targetRuntime;
+    let SVG = require("../lib/svghandler").SVG;
+    svg = SVG(targetRuntime());
+</script>
 <script src="Util.js"></script>
 <script src="Domain.js"></script>
 <script src="GUI.js"></script>
@@ -24,9 +30,15 @@
     setGlobalVariable();
 </script>
 <script>
+    var formationsManager;
     var param = {speed: 5, step: 100};
-    var formationsManager = new FormationsManager(myFormations);
-    formationsManager.display();
+    var thing = function (data) {
+        var myFormations=JSON.parse(data).myCollection;
+        console.log(myFormations);
+        formationsManager = new FormationsManager(myFormations);
+        formationsManager.display();
+    };
+    var result1 = httpGetAsync("/getAllFormationsNames", thing);
 
     function resizePaper(){
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;

@@ -519,9 +519,8 @@ function Domain() {
 
         self.formations = [];
         self.count = 0;
-        formations.forEach(function (formation) {
-            self.formations[self.count] = new Formation(formation);
-            self.count++;
+        formations.forEach(function (formation, count) {
+            self.formations[count] = new Formation(formation);
         });
         self.manipulator = new Manipulator();
         self.headerManipulator = new Manipulator();
