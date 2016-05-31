@@ -465,7 +465,7 @@ function FormationDisplayMiniature (w,h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
-    if(self.status==="statusEnum.Published") {
+    if(self.status==="statusEnum.Published") { //Trouver un moyen de faire ça de manière plus gracieuse
         self.status=statusEnum.Published;
     }
     else if(self.status==="statusEnum.Edited"){

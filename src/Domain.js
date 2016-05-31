@@ -512,7 +512,7 @@ function Domain() {
 
         self.formations = [];
         self.count = 0;
-        formations.tab.forEach(function (formation) {
+        formations.forEach(function (formation) {
             self.formations[self.count] = new Formation(formation);
             self.count++;
         });
