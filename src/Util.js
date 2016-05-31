@@ -696,9 +696,9 @@ function SVGUtil() {
 function drawStraightArrow(x1,y1,x2,y2){
     var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
     var arrowPath=new svg.Path(x1,y1);
-    arrow.points.forEach(function(point){
-        arrowPath.line(point.x, point.y);
-    });
+    for(let i = 0; i<arrow.points.length; i+=2) {
+        arrowPath.line(arrow.points[i], arrow.points[i+1]);
+    }
     arrowPath.line(x1,y1);
     return arrowPath;
 }
