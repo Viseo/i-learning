@@ -46,9 +46,7 @@ describe('Quizz game', function () {
     var domain = require("../src/Domain");
     var mainModule = require("../src/main");
     var adminModule = require("../src/admin");
-    //var quizzManagerModule = require("../src/quizzManager");
     var testModule = require("../test/testTest");
-
 
     beforeEach(function () {
         runtime = mockRuntime();
@@ -91,7 +89,6 @@ describe('Quizz game', function () {
         };
         runTest(jsonFile, execute);
     });
-
     it("plays a complete quizz game with all wrong", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testQuizzAllWrong.json";
@@ -105,7 +102,6 @@ describe('Quizz game', function () {
         };
         runTest(jsonFile, execute);
     });
-
     it("plays a complete quizz game with all correct but one", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testQuizzAllCorrectButOne.json";
@@ -119,7 +115,6 @@ describe('Quizz game', function () {
         };
         runTest(jsonFile, execute);
     });
-
     it("plays a complete quizz game with all correct", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testQuizzAllCorrect.json";
@@ -156,17 +151,14 @@ describe('Firefox game', function () {
     var adminModule = require("../src/admin");
     var testModule = require("../test/testTest");
 
-
     beforeEach(function () {
-        runtime = mock.mockRuntime();
+        runtime = mockRuntime();
         runtime.declareAnchor('content');
         svg = SVG(runtime);
-        guiSvgModule.setSVG(svg);
-        var guiSvg = guiSvgModule.Gui({speed: 50, step: 10});
-        util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
-        util.setGui(guiSvg);
+        util.setSvg(svg);
+        util.setGui(guiSvgModule);
         util.setRuntime(runtime);
         mainModule.setSvg(svg);
         mainModule.setUtil(util);
@@ -176,27 +168,29 @@ describe('Firefox game', function () {
         testModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
-        var globalVariables = mainModule.setGlobalVariable();
         domain.setUtil(util);
-        domain.setGlobalVariables(globalVariables);
         domain.Domain();
         domain.setRuntime(runtime);
         domain.setSvg(svg);
         gui.setDomain(domain);
-        gui.AdminGUI();
+        gui.LearningGUI();
         gui.setSVG(svg);
         gui.setGui(guiSvg);
         gui.setRuntime(runtime);
     });
 
-
     it("a short admin use (to Formation)", function (done) {
         this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminShort.json", 'content', runtime, done);
+        var jsonFile = "./log/testFirefoxAdminShort.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
     });
 
     it("a short admin use (to Formation, with Games)", function (done) {
