@@ -1055,7 +1055,7 @@ function FormationsManagerDisplayPlayer() {
 
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.headerManipulator.ordonator.set(1, self.title);
+        self.headerManipulator.ordonator.set(0, self.title);
 
         self.formations.sort(function (a, b) {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -1072,7 +1072,7 @@ function FormationsManagerDisplayPlayer() {
 
     function displayFormationsCheck() {
         var toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-        self.toggleFormationsManipulator.ordonator.set(3, toggleFormationsCheck);
+        self.toggleFormationsManipulator.ordonator.set(0, toggleFormationsCheck);
         var toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
         self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
         toggleFormationsText.position(svg.getSvgr().boundingRect(toggleFormationsText.component).width/2 + 2*MARGIN, 6);

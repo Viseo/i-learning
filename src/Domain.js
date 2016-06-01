@@ -103,7 +103,7 @@ function Domain() {
         };
         answerParameters && (answer = answerParameters);
         self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(10);
+        self.manipulator.addOrdonator(5);
         self.label = answer.label;
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;
@@ -526,6 +526,7 @@ function Domain() {
 
         /* for Player */
         self.toggleFormationsManipulator = new Manipulator(self);
+        self.toggleFormationsManipulator.addOrdonator(2);
     };
 
 /////////////////// end of FormationManager.js ///////////////////

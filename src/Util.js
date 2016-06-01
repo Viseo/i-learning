@@ -312,7 +312,7 @@ function SVGUtil() {
         svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
         sender.obj.checked = drawCheck(x, y, size);
         svg.addEvent(sender.obj.checked, "click", onclickFunction);
-        sender.manipulator.ordonator.set(8, sender.obj.checked);
+        sender.manipulator.ordonator.set(4, sender.obj.checked);
     };
 
     updateAllCheckBoxes = function (sender) {
@@ -320,7 +320,7 @@ function SVGUtil() {
         editor.linkedQuestion.tabAnswer.forEach(answer => {
             if (answer.editable && answer.obj.checkbox) {
                 answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                !answer.correct && answer.manipulator.ordonator.unset(8);
+                !answer.correct && answer.manipulator.ordonator.unset(4);
             }
         });
     };
@@ -342,8 +342,8 @@ function SVGUtil() {
         sender.obj.checkbox.color(myColors.white, 2, myColors.black);
         svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
 
-        sender.manipulator.ordonator.set(7, sender.obj.checkbox);
-        !sender.correct && sender.manipulator.ordonator.unset(8);
+        sender.manipulator.ordonator.set(3, sender.obj.checkbox);
+        !sender.correct && sender.manipulator.ordonator.unset(4);
         sender.correct && drawPathChecked(sender, x, y, size);
         return sender.obj;
     };
