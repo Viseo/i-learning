@@ -363,7 +363,8 @@ function SVGUtil() {
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
 
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var textHeight = svg.getSvgr().boundingRect(text.component).height;
+        var bbox= svg.getSvgr().boundingRect(text.component);
+        var textHeight = bbox.height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth = previousImage && w === previousImage.width ? w : w - 2 * MARGIN;
@@ -422,8 +423,7 @@ function SVGUtil() {
         }
 
         return {
-            image: new svg.Image(imageSrc).dimension(width, height).position(0, 0),
-            height: height
+            image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
         };
 
     };

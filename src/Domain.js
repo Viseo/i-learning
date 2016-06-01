@@ -257,7 +257,7 @@ function Domain() {
                         }
                     }
 
-                var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
+                var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.text : false);
                 switch (objectToBeAddedLabel) {
                     case ("Quiz"):
                         var newQuizz = new Quizz(defaultQuizz, false, formation);

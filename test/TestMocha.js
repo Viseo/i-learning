@@ -3,15 +3,10 @@
  */
 
 var assert = require('assert');
-var fs = require("fs");
-var readline = require("readline");
 var testutils = require('../lib/testutils');
 var targetRuntime = require('../lib/targetruntime').targetRuntime;
-var mock = require('../lib/runtimemock');
-mock.setTarget(targetRuntime);
-var svgHandler = require('../lib/svghandler');
-svgHandler.setTarget(targetRuntime);
-var SVG = svgHandler.SVG;
+var mockRuntime = require('../lib/runtimemock').mockRuntime;
+var SVG = require('../lib/svghandler').SVG;
 
 var runTest = function (file, exec) {
     var lineReader = require('readline').createInterface({
@@ -45,7 +40,7 @@ var runtime;
 var svg;
 
 describe('Quizz game', function () {
-    var guiSvgModule = require("../lib/svggui");
+    var guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
     var util = require("../src/Util");
     var gui = require("../src/GUI");
     var domain = require("../src/Domain");
@@ -56,15 +51,13 @@ describe('Quizz game', function () {
 
 
     beforeEach(function () {
-        runtime = mock.mockRuntime();
+        runtime = mockRuntime();
         runtime.declareAnchor('content');
         svg = SVG(runtime);
-        guiSvgModule.setSVG(svg);
-        guiSvg = guiSvgModule.Gui();
-        util.setSvg(svg);
         util.SVGUtil();
         util.Bdd();
-        util.setGui(guiSvg);
+        util.setSvg(svg);
+        util.setGui(guiSvgModule);
         util.setRuntime(runtime);
         mainModule.setSvg(svg);
         mainModule.setUtil(util);
@@ -81,7 +74,7 @@ describe('Quizz game', function () {
         gui.setDomain(domain);
         gui.LearningGUI();
         gui.setSVG(svg);
-        gui.setGui(guiSvg);
+        gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
     });
 
