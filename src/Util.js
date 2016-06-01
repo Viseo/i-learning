@@ -688,7 +688,6 @@ function SVGUtil() {
             svg.removeEvent(svgItem, 'mouseup', mouseupHandler);
         };
         svg.addEvent(svgItem, "mousedown", mousedownHandler);
-        console.log(svgItem.component.listeners["mousedown"]);
     }
 }
 

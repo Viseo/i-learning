@@ -297,7 +297,6 @@ function LibraryDisplay(x, y, w, h) {
 
                 self.gameMiniature && self.gameMiniature.cadre.component.listeners && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.listeners.mouseup);
                 self.gameMiniature && self.gameMiniature.cadre.component.target && self.gameMiniature.cadre.component.target.listeners && self.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.target.listeners.mouseup);
-                console.log(self.gameMiniature.cadre.component.listeners["mousedown"]);
 
                 svg.event(drawings.glass, "mousedown", event);
                 self.gameMiniature && self.gameMiniature.cadre && svg.addEvent(self.gameMiniature.cadre, 'mouseup', mouseupHandler);
