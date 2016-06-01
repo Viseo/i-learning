@@ -103,6 +103,7 @@ function Domain() {
         };
         answerParameters && (answer = answerParameters);
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(10);
         self.label = answer.label;
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;
@@ -165,7 +166,9 @@ function Domain() {
     Library = function (lib) {
         var self = this;
         self.libraryManipulator = new Manipulator(self);
+        self.libraryManipulator.addOrdonator(2);
         self.arrowModeManipulator = new Manipulator(self);
+        self.arrowModeManipulator.addOrdonator(3);
 
         self.title = lib.title;
 
@@ -180,6 +183,7 @@ function Domain() {
 
         for (var i = 0; i < self.itemsTab.length; i++) {
             self.libraryManipulators[i] = new Manipulator(self);
+            self.libraryManipulators[i].addOrdonator(2);
             if (self.itemsTab[i].imgSrc) {
                 self.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
@@ -290,6 +294,7 @@ function Domain() {
     AddEmptyElement = function (parent, type) {
         var self = this;
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(3);
         type && (self.type = type);
         switch (type) {
             case 'question':
@@ -311,6 +316,7 @@ function Domain() {
         var self = this;
         self.parentFormation = formation;
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(10);
         self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
         gamesTab ? (self.gamesTab = gamesTab) : (self.gamesTab = []);
         self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
@@ -336,12 +342,18 @@ function Domain() {
     Formation = function (formation) {
         var self = this;
         self.manipulatorMiniature = new Manipulator();
+        self.manipulatorMiniature.addOrdonator(2)
         self.iconManipulator = new Manipulator();
+        self.iconManipulator.addOrdonator(3);
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(1);
         self.formationInfoManipulator = new Manipulator();
+        self.formationInfoManipulator.addOrdonator(2);
         self.graphManipulator = new Manipulator(self);
+        self.graphManipulator.addOrdonator(2);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
+        self.saveFormationButtonManipulator.addOrdonator(2);
         self.library = new Library(myLibraryGames);
         self.library.formation = self;
         self.quizzManager = new QuizzManager();
@@ -502,9 +514,13 @@ function Domain() {
         });
         self.manipulator = new Manipulator();
         self.headerManipulator = new Manipulator();
+        self.headerManipulator.addOrdonator(1);
         self.addButtonManipulator = new Manipulator();
+        self.addButtonManipulator.addOrdonator(4)
         self.checkManipulator = new Manipulator();
+        self.checkManipulator.addOrdonator(4)
         self.exclamationManipulator = new Manipulator();
+        self.exclamationManipulator.addOrdonator(4);
         self.formationsManipulator = new Manipulator();
         self.clippingManipulator = new Manipulator(self);
 
@@ -524,6 +540,7 @@ function Domain() {
         var self = this;
         additionalMessage && (self.addMessage = additionalMessage);
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(3);
         self.label = "I-learning";
         self.size = 0.05; // 5%
         self.setMessage = function (additionalMessage) {
@@ -563,7 +580,9 @@ function Domain() {
         self.virtualTab = [];
         self.puzzleManipulator = new Manipulator(self);
         self.leftArrowManipulator = new Manipulator(self);
+        self.leftArrowManipulator.addOrdonator(1);
         self.rightArrowManipulator = new Manipulator(self);
+        self.rightArrowManipulator.addOrdonator(1);
         self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
         self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
@@ -614,12 +633,18 @@ function Domain() {
     Question = function (question, quizz) {
         var self = this;
         self.questionManipulator = new Manipulator(self);
+        self.questionManipulator.addOrdonator(5);
         self.answersManipulator = new Manipulator(self);
         self.questionManipulator.last.add(self.answersManipulator.first);
         self.resetManipulator = new Manipulator(self);
+        self.resetManipulator.addOrdonator(2);
         self.answersManipulator.last.add(self.resetManipulator.first);
         self.validateManipulator = new Manipulator(self);
+        self.validateManipulator.addOrdonator(2);
         self.answersManipulator.last.add(self.validateManipulator.first);
+        self.simpleChoiceMessageManipulator = new Manipulator(self);
+        self.simpleChoiceMessageManipulator.addOrdonator(2);
+        self.answersManipulator.last.add(self.simpleChoiceMessageManipulator.first);
 
         self.selected = false;
         self.parentQuizz = quizz;
@@ -702,8 +727,10 @@ function Domain() {
         self.manipulatorQuizzInfo = new Manipulator(self);
         self.questionCreatorManipulator = new Manipulator(self);
         self.questionManipulator = new Manipulator(self);
+        self.questionManipulator.addOrdonator(5);
         self.toggleButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator = new Manipulator(self);
+        self.previewButtonManipulator.addOrdonator(2);
         self.manipulator.last.add(self.previewButtonManipulator.first);
         self.saveQuizButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.saveQuizButtonManipulator.first);
@@ -802,6 +829,7 @@ function Domain() {
 
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
+        self.quizzManipulator.addOrdonator(2);
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
@@ -973,11 +1001,16 @@ function Domain() {
         self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
         self.quizzManagerManipulator = new Manipulator(self);
         self.questionsPuzzleManipulator = new Manipulator(self);
+        self.questionsPuzzleManipulator.addOrdonator(1);
         self.quizzInfoManipulator = new Manipulator(self);
+        self.quizzInfoManipulator.addOrdonator(5);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
+        self.previewButtonManipulator.addOrdonator(2);
         self.saveQuizButtonManipulator = new Manipulator(self);
+        self.saveQuizButtonManipulator.addOrdonator(2);
         self.returnButtonManipulator=new Manipulator(self);
+        self.returnButtonManipulator.addOrdonator(1);
         self.libraryIManipulator = self.library.libraryManipulator;
 
         // WIDTH

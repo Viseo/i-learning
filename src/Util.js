@@ -48,11 +48,14 @@ function SVGGlobalHandler() {
         self.rotator.parentManip = self;
         self.scalor = new svg.Scaling(1);
         self.scalor.parentManip = self;
-        self.ordonator = new svg.Ordered(10);
-        self.ordonator.parentManip = self;
-        self.translator.add(self.rotator.add(self.scalor.add(self.ordonator)));
+        self.translator.add(self.rotator.add(self.scalor));
         self.last = self.scalor;
         self.first = self.translator;
+        self.addOrdonator = function(layerNumber){
+            self.ordonator = new svg.Ordered(layerNumber);
+            self.ordonator.parentManip = self;
+            self.scalor.add(self.ordonator);
+        }
     };
 
     Drawings = function (w, h, anchor) {
@@ -61,11 +64,12 @@ function SVGGlobalHandler() {
         !anchor && (anchor = "content");
         self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
         self.drawing.manipulator = new Manipulator(self);
+        self.drawing.manipulator.addOrdonator(3);
         self.piste = new Manipulator(self);
         self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
         self.drawing.add(self.drawing.manipulator.translator);
         self.background = self.drawing.manipulator.translator;
-        self.drawing.manipulator.ordonator.set(8, self.piste.first);
+        self.drawing.manipulator.ordonator.set(2, self.piste.first);
         self.drawing.add(self.glass);
 
         var onmousedownHandler = function (event) {
@@ -650,7 +654,7 @@ function SVGUtil() {
 
         chevron.tempWidth = baseWidth;
         chevron.tempHeight = baseHeight;
-        arrowManipulator.ordonator.set(6,chevron);
+        arrowManipulator.ordonator.set(0,chevron);
 
 
         if (chevron.tempWidth > w) {
@@ -696,8 +700,8 @@ function SVGUtil() {
 function drawStraightArrow(x1,y1,x2,y2){
     var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
     var arrowPath=new svg.Path(x1,y1);
-    for(let i = 0; i<arrow.points.length; i+=2) {
-        arrowPath.line(arrow.points[i], arrow.points[i+1]);
+    for(let i = 0; i<arrow.points.length; i++) {
+        arrowPath.line(arrow.points[i].x, arrow.points[i].y);
     }
     arrowPath.line(x1,y1);
     return arrowPath;

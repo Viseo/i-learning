@@ -236,6 +236,7 @@ function LibraryDisplay(x, y, w, h) {
 
             e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
             var manip = new Manipulator(self);
+            manip.addOrdonator(2);
             drawings.piste.last.add(manip.first);
             self.formation && self.formation.removeErrorMessage(self.formation.errorMessageDisplayed);
             var elementCopy = e.ordonator.children[0];
@@ -334,7 +335,7 @@ function LibraryDisplay(x, y, w, h) {
         var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
         arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
         arrowModeButton.arrow.color(myColors.black,1,myColors.black);
-        self.arrowModeManipulator.ordonator.set(6, arrowModeButton.arrow);
+        self.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
 
         self.toggleArrowMode = function() {
             var arrowMode = false;
@@ -406,7 +407,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
     var self = this;
     self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
     self.plus = drawPlus(0,0, h*.3, h*0.3);
-    self.manipulator.ordonator.set(3, self.plus);
+    self.manipulator.ordonator.set(2, self.plus);
     self.obj.content.position(0,h*0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
@@ -485,7 +486,7 @@ function FormationDisplayMiniature (w,h) {
 
     for(var i=0; i<icon.elements.length; i++)
     {
-        self.iconManipulator.ordonator.set(i+5,icon.elements[i]);
+        self.iconManipulator.ordonator.set(i,icon.elements[i]);
     }
     self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
 
@@ -529,7 +530,7 @@ function FormationDisplayFormation(){
     self.manipulator.first.move(0, drawing.height*0.075);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
-    self.manipulator.ordonator.set(1,self.title);
+    self.manipulator.ordonator.set(0,self.title);
 
 
     self.gamesCounter = myFormation.gamesCounter;
@@ -753,6 +754,7 @@ function FormationDisplayFormation(){
                     self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
                 }
                 tabElement.miniatureManipulator = new Manipulator(tabElement);
+                tabElement.miniatureManipulator.addOrdonator(2);
                 self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
                 var testGame = tabElement.displayMiniature(self.graphElementSize);
@@ -909,13 +911,12 @@ function FormationsManagerDisplay() {
 
     self.displayHeaderFormations = function () {
         self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.headerManipulator.ordonator.set(1, self.title);
+        self.headerManipulator.ordonator.set(0, self.title);
         self.headerManipulator.translator.move(0,2*MARGIN);
         self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         var addFormationButtonTextBr = svg.getSvgr().boundingRect(self.addFormationButton.content.component);
         self.addFormationButton.cadre.position(MARGIN +addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
         self.addFormationButton.content.position(self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
-
         self.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, self.addButtonHeight, self.addButtonHeight);
         self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
         self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
@@ -936,8 +937,8 @@ function FormationsManagerDisplay() {
 
         self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
         self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
-        self.exclamationManipulator.ordonator.set(4, self.exclamationLegend.exclamation);
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
+        self.exclamationManipulator.ordonator.set(3, self.exclamationLegend.exclamation);
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
         self.legendWidth = drawing.width * 0.3;
@@ -1280,7 +1281,7 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
                     }else{
                         self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                        self.virtualTab[i][j].questionManipulator.ordonator.unset(7);
+                        self.virtualTab[i][j].questionManipulator.ordonator.unset(3);
                     }
                     self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                     if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
@@ -1424,7 +1425,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
                 self.tileHeight = tmpTileHeight;
             }
         }
-        self.questionManipulator.ordonator.set(7, self.answersManipulator.first);
+        self.questionManipulator.ordonator.set(3, self.answersManipulator.first);
 
         self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
 
@@ -1543,6 +1544,14 @@ function QuestionDisplayAnswers(x, y, w, h) {
         svg.addEvent(self.resetButton.content, 'click', self.reset);
         svg.addEvent(self.resetButton.cadre, 'click', self.reset);
     }
+    else {
+        w = 0.5 * drawing.width;
+        h = Math.min(self.tileHeight, 50);
+        var buttonX = - w/2;
+        var buttonY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
+        self.simpleChoiceMessageManipulator.translator.move(buttonX+w/2, buttonY+h/2);
+        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.white, myColors.white, 20, self.font, self.simpleChoiceMessageManipulator);
+    }
 }
 
 function QuestionSelectedQuestion() {
@@ -1627,6 +1636,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
         self.virtualTab[i] = {};
 
         self.virtualTab[i].manipulator = new Manipulator(self);
+        self.virtualTab[i].manipulator.addOrdonator(2);
         self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
         (type.label == clicked) ? (self.virtualTab[i].color = SELECTION_COLOR) : (self.virtualTab[i].color = myColors.white);
         self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, 20, null, self.virtualTab[i].manipulator);
@@ -1661,7 +1671,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         }
         var fontSize = Math.min(20, self.h*0.1);
         self.questNum = new svg.Text(self.linkedQuestion.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.linkedQuestion.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
-        self.questionManipulator.ordonator.set(6, self.questNum);
+        self.questionManipulator.ordonator.set(4, self.questNum);
         self.questionBlock.title.content.color(color);
         self.questionBlock.title.content._acceptDrop = true;
         self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure);
@@ -1792,9 +1802,8 @@ function QuizzDisplay(x,y,w,h) {
     self.titleBox = object.cadre;
     self.titleText = object.content;
 
-    self.quizzManipulator.ordonator.set(1,self.titleText);
-
-    self.quizzManipulator.ordonator.set(0,self.titleBox);
+    //self.quizzManipulator.ordonator.set(1,self.titleText);
+    //self.quizzManipulator.ordonator.set(0,self.titleBox);
     self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
@@ -1854,6 +1863,7 @@ function QuizzDisplayScore(color){
 
     self.resultManipulator = new Manipulator(self);
     self.scoreManipulator = new Manipulator(self);
+    self.scoreManipulator.addOrdonator(2);
     self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+MARGIN);
     self.resultManipulator.last.add(self.scoreManipulator.first);
     self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
@@ -1937,7 +1947,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
     self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
     self.returnText=new svg.Text("Retour");
-    self.quizzInfoManipulator.ordonator.set(5, self.returnText);
+    self.quizzInfoManipulator.ordonator.set(3, self.returnText);
 
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
@@ -1950,7 +1960,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var textSize = svg.getSvgr().boundingRect(self.returnText.component);
     self.returnTextCadre = new svg.Rect(textSize.width + svg.getSvgr().boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
     self.returnTextCadre.position(textSize.width/2 + svg.getSvgr().boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
-    self.quizzInfoManipulator.ordonator.set(6, self.returnTextCadre);
+    self.quizzInfoManipulator.ordonator.set(4, self.returnTextCadre);
     self.returnTextCadre.parentFormation=self.parentFormation;
     self.returnText.parentFormation=self.parentFormation;
     self.returnButton.parentFormation=self.parentFormation;
@@ -2011,7 +2021,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
+            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(3);
             self.quizzLabel.cadre.color(myColors.grey);
             self.quizzNameValidInput = true;
         };
@@ -2023,7 +2033,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
+            self.quizzInfoManipulator.ordonator.set(3, self.errorMessage);
             textarea.focus();
             self.quizzNameValidInput = false;
         };
