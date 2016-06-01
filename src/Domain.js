@@ -341,6 +341,7 @@ function Domain() {
 
     Formation = function (formation) {
         var self = this;
+
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2)
         self.iconManipulator = new Manipulator();
@@ -379,6 +380,15 @@ function Domain() {
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
+        self.loadFormation=function(formation){
+            formation.levelsTab.forEach(function(level){
+                var gamesTab =[];
+                level.gamesTab.forEach(function(game){
+                    gamesTab.push(new Quizz(game, true, formation));
+                });
+                self.levelsTab.push(new Level(self, gamesTab));
+            });
+        }
         self.redim = function() {
             self.graphElementSize = drawing.width/15;
             self.gamesLibraryManipulator = self.library.libraryManipulator;
@@ -836,6 +846,7 @@ function Domain() {
                 self.tabQuestions = [];
                 quizz.tabQuestions.forEach(function (it) {
                     var tmp = new Question(it, self);
+                    tmp.parentQuizz=self;
                     self.tabQuestions.push(tmp);
                 });
             } else {
@@ -968,7 +979,7 @@ function Domain() {
     QuizzManager = function (quizz) {
         var self = this;
 
-        self.formationName = "Hibernate";
+
         self.quizzName = "";
         self.quizzNameDefault = "Ecrire ici le nom du quiz";
         self.tabQuestions = [defaultQuestion];

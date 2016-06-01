@@ -657,7 +657,7 @@ function FormationDisplayFormation(){
         level.manipulator.ordonator.set(9, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
         level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, svg.getSvgr().boundingRect(level.obj.content.component).height);
-        self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
+        //self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.w = w;
@@ -745,6 +745,7 @@ function FormationDisplayFormation(){
         if (typeof w !== "undefined") self.graphW = w;
         if (typeof h !== "undefined") self.graphH = h;
         self.graphManipulator.flush();
+        self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
@@ -824,7 +825,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
 
         var tmpFormationObject = {
             title: self.label,
-            levels: self.levelsTab,
+            levelsTab: self.levelsTab,
         };
         var aDefinir = function (key, value) {
             var notToBeStringify = false;
@@ -894,11 +895,282 @@ function FormationsManagerDisplay() {
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
     }
 
+    var myFormationAct={
+        "_id": "574ea35af1baf748368f2354",
+        "title": "Hibernate 2",
+        "levelsTab": [{
+        "index": 1,
+        "gamesTab": [{
+            "tabQuestions": [{
+                "selected": false,
+                "tabAnswer": [{
+                    "label": "",
+                    "imageSrc": null,
+                    "correct": false,
+                    "selected": false,
+                    "fontSize": 20,
+                    "imageLoaded": true,
+                    "colorBordure": [0, 0, 0],
+                    "bgColor": [255, 255, 255],
+                    "bordure": null
+                }, {
+                    "label": "",
+                    "imageSrc": null,
+                    "correct": false,
+                    "selected": false,
+                    "fontSize": 20,
+                    "imageLoaded": true,
+                    "colorBordure": [0, 0, 0],
+                    "bgColor": [255, 255, 255],
+                    "bordure": null
+                }],
+                "fontSize": 20,
+                "questionNum": 1,
+                "label": "",
+                "imageSrc": "",
+                "rows": 4,
+                "rightAnswers": [],
+                "multipleChoice": false,
+                "colorBordure": [0, 0, 0],
+                "bgColor": [255, 255, 255],
+                "imageLoaded": true,
+                "lines": 1,
+                "bordure": null
+            }],
+            "previewMode": false,
+            "puzzleRows": 1,
+            "puzzleLines": 3,
+            "fontSize": 20,
+            "colorBordure": [0, 0, 0],
+            "bgColor": [255, 255, 255],
+            "resultArea": {
+                "x": 657,
+                "y": 220,
+                "w": 1314,
+                "h": 200
+            },
+            "titleArea": {
+                "x": 0,
+                "y": 0,
+                "w": 1314,
+                "h": 200
+            },
+            "questionArea": {
+                "x": 0,
+                "y": 210,
+                "w": 1314,
+                "h": 200
+            },
+            "miniaturePosition": {
+                "x": 1,
+                "y": -309.35625
+            },
+            "questionsWithBadAnswers": [],
+            "score": 0,
+            "title": "Quiz 1",
+            "currentQuestionIndex": -1,
+            "finalMessage": "",
+            "childrenGames": [{
+                "tabQuestions": [{
+                    "selected": false,
+                    "tabAnswer": [{
+                        "label": "",
+                        "imageSrc": null,
+                        "correct": false,
+                        "selected": false,
+                        "fontSize": 20,
+                        "imageLoaded": true,
+                        "colorBordure": [0, 0, 0],
+                        "bgColor": [255, 255, 255],
+                        "bordure": null
+                    }, {
+                        "label": "",
+                        "imageSrc": null,
+                        "correct": false,
+                        "selected": false,
+                        "fontSize": 20,
+                        "imageLoaded": true,
+                        "colorBordure": [0, 0, 0],
+                        "bgColor": [255, 255, 255],
+                        "bordure": null
+                    }],
+                    "fontSize": 20,
+                    "questionNum": 1,
+                    "label": "",
+                    "imageSrc": "",
+                    "rows": 4,
+                    "rightAnswers": [],
+                    "multipleChoice": false,
+                    "colorBordure": [0, 0, 0],
+                    "bgColor": [255, 255, 255],
+                    "imageLoaded": true,
+                    "lines": 1,
+                    "bordure": null
+                }],
+                "previewMode": false,
+                "puzzleRows": 1,
+                "puzzleLines": 3,
+                "fontSize": 20,
+                "colorBordure": [0, 0, 0],
+                "bgColor": [255, 255, 255],
+                "resultArea": {
+                    "x": 657,
+                    "y": 220,
+                    "w": 1314,
+                    "h": 200
+                },
+                "titleArea": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 1314,
+                    "h": 200
+                },
+                "questionArea": {
+                    "x": 0,
+                    "y": 210,
+                    "w": 1314,
+                    "h": 200
+                },
+                "miniaturePosition": {
+                    "x": -189.40000000000003,
+                    "y": -113.11874999999998
+                },
+                "questionsWithBadAnswers": [],
+                "score": 0,
+                "title": "Quiz 2",
+                "currentQuestionIndex": -1,
+                "finalMessage": "",
+                "childrenGames": []
+            }, {
+                "title": "Bd 1",
+                "miniaturePosition": {
+                    "x": 1,
+                    "y": -113.11874999999998
+                },
+                "childrenGames": []
+            }, {
+                "title": "Bd 2",
+                "miniaturePosition": {
+                    "x": 191.4,
+                    "y": -113.11874999999998
+                },
+                "childrenGames": []
+            }]
+        }],
+        "x": 197.1,
+        "y": 0,
+        "w": 1608.3999999999999,
+        "h": 814.9499999999999
+    }, {
+        "index": 2,
+        "gamesTab": [{
+            "tabQuestions": [{
+                "selected": false,
+                "tabAnswer": [{
+                    "label": "",
+                    "imageSrc": null,
+                    "correct": false,
+                    "selected": false,
+                    "fontSize": 20,
+                    "imageLoaded": true,
+                    "colorBordure": [0, 0, 0],
+                    "bgColor": [255, 255, 255],
+                    "bordure": null
+                }, {
+                    "label": "",
+                    "imageSrc": null,
+                    "correct": false,
+                    "selected": false,
+                    "fontSize": 20,
+                    "imageLoaded": true,
+                    "colorBordure": [0, 0, 0],
+                    "bgColor": [255, 255, 255],
+                    "bordure": null
+                }],
+                "fontSize": 20,
+                "questionNum": 1,
+                "label": "",
+                "imageSrc": "",
+                "rows": 4,
+                "rightAnswers": [],
+                "multipleChoice": false,
+                "colorBordure": [0, 0, 0],
+                "bgColor": [255, 255, 255],
+                "imageLoaded": true,
+                "lines": 1,
+                "bordure": null
+            }],
+            "previewMode": false,
+            "puzzleRows": 1,
+            "puzzleLines": 3,
+            "fontSize": 20,
+            "colorBordure": [0, 0, 0],
+            "bgColor": [255, 255, 255],
+            "resultArea": {
+                "x": 657,
+                "y": 220,
+                "w": 1314,
+                "h": 200
+            },
+            "titleArea": {
+                "x": 0,
+                "y": 0,
+                "w": 1314,
+                "h": 200
+            },
+            "questionArea": {
+                "x": 0,
+                "y": 210,
+                "w": 1314,
+                "h": 200
+            },
+            "miniaturePosition": {
+                "x": -189.40000000000003,
+                "y": -113.11874999999998
+            },
+            "questionsWithBadAnswers": [],
+            "score": 0,
+            "title": "Quiz 2",
+            "currentQuestionIndex": -1,
+            "finalMessage": "",
+            "childrenGames": []
+        }, {
+            "title": "Bd 1",
+            "miniaturePosition": {
+                "x": 1,
+                "y": -113.11874999999998
+            },
+            "childrenGames": []
+        }, {
+            "title": "Bd 2",
+            "miniaturePosition": {
+                "x": 191.4,
+                "y": -113.11874999999998
+            },
+            "childrenGames": []
+        }],
+        "x": 197.1,
+        "y": 196.23749999999998,
+        "w": 1608.3999999999999,
+        "h": 814.9499999999999
+    }]
+    };
     function onClickFormation(formation) {
+        formation.loadFormation(myFormationAct);
         self.formationDisplayed=formation;
-        //self.header.redim();
-        //formation.redim();
         formation.displayFormation();
+        var thing = function (data) {
+            var myFormation=JSON.parse(data).formation;
+            formation=myFormation;
+            console.log(myFormation.version);
+            //self.header.redim();
+            //formation.redim();
+            formation.displayFormation();
+
+        };
+        //var result1 = httpGetAsync("/getFormationByName", thing, formation.label);
+
+
     }
 
     function onClickNewFormation() {
