@@ -893,13 +893,12 @@ function FormationsManagerDisplay() {
             var myFormation=JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             self.formationDisplayed=formation;
-            console.log(myFormation.version);
             //self.header.redim();
             //formation.redim();
-            formation.displayFormation();
+            self.formationDisplayed.displayFormation();
 
         };
-        var result1 = httpGetAsync("/getFormationByName", thing, formation.label);
+        httpGetAsync("/getFormationByName", thing, formation.label);
 
 
     }
