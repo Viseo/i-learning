@@ -616,20 +616,11 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz;
-        var thing = function (data) {
-            var obj=JSON.parse(data);
-            targetQuizz=obj.myCollection[0];
-            self.selectedArrow=null;
-            self.selectedGame=null;
-            self.quizzManager.loadQuizz(targetQuizz);
-            //self.quizzManager.redim();
-            self.quizzDisplayed=targetQuizz;
-            self.quizzManager.display();
-
-        };
-        var result = httpGetAsync("/getAllFormations", thing);
-        console.log("TargetQuizz 2" +targetQuizz);
+        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
+        //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
+        self.quizzManager.loadQuizz(targetQuizz);
+        self.quizzDisplayed=targetQuizz;
+        self.quizzManager.display();
         //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
         self.selectedArrow=null;
@@ -894,281 +885,21 @@ function FormationsManagerDisplay() {
         self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
         self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
     }
-
-    var myFormationAct={
-        "_id": "574ea35af1baf748368f2354",
-        "title": "Hibernate 2",
-        "levelsTab": [{
-        "index": 1,
-        "gamesTab": [{
-            "tabQuestions": [{
-                "selected": false,
-                "tabAnswer": [{
-                    "label": "",
-                    "imageSrc": null,
-                    "correct": false,
-                    "selected": false,
-                    "fontSize": 20,
-                    "imageLoaded": true,
-                    "colorBordure": [0, 0, 0],
-                    "bgColor": [255, 255, 255],
-                    "bordure": null
-                }, {
-                    "label": "",
-                    "imageSrc": null,
-                    "correct": false,
-                    "selected": false,
-                    "fontSize": 20,
-                    "imageLoaded": true,
-                    "colorBordure": [0, 0, 0],
-                    "bgColor": [255, 255, 255],
-                    "bordure": null
-                }],
-                "fontSize": 20,
-                "questionNum": 1,
-                "label": "",
-                "imageSrc": "",
-                "rows": 4,
-                "rightAnswers": [],
-                "multipleChoice": false,
-                "colorBordure": [0, 0, 0],
-                "bgColor": [255, 255, 255],
-                "imageLoaded": true,
-                "lines": 1,
-                "bordure": null
-            }],
-            "previewMode": false,
-            "puzzleRows": 1,
-            "puzzleLines": 3,
-            "fontSize": 20,
-            "colorBordure": [0, 0, 0],
-            "bgColor": [255, 255, 255],
-            "resultArea": {
-                "x": 657,
-                "y": 220,
-                "w": 1314,
-                "h": 200
-            },
-            "titleArea": {
-                "x": 0,
-                "y": 0,
-                "w": 1314,
-                "h": 200
-            },
-            "questionArea": {
-                "x": 0,
-                "y": 210,
-                "w": 1314,
-                "h": 200
-            },
-            "miniaturePosition": {
-                "x": 1,
-                "y": -309.35625
-            },
-            "questionsWithBadAnswers": [],
-            "score": 0,
-            "title": "Quiz 1",
-            "currentQuestionIndex": -1,
-            "finalMessage": "",
-            "childrenGames": [{
-                "tabQuestions": [{
-                    "selected": false,
-                    "tabAnswer": [{
-                        "label": "",
-                        "imageSrc": null,
-                        "correct": false,
-                        "selected": false,
-                        "fontSize": 20,
-                        "imageLoaded": true,
-                        "colorBordure": [0, 0, 0],
-                        "bgColor": [255, 255, 255],
-                        "bordure": null
-                    }, {
-                        "label": "",
-                        "imageSrc": null,
-                        "correct": false,
-                        "selected": false,
-                        "fontSize": 20,
-                        "imageLoaded": true,
-                        "colorBordure": [0, 0, 0],
-                        "bgColor": [255, 255, 255],
-                        "bordure": null
-                    }],
-                    "fontSize": 20,
-                    "questionNum": 1,
-                    "label": "",
-                    "imageSrc": "",
-                    "rows": 4,
-                    "rightAnswers": [],
-                    "multipleChoice": false,
-                    "colorBordure": [0, 0, 0],
-                    "bgColor": [255, 255, 255],
-                    "imageLoaded": true,
-                    "lines": 1,
-                    "bordure": null
-                }],
-                "previewMode": false,
-                "puzzleRows": 1,
-                "puzzleLines": 3,
-                "fontSize": 20,
-                "colorBordure": [0, 0, 0],
-                "bgColor": [255, 255, 255],
-                "resultArea": {
-                    "x": 657,
-                    "y": 220,
-                    "w": 1314,
-                    "h": 200
-                },
-                "titleArea": {
-                    "x": 0,
-                    "y": 0,
-                    "w": 1314,
-                    "h": 200
-                },
-                "questionArea": {
-                    "x": 0,
-                    "y": 210,
-                    "w": 1314,
-                    "h": 200
-                },
-                "miniaturePosition": {
-                    "x": -189.40000000000003,
-                    "y": -113.11874999999998
-                },
-                "questionsWithBadAnswers": [],
-                "score": 0,
-                "title": "Quiz 2",
-                "currentQuestionIndex": -1,
-                "finalMessage": "",
-                "childrenGames": []
-            }, {
-                "title": "Bd 1",
-                "miniaturePosition": {
-                    "x": 1,
-                    "y": -113.11874999999998
-                },
-                "childrenGames": []
-            }, {
-                "title": "Bd 2",
-                "miniaturePosition": {
-                    "x": 191.4,
-                    "y": -113.11874999999998
-                },
-                "childrenGames": []
-            }]
-        }],
-        "x": 197.1,
-        "y": 0,
-        "w": 1608.3999999999999,
-        "h": 814.9499999999999
-    }, {
-        "index": 2,
-        "gamesTab": [{
-            "tabQuestions": [{
-                "selected": false,
-                "tabAnswer": [{
-                    "label": "",
-                    "imageSrc": null,
-                    "correct": false,
-                    "selected": false,
-                    "fontSize": 20,
-                    "imageLoaded": true,
-                    "colorBordure": [0, 0, 0],
-                    "bgColor": [255, 255, 255],
-                    "bordure": null
-                }, {
-                    "label": "",
-                    "imageSrc": null,
-                    "correct": false,
-                    "selected": false,
-                    "fontSize": 20,
-                    "imageLoaded": true,
-                    "colorBordure": [0, 0, 0],
-                    "bgColor": [255, 255, 255],
-                    "bordure": null
-                }],
-                "fontSize": 20,
-                "questionNum": 1,
-                "label": "",
-                "imageSrc": "",
-                "rows": 4,
-                "rightAnswers": [],
-                "multipleChoice": false,
-                "colorBordure": [0, 0, 0],
-                "bgColor": [255, 255, 255],
-                "imageLoaded": true,
-                "lines": 1,
-                "bordure": null
-            }],
-            "previewMode": false,
-            "puzzleRows": 1,
-            "puzzleLines": 3,
-            "fontSize": 20,
-            "colorBordure": [0, 0, 0],
-            "bgColor": [255, 255, 255],
-            "resultArea": {
-                "x": 657,
-                "y": 220,
-                "w": 1314,
-                "h": 200
-            },
-            "titleArea": {
-                "x": 0,
-                "y": 0,
-                "w": 1314,
-                "h": 200
-            },
-            "questionArea": {
-                "x": 0,
-                "y": 210,
-                "w": 1314,
-                "h": 200
-            },
-            "miniaturePosition": {
-                "x": -189.40000000000003,
-                "y": -113.11874999999998
-            },
-            "questionsWithBadAnswers": [],
-            "score": 0,
-            "title": "Quiz 2",
-            "currentQuestionIndex": -1,
-            "finalMessage": "",
-            "childrenGames": []
-        }, {
-            "title": "Bd 1",
-            "miniaturePosition": {
-                "x": 1,
-                "y": -113.11874999999998
-            },
-            "childrenGames": []
-        }, {
-            "title": "Bd 2",
-            "miniaturePosition": {
-                "x": 191.4,
-                "y": -113.11874999999998
-            },
-            "childrenGames": []
-        }],
-        "x": 197.1,
-        "y": 196.23749999999998,
-        "w": 1608.3999999999999,
-        "h": 814.9499999999999
-    }]
-    };
     function onClickFormation(formation) {
-        formation.loadFormation(myFormationAct);
-        self.formationDisplayed=formation;
+
+
         formation.displayFormation();
         var thing = function (data) {
             var myFormation=JSON.parse(data).formation;
-            formation=myFormation;
+            formation.loadFormation(myFormation);
+            self.formationDisplayed=formation;
             console.log(myFormation.version);
             //self.header.redim();
             //formation.redim();
             formation.displayFormation();
 
         };
-        //var result1 = httpGetAsync("/getFormationByName", thing, formation.label);
+        var result1 = httpGetAsync("/getFormationByName", thing, formation.label);
 
 
     }

@@ -380,14 +380,39 @@ function Domain() {
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
-        self.loadFormation=function(formation){
-            formation.levelsTab.forEach(function(level){
-                var gamesTab =[];
-                level.gamesTab.forEach(function(game){
-                    gamesTab.push(new Quizz(game, true, formation));
+        self.loadFormation=function(formation) {
+            formation.levelsTab.forEach(function (level) {
+                var gamesTab = [];
+                level.gamesTab.forEach(function (game) {
+                    gamesTab.push(new Quizz(game, true, self));
                 });
                 self.levelsTab.push(new Level(self, gamesTab));
             });
+            self.matchGame=function(childrenGame, levelIndex){
+                for(var game of self.levelsTab[levelIndex].gamesTab)
+                {
+                    if(game.title===childrenGame.title){
+                        return game;
+                    }
+                }
+            }
+
+            self.loadDependencies = function () {
+                formation.levelsTab.forEach(function (level, i) {
+                    level.gamesTab.forEach(function (game, j) {
+                        game.childrenGames.forEach(function (childrenGame) {
+                            if(self.levelsTab[i+1]){
+                                var match= self.matchGame(childrenGame, i+1);
+                                !match.parentGames  && (match.parentGames = []);
+                                !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                                self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                                self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                            }
+                        })
+                    })
+                })
+            };
+            self.loadDependencies();
         }
         self.redim = function() {
             self.graphElementSize = drawing.width/15;
