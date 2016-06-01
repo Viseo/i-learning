@@ -219,19 +219,15 @@ function Domain() {
                         cadre: target.parent.parentManip.ordonator.get(0),
                         content: target.parent.parentManip.ordonator.get(1)
                     };
-
                     target.parent.parentManip.ordonator.unset(0);
                     target.parent.parentManip.ordonator.unset(1);
-
                     var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
                         element.srcDimension,
                         oldQuest.cadre.width, oldQuest.cadre.height,
                         oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
                     );
-                    //target.parent.children[0].add && target.parent.children[0].add(newQuest);
                     oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
                     oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-
                     newQuest.image._acceptDrop = true;
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
@@ -294,8 +290,6 @@ function Domain() {
     AddEmptyElement = function (parent, type) {
         var self = this;
         self.manipulator = new Manipulator(self);
-        //self.plusManipulator = new Manipulator(self);
-        //self.manipulator.ordonator.set(7, self.plusManipulator.first);
         type && (self.type = type);
         switch (type) {
             case 'question':
@@ -348,12 +342,12 @@ function Domain() {
         self.graphManipulator = new Manipulator(self);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
-
         self.library = new Library(myLibraryGames);
         self.library.formation = self;
+        self.quizzManager = new QuizzManager();
+        self.quizzManager.parentFormation=self;
 
         self.labelDefault = "Entrer le nom de la formation";
-
         self.deltaLevelWidthIncreased = 0;
 
         // WIDTH
@@ -366,15 +360,10 @@ function Domain() {
         self.x = MARGIN;
         self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-
-        self.quizzManager = new QuizzManager();
-        self.quizzManager.parentFormation=self;
         self.targetLevelIndex = 0;
         self.levelsTab = [];
-
         self.saveButtonHeightRatio = 0.1;
         self.marginRatio = 0.03;
-
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
@@ -383,15 +372,12 @@ function Domain() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;
             self.manipulator.last.add(self.gamesLibraryManipulator.first);
             self.manipulator.last.add(self.graphManipulator.first);
-
             self.manipulatorMiniature.last.add(self.iconManipulator.first);
             self.manipulator.last.add(self.formationInfoManipulator.first);
-
             self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
             self.libraryWidth = drawing.width * self.libraryWidthRatio;
             self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
-
             self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
             self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
             self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
@@ -400,12 +386,10 @@ function Domain() {
 
             self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
             self.ButtonWidth = 150;
-
             self.globalMargin = {
                 height: self.marginRatio * drawing.height,
                 width: self.marginRatio * drawing.width
             };
-
             self.clippingManipulator.flush();
 
         };
@@ -502,21 +486,15 @@ function Domain() {
 
         self.header = new Header(additionalMessage);
         self.x = MARGIN;
-        //self.y = drawing.height * self.header.size + 3 * MARGIN;
         self.addButtonWidth = 330;
         self.addButtonHeight = 40;
         self.fontSize = 20;
         self.plusDim = self.fontSize * 2;
         self.iconeSize = self.plusDim / 1.5;
-
-        //self.headerHeightFormation = drawing.height * self.header.size * 2;
         self.puzzleRows = 6;
         self.initialFormationsPosX = MARGIN;
         self.rows = 6;
         self.lines = 4;
-        //self.tileWidth = (drawing.width - 2 * MARGIN * (self.rows + 1)) / self.rows;
-        //self.tileHeight = Math.floor(((drawing.height - self.headerHeightFormation - 2 * MARGIN * (self.rows + 1))) / self.lines);
-
         self.formations = [];
         self.count = 0;
         formations.forEach(function (formation, count) {
@@ -532,8 +510,7 @@ function Domain() {
 
         /* for Player */
         self.toggleFormationsManipulator = new Manipulator(self);
-
-        };
+    };
 
 /////////////////// end of FormationManager.js ///////////////////
 
@@ -549,15 +526,11 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.label = "I-learning";
         self.size = 0.05; // 5%
-        //mainManipulator.ordonator.set(0, self.manipulator.first);
-
-
         self.setMessage = function (additionalMessage) {
             self.addMessage = additionalMessage;
         };
         self.removeMessage = function () {
             self.addMessage = null;
-            //self.display();
         };
     };
 ////////////////// end of Header.js //////////////////////////
@@ -576,10 +549,8 @@ function Domain() {
         self.tilesTab = [];
         self.questionsTab = questionsTab;
         self.startPosition = 0;
-
         self.reverseMode = reverseMode;
         self.parent = parent;
-
         self.totalRows = 0;
         if (self.questionsTab.length % self.lines === 0) {
             self.totalRows = self.questionsTab.length / self.lines;
@@ -651,7 +622,6 @@ function Domain() {
         self.answersManipulator.last.add(self.validateManipulator.first);
 
         self.selected = false;
-
         self.parentQuizz = quizz;
         self.tabAnswer = [];
         self.fontSize = 20;
@@ -723,27 +693,18 @@ function Domain() {
      * Created by qde3485 on 15/03/16.
      */
 
-
     QuestionCreator = function (parent, question) {
         var self = this;
         self.MAX_ANSWERS = 8;
         self.parent = parent;
 
         self.manipulator = new Manipulator(self);
-
         self.manipulatorQuizzInfo = new Manipulator(self);
-        //self.manipulator.last.add(self.manipulatorQuizzInfo.first);
-
         self.questionCreatorManipulator = new Manipulator(self);
-        //self.manipulator.last.add(self.questionCreatorManipulator.first);
-
         self.questionManipulator = new Manipulator(self);
-
         self.toggleButtonManipulator = new Manipulator(self);
-
         self.previewButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.previewButtonManipulator.first);
-
         self.saveQuizButtonManipulator = new Manipulator(self);
         self.manipulator.last.add(self.saveQuizButtonManipulator.first);
 
@@ -760,40 +721,26 @@ function Domain() {
             } else {
                 self.multipleChoice = false;
             }
-            //self.tabAnswer = [];
             quest.tabAnswer.forEach(function (answer) {
                 if(answer instanceof Answer){
                     answer.isEditable(self, true);
                 }
-                //self.tabAnswer.push(answer);
             });
-            //self.quizzName = quest.parentQuizz.title;
-            //self.label = quest.label;
-            //self.rightAnswers = [];
-            //self.fontSize = quest.fontSize;
-            //self.font = quest.font;
-            //self.bgColor = quest.bgColor;
-            //self.colorBordure = quest.colorBordure;
-            //self.questionNum = quest.questionNum;
-
             quest.tabAnswer.forEach(function (el) {
                 if (el.correct) {
                     quest.rightAnswers.push(el);
                 }
             });
-
         };
 
         if (!question) {
             // init default : 2 empty answers
             self.linkedQuestion=new Question(defaultQuestion,self.parent.quizz);
-
         } else {
             self.loadQuestion(question);
         }
 
         self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
-
         self.checkInputTextArea = function (myObj) {
             if (myObj.textarea.value.match(REGEX)) {
                 myObj.remove();
@@ -810,8 +757,6 @@ function Domain() {
                 }
             }
         };
-
-
     };
 ////////////////// end of QuestionCreator.js //////////////////////////
 
@@ -825,7 +770,6 @@ function Domain() {
 
         self.getPositionInFormation = function(){
             var gameIndex, levelIndex;
-
             for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
 
                 gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
@@ -833,9 +777,7 @@ function Domain() {
                     break;
                 }
             }
-
             levelIndex = i;
-
             return {levelIndex:levelIndex, gameIndex:gameIndex};
         };
 
@@ -860,7 +802,6 @@ function Domain() {
 
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
-
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
@@ -875,7 +816,6 @@ function Domain() {
             }
         };
         self.loadQuestions(quizz);
-
         (previewMode) ? (self.previewMode = previewMode) : (self.previewMode = false);
         quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows) : (self.puzzleRows = 2);
         quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines) : (self.puzzleLines = 2);
@@ -883,14 +823,12 @@ function Domain() {
         quizz.fontSize ? (self.fontSize = quizz.fontSize) : (self.fontSize = 20);
         quizz.colorBordure ? (self.colorBordure = quizz.colorBordure) : (self.colorBordure = myColors.black);
         quizz.bgColor ? (self.bgColor = quizz.bgColor) : (self.bgColor = myColors.none);
-
         self.resultArea= {
             x: drawing.width / 2,
             y: 220,
             w: drawing.width,
             h: 200
         };
-
         self.titleArea = {
             x: 0,
             y: 0,
@@ -903,18 +841,13 @@ function Domain() {
             w: drawing.width,
             h: 200
         };
-
-
         self.miniaturePosition = {x:0, y:0};
-
         self.questionsWithBadAnswers = [];
         self.score = 0;
         self.drawing = drawing;
         self.title = quizz.title ? quizz.title : '';
-
         self.currentQuestionIndex = -1;
         self.finalMessage = "";
-
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
                 var loaded = true;
@@ -937,12 +870,10 @@ function Domain() {
 
             });
             runtime && self.display(x, y, w, h);
-
         };
 
         // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
-
             if (self.currentQuestionIndex !== -1 && !self.previewMode) {
                 self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
             }
@@ -956,10 +887,8 @@ function Domain() {
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.questionHeight = self.questionHeightWithoutImage);
                     self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithImage);
                     !self.tabQuestions[self.currentQuestionIndex].imageSrc && (self.answerHeight = self.answerHeightWithoutImage);
-
                     self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                     self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
-
                     self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
                         self.questionArea.w, self.questionHeight);
                     self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
@@ -981,7 +910,6 @@ function Domain() {
                 } else {//--> fin du tableau, dernière question
                     console.log("Final score: " + self.score);
                     self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
-
                     self.displayResult();
                 }
             }
@@ -989,9 +917,7 @@ function Domain() {
 
         self.getPositionInFormation = function () {
             var gameIndex, levelIndex;
-
             for (var i = 0; i < self.parentFormation.levelsTab.length; i++) {
-
                 gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
                 if (gameIndex !== -1) {
                     break;
@@ -1016,10 +942,8 @@ function Domain() {
         self.formationName = "Hibernate";
         self.quizzName = "";
         self.quizzNameDefault = "Ecrire ici le nom du quiz";
-
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
-
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, parentFormation);
@@ -1028,7 +952,6 @@ function Domain() {
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
         };
-
         if (!quizz) {
             var initialQuizzObject = {
                 title: defaultQuizz.title,
@@ -1040,27 +963,21 @@ function Domain() {
             self.quizz = new Quizz(initialQuizzObject, false);
             self.indexOfEditedQuestion = 0;
             self.quizzName = self.quizz.title;
-
         } else {
             self.loadQuizz(quizz);
         }
-
         self.questionCreator = new QuestionCreator(self, self.quizz.tabQuestions[self.indexOfEditedQuestion]);
         self.library = new Library(myLibraryImage);
-
         self.quizz.tabQuestions[0].selected = true;
         self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
         self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
-
         self.quizzManagerManipulator = new Manipulator(self);
-
         self.questionsPuzzleManipulator = new Manipulator(self);
         self.quizzInfoManipulator = new Manipulator(self);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
         self.saveQuizButtonManipulator = new Manipulator(self);
         self.returnButtonManipulator=new Manipulator(self);
-
         self.libraryIManipulator = self.library.libraryManipulator;
 
         // WIDTH
@@ -1075,9 +992,7 @@ function Domain() {
         self.libraryHeightRatio = self.questCreaHeightRatio;
         self.previewButtonHeightRatio = 0.1;
         self.saveButtonHeightRatio = 0.1;
-
         self.marginRatio = 0.03;
-
         self.redim = function () {
             self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
             self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
@@ -1107,9 +1022,6 @@ function Domain() {
         };
         self.redim();
     };
-
-
-
 
 ////////////////// end of QuizzManager.js //////////////////////////
 }
