@@ -512,7 +512,7 @@ function FormationDisplayFormation(){
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
     self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
-    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
+    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN-15-MARGIN-self.saveButtonHeight;//15: Height Message Error
     self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
     self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
     self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
@@ -783,12 +783,12 @@ function FormationDisplayFormation(){
 
         self.updateAllLinks();
     };
-    self.displayFrame(self.graphCreaWidth, self.graphCreaHeight-15-MARGIN-self.saveButtonHeight); //15: Height Message Error
+    self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight-15-MARGIN-self.saveButtonHeight);//15: Height Message Error
+    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
     //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
-    self.displayFormationSaveButton(self.graphCreaWidth/2,self.graphCreaHeight ,self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
+    self.displayFormationSaveButton(self.graphCreaWidth/2,self.graphCreaHeight+15+MARGIN+self.saveButtonHeight ,self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height); ////15: Height Message Error
 }
 
 function FormationDisplayFormationPlayer(){
