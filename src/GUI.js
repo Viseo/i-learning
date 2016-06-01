@@ -1113,10 +1113,12 @@ function FormationsManagerDisplayPlayer() {
                 posy += (self.tileHeight + self.spaceBetweenElements );
                 posx = self.initialFormationsPosX;
             }
-            formation.parent = self;
-            self.formationsManipulator.last.add(formation.manipulatorMiniature.first);
-            formation.displayMiniature(self.tileWidth, self.tileHeight);
-            formation.manipulatorMiniature.translator.move(posx, posy + MARGIN);
+            formations.parent = self;
+            self.formationsManipulator.last.add(formations.manipulatorMiniature.first);
+            formations.displayMiniature(self.tileWidth, self.tileHeight);
+            formations.manipulatorMiniature.translator.move(posx, posy);
+            formations.manipulatorMiniature.last.add(formations.iconManipulator.first);
+
             (function (element) {
                 if (element.miniature.cadre) {
                     svg.addEvent(element.miniature.cadre, "click", function () {
@@ -1135,6 +1137,7 @@ function FormationsManagerDisplayPlayer() {
                 }
             })(formation);
             count++;
+            posx += (self.tileWidth+ self.spaceBetweenElements.width);
         });
     };
     self.displayFormations();
