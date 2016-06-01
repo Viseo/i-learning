@@ -1018,9 +1018,13 @@ function FormationsManagerDisplayPlayer() {
         self.heightAllocatedToPanel=0.80*drawing.height;
         self.headerHeightFormation = drawing.height * self.header.size ;
         self.y =self.addButtonHeight*2;//drawing.height * self.header.size;
-        self.spaceBetweenElements=self.panel?0.015*self.panel.width:0.013*drawing.width;
-        self.tileWidth = (drawing.width -  self.spaceBetweenElements * (self.rows+1 )) / self.rows;
-        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements * (self.lines+1 ))) / self.lines);
+        self.spaceBetweenElements={
+            width:self.panel?0.015*self.panel.width:0.015*drawing.width,
+            height: self.panel?0.030*self.panel.height:0.030*drawing.height
+        };
+
+        self.tileWidth = (drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
+        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
 
         svg.getSvgr().addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
@@ -1106,18 +1110,18 @@ function FormationsManagerDisplayPlayer() {
         var posy = MARGIN;
         var count = 0;
         self.formations.forEach(formation => {
-            if(formation.status !== statusEnum.Published) return;
+            if(formation.status.toString() === statusEnum.NotPublished.toString()) return;
 
             if (count > (self.rows - 1)) {
                 count = 0;
-                posy += (self.tileHeight + self.spaceBetweenElements );
+                posy += (self.tileHeight + self.spaceBetweenElements.height);
                 posx = self.initialFormationsPosX;
             }
-            formations.parent = self;
-            self.formationsManipulator.last.add(formations.manipulatorMiniature.first);
-            formations.displayMiniature(self.tileWidth, self.tileHeight);
-            formations.manipulatorMiniature.translator.move(posx, posy);
-            formations.manipulatorMiniature.last.add(formations.iconManipulator.first);
+            formation.parent = self;
+            self.formationsManipulator.last.add(formation.manipulatorMiniature.first);
+            formation.displayMiniature(self.tileWidth, self.tileHeight);
+            formation.manipulatorMiniature.translator.move(posx, posy);
+            formation.manipulatorMiniature.last.add(formation.iconManipulator.first);
 
             (function (element) {
                 if (element.miniature.cadre) {
