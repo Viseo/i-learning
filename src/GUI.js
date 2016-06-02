@@ -338,7 +338,7 @@ function LibraryDisplay(x, y, w, h) {
         };
 
 
-        var arrowModeButton = displayText('', w - 2 * MARGIN, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
+        var arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
         arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
         arrowModeButton.arrow.color(myColors.black,1,myColors.black);
         self.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
@@ -503,7 +503,7 @@ function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
     self.formationsManager.formationDisplayed = self;
-    self.graphElementSize = drawing.width/15;
+    self.graphElementSize = Math.min(self.levelHeight*0.8,self.graphCreaWidth*0.1);
     self.gamesLibraryManipulator = self.library.libraryManipulator;
     self.manipulator.last.add(self.gamesLibraryManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
@@ -513,11 +513,11 @@ function FormationDisplayFormation(){
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
     self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
-    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN-15-MARGIN-self.saveButtonHeight;//15: Height Message Error
-    self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
+    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio- drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+    self.levelHeight = (self.graphCreaHeight ) / 4;
     self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
     self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
-    self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+    self.y = drawing.height * HEADER_SIZE ;
 
     self.globalMargin = {
         height: self.marginRatio * drawing.height,
@@ -635,7 +635,7 @@ function FormationDisplayFormation(){
     self.displayLevel = function(w, h, level){
         self.graphManipulator.last.add(level.manipulator.first);
 
-        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight-2*self.borderSize, myColors.none, myColors.white, 20, null, level.manipulator);
+        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
@@ -651,6 +651,7 @@ function FormationDisplayFormation(){
         level.obj.content._acceptDrop = true;
         level.w = w;
         level.h = h;
+        level.y = (level.index-1) * level.parentFormation.levelHeight;
         level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
     };
 
@@ -964,6 +965,7 @@ function FormationsManagerDisplay() {
     };
     self.header.display();
     self.displayHeaderFormations();
+    (self.tileHeight < 0) && (self.tileHeight = undefined);
     (!self.tileHeight || self.tileHeight > 0) && displayPanel();
 
     self.displayFormations = function () {
@@ -1801,7 +1803,7 @@ function QuizzManagerDisplay(){
 
     if (self.resizing){
         self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
-            self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height);
+            self.libraryWidth-self.globalMargin.width/2, self.libraryHeight);
         displayFunctions();
     }
 
