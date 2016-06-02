@@ -416,8 +416,8 @@ function AddEmptyElementDisplay(x, y, w, h) {
     self.obj.content.position(0,h*0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
-    self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '[10, 5]');
-    self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute('stroke-dasharray', '[10, 5]');
+    self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
+    self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute('stroke-dasharray', '10, 5');
 
     var dblclickAdd = function () {
         switch (self.type) {
