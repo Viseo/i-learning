@@ -832,25 +832,20 @@ function FormationsManagerDisplay() {
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.add(self.headerManipulator.first);
 
-    if (!playerMode) {
-        self.headerManipulator.last.add(self.addButtonManipulator.first);
-        self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
-        self.headerManipulator.last.add(self.checkManipulator.first);
-        self.headerManipulator.last.add(self.exclamationManipulator.first);
-    } else {
+    if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
         self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
         self.toggleFormationsManipulator.ordonator.set(0, self.toggleFormationsCheck);
         let toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
         self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
-        toggleFormationsText.position(svg.getSvgr().boundingRect(toggleFormationsText.component).width/2 + 2*MARGIN, 6);
-        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.component).width + 2*MARGIN +
+        toggleFormationsText.position(svg.getSvgr().boundingRect(toggleFormationsText.component).width / 2 + 2 * MARGIN, 6);
+        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
             svg.getSvgr().boundingRect(self.toggleFormationsCheck.component).width ), 0);
 
-        let toggleFormations = function() {
+        let toggleFormations = function () {
             let all = false;
 
-            return function() {
+            return function () {
                 all = !all;
                 let check = drawCheck(0, 0, 20),
                     manip = self.toggleFormationsManipulator.last;
@@ -865,14 +860,19 @@ function FormationsManagerDisplay() {
 
         svg.addEvent(self.toggleFormationsCheck, "click", toggleFormations);
         svg.addEvent(toggleFormationsText, "click", toggleFormations);
+    } else {
+        self.headerManipulator.last.add(self.addButtonManipulator.first);
+        self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
+        self.headerManipulator.last.add(self.checkManipulator.first);
+        self.headerManipulator.last.add(self.exclamationManipulator.first);
     }
 
     function displayPanel() {
-        self.heightAllocatedToPanel = drawing.height - (!playerMode ?
-            self.addFormationButton.cadre.globalPoint(0,0).y - self.addFormationButton.cadre.height :
-            self.toggleFormationsCheck.globalPoint(0,0).y - self.toggleFormationsCheck.height);
+        self.heightAllocatedToPanel = drawing.height - (playerMode ?
+            self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
+            self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
         self.headerHeightFormation = drawing.height * self.header.size ;
-        self.y = self.addButtonHeight*2;//drawing.height * self.header.size;
+        self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
         self.spaceBetweenElements={
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
@@ -896,8 +896,6 @@ function FormationsManagerDisplay() {
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(MARGIN/2, self.y);
 
-        var totalLines = self.count%self.rows === 0 ? self.count/self.rows : self.count/self.rows+1;
-        totalLines = parseInt(totalLines);
         self.panel = new gui.Panel(drawing.width-2*MARGIN,self.heightAllocatedToPanel , myColors.none);
         self.panel.component.move((drawing.width-2*MARGIN)/2, self.heightAllocatedToPanel /2);
         self.clippingManipulator.last.add(self.panel.component);
@@ -905,7 +903,6 @@ function FormationsManagerDisplay() {
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
         self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
-        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
     }
 
     function onClickFormation(formation) {
@@ -984,9 +981,10 @@ function FormationsManagerDisplay() {
     (!self.tileHeight || self.tileHeight > 0) && displayPanel();
 
     self.displayFormations = function () {
-        let posx = self.initialFormationsPosX;
-        let posy = MARGIN;
-        let count = 0;
+        let posx = self.initialFormationsPosX,
+            posy = MARGIN,
+            count = 0,
+            totalLines = 1;
         self.formations.forEach(formation => {
             if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()){
                 return;
@@ -994,6 +992,7 @@ function FormationsManagerDisplay() {
 
             if (count > (self.rows - 1)) {
                 count = 0;
+                totalLines ++;
                 posy += (self.tileHeight + self.spaceBetweenElements.height);
                 posx = self.initialFormationsPosX;
             }
@@ -1023,6 +1022,7 @@ function FormationsManagerDisplay() {
             count++;
             posx += (self.tileWidth+ self.spaceBetweenElements.width);
         });
+        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
     };
     (self.tileHeight > 0) && self.displayFormations();
 }
