@@ -910,19 +910,14 @@ function FormationsManagerDisplay() {
         var thing = function (data) {
             var myFormation=JSON.parse(data).formation;
             formation.loadFormation(myFormation);
-            self.formationDisplayed=formation;
-            //self.header.redim();
-            //formation.redim();
+            self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
-
         };
         !playerMode && httpGetAsync("/getFormationByName", thing, formation.label);
-
-
     }
 
     function onClickNewFormation() {
-        var formation = new Formation({});
+        var formation = new Formation({}, self);
         self.header.redim();
         self.formationDisplayed=formation;
         formation.parent = self;
