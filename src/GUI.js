@@ -251,6 +251,7 @@ function LibraryDisplay(x, y, w, h) {
                     self.draggedObjectLabel = self.gameMiniature.content.messageText;
                     manip.ordonator.set(0, self.gameMiniature.cadre);
                     manageDnD(self.gameMiniature.cadre, manip);
+                    manageDnD(self.gameMiniature.content, manip);
                 } else {
                     var img;
                     img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
@@ -263,21 +264,24 @@ function LibraryDisplay(x, y, w, h) {
                 var mouseClick = function (event) {
                     var target = drawings.background.getTarget(event.clientX, event.clientY);
                     self.itemsTab.forEach(function (e) {
-                        if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
-                            if (e.objectTotal !== self.gameSelected) {
-                                e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                self.gameSelected = e.objectTotal;
-                            }
-                            else {
-                                e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                                self.gameSelected = null;
+                        if(e.objectTotal) {
+                            if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
+                                if (e.objectTotal !== self.gameSelected) {
+                                    self.gameSelected && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                                    e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                    self.gameSelected = e.objectTotal;
+                                }
+                                //else {
+                                //    e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                //    self.gameSelected = null;
+                                //}
+                                else {
+                                    e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                }
                             }
                         }
-                        else {
-                            e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                        }
-                    });
-                };
+                });
+};
 
                 var mouseupHandler = function (event) {
                     var svgObj = manip.ordonator.children.shift();
