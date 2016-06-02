@@ -33,7 +33,7 @@
     var formationsManager;
     var param = {speed: 5, step: 100};
     var thing = function (data) {
-        var myFormations=JSON.parse(data).myCollection;
+        var myFormations = JSON.parse(data).myCollection;
         console.log(myFormations);
         formationsManager = new FormationsManager(myFormations);
         formationsManager.display();
@@ -63,16 +63,12 @@
             case "QuizManager":
                 formation.library.libraryManipulator.flush();
                 formation.quizzManager.library.libraryManipulator.flush();
-                //formation.quizzManager.redim();
-                //formationsManager.header.redim();
-                formation.quizzManager.loadQuizz(formation.quizzDisplayed);
                 formation.quizzManager.resizing = true;
                 formation.quizzManager.display();
                 break;
             case "QuizPreview":
-                formation.quizzManager.manipulator.flush();
+                formation.quizzManager.quizz.quizzManipulator.flush();
                 formation.quizzManager.displayEditedQuestion();
-
                 break;
         }
 

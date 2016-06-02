@@ -339,12 +339,13 @@ function Domain() {
         return self;
     };
 
-    Formation = function (formation) {
+    Formation = function (formation, formationsManager) {
         var self = this;
         self.gamesCounter =  {
             quizz: 0,
             bd: 0
         };
+        self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2);
         self.iconManipulator = new Manipulator();
@@ -555,15 +556,15 @@ function Domain() {
         self.formations = [];
         self.count = 0;
         formations.forEach(function (formation, count) {
-            self.formations[count] = new Formation(formation);
+            self.formations[count] = new Formation(formation, self);
         });
         self.manipulator = new Manipulator();
         self.headerManipulator = new Manipulator();
         self.headerManipulator.addOrdonator(1);
         self.addButtonManipulator = new Manipulator();
-        self.addButtonManipulator.addOrdonator(4)
+        self.addButtonManipulator.addOrdonator(4);
         self.checkManipulator = new Manipulator();
-        self.checkManipulator.addOrdonator(4)
+        self.checkManipulator.addOrdonator(4);
         self.exclamationManipulator = new Manipulator();
         self.exclamationManipulator.addOrdonator(4);
         self.formationsManipulator = new Manipulator();

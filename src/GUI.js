@@ -503,7 +503,7 @@ function FormationDisplayMiniature (w,h) {
 function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
-
+    self.formationsManager.formationDisplayed = self;
     self.graphElementSize = drawing.width/15;
     self.gamesLibraryManipulator = self.library.libraryManipulator;
     self.manipulator.last.add(self.gamesLibraryManipulator.first);
@@ -620,17 +620,12 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
-        //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
+        var targetQuizz = drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         self.quizzManager.loadQuizz(targetQuizz);
-        self.quizzDisplayed=targetQuizz;
+        self.quizzDisplayed = targetQuizz;
         self.quizzManager.display();
-        //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
-        //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
-        self.selectedArrow=null;
-        self.selectedGame=null;
-        //while(!targetQuizz);
-        //self.quizzManager.loadQuizz(targetQuizz);
+        self.selectedArrow = null;
+        self.selectedGame = null;
 
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
@@ -1594,7 +1589,6 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         body.appendChild(textarea).focus();
 
         var onblur = function () {
-            console.log(textarea);
             if(textarea.value){
                 self.label = textarea.value;
                 self.linkedQuestion.label=textarea.value;
@@ -1854,11 +1848,10 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.returnButton.parentFormation=self.parentFormation;
 
     var returnHandler = function(event){
-        console.log("click");
-        var target=drawings.background.getTarget(event.clientX,event.clientY);
+        var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        self.header=new Header ();
+        self.header = new Header ();
         self.header.display();
     };
 
@@ -1971,26 +1964,26 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
             }
-            validation = validation&&result.isValid;
+            validation = validation && result.isValid;
         });
 
-        if(validation) {
-            self.displayEditedQuestion = function () {
-                self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
-                (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length - 1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
-                var tmpQuizzObject = {
-                    title: self.quizzName,
-                    bgColor: myColors.white,
-                    tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
-                    puzzleLines: 3,
-                    puzzleRows: 3
-                };
-
-                self.quizzManagerManipulator.flush();
-
-                var tmpQuizz = new Quizz(tmpQuizzObject, true);
-                tmpQuizz.run(1, 1, drawing.width, drawing.height);//
+        self.displayEditedQuestion = function () {
+            self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
+            (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length - 1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
+            var tmpQuizzObject = {
+                title: self.quizzName,
+                bgColor: myColors.white,
+                tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+                puzzleLines: 3,
+                puzzleRows: 3
             };
+
+            self.quizzManagerManipulator.flush();
+
+            var tmpQuizz = new Quizz(tmpQuizzObject, true);
+            tmpQuizz.run(1, 1, drawing.width, drawing.height);//
+        };
+        if(validation) {
             self.displayEditedQuestion();
         }
     };
