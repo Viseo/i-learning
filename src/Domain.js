@@ -921,14 +921,7 @@ function Domain() {
         self.finalMessage = "";
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
-                var loaded = true;
-                self.tabQuestions.forEach(function (e) {
-                    loaded = loaded && e.imageLoaded;
-                    e.tabAnswer.forEach(function (el) {
-                        loaded = loaded && el.imageLoaded;
-                    })
-                });
-                if (loaded) {
+                if (self.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
                     asyncTimerController.clearInterval(intervalToken);
                     self.display(x, y, w, h);
                 }
