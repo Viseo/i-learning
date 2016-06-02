@@ -2075,6 +2075,42 @@ if (typeof exports !== "undefined") {
     exports.setRuntime = setRuntime;
 }
 
+///////////////////// Requests ////////////////////////////
+/* istanbul ignore next */
+function httpGetAsync(theUrl, callback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    };
+    xmlHttp.open("GET", theUrl, true); // true for asynchronous
+    xmlHttp.send(null);
+}
+
+/* istanbul ignore next */
+function httpPostAsync(theUrl, body, callback, aDefinir) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    };
+    xmlHttp.open("POST", theUrl, true); // true for asynchronous
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    xmlHttp.send(JSON.stringify(body, aDefinir));
+}
+
+/* istanbul ignore next */
+function httpPutAsync(theUrl, body, callback, aDefinir) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText);
+    };
+    xmlHttp.open("PUT", theUrl, true); // true for asynchronous
+    xmlHttp.setRequestHeader("Content-type", "application/json");
+    xmlHttp.send(JSON.stringify(body, aDefinir));
+}
+
 /*var FormationVersionStructure =
  {
  parentFormation: objectId, //(Formation)
