@@ -395,25 +395,31 @@ function Domain() {
                         return game;
                     }
                 }
-            }
+            };
 
             self.loadDependencies = function () {
                 formation.levelsTab.forEach(function (level, i) {
                     level.gamesTab.forEach(function (game, j) {
                         game.childrenGames.forEach(function (childrenGame) {
-                            if(self.levelsTab[i+1]){
-                                var match= self.matchGame(childrenGame, i+1);
-                                !match.parentGames  && (match.parentGames = []);
-                                !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                                self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                                self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                            }
-                        })
+                        var match = self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+                        !match.parentGames && (match.parentGames = []);
+                        !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                        self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                        match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                    });
+                        //    if(self.levelsTab[i+1]){
+                        //        var match= self.matchGame(childrenGame, i+1);
+                        //        !match.parentGames  && (match.parentGames = []);
+                        //        !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                        //        self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                        //        self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                        //    }
+                        //})
                     })
                 })
             };
             self.loadDependencies();
-        }
+        };
         self.redim = function() {
             self.graphElementSize = drawing.width/15;
             self.gamesLibraryManipulator = self.library.libraryManipulator;
@@ -989,8 +995,11 @@ function Domain() {
                 }
             }
             levelIndex = i;
+            self.levelIndex=levelIndex;
+            self.gameIndex=gameIndex;
             return {levelIndex: levelIndex, gameIndex: gameIndex};
         };
+
     };
 
 ////////////////// end of Quizz.js //////////////////////////
