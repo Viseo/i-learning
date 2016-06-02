@@ -375,13 +375,12 @@ function LibraryDisplay(x, y, w, h) {
 
                         var mouseUpAction = function(event) {
                             var targetChild = graph.getTarget(event.clientX, event.clientY);
-                            if (targetParent && targetParent.parent && targetParent.parent.parentManip && targetParent.parent.parentManip.parentObject &&
-                                (targetParent.parent.parentManip.parentObject instanceof Quizz ||
-                                targetParent.parent.parentManip.parentObject instanceof Bd) &&
-                                targetChild && targetChild.parent && targetChild.parent.parentManip && targetChild.parent.parentManip.parentObject &&
-                                (targetChild.parent.parentManip.parentObject instanceof Quizz ||
-                                targetChild.parent.parentManip.parentObject instanceof Bd)
-                            ) {
+                            var booleanInstanceOfCorrect = function(element){
+                                return element && element.parent && element.parent.parentManip && element.parent.parentManip.parentObject &&
+                                (element.parent.parentManip.parentObject instanceof Quizz ||
+                                element.parent.parentManip.parentObject instanceof Bd);
+                            };
+                            if(booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                 createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
                             }
                         };
