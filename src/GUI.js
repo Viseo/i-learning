@@ -1416,7 +1416,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
             ( self.tileWidth = (w - MARGIN * (self.rows - 1)) / self.rows);
         }
         self.tileHeight = 0;
-        self.multipleChoice && (h = h-50);
+        h = h-50;
 
         if(typeof h !== 'undefined'){
             (self.tileHeightMax = Math.floor(h/self.lines)-2*MARGIN);
@@ -1559,7 +1559,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
         var buttonX = - w/2;
         var buttonY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
         self.simpleChoiceMessageManipulator.translator.move(buttonX+w/2, buttonY+h/2);
-        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.white, myColors.white, 20, self.font, self.simpleChoiceMessageManipulator);
+        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.white, myColors.white, 20, "Arial", self.simpleChoiceMessageManipulator);
     }
 }
 
