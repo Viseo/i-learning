@@ -341,7 +341,10 @@ function Domain() {
 
     Formation = function (formation) {
         var self = this;
-
+        self.gamesCounter =  {
+            quizz: 0,
+            bd: 0
+        };
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2);
         self.iconManipulator = new Manipulator();
@@ -381,6 +384,7 @@ function Domain() {
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
         self.loadFormation = function(formation) {
+            self.gamesCounter=formation.gamesCounter;
             formation.levelsTab.forEach(function (level) {
                 var gamesTab = [];
                 level.gamesTab.forEach(function (game) {
