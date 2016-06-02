@@ -175,7 +175,7 @@ describe('Firefox game', function () {
         gui.setDomain(domain);
         gui.LearningGUI();
         gui.setSVG(svg);
-        gui.setGui(guiSvg);
+        gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
     });
 
@@ -187,7 +187,7 @@ describe('Firefox game', function () {
             domain.setGlobalVariables(globalVariables);
             checkScenario(
                 function () {
-                    mainModule.main(myQuizzTest);
+                    adminModule.admin();
                 }, jsonFile, 'content', runtime, done);
         };
         runTest(jsonFile, execute);
