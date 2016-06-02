@@ -808,7 +808,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
         console.log("okokoko",self.levelsTab);
 
         var tmpFormationObject = {
-            title: self.label,
+            label: self.label,
             levelsTab: self.levelsTab,
         };
         var aDefinir = function (key, value) {
