@@ -218,7 +218,7 @@ function LibraryDisplay(x, y, w, h) {
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.w / 2 + self.libMargin2;
             }
-           var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
+            var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
             objectTotal = displayTextWithCircle(label, w / 2, h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);
@@ -377,8 +377,8 @@ function LibraryDisplay(x, y, w, h) {
                             var targetChild = graph.getTarget(event.clientX, event.clientY);
                             var booleanInstanceOfCorrect = function(element){
                                 return element && element.parent && element.parent.parentManip && element.parent.parentManip.parentObject &&
-                                (element.parent.parentManip.parentObject instanceof Quizz ||
-                                element.parent.parentManip.parentObject instanceof Bd);
+                                    (element.parent.parentManip.parentObject instanceof Quizz ||
+                                    element.parent.parentManip.parentObject instanceof Bd);
                             };
                             if(booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                 createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
@@ -666,8 +666,8 @@ function FormationDisplayFormation(){
             if(event.keyCode===46 && self.selectedArrow) { // suppr
                 self.selectedArrow.redCrossClickHandler();
             }else if(event.keyCode===46 && self.selectedGame) { // suppr
-                    self.selectedGame.redCrossClickHandler();
-             }else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
+                self.selectedGame.redCrossClickHandler();
+            }else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
                 self.library.toggleArrowMode();
             }else if(event.keyCode === 27 && self.library && self.library.gameSelected) {
                 self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
@@ -720,12 +720,12 @@ function FormationDisplayFormation(){
     };
     self.updateAllLinks=function(){
         self.levelsTab.forEach(function(level){
-           level.gamesTab.forEach(function(parentGame){
-               parentGame.childrenGames.forEach(function(game){
-                   var arrow= new Arrow(parentGame,game);
-                   parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
-               });
-           }) ;
+            level.gamesTab.forEach(function(parentGame){
+                parentGame.childrenGames.forEach(function(game){
+                    var arrow= new Arrow(parentGame,game);
+                    parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
+                });
+            }) ;
         });
 
 
@@ -959,7 +959,7 @@ function FormationsManagerDisplay() {
         self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN
         self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
-       // self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
+        // self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
 
         self.formations.sort(function (a, b) {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -1815,7 +1815,7 @@ function QuizzManagerDisplay(){
 
     !self.resizing && self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
         self.libraryWidth-self.globalMargin.width/2, self.libraryHeight-self.globalMargin.height, function(){
-        displayFunctions();
+            displayFunctions();
         });
 }
 
@@ -1993,10 +1993,10 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
-    for(var i =0;i<self.quizz.tabQuestions.length-1;i++){
-              typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
-              (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
-    }
+        for(var i =0;i<self.quizz.tabQuestions.length-1;i++){
+            typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
+            (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
+        }
         var tmpQuizzObject = {
             title: self.quizzName,
             tabQuestions: self.tabQuestions,
