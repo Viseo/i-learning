@@ -628,7 +628,7 @@ function FormationDisplayFormation(){
             self.quizzManager.display();
 
         };
-        var result = httpGetAsync("/getAllFormations", thing);
+        var result = dbListener.httpGetAsync("/getAllFormations", thing);
         console.log("TargetQuizz 2" +targetQuizz);
         //var targetQuizz=drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         //myFormation.gamesTab[/*TODO*/][/*TODO*/] ? quizzManager = new QuizzManager(defaultQuizz): quizzManager = new quizzManager(myFormation.gamesTab[/*TODO*/][/*TODO*/]);
@@ -826,7 +826,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
             title: self.label,
             levels: self.levelsTab,
         };
-        var aDefinir = function (key, value) {
+        var ignoredData = function (key, value) {
             var notToBeStringify = false;
             myParentsList.forEach(function(parent){
                 if (key=== parent){
@@ -835,8 +835,8 @@ function FormationDisplaySaveButton(x, y, w, h) {
             });
             return notToBeStringify ? undefined : value;
         };
-        var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
+        var result = dbListener.httpGetAsync("/id", thing);
+        var result = dbListener.httpPostAsync("/insert", tmpFormationObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
@@ -2133,7 +2133,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             title: self.quizzName,
             tabQuestions: self.tabQuestions,
         };
-        var aDefinir = function (key, value) {
+        var ignoredData = function (key, value) {
             var notToBeStringify = false;
             myParentsList.forEach(function(parent){
                 if (key=== parent){
@@ -2142,8 +2142,8 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             });
             return notToBeStringify ? undefined : value;
         };
-        var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
+        var result = dbListener.httpGetAsync("/id", thing);
+        var result = dbListener.httpPostAsync("/insert", tmpQuizzObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
     };
 
@@ -2184,8 +2184,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 }
 
 var AdminGUI = function (){
-
-    //domain && domain.Domain();
+    domain && domain.Domain();
     Answer.prototype.display = AnswerDisplay;
     Library.prototype.display = LibraryDisplay;
     Header.prototype.display = HeaderDisplay;

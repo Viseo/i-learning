@@ -516,9 +516,9 @@ function Domain() {
         self.headerManipulator = new Manipulator();
         self.headerManipulator.addOrdonator(1);
         self.addButtonManipulator = new Manipulator();
-        self.addButtonManipulator.addOrdonator(4)
+        self.addButtonManipulator.addOrdonator(4);
         self.checkManipulator = new Manipulator();
-        self.checkManipulator.addOrdonator(4)
+        self.checkManipulator.addOrdonator(4);
         self.exclamationManipulator = new Manipulator();
         self.exclamationManipulator.addOrdonator(4);
         self.formationsManipulator = new Manipulator();

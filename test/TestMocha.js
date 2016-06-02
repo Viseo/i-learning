@@ -38,20 +38,27 @@ var checkScenario = testutils.checkScenario;
 
 var runtime;
 var svg;
+var guiSvgModule;
+var util;
+var gui;
+var domain;
+var mainModule;
+var adminModule;
+var testModule;
 
 describe('Quizz game', function () {
-    var guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
-    var util = require("../src/Util");
-    var gui = require("../src/GUI");
-    var domain = require("../src/Domain");
-    var mainModule = require("../src/main");
-    var adminModule = require("../src/admin");
-    var testModule = require("../test/testTest");
 
     beforeEach(function () {
         runtime = mockRuntime();
-        runtime.declareAnchor('content');
         svg = SVG(runtime);
+        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
+        util = require("../src/Util");
+        gui = require("../src/GUI");
+        domain = require("../src/Domain");
+        mainModule = require("../src/main");
+        adminModule = require("../src/admin");
+        testModule = require("../test/testTest");
+        runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
         util.setSvg(svg);
@@ -143,18 +150,17 @@ describe('Quizz game', function () {
     });
 });
 describe('Firefox game', function () {
-    var guiSvgModule = require("../lib/svggui");
-    var util = require("../src/Util");
-    var gui = require("../src/GUI");
-    var domain = require("../src/Domain");
-    var mainModule = require("../src/main");
-    var adminModule = require("../src/admin");
-    var testModule = require("../test/testTest");
-
     beforeEach(function () {
         runtime = mockRuntime();
-        runtime.declareAnchor('content');
         svg = SVG(runtime);
+        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
+        util = require("../src/Util");
+        gui = require("../src/GUI");
+        domain = require("../src/Domain");
+        mainModule = require("../src/main");
+        adminModule = require("../src/admin");
+        testModule = require("../test/testTest");
+        runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
         util.setSvg(svg);
@@ -173,7 +179,7 @@ describe('Firefox game', function () {
         domain.setRuntime(runtime);
         domain.setSvg(svg);
         gui.setDomain(domain);
-        gui.LearningGUI();
+        gui.AdminGUI();
         gui.setSVG(svg);
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);

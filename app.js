@@ -11,7 +11,7 @@ var app = express();
 app.use(express.static(__dirname));
 app.use(bodyParser.json({limit: '500mb'}));
 
-var routes = require("./server/controllers/routes")(app);
+var routes = require("./server/controllers/routes")(app, fs);
 var db = require('./server/db');
 
 // Connect to Mongo on start

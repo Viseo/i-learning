@@ -1,6 +1,8 @@
-module.exports = function (app) {
+module.exports = function (app, fs) {
 
     var db = require('../db');
+
+    //fs.writeFileSync("./log/db.json", "");
 
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');
@@ -33,5 +35,11 @@ module.exports = function (app) {
         collection.find().toArray(function (err, docs) {
             res.send({id: docs})
         })
+    });
+
+    app.post('/data', function (req, res) {
+        console.log(req.body);
+        fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
+        res.send({ack:'ok'});
     });
 };
