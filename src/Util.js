@@ -1927,115 +1927,87 @@ function Bdd() {
     };
 
     singleAnswerValidationTab = [
-        function (quiz) {
-            // Check Quiz Name:
-            var isValid = (quiz.quizzName !== "");
-            var message = "Vous devez remplir le nom du quiz.";
-            return {isValid: isValid, message: message};
-        },
-        function (quiz) {
-            // Check Question Name:
-            var isValid = (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
-            var message = "Vous devez remplir le nom de la question.";
-            return {isValid: isValid, message: message};
-        },
-        function (quiz) {
-            // Check 1 Correct Answer:
-            var correctAnswers = 0;
-            quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
-                if (el.editable) {
-                    if (el.correct) {
-                        correctAnswers++;
-                    }
-                }
-            });
-            console.log(correctAnswers);
-            var isValid = (correctAnswers === 1);
-            var message = "Votre quiz doit avoir une bonne réponse.";
-            return {isValid: isValid, message: message};
-        },
-        function (quiz) {
-            // Check at least 1 valid answer:
-            var isFilled = false;
-            quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
-                if (el.editable) {
-                    isFilled = (isFilled) || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
-                }
-            });
-            var isValid = (isFilled);
-            var message = "Vous devez remplir au moins une réponse.";
-            return {isValid: isValid, message: message};
-        }
+        // Check Quiz Name:
+        quiz => ({
+            isValid: quiz.quizzName !== "",
+            message: "Vous devez remplir le nom du quiz."
+        }),
+        // Check Question Name:
+        quiz => ({
+            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            message: "Vous devez remplir le nom de la question."
+        }),
+        // Check 1 Correct Answer:
+        quiz => ({
+            isValid: quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && el.correct),
+            message: "Votre quiz doit avoir une bonne réponse."
+        }),
+        // Check at least 1 valid answer:
+        quiz => ({
+            isValid: quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
+            message: "Vous devez remplir au moins une réponse."
+        })
     ];
 
     multipleAnswerValidationTab = [
-        function (quiz) {
-            // Check Quiz Name:
-            var isValid = (quiz.quizzName !== "");
-            var message = "Vous devez remplir le nom du quiz.";
-            return {isValid: isValid, message: message};
-        },
-        function (quiz) {
-            // Check Question Name:
-            var isValid = (quiz.questionCreator.label !== "") || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image);
-            var message = "Vous devez remplir le nom de la question.";
-            return {isValid: isValid, message: message};
-        },
-        function (quiz) {
-            // Check at least 1 valid answer:
-            var isFilled = false;
-            quiz.questionCreator.linkedQuestion.tabAnswer.forEach(function (el) {
-                if (el.editable) {
-                    isFilled = isFilled || (el.label) || (el.manipulator.ordonator.children[2] instanceof svg.Image);
-                }
-            });
-            var isValid = isFilled;
-            var message = "Vous devez remplir au moins une réponse.";
-            return {isValid: isValid, message: message};
-        }
+        // Check Quiz Name:
+        quiz => ({
+            isValid: quiz.quizzName !== "",
+            message: "Vous devez remplir le nom du quiz."
+        }),
+        // Check Question Name:
+        quiz => ({
+            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            message: "Vous devez remplir le nom de la question."
+        }),
+        // Check at least 1 valid answer:
+        quiz => ({
+            isValid: quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
+            message: "Vous devez remplir au moins une réponse."
+        })
     ];
 
     formationValidation = [
-        function (formation) {
-            // Check Formation Name:
-            var isValid = (formation.formationName !== "");
-            var message = "Vous devez remplir le nom de la formation.";
-            return {isValid: isValid, message: message};
-        }
+        // Check Formation Name:
+        formation => ({
+            isValid: formation.formationName !== "",
+            message: "Vous devez remplir le nom de la formation."
+        })
     ];
 
     myQuizzType = {
-        tab: [{
-            label: "Réponse unique",
-            default: true,
-            validationTab: singleAnswerValidationTab
-        }, {label: "Réponses multiples", default: false, validationTab: multipleAnswerValidationTab}]
+        tab: [
+            {
+                label: "Réponse unique",
+                default: true,
+                validationTab: singleAnswerValidationTab
+            },
+            {
+                label: "Réponses multiples",
+                default: false,
+                validationTab: multipleAnswerValidationTab
+            }
+        ]
     };
 
     statusEnum = {
         Published: {
-            icon: function (size) {
-                var check = drawCheck(0, 0, size).color(myColors.none, 5, myColors.white);
-                var square = new svg.Rect(size, size).color(myColors.green);
-                var elems = [];
-                elems.push(square,check);
-                return {check: check, square: square, elements: elems };
-            }
-            
+            icon: size => ({
+                check: drawCheck(0, 0, size).color(myColors.none, 5, myColors.white),
+                square: new svg.Rect(size, size).color(myColors.green),
+                elements: [this.square, this.check]
+            })
         },
         Edited: {
-            icon: function (size) {
-                var circle = new svg.Circle(size / 2).color(myColors.orange);
-                var exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white);
-                var dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
-                var elems = [];
-                elems.push(circle, exclamation, dot);
-                return {circle: circle, exclamation: exclamation, dot:dot, elements: elems };
-            }
-            
+            icon: size => ({
+                circle: new svg.Circle(size / 2).color(myColors.orange),
+                exclamation: new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white),
+                dot: new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white),
+                elements: [this.circle, this.exclamation, this.dot]
+            })
         },
         NotPublished: {
-            icon: function (){return {elements:[]}}
+            icon: () => ({elements:[]})
         }
     };
 

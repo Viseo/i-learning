@@ -196,17 +196,13 @@ function Domain() {
 
         self.run = function (x, y, w, h, callback) {
             self.intervalToken = asyncTimerController.interval(function () {
-                var loaded = true;
-                self.itemsTab.forEach(function (e) {
-                    loaded = loaded && e.imageLoaded;
-                });
-                if (loaded) {
+                if (self.itemsTab.every(e => e.imageLoaded)) {
                     asyncTimerController.clearInterval(self.intervalToken);
                     self.display(x, y, w, h);
                     callback();
                 }
             }, 100);
-                runtime && self.itemsTab.forEach(function(e){
+                runtime && self.itemsTab.forEach(e => {
                     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
                 });
                 if (runtime){
