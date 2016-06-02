@@ -12,8 +12,7 @@ function DbListener(isWriting, isMock) {
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 isWriting && register(JSON.parse(xmlHttp.responseText));
-                data = xmlHttp.responseText;
-                console.log(data);
+                data = xmlHttp.responseText.split("\n");
                 callback();
             }
         };
@@ -58,7 +57,7 @@ function HttpRequests(isWriting, isMock) {
     }
 
     function httpMockGet(theUrl, callback) {
-        callback(data.pop());
+        callback(data.shift());
     }
 
     function httpMockPost(theUrl, body, callback, ignoredData) {

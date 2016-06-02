@@ -41,6 +41,7 @@
     };
     var result1;
     dbListener.loadData(function () {
+        console.log(data);
         result1 = dbListener.httpGetAsync("/getAllFormationsNames", thing);
     });
     function resizePaper(){
