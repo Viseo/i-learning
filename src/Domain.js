@@ -403,10 +403,10 @@ function Domain() {
             };
 
             self.loadDependencies = function () {
-                formation.levelsTab.forEach(function (level, i) {
+                formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
                     level.gamesTab.forEach(function (game, j) {
                         game.childrenGames.forEach(function (childrenGame) {
-                        var match = self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+                        var match = self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab && self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
                         !match.parentGames && (match.parentGames = []);
                         !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
                         self.levelsTab[i].gamesTab[j].childrenGames.push(match);
