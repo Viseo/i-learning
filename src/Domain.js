@@ -343,7 +343,7 @@ function Domain() {
         var self = this;
 
         self.manipulatorMiniature = new Manipulator();
-        self.manipulatorMiniature.addOrdonator(2)
+        self.manipulatorMiniature.addOrdonator(2);
         self.iconManipulator = new Manipulator();
         self.iconManipulator.addOrdonator(3);
         self.manipulator = new Manipulator(self);
@@ -358,7 +358,7 @@ function Domain() {
         self.library = new Library(myLibraryGames);
         self.library.formation = self;
         self.quizzManager = new QuizzManager();
-        self.quizzManager.parentFormation=self;
+        self.quizzManager.parentFormation = self;
 
         self.labelDefault = "Entrer le nom de la formation";
         self.deltaLevelWidthIncreased = 0;
@@ -380,7 +380,7 @@ function Domain() {
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
-        self.loadFormation=function(formation) {
+        self.loadFormation = function(formation) {
             formation.levelsTab.forEach(function (level) {
                 var gamesTab = [];
                 level.gamesTab.forEach(function (game) {
@@ -388,7 +388,7 @@ function Domain() {
                 });
                 self.levelsTab.push(new Level(self, gamesTab));
             });
-            self.matchGame=function(childrenGame, levelIndex){
+            self.matchGame = function(childrenGame, levelIndex){
                 for(var game of self.levelsTab[levelIndex].gamesTab)
                 {
                     if(game.title===childrenGame.title){

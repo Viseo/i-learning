@@ -277,11 +277,15 @@ function LibraryDisplay(x, y, w, h) {
                                 //}
                                 else {
                                     e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                    self.gameSelected = null;
                                 }
                             }
                         }
                 });
-};
+                    self.formation && !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
+                    self.formation && self.formation.clickToAdd();
+
+                };
 
                 var mouseupHandler = function (event) {
                     var svgObj = manip.ordonator.children.shift();
@@ -293,8 +297,6 @@ function LibraryDisplay(x, y, w, h) {
                         }
                         else {
                             mouseClick(event);
-                            !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
-                            self.formation.clickToAdd();
                         }
                     }
                     self.draggedObjectLabel = "";
