@@ -316,7 +316,7 @@ function Domain() {
         var self = this;
         self.parentFormation = formation;
         self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(10);
+        self.manipulator.addOrdonator(3);
         self.index = (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1]) ? (self.parentFormation.levelsTab[self.parentFormation.levelsTab.length-1].index+1) : 1;
         gamesTab ? (self.gamesTab = gamesTab) : (self.gamesTab = []);
         self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
@@ -513,7 +513,7 @@ function Domain() {
                 level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
                 level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
                 level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
-                level.manipulator.ordonator.set(9,level.obj.line);
+                level.manipulator.ordonator.set(2,level.obj.line);
                 level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
             }
             level.gamesTab.forEach(function (game) {
