@@ -804,9 +804,9 @@ function FormationDisplaySaveButton(x, y, w, h) {
         var tmpFormationObject = {
             label: self.label,
             gamesCounter: self.gamesCounter,
-            levelsTab: self.levelsTab,
+            levelsTab: self.levelsTab
         };
-        var aDefinir = function (key, value) {
+        /*var aDefinir = function (key, value) {
             var notToBeStringify = false;
             myParentsList.forEach(function(parent){
                 if (key=== parent){
@@ -814,9 +814,10 @@ function FormationDisplaySaveButton(x, y, w, h) {
                 }
             });
             return notToBeStringify ? undefined : value;
-        };
-        var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
+        };*/
+        let aDefinir = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        httpGetAsync("/id", thing);
+        httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
         console.log("Votre travail a été bien enregistré");
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
@@ -956,7 +957,7 @@ function FormationsManagerDisplay() {
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
         self.legendWidth = drawing.width * 0.3;
-        self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN
+        self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN;
         self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
        // self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
@@ -1805,7 +1806,7 @@ function QuizzManagerDisplay(){
         self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
-    }
+    };
 
     if (self.resizing){
         self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
@@ -2001,7 +2002,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             title: self.quizzName,
             tabQuestions: self.tabQuestions,
         };
-        var aDefinir = function (key, value) {
+        /*var aDefinir = function (key, value) {
             var notToBeStringify = false;
             myParentsList.forEach(function(parent){
                 if (key=== parent){
@@ -2009,9 +2010,10 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
                 }
             });
             return notToBeStringify ? undefined : value;
-        };
-        var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
+        };*/
+        let aDefinir = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        httpGetAsync("/id", thing);
+        httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
         console.log("Votre travail a été bien enregistré");
     };
 
