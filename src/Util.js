@@ -2102,7 +2102,7 @@ function httpPostAsync(theUrl, body, callback, aDefinir) {
     xmlHttp.setRequestHeader("Content-type", "application/json");
     xmlHttp.send(JSON.stringify(body, aDefinir));
 }
-myFormation ={
+myFormation = {
     "_id": "574ea35af1baf748368f2354",
     "title": "Hibernate 2",
     "levels": [{
@@ -2361,7 +2361,7 @@ myFormation ={
     "w": 1608.3999999999999,
     "h": 814.9499999999999
 }]
-}
+};
 
 /*var FormationVersionStructure =
 {
