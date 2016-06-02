@@ -992,7 +992,7 @@ function FormationsManagerDisplay() {
         let posy = MARGIN;
         let count = 0;
         self.formations.forEach(formation => {
-            if(formation.status.toString() === statusEnum.NotPublished.toString()) return;
+            if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
 
             if (count > (self.rows - 1)) {
                 count = 0;
