@@ -17,6 +17,7 @@
     let SVG = require("../lib/svghandler").SVG;
     svg = SVG(targetRuntime());
 </script>
+<script src="dbListener.js"></script>
 <script src="Util.js"></script>
 <script src="Domain.js"></script>
 <script src="GUI.js"></script>
@@ -30,6 +31,7 @@
     setGlobalVariable();
 </script>
 <script>
+    var dbListener = new DbListener(false, false);
     var formationsManager;
     var param = {speed: 5, step: 100};
     var thing = function (data) {
