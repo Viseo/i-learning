@@ -2,7 +2,7 @@ module.exports = function (app, fs) {
 
     var db = require('../db');
 
-    //fs.writeFileSync("./log/db.json", "");
+    fs.writeFileSync("./log/db.json", "");
 
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');

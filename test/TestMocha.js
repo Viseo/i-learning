@@ -45,6 +45,7 @@ var domain;
 var mainModule;
 var adminModule;
 var testModule;
+var dbListenerModule;
 
 describe('Quizz game', function () {
 
@@ -160,6 +161,7 @@ describe('Firefox game', function () {
         mainModule = require("../src/main");
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
+        dbListenerModule = require("../src/dbListener");
         runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
@@ -183,11 +185,14 @@ describe('Firefox game', function () {
         gui.setSVG(svg);
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
+        dbListener = DbListener(false, true);
+        data = {};
     });
 
     it("a short admin use (to Formation)", function (done) {
         this.timeout(100000);
-        var jsonFile = "./log/testFirefoxAdminShort.json";
+        var jsonFile = "./log/testAdminShortUse.json";
+        data = retrieveDB("./log/dbtestAdminShortUse.json");
         var execute = function () {
             var globalVariables = mainModule.setGlobalVariable();
             domain.setGlobalVariables(globalVariables);
