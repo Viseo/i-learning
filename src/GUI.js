@@ -809,7 +809,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
         dbListener.httpGetAsync("/id", thing);
-        dbListener.httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
+        dbListener.httpPostAsync("/insert", tmpFormationObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
