@@ -375,13 +375,13 @@ function Domain() {
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
         self.targetLevelIndex = 0;
         self.levelsTab = [];
-        self.saveButtonHeightRatio = 0.1;
+        self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
         self.loadFormation = function(formation) {
-            self.gamesCounter=formation.gamesCounter;
+            self.gamesCounter = formation.gamesCounter;
             formation.levelsTab.forEach(function (level) {
                 var gamesTab = [];
                 level.gamesTab.forEach(function (game) {

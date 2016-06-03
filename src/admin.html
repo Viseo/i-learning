@@ -67,10 +67,15 @@
                     formation.displayFormation();
                     break;
                 case "QuizManager":
-                    formation.library.libraryManipulator.flush();
-                    formation.quizzManager.library.libraryManipulator.flush();
-                    formation.quizzManager.resizing = true;
-                    formation.quizzManager.display();
+//                    var puzzle = formation.quizzManager.questionCreator.puzzle;
+//                    var minTileWidth=(puzzle.w -(puzzle.rows-1)*MARGIN)/puzzle.rows;
+//                    var minTileHeight=(puzzle.h -(puzzle.lines+1)*MARGIN)/puzzle.lines;
+//                    if((minTileWidth > 0) && (minTileHeight > 0)) {
+                        formation.library.libraryManipulator.flush();
+                        formation.quizzManager.library.libraryManipulator.flush();
+                        formation.quizzManager.resizing = true;
+                        formation.quizzManager.display();
+//                    }
                     break;
                 case "QuizPreview":
                     formation.quizzManager.quizz.quizzManipulator.flush();

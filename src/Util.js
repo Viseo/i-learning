@@ -363,7 +363,10 @@ function SVGUtil() {
      * @returns {{cadre: *, image, text}}
      */
     displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
-
+        if((w <= 0) || (h <= 0)){
+            w = 1;
+            h = 1;
+        }
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
         var bbox= svg.getSvgr().boundingRect(text.component);
         var textHeight = bbox.height;
@@ -405,6 +408,10 @@ function SVGUtil() {
      * @param h
      */
     displayImage = function (imageSrc, image, w, h) {
+        if((w <= 0) || (h <= 0)){
+            w = 1;
+            h = 1;
+        }
         var width = image.width;
         var height = image.height;
         if (width > w) {
@@ -421,7 +428,6 @@ function SVGUtil() {
         return {
             image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
         };
-
     };
 
     /**
@@ -437,7 +443,10 @@ function SVGUtil() {
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
     displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-
+        if((w <= 0) || (h <= 0)){
+            w = 1;
+            h = 1;
+        }
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
         manipulator.ordonator.set(0, cadre);
