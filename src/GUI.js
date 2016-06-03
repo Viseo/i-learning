@@ -536,7 +536,7 @@ function FormationDisplayFormation(){
     if (playerMode) return;
 
 
-
+    self.gamesCounter = myFormation.gamesCounter;
 
     var showTitle = function() {
         var text = (self.label) ? self.label : (self.label=self.labelDefault);
@@ -800,7 +800,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
     var saveFormationFunction = function () {
         var thing = function (data) {
         };
-        //console.log("okokoko",self.levelsTab);
+        console.log("okokoko",self.levelsTab);
 
         var tmpFormationObject = {
             label: self.label,
@@ -974,9 +974,7 @@ function FormationsManagerDisplay() {
             count = 0,
             totalLines = 1;
         self.formations.forEach(formation => {
-            if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()){
-                return;
-            }
+            if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
 
             if (count > (self.rows - 1)) {
                 count = 0;
@@ -1829,7 +1827,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
-    self.formationLabel = new svg.Text("Formation : " + self.parentFormation.label).position(drawing.width/2,0);
+    self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
     self.formationLabel.font("Arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
