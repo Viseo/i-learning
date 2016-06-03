@@ -905,7 +905,7 @@ function FormationsManagerDisplay() {
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && dbListener.httpGetAsync("/getFormationByName", thing, formation.label);
+        !playerMode && dbListener.httpGetAsync("/getFormationByName/" + formation.label, thing, formation.label);
     }
 
     function onClickNewFormation() {
