@@ -1783,9 +1783,9 @@ function QuizzManagerDisplay(){
     drawing.currentPageDisplayed = "QuizManager";
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
-    self.questionClickHandler=function(event){
-        var target=drawings.background.getTarget(event.clientX,event.clientY);
-        var element=target.parent.parentManip.parentObject;
+    self.questionClickHandler = function(event){
+        var target = drawings.background.getTarget(event.clientX,event.clientY);
+        var element = target.parent.parentManip.parentObject;
         self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         element.selected = true;
         self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
