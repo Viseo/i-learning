@@ -1989,19 +1989,28 @@ function Bdd() {
 
     statusEnum = {
         Published: {
-            icon: size => ({
-                check: drawCheck(0, 0, size).color(myColors.none, 5, myColors.white),
-                square: new svg.Rect(size, size).color(myColors.green),
-                elements: [this.square, this.check]
-            })
+            icon: size => {
+                let check = drawCheck(0, 0, size).color(myColors.none, 5, myColors.white),
+                    square = new svg.Rect(size, size).color(myColors.green);
+                return {
+                    check: check,
+                    square: square,
+                    elements: [square, check]
+                }
+            }
         },
         Edited: {
-            icon: size => ({
-                circle: new svg.Circle(size / 2).color(myColors.orange),
-                exclamation: new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white),
-                dot: new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white),
-                elements: [this.circle, this.exclamation, this.dot]
-            })
+            icon: size => {
+                let circle = new svg.Circle(size / 2).color(myColors.orange),
+                    exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white),
+                    dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
+                return {
+                    circle: circle,
+                    exclamation: exclamation,
+                    dot: dot,
+                    elements: [circle, exclamation, dot]
+                }
+            }
         },
         NotPublished: {
             icon: () => ({elements:[]})
