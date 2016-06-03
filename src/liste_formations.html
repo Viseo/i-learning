@@ -38,7 +38,7 @@
         formationsManager = new FormationsManager(myFormations);
         formationsManager.display();
     };
-    var result1 = httpGetAsync("/getAllFormationsNames", thing);
+    var result1 = dbListener.httpGetAsync("/getAllFormationsNames", thing);
 
     function resizePaper(){
         drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;

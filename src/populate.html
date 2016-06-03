@@ -22,6 +22,7 @@
 <script src="GUI.js"></script>
 <script src="main.js"></script>
 <script>
+    dbListener = new DbListener();
     SVGGlobalHandler();
     Domain();
     SVGUtil();
@@ -385,10 +386,9 @@
 
 
    var thing = function (data) {
-
        console.log(myFormation);
     };
-   var result = httpPostAsync("/insert", myFormations, thing);
+    var result = dbListener.httpPostAsync("/insert", myFormations, thing);
 </script>
 </body>
 

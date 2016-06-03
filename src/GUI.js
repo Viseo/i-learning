@@ -806,18 +806,9 @@ function FormationDisplaySaveButton(x, y, w, h) {
             gamesCounter: self.gamesCounter,
             levelsTab: self.levelsTab
         };
-        /*var aDefinir = function (key, value) {
-            var notToBeStringify = false;
-            myParentsList.forEach(function(parent){
-                if (key=== parent){
-                    notToBeStringify = true;
-                }
-            });
-            return notToBeStringify ? undefined : value;
-        };*/
-        let aDefinir = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        httpGetAsync("/id", thing);
-        httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
+        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        dbListener.httpGetAsync("/id", thing);
+        dbListener.httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
         console.log("Votre travail a été bien enregistré");
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
@@ -913,7 +904,7 @@ function FormationsManagerDisplay() {
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && httpGetAsync("/getFormationByName", thing, formation.label);
+        !playerMode && dbListener.httpGetAsync("/getFormationByName", thing, formation.label);
     }
 
     function onClickNewFormation() {
@@ -2002,18 +1993,9 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             title: self.quizzName,
             tabQuestions: self.tabQuestions,
         };
-        /*var aDefinir = function (key, value) {
-            var notToBeStringify = false;
-            myParentsList.forEach(function(parent){
-                if (key=== parent){
-                    notToBeStringify = true;
-                }
-            });
-            return notToBeStringify ? undefined : value;
-        };*/
-        let aDefinir = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        httpGetAsync("/id", thing);
-        httpPostAsync("/insert", tmpQuizzObject, thing, aDefinir);
+        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        dbListener.httpGetAsync("/id", thing);
+        dbListener.httpPostAsync("/insert", tmpQuizzObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
     };
 
