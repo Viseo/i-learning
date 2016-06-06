@@ -823,38 +823,10 @@ function FormationDisplaySaveButton(x, y, w, h) {
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
         dbListener.httpGetAsync("/id", () => {});
         dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
-    };
 
-       /* var thing = function (data) {
-        };
-        console.log("okokoko",self.levelsTab);
-
-        var tmpFormationObject = {
-            title: self.label,
-            levels: self.levelsTab,
-        };
-        var aDefinir = function (key, value) {
-            var notToBeStringify = false;
-            myParentsList.forEach(function(parent){
-                if (key=== parent){
-                    notToBeStringify = true;
-                }
-            });
-            return notToBeStringify ? undefined : value;
-        };
-
-        var result = httpGetAsync("/id", thing);
-        var result = httpPostAsync("/insert", tmpFormationObject, thing, aDefinir);
-        console.log("Insert New DOC: Votre travail a été bien enregistré");
-/!*
-        var resultF = httpGetAsync("/id",thing);
-        var resultF = httpGetAsync("/find", thing, aDefinir);
-        console.log("Find ID");*!/
-
-        var result = httpGetAsync("/id",thing);
-        var result = httpPutAsync("/update",tmpFormationObject, thing, aDefinir);
+        /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
         console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
-
+    };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
     svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
     self.saveFormationButtonManipulator.translator.move(x, y);
