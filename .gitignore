@@ -3,6 +3,7 @@
 
 coverage/
 log/data.json
+log/db.json
 node_modules/
 html-report/
 npm-debug.log
