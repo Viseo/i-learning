@@ -2,17 +2,15 @@
  * Created by qde3485 on 02/06/16.
  */
 
-var data;
-
 function DbListener(isWriting, isMock) {
     var self = this;
-
+    self.data = [1, 2];
     self.loadData = function (callback) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 isWriting && register(JSON.parse(xmlHttp.responseText));
-                data = xmlHttp.responseText.split("\n");
+                self.data = xmlHttp.responseText.split("\n");
                 callback();
             }
         };
@@ -20,12 +18,13 @@ function DbListener(isWriting, isMock) {
         xmlHttp.send(null);
     };
 
-    self.runtime = HttpRequests(isWriting, isMock);
+    self.runtime = HttpRequests(isWriting, isMock, this);
     self.httpGetAsync = self.runtime.httpGetRequest;
     self.httpPostAsync = self.runtime.httpPostRequest;
 }
 
-function HttpRequests(isWriting, isMock) {
+function HttpRequests(isWriting, isMock, listener) {
+    this.parent = listener;
     function register(data) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.open("POST", "/data", true); // true for asynchronous
@@ -57,7 +56,8 @@ function HttpRequests(isWriting, isMock) {
     }
 
     function httpMockGet(theUrl, callback) {
-        callback(data.shift());
+        var obj = parent.data.shift();
+        callback(obj);
     }
 
     function httpMockPost(theUrl, body, callback, ignoredData) {
@@ -71,5 +71,8 @@ function HttpRequests(isWriting, isMock) {
         httpGetRequest:httpGetAsync,
         httpPostRequest:httpPostAsync
     };
+}
 
+if (typeof exports !== "undefined") {
+    exports.DbListener = DbListener;
 }

@@ -899,13 +899,13 @@ function FormationsManagerDisplay() {
 
     function onClickFormation(formation) {
         formation.displayFormation();
-        var thing = function (data) {
+        var callback = function (data) {
             var myFormation=JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && dbListener.httpGetAsync("/getFormationByName/" + formation.label, thing, formation.label);
+        !playerMode && dbListener.httpGetAsync("/getFormationByName/" + formation.label, callback, formation.label);
     }
 
     function onClickNewFormation() {

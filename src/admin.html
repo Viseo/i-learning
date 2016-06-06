@@ -30,80 +30,11 @@
     AdminGUI();
     setGlobalVariable();
 </script>
+<script src="admin.js"></script>
 <script>
     var dbListener = new DbListener(true, false);
-    var formationsManager;
     var param = {speed: 5, step: 100};
-    var thing = function (data) {
-        var myFormations=JSON.parse(data).myCollection;
-        formationsManager = new FormationsManager(myFormations);
-        formationsManager.display();
-    };
-    var result1 = dbListener.httpGetAsync("/getAllFormationsNames", thing);
-    function resizePaper(){
-        if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
-        drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
-        drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
-        var formation = formationsManager.formationDisplayed;
-
-            switch (drawing.currentPageDisplayed) {
-                case "FormationsManager":
-                    var minimalSize = drawing.height - (playerMode ?
-                            formationsManager.toggleFormationsCheck.globalPoint(0, 0).y + formationsManager.toggleFormationsCheck.height + MARGIN :
-                            formationsManager.addFormationButton.cadre.globalPoint(0, 0).y + formationsManager.addFormationButton.cadre.height);
-                    if (minimalSize > 1) {
-                        mainManipulator.flush();
-                        drawing.manipulator.ordonator.set(2, drawings.piste.first);
-                        (formationsManager.clippingManipulator.last.children.indexOf(formationsManager.panel.component) !== -1) && formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
-                        formationsManager.header.display();
-                        formationsManager.display();
-                    }
-                    break;
-                case "Formation":
-                    formation.gamesLibraryManipulator.flush();
-                    formation.clippingManipulator.last.remove(formation.panel.component);
-                    formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
-                    formationsManager.header.display();
-                    formation.displayFormation();
-                    break;
-                case "QuizManager":
-//                    var puzzle = formation.quizzManager.questionCreator.puzzle;
-//                    var minTileWidth=(puzzle.w -(puzzle.rows-1)*MARGIN)/puzzle.rows;
-//                    var minTileHeight=(puzzle.h -(puzzle.lines+1)*MARGIN)/puzzle.lines;
-//                    if((minTileWidth > 0) && (minTileHeight > 0)) {
-                        formation.library.libraryManipulator.flush();
-                        formation.quizzManager.library.libraryManipulator.flush();
-                        formation.quizzManager.resizing = true;
-                        formation.quizzManager.display();
-//                    }
-                    break;
-                case "QuizPreview":
-                    formation.quizzManager.quizz.quizzManipulator.flush();
-                    formation.quizzManager.displayEditedQuestion();
-                    break;
-            }
-
-
-            /** for( var i = 0;i<qManip.ordonator.children.length;i++) {
-            qManip.ordonator.unset(i);
-        }
-             if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
-            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
-                quizz.questionArea.w , quizz.questionHeight);
-            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
-                quizz.questionArea.w , quizz.answerHeight);
-        }else{
-            quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
-            quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
-            quizz.displayResult();
-        }**/
-
-        }
-    }
-    setTimeout(function(){
-        window.onresize = resizePaper;
-    },200);
-
+    admin();
 </script>
 </body>
 

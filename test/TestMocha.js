@@ -185,23 +185,23 @@ describe('Firefox game', function () {
         gui.setSVG(svg);
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
-        dbListener = DbListener(false, true);
-        data = {};
+        dbListener = new dbListenerModule.DbListener(false, true);
     });
 
     it("a short admin use (to Formation)", function (done) {
-        this.timeout(100000);
         var jsonFile = "./log/testAdminShortUse.json";
-        data = retrieveDB("./log/dbtestAdminShortUse.json");
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    adminModule.admin();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+        testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
     });
 
     it("a short admin use (to Formation, with Games)", function (done) {
