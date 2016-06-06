@@ -71,7 +71,7 @@ function admin() {
         }
     }
     setTimeout(function(){
-        window.onresize = resizePaper;
+        svg.getSvgr().addGlobalEvent("resize", resizePaper);
     },200);
 }
 if (typeof exports !== "undefined") {

@@ -204,6 +204,22 @@ describe('Firefox game', function () {
         this.timeout(100000);
     });
 
+    it("an admin goes to formation and creates games and save", function (done) {
+        var jsonFile = "./log/testAdminCreateGamesAndSave.json";
+        testutils.retrieveDB("./log/dbtestAdminCreateGamesAndSave.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
+    });
+
     it("a short admin use (to Formation, with Games)", function (done) {
         this.timeout(100000);
         checkScenario(
