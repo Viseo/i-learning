@@ -220,13 +220,36 @@ describe('Firefox game', function () {
         this.timeout(100000);
     });
 
-    it("a short admin use (to Formation, with Games)", function (done) {
+    it("an admin goes to formation and into a game, fill it with data and save it", function (done) {
+        var jsonFile = "./log/testAdminNewGame.json";
+        testutils.retrieveDB("./log/dbtestAdminNewGame.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
         this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminShortGames.json", 'content', runtime, done);
+    });
+
+    it("an admin use with resizes", function (done) {
+        var jsonFile = "./log/testAdminResize.json";
+        testutils.retrieveDB("./log/dbtestAdminResize.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
     });
 
     //it("a short admin use (to QuizzManager)", function (done) {

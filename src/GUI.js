@@ -214,7 +214,7 @@ function LibraryDisplay(x, y, w, h) {
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.h / 4 + self.libMargin2;
             }
-           var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
+            var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
             objectTotal = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
             self.libraryManipulators[i].first.move(X, tempY);

@@ -32,7 +32,7 @@ function Domain() {
         getImage: function (imgUrl, onloadHandler) {
             this.count++;
             var image = {
-                url: imgUrl,
+                src: imgUrl,
                 onload: onloadHandler,
                 id: "i"+ this.count
             };
@@ -203,7 +203,7 @@ function Domain() {
                 }
             }, 100);
                 runtime && self.itemsTab.forEach(e => {
-                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.url].width, myImagesSourceDimensions[e.url].height);
+                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
                 });
                 if (runtime){
                     self.display(x, y, w, h);
@@ -928,9 +928,9 @@ function Domain() {
                 }
             }, 100);
             runtime && self.tabQuestions.forEach(function(e){
-                e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.url].width, myImagesSourceDimensions[e.image.url].height);
+                e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
                 e.tabAnswer.forEach(function(el){
-                    el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.url].width, myImagesSourceDimensions[el.image.url].height);
+                    el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
                 });
 
             });
