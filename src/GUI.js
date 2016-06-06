@@ -196,8 +196,6 @@ function LibraryDisplay(x, y, w, h) {
     self.libMargin2 = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN;
     var tempY = (2 / 10 * h);
 
-    var displayArrowModeButton = true;
-
     for (var i = 0; i < self.itemsTab.length; i++) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
@@ -207,7 +205,6 @@ function LibraryDisplay(x, y, w, h) {
         }
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
         if (self.itemsTab[i].src) {
-            displayArrowModeButton = false;
             var objectTotal = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
             objectTotal.image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
             self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
@@ -319,7 +316,7 @@ function LibraryDisplay(x, y, w, h) {
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
     });
 
-    if (displayArrowModeButton) {
+    if (!self.itemsTab.some(i=>i.src)) {
         if(self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)!==-1){
             self.libraryManipulator.last.remove(self.arrowModeManipulator.first);
         }
