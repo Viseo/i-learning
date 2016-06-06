@@ -70,7 +70,9 @@ function admin() {
             }
         }
     }
+
     setTimeout(function(){
+      
         svg.getSvgr().addGlobalEvent("resize", resizePaper);
     },200);
 }
