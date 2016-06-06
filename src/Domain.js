@@ -349,7 +349,7 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(1);
         self.formationInfoManipulator = new Manipulator();
-        self.formationInfoManipulator.addOrdonator(2);
+        self.formationInfoManipulator.addOrdonator(3);
         self.graphManipulator = new Manipulator(self);
         self.graphManipulator.addOrdonator(2);
         self.clippingManipulator = new Manipulator(self);
@@ -769,6 +769,7 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.manipulatorQuizzInfo = new Manipulator(self);
         self.questionCreatorManipulator = new Manipulator(self);
+        self.questionCreatorManipulator.addOrdonator(1);
         self.questionManipulator = new Manipulator(self);
         self.questionManipulator.addOrdonator(5);
         self.toggleButtonManipulator = new Manipulator(self);

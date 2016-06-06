@@ -113,7 +113,7 @@ function AnswerDisplay (x, y, w, h) {
 
             var removeErrorMessage = function () {
                 self.answerNameValidInput = true;
-                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(5);
+                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(0);
                 self.obj.cadre.color(myColors.white, 1, myColors.black);
             };
 
@@ -128,7 +128,7 @@ function AnswerDisplay (x, y, w, h) {
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
-                self.editor.questionCreatorManipulator.ordonator.set(5,self.errorMessage);
+                self.editor.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
@@ -578,7 +578,7 @@ function FormationDisplayFormation(){
 
         var removeErrorMessage = function () {
             self.formationCreator.formationNameValidInput = true;
-            self.errorMessage && self.formationInfoManipulator.ordonator.unset(5);
+            self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
             self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
         };
 
@@ -589,7 +589,7 @@ function FormationDisplayFormation(){
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(drawing.width/2, 0)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            self.formationInfoManipulator.ordonator.set(5, self.errorMessage);
+            self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
             textarea.focus();
             self.labelValidInput = false;
         };
@@ -1592,7 +1592,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
 
         var removeErrorMessage = function () {
             self.questionNameValidInput = true;
-            self.errorMessage && self.questionCreatorManipulator.ordonator.unset(5);
+            self.errorMessage && self.questionCreatorManipulator.ordonator.unset(0);
             self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
 
@@ -1605,7 +1605,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             self.errorMessage = new svg.Text(REGEXERROR)
                 .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            self.questionCreatorManipulator.ordonator.set(5, self.errorMessage);
+            self.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
             textarea.focus();
             self.questionNameValidInput = false;
         };
