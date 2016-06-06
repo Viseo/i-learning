@@ -500,7 +500,11 @@ function FormationDisplayFormation(){
     drawing.currentPageDisplayed = "Formation";
     self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
     self.formationsManager.formationDisplayed = self;
-    self.graphElementSize = Math.min(self.levelHeight*0.8,self.graphCreaWidth*0.1);
+
+    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+    self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
+    self.levelHeight = (self.graphCreaHeight ) / 4;
+    self.graphElementSize = Math.min(self.levelHeight*0.6, self.graphCreaWidth*0.1);
     self.gamesLibraryManipulator = self.library.libraryManipulator;
     self.manipulator.last.add(self.gamesLibraryManipulator.first);
     self.manipulator.last.add(self.graphManipulator.first);
@@ -508,11 +512,8 @@ function FormationDisplayFormation(){
     self.manipulator.last.add(self.formationInfoManipulator.first);
 
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
-    self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
-    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio- drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
-    self.levelHeight = (self.graphCreaHeight ) / 4;
-    self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
+    self.levelWidth = drawing.width - self.libraryWidth - MARGIN;
     self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
     self.y = drawing.height * HEADER_SIZE ;
 
@@ -757,7 +758,6 @@ function FormationDisplayFormation(){
 
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
-        //self.graphBlock.rect.position(0, height/2-self.graphH/2);
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.graphManipulator).text;
         (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
@@ -768,7 +768,7 @@ function FormationDisplayFormation(){
         self.panel.back._acceptDrop = true;
         self.panel.resizeContent(height);
         self.panel.resizeContentW(self.levelWidth-1);
-        self.panel.back.parent.parentManip=self.graphManipulator;
+        self.panel.back.parent.parentManip = self.graphManipulator;
 
         self.updateAllLinks();
     };

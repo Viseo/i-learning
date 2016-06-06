@@ -273,6 +273,18 @@ function Domain() {
                         formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
                         break;
                 }
+                    level = formation.levelsTab[formation.targetLevelIndex];
+                    var nbOfGames = level.gamesTab.length;
+                    var spaceOccupied = (nbOfGames) * (formation.minimalMarginBetweenGraphElements) + formation.graphElementSize * nbOfGames;
+                    if(spaceOccupied > (level.parentFormation.levelWidth)){
+                        formation.levelWidth += (formation.minimalMarginBetweenGraphElements + formation.graphElementSize);
+                        level.obj.line = new svg.Line(level.obj.line.x1, level.obj.line.y1, level.obj.line.x1 + formation.levelWidth, level.obj.line.y2).color(myColors.black, 3, myColors.black);
+                        level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
+                        level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
+                        level.manipulator.ordonator.set(2, level.obj.line);
+                        level.parentFormation.deltaLevelWidthIncreased += (formation.minimalMarginBetweenGraphElements + formation.graphElementSize)/2;
+                    }
+
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
             }
@@ -504,17 +516,9 @@ function Domain() {
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
-            if(spaceOccupied > (level.parentFormation.levelWidth)){
-                level.parentFormation.levelWidth += (self.minimalMarginBetweenGraphElements + self.graphElementSize);
-                level.obj.line=new svg.Line(level.obj.line.x1,level.obj.line.y1,level.obj.line.x1+self.levelWidth,level.obj.line.y2).color(myColors.black, 3, myColors.black);
-                level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
-                level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
-                level.manipulator.ordonator.set(2,level.obj.line);
-                level.parentFormation.deltaLevelWidthIncreased += (self.minimalMarginBetweenGraphElements + self.graphElementSize)/2;
-            }
             level.gamesTab.forEach(function (game) {
-                !game.parentsGames  && (game.parentsGames = []);
-                !game.childrenGames  && (game.childrenGames = []);
+                !game.parentsGames && (game.parentsGames = []);
+                !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x = level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
