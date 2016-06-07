@@ -31,7 +31,8 @@ function admin() {
         formationsManager.display();
     };
     var result1 = dbListener.httpGetAsync("/getAllFormationsNames", callback);
-    function resizePaper(){
+    function resizePaper(event){
+        //event.defaultPrevented=true;
         if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
             drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
@@ -70,7 +71,16 @@ function admin() {
             }
         }
     }
-
+    var addEvent = function(object, type, callback) {
+        if (object == null || typeof(object) == 'undefined') return;
+        if (object.addEventListener) {
+            object.addEventListener(type, callback, false);
+        } else if (object.attachEvent) {
+            object.attachEvent("on" + type, callback);
+        } else {
+            object["on"+type] = callback;
+        }
+    };
     setTimeout(function(){
 
         svg.getSvgr().addGlobalEvent("resize", resizePaper);

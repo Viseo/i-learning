@@ -534,8 +534,6 @@ function FormationDisplayFormation(){
     if (playerMode) return;
 
 
-    self.gamesCounter = myFormation.gamesCounter;
-
     var showTitle = function() {
         var text = (self.label) ? self.label : (self.label=self.labelDefault);
         var color = (self.label) ? myColors.black : myColors.grey;
