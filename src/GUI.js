@@ -206,13 +206,13 @@ function LibraryDisplay(x, y, w, h) {
                 tempY += self.h / 4 + self.libMargin2;
             }
             let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
-            let objectTotal = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            let obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
             let X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
-            
+
             self.libraryManipulators[i].first.move(X, tempY);
 
-            self.itemsTab[i] = {objectTotal: objectTotal};
-            self.itemsTab[i].objectTotal.cadre.clicked = false;
+            self.itemsTab[i] = obj;
+            self.itemsTab[i].cadre.clicked = false;
         }
     }
 
@@ -234,7 +234,7 @@ function LibraryDisplay(x, y, w, h) {
             manip.first.move(point.x - point2.x, point.y - point2.y);
 
             if (self.itemsTab && self.itemsTab.length !== 0) {
-                if (self.itemsTab[0].objectTotal && (self.itemsTab[0].objectTotal.content.messageText !== "")) {
+                if (self.itemsTab[0].content && (self.itemsTab[0].content.messageText !== "")) {
                     self.gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
                     self.draggedObjectLabel = self.gameMiniature.content.messageText;
                     manip.ordonator.set(0, self.gameMiniature.cadre);
@@ -252,19 +252,19 @@ function LibraryDisplay(x, y, w, h) {
                 var mouseClick = function (event) {
                     var target = drawings.background.getTarget(event.clientX, event.clientY);
                     self.itemsTab.forEach(function (e) {
-                        if(e.objectTotal) {
-                            if (e.objectTotal.content.messageText === target.parent.children[1].messageText) {
-                                if (e.objectTotal !== self.gameSelected) {
+                        if(e.content) {
+                            if (e.content.messageText === target.parent.children[1].messageText) {
+                                if (e !== self.gameSelected) {
                                     self.gameSelected && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-                                    e.objectTotal.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                    self.gameSelected = e.objectTotal;
+                                    e.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                    self.gameSelected = e;
                                 }
                                 //else {
-                                //    e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                //    e.cadre.color(myColors.white, 1, myColors.black);
                                 //    self.gameSelected = null;
                                 //}
                                 else {
-                                    e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
+                                    e.cadre.color(myColors.white, 1, myColors.black);
                                     self.gameSelected = null;
                                 }
                             }
@@ -345,9 +345,7 @@ function LibraryDisplay(x, y, w, h) {
 
                 if (arrowMode) {
                     self.gameSelected = null;
-                    self.itemsTab.forEach(function (e) {
-                        e.objectTotal.cadre.color(myColors.white, 1, myColors.black);
-                    });
+                    self.itemsTab.forEach(e => {e.cadre.color(myColors.white, 1, myColors.black)});
 
                     self.formation.selectedGame && self.formation.selectedGame.icon.cadre.component.listeners.click();
 
@@ -1188,10 +1186,10 @@ function QuestionDisplay(x, y, w, h) {
 
     // Question avec Texte ET image
     if (typeof self.label !== "undefined" && self.imageSrc) {
-        var objectTotal = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
-        self.bordure = objectTotal.cadre;
-        self.content = objectTotal.content;
-        self.raphImage = objectTotal.image;
+        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
+        self.bordure = obj.cadre;
+        self.content = obj.content;
+        self.raphImage = obj.image;
     }
     // Question avec Texte uniquement
     else if (typeof self.label !== "undefined" && !self.imageSrc) {
