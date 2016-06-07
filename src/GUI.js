@@ -36,34 +36,26 @@ function AnswerDisplay (x, y, w, h) {
     w && (this.w=w);
     h && (this.h=h);
 
+    if(this.label && this.imageSrc) { // Question avec Texte ET image
+        let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator,this.image);
+        this.bordure = obj.cadre;
+        this.content = obj.text;
+        this.image = obj.image;
+    } else if(this.label && !this.imageSrc) { // Question avec Texte uniquement
+        let obj = displayText(this.label, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
+        this.bordure = obj.cadre;
+        this.content = obj.content;
 
-    // Question avec Texte ET image
-    if(this.label && this.imageSrc) {
-        var objectTotal = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator,this.image);
-        this.bordure = objectTotal.cadre;
-        this.content = objectTotal.text;
-        this.image = objectTotal.image;
-
-    }
-    // Question avec Texte uniquement
-    else if(this.label && !this.imageSrc) {
-        var object = displayText(this.label, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
-        this.bordure = object.cadre;
-        this.content = object.content;
-
-    }
-    // Question avec Image uniquement
-    else if(this.imageSrc && !this.label) {
-        var obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.w, this.h, this.manipulator);
+    } else if(this.imageSrc && !this.label) { // Question avec Image uniquement
+        let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.w, this.h, this.manipulator);
         this.image = obj.image;
         this.bordure = obj.cadre;
-    }
-    // Cas pour test uniquement : si rien, n'affiche qu'une bordure
-    else {
+    } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         this.bordure = new svg.Rect(this.w, this.h).color(this.bgColor, 1, myColors.black).corners(25, 25);
         this.manipulator.last.add(this.bordure);
 
     }
+
     if(this.selected){// image pré-selectionnée
         this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
 
@@ -189,14 +181,13 @@ function LibraryDisplay(x, y, w, h) {
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w / 2, (1 / 20) * h);
 
-    var maxImagesPerLine = Math.floor((w-MARGIN)/(self.imageWidth+MARGIN)) || 1; //||1 pour le cas de resize très petit
-    //var maxImagesPerLine = Math.floor((w-self.libMargin)/(self.imageWidth+self.libMargin));
+    let maxImagesPerLine = Math.floor((w-MARGIN)/(self.imageWidth+MARGIN)) || 1; //||1 pour le cas de resize très petit
     self.libMargin = (w - (maxImagesPerLine * self.imageWidth)) / (maxImagesPerLine + 1);
-    var maxGamesPerLine = 1;
+    let maxGamesPerLine = 1;
     self.libMargin2 = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN;
-    var tempY = (2 / 10 * h);
+    let tempY = (2 / 10 * h);
 
-    for (var i = 0; i < self.itemsTab.length; i++) {
+    for (let i = 0; i < self.itemsTab.length; i++) {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
@@ -204,19 +195,20 @@ function LibraryDisplay(x, y, w, h) {
             self.libraryManipulator.last.remove(self.libraryManipulators[i].first);
         }
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-        if (self.itemsTab[i].src) {
-            var objectTotal = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]);
-            objectTotal.image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
-            self.libraryManipulators[i].ordonator.set(0, objectTotal.image);
-            var X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
+        if (drawing.currentPageDisplayed === "QuizManager") {
+            let image = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
+            image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
+            self.libraryManipulators[i].ordonator.set(0, image);
+            let X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
-        } else {
+        } else { // Formation
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.h / 4 + self.libMargin2;
             }
-            var label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
-            objectTotal = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
-            X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+            let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
+            let objectTotal = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
+            let X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+            
             self.libraryManipulators[i].first.move(X, tempY);
 
             self.itemsTab[i] = {objectTotal: objectTotal};
@@ -316,7 +308,7 @@ function LibraryDisplay(x, y, w, h) {
         svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
     });
 
-    if (!self.itemsTab.some(i=>i.src)) {
+    if (drawing.currentPageDisplayed === "Formation") {
         if(self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)!==-1){
             self.libraryManipulator.last.remove(self.arrowModeManipulator.first);
         }
