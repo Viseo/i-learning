@@ -1068,137 +1068,69 @@ function Domain() {
         self.previewButtonHeightRatio = 0.1;
         self.saveButtonHeightRatio = 0.1;
         self.marginRatio = 0.03;
-        self.redim = function () {
-            self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
-            self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
-            self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
-            self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
-            self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
-            self.quizzManagerManipulator.last.add(self.saveQuizButtonManipulator.first);
-            self.libraryWidth = drawing.width * self.libraryWidthRatio;
-            self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
-            self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
-            self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-            self.libraryHeight = drawing.height * self.libraryHeightRatio;
-            self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
-            self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
-            self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
-            self.ButtonWidth = 150;
-            self.globalMargin = {
-                height: self.marginRatio * drawing.height,
-                width: self.marginRatio * drawing.width
-            };
-            self.questionPuzzleCoordinates = {
-                x: self.globalMargin.width / 2,
-                y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
-                w: (drawing.width - self.globalMargin.width),
-                h: (self.questionsPuzzleHeight - self.globalMargin.height)
-            };
-        };
-        self.redim();
     };
 
 ////////////////// end of QuizzManager.js //////////////////////////
 }
 
+User = function () {
 
+    let self = this;
+    self.firstName;
+    self.lastName;
+    self.mailAdress;
+    self.password;
+
+
+}
 ////////////////// InscriptionManager.js //////////////////////////
 
 
-InscriptionManager = function (quizz) {
-    var self = this;
+InscriptionManager = function () {
 
+    let self = this;
 
-    self.quizzName = "";
-    self.quizzNameDefault = "Ecrire ici le nom du quiz";
-    self.tabQuestions = [defaultQuestion];
-    self.questionPuzzle = {};
-    self.loadQuizz = function (quizz, parentFormation) {
-        self.indexOfEditedQuestion = 0;
-        self.quizz = new Quizz(quizz, parentFormation);
-        self.quizzName = self.quizz.title;
-        self.quizz.tabQuestions[0].selected = true;
-        self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
-        self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
-    };
-    if (!quizz) {
-        var initialQuizzObject = {
-            title: defaultQuizz.title,
-            bgColor: myColors.white,
-            tabQuestions: self.tabQuestions,
-            puzzleLines: 3,
-            puzzleRows: 3
-        };
-        self.quizz = new Quizz(initialQuizzObject, false);
-        self.indexOfEditedQuestion = 0;
-        self.quizzName = self.quizz.title;
-    } else {
-        self.loadQuizz(quizz);
-    }
-    self.questionCreator = new QuestionCreator(self, self.quizz.tabQuestions[self.indexOfEditedQuestion]);
-    self.library = new Library(myLibraryImage);
-    self.quizz.tabQuestions[0].selected = true;
-    self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
-    self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
-    self.quizzManagerManipulator = new Manipulator(self);
-    self.questionsPuzzleManipulator = new Manipulator(self);
-    self.questionsPuzzleManipulator.addOrdonator(1);
-    self.quizzInfoManipulator = new Manipulator(self);
-    self.quizzInfoManipulator.addOrdonator(5);
-    self.questionCreatorManipulator = self.questionCreator.manipulator;
-    self.previewButtonManipulator = new Manipulator(self);
-    self.previewButtonManipulator.addOrdonator(2);
-    self.saveQuizButtonManipulator = new Manipulator(self);
-    self.saveQuizButtonManipulator.addOrdonator(2);
-    self.returnButtonManipulator=new Manipulator(self);
-    self.returnButtonManipulator.addOrdonator(1);
-    self.libraryIManipulator = self.library.libraryManipulator;
+    self.manipulator = new Manipulator(self);
+    self.manipulator.addOrdonator(6);
+    self.firstNameManipulator = new Manipulator(self);
+    self.firstNameManipulator.addOrdonator(3);
+    self.lastNameManipulator = new Manipulator(self);
+    self.lastNameManipulator.addOrdonator(3);
+    self.mailAdressManipulator = new Manipulator(self);
+    self.mailAdressManipulator.addOrdonator(3);
+    self.passwordManipulator = new Manipulator(self);
+    self.passwordManipulator.addOrdonator(3);
+    self.passwordConfirmationManipulator = new Manipulator(self);
+    self.passwordConfirmationManipulator.addOrdonator(3);
+    self.saveButtonManipulator = new Manipulator(self);
+    self.saveButtonManipulator.addOrdonator(3);
 
-    // WIDTH
-    self.libraryWidthRatio = 0.15;
-    self.questCreaWidthRatio = 1 - self.libraryWidthRatio;
-
+    self.manipulator.last.add(self.firstNameManipulator.first);
+    self.manipulator.last.add(self.lastNameManipulator.first);
+    self.manipulator.last.add(self.mailAdressManipulator.first);
+    self.manipulator.last.add(self.passwordManipulator.first);
+    self.manipulator.last.add(self.passwordConfirmationManipulator.first);
+    self.manipulator.last.add(self.saveButtonManipulator.first);
 
     // HEIGHT
-    self.quizzInfoHeightRatio = 0.05;
-    self.questionsPuzzleHeightRatio = 0.25;
-    self.questCreaHeightRatio = 0.57;
-    self.libraryHeightRatio = self.questCreaHeightRatio;
-    self.previewButtonHeightRatio = 0.1;
-    self.saveButtonHeightRatio = 0.1;
-    self.marginRatio = 0.03;
-    self.redim = function () {
-        self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
-        self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
-        self.quizzManagerManipulator.last.add(self.questionCreatorManipulator.first);
-        self.quizzManagerManipulator.last.add(self.previewButtonManipulator.first);
-        self.quizzManagerManipulator.last.add(self.saveQuizButtonManipulator.first);
-        self.libraryWidth = drawing.width * self.libraryWidthRatio;
-        self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
-        self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
-        self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-        self.libraryHeight = drawing.height * self.libraryHeightRatio;
-        self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
-        self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
-        self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
-        self.ButtonWidth = 150;
-        self.globalMargin = {
-            height: self.marginRatio * drawing.height,
-            width: self.marginRatio * drawing.width
-        };
-        self.questionPuzzleCoordinates = {
-            x: self.globalMargin.width / 2,
-            y: (self.quizzInfoHeight + self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2),
-            w: (drawing.width - self.globalMargin.width),
-            h: (self.questionsPuzzleHeight - self.globalMargin.height)
-        };
-    };
-    self.redim();
+    self.saveButtonHeightRatio = 0.075;
+
+    self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
+    self.saveButtonWidth = 200;
+
+    self.lastNameLabel = "Nom :";
+    self.firstNameLabel = "Prénom :";
+    self.mailAdressLabel = "Adresse mail :";
+    self.passwordLabel = "Mot de passe :";
+    self.passwordConfirmationLabel = "Confirmer votre mot de passe :";
+    self.lastNameLabel = "Nom :";
+    self.saveButtonLabel = "S'enregistrer"
+
 };
 
+
 ////////////////// end of QuizzManager.js //////////////////////////
-}
+
 if(typeof exports !== "undefined") {
     exports.Domain = Domain;
     exports.setUtil = setUtil;

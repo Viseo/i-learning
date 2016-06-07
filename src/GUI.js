@@ -2029,6 +2029,156 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 }
 
+
+function InscriptionManagerDisplay() {
+    let self = this;
+    self.header = new Header();
+    self.header.display();
+    mainManipulator.ordonator.set(1, self.manipulator.first);
+    self.manipulator.first.move(drawing.width/2, drawing.height/2);
+
+    var lastNameLabel = new svg.Text(self.lastNameLabel).position(0,0);
+    lastNameLabel.font("Arial", 20).anchor("end");
+    self.lastNameManipulator.ordonator.set(2,lastNameLabel);
+    self.lastNameManipulator.first.move(-drawing.width/10, -3*drawing.height/10);
+
+
+    var firstNameLabel = new svg.Text(self.firstNameLabel).position(0,0);
+    firstNameLabel.font("Arial", 20).anchor("end");
+    self.firstNameManipulator.ordonator.set(2,firstNameLabel);
+    self.firstNameManipulator.first.move(-drawing.width/10, -2*drawing.height/10);
+
+    var mailAdressLabel = new svg.Text(self.mailAdressLabel).position(0,0);
+    mailAdressLabel.font("Arial", 20).anchor("end");
+    self.mailAdressManipulator.ordonator.set(2,mailAdressLabel);
+    self.mailAdressManipulator.first.move(-drawing.width/10, -1*drawing.height/10);
+
+    var passwordLabel = new svg.Text(self.passwordLabel).position(0,0);
+    passwordLabel.font("Arial", 20).anchor("end");
+    self.passwordManipulator.ordonator.set(2,passwordLabel);
+    self.passwordManipulator.first.move(-drawing.width/10, 0);
+
+    var passwordConfirmationLabel = new svg.Text(self.passwordConfirmationLabel).position(0,0);
+    passwordConfirmationLabel.font("Arial", 20).anchor("end");
+    self.passwordConfirmationManipulator.ordonator.set(2,passwordConfirmationLabel);
+    self.passwordConfirmationManipulator.first.move(-drawing.width/10, drawing.height/10);
+
+    self.previewButton = displayText(self.saveButtonLabel, self.saveButtonWidth, self.saveButtonHeight, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
+    self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
+
+    var w = drawing.width/6;
+    var h = 1.5*svg.getSvgr().boundingRect(lastNameLabel.component).height
+    var x = drawing.width/10;
+
+
+;
+    self.lastNameField = displayTextWithoutCorners("cucu ", w, h ,myColors.black , myColors.white, self.fontSize, self.font, self.lastNameManipulator);
+    self.lastNameField.content.position(x,0);
+
+    var y = -svg.getSvgr().boundingRect(self.lastNameField.content.component).height/4;
+
+    self.lastNameField.cadre.position(x,y);
+
+    self.firstNameField = displayTextWithoutCorners("cucu ", w, h ,myColors.black , myColors.white, self.fontSize, self.font, self.firstNameManipulator);
+    self.firstNameField.content.position(x,0);
+    self.firstNameField.cadre.position(x,y);
+
+    self.mailAdressField = displayTextWithoutCorners("cucu ", w, h ,myColors.black , myColors.white, self.fontSize, self.font, self.mailAdressManipulator);
+    self.mailAdressField.content.position(x,0);
+    self.mailAdressField.cadre.position(x,y);
+
+    self.passwordField = displayTextWithoutCorners("cucu ", w, h ,myColors.black , myColors.white, self.fontSize, self.font, self.passwordManipulator);
+    self.passwordField.content.position(x,0);
+    self.passwordField.cadre.position(x,y);
+
+    self.passwordConfirmationField = displayTextWithoutCorners("cucu ", w, h,myColors.black , myColors.white, self.fontSize, self.font, self.passwordConfirmationManipulator);
+    self.passwordConfirmationField.content.position(x,0);
+    self.passwordConfirmationField.cadre.position(x,y);
+
+
+    var clickEditionField = function (field, manipulator) {
+        return function () {
+            var contentarea = document.createElement("textarea");
+            contentarea.value = "";
+            contentarea.width = w;
+            contentarea.height = h;
+
+            contentarea.globalPointCenter = field.cadre.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
+            manipulator.ordonator.unset(1, field.content.text);
+
+            var contentareaStyle = {
+                toppx: contentarea.globalPointCenter.y ,
+                leftpx: contentarea.globalPointCenter.x,
+                height: contentarea.height,
+                width: field.cadre.width
+            };
+            contentarea.setAttribute("style", "position: absolute; top:" + (contentareaStyle.toppx) + "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" + (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
+
+            var body = document.getElementById("content");
+            body.appendChild(contentarea).focus();
+
+            /**var removeErrorMessage = function () {
+                self.answerNameValidInput = true;
+                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(0);
+                field.cadre.color(myColors.white, 1, myColors.black);
+            };
+
+            var displayErrorMessage = function () {
+                removeErrorMessage();
+                field.cadre.color(myColors.white, 2, myColors.red);
+                var libraryRatio = 0.2;
+                var previewButtonHeightRatio = 0.1;
+                var marginErrorMessagePreviewButton = 0.03;
+                var position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN);
+                var anchor = 'middle';
+                self.errorMessage = new svg.Text(REGEXERROR)
+                    .position(position, drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
+                    .font("Arial", 15).color(myColors.red).anchor(anchor);
+                self.editor.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
+                contentarea.focus();
+                self.answerNameValidInput = false;
+            };**/
+
+
+            contentarea.oninput = function () {
+                self.checkInputContentArea({
+                    contentarea: contentarea,
+                    border: field.cadre,
+                    // remove: removeErrorMessage,
+                    // display: displayErrorMessage
+                });
+            };
+
+            self.checkInputContentArea({
+                contentarea: contentarea,
+                border: field.cadre,
+                // remove: removeErrorMessage,
+                // display: displayErrorMessage
+            });
+        };
+    };
+
+    var clickEditionLastName = clickEditionField(self.lastNameField, self.lastNameManipulator);
+    svg.addEvent(self.lastNameField.content, "click", clickEditionLastName);
+    svg.addEvent(self.lastNameField.cadre, "click", clickEditionLastName);
+
+    var clickEditionFirstName = clickEditionField(self.firstNameField, self.firstNameManipulator);
+    svg.addEvent(self.firstNameField.content, "click", clickEditionFirstName);
+    svg.addEvent(self.firstNameField.cadre, "click", clickEditionFirstName);
+
+    var clickEditionMailAdress = clickEditionField(self.mailAdressField, self.mailAdressManipulator);
+    svg.addEvent(self.mailAdressField.content, "click", clickEditionMailAdress);
+    svg.addEvent(self.mailAdressField.cadre, "click", clickEditionMailAdress);
+
+    var clickEditionPassword = clickEditionField(self.passwordField, self.passwordManipulator);
+    svg.addEvent(self.passwordField.content, "click", clickEditionPassword);
+    svg.addEvent(self.passwordField.cadre, "click", clickEditionPassword);
+
+    var clickEditionPasswordConfirmation = clickEditionField(self.passwordConfirmationField, self.passwordConfirmationManipulator);
+    svg.addEvent(self.passwordConfirmationField.content, "click", clickEditionPasswordConfirmation);
+    svg.addEvent(self.passwordConfirmationField.cadre, "click", clickEditionPasswordConfirmation);
+};
+
 var AdminGUI = function (){
     domain && domain.Domain();
     playerMode = false;
@@ -2082,6 +2232,7 @@ var LearningGUI = function (){
     Quizz.prototype.displayResult = QuizzDisplayResult;
     Quizz.prototype.displayMiniature = GameDisplayMiniature;
     Quizz.prototype.displayScore = QuizzDisplayScore;
+    InscriptionManager.prototype.display = InscriptionManagerDisplay;
 };
 if (typeof exports !== "undefined") {
     exports.AdminGUI = AdminGUI;
