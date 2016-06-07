@@ -198,7 +198,7 @@ function LibraryDisplay(x, y, w, h) {
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
 
         if (drawing.currentPageDisplayed === "QuizManager") {
-            let image = displayImage(item.src, item, self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
+            let image = displayImage(myLibraryImage.tab[i].imgSrc, item, self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
             image.srcDimension = {width: item.width, height: item.height};
             self.libraryManipulators[i].ordonator.set(0, image);
 
@@ -1547,8 +1547,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     var dblclickEditionQuestionBlock = function () {
-        var textarea = document.createElement("textarea");
-        textarea.textContent = self.linkedQuestion.label;
+        var textarea = !runtime ? document.createElement("textarea") : {};
+        textarea.value = self.linkedQuestion.label;
         textarea.width = self.w;
         textarea.height = (self.linkedQuestion.image) ? svg.getSvgr().boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
 
@@ -1561,9 +1561,9 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             width: (self.w*5/6),
             height: (textarea.height)
         };
-        textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
-        var body = document.getElementById("content");
-        body.appendChild(textarea).focus();
+        !runtime && textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
+        var body = !runtime && document.getElementById("content");
+        !runtime && body.appendChild(textarea).focus();
 
         var onblur = function () {
             if(textarea.value){
@@ -1618,11 +1618,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         w: self.w - 2 * MARGIN,
         h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
     };
-
-
-
     showTitle();
-
     // bloc Answers
     if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
 

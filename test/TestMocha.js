@@ -163,7 +163,7 @@ describe('Quizz game', function () {
         runTest(jsonFile, execute);
     });
 });
-describe('Firefox game', function () {
+describe('Admin use', function () {
     beforeEach(function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
@@ -252,6 +252,22 @@ describe('Firefox game', function () {
     it("an admin use with resizes", function (done) {
         var jsonFile = "./log/testAdminResize.json";
         testutils.retrieveDB("./log/dbtestAdminResize.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
+    });
+
+    it("an admin use with add/delete arrows", function (done) {
+        var jsonFile = "./log/testAdminArrows.json";
+        testutils.retrieveDB("./log/dbtestAdminArrows.json", dbListener, function () {
             var execute = function () {
                 var globalVariables = mainModule.setGlobalVariable();
                 domain.setGlobalVariables(globalVariables);
