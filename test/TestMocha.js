@@ -205,8 +205,8 @@ describe('Firefox game', function () {
     });
 
     it("an admin goes to formation and creates games and save", function (done) {
-        var jsonFile = "./log/testAdminCreateGamesAndSave.json";
-        testutils.retrieveDB("./log/dbtestAdminCreateGamesAndSave.json", dbListener, function () {
+        var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
+        testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {
             var execute = function () {
                 var globalVariables = mainModule.setGlobalVariable();
                 domain.setGlobalVariables(globalVariables);

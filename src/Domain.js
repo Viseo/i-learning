@@ -187,6 +187,7 @@ function Domain() {
             if (self.itemsTab[i].imgSrc) {
                 self.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
+                    console.log(this.src);
                 });
             }
         }
@@ -257,22 +258,22 @@ function Domain() {
                         }
                     }
 
-                var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
-                switch (objectToBeAddedLabel) {
-                    case ("Quiz"):
-                        var newQuizz = new Quizz(defaultQuizz, false, formation);
-                        formation.gamesCounter.quizz++;
-                        newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                        newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
-                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
-                        break;
-                    case ("Bd"):
-                        var newBd = new Bd({}, formation);
-                        formation.gamesCounter.bd++;
-                        newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
-                        formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
-                        break;
-                }
+                    var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
+                    switch (objectToBeAddedLabel) {
+                        case ("Quiz"):
+                            var newQuizz = new Quizz(defaultQuizz, false, formation);
+                            formation.gamesCounter.quizz++;
+                            newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                            newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
+                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
+                            break;
+                        case ("Bd"):
+                            var newBd = new Bd({}, formation);
+                            formation.gamesCounter.bd++;
+                            newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
+                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
+                            break;
+                    }
                     level = formation.levelsTab[formation.targetLevelIndex];
                     var nbOfGames = level.gamesTab.length;
                     var spaceOccupied = (nbOfGames) * (formation.minimalMarginBetweenGraphElements) + formation.graphElementSize * nbOfGames;
@@ -504,11 +505,11 @@ function Domain() {
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 svg.addEvent(self.messageDragDrop, "mouseup", self.mouseUpGraphBlock);
-                runtime && runtime.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
+                runtime && runtime.addEvent(self.panel.back.component, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
                     e.obj.cadre.component.target && svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
-                    runtime && runtime.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
+                    runtime && runtime.addEvent(e.obj.cadre.component, "mouseup", self.mouseUpGraphBlock);
                 });
             }
         };
@@ -727,6 +728,7 @@ function Domain() {
             if (question.imageSrc) {
                 self.image = imageController.getImage(self.imageSrc, function () {
                     self.imageLoaded = true;
+                    console.log(this.src);
                     self.dimImage = {width: self.image.width, height: self.image.height};
                 });
                 self.imageLoaded = false;
