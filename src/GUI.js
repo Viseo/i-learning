@@ -404,61 +404,69 @@ function LibraryDisplay(x, y, w, h) {
 }
 
 function AddEmptyElementDisplay(x, y, w, h) {
-    var self = this;
+    let self = this;
+    
     self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-    self.plus = drawPlus(0,0, h*.3, h*0.3);
+    self.plus = drawPlus(0, 0, h * 0.3, h * 0.3);
     self.manipulator.ordonator.set(2, self.plus);
-    self.obj.content.position(0,h*0.35);
+    self.obj.content.position(0, h * 0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
     self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute('stroke-dasharray', '10, 5');
 
     var dblclickAdd = function () {
+        self.manipulator.flush();
         switch (self.type) {
             case 'answer':
-                self.parent.linkedQuestion.tabAnswer.pop();
-                var newAnswer = new Answer(null, self.parent.linkedQuestion);
-                //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.content));
-                //self.manipulator.ordonator.unset(self.manipulator.ordonator.children.indexOf(self.obj.cadre));
-                self.manipulator.flush();
-                //self.manipulator.ordonator.children[7].parentManip.ordonator.unset(0);
-
-                //self.parent.parent.quizz.tabQuestions[self.parent.parent.indexOfEditedQuestion].tabAnswer.push(newAnswer);
+                let newAnswer = new Answer(null, self.parent.linkedQuestion);
                 newAnswer.isEditable(self, true);
+                self.parent.linkedQuestion.tabAnswer.pop();
                 self.parent.linkedQuestion.tabAnswer.push(newAnswer);
 
                 if(self.parent.linkedQuestion.tabAnswer.length < self.parent.MAX_ANSWERS) {
                     self.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
                 }
+
                 self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, self.parent.coordinatesAnswers, true, self);
                 self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
-                self.parent.puzzle.display(self.parent.coordinatesAnswers.x, self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w, self.parent.coordinatesAnswers.h, 0);
+                self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
+                    self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w,
+                    self.parent.coordinatesAnswers.h,
+                    0);
                 break;
             case 'question':
-                //self.manipulator.ordonator.unset(0);
-                //self.parent.questionPuzzle.puzzleManipulator.ordonator.unset(1);
-                ////self.plusManipulator.flush();
-                self.manipulator.flush();
+                let newQuestion = new Question(null, self.parent.quizz);
+                newQuestion.selected = true;
 
                 self.parent.quizz.tabQuestions.pop();
-
-                var newQuestion = new Question(null, self.parent.quizz);
                 self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false;
-                newQuestion.selected = true;
                 self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
                 self.parent.quizz.tabQuestions.push(newQuestion);
-                var AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
-                self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
-                if(self.parent.questionPuzzle.questionsTab.length >self.parent.questionPuzzle.rows){
-                    self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition+1);
-                } else {
-                    self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x, self.parent.questionPuzzleCoordinates.y, self.parent.questionPuzzleCoordinates.w, self.parent.questionPuzzleCoordinates.h, self.parent.questionPuzzle.startPosition);
-                }
-                self.parent.questionCreator.loadQuestion(newQuestion);
-                //self.parent.questionCreatorManipulator.flush();
 
-                self.parent.questionCreator.display(self.parent.questionCreator.previousX, self.parent.questionCreator.previousY, self.parent.questionCreator.previousW, self.parent.questionCreator.previousH);
+                let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
+                self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
+
+                if (self.parent.questionPuzzle.questionsTab.length > self.parent.questionPuzzle.rows) {
+                    self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x,
+                        self.parent.questionPuzzleCoordinates.y,
+                        self.parent.questionPuzzleCoordinates.w,
+                        self.parent.questionPuzzleCoordinates.h,
+                        self.parent.questionPuzzle.startPosition + 1);
+                } else {
+                    self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x,
+                        self.parent.questionPuzzleCoordinates.y,
+                        self.parent.questionPuzzleCoordinates.w,
+                        self.parent.questionPuzzleCoordinates.h,
+                        self.parent.questionPuzzle.startPosition);
+                }
+
+                self.parent.questionCreator.loadQuestion(newQuestion);
+
+                self.parent.questionCreator.display(self.parent.questionCreator.previousX,
+                    self.parent.questionCreator.previousY,
+                    self.parent.questionCreator.previousW,
+                    self.parent.questionCreator.previousH);
         }
     };
 
