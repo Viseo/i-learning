@@ -22,110 +22,113 @@ function setRuntime(_runtime){
 }
 
 function AnswerDisplay (x, y, w, h) {
-    var self = this;
-    if(this.editable) {
+    let self = this;
+    
+    if(self.editable) {
         answerEditableDisplay(x, y, w, h);
         return;
     }
-    if(typeof x !=='undefined'){
-        this.x=x;
-    }
-    if(typeof y !=='undefined'){
-        this.y=y;
-    }
-    w && (this.w=w);
-    h && (this.h=h);
+    x && (self.x = x);
+    y && (self.y = y);
+    w && (self.w = w);
+    h && (self.h = h);
 
-    if(this.label && this.imageSrc) { // Question avec Texte ET image
-        let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator,this.image);
-        this.bordure = obj.cadre;
-        this.content = obj.text;
-        this.image = obj.image;
-    } else if(this.label && !this.imageSrc) { // Question avec Texte uniquement
-        let obj = displayText(this.label, this.w, this.h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
-        this.bordure = obj.cadre;
-        this.content = obj.content;
+    if (self.label && self.imageSrc) { // Question avec Texte ET image
+        let obj = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator,self.image);
+        self.bordure = obj.cadre;
+        self.content = obj.text;
+        self.image = obj.image;
+    } else if (self.label && !self.imageSrc) { // Question avec Texte uniquement
+        let obj = displayText(self.label, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+        self.bordure = obj.cadre;
+        self.content = obj.content;
 
-    } else if(this.imageSrc && !this.label) { // Question avec Image uniquement
-        let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.w, this.h, this.manipulator);
-        this.image = obj.image;
-        this.bordure = obj.cadre;
+    } else if (self.imageSrc && !self.label) { // Question avec Image uniquement
+        let obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.w, self.h, self.manipulator);
+        self.image = obj.image;
+        self.bordure = obj.cadre;
     } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
-        this.bordure = new svg.Rect(this.w, this.h).color(this.bgColor, 1, myColors.black).corners(25, 25);
-        this.manipulator.last.add(this.bordure);
+        self.bordure = new svg.Rect(self.w, self.h).color(self.bgColor, 1, myColors.black).corners(25, 25);
+        self.manipulator.last.add(self.bordure);
 
     }
 
-    if(this.selected){// image pré-selectionnée
-        this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
-
+    if(self.selected){ // image pré-selectionnée
+        self.bordure.color(self.bgColor, 5, SELECTION_COLOR);
     }
-    this.manipulator.translator.move(this.x,this.y);
+    self.manipulator.translator.move(self.x,self.y);
 
     function answerEditableDisplay(x, y, w, h) {
-        self.checkboxSize = h*0.2;
-        var showTitle = function () {
-            var text = (self.label) ? self.label : self.labelDefault;
-            var color = (self.label) ? myColors.black : myColors.grey;
+        self.checkboxSize = h * 0.2;
+
+        let showTitle = function () {
+            let text = (self.label) ? self.label : self.labelDefault,
+                color = (self.label) ? myColors.black : myColors.grey;
+
             if(self.image){
                 self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
-            }
-            else{
+            } else {
                 self.obj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
+
             self.obj.cadre.fillOpacity(0.001);
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
-            var editor = (self.editor.puzzle ? self.editor : self.editor.parent);
+
+            let editor = (self.editor.puzzle ? self.editor : self.editor.parent);
             editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
-            svg.addEvent(self.obj.content, "dblclick", dblclickEditionAnswer);
-            svg.addEvent(self.obj.cadre, "dblclick", dblclickEditionAnswer);
+
+            svg.addEvent(self.obj.content, 'dblclick', dblclickEditionAnswer);
+            svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
         };
 
-        var dblclickEditionAnswer = function () {
-            var contentarea = document.createElement("textarea");
+        let dblclickEditionAnswer = function () {
+            self.manipulator.ordonator.unset(1, self.obj.content);
+
+            let contentarea = document.createElement('textarea');
             contentarea.value = self.label;
             contentarea.width = w;
             contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
-
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-            self.manipulator.ordonator.unset(1, self.obj.content);
-            var contentareaStyle = {
+
+            let contentareaStyle = {
                 toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
                 leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
                 height:(self.image) ? contentarea.height : (h*.5),
                 width:self.obj.cadre.width*5/6
             };
-            contentarea.setAttribute("style", "position: absolute; top:"+(contentareaStyle.toppx)+"px; left:"+(contentareaStyle.leftpx)+"px; width:"+contentareaStyle.width+"px; height:"+(contentareaStyle.height)+"px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;");
 
-            var body = document.getElementById("content");
-            body.appendChild(contentarea).focus();
+            contentarea.setAttribute('style', 'position: absolute; top:' + (contentareaStyle.toppx) + 'px; left:' +
+                (contentareaStyle.leftpx) + 'px; width:' + contentareaStyle.width + 'px; height:' + (contentareaStyle.height) +
+                'px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;');
 
-            var removeErrorMessage = function () {
+            document.getElementById('content').appendChild(contentarea).focus();
+
+            let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
                 self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(0);
                 self.obj.cadre.color(myColors.white, 1, myColors.black);
             };
 
-            var displayErrorMessage = function () {
+            let displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                var libraryRatio = 0.2;
-                var previewButtonHeightRatio = 0.1;
-                var marginErrorMessagePreviewButton = 0.03;
-                var position = (window.innerWidth/2 - 0.5 * libraryRatio*drawing.width+2*MARGIN);
-                var anchor = 'middle';
+                let libraryRatio = 0.2;
+                let previewButtonHeightRatio = 0.1;
+                let marginErrorMessagePreviewButton = 0.03;
+                let position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN);
+                let anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
-                    .position(position,drawing.height*(1-previewButtonHeightRatio - marginErrorMessagePreviewButton)-2*MARGIN)
-                    .font("Arial", 15).color(myColors.red).anchor(anchor);
+                    .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
+                    .font('Arial', 15).color(myColors.red).anchor(anchor);
                 self.editor.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
 
-            var onblur = function () {
+            let onblur = function () {
                 self.answerNameValidInput && (self.label = contentarea.value);
                 contentarea.remove();
                 showTitle();
@@ -134,6 +137,7 @@ function AnswerDisplay (x, y, w, h) {
                     self.obj.checkbox.answerParent = self;
                 }
             };
+
             contentarea.oninput = function () {
                 self.checkInputContentArea({
                     contentarea: contentarea,
@@ -156,10 +160,12 @@ function AnswerDisplay (x, y, w, h) {
 
         self.manipulator.flush();
         showTitle();
+
         if(typeof self.obj.checkbox === 'undefined') {
             self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }
+        
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });
@@ -1920,7 +1926,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
-
 function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
@@ -2024,7 +2029,6 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 }
-
 
 function InscriptionManagerDisplay() {
     let self = this;
@@ -2173,7 +2177,7 @@ function InscriptionManagerDisplay() {
     var clickEditionPasswordConfirmation = clickEditionField(self.passwordConfirmationField, self.passwordConfirmationManipulator);
     svg.addEvent(self.passwordConfirmationField.content, "click", clickEditionPasswordConfirmation);
     svg.addEvent(self.passwordConfirmationField.cadre, "click", clickEditionPasswordConfirmation);
-};
+}
 
 var AdminGUI = function (){
     domain && domain.Domain();
