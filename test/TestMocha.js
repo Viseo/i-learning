@@ -84,9 +84,22 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game with 2 Answers Right and a resize", function (done) {
+    it("plays a complete quizz game using resize", function (done) {
         this.timeout(100000);
-        var jsonFile = "./log/testQuizzTwoRightAnswersResize.json";
+        var jsonFile = "./log/testQuizzResize.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+    it("plays a complete quizz game with 2 Answers correct", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testQuizzTwoRightAnswers.json";
         var execute = function () {
             var globalVariables = mainModule.setGlobalVariable();
             domain.setGlobalVariables(globalVariables);
@@ -250,43 +263,6 @@ describe('Firefox game', function () {
             runTest(jsonFile, execute);
         });
         this.timeout(100000);
-    });
-
-    //it("a short admin use (to QuizzManager)", function (done) {
-    //    this.timeout(100000);
-    //    checkScenario(
-    //        function () {
-    //            adminModule.admin();
-    //        },
-    //        "./log/testFirefoxAdminQuizzManager.json", 'content', runtime, done);
-    //});
-
-    it("a short admin use (to QuizzManager, with new questions and answers)", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminAddElementsSmall.json", 'content', runtime, done);
-    });
-
-    it("a short admin use (to QuizzManager, with checkbox use and toggle button)", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                var param = {speed: 50, step: 10};
-                adminModule.admin();
-            },
-            "./log/testFirefoxAdminCheckbox.json", 'content', runtime, done);
-    });
-
-    it("a short admin use (edit formation title)", function (done) {
-        this.timeout(100000);
-        checkScenario(
-            function () {
-                adminModule.admin();
-            },
-            "./log/testTextarea.json", 'content', runtime, done);
     });
 });
 
