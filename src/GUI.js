@@ -187,34 +187,37 @@ function LibraryDisplay(x, y, w, h) {
     self.libMargin2 = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN;
     let tempY = (2 / 10 * h);
 
-    for (let i = 0; i < self.itemsTab.length; i++) {
+    self.itemsTab.forEach((item, i) => {
         if (i % maxImagesPerLine === 0 && i !== 0) {
             tempY += self.imageHeight + self.libMargin;
         }
-        if(self.libraryManipulator.last.children.indexOf(self.libraryManipulators[i].first )!==-1){
+
+        if(self.libraryManipulator.last.children.indexOf(self.libraryManipulators[i].first ) !== -1){
             self.libraryManipulator.last.remove(self.libraryManipulators[i].first);
         }
         self.libraryManipulator.last.add(self.libraryManipulators[i].first);
+
         if (drawing.currentPageDisplayed === "QuizManager") {
-            let image = displayImage(self.itemsTab[i].src, self.itemsTab[i], self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
-            image.srcDimension = {width: self.itemsTab[i].width, height: self.itemsTab[i].height};
+            let image = displayImage(item.src, item, self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
+            image.srcDimension = {width: item.width, height: item.height};
             self.libraryManipulators[i].ordonator.set(0, image);
+
             let X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
             self.libraryManipulators[i].first.move(X, tempY);
         } else { // Formation
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += self.h / 4 + self.libMargin2;
             }
+
             let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
             let obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
-            let X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
-
-            self.libraryManipulators[i].first.move(X, tempY);
-
+            obj.cadre.clicked = false;
             self.itemsTab[i] = obj;
-            self.itemsTab[i].cadre.clicked = false;
+
+            let X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
+            self.libraryManipulators[i].first.move(X, tempY);
         }
-    }
+    });
 
     self.libraryManipulator.translator.move(self.x, self.y);
 
