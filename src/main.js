@@ -65,7 +65,7 @@ function main(targetQuizz) {
     //window.oldWidth=window.innerWidth;
     //window.oldHeight=window.innerHeight;
     setTimeout(function() {
-        svg.getSvgr().addGlobalEvent("resize", resizePaper);
+        svg.runtime.addGlobalEvent("resize", resizePaper);
     },200);
 
 

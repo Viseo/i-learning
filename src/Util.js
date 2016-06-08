@@ -373,7 +373,7 @@ function SVGUtil() {
             h = 1;
         }
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var bbox= svg.getSvgr().boundingRect(text.component);
+        var bbox= svg.runtime.boundingRect(text.component);
         var textHeight = bbox.height;
         (typeof textHeight === "undefined") && (textHeight = fontSize+2);
         text.position(0, (h - textHeight) / 2);//w*1/6
@@ -472,7 +472,7 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.position(0, Math.floor(svg.getSvgr().boundingRect(content.component).height)/4);
+        content.position(0, Math.floor(svg.runtime.boundingRect(content.component).height)/4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -520,7 +520,7 @@ function SVGUtil() {
             // set text to test the BBox.width
             t.message(tempText + " " + words[i]);
             // test if DOESN'T fit in the line
-            if ((svg.getSvgr().boundingRect(t.component) && svg.getSvgr().boundingRect(t.component).width > w) ) {
+            if ((svg.runtime.boundingRect(t.component) && svg.runtime.boundingRect(t.component).width > w) ) {
                 //Comment 2 next lines to add BreakLine
                 tempText = tempText.substring(0, tempText.length - 3) + "...";
                 break;
@@ -567,7 +567,7 @@ function SVGUtil() {
             }
         }
         t.message(tempText.substring(1));
-        var finalHeight = svg.getSvgr().boundingRect(t.component).height;
+        var finalHeight = svg.runtime.boundingRect(t.component).height;
         (typeof finalHeight === "undefined" && t.messageText !== "") && (finalHeight = runtime.boundingRect(t.component).height);
         (typeof finalHeight === "undefined" && t.messageText === "") && (finalHeight = 0);
         t.position(0, Math.round((finalHeight - fontSize / 2) / 2)); // finalHeight/2 ??

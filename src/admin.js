@@ -83,7 +83,7 @@ function admin() {
     };
     setTimeout(function(){
 
-        svg.getSvgr().addGlobalEvent("resize", resizePaper);
+        svg.runtime.addGlobalEvent("resize", resizePaper);
     },200);
 }
 if (typeof exports !== "undefined") {

@@ -553,9 +553,9 @@ function FormationDisplayFormation(){
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
-        self.labelHeight = svg.getSvgr().boundingRect(self.formationLabel.content.component).height;
+        self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
 
-        self.formationTitleWidth = svg.getSvgr().boundingRect(self.title.component).width;
+        self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
         self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
         self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2).fillOpacity(0.1);
 
@@ -568,7 +568,7 @@ function FormationDisplayFormation(){
     };
 
     var dblclickEditionFormationLabel = function () {
-        var width = svg.getSvgr().boundingRect(self.formationLabel.content.component).width;
+        var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
 
@@ -648,13 +648,13 @@ function FormationDisplayFormation(){
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
         (self.textLevelNumberDimensions = {
-            width: svg.getSvgr().boundingRect(level.obj.content.component).width,
-            height: svg.getSvgr().boundingRect(level.obj.content.component).height
+            width: svg.runtime.boundingRect(level.obj.content.component).width,
+            height: svg.runtime.boundingRect(level.obj.content.component).height
         });
         level.manipulator.ordonator.set(2, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
-        level.obj.content.position(svg.getSvgr().boundingRect(level.obj.content.component).width, svg.getSvgr().boundingRect(level.obj.content.component).height);
-        //self.messageDragDrop.position(w/2, svg.getSvgr().boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
+        level.obj.content.position(svg.runtime.boundingRect(level.obj.content.component).width, svg.runtime.boundingRect(level.obj.content.component).height);
+        //self.messageDragDrop.position(w/2, svg.runtime.boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.w = w;
@@ -664,7 +664,7 @@ function FormationDisplayFormation(){
     };
 
     self.displayFrame = function (w, h) {
-        svg.getSvgr().addGlobalEvent("keydown", function (event) {
+        svg.runtime.addGlobalEvent("keydown", function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -769,7 +769,7 @@ function FormationDisplayFormation(){
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
         self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.graphManipulator).text;
-        (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.getSvgr().boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -836,9 +836,9 @@ function FormationsManagerDisplay() {
         self.toggleFormationsManipulator.ordonator.set(0, self.toggleFormationsCheck);
         let toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
         self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
-        toggleFormationsText.position(svg.getSvgr().boundingRect(toggleFormationsText.component).width / 2 + 2 * MARGIN, 6);
-        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.getSvgr().boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
-            svg.getSvgr().boundingRect(self.toggleFormationsCheck.component).width ), 0);
+        toggleFormationsText.position(svg.runtime.boundingRect(toggleFormationsText.component).width / 2 + 2 * MARGIN, 6);
+        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.runtime.boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
+            svg.runtime.boundingRect(self.toggleFormationsCheck.component).width ), 0);
 
         let toggleFormations = function () {
             let all = false;
@@ -880,7 +880,7 @@ function FormationsManagerDisplay() {
         self.tileWidth = (drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
         self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
 
-        svg.getSvgr().addGlobalEvent('keydown', function (event) {
+        svg.runtime.addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -927,9 +927,9 @@ function FormationsManagerDisplay() {
         self.headerManipulator.ordonator.set(0, self.title);
         self.headerManipulator.translator.move(0,2*MARGIN);
         self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
-        var addFormationButtonTextBr = svg.getSvgr().boundingRect(self.addFormationButton.content.component);
+        var addFormationButtonTextBr = svg.runtime.boundingRect(self.addFormationButton.content.component);
         self.addFormationButton.cadre.position(MARGIN +addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
-        self.addFormationButton.content.position(self.plusDim+svg.getSvgr().boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
+        self.addFormationButton.content.position(self.plusDim+svg.runtime.boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
         self.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, self.addButtonHeight, self.addButtonHeight);
         self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
         self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
@@ -955,8 +955,8 @@ function FormationsManagerDisplay() {
         self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
         self.legendWidth = drawing.width * 0.3;
-        self.legendItemLength = svg.getSvgr().boundingRect(self.toPublish.component).width+svg.getSvgr().boundingRect(self.exclamationLegend.circle.component).width+MARGIN;
-        self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.getSvgr().boundingRect(self.published.component).width-svg.getSvgr().boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
+        self.legendItemLength = svg.runtime.boundingRect(self.toPublish.component).width+svg.runtime.boundingRect(self.exclamationLegend.circle.component).width+MARGIN;
+        self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.runtime.boundingRect(self.published.component).width-svg.runtime.boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
         self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
        // self.exclamationManipulator.first.move(drawing.width - self.legendWidth + self.legendItemLength, 30);
 
@@ -1819,16 +1819,16 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.quizzInfoManipulator.ordonator.set(3, self.returnText);
 
     self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
-    var returnButtonHeight= -svg.getSvgr().boundingRect(self.returnText.component).height/2;
-    self.returnText.position(svg.getSvgr().boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
+    var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
+    self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
     self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
     self.formationLabel.font("Arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
-    var textSize = svg.getSvgr().boundingRect(self.returnText.component);
-    self.returnTextCadre = new svg.Rect(textSize.width + svg.getSvgr().boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
-    self.returnTextCadre.position(textSize.width/2 + svg.getSvgr().boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
+    var textSize = svg.runtime.boundingRect(self.returnText.component);
+    self.returnTextCadre = new svg.Rect(textSize.width + svg.runtime.boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
+    self.returnTextCadre.position(textSize.width/2 + svg.runtime.boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
     self.quizzInfoManipulator.ordonator.set(4, self.returnTextCadre);
     self.returnTextCadre.parentFormation=self.parentFormation;
     self.returnText.parentFormation=self.parentFormation;
@@ -1855,7 +1855,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
 
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        self.quizzNameHeight = svg.getSvgr().boundingRect(self.quizzLabel.content.component).height;
+        self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
@@ -1869,7 +1869,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var dblclickEditionQuizz = function () {
         var width;
-        width = svg.getSvgr().boundingRect(self.quizzLabel.content.component).width;
+        width = svg.runtime.boundingRect(self.quizzLabel.content.component).width;
 
         self.quizzInfoManipulator.ordonator.unset(1);
 
@@ -2069,7 +2069,7 @@ function InscriptionManagerDisplay() {
     self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
 
     var w = drawing.width/6;
-    var h = 1.5*svg.getSvgr().boundingRect(lastNameLabel.component).height
+    var h = 1.5*svg.runtime.boundingRect(lastNameLabel.component).height
     var x = drawing.width/10;
 
 
@@ -2077,7 +2077,7 @@ function InscriptionManagerDisplay() {
     self.lastNameField = displayTextWithoutCorners("cucu ", w, h ,myColors.black , myColors.white, self.fontSize, self.font, self.lastNameManipulator);
     self.lastNameField.content.position(x,0);
 
-    var y = -svg.getSvgr().boundingRect(self.lastNameField.content.component).height/4;
+    var y = -svg.runtime.boundingRect(self.lastNameField.content.component).height/4;
 
     self.lastNameField.cadre.position(x,y);
 
