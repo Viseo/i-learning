@@ -360,11 +360,11 @@ function Domain() {
         self.iconManipulator = new Manipulator();
         self.iconManipulator.addOrdonator(3);
         self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(1);
+        self.manipulator.addOrdonator(5);
         self.formationInfoManipulator = new Manipulator();
         self.formationInfoManipulator.addOrdonator(3);
         self.graphManipulator = new Manipulator(self);
-        self.graphManipulator.addOrdonator(2);
+        self.graphManipulator.addOrdonator(10);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator.addOrdonator(2);
@@ -437,11 +437,11 @@ function Domain() {
         self.redim = function() {
             self.graphElementSize = drawing.width/15;
             self.gamesLibraryManipulator = self.library.libraryManipulator;
-            self.manipulator.last.add(self.gamesLibraryManipulator.first);
-            self.manipulator.last.add(self.graphManipulator.first);
-            self.manipulatorMiniature.last.add(self.iconManipulator.first);
-            self.manipulator.last.add(self.formationInfoManipulator.first);
-            self.manipulator.last.add(self.saveFormationButtonManipulator.first);
+            //self.manipulator.last.add(self.gamesLibraryManipulator.first);
+            //self.manipulator.last.add(self.graphManipulator.first);
+            //self.manipulatorMiniature.last.add(self.iconManipulator.first);
+            //self.manipulator.last.add(self.formationInfoManipulator.first);
+            //self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
             self.libraryWidth = drawing.width * self.libraryWidthRatio;
             self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;

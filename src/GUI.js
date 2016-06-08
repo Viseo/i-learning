@@ -180,9 +180,9 @@ function LibraryDisplay(x, y, w, h) {
     if (typeof h !== "undefined")(self.h = h);
     self.borderSize = 3;
 
-    self.bordure = new svg.Rect(w - self.borderSize, h, self.libraryManipulator).color(myColors.none, self.borderSize, myColors.black);
+    self.bordure = new svg.Rect(w - self.borderSize, h, self.libraryManipulator).color(myColors.white, self.borderSize, myColors.black);
     self.bordure.position(w / 2, h / 2 );
-    self.libraryManipulator.last.add(self.bordure);
+    self.libraryManipulator.ordonator.set(0, self.bordure);
 
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w / 2, (1 / 20) * h);
@@ -514,10 +514,13 @@ function FormationDisplayFormation(){
     self.levelHeight = (self.graphCreaHeight ) / 4;
     self.graphElementSize = Math.min(self.levelHeight*0.6, self.graphCreaWidth*0.1);
     self.gamesLibraryManipulator = self.library.libraryManipulator;
-    self.manipulator.last.add(self.gamesLibraryManipulator.first);
-    self.manipulator.last.add(self.graphManipulator.first);
+    //self.manipulator.last.add(self.gamesLibraryManipulator.first);
+    //self.manipulator.last.add(self.graphManipulator.first);
+    //self.manipulator.last.add(self.formationInfoManipulator.first);
+    self.manipulator.ordonator.set(2, self.gamesLibraryManipulator.first);
+    //self.manipulator.ordonator.set(3, self.graphManipulator.first);
+    self.manipulator.ordonator.set(4, self.formationInfoManipulator.first);
 
-    self.manipulator.last.add(self.formationInfoManipulator.first);
 
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
 
@@ -637,7 +640,8 @@ function FormationDisplayFormation(){
     };
 
     self.displayLevel = function(w, h, level){
-        self.graphManipulator.last.add(level.manipulator.first);
+        //self.graphManipulator.last.add(level.manipulator.first);
+        self.graphManipulator.ordonator.set(level.index+1, level.manipulator.first);
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight, myColors.none, myColors.white, 20, null, level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
@@ -682,7 +686,7 @@ function FormationDisplayFormation(){
 
         };
 
-        self.manipulator.last.add(self.clippingManipulator.first);
+        self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
 
         self.panel = new gui.Panel(w, h);

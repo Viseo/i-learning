@@ -130,7 +130,12 @@ function SVGGlobalHandler() {
             for(var i=0;i<handler.children.length;i++){
                 if((handler instanceof svg.Ordered)){
                     for(var j =0; j<handler.children.length;j++){
-                        handler.unset(j);
+                        if(!(handler.children[j] instanceof svg.Handler)){
+                            handler.unset(j);
+                        }
+                        else {
+                            clean(handler.children[j]);
+                        }
                     }
                 }
                 else if (handler.children[i] instanceof svg.Handler){
