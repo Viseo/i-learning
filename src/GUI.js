@@ -2056,7 +2056,7 @@ function InscriptionManagerDisplay() {
     var clickEditionField = function (field, manipulator) {
         return function () {
             let contentarea = document.createElement("textarea");
-            contentarea.value = "";
+            contentarea.value = self[field].label;
             contentarea.trueValue = "";
             contentarea.width = w;
             contentarea.height = self.h;
@@ -2139,24 +2139,28 @@ function InscriptionManagerDisplay() {
     }
 
     var nameCheckInput = function(field){
+        self[field].label = self[field].label.trim();
         var regex = /^([A-Za-zéèêâàîïëôûùö '-]){0,150}$/g;
         var result = self[field].label.match(regex);
         if (!result) {
             self[field].cadre.color(myColors.white, 3, myColors.red);
         }
         else {
+            self[field].cadre.color(myColors.white, 1, myColors.black);
             self.errorMessageManipulator.ordonator.unset(1);
         }
         return result;
     };
 
+    var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
     self.lastNameField={label:"nom", title:self.lastNameLabel, line:-3};
-    self.lastNameField.checkInput = function(){nameCheckInput("lastName")};
-    self.lastNameField.errorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
+    self.lastNameField.checkInput = function(){return nameCheckInput("lastNameField")};
+    self.lastNameField.errorMessage = nameErrorMessage;
     displayField("lastNameField", w, self.h ,myColors.black , myColors.white, null, null, self.lastNameManipulator);
 
     self.firstNameField={label:"prénom", title:self.firstNameLabel, line:-2};
-    self.firstNameField.checkInput = function (){nameCheckInput("firstName")};
+    self.firstNameField.errorMessage = nameErrorMessage;
+    self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
     displayField("firstNameField", w, self.h ,myColors.black , myColors.white, null, null, self.firstNameManipulator);
 
     self.mailAdressField={label:"mail", title:self.mailAdressLabel, line:-1};
