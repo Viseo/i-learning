@@ -282,5 +282,21 @@ describe('Admin use', function () {
         });
         this.timeout(100000);
     });
+
+    it("an admin use with quiz preview and its validation tests", function (done) {
+        var jsonFile = "./log/testAdminPreview.json";
+        testutils.retrieveDB("./log/dbtestAdminPreview.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
+    });
 });
 
