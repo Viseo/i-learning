@@ -811,7 +811,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
     self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
 
     var saveFormationFunction = function () {
-        var callback = function (data) {
+        var callback = function () {
             console.log("Votre travail a été bien enregistré");
         };
 
