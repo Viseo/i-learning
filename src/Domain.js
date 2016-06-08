@@ -1107,6 +1107,7 @@ InscriptionManager = function () {
     self.passwordConfirmationManipulator.addOrdonator(3);
     self.saveButtonManipulator = new Manipulator(self);
     self.saveButtonManipulator.addOrdonator(3);
+    self.errorMessageManipulator = new Manipulator(self);
 
     self.manipulator.last.add(self.firstNameManipulator.first);
     self.manipulator.last.add(self.lastNameManipulator.first);
@@ -1114,6 +1115,8 @@ InscriptionManager = function () {
     self.manipulator.last.add(self.passwordManipulator.first);
     self.manipulator.last.add(self.passwordConfirmationManipulator.first);
     self.manipulator.last.add(self.saveButtonManipulator.first);
+    self.saveButtonManipulator.last.add(self.errorMessageManipulator.first);
+    self.errorMessageManipulator.addOrdonator(2);
 
     // HEIGHT
     self.saveButtonHeightRatio = 0.075;
@@ -1127,7 +1130,27 @@ InscriptionManager = function () {
     self.passwordLabel = "Mot de passe :";
     self.passwordConfirmationLabel = "Confirmer votre mot de passe :";
     self.lastNameLabel = "Nom :";
-    self.saveButtonLabel = "S'enregistrer"
+    self.saveButtonLabel = "S'enregistrer";
+    self.tabForm =[];
+
+
+
+    self.checkInputContentArea = function (objCont) {
+        if (objCont.contentarea.value.match(REGEX)) {
+            self.label = objCont.contentarea.value;
+            //objCont.remove();
+            //objCont.contentarea.onblur = objCont.onblur;
+            objCont.contentarea.style.border = "none";
+            objCont.contentarea.style.outline = "none";
+        } else {
+            //objCont.display();
+            objCont.contentarea.onblur = function () {
+                objCont.contentarea.value = "";
+                //objCont.onblur();
+                //objCont.remove();
+            }
+        }
+    };
 
 };
 
