@@ -674,11 +674,11 @@ function FormationDisplayFormation(){
             self.target = self.panel;
             if (event.keyCode===46 && self.selectedArrow) { // suppr
                 self.selectedArrow.redCrossClickHandler();
-            } else if (event.keyCode===46 && self.selectedGame) { // suppr
+            } else if(event.keyCode===46 && self.selectedGame) { // suppr
                     self.selectedGame.redCrossClickHandler();
-            } else if (event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
+            } else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
                 self.library.toggleArrowMode();
-            } else if (event.keyCode === 27 && self.library && self.library.gameSelected) {
+            } else if(event.keyCode === 27 && self.library && self.library.gameSelected) {
                 self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.library.gameSelected = null;
             }
@@ -805,9 +805,9 @@ function FormationDisplaySaveButton(x, y, w, h) {
     self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
 
     var saveFormationFunction = function () {
-        var thing = function (data) {
+        var callback = function (data) {
+            console.log("Votre travail a été bien enregistré");
         };
-        console.log("okokoko",self.levelsTab);
 
         var tmpFormationObject = {
             label: self.label,
@@ -815,9 +815,8 @@ function FormationDisplaySaveButton(x, y, w, h) {
             levelsTab: self.levelsTab
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        dbListener.httpGetAsync("/id", thing);
-        dbListener.httpPostAsync("/insert", tmpFormationObject, thing, ignoredData);
-        console.log("Votre travail a été bien enregistré");
+        dbListener.httpGetAsync("/id", () => {});
+        dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
     svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);

@@ -187,7 +187,6 @@ function Domain() {
             if (self.itemsTab[i].imgSrc) {
                 self.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
                     this.imageLoaded = true;
-                    console.log(this.src);
                 });
             }
         }
@@ -728,7 +727,6 @@ function Domain() {
             if (question.imageSrc) {
                 self.image = imageController.getImage(self.imageSrc, function () {
                     self.imageLoaded = true;
-                    console.log(this.src);
                     self.dimImage = {width: self.image.width, height: self.image.height};
                 });
                 self.imageLoaded = false;
@@ -827,7 +825,6 @@ function Domain() {
             } else {
                 myObj.display();
                 myObj.textarea.onblur = function () {
-                    console.log("blur");
                     myObj.textarea.value = "";
                     myObj.onblur();
                     myObj.remove();
