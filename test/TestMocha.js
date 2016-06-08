@@ -84,19 +84,20 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
     });
 
-    it("plays a complete quizz game using resize", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testQuizzResize.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
+    // it("plays a complete quizz game using resize", function (done) {
+    //     this.timeout(100000);
+    //     var jsonFile = "./log/testQuizzResize.json";
+    //     var execute = function () {
+    //         var globalVariables = mainModule.setGlobalVariable();
+    //         domain.setGlobalVariables(globalVariables);
+    //         checkScenario(
+    //             function () {
+    //                 mainModule.main(myQuizzTest);
+    //             }, jsonFile, 'content', runtime, done);
+    //     };
+    //     runTest(jsonFile, execute);
+    // });
+
     it("plays a complete quizz game with 2 Answers correct", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testQuizzTwoRightAnswers.json";
