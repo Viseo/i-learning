@@ -460,6 +460,7 @@ function Domain() {
 
         };
         self.redim();
+        self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
         self.checkInputTextArea = function (myObj) {
             if (myObj.textarea.value.match(self.regex)) {
