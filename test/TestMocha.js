@@ -234,7 +234,7 @@ describe('Admin use', function () {
         this.timeout(100000);
     });
 
-    it("an admin goes to formation and into a game, fill it with data and save it", function (done) {
+    it("an admin creates a new game and fill it with pictures", function (done) {
         var jsonFile = "./log/testAdminNewGame.json";
         testutils.retrieveDB("./log/dbtestAdminNewGame.json", dbListener, function () {
             var execute = function () {
@@ -249,6 +249,23 @@ describe('Admin use', function () {
         });
         this.timeout(100000);
     });
+
+    // Mock AppendChild
+    // it("an admin creates a new game and fill it with data", function (done) {
+    //     var jsonFile = "./log/testAdminNewGameData.json";
+    //     testutils.retrieveDB("./log/dbtestAdminNewGameData.json", dbListener, function () {
+    //         var execute = function () {
+    //             var globalVariables = mainModule.setGlobalVariable();
+    //             domain.setGlobalVariables(globalVariables);
+    //             checkScenario(
+    //                 function () {
+    //                     adminModule.admin();
+    //                 }, jsonFile, 'content', runtime, done);
+    //         };
+    //         runTest(jsonFile, execute);
+    //     });
+    //     this.timeout(100000);
+    // });
 
     it("an admin use with add/delete arrows", function (done) {
         var jsonFile = "./log/testAdminArrows.json";

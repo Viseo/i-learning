@@ -85,10 +85,10 @@ function AnswerDisplay (x, y, w, h) {
         };
 
         let dblclickEditionAnswer = function () {
-            let contentarea = document.createElement('textarea');
+            let contentarea = svg.runtime.createDOM('textarea');
             contentarea.value = self.label;
             contentarea.width = w;
-            contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
+            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
 
             let contentareaStyle = {
