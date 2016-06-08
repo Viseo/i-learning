@@ -318,36 +318,37 @@ function LibraryDisplay(x, y, w, h) {
     });
 
     if (drawing.currentPageDisplayed === "Formation") {
-        if(self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)!==-1){
+        if (self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)!==-1) {
             self.libraryManipulator.last.remove(self.arrowModeManipulator.first);
         }
         self.libraryManipulator.last.add(self.arrowModeManipulator.first);
         self.arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
 
-        var createLink = function (parentGame, childGame) {
+        let createLink = function (parentGame, childGame) {
             if (parentGame.childrenGames.indexOf(childGame) != -1) return;
             if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
 
             parentGame.childrenGames.push(childGame);
             childGame.parentsGames.push(parentGame);
-            var arrow = new Arrow(parentGame, childGame);
+
+            let arrow = new Arrow(parentGame, childGame);
             parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
         };
 
 
-        var arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
+        let arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
         arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
         arrowModeButton.arrow.color(myColors.black,1,myColors.black);
         self.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
 
         self.toggleArrowMode = function() {
-            var arrowMode = false;
+            let arrowMode = false;
 
             return function () {
                 arrowMode = !arrowMode;
                 self.arrowMode = arrowMode;
 
-                var panel = self.formation.panel,
+                let panel = self.formation.panel,
                     graph = self.formation.graphManipulator.last,
                     clip = self.formation.clippingManipulator.last,
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
@@ -364,26 +365,26 @@ function LibraryDisplay(x, y, w, h) {
                     clip.add(glass);
                     glass.position(glass.width/2, glass.height/2);
 
-                    var mouseDownAction = function (event) {
+                    let mouseDownAction = function (event) {
                         event.preventDefault();
-                        var targetParent = graph.getTarget(event.clientX, event.clientY);
+                        let targetParent = graph.getTarget(event.clientX, event.clientY);
 
-                        var mouseUpAction = function(event) {
-                            var targetChild = graph.getTarget(event.clientX, event.clientY);
-                            var booleanInstanceOfCorrect = function(element){
-                                return element && element.parent && element.parent.parentManip && element.parent.parentManip.parentObject &&
-                                (element.parent.parentManip.parentObject instanceof Quizz ||
-                                element.parent.parentManip.parentObject instanceof Bd);
+                        let mouseUpAction = function(event) {
+                            let targetChild = graph.getTarget(event.clientX, event.clientY);
+                            let booleanInstanceOfCorrect = function(e) {
+                                return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
+                                    (e.parent.parentManip.parentObject instanceof Quizz ||
+                                    e.parent.parentManip.parentObject instanceof Bd);
                             };
-                            if(booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
+                            if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                 createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
                             }
                         };
                         svg.addEvent(glass, 'mouseup', mouseUpAction);
                     };
 
-                    var clickAction = function(event) {
-                        var target = graph.getTarget(event.clientX, event.clientY);
+                    let clickAction = function(event) {
+                        let target = graph.getTarget(event.clientX, event.clientY);
                         (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
                     };
 
@@ -667,13 +668,13 @@ function FormationDisplayFormation(){
 
         var hasKeyDownEvent = function (event) {
             self.target = self.panel;
-            if(event.keyCode===46 && self.selectedArrow) { // suppr
+            if (event.keyCode===46 && self.selectedArrow) { // suppr
                 self.selectedArrow.redCrossClickHandler();
-            }else if(event.keyCode===46 && self.selectedGame) { // suppr
+            } else if (event.keyCode===46 && self.selectedGame) { // suppr
                     self.selectedGame.redCrossClickHandler();
-             }else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
+            } else if (event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
                 self.library.toggleArrowMode();
-            }else if(event.keyCode === 27 && self.library && self.library.gameSelected) {
+            } else if (event.keyCode === 27 && self.library && self.library.gameSelected) {
                 self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.library.gameSelected = null;
             }
