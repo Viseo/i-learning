@@ -87,10 +87,10 @@ function AnswerDisplay (x, y, w, h) {
         let dblclickEditionAnswer = function () {
             self.manipulator.ordonator.unset(1, self.obj.content);
 
-            let contentarea = document.createElement('textarea');
+            let contentarea = svg.runtime.createDOM('textarea');
             contentarea.value = self.label;
             contentarea.width = w;
-            contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
+            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
 
             let contentareaStyle = {
@@ -100,11 +100,11 @@ function AnswerDisplay (x, y, w, h) {
                 width:self.obj.cadre.width*5/6
             };
 
-            contentarea.setAttribute('style', 'position: absolute; top:' + (contentareaStyle.toppx) + 'px; left:' +
+            svg.runtime.attr(contentarea, 'style', 'position: absolute; top:' + (contentareaStyle.toppx) + 'px; left:' +
                 (contentareaStyle.leftpx) + 'px; width:' + contentareaStyle.width + 'px; height:' + (contentareaStyle.height) +
                 'px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;');
 
-            document.getElementById('content').appendChild(contentarea).focus();
+            svg.runtime.anchor('content').appendChild(contentarea).focus();
 
             let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
@@ -571,17 +571,16 @@ function FormationDisplayFormation(){
 
         self.formationInfoManipulator.ordonator.unset(1);
 
-        var textarea = document.createElement("textarea");
+        var textarea = svg.runtime.createDOM("textarea");
         textarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            leftpx: (svg.getSvgr().boundingRect(self.title.component).width+ 2 * MARGIN + 1),
+            leftpx: (svg.runtime.boundingRect(self.title.component).width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
         };
-        textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        var body = document.getElementById("content");
-        body.appendChild(textarea).focus();
+        svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        svg.runtime.anchor("content").appendChild(textarea).focus();
 
         var removeErrorMessage = function () {
             self.formationCreator.formationNameValidInput = true;
@@ -1560,10 +1559,10 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     var dblclickEditionQuestionBlock = function () {
-        var textarea = !runtime ? document.createElement("textarea") : {};
+        var textarea = svg.runtime.createDOM("textarea");
         textarea.value = self.linkedQuestion.label;
         textarea.width = self.w;
-        textarea.height = (self.linkedQuestion.image) ? svg.getSvgr().boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
+        textarea.height = (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
 
         self.questionManipulator.ordonator.unset(1);
         textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
@@ -1574,17 +1573,15 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             width: (self.w*5/6),
             height: (textarea.height)
         };
-        !runtime && textarea.setAttribute("style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
-        var body = !runtime && document.getElementById("content");
-        !runtime && body.appendChild(textarea).focus();
-
+        svg.runtime.attr(textarea, "style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
+        svg.runtime.anchor("content").appendChild(textarea).focus();
         var onblur = function () {
             if(textarea.value){
                 self.label = textarea.value;
                 self.linkedQuestion.label=textarea.value;
             }
 
-            body.removeChild(textarea);
+            svg.runtime.anchor("content").removeChild(textarea);
             showTitle();
             self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
         };
@@ -1875,8 +1872,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzInfoManipulator.ordonator.unset(1);
 
-        //var textarea = runtime ? runtime.document.createElement("textarea") : document.createElement("textarea");
-        var textarea = !runtime && document.createElement("textarea");
+        var textarea = svg.runtime.createDOM("textarea");
         textarea.value = self.quizzName;
         var contentareaStyle = {
             toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),
@@ -1884,10 +1880,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             width: 700,
             height:(self.quizzNameHeight+3)
         };
-        !runtime && textarea.setAttribute("style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        var body = !runtime && document.getElementById("content");
-        !runtime && body.appendChild(textarea).focus();
-
+        svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        svg.runtime.anchor("content").appendChild(textarea).focus();
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
