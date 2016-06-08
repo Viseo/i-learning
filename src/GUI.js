@@ -85,24 +85,25 @@ function AnswerDisplay (x, y, w, h) {
         };
 
         let dblclickEditionAnswer = function () {
-            self.manipulator.ordonator.unset(1, self.obj.content);
-
-            let contentarea = svg.runtime.createDOM('textarea');
+            let contentarea = document.createElement('textarea');
             contentarea.value = self.label;
             contentarea.width = w;
-            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
+            contentarea.height = svg.getSvgr().boundingRect(self.obj.content.component).height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
 
             let contentareaStyle = {
-                toppx: contentarea.globalPointCenter.y-(contentarea.height/2)*2/3 ,
-                leftpx: contentarea.globalPointCenter.x+(1/12)*self.obj.cadre.width,
-                height:(self.image) ? contentarea.height : (h*.5),
-                width:self.obj.cadre.width*5/6
+                toppx: contentarea.globalPointCenter.y - (contentarea.height/2) * 2/3 ,
+                leftpx: contentarea.globalPointCenter.x + (1/12) * self.obj.cadre.width,
+                height: self.image ? contentarea.height : h * 0.5,
+                width: self.obj.cadre.width * 5/6
             };
 
-            svg.runtime.attr(contentarea, 'style', 'position: absolute; top:' + (contentareaStyle.toppx) + 'px; left:' +
-                (contentareaStyle.leftpx) + 'px; width:' + contentareaStyle.width + 'px; height:' + (contentareaStyle.height) +
-                'px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;');
+            svg.runtime.attr(contentarea, 'style',
+                `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
+                `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
+                `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
+
+            self.manipulator.ordonator.unset(1, self.obj.content);
 
             svg.runtime.anchor('content').appendChild(contentarea).focus();
 
@@ -115,11 +116,11 @@ function AnswerDisplay (x, y, w, h) {
             let displayErrorMessage = function () {
                 removeErrorMessage();
                 self.obj.cadre.color(myColors.white, 2, myColors.red);
-                let libraryRatio = 0.2;
-                let previewButtonHeightRatio = 0.1;
-                let marginErrorMessagePreviewButton = 0.03;
-                let position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN);
-                let anchor = 'middle';
+                let libraryRatio = 0.2,
+                    previewButtonHeightRatio = 0.1,
+                    marginErrorMessagePreviewButton = 0.03,
+                    position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN),
+                    anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEXERROR)
                     .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
