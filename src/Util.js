@@ -168,13 +168,13 @@ function SVGGlobalHandler() {
     };
     gui.Panel.prototype.resizeContentW = function (width) {
         this.back.color(myColors.white).opacity(0.001);
-        if (width>this.width) {
+        if (width>=this.width) {
             this.content.width = width;
-            this.updateHandleH();
+            this.updateHandleHorizontal();
         }
         return this;
     };
-    gui.Panel.prototype.updateHandleH = function () {
+    gui.Panel.prototype.updateHandleHorizontal = function () {
         this.hHandle.dimension(this.view.width, this.content.width)
             .position((this.view.width/2-this.content.x)/(this.content.width)*this.view.width);
         return this;
@@ -188,7 +188,7 @@ function SVGGlobalHandler() {
                 .execute(completeMovement).moveTo(lx, this.content.y);
         }
         function completeMovement(progress) {
-            self.updateHandleH();
+            self.updateHandleHorizontal();
             if (progress===1) {
                 delete self.animation;
             }
@@ -215,7 +215,7 @@ function SVGGlobalHandler() {
                 callback(x);
             }
             function completeMovement(progress) {
-                self.updateHandleH();
+                self.updateHandleHorizontal();
                 if (progress===1) {
                     delete self.animation;
                 }
@@ -772,6 +772,26 @@ function SVGUtil() {
             var levelsTab = game.parentFormation.levelsTab;
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
                 game.parentFormation.levelsTab.pop();
+            }
+
+            var longestLevelCandidates=[];
+            longestLevelCandidates.index=0;
+
+            game.parentFormation.levelsTab.forEach(level=>{
+
+                if(level.gamesTab.length>=game.parentFormation.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                    if(level.gamesTab.length===game.parentFormation.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                        longestLevelCandidates.push(level);
+                    }
+                    longestLevelCandidates.index=level.index-1;
+                }
+
+            });
+
+            if(indexes.levelIndex===longestLevelCandidates.index && longestLevelCandidates.length===1 && game.parentFormation.levelWidth>game.parentFormation.graphCreaWidth){
+                let spaceOccupiedByAGame=(game.parentFormation.graphElementSize+game.parentFormation.minimalMarginBetweenGraphElements);
+                game.parentFormation.levelWidth -= spaceOccupiedByAGame;
+                game.parentFormation.panel.moveContentH(game.parentFormation.panel.content.x+spaceOccupiedByAGame);
             }
             game.parentFormation.selectedGame.selected = false;
             game.parentFormation.selectedGame = null;

@@ -56,7 +56,9 @@ function admin() {
                     formation.clippingManipulator.last.remove(formation.panel.component);
                     formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
                     formationsManager.header.display();
+                    formation.needUpdate=true;
                     formation.displayFormation();
+                    formation.needUpdate=true;
                     break;
                 case "QuizManager":
                     formation.library.libraryManipulator.flush();

@@ -282,7 +282,6 @@ function Domain() {
                         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
                         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
                         level.manipulator.ordonator.set(2, level.obj.line);
-                        level.parentFormation.deltaLevelWidthIncreased += (formation.minimalMarginBetweenGraphElements + formation.graphElementSize)/2;
                     }
 
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
@@ -330,6 +329,7 @@ function Domain() {
         self.x = self.parentFormation.libraryWidth ? self.parentFormation.libraryWidth : null; // Juste pour être sûr
         self.y = (self.index-1) * self.parentFormation.levelHeight;
         self.obj = null;
+
         self.removeGame = function(index){
             if(typeof index==='undefined'){
                 self.gamesTab.pop();
@@ -373,8 +373,7 @@ function Domain() {
         self.quizzManager.parentFormation = self;
 
         self.labelDefault = "Entrer le nom de la formation";
-        self.deltaLevelWidthIncreased = 0;
-
+        self.needUpdate=true;
         // WIDTH
         self.libraryWidthRatio = 0.15;
         self.graphWidthRatio = 1 - self.libraryWidthRatio;
@@ -391,6 +390,12 @@ function Domain() {
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : "Nouvelle formation";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
+
+
+        self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
+
+        self.levelHeight = 150;
+        self.graphElementSize = self.levelHeight*0.65;
 
         self.loadFormation = function(formation) {
             self.gamesCounter = formation.gamesCounter;
@@ -434,7 +439,6 @@ function Domain() {
             self.loadDependencies();
         };
         self.redim = function() {
-            self.graphElementSize = drawing.width/15;
             self.gamesLibraryManipulator = self.library.libraryManipulator;
             //self.manipulator.last.add(self.gamesLibraryManipulator.first);
             //self.manipulator.last.add(self.graphManipulator.first);
@@ -445,7 +449,6 @@ function Domain() {
             self.libraryWidth = drawing.width * self.libraryWidthRatio;
             self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
             self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
-            self.levelHeight = (self.graphCreaHeight - 3 * MARGIN) / 4;
             self.levelWidth = drawing.width - self.libraryWidth-MARGIN;
             self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
             self.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
@@ -522,8 +525,8 @@ function Domain() {
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = level.parentFormation.deltaLevelWidthIncreased;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
-                if (pos.gameIndex < nbOfGames / 2) {
+                game.miniaturePosition.x =-self.graphCreaWidth/2+self.levelWidth/2;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
+                if (pos.gameIndex < nbOfGames / 2) {// !_! pk pas levelWidth dans ce calcul ?
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
                     game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2) + self.borderSize + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;

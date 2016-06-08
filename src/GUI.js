@@ -23,7 +23,7 @@ function setRuntime(_runtime){
 
 function AnswerDisplay (x, y, w, h) {
     let self = this;
-    
+
     if(self.editable) {
         answerEditableDisplay(x, y, w, h);
         return;
@@ -166,7 +166,7 @@ function AnswerDisplay (x, y, w, h) {
             self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }
-        
+
         self.manipulator.ordonator.children.forEach(function(e) {
             e._acceptDrop = true;
         });
@@ -407,7 +407,7 @@ function LibraryDisplay(x, y, w, h) {
 
 function AddEmptyElementDisplay(x, y, w, h) {
     let self = this;
-    
+
     self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
     self.plus = drawPlus(0, 0, h * 0.3, h * 0.3);
     self.manipulator.ordonator.set(2, self.plus);
@@ -512,8 +512,7 @@ function FormationDisplayFormation(){
 
     self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
     self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
-    self.levelHeight = (self.graphCreaHeight ) / 4;
-    self.graphElementSize = Math.min(self.levelHeight*0.6, self.graphCreaWidth*0.1);
+
     self.gamesLibraryManipulator = self.library.libraryManipulator;
     //self.manipulator.last.add(self.gamesLibraryManipulator.first);
     //self.manipulator.last.add(self.graphManipulator.first);
@@ -525,8 +524,6 @@ function FormationDisplayFormation(){
 
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
 
-    self.levelWidth = drawing.width - self.libraryWidth - MARGIN;
-    self.minimalMarginBetweenGraphElements = self.graphElementSize / 2;
     self.y = drawing.height * HEADER_SIZE ;
 
     self.globalMargin = {
@@ -652,7 +649,7 @@ function FormationDisplayFormation(){
             height: svg.runtime.boundingRect(level.obj.content.component).height
         });
         level.manipulator.ordonator.set(2, level.obj.line);
-        level.obj.cadre.position((w-self.borderSize)/2, self.messageDragDropMargin).opacity(0.001);
+        level.obj.cadre.position((w-self.borderSize)/2, self.levelHeight/2).opacity(0.001);
         level.obj.content.position(svg.runtime.boundingRect(level.obj.content.component).width, svg.runtime.boundingRect(level.obj.content.component).height);
         //self.messageDragDrop.position(w/2, svg.runtime.boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
@@ -745,9 +742,15 @@ function FormationDisplayFormation(){
         self.graphManipulator.flush();
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
+        if(self.levelWidth<self.graphCreaWidth){
+            self.levelWidth=self.graphCreaWidth;
+        }
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
-            self.adjustGamesPositions(self.levelsTab[i]);
+            if(self.needUpdate){
+                self.adjustGamesPositions(self.levelsTab[i]);
+               //self.levelsTab[i].needUpdate=false;
+            }
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
                 if(tabElement.miniatureManipulator){
                     self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
@@ -773,15 +776,18 @@ function FormationDisplayFormation(){
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
-        self.graphManipulator.translator.move(self.graphW/2-self.borderSize, self.graphH/2);
+        self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
 
         self.panel.back._acceptDrop = true;
+
         self.panel.resizeContent(height);
-        self.panel.resizeContentW(self.levelWidth-1);
+
+        self.panel.resizeContentW(self.levelWidth);
         self.panel.back.parent.parentManip = self.graphManipulator;
 
         self.updateAllLinks();
     };
+
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
@@ -1027,7 +1033,7 @@ function HeaderDisplay () {
 
     let text = new svg.Text(self.label).position(MARGIN, drawing.height * self.size * 0.75).font('Arial', 20).anchor('start');
     self.manipulator.ordonator.set(1, text);
-    
+
     mainManipulator.ordonator.set(0, self.manipulator.first);
     self.redim = function() {
         self.line = new svg.Line(0, drawing.height * self.size, drawing.width, drawing.height * self.size).color(myColors.black, 3, myColors.black);
