@@ -1020,95 +1020,90 @@ function FormationsManagerDisplay() {
 }
 
 function HeaderDisplay () {
-    var self =this;
-    self.width=drawing.width;
-    self.height=0.05*drawing.height;
+    let self = this;
+
+    self.width = drawing.width;
+    self.height = 0.05 * drawing.height;
+
+    let text = new svg.Text(self.label).position(MARGIN, drawing.height * self.size * 0.75).font('Arial', 20).anchor('start');
+    self.manipulator.ordonator.set(1, text);
+    
     mainManipulator.ordonator.set(0, self.manipulator.first);
-    self.text = new svg.Text(self.label).position(MARGIN, drawing.height*self.size*.75).font("Arial", 20).anchor("start");
-    self.redim = function(){
-        self.line = new svg.Line(0, drawing.height*self.size, drawing.width, drawing.height*self.size).color(myColors.black, 3, myColors.black);
-        self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height*self.size/2).font("Arial", 32));
+    self.redim = function() {
+        self.line = new svg.Line(0, drawing.height * self.size, drawing.width, drawing.height * self.size).color(myColors.black, 3, myColors.black);
+        self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(drawing.width/2, drawing.height * self.size/2).font('Arial', 32));
     };
     self.redim();
+
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
-    self.manipulator.ordonator.set(1, self.text);
     self.manipulator.ordonator.set(0, self.line);
 
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
-    var self = this;
+    let self = this;
     self.startPosition = startPosition;
     self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
     self.questionWithBadAnswersManipulator = new Manipulator(self);
     self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
 
-    var removeArrows = function (){
-        if(self.leftArrowManipulator.last.children.length>1) {
-            self.leftArrowManipulator.flush();
-        }
-        if (self.rightArrowManipulator.last.children.length>1){
-            self.rightArrowManipulator.flush();
-        }
+    let removeArrows = function (){
+        if (self.leftArrowManipulator.last.children.length > 1) self.leftArrowManipulator.flush();
+        if (self.rightArrowManipulator.last.children.length > 1) self.rightArrowManipulator.flush();
     };
 
-    self.handlerLeftArrow = function (){
+    let handlerLeftArrow = function (){
+        removeArrows();
         if (self.rows === 1 && startPosition !== 0) {
-            removeArrows();
             self.display(x, y, w, h, startPosition - 1);
         } else if (startPosition - self.rows + 1 <= 0) {
-            removeArrows();
             self.display(x, y, w, h, 0);
         } else {
-            removeArrows();
             self.display(x, y, w, h, startPosition - self.rows + 1);
         }
     };
 
     if (self.rows < self.totalRows) {
-        if(startPosition === 0) {
-            self.leftArrow=drawArrow(0,0, 75, 75,self.leftArrowManipulator);
-            self.leftArrow.color(myColors.grey);
-            if(self.leftArrow.onClick!==null){
-                svg.removeEvent(self.leftArrow,'click',self.leftArrow.onClick);
+        let leftArrow = drawArrow(0, 0, 75, 75, self.leftArrowManipulator);
+        if (startPosition === 0) {
+            leftArrow.color(myColors.grey);
+            if (leftArrow.onClick !== null) {
+                svg.removeEvent(leftArrow, 'click', leftArrow.onClick);
             }
         } else {
-            self.leftArrow=drawArrow(0,0, 75, 75,self.leftArrowManipulator);
-            self.leftArrow.color(myColors.black);
-            svg.addEvent(self.leftArrow, "click",self.handlerLeftArrow);
+            leftArrow.color(myColors.black);
+            svg.addEvent(leftArrow, "click", handlerLeftArrow);
         }
 
         self.leftArrowManipulator.rotator.rotate(180);
-        self.leftArrowManipulator.translator.move(-w/2-MARGIN+75/2, y+h/2);// marge post-rotation
+        self.leftArrowManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
 
-        self.handlerRightArrow = function (){
-            if(self.rows === 1 && startPosition !== self.totalRows -1) {
-                removeArrows();
-                self.display(x, y, w, h, startPosition+1);
+        let handlerRightArrow = function () {
+            removeArrows();
+            if(self.rows === 1 && startPosition !== self.totalRows - 1) {
+                self.display(x, y, w, h, startPosition + 1);
             } else if(2*self.rows + startPosition >= self.totalRows) {
-                removeArrows();
-                var newStartPosition = self.totalRows - self.rows;
+                let newStartPosition = self.totalRows - self.rows;
                 self.display(x, y, w, h, newStartPosition);
             } else {
-                removeArrows();
-                newStartPosition = startPosition + self.rows - 1;
+                let newStartPosition = startPosition + self.rows - 1;
                 self.display(x, y, w, h, newStartPosition);
             }
         };
 
-        if(startPosition + self.rows>= self.totalRows) {
-            self.rightArrow= drawArrow(0, 0, 75, 75,self.rightArrowManipulator);
-            self.rightArrow.color(myColors.grey);
-            if(self.rightArrow.onClick!==null){
-                svg.removeEvent(self.rightArrow,'click',self.rightArrow.onClick);
+        let rightArrow = drawArrow(0, 0, 75, 75, self.rightArrowManipulator);
+        if (startPosition + self.rows >= self.totalRows) {
+            rightArrow.color(myColors.grey);
+            if (rightArrow.onClick !== null) {
+                svg.removeEvent(rightArrow, 'click', rightArrow.onClick);
             }
         } else {
-            self.rightArrow=drawArrow(0, 0, 75, 75,self.rightArrowManipulator);
-            self.rightArrow.color(myColors.black);
-            svg.addEvent(self.rightArrow, "click", self.handlerRightArrow);
+            rightArrow.color(myColors.black);
+            svg.addEvent(rightArrow, 'click', handlerRightArrow);
         }
-        self.rightArrowManipulator.translator.move(w/2-75/2+MARGIN, y+h/2);
-        self.initTiles(x+MARGIN+50, y, w-100-MARGIN*2, h, startPosition);
+
+        self.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
+        self.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
     } else {
         self.initTiles(x, y, w, h, startPosition);
     }
