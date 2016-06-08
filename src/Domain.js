@@ -419,11 +419,13 @@ function Domain() {
                 formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
                     level.gamesTab.forEach(function (game, j) {
                         game.childrenGames.forEach(function (childrenGame) {
-                        var match = self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab && self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
-                        !match.parentGames && (match.parentGames = []);
-                        !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                        match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                       if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
+                           let match =  self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+                           !match.parentGames && (match.parentGames = []);
+                           !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                           self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                           match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                       }
                     });
                         //    if(self.levelsTab[i+1]){
                         //        var match= self.matchGame(childrenGame, i+1);
@@ -521,7 +523,7 @@ function Domain() {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
             level.gamesTab.forEach(function (game) {
-                !game.parentsGames && (game.parentsGames = []);
+                !game.parentGames && (game.parentGames = []);
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();

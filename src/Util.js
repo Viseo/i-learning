@@ -168,7 +168,7 @@ function SVGGlobalHandler() {
     };
     gui.Panel.prototype.resizeContentW = function (width) {
         this.back.color(myColors.white).opacity(0.001);
-        if (width>=this.width) {
+        if (width>=this.width-1) {//feat. MC Alexis, tabascologue de son état
             this.content.width = width;
             this.updateHandleHorizontal();
         }
@@ -703,7 +703,7 @@ function SVGUtil() {
 
         var removeLink=function(parentGame,childGame) {
             parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
-            childGame.parentsGames.splice(childGame.parentsGames.indexOf(parentGame),1);
+            childGame.parentGames.splice(childGame.parentGames.indexOf(parentGame),1);
         };
 
         self.redCrossClickHandler = function () {
@@ -755,9 +755,9 @@ function SVGUtil() {
 
         var removeAllLinks = function () {
             game.childrenGames.forEach(function (childGame) {
-                childGame.parentsGames.splice(childGame.parentsGames.indexOf(game), 1);
+                childGame.parentGames.splice(childGame.parentGames.indexOf(game), 1);
             });
-            game.parentsGames.forEach(function (parentGame) {
+            game.parentGames.forEach(function (parentGame) {
                 parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game), 1);
             });
         };

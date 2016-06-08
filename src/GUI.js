@@ -330,7 +330,7 @@ function LibraryDisplay(x, y, w, h) {
             if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
 
             parentGame.childrenGames.push(childGame);
-            childGame.parentsGames.push(parentGame);
+            childGame.parentGames.push(parentGame);
 
             let arrow = new Arrow(parentGame, childGame);
             parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
@@ -782,7 +782,7 @@ function FormationDisplayFormation(){
 
         self.panel.resizeContent(height);
 
-        self.panel.resizeContentW(self.levelWidth);
+        self.panel.resizeContentW(self.levelWidth-1);// merci pour ce -1, chrome. ._.
         self.panel.back.parent.parentManip = self.graphManipulator;
 
         self.updateAllLinks();
