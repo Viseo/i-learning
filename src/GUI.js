@@ -1730,51 +1730,50 @@ function GameDisplayMiniature(size){
 }
 
 function QuizzDisplayScore(color){
-    var self = this;
-    var autoColor;
+    let self = this;
+    let autoColor;
     switch(this.score) {
         case self.tabQuestions.length:
-            str1 = "Impressionant !";
-            str2 = " et toutes sont justes !";
+            str1 = 'Impressionant !';
+            str2 = ' et toutes sont justes !';
             autoColor = [100, 255, 100];
             break;
         case 0:
-            str1 = "Votre niveau est désolant... Mais gardez espoir !";
+            str1 = 'Votre niveau est désolant... Mais gardez espoir !';
             str2 = "dont aucune n'est juste !";
             autoColor = [255, 17, 0];
             break;
-        case (self.tabQuestions.length-1):
-            str1 = "Pas mal du tout !";
-            str2 = " et toutes (sauf une...) sont justes !";
+        case (self.tabQuestions.length - 1):
+            str1 = 'Pas mal du tout !';
+            str2 = ' et toutes (sauf une...) sont justes !';
             autoColor = [200, 255, 0];
             break;
         case 1:
-            str1 = "Vous avez encore de nombreux progrès à faire.";
-            str2 = "dont une seule est juste.";
+            str1 = 'Vous avez encore de nombreux progrès à faire.';
+            str2 = 'dont une seule est juste.';
             autoColor = [255, 100, 0];
             break;
         default:
-            str1 = "Correct, mais ne relachez pas vos efforts !";
-            str2 = " dont " + self.score + " sont justes !";
+            str1 = 'Correct, mais ne relachez pas vos efforts !';
+            str2 = ` dont ${self.score} sont justes !`;
             autoColor = [220, 255, 0];
             break;
     }
     var str1,str2;
 
-    self.finalMessage = str1 + " Vous avez répondu à " + self.tabQuestions.length + " questions, " + str2;
+    self.finalMessage = `${str1} Vous avez répondu à ${self.tabQuestions.length} questions, ${str2}`;
     if(!color) {
         var usedColor = autoColor;
     } else {
         usedColor = color;
     }
-
-    //!_! à Ajouter après le 03/06/2016
-    //self.resultManipulator && (self.quizzManipulator.last.children.indexOf(self.resultManipulator.first)!== -1) && self.quizzManipulator.last.remove(self.resultManipulator.first);
+    
+    self.resultManipulator && (self.quizzManipulator.last.children.indexOf(self.resultManipulator.first) !== -1) && self.quizzManipulator.last.remove(self.resultManipulator.first);
 
     self.resultManipulator = new Manipulator(self);
     self.scoreManipulator = new Manipulator(self);
     self.scoreManipulator.addOrdonator(2);
-    self.resultManipulator.translator.move(0,self.questionHeight/2+self.headerHeight/2+MARGIN);
+    self.resultManipulator.translator.move(0, self.questionHeight/2 + self.headerHeight/2 + MARGIN);
     self.resultManipulator.last.add(self.scoreManipulator.first);
     self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
@@ -1810,7 +1809,7 @@ function QuizzManagerDisplay(){
         w: (drawing.width - self.globalMargin.width),
         h: (self.questionsPuzzleHeight - self.globalMargin.height)
     };
-    drawing.currentPageDisplayed = "QuizManager";
+    drawing.currentPageDisplayed = 'QuizManager';
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler = function(event){
