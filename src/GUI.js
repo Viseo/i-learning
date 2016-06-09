@@ -1464,7 +1464,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
         var buttonX = - w/2;
         var buttonY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
         self.simpleChoiceMessageManipulator.translator.move(buttonX+w/2, buttonY+h/2);
-        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.white, myColors.white, 20, "Arial", self.simpleChoiceMessageManipulator);
+        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.none, myColors.none, 20, "Arial", self.simpleChoiceMessageManipulator);
     }
 }
 
@@ -1721,7 +1721,7 @@ function QuizzDisplay(x,y,w,h) {
 function QuizzDisplayResult (color){
     var self = this;
     self.displayScore(color);
-    self.puzzle.display(0, self.questionHeight/2, drawing.width,self.answerHeight, self.puzzle.startPosition);
+    self.puzzle.display(0, self.questionHeight/2, drawing.width, self.answerHeight, self.puzzle.startPosition);
 }
 
 function GameDisplayMiniature(size){
@@ -1735,7 +1735,7 @@ function QuizzDisplayScore(color){
     switch(this.score) {
         case self.tabQuestions.length:
             str1 = 'Impressionant !';
-            str2 = ' et toutes sont justes !';
+            str2 = 'et toutes sont justes !';
             autoColor = [100, 255, 100];
             break;
         case 0:
@@ -1745,7 +1745,7 @@ function QuizzDisplayScore(color){
             break;
         case (self.tabQuestions.length - 1):
             str1 = 'Pas mal du tout !';
-            str2 = ' et toutes (sauf une...) sont justes !';
+            str2 = 'et toutes (sauf une...) sont justes !';
             autoColor = [200, 255, 0];
             break;
         case 1:
@@ -1755,7 +1755,7 @@ function QuizzDisplayScore(color){
             break;
         default:
             str1 = 'Correct, mais ne relachez pas vos efforts !';
-            str2 = ` dont ${self.score} sont justes !`;
+            str2 = `dont ${self.score} sont justes !`;
             autoColor = [220, 255, 0];
             break;
     }

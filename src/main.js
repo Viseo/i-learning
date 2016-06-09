@@ -44,17 +44,17 @@ function main(targetQuizz) {
         drawings.glass.dimension(drawing.width,drawing.height);
 
         quizz.display(0,0,drawing.width,drawing.height);
-        var qManip=quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
-        for( var i = 0;i<qManip.ordonator.children.length;i++) {
-            qManip.ordonator.unset(i);
-        }
 
-        if(quizz.currentQuestionIndex<quizz.tabQuestions.length){//-1?
-            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
+        if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+            let qManip = quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
+            for(let i = 0; i < qManip.ordonator.children.length; i++) {
+                qManip.ordonator.unset(i);
+            }
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2 + MARGIN,
                 quizz.questionArea.w , quizz.questionHeight);
-            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
+            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN + quizz.questionHeight,
                 quizz.questionArea.w , quizz.answerHeight);
-        }else{
+        } else {
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();

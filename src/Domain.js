@@ -974,10 +974,9 @@ function Domain() {
                     functionDisplayInAllCases();
                 }
             } else {
-                if (self.currentQuestionIndex + 1 < self.tabQuestions.length) {
-                    self.currentQuestionIndex++;
+                if (++self.currentQuestionIndex < self.tabQuestions.length) {
                     functionDisplayInAllCases();
-                } else {//--> fin du tableau, dernière question
+                } else {
                     console.log("Final score: " + self.score);
                     self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
                     self.displayResult();
