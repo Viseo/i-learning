@@ -49,7 +49,7 @@ function main(targetQuizz) {
             qManip.ordonator.unset(i);
         }
 
-        if(quizz.currentQuestionIndex<quizz.tabQuestions.length-1){//-1?
+        if(quizz.currentQuestionIndex<quizz.tabQuestions.length){//-1?
             quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2+MARGIN,
                 quizz.questionArea.w , quizz.questionHeight);
             quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN+quizz.questionHeight,
