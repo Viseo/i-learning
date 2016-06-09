@@ -787,7 +787,7 @@ function SVGUtil() {
                 if (game.parentFormation.selectedGame) {
                     game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
                     game.parentFormation.selectedGame.selected = false;
-                    game.parentFormation.selectedGame.game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
+                    (game.parentFormation.selectedGame.game.miniatureManipulator.last.children.indexOf(game.parentFormation.selectedGame.redCrossManipulator.first)!== -1) && game.parentFormation.selectedGame.game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
                 }
                 game.parentFormation.selectedGame = self;
                 game.miniatureManipulator.last.add(self.redCrossManipulator.first);

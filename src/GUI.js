@@ -908,15 +908,18 @@ function FormationsManagerDisplay() {
             self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
             self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
         self.headerHeightFormation = drawing.height * self.header.size ;
-        self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
-
         self.spaceBetweenElements={
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
             height: self.panel?0.030*self.panel.height:0.030*drawing.height
         };
+        self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
-        self.tileWidth = (drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
-        self.tileHeight = Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
+        //(drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
+
+        //Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
+
+        self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
+        if(self.rows === 0) self.rows = 1;
 
         svg.runtime.addGlobalEvent('keydown', function (event) {
             if(hasKeyDownEvent(event)) {

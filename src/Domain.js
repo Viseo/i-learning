@@ -550,6 +550,8 @@ function Domain() {
 
         self.header = new Header(additionalMessage);
         self.x = MARGIN;
+        self.tileHeight = 150;
+        self.tileWidth = self.tileHeight*(16/9);
         self.addButtonWidth = 330;
         self.addButtonHeight = 40;
         self.fontSize = 20;
