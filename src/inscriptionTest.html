@@ -13,9 +13,9 @@
 <script src="../lib/svghandler.js"></script>
 <script src="../lib/svggui.js"></script>
 <script src="dbListener.js"></script>
-<!--<script src="../lib/scenario.js"></script>-->
+<script src="../lib/scenario.js"></script>
 <script>
-    var dbListener = new DbListener(true, false);
+    var dbListener = new DbListener(false, true);
     let targetRuntime = require("../lib/targetruntime").targetRuntime;
     let SVG = require("../lib/svghandler").SVG;
     svg = SVG(targetRuntime());
@@ -24,7 +24,6 @@
 <script src="Domain.js"></script>
 <script src="GUI.js"></script>
 <script src="main.js"></script>
-<script src="inscription.js"></script>
 <script>
     Bdd();
     SVGGlobalHandler();
@@ -34,7 +33,8 @@
     setGlobalVariable();
 </script>
 <script>
-   inscription();
+    var inscriptionManager = new InscriptionManager();
+        inscriptionManager.display();
 </script>
 </body>
 </html>

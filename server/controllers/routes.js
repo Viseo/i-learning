@@ -12,6 +12,14 @@ module.exports = function (app, fs) {
         });
     });
 
+    app.post('/inscription', function(req, res) {
+        var collection = db.get().collection('users');
+        var obj = req.body;
+        collection.insert(obj, function(err, docs) {
+            res.send(JSON.stringify(obj));
+        });
+    });
+
     app.get('/getAllFormations', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = collection.find().toArray(function(err, docs) {

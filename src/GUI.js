@@ -2068,37 +2068,13 @@ function InscriptionManagerDisplay() {
                 height: contentarea.height,
                 width: self[field].cadre.width
             };
-            //contentarea.setAttribute("style", "position: absolute; top:" + (contentareaStyle.toppx) + "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" + (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
             svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
                 "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
                 (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
                 "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
-            //var body = document.getElementById("content");
-            //body.appendChild(contentarea).focus();
             manipulator.ordonator.unset(1, self[field].content.text);
             svg.runtime.anchor('content').appendChild(contentarea).focus();
 
-            var removeErrorMessage = function () {
-                self.answerNameValidInput = true;
-                self.errorMessage && self.errorMessageManipulator.ordonator.unset(0);
-                self[field].cadre.color(myColors.white, 1, myColors.black);
-            };
-
-            //var displayErrorMessage = function () {
-            //    removeErrorMessage();
-            //    self[field].cadre.color(myColors.white, 2, myColors.red);
-            //    var libraryRatio = 0.2;
-            //    var previewButtonHeightRatio = 0.1;
-            //    var marginErrorMessagePreviewButton = 0.03;
-            //    var position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN);
-            //    var anchor = 'middle';
-            //    self.errorMessage = new svg.Text(REGEXERROR)
-            //        .position(position, drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
-            //        .font("Arial", 15).color(myColors.red).anchor(anchor);
-            //    self.errorMessageManipulator.ordonator.set(0, self.errorMessage);
-            //    contentarea.focus();
-            //    self.answerNameValidInput = false;
-            //};
             contentarea.oninput = function(){
                 if (self[field].secret && contentarea.trueValue.length<contentarea.value.length){
                     contentarea.trueValue += contentarea.value.substring(contentarea.value.length-1);
@@ -2107,29 +2083,39 @@ function InscriptionManagerDisplay() {
                         contentarea.value+="*";
                     }
                 }
+                else if (self[field].secret && contentarea.value.length ===1){
+                    contentarea.trueValue = contentarea.value;
+                    contentarea.value = "*";
+                }
             }
             contentarea.onblur = function(){
-                if (self[field].secret){
-                    self[field].labelSecret = contentarea.trueValue;
-                    console.log(self[field].labelSecret);
-                }
                 self[field].label = contentarea.value;
-                displayField(field, w, self.h , myColors.black , myColors.white, null, null, manipulator);
-                self[field].checkInput && (self[field].checkInput() || displayErrorMessage(self[field].errorMessage));
+                displayField(field, manipulator);
+                if (self[field].checkInput()){
+                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                    self.errorMessageManipulator.ordonator.unset(1);
+                    if (self[field].secret && self.passwordField.label===self.passwordConfirmationField.label){
+                        self.passwordField.labelSecret = contentarea.trueValue;
+                    }
+                }
+                else {
+                    self[field].cadre.color(myColors.white, 3, myColors.red);
+                    displayErrorMessage(self[field].errorMessage)
+                }
                 contentarea.remove();
             }
         };
     };
-    var displayField = function(field, w, h, rgbCadre, bgColor, textHeight, font, manipulator){
+    var displayField = function(field, manipulator){
         var fieldTitle = new svg.Text(self[field].title).position(0,0);
         fieldTitle.font("Arial", 20).anchor("end");
         manipulator.ordonator.set(2, fieldTitle);
         manipulator.first.move(-drawing.width/10, self[field].line*drawing.height/10);
         self.h = 1.5*svg.runtime.boundingRect(fieldTitle.component).height;
-        var displayText = displayTextWithoutCorners(self[field].label, w, self.h, rgbCadre, bgColor, textHeight, font, manipulator);
+        var displayText = displayTextWithoutCorners(self[field].label, w, self.h, myColors.black, myColors.white, 20, null, manipulator);
         self[field].content = displayText.content;
         self[field].cadre = displayText.cadre;
-        var y = -svg.runtime.boundingRect(self[field].content.component).height/4;
+        var y = -svg.runtime.boundingRect(fieldTitle.component).height/4;
         self[field].content.position(x,0);
         self[field].cadre.position(x,y);
         var clickEdition = clickEditionField(field, manipulator);
@@ -2141,50 +2127,59 @@ function InscriptionManagerDisplay() {
     var nameCheckInput = function(field){
         self[field].label = self[field].label.trim();
         var regex = /^([A-Za-zéèêâàîïëôûùö '-]){0,150}$/g;
-        var result = self[field].label.match(regex);
-        if (!result) {
-            self[field].cadre.color(myColors.white, 3, myColors.red);
-        }
-        else {
-            self[field].cadre.color(myColors.white, 1, myColors.black);
-            self.errorMessageManipulator.ordonator.unset(1);
-        }
-        return result;
+        return self[field].label.match(regex);
     };
 
     var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
-    self.lastNameField={label:"nom", title:self.lastNameLabel, line:-3};
+    self.lastNameField={label:"", title:self.lastNameLabel, line:-3};
     self.lastNameField.checkInput = function(){return nameCheckInput("lastNameField")};
     self.lastNameField.errorMessage = nameErrorMessage;
-    displayField("lastNameField", w, self.h ,myColors.black , myColors.white, null, null, self.lastNameManipulator);
+    displayField("lastNameField", self.lastNameManipulator);
 
-    self.firstNameField={label:"prénom", title:self.firstNameLabel, line:-2};
+    self.firstNameField={label:"", title:self.firstNameLabel, line:-2};
     self.firstNameField.errorMessage = nameErrorMessage;
     self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
-    displayField("firstNameField", w, self.h ,myColors.black , myColors.white, null, null, self.firstNameManipulator);
+    displayField("firstNameField", self.firstNameManipulator);
 
-    self.mailAdressField={label:"mail", title:self.mailAdressLabel, line:-1};
-    displayField("mailAdressField", w, self.h ,myColors.black , myColors.white, null, null, self.mailAdressManipulator);
+    self.mailAdressField={label:"", title:self.mailAdressLabel, line:-1};
+    self.mailAdressField.errorMessage = "L'adresse email n'est pas valide";
+    self.mailAdressField.checkInput = function(){
+        var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+        return self.mailAdressField.label.match(regex);
+    }
+    displayField("mailAdressField", self.mailAdressManipulator);
 
-    self.passwordField={label:"mot de passe", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
-    displayField("passwordField", w, self.h ,myColors.black , myColors.white, null, null, self.passwordManipulator);
-
-    self.passwordConfirmationField={label:"confirmation", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
-    self.passwordConfirmationField.checkInput = function(){
-        var result = (self.passwordField.label===self.passwordConfirmationField.label);
-        if (!result){
-            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
+    self.passwordField={label:"", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
+    self.passwordField.checkInput = function(){
+        var result = self.passwordField.label.length>=6 && (self.passwordConfirmationField.label==="" || (self.passwordField.label===self.passwordConfirmationField.label));
+        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label.length<6){
             self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
         }
         else {
-            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
             self.passwordConfirmationField.cadre.color(myColors.white, 1, myColors.black);
-            self.errorMessageManipulator.ordonator.unset(1);
+        }
+        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label!== self.passwordField.label){
+            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
+        }
+        else {
+            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
         }
         return result;
     }
+    displayField("passwordField", self.passwordManipulator);
 
-    displayField("passwordConfirmationField", w, self.h ,myColors.black , myColors.white, null, null, self.passwordConfirmationManipulator);
+    self.passwordConfirmationField={label:"", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordConfirmationField.checkInput = function(){
+        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label!== self.passwordField.label){
+            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
+        }
+        else {
+            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
+        }
+        return (self.passwordField.label===self.passwordConfirmationField.label);
+    }
+    displayField("passwordConfirmationField", self.passwordConfirmationManipulator);
 
 
     self.saveButtonHandler = function(){
@@ -2192,10 +2187,32 @@ function InscriptionManagerDisplay() {
         emptyAreas.forEach(function(emptyArea){
             emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
-        displayErrorMessage(EMPTYFIELDERROR);
-        //emptyarea && emptyarea.display(EMPTYFIELDERROR);
+        if (emptyAreas.length>0){
+            displayErrorMessage(EMPTYFIELDERROR);
+        }
+        else {
+            self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
+            console.log(self.passwordField.hash);
+            console.log(TwinBcrypt.compareSync(self.passwordField.labelSecret, self.passwordField.hash));
+            console.log(self.passwordField.labelSecret);
+            var tempObject = {
+                lastName: self.lastNameField.label,
+                firstName: self.firstNameField.label,
+                mailAdress: self.mailAdressField.label,
+                password: self.passwordField.hash
+            }
+            var callback = function (data) {
+                var messageText = "Votre compte a bien été créé !";
+                var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.errorMessageManipulator);
+                message.text.color(myColors.green);
+                setTimeout(function(){
+                    self.errorMessageManipulator.ordonator.unset(1);
+                }, 10000);
+            };
+            dbListener.httpPostAsync("/inscription", tempObject, callback);
+            console.log(tempObject);
+        }
     }
-
     self.saveButton = displayText(self.saveButtonLabel, self.saveButtonWidth, self.saveButtonHeight, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
     self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
     self.errorMessageManipulator.translator.move(0, -self.saveButton.cadre.height);

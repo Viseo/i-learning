@@ -46,6 +46,7 @@ var mainModule;
 var adminModule;
 var testModule;
 var dbListenerModule;
+var inscriptionModule;
 
 describe('Quizz game', function () {
 
@@ -59,6 +60,7 @@ describe('Quizz game', function () {
         mainModule = require("../src/main");
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
+        inscriptionModule = require("../src/inscription");
         runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
@@ -159,6 +161,19 @@ describe('Quizz game', function () {
             checkScenario(
                 function () {
                     mainModule.main(myQuizzTest);
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+    it("Inscription page", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testInscription.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    inscriptionModule.inscription();
                 }, jsonFile, 'content', runtime, done);
         };
         runTest(jsonFile, execute);

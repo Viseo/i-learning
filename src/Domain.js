@@ -1132,26 +1132,6 @@ InscriptionManager = function () {
     self.lastNameLabel = "Nom :";
     self.saveButtonLabel = "S'enregistrer";
     self.tabForm =[];
-
-
-
-    self.checkInputContentArea = function (objCont) {
-        if (objCont.contentarea.value.match(REGEX)) {
-            self.label = objCont.contentarea.value;
-            //objCont.remove();
-            //objCont.contentarea.onblur = objCont.onblur;
-            objCont.contentarea.style.border = "none";
-            objCont.contentarea.style.outline = "none";
-        } else {
-            //objCont.display();
-            objCont.contentarea.onblur = function () {
-                objCont.contentarea.value = "";
-                //objCont.onblur();
-                //objCont.remove();
-            }
-        }
-    };
-
 };
 
 
