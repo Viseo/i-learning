@@ -1984,19 +1984,13 @@ function Bdd() {
     formationValidation = [
         // Check Formation Name:
         formation => ({
-            isValid: formation.formationName !== "",
-            message: "Vous devez remplir le nom de la formation."
+            isValid: formation.formationName !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'),
+            messageSave: "Votre travail a bien été enregistré.",
+            messageError: "Vous devez remplir le nom de la formation."
+
         })
     ];
-/*    formationValidation = [
-        function (formation) {
-            // Check Formation Name:
-            var isValid = (formation.label !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'));
-            var messageSave = "Votre travail a bien été enregistré.";
-            var messageError = "Vous devez remplir le nom de la formation.";
-            return {isValid: isValid, messageSave : messageSave, messageError : messageError};
-        }
-    ];*/
+
     myQuizzType = {
         tab: [
             {
