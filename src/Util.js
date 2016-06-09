@@ -502,75 +502,57 @@ function SVGUtil() {
      * @param content: text to print
      * @param x : X position
      * @param y : Y position
-     * @param w : width
+     * @param wi : width
      * @param h : height
      * @param fontSize
      * @param font
      * @param manipulator
      */
-    autoAdjustText = function (content, x, y, w, h, fontSize, font, manipulator) {
-        var t = new svg.Text("text");
+    autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator) {
+        let words = content.split(' '),
+            text = '',
+            w = wi * 5 / 6,
+            t = new svg.Text('text');
         manipulator.ordonator.set(1, t);
-        var words = content.split(" ");
-        var tempText = "";
-        var w = w * 5 / 6;
-        t.font(font ? font : "Arial", fontSize ? fontSize : 20);
-        // add text word by word
-        for (var i = 0; i < words.length; i++) {
+        t.font(font ? font : 'Arial', fontSize ? fontSize : 20);
+
+        while (words.length > 0) {
+            let word = words.shift();
             // set text to test the BBox.width
-            t.message(tempText + " " + words[i]);
-            // test if DOESN'T fit in the line
-            if ((svg.runtime.boundingRect(t.component) && svg.runtime.boundingRect(t.component).width > w) ) {
-                //Comment 2 next lines to add BreakLine
-                tempText = tempText.substring(0, tempText.length - 3) + "...";
-                break;
-                // temporary string to store the word in a new line
-                var tmpStr = tempText + "\n" + words[i];
+            t.message(text + ' ' + word);
+            if (svg.runtime.boundingRect(t.component) && svg.runtime.boundingRect(t.component).width <= w) {
+                text += ' ' + word;
+            } else {
+                let tmpStr = text + '\n' + word;
                 t.message(tmpStr);
-                // test if the whole word can fit in a line
-                if (t.component.getBoundingClientRect().width > w) {
-                    // we don't need the tmpStr anymore
-                    // add a space before the problematic word
-                    tempText += " ";
-                    // longWord is the word too long to fit in a line
-                    var longWord = words[i];
-                    // goes character by character
-                    for (var j = 0; j < longWord.length; j++) {
-                        // set text to test the BBox.width
-                        t.message(tempText + " " + longWord.charAt(j));
-                        // check if we can add an additional character in this line
-                        if (t.component.getBoundingClientRect().width > w) {
-                            // we can't: break line, add the character
-                            tempText += "-\n" + longWord.charAt(j);
-                        } else {
-                            // we can, add the character
-                            tempText += longWord.charAt(j);
+                if (svg.runtime.boundingRect(t.component).height <= (h - MARGIN)) {
+                    if (svg.runtime.boundingRect(t.component).width <= w) {
+                        text = tmpStr;
+                    } else {
+                        text += ' ';
+                        let longWord = word;
+                        for (let j = 0; j < longWord.length; j++) {
+                            t.message(text + ' ' + longWord.charAt(j));
+                            if (svg.runtime.boundingRect(t.component).width <= w) {
+                                text += longWord.charAt(j);
+                            } else {
+                                text += '-\n';
+                                words.unshift(longWord.slice(j));
+                                break;
+                            }
                         }
                     }
+                } else {
+                    text = text.slice(0, -2) + '…';
+                    break;
                 }
-                // it fits in a new line
-                else {
-                    // we add the word in a new line
-                    var tmpText = tempText;
-                    tempText += "\n" + words[i];
-                    t.message(tmpStr);
-                    // test if it fits in height
-                    if (t.component.getBoundingClientRect().height > h - MARGIN) {
-                        // it doesn't : break
-                        tempText = tmpText.substring(0, tmpText.length - 3) + "...";
-                        break;
-                    }
-                }
-            } else {
-                // it fits in the current line
-                tempText += " " + words[i];
             }
         }
-        t.message(tempText.substring(1));
-        var finalHeight = svg.runtime.boundingRect(t.component).height;
-        (typeof finalHeight === "undefined" && t.messageText !== "") && (finalHeight = runtime.boundingRect(t.component).height);
-        (typeof finalHeight === "undefined" && t.messageText === "") && (finalHeight = 0);
-        t.position(0, Math.round((finalHeight - fontSize / 2) / 2)); // finalHeight/2 ??
+        t.message(text.substring(1));
+        let finalHeight = svg.runtime.boundingRect(t.component).height;
+        (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
+        (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
+        t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
         return {finalHeight: finalHeight, text: t};
     };
 
