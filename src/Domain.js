@@ -364,6 +364,10 @@ function Domain() {
         self.formationInfoManipulator.addOrdonator(3);
         self.graphManipulator = new Manipulator(self);
         self.graphManipulator.addOrdonator(10);
+        self.arrowsManipulator = new Manipulator(self);
+        self.miniaturesManipulator = new Manipulator(self);
+        self.graphManipulator.last.add(self.miniaturesManipulator.first);
+        self.graphManipulator.last.add(self.arrowsManipulator.first);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator.addOrdonator(2);
@@ -846,6 +850,7 @@ function Domain() {
 
     Bd = function(bd, parentFormation){
         var self = this;
+        self.miniatureManipulator = new Manipulator(self);
         self.parentFormation = parentFormation;
         self.title = "BD";
         self.miniaturePosition = {x:0, y:0};
@@ -881,6 +886,7 @@ function Domain() {
     Quizz = function (quizz, previewMode, parentFormation) {
         var self = this;
 
+        self.miniatureManipulator = new Manipulator(self);
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);

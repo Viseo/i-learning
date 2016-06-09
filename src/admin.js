@@ -40,25 +40,16 @@ function admin() {
 
             switch (drawing.currentPageDisplayed) {
                 case "FormationsManager":
-                    var minimalSize = drawing.height - (playerMode ?
-                        formationsManager.toggleFormationsCheck.globalPoint(0, 0).y + formationsManager.toggleFormationsCheck.height + MARGIN :
-                        formationsManager.addFormationButton.cadre.globalPoint(0, 0).y + formationsManager.addFormationButton.cadre.height);
-                    if (minimalSize > 1) {
-                        mainManipulator.flush();
-                        drawing.manipulator.ordonator.set(2, drawings.piste.first);
                         (formationsManager.clippingManipulator.last.children.indexOf(formationsManager.panel.component) !== -1) && formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
                         formationsManager.header.display();
                         formationsManager.display();
-                    }
                     break;
                 case "Formation":
                     formation.gamesLibraryManipulator.flush();
-                    formation.clippingManipulator.last.remove(formation.panel.component);
+                    //formation.clippingManipulator.last.remove(formation.panel.component);
                     formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
                     formationsManager.header.display();
-                    formation.needUpdate=true;
                     formation.displayFormation();
-                    formation.needUpdate=true;
                     break;
                 case "QuizManager":
                     formation.library.libraryManipulator.flush();

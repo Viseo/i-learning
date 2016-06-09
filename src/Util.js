@@ -657,77 +657,75 @@ function SVGUtil() {
         svg.addEvent(svgItem, "mousedown", mousedownHandler);
     };
 
-    drawStraightArrow = function(x1,y1,x2,y2){
-        var arrow = new svg.Arrow(3, 9, 15).position(x1,y1,x2,y2);
-        var arrowPath=new svg.Path(x1,y1);
+    drawStraightArrow = function(x1, y1, x2, y2){
+        var arrow = new svg.Arrow(3, 9, 15).position(x1, y1, x2, y2);
+        var arrowPath = new svg.Path(x1,y1);
         for(let i = 0; i<arrow.points.length; i++) {
             arrowPath.line(arrow.points[i].x, arrow.points[i].y);
         }
-        arrowPath.line(x1,y1);
+        arrowPath.line(x1, y1);
         return arrowPath;
     };
 
-    Arrow = function(parentGame,childGame) {
-        var self=this;
-        self.origin=parentGame;
-        self.target=childGame;
-        var parentGlobalPoint=parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
-        var parentLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-        var childGlobalPoint=childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
-        var childLocalPoint=parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+    Arrow = function(parentGame, childGame) {
+        var self = this;
+        self.origin = parentGame;
+        self.target = childGame;
+        var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+        var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+        var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+        var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
-        self.redCross=drawPlus(0,0,20,20);
-        self.redCrossManipulator=new Manipulator(self);
+        self.redCross = drawPlus(0, 0, 20, 20);
+        self.redCrossManipulator = new Manipulator(self);
         self.redCrossManipulator.last.add(self.redCross);
-        self.redCross.color(myColors.red,1,myColors.black);
+        self.redCross.color(myColors.red, 1, myColors.black);
         self.redCrossManipulator.rotator.rotate(45);
-        self.redCrossManipulator.translator.move((parentLocalPoint.x+childLocalPoint.x)/2,(parentLocalPoint.y+childLocalPoint.y)/2);
+        self.redCrossManipulator.translator.move((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2);
 
-        var removeLink=function(parentGame,childGame) {
+        var removeLink = function(parentGame,childGame) {
             parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
             childGame.parentGames.splice(childGame.parentGames.indexOf(parentGame),1);
         };
 
         self.redCrossClickHandler = function () {
-            //parentGame.parentFormation.selectedArrow.selected=false;
             removeLink(parentGame,childGame);
-            parentGame.parentFormation.graphManipulator.last.remove(self.arrowPath);
-            parentGame.parentFormation.graphManipulator.last.remove(self.redCrossManipulator.first);
-            parentGame.parentFormation.selectedArrow=null;
+            parentGame.parentFormation.arrowsManipulator.last.remove(self.arrowPath);
+            parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
+            parentGame.parentFormation.selectedArrow = null;
         };
 
-        svg.addEvent(self.redCross,'click',self.redCrossClickHandler);
+        svg.addEvent(self.redCross,'click', self.redCrossClickHandler);
 
-        self.arrowPath=drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
-        self.selected=false;
+        self.arrowPath = drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+        self.selected = false;
         function arrowClickHandler(){
             parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
             if(!self.selected){
                 if(parentGame.parentFormation.selectedArrow){
-                    parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black,1,myColors.black);
-                    parentGame.parentFormation.selectedArrow.selected=false;
-                    parentGame.parentFormation.graphManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
+                    parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
+                    parentGame.parentFormation.selectedArrow.selected = false;
+                    parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
                 }
-                parentGame.parentFormation.selectedArrow=self;
-                parentGame.parentFormation.graphManipulator.last.add(self.redCrossManipulator.first);
-                self.arrowPath.color(myColors.blue,2,myColors.black);
+                parentGame.parentFormation.selectedArrow = self;
+                parentGame.parentFormation.arrowsManipulator.last.add(self.redCrossManipulator.first);
+                self.arrowPath.color(myColors.blue, 2, myColors.black);
             } else {
                 self.arrowPath.color(myColors.black,1,myColors.black);
-                parentGame.parentFormation.graphManipulator.last.remove(self.redCrossManipulator.first);
-                parentGame.parentFormation.selectedArrow=null;
+                parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
+                parentGame.parentFormation.selectedArrow = null;
             }
-            self.selected= !self.selected;
+            self.selected = !self.selected;
         }
         svg.addEvent(self.arrowPath,'click',arrowClickHandler);
         self.arrowPath.color(myColors.black,1,myColors.black);
         return self;
     };
 
-    Miniature = function(game,size) {
+    Miniature = function(game, size) {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-        game.miniatureManipulator.first.move(game.miniaturePosition.x, game.miniaturePosition.y);
         self.redCross = drawPlus(0, 0, 20, 20);
         self.redCrossManipulator = new Manipulator(self);
         self.redCrossManipulator.last.add(self.redCross);
@@ -746,6 +744,7 @@ function SVGUtil() {
 
         self.redCrossClickHandler = function () {
             removeAllLinks();
+            game.parentFormation.miniaturesManipulator.last.remove(game.miniatureManipulator.first);
             game.miniatureManipulator.ordonator.unset(0);
             game.miniatureManipulator.ordonator.unset(1);
             game.miniatureManipulator.last.remove(self.redCrossManipulator.first);

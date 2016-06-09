@@ -333,7 +333,7 @@ function LibraryDisplay(x, y, w, h) {
             childGame.parentGames.push(parentGame);
 
             let arrow = new Arrow(parentGame, childGame);
-            parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);
+            parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         };
 
 
@@ -514,13 +514,8 @@ function FormationDisplayFormation(){
     self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
     self.gamesLibraryManipulator = self.library.libraryManipulator;
-    //self.manipulator.last.add(self.gamesLibraryManipulator.first);
-    //self.manipulator.last.add(self.graphManipulator.first);
-    //self.manipulator.last.add(self.formationInfoManipulator.first);
     self.manipulator.ordonator.set(2, self.gamesLibraryManipulator.first);
-    //self.manipulator.ordonator.set(3, self.graphManipulator.first);
     self.manipulator.ordonator.set(4, self.formationInfoManipulator.first);
-
 
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
 
@@ -531,7 +526,7 @@ function FormationDisplayFormation(){
         width: self.marginRatio * drawing.width
     };
 
-    self.clippingManipulator.flush();
+    //self.clippingManipulator.flush();
 
     self.borderSize = 3;
 
@@ -638,7 +633,10 @@ function FormationDisplayFormation(){
     };
 
     self.displayLevel = function(w, h, level){
-        //self.graphManipulator.last.add(level.manipulator.first);
+
+        if(self.levelsTab.length >= self.graphManipulator.ordonator.children.length-1){
+            self.graphManipulator.ordonator.order(self.graphManipulator.ordonator.children.length + 1);
+        }
         self.graphManipulator.ordonator.set(level.index+1, level.manipulator.first);
 
         level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight, myColors.none, myColors.white, 20, null, level.manipulator);
@@ -686,13 +684,20 @@ function FormationDisplayFormation(){
 
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
-
-        self.panel = new gui.Panel(w, h);
-        self.panel.addhHandle(function () {
-            self.levelsTab.forEach(function (level) {
-                level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
+        if(typeof self.panel === "undefined") {
+            self.panel = new gui.Panel(w, h);
+        }
+        else {
+            self.panel.resize(w, h);
+            self.panel.hHandle.horizontal(-w/2,w/2,h/2);
+        }
+        if(typeof self.panel.hHandle === "undefined"){
+            self.panel.addhHandle(function () {
+                self.levelsTab.forEach(function (level) {
+                    level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
+                });
             });
-        });
+        }
 
         function controlPositionH(x) {
             if (x > 0) {
@@ -719,18 +724,19 @@ function FormationDisplayFormation(){
         });
         self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
-        self.clippingManipulator.last.add(self.panel.component);
+        (self.clippingManipulator.last.children.indexOf(self.panel.component) === -1) && self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.content.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     };
-    self.updateAllLinks=function(){
+    self.updateAllLinks = function(){
+        self.arrowsManipulator.flush();
         self.levelsTab.forEach(function(level){
            level.gamesTab.forEach(function(parentGame){
                parentGame.childrenGames.forEach(function(game){
-                   var arrow= new Arrow(parentGame,game);
-                   parentGame.parentFormation.graphManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
+                   var arrow = new Arrow(parentGame,game);
+                   parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
                });
            }) ;
         });
@@ -740,7 +746,7 @@ function FormationDisplayFormation(){
     self.displayGraph = function (w, h){
         if (typeof w !== "undefined") self.graphW = w;
         if (typeof h !== "undefined") self.graphH = h;
-        self.graphManipulator.flush();
+        //self.graphManipulator.flush();
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
         if(self.levelWidth<self.graphCreaWidth){
@@ -748,22 +754,19 @@ function FormationDisplayFormation(){
         }
         for(var i = 0; i<self.levelsTab.length; i++){
             self.displayLevel(self.graphCreaWidth, self.graphCreaHeight,self.levelsTab[i]);
-            if(self.needUpdate){
-                self.adjustGamesPositions(self.levelsTab[i]);
-               //self.levelsTab[i].needUpdate=false;
-            }
+            self.adjustGamesPositions(self.levelsTab[i]);
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
-                if(tabElement.miniatureManipulator){
-                    self.graphManipulator.last.remove(tabElement.miniatureManipulator.first);
-                }
-                tabElement.miniatureManipulator = new Manipulator(tabElement);
                 tabElement.miniatureManipulator.addOrdonator(2);
-                self.graphManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
 
-                var testGame = tabElement.displayMiniature(self.graphElementSize);
+                if(typeof tabElement.miniature === "undefined"){
+                    tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
+                }
+                tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+
                 if(tabElement instanceof Quizz){
-                    svg.addEvent(testGame.icon.cadre, "dblclick", onclickQuizzHandler);
-                    svg.addEvent(testGame.icon.content, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(tabElement.miniature.icon.content, "dblclick", onclickQuizzHandler);
                 }else if(tabElement instanceof Bd){
                     // Ouvrir le Bd creator du futur jeu Bd
                 }
@@ -914,10 +917,6 @@ function FormationsManagerDisplay() {
         };
         self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
-        //(drawing.width -  self.spaceBetweenElements.width * (self.rows+1 )) / self.rows;
-
-        //Math.floor(((self.heightAllocatedToPanel - self.spaceBetweenElements.height * (self.lines+1 ))) / self.lines);
-
         self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
         if(self.rows === 0) self.rows = 1;
 
@@ -934,11 +933,15 @@ function FormationsManagerDisplay() {
 
         self.manipulator.last.add(self.clippingManipulator.first);
         self.clippingManipulator.translator.move(MARGIN/2, self.y);
-
-        self.panel = new gui.Panel(drawing.width-2*MARGIN,self.heightAllocatedToPanel , myColors.none);
+        if(typeof self.panel === "undefined") {
+            self.panel = new gui.Panel(drawing.width - 2 * MARGIN, self.heightAllocatedToPanel, myColors.none);
+        }
+        else {
+            self.panel.resize(drawing.width - 2 * MARGIN, self.heightAllocatedToPanel);
+        }
         self.panel.component.move((drawing.width-2*MARGIN)/2, self.heightAllocatedToPanel /2);
-        self.clippingManipulator.last.add(self.panel.component);
-        self.panel.content.add(self.formationsManipulator.first);
+        (self.clippingManipulator.last.children.indexOf(self.panel.component) === -1) && self.clippingManipulator.last.add(self.panel.component);
+            self.panel.content.add(self.formationsManipulator.first);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
         self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
@@ -1031,7 +1034,9 @@ function FormationsManagerDisplay() {
             }
             formation.parent = self;
             self.formationsManipulator.last.add(formation.manipulatorMiniature.first);
-            formation.displayMiniature(self.tileWidth, self.tileHeight);
+            if(typeof formation.miniature === "undefined"){
+                formation.displayMiniature(self.tileWidth, self.tileHeight);
+            }
             formation.manipulatorMiniature.translator.move(posx, posy);
             formation.manipulatorMiniature.last.add(formation.iconManipulator.first);
 
