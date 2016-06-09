@@ -807,54 +807,53 @@ function FormationRemoveErrorMessage(message) {
 }
 
 function FormationDisplaySaveButton(x, y, w, h) {
-    var validation = true;
-    formationValidation.forEach(formValid => {
-        var result = formValid(self);
+        var self = this;
+        self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
+        self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
 
-        if (result.isValid) {
-            self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-            self.errorMessageSave = new svg.Text(result.messageSave)
-                .position(self.ButtonWidth,-self.saveButtonHeight/2 )
-                .font("Arial", 20)
-                .anchor('middle').color(myColors.green);
-            self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+        var saveFormationFunction = function () {
+            var validation = true;
+             formationValidation.forEach(formValid => {
+             var result = formValid(self);
+
+             if (result.isValid) {
+             self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+             self.errorMessageSave = new svg.Text(result.messageSave)
+             .position(0, -self.saveButtonHeight / 2 - MARGIN)
+             .font("Arial", 20)
+             .anchor('middle').color(myColors.green);
+             self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+             }
+             else {
+             // self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+             self.errorMessageSave = new svg.Text(result.messageError)
+             .position(0, -self.saveButtonHeight / 2 - MARGIN)
+             .font("Arial", 20)
+             .anchor('middle').color(myColors.red);
+             self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+             }
+
+             validation = validation && result.isValid;
+             });
+
+            if (validation) {
+            var callback = function () {
+                console.log("Votre travail a été bien enregistré");
+            };
+
+            var tmpFormationObject = {
+                label: self.label,
+                gamesCounter: self.gamesCounter,
+                levelsTab: self.levelsTab
+            };
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            dbListener.httpGetAsync("/id", () => {
+            });
+            dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
+
+            /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
+             console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
         }
-        else {
-            self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-            self.errorMessageSave = new svg.Text(result.messageError)
-                .position(self.ButtonWidth, -self.saveButtonHeight / 2)
-                .font("Arial", 20)
-                .anchor('middle').color(myColors.red);
-            self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-        }
-
-        validation = validation && result.isValid;
-    });
-
-    if (validation) {
-
-    var self = this;
-    self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
-    self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
-
-    var saveFormationFunction = function () {
-        var callback = function () {
-            console.log("Votre travail a été bien enregistré");
-        };
-
-        var tmpFormationObject = {
-            label: self.label,
-            gamesCounter: self.gamesCounter,
-            levelsTab: self.levelsTab
-        };
-        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        dbListener.httpGetAsync("/id", () => {
-        });
-        dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
-
-        /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
-         console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
-    }
     };
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
     svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);

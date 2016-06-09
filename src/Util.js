@@ -1984,7 +1984,7 @@ function Bdd() {
     formationValidation = [
         // Check Formation Name:
         formation => ({
-            isValid: formation.formationName !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'),
+            isValid: formation.label !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'),
             messageSave: "Votre travail a bien été enregistré.",
             messageError: "Vous devez remplir le nom de la formation."
 
