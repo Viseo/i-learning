@@ -179,6 +179,31 @@ function SVGGlobalHandler() {
             .position((this.view.width/2-this.content.x)/(this.content.width)*this.view.width);
         return this;
     };
+    gui.Panel.prototype.moveContent = function (y) {
+        let completeMovement = progress => {
+            this.updateHandle();
+            if (progress === 1) {
+                delete this.animation;
+                //this.moveContentH(this.x);
+            }
+        };
+        if (!this.animation) {
+            this.animation = true;
+            let ly = this.controlPosition(y);
+            this.content.onChannel().smoothy(param.speed, param.step)
+                .execute(completeMovement).moveTo(this.content.x, ly);
+        }
+        return this;
+    };
+    gui.Panel.prototype.controlPositionH = function(x) {
+        if (x > 0) {
+            x = 0;
+        }
+        if (x < -this.content.width + this.view.width) {
+            x = -this.content.width + this.view.width;
+        }
+        return x;
+    };
     gui.Panel.prototype.moveContentH = function (x) {
         var self=this;
         if (!self.animation) {
@@ -194,15 +219,6 @@ function SVGGlobalHandler() {
             }
         }
         return this;
-    };
-    gui.Panel.prototype.controlPositionH = function(x) {
-        if (x > 0) {
-            x = 0;
-        }
-        if (x < -this.content.width + this.view.width) {
-            x = -this.content.width + this.view.width;
-        }
-        return x;
     };
     gui.Panel.prototype.functionOnMoveH = function (callback) {
         this.moveContentH = function (x) {
