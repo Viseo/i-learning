@@ -184,7 +184,6 @@ function SVGGlobalHandler() {
             this.updateHandle();
             if (progress === 1) {
                 delete this.animation;
-                //this.moveContentH(this.x);
             }
         };
         if (!this.animation) {
