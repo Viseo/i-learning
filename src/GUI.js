@@ -539,6 +539,7 @@ function FormationDisplayFormation(){
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
     self.manipulator.ordonator.set(0,self.title);
+    self.formationWidth = svg.runtime.boundingRect(self.title.component).width;
 
     if (playerMode) return;
 
@@ -590,8 +591,8 @@ function FormationDisplayFormation(){
             removeErrorMessage();
             self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
             var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEXERROR)
-                .position(drawing.width/2, 0)
+            self.errorMessage = new svg.Text(REGEXERRORFORMATION)
+                .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
             textarea.focus();
