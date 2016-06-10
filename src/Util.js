@@ -749,31 +749,20 @@ function SVGUtil() {
             game.miniatureManipulator.ordonator.unset(1);
             game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
             var indexes = game.getPositionInFormation();
+            var longestLevelCandidates = game.parentFormation.findLongestLevel();
+
+            if(longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && game.parentFormation.levelWidth > game.parentFormation.graphCreaWidth){
+                let spaceOccupiedByAGame = (game.parentFormation.graphElementSize + game.parentFormation.minimalMarginBetweenGraphElements);
+                game.parentFormation.levelWidth -= spaceOccupiedByAGame;
+                game.parentFormation.panel.moveContentH(game.parentFormation.panel.content.x + spaceOccupiedByAGame);
+            }
             game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
             var levelsTab = game.parentFormation.levelsTab;
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
                 game.parentFormation.levelsTab.pop();
             }
 
-            var longestLevelCandidates=[];
-            longestLevelCandidates.index=0;
 
-            game.parentFormation.levelsTab.forEach(level=>{
-
-                if(level.gamesTab.length>=game.parentFormation.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                    if(level.gamesTab.length===game.parentFormation.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index=level.index-1;
-                }
-
-            });
-
-            if(indexes.levelIndex===longestLevelCandidates.index && longestLevelCandidates.length===1 && game.parentFormation.levelWidth>game.parentFormation.graphCreaWidth){
-                let spaceOccupiedByAGame=(game.parentFormation.graphElementSize+game.parentFormation.minimalMarginBetweenGraphElements);
-                game.parentFormation.levelWidth -= spaceOccupiedByAGame;
-                game.parentFormation.panel.moveContentH(game.parentFormation.panel.content.x+spaceOccupiedByAGame);
-            }
             game.parentFormation.selectedGame.selected = false;
             game.parentFormation.selectedGame = null;
             game.parentFormation.displayGraph();
@@ -824,8 +813,8 @@ function Bdd() {
         "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
-        "editor","miniatureManipulator","parentFormation","formationInfoManipulator","parentGames",
-        "simpleChoiceMessageManipulator"];
+        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature"];
 
     myColors = {
         darkBlue: [25, 25, 112],

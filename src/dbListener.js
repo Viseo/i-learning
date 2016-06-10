@@ -52,6 +52,7 @@ function HttpRequests(isWriting, isMock, listener) {
         };
         xmlHttp.open("POST", theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader("Content-type", "application/json");
+        console.log(body);
         xmlHttp.send(JSON.stringify(body, ignoredData));
     }
 

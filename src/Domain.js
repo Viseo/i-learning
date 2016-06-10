@@ -283,7 +283,6 @@ function Domain() {
                         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
                         level.manipulator.ordonator.set(2, level.obj.line);
                     }
-
                     formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
                 }
             }
@@ -431,19 +430,35 @@ function Domain() {
                            match.parentGames.push(self.levelsTab[i].gamesTab[j]);
                        }
                     });
-                        //    if(self.levelsTab[i+1]){
-                        //        var match= self.matchGame(childrenGame, i+1);
-                        //        !match.parentGames  && (match.parentGames = []);
-                        //        !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        //        self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                        //        self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                        //    }
-                        //})
+
                     })
                 })
             };
             self.loadDependencies();
+            var longestLevels = self.findLongestLevel();
+            if(longestLevels.length !== 0){
+                (self.levelWidth = longestLevels[0].gamesTab.length * (self.graphElementSize + self.minimalMarginBetweenGraphElements));
+            }
         };
+        self.findLongestLevel = function(){
+            var longestLevelCandidates = [];
+            longestLevelCandidates.index = 0;
+
+            self.levelsTab.forEach(level=>{
+
+                if(level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                    if(level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                        longestLevelCandidates.push(level);
+                    }else{
+                        longestLevelCandidates = [];
+                        longestLevelCandidates.push(level);
+                    }
+                    longestLevelCandidates.index = level.index-1;
+                }
+            });
+            return longestLevelCandidates;
+        };
+
         self.redim = function() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;
             //self.manipulator.last.add(self.gamesLibraryManipulator.first);

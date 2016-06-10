@@ -398,10 +398,8 @@ function LibraryDisplay(x, y, w, h) {
                 }
             }
         }();
-
         svg.addEvent(arrowModeButton.cadre, 'click', self.toggleArrowMode);
         svg.addEvent(arrowModeButton.arrow, 'click', self.toggleArrowMode)
-
     }
 }
 
@@ -911,7 +909,7 @@ function FormationsManagerDisplay() {
             self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
             self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
         self.headerHeightFormation = drawing.height * self.header.size ;
-        self.spaceBetweenElements={
+        self.spaceBetweenElements = {
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
             height: self.panel?0.030*self.panel.height:0.030*drawing.height
         };
