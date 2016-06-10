@@ -1859,7 +1859,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
-    self.formationLabel = new svg.Text("Formation : " + self.formationName).position(drawing.width/2,0);
+    self.formationLabel = new svg.Text("Formation : " + self.parentFormation.label).position(drawing.width/2,0);
     self.formationLabel.font("Arial", 20).anchor("middle");
     self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
