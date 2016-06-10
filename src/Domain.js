@@ -385,7 +385,7 @@ function Domain() {
         self.graphCreaHeightRatio = 0.85;
 
         self.x = MARGIN;
-        self.regex = /^([A-Za-z0-9.éèêâàîïëôûùö '-]){0,50}$/g;
+        self.regex = /^([A-Za-z0-9.éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
         self.targetLevelIndex = 0;
         self.levelsTab = [];
