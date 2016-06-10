@@ -22,6 +22,16 @@ module.exports = function (app, fs) {
         });
     });
 
+    app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
+        var collection = db.get().collection('users');
+        var result;
+        var obj=collection.find().
+        toArray(function(err, docs) {
+            result = docs.find(user => user.mailAddress===req.params.mailAddress);
+            res.send({user: result});
+        });
+    });
+
     app.get('/getAllFormations', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = collection.find().toArray(function(err, docs) {

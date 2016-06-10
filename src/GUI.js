@@ -2075,28 +2075,22 @@ function InscriptionManagerDisplay() {
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
-
     var w = drawing.width/6;
     var x = drawing.width/10;
-
-    var displayErrorMessage = function(errorMessage){
-        var message = autoAdjustText(errorMessage, 0, 0, drawing.width, self.h, 20, null, self.errorMessageManipulator);
-        message.text.color(myColors.red);
-    }
+    var trueValue = "";
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = document.createElement("textarea");
+            let contentarea = svg.runtime.createDOM("textarea");
             contentarea.value = self[field].label;
-            contentarea.trueValue = "";
-            contentarea.width = w;
-            contentarea.height = self.h;
-            contentarea.globalPointCenter = self[field].cadre.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
+            var width = w;
+            var height = self.h;
+            var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
 
             var contentareaStyle = {
-                toppx: contentarea.globalPointCenter.y ,
-                leftpx: contentarea.globalPointCenter.x,
-                height: contentarea.height,
+                toppx: globalPointCenter.y ,
+                leftpx: globalPointCenter.x,
+                height: height,
                 width: self[field].cadre.width
             };
             svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
@@ -2104,34 +2098,54 @@ function InscriptionManagerDisplay() {
                 (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
                 "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
             manipulator.ordonator.unset(1, self[field].content.text);
-            svg.runtime.anchor('content').appendChild(contentarea).focus();
+            svg.runtime.add(svg.runtime.anchor('content'), contentarea);
+            !runtime && contentarea.focus();
+
+            var displayErrorMessage = function(trueManipulator=manipulator){
+                if (!(field==="passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)){
+                    var message = autoAdjustText(self[field].errorMessage, 0, 0, drawing.width, self.h, 20, null, trueManipulator, 3);
+                    message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
+                }
+            };
 
             contentarea.oninput = function(){
-                if (self[field].secret && contentarea.trueValue.length<contentarea.value.length){
-                    contentarea.trueValue += contentarea.value.substring(contentarea.value.length-1);
+                if (self[field].secret && trueValue.length<contentarea.value.length){
+                    trueValue += contentarea.value.substring(contentarea.value.length-1);
                     contentarea.value = "";
-                    for (var i = 0; i<contentarea.trueValue.length; i++){
+                    for (var i = 0; i<trueValue.length; i++){
                         contentarea.value+="*";
                     }
                 }
                 else if (self[field].secret && contentarea.value.length ===1){
-                    contentarea.trueValue = contentarea.value;
+                    trueValue = contentarea.value;
                     contentarea.value = "*";
                 }
-            }
+                self[field].label = contentarea.value;
+                self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
+                if ((field === "lastNameField" || field==='firstNameField' ) && !self[field].checkInput()){
+                    displayErrorMessage();
+                    self[field].cadre.color(myColors.white, 3, myColors.red);
+                }
+                else {
+                    field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                }
+            };
             contentarea.onblur = function(){
                 self[field].label = contentarea.value;
                 displayField(field, manipulator);
                 if (self[field].checkInput()){
-                    self[field].cadre.color(myColors.white, 1, myColors.black);
-                    self.errorMessageManipulator.ordonator.unset(1);
                     if (self[field].secret && self.passwordField.label===self.passwordConfirmationField.label){
-                        self.passwordField.labelSecret = contentarea.trueValue;
+                        self.passwordField.labelSecret = trueValue;
+                    }
+                    else {
+                        self[field].cadre.color(myColors.white, 1, myColors.black);
+                        field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
                     }
                 }
                 else {
-                    self[field].cadre.color(myColors.white, 3, myColors.red);
-                    displayErrorMessage(self[field].errorMessage)
+                    self[field].secret || displayErrorMessage();
+                    self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
                 }
                 contentarea.remove();
             }
@@ -2153,11 +2167,11 @@ function InscriptionManagerDisplay() {
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
         self.tabForm.push(self[field]);
-    }
+    };
 
     var nameCheckInput = function(field){
         self[field].label = self[field].label.trim();
-        var regex = /^([A-Za-zéèêâàîïëôûùö '-]){0,150}$/g;
+        var regex = /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g;
         return self[field].label.match(regex);
     };
 
@@ -2172,45 +2186,62 @@ function InscriptionManagerDisplay() {
     self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
     displayField("firstNameField", self.firstNameManipulator);
 
-    self.mailAdressField={label:"", title:self.mailAdressLabel, line:-1};
-    self.mailAdressField.errorMessage = "L'adresse email n'est pas valide";
-    self.mailAdressField.checkInput = function(){
+    self.mailAddressField={label:"", title:self.mailAddressLabel, line:-1};
+    self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
+    self.mailAddressField.checkInput = function(){
         var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-        return self.mailAdressField.label.match(regex);
+        return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
     }
-    displayField("mailAdressField", self.mailAdressManipulator);
+    displayField("mailAddressField", self.mailAddressManipulator);
 
-    self.passwordField={label:"", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
-    self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
-    self.passwordField.checkInput = function(){
-        var result = self.passwordField.label.length>=6 && (self.passwordConfirmationField.label==="" || (self.passwordField.label===self.passwordConfirmationField.label));
-        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label.length<6){
+    var passwordCheckInput = function() {
+        var passTooShort = self.passwordField.labelSecret !== "" && self.passwordField.labelSecret.length<6;
+        var confTooShort = self.passwordConfirmationField.labelSecret !== "" && self.passwordConfirmationField.labelSecret.length<6;
+        if (passTooShort || confTooShort){
+            if (passTooShort){
+                self.passwordField.cadre.color(myColors.white, 3, myColors.red);
+                var message = autoAdjustText(self.passwordField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+                message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
+            }
+            if (confTooShort){
+                self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
+                var message = autoAdjustText(self.passwordField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+                message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
+            }
+        }
+        else if (self.passwordConfirmationField.labelSecret !== "" && self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret){
+            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
             self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
+            var message = autoAdjustText(self.passwordConfirmationField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+            message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
+        }
+        else if (self.passwordField.labelSecret.length>=6){
+            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
+            self.passwordManipulator.ordonator.unset(3);
         }
         else {
             self.passwordConfirmationField.cadre.color(myColors.white, 1, myColors.black);
-        }
-        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label!== self.passwordField.label){
-            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
-        }
-        else {
             self.passwordField.cadre.color(myColors.white, 1, myColors.black);
+            self.passwordManipulator.ordonator.unset(3);
         }
-        return result;
     }
+
+    self.passwordField={label:"", labelSecret:"", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
+    self.passwordField.checkInput = passwordCheckInput;
     displayField("passwordField", self.passwordManipulator);
 
-    self.passwordConfirmationField={label:"", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
-    self.passwordConfirmationField.checkInput = function(){
-        if (self.passwordConfirmationField.label !== "" && self.passwordConfirmationField.label!== self.passwordField.label){
-            self.passwordField.cadre.color(myColors.white, 3, myColors.red);
-        }
-        else {
-            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
-        }
-        return (self.passwordField.label===self.passwordConfirmationField.label);
-    }
+    self.passwordConfirmationField={label:"", labelSecret:"", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordConfirmationField.checkInput = passwordCheckInput;
     displayField("passwordConfirmationField", self.passwordConfirmationManipulator);
+
+    var AllOk = function (){
+        return self.lastNameField.checkInput() &&
+        self.firstNameField.checkInput() &&
+        self.mailAddressField.checkInput() &&
+        self.passwordField.checkInput() &&
+        self.passwordConfirmationField.checkInput();
+    }
 
 
     self.saveButtonHandler = function(){
@@ -2219,34 +2250,49 @@ function InscriptionManagerDisplay() {
             emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
         if (emptyAreas.length>0){
-            displayErrorMessage(EMPTYFIELDERROR);
+            var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
-        else {
-            self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
-            console.log(self.passwordField.hash);
-            console.log(TwinBcrypt.compareSync(self.passwordField.labelSecret, self.passwordField.hash));
-            console.log(self.passwordField.labelSecret);
-            var tempObject = {
-                lastName: self.lastNameField.label,
-                firstName: self.firstNameField.label,
-                mailAdress: self.mailAdressField.label,
-                password: self.passwordField.hash
+        else if (AllOk){
+            var callback = function(data){
+                var myUser=JSON.parse(data).user;
+                if (myUser){
+                    var messageText = "Un utilisateur possède déjà cet adresse mail !";
+                    var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
+                    setTimeout(function(){
+                        self.saveButtonManipulator.ordonator.unset(3);
+                    }, 10000);
+                }
+                else {
+                    self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
+                    //console.log(TwinBcrypt.compareSync(self.passwordField.labelSecret, self.passwordField.hash));
+                    //console.log(TwinBcrypt.compareSync("bbbbbb", self.passwordField.hash));
+                    var tempObject = {
+                        lastName: self.lastNameField.label,
+                        firstName: self.firstNameField.label,
+                        mailAddress: self.mailAddressField.label,
+                        password: self.passwordField.hash
+                    }
+                    var callback = function (data) {
+                        var messageText = "Votre compte a bien été créé !";
+                        var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);;
+                        setTimeout(function(){
+                            self.saveButtonManipulator.ordonator.unset(3);
+                        }, 10000);
+                    };
+                    dbListener.httpPostAsync("/inscription", tempObject, callback);
+                    console.log(tempObject);
+                }
             }
-            var callback = function (data) {
-                var messageText = "Votre compte a bien été créé !";
-                var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.errorMessageManipulator);
-                message.text.color(myColors.green);
-                setTimeout(function(){
-                    self.errorMessageManipulator.ordonator.unset(1);
-                }, 10000);
-            };
-            dbListener.httpPostAsync("/inscription", tempObject, callback);
-            console.log(tempObject);
+            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+
+
         }
     }
     self.saveButton = displayText(self.saveButtonLabel, self.saveButtonWidth, self.saveButtonHeight, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
     self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
-    self.errorMessageManipulator.translator.move(0, -self.saveButton.cadre.height);
     svg.addEvent(self.saveButton.content, "click", self.saveButtonHandler);
     svg.addEvent(self.saveButton.cadre, "click", self.saveButtonHandler);
 }

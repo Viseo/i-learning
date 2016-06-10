@@ -61,6 +61,7 @@ describe('Quizz game', function () {
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
         inscriptionModule = require("../src/inscription");
+        dbListenerModule = require("../src/dbListener");
         runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
@@ -84,6 +85,7 @@ describe('Quizz game', function () {
         gui.setSVG(svg);
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
+        dbListener = new dbListenerModule.DbListener(false, true);
     });
 
     // it("plays a complete quizz game using resize", function (done) {

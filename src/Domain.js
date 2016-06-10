@@ -1080,7 +1080,7 @@ User = function () {
     let self = this;
     self.firstName;
     self.lastName;
-    self.mailAdress;
+    self.mailAddress;
     self.password;
 
 
@@ -1095,27 +1095,27 @@ InscriptionManager = function () {
     self.manipulator = new Manipulator(self);
     self.manipulator.addOrdonator(6);
     self.firstNameManipulator = new Manipulator(self);
-    self.firstNameManipulator.addOrdonator(3);
+    self.firstNameManipulator.addOrdonator(4);
     self.lastNameManipulator = new Manipulator(self);
-    self.lastNameManipulator.addOrdonator(3);
-    self.mailAdressManipulator = new Manipulator(self);
-    self.mailAdressManipulator.addOrdonator(3);
+    self.lastNameManipulator.addOrdonator(4);
+    self.mailAddressManipulator = new Manipulator(self);
+    self.mailAddressManipulator.addOrdonator(4);
     self.passwordManipulator = new Manipulator(self);
-    self.passwordManipulator.addOrdonator(3);
+    self.passwordManipulator.addOrdonator(4);
     self.passwordConfirmationManipulator = new Manipulator(self);
     self.passwordConfirmationManipulator.addOrdonator(3);
     self.saveButtonManipulator = new Manipulator(self);
-    self.saveButtonManipulator.addOrdonator(3);
-    self.errorMessageManipulator = new Manipulator(self);
+    self.saveButtonManipulator.addOrdonator(4);
+    //self.errorMessageManipulator = new Manipulator(self);
 
     self.manipulator.last.add(self.firstNameManipulator.first);
     self.manipulator.last.add(self.lastNameManipulator.first);
-    self.manipulator.last.add(self.mailAdressManipulator.first);
+    self.manipulator.last.add(self.mailAddressManipulator.first);
     self.manipulator.last.add(self.passwordManipulator.first);
     self.manipulator.last.add(self.passwordConfirmationManipulator.first);
     self.manipulator.last.add(self.saveButtonManipulator.first);
-    self.saveButtonManipulator.last.add(self.errorMessageManipulator.first);
-    self.errorMessageManipulator.addOrdonator(2);
+    //self.saveButtonManipulator.last.add(self.errorMessageManipulator.first);
+    //self.errorMessageManipulator.addOrdonator(2);
 
     // HEIGHT
     self.saveButtonHeightRatio = 0.075;
@@ -1125,7 +1125,7 @@ InscriptionManager = function () {
 
     self.lastNameLabel = "Nom :";
     self.firstNameLabel = "Prénom :";
-    self.mailAdressLabel = "Adresse mail :";
+    self.mailAddressLabel = "Adresse mail :";
     self.passwordLabel = "Mot de passe :";
     self.passwordConfirmationLabel = "Confirmer votre mot de passe :";
     self.lastNameLabel = "Nom :";
