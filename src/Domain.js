@@ -423,9 +423,9 @@ function Domain() {
                     level.gamesTab.forEach(function (game, j) {
                         game.childrenGames.forEach(function (childrenGame) {
                        if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
-                           let match =  self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+                           let match = self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
                            !match.parentGames && (match.parentGames = []);
-                           !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                            !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
                            self.levelsTab[i].gamesTab[j].childrenGames.push(match);
                            match.parentGames.push(self.levelsTab[i].gamesTab[j]);
                        }
@@ -870,17 +870,20 @@ function Domain() {
         self.title = "BD";
         self.miniaturePosition = {x:0, y:0};
 
-        self.getPositionInFormation = function(){
+        self.getPositionInFormation = function () {
             var gameIndex, levelIndex;
-            for(var i = 0; i<self.parentFormation.levelsTab.length; i++){
+            for (var i = 0; i < self.parentFormation.levelsTab.length; i++) {
                 gameIndex = self.parentFormation.levelsTab[i].gamesTab.indexOf(self);
-                if(gameIndex !== -1){
+                if (gameIndex !== -1) {
                     break;
                 }
             }
             levelIndex = i;
-            return {levelIndex:levelIndex, gameIndex:gameIndex};
+            self.levelIndex = levelIndex;
+            self.gameIndex = gameIndex;
+            return {levelIndex: levelIndex, gameIndex: gameIndex};
         };
+
 
     };
 
@@ -1016,8 +1019,8 @@ function Domain() {
                 }
             }
             levelIndex = i;
-            self.levelIndex=levelIndex;
-            self.gameIndex=gameIndex;
+            self.levelIndex = levelIndex;
+            self.gameIndex = gameIndex;
             return {levelIndex: levelIndex, gameIndex: gameIndex};
         };
 
