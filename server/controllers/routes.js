@@ -1,6 +1,7 @@
 module.exports = function (app, fs) {
 
     var db = require('../db');
+    var TwinBcrypt=require('twin-bcrypt');
 
     try {
         fs.accessSync(path, fs.F_OK);
@@ -34,6 +35,18 @@ module.exports = function (app, fs) {
         toArray(function(err, docs) {
             result = docs.find(user => user.mailAddress===req.params.mailAddress);
             res.send({user: result});
+        });
+    });
+
+    app.post('/connectUser', function(req, res) {
+        let collection = db.get().collection('users');
+        collection.find().toArray(function(err, docs) {
+            let result = docs.find(user => user.mailAddress===req.body.mailAddress);
+            if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
+                res.send({user: result});
+            }else{
+                res.send({});
+            }
         });
     });
 

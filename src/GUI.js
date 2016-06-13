@@ -2254,7 +2254,7 @@ function InscriptionManagerDisplay(labels={}) {
                         firstName: self.firstNameField.label,
                         mailAddress: self.mailAddressField.label,
                         password: self.passwordField.hash
-                    }
+                    };
                     var callback = function (data) {
                         var messageText = "Votre compte a bien été créé !";
                         var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
@@ -2291,7 +2291,7 @@ function ConnectionManagerDisplay() {
     var clickEditionField = function (field, manipulator) {
         return function () {
             let contentarea = svg.runtime.createDOM("input");
-            contentarea.value = self[field].label;
+            contentarea.value = self[field].labelSecret||self[field].label;
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
@@ -2322,22 +2322,17 @@ function ConnectionManagerDisplay() {
             contentarea.onblur = function(){
                 if(self[field].secret){
                     self[field].label='';
+                    self[field].labelSecret=contentarea.value;
                     for(let i=0;i<contentarea.value.length;i++){
                         self[field].label += '●';
                     }
+
                 }else{
                     self[field].label=contentarea.value;
                 }
-
                 displayField(field, manipulator);
-
-
-
-                        //self[field].cadre.color(myColors.white, 1, myColors.black);
-                        manipulator.ordonator.unset(3);
-
-
-
+                //self[field].cadre.color(myColors.white, 1, myColors.black);
+                manipulator.ordonator.unset(3);
                 contentarea.remove();
             }
         };
@@ -2357,7 +2352,7 @@ function ConnectionManagerDisplay() {
         var clickEdition = clickEditionField(field, manipulator);
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
-        self.tabForm.push(self[field]);
+        self.tabForm.indexOf(self[field])===-1 && self.tabForm.push(self[field]);
     };
 
     self.mailAddressField={label:"", title:self.mailAddressLabel, line:-1};
@@ -2380,47 +2375,18 @@ function ConnectionManagerDisplay() {
             emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
         if (emptyAreas.length>0){
-            var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-            message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
-        }
-        else if (AllOk){
-            var callback = function(data){
-                var myUser=JSON.parse(data).user;
-                if (myUser){
-                    var messageText = "Un utilisateur possède déjà cet adresse mail !";
-                    var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
-                    setTimeout(function(){
-                        self.saveButtonManipulator.ordonator.unset(3);
-                    }, 10000);
-                }
-                else {
-                    self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
-                    //console.log(TwinBcrypt.compareSync(self.passwordField.labelSecret, self.passwordField.hash));
-                    //console.log(TwinBcrypt.compareSync("bbbbbb", self.passwordField.hash));
-                    var tempObject = {
-                        lastName: self.lastNameField.label,
-                        firstName: self.firstNameField.label,
-                        mailAddress: self.mailAddressField.label,
-                        password: self.passwordField.hash
-                    }
-                    var callback = function (data) {
-                        var messageText = "Votre compte a bien été créé !";
-                        var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);;
-                        setTimeout(function(){
-                            self.saveButtonManipulator.ordonator.unset(3);
-                        }, 10000);
-                    };
-                    dbListener.httpPostAsync("/inscription", tempObject, callback);
-                    console.log(tempObject);
-                }
-            }
-            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+            var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
+            //svg.timeout()
+        } else {
+            let callback = function(user){
+                console.log(user);
+            };
+            dbListener.httpPostAsync("/connectUser/" ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
 
 
         }
-    }
+    };
     self.connectionButton = displayText(self.connectionButtonLabel, self.connectionButtonWidth, self.connectionButtonHeight, myColors.black, myColors.white, 20, null, self.connectionButtonManipulator);
     self.connectionButtonManipulator.first.move(0, 2.5*drawing.height/10);
     svg.addEvent(self.connectionButton.content, "click", self.connectionButtonHandler);
