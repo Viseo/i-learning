@@ -1159,6 +1159,37 @@ InscriptionManager = function () {
     self.tabForm =[];
 };
 
+ConnectionManager = function () {
+
+    let self = this;
+
+    self.manipulator = new Manipulator(self);
+    self.manipulator.addOrdonator(6);
+
+
+    self.mailAddressManipulator = new Manipulator(self);
+    self.mailAddressManipulator.addOrdonator(4);
+    self.passwordManipulator = new Manipulator(self);
+    self.passwordManipulator.addOrdonator(4);
+    self.connectionButtonManipulator=new Manipulator(self);
+    self.connectionButtonManipulator.addOrdonator(4);
+
+    self.manipulator.last.add(self.mailAddressManipulator.first);
+    self.manipulator.last.add(self.passwordManipulator.first);
+    self.manipulator.last.add(self.connectionButtonManipulator.first);
+
+    // HEIGHT
+    self.connectionButtonHeightRatio = 0.075;
+
+    self.connectionButtonHeight = drawing.height * self.connectionButtonHeightRatio;
+    self.connectionButtonWidth = 200;
+
+    self.mailAddressLabel = "Adresse mail :";
+    self.passwordLabel = "Mot de passe :";
+
+    self.connectionButtonLabel = "Connexion";
+    self.tabForm =[];
+};
 
 ////////////////// end of QuizzManager.js //////////////////////////
 
