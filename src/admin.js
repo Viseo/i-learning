@@ -32,6 +32,7 @@ function admin() {
     };
     var result1 = dbListener.httpGetAsync("/getAllFormationsNames", callback);
     function resizePaper(event){
+        !runtime && document.activeElement.blur();
         //event.defaultPrevented=true;
         if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;

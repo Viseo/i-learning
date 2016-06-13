@@ -563,16 +563,16 @@ function FormationDisplayFormation(){
 
         self.formationInfoManipulator.ordonator.unset(1);
 
-        var textarea = svg.runtime.createDOM("textarea");
-        textarea.value = self.label;
+        let contentarea = svg.runtime.createDOM("textarea");
+        contentarea.value = self.label;
         var contentareaStyle = {
             toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
             leftpx: (svg.runtime.boundingRect(self.title.component).width+ 2 * MARGIN + 1),
             width: 400,
             height:(self.labelHeight+3)
         };
-        svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        svg.runtime.anchor("content").appendChild(textarea).focus();
+        svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        svg.runtime.anchor("content").appendChild(contentarea).focus();
 
         var removeErrorMessage = function () {
             self.formationCreator.formationNameValidInput = true;
@@ -588,26 +588,26 @@ function FormationDisplayFormation(){
                 .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
-            textarea.focus();
+            contentarea.focus();
             self.labelValidInput = false;
         };
         var onblur = function () {
-            self.formationCreator.formationNameValidInput && (self.label = textarea.value);
-            textarea.remove();
+            self.formationCreator.formationNameValidInput && (self.label = contentarea.value);
+            contentarea.remove();
             showTitle();
         };
-        textarea.oninput = function () {
+        contentarea.oninput = function () {
             self.checkInputTextArea({
-                textarea: textarea,
+                textarea: contentarea,
                 border: self.formationLabel.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
         };
-        textarea.onblur = onblur;
+        contentarea.onblur = onblur;
         self.checkInputTextArea({
-            textarea: textarea,
+            textarea: contentarea,
             border: self.formationLabel.cadre,
             onblur: onblur,
             remove: removeErrorMessage,
@@ -2034,14 +2034,14 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 }
 
-function InscriptionManagerDisplay() {
+function InscriptionManagerDisplay(labels={}) {
     let self = this;
     self.header = new Header();
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
-    var w = drawing.width/6;
-    var x = drawing.width/10;
+    var w = drawing.width/5;
+    var x = drawing.width/9;
     var trueValue = "";
 
     var clickEditionField = function (field, manipulator) {
@@ -2067,6 +2067,7 @@ function InscriptionManagerDisplay() {
             !runtime && contentarea.focus();
 
             var displayErrorMessage = function(trueManipulator=manipulator){
+                emptyAreasHandler();
                 if (!(field==="passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)){
                     var message = autoAdjustText(self[field].errorMessage, 0, 0, drawing.width, self.h, 20, null, trueManipulator, 3);
                     message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
@@ -2074,16 +2075,19 @@ function InscriptionManagerDisplay() {
             };
 
             contentarea.oninput = function(){
-                if (self[field].secret && trueValue.length<contentarea.value.length){
-                    trueValue += contentarea.value.substring(contentarea.value.length-1);
+                var staredContentarea = function(){
                     contentarea.value = "";
                     for (var i = 0; i<trueValue.length; i++){
                         contentarea.value+="*";
                     }
                 }
-                else if (self[field].secret && contentarea.value.length ===1){
-                    trueValue = contentarea.value;
-                    contentarea.value = "*";
+                if (self[field].secret && trueValue.length<contentarea.value.length){
+                    trueValue += contentarea.value.substring(contentarea.value.length-1);
+                    staredContentarea();
+                }
+                else if (self[field].secret){
+                    trueValue = trueValue.substring(0, contentarea.value.length);
+                    staredContentarea();
                 }
                 self[field].label = contentarea.value;
                 self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
@@ -2132,6 +2136,7 @@ function InscriptionManagerDisplay() {
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
         self.tabForm.push(self[field]);
+        self.formLabels[field] = self[field].label;
     };
 
     var nameCheckInput = function(field){
@@ -2141,17 +2146,17 @@ function InscriptionManagerDisplay() {
     };
 
     var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
-    self.lastNameField={label:"", title:self.lastNameLabel, line:-3};
+    self.lastNameField={label:labels.lastNameField || "", title:self.lastNameLabel, line:-3};
     self.lastNameField.checkInput = function(){return nameCheckInput("lastNameField")};
     self.lastNameField.errorMessage = nameErrorMessage;
     displayField("lastNameField", self.lastNameManipulator);
 
-    self.firstNameField={label:"", title:self.firstNameLabel, line:-2};
+    self.firstNameField={label:labels.firstNameField || "", title:self.firstNameLabel, line:-2};
     self.firstNameField.errorMessage = nameErrorMessage;
     self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
     displayField("firstNameField", self.firstNameManipulator);
 
-    self.mailAddressField={label:"", title:self.mailAddressLabel, line:-1};
+    self.mailAddressField={label:labels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
     self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
     self.mailAddressField.checkInput = function(){
         var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
@@ -2191,12 +2196,12 @@ function InscriptionManagerDisplay() {
         }
     }
 
-    self.passwordField={label:"", labelSecret:"", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField={label:labels.passwordField || "", labelSecret:labels.passwordSecret || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
     self.passwordField.checkInput = passwordCheckInput;
     displayField("passwordField", self.passwordManipulator);
 
-    self.passwordConfirmationField={label:"", labelSecret:"", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordConfirmationField={label:labels.passwordConfirmationField || "", labelSecret:labels.passwordSecret || "", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordConfirmationField.checkInput = passwordCheckInput;
     displayField("passwordConfirmationField", self.passwordConfirmationManipulator);
 
@@ -2206,10 +2211,9 @@ function InscriptionManagerDisplay() {
         self.mailAddressField.checkInput() &&
         self.passwordField.checkInput() &&
         self.passwordConfirmationField.checkInput();
-    }
+    };
 
-
-    self.saveButtonHandler = function(){
+    var emptyAreasHandler = function(){
         var emptyAreas = self.tabForm.filter(field=> field.label === "");
         emptyAreas.forEach(function(emptyArea){
             emptyArea.cadre.color(myColors.white, 3, myColors.red);
@@ -2218,7 +2222,14 @@ function InscriptionManagerDisplay() {
             var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
-        else if (AllOk){
+        else {
+            self.saveButtonManipulator.ordonator.unset(3);
+        }
+        return (emptyAreas.length>0);
+    };
+
+    self.saveButtonHandler = function(){
+        if (!emptyAreasHandler() && AllOk){
             var callback = function(data){
                 var myUser=JSON.parse(data).user;
                 if (myUser){
@@ -2250,12 +2261,12 @@ function InscriptionManagerDisplay() {
                     dbListener.httpPostAsync("/inscription", tempObject, callback);
                     console.log(tempObject);
                 }
-            }
+            };
             dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
-
-
         }
-    }
+    };
+    self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
+    self.saveButtonWidth = Math.min(drawing.width * self.saveButtonWidthRatio, 200);
     self.saveButton = displayText(self.saveButtonLabel, self.saveButtonWidth, self.saveButtonHeight, myColors.black, myColors.white, 20, null, self.saveButtonManipulator);
     self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
     svg.addEvent(self.saveButton.content, "click", self.saveButtonHandler);

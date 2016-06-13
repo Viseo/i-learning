@@ -1204,9 +1204,7 @@ InscriptionManager = function () {
 
     // HEIGHT
     self.saveButtonHeightRatio = 0.075;
-
-    self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
-    self.saveButtonWidth = 200;
+    self.saveButtonWidthRatio = 0.25;
 
     self.lastNameLabel = "Nom :";
     self.firstNameLabel = "Prénom :";
@@ -1216,6 +1214,7 @@ InscriptionManager = function () {
     self.lastNameLabel = "Nom :";
     self.saveButtonLabel = "S'enregistrer";
     self.tabForm =[];
+    self.formLabels = {};
 };
 
 ConnectionManager = function () {
