@@ -45,7 +45,7 @@ module.exports = function (app, fs) {
             if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
                 res.send({user: result});
             }else{
-                res.send({});
+                res.send();
             }
         });
     });

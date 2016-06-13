@@ -2376,10 +2376,25 @@ function ConnectionManagerDisplay() {
         if (emptyAreas.length>0){
             var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
-            //svg.timeout()
+            svg.timeout(function(){
+                self.connectionButtonManipulator.ordonator.unset(3);
+                emptyAreas.forEach(function(emptyArea){
+                    emptyArea.cadre.color(myColors.white, 1, myColors.black);
+                });
+            },5000);
         } else {
             let callback = function(user){
                 console.log(user);
+                if(user){
+
+                }else {
+                    var message = autoAdjustText("Adresse et/ou mot de passe invalide(s)", 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
+                    svg.timeout(function(){
+                        self.connectionButtonManipulator.ordonator.unset(3);
+
+                    },5000);
+                }
             };
             dbListener.httpPostAsync("/connectUser/" ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
 
