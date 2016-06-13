@@ -481,6 +481,22 @@ function Domain() {
                 });
             });
         };
+        self.findLongestLevel = function(){
+            var longestLevelCandidates = [];
+            longestLevelCandidates.index = 0;
+            self.levelsTab.forEach(level=>{
+                if(level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                    if(level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length){
+                        longestLevelCandidates.push(level);
+                    }else{
+                        longestLevelCandidates = [];
+                        longestLevelCandidates.push(level);
+                    }
+                    longestLevelCandidates.index = level.index-1;
+                }
+            });
+            return longestLevelCandidates;
+        };
      // formation.levelsTab.forEach(function (level) {
             //     var gamesTab = [];
             //     level.gamesTab.forEach(function (game) {
