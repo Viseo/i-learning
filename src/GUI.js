@@ -839,14 +839,30 @@ function FormationDisplaySaveButton(x, y, w, h) {
              });
 
             if (validation) {
-            var callback = function () {
+            var callback = function (data) {
                 console.log("Votre travail a été bien enregistré");
+
             };
+
+            var saveLevelsTab = function () {
+                var levelsTab = [];
+                self.levelsTab.forEach(function(level, i) {
+                    var gamesTab=[];
+                    levelsTab.push({gamesTab:gamesTab});
+                    level.gamesTab.forEach(function(game) {
+                        game.parentGames.length===0 && levelsTab[i].gamesTab.push(game);
+                    });
+                });
+                return levelsTab;
+            };
+
+            let levelsTab = saveLevelsTab();
 
             var tmpFormationObject = {
                 label: self.label,
                 gamesCounter: self.gamesCounter,
-                levelsTab: self.levelsTab
+                gamesId: self.gamesId,
+                levelsTab: levelsTab
             };
             let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             dbListener.httpGetAsync("/id", () => {
