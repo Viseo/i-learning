@@ -2213,12 +2213,12 @@ function InscriptionManagerDisplay(labels={}) {
         self.passwordConfirmationField.checkInput();
     };
 
-    var emptyAreasHandler = function(){
+    var emptyAreasHandler = function(save){
         var emptyAreas = self.tabForm.filter(field=> field.label === "");
         emptyAreas.forEach(function(emptyArea){
-            emptyArea.cadre.color(myColors.white, 3, myColors.red);
+            save && emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
-        if (emptyAreas.length>0){
+        if (emptyAreas.length>0 && save){
             var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
@@ -2229,7 +2229,7 @@ function InscriptionManagerDisplay(labels={}) {
     };
 
     self.saveButtonHandler = function(){
-        if (!emptyAreasHandler() && AllOk){
+        if (!emptyAreasHandler(true) && AllOk){
             var callback = function(data){
                 var myUser=JSON.parse(data).user;
                 if (myUser){
