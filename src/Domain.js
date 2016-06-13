@@ -724,7 +724,7 @@ function Domain() {
         self.parentQuizz = quizz;
         self.tabAnswer = [];
         self.fontSize = 20;
-        self.questionNum = self.parentQuizz.tabQuestions.length + 1;
+        self.questionNum = self.parentQuizz.tabQuestions.length+1;
 
         if (!question) {
             self.label = "";

@@ -436,12 +436,12 @@ function AddEmptyElementDisplay(x, y, w, h) {
                     0);
                 break;
             case 'question':
-                let newQuestion = new Question(null, self.parent.quizz);
-                newQuestion.selected = true;
-
                 self.parent.quizz.tabQuestions.pop();
                 self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false;
                 self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
+                
+                let newQuestion = new Question(null, self.parent.quizz);
+                newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
 
                 let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
