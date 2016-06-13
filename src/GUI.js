@@ -444,7 +444,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 self.parent.quizz.tabQuestions.pop();
                 self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false;
                 self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
-                
+
                 let newQuestion = new Question(null, self.parent.quizz);
                 newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
@@ -817,12 +817,64 @@ function FormationDisplaySaveButton(x, y, w, h) {
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
 
-            /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
-             console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
+        var saveFormationFunction = function () {
+            var validation = true;
+            var exist = false;
 
-        svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
-        svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
-        self.saveFormationButtonManipulator.translator.move(x, y);
+            var callback = function (data) {
+                var myFormation = JSON.parse(data).formation;
+                if (myFormation) {
+                    self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                    var messageText = "Le nom de cette formation est déjà utilisé !";
+                    self.errorMessage = new svg.Text(messageText)
+                        .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
+                        .font("Arial", 15)
+                        .anchor('start').color(myColors.red);
+                    setTimeout(function () {
+                        self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                    }, 1);
+                    exist = true;
+                }
+
+                formationValidation.forEach(formValid => {
+                    var result = formValid(self);
+
+                    if (result.isValid && !exist) {
+                        self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                        self.errorMessageSave = new svg.Text(result.messageSave)
+                            .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                            .font("Arial", 20)
+                            .anchor('middle').color(myColors.green);
+                        self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+                    }
+                    else if (!result.isValid) {
+                        self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                        self.errorMessageSave = new svg.Text(result.messageError)
+                            .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                            .font("Arial", 20)
+                            .anchor('middle').color(myColors.red);
+                        self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+                    }
+
+                    validation = validation && result.isValid;
+                });
+
+                if (validation && !exist) {
+                    var tmpFormationObject = {
+                        label: self.label,
+                        gamesCounter: self.gamesCounter,
+                        levelsTab: self.levelsTab
+                    };
+                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                    dbListener.httpPostAsync("/insert", tmpFormationObject, null, ignoredData);
+                }
+            };
+            dbListener.httpGetAsync("/getFormationByName/" + self.label, callback);
+    };
+
+    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
+    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
+    self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
 function FormationsManagerDisplay() {
