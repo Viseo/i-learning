@@ -74,6 +74,7 @@ describe('Quizz game', function () {
         adminModule.setUtil(util);
         testModule.setUtil(util);
         testModule.setSvg(svg);
+        inscriptionModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
         domain.setUtil(util);
