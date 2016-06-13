@@ -428,6 +428,9 @@ function Domain() {
 
             if (validation) {
                 var callback = function (data) {
+                    setTimeout(function(){
+                        self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                    }, 5000);
                     console.log("Votre travail a été bien enregistré");
 
                 };
