@@ -2,7 +2,12 @@ module.exports = function (app, fs) {
 
     var db = require('../db');
 
-    fs.writeFileSync("./log/db.json", "");
+    try {
+        fs.accessSync(path, fs.F_OK);
+        fs.writeFileSync("./log/db.json", "");
+    } catch (e) {
+        // It isn't accessible
+    }
     var ObjectID = require('mongodb').ObjectID;
     var id = new ObjectID();
 
@@ -68,9 +73,16 @@ module.exports = function (app, fs) {
     });
 
     app.post('/data', function (req, res) {
-        console.log(req.body);
-        fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
-        res.send({ack:'ok'});
+        try {
+            fs.accessSync(path, fs.F_OK);
+            // Do something
+            console.log(req.body);
+            fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
+            res.send({ack:'ok'});
+        } catch (e) {
+            // It isn't accessible
+            res.send({ack:'ok'});
+        }
     });
 
     /*    app.get('/find', function(req, res) {
