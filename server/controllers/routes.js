@@ -39,9 +39,9 @@ module.exports = function (app, fs) {
     });
 
     app.post('/connectUser', function(req, res) {
-        let collection = db.get().collection('users');
+        var collection = db.get().collection('users');
         collection.find().toArray(function(err, docs) {
-            let result = docs.find(user => user.mailAddress===req.body.mailAddress);
+            var result = docs.find(user => user.mailAddress===req.body.mailAddress);
             if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
                 res.send({user: result});
             }else{
