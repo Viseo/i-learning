@@ -8,8 +8,10 @@
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
     "method-override": "^2.3.5",
+    "mocha": "^2.5.3",
+    "mocha-istanbul": "^0.2.0",
     "mongodb": "^2.1.19",
-    "twin-bcrypt":"^2.1.1"
+    "twin-bcrypt": "^2.1.1"
   },
   "devDependencies": {
     "test-module": "*"
