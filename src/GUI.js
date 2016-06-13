@@ -813,68 +813,13 @@ function FormationDisplaySaveButton(x, y, w, h) {
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
 
-        var saveFormationHandler = function () {
-            var validation = true;
-             formationValidation.forEach(formValid => {
-             var result = formValid(self);
 
-             if (result.isValid) {
-             self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-             self.errorMessageSave = new svg.Text(result.messageSave)
-             .position(0, -self.saveButtonHeight / 2 - MARGIN)
-             .font("Arial", 20)
-             .anchor('middle').color(myColors.green);
-             self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-             }
-             else {
-             // self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-             self.errorMessageSave = new svg.Text(result.messageError)
-             .position(0, -self.saveButtonHeight / 2 - MARGIN)
-             .font("Arial", 20)
-             .anchor('middle').color(myColors.red);
-             self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-             }
-
-             validation = validation && result.isValid;
-             });
-
-            if (validation) {
-            var callback = function (data) {
-                console.log("Votre travail a été bien enregistré");
-
-            };
-
-            var saveLevelsTab = function () {
-                var levelsTab = [];
-                self.levelsTab.forEach(function(level, i) {
-                    var gamesTab=[];
-                    levelsTab.push({gamesTab:gamesTab});
-                    level.gamesTab.forEach(function(game) {
-                        game.parentGames.length===0 && levelsTab[i].gamesTab.push(game);
-                    });
-                });
-                return levelsTab;
-            };
-
-            let levelsTab = saveLevelsTab();
-
-            var tmpFormationObject = {
-                label: self.label,
-                gamesCounter: self.gamesCounter,
-                gamesId: self.gamesId,
-                levelsTab: levelsTab
-            };
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-            dbListener.httpGetAsync("/id", () => {
-            });
-            dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
 
             /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
              console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
-        }
-    };
-    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationHandler);
-    svg.addEvent(self.saveFormationButton.content, "click", saveFormationHandler);
+        
+    svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
+    svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
     self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
