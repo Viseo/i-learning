@@ -460,62 +460,63 @@ function Domain() {
         };
         self.loadFormation = function(formation) {
             self.gamesCounter = formation.gamesCounter;
-            formation.levelsTab.forEach(function (level) {
+            for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];
-                level.gamesTab.forEach(function (game) {
-                    gamesTab.push(new Quizz(game, true, self));
-                });
                 self.levelsTab.push(new Level(self, gamesTab));
-            });
-            self.matchGame = function(childrenGame, levelIndex){
-                for(var game of self.levelsTab[levelIndex].gamesTab)
-                {
-                    if(game.title===childrenGame.title){
-                        return game;
-                    }
-                }
-            };
-
-            self.loadDependencies = function () {
-                formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-                    level.gamesTab.forEach(function (game, j) {
-                        game.childrenGames.forEach(function (childrenGame) {
-                       if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
-                           let match = self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
-                           !match.parentGames && (match.parentGames = []);
-                            !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                           self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                           match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                       }
-                    });
-
-                    })
-                })
-            };
-            self.loadDependencies();
-            var longestLevels = self.findLongestLevel();
-            if(longestLevels.length !== 0){
-                (self.levelWidth = longestLevels[0].gamesTab.length * (self.graphElementSize + self.minimalMarginBetweenGraphElements));
             }
-        };
-        self.findLongestLevel = function(){
-            var longestLevelCandidates = [];
-            longestLevelCandidates.index = 0;
+            formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
+                level.gamesTab.forEach(function (game, j) {
+                    self.levelsTab[i].gamesTab[j] = new Quizz(game, true, self);
+                    game.childrenGames.forEach(function (child) {
+                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
+                        !self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames && (self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames = []);
+                        !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                        self.levelsTab[i].gamesTab[j].childrenGames.push(self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]);
+                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames.push(self.levelsTab[i].gamesTab[j]);
 
-            self.levelsTab.forEach(level=>{
-
-                if(level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                    if(level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                        longestLevelCandidates.push(level);
-                    }else{
-                        longestLevelCandidates = [];
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index = level.index-1;
-                }
+                    });
+                });
             });
-            return longestLevelCandidates;
         };
+     // formation.levelsTab.forEach(function (level) {
+            //     var gamesTab = [];
+            //     level.gamesTab.forEach(function (game) {
+            //         gamesTab.push(new Quizz(game, true, self));
+            //     });
+            //     self.levelsTab.push(new Level(self, gamesTab));
+            // });
+            // self.matchGame = function(childrenGame, levelIndex){
+            //     for(var game of self.levelsTab[levelIndex].gamesTab)
+            //     {
+            //         if(game.title===childrenGame.title){
+            //             return game;
+            //         }
+            //     }
+            // };
+
+            // self.loadDependencies = function () {
+            //     formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
+            //         level.gamesTab.forEach(function (game, j) {
+            //             game.childrenGames.forEach(function (childrenGame) {
+            //            if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
+            //                let match =  self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+            //                !match.parentGames && (match.parentGames = []);
+            //                !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+            //                self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+            //                match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+            //            }
+            //         });
+                        //    if(self.levelsTab[i+1]){
+                        //        var match= self.matchGame(childrenGame, i+1);
+                        //        !match.parentGames  && (match.parentGames = []);
+                        //        !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                        //        self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                        //        self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                        //    }
+                        //})
+
+            // self.loadDependencies();
+
 
         self.redim = function() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;

@@ -813,14 +813,12 @@ function FormationDisplaySaveButton(x, y, w, h) {
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
 
-
-
             /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
              console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
         
-    svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
-    svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
-    self.saveFormationButtonManipulator.translator.move(x, y);
+        svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
+        svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
+        self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
 function FormationsManagerDisplay() {
