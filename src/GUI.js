@@ -815,7 +815,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
 
             /*var result = httpPutAsync("/update/:name", tmpFormationObject, thing, aDefinir);
              console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
-        
+
         svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
         svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
         self.saveFormationButtonManipulator.translator.move(x, y);
@@ -907,7 +907,7 @@ function FormationsManagerDisplay() {
     function onClickFormation(formation) {
         formation.displayFormation();
         var callback = function (data) {
-            var myFormation=JSON.parse(data).formation;
+            var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
