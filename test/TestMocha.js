@@ -284,7 +284,7 @@ describe('Admin use', function () {
     //     this.timeout(100000);
     // });
 
-    it("an admin use with add/delete arrows", function (done) {
+    it("an admin use with add/delete arrows game and level", function (done) {
         var jsonFile = "./log/testAdminArrows.json";
         testutils.retrieveDB("./log/dbtestAdminArrows.json", dbListener, function () {
             var execute = function () {
