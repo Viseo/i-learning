@@ -766,7 +766,7 @@ function SVGUtil() {
             var indexes = game.getPositionInFormation();
             var longestLevelCandidates = game.parentFormation.findLongestLevel();
 
-            if(longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && game.parentFormation.levelWidth > game.parentFormation.graphCreaWidth){
+            if(longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && (game.parentFormation.levelWidth > game.parentFormation.graphCreaWidth)){
                 let spaceOccupiedByAGame = (game.parentFormation.graphElementSize + game.parentFormation.minimalMarginBetweenGraphElements);
                 game.parentFormation.levelWidth -= spaceOccupiedByAGame;
                 game.parentFormation.panel.moveContentH(game.parentFormation.panel.content.x + spaceOccupiedByAGame);
@@ -774,9 +774,9 @@ function SVGUtil() {
             game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
             var levelsTab = game.parentFormation.levelsTab;
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+                game.parentFormation.graphManipulator.ordonator.unset(game.parentFormation.levelsTab.length+1);
                 game.parentFormation.levelsTab.pop();
             }
-
 
             game.parentFormation.selectedGame.selected = false;
             game.parentFormation.selectedGame = null;

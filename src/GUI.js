@@ -813,7 +813,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
 
-        var saveFormationFunction = function () {
+        var saveFormationHandler = function () {
             var validation = true;
              formationValidation.forEach(formValid => {
              var result = formValid(self);
@@ -857,8 +857,8 @@ function FormationDisplaySaveButton(x, y, w, h) {
              console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
         }
     };
-    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
-    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
+    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationHandler);
+    svg.addEvent(self.saveFormationButton.content, "click", saveFormationHandler);
     self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
@@ -2025,7 +2025,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
-    for(var i =0;i<self.quizz.tabQuestions.length-1;i++){
+    for(var i = 0;i<self.quizz.tabQuestions.length-1;i++){
         typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
         (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
     }
