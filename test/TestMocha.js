@@ -92,6 +92,20 @@ describe('Quizz game', function () {
         dbListener = new dbListenerModule.DbListener(false, true);
     });
 
+    it("TEST GLOBAL EVENT", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/TEST_GLOBAL_EVENT.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    testModule.test();
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+
     // it("plays a complete quizz game using resize", function (done) {
     //     this.timeout(100000);
     //     var jsonFile = "./log/testQuizzResize.json";

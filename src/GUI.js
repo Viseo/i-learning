@@ -671,10 +671,9 @@ function FormationDisplayFormation(){
 
         var hasKeyDownEvent = function (event) {
             self.target = self.panel;
-            if (event.keyCode===46 && self.selectedArrow) { // suppr
-                self.selectedArrow.redCrossClickHandler();
-            } else if(event.keyCode===46 && self.selectedGame) { // suppr
-                    self.selectedGame.redCrossClickHandler();
+            if (event.keyCode===46) { // suppr
+                self.selectedArrow && self.selectedArrow.redCrossClickHandler();
+                self.selectedGame && self.selectedGame.redCrossClickHandler();
             } else if(event.keyCode === 27 && self.library && self.library.arrowMode) { // échap
                 self.library.toggleArrowMode();
             } else if(event.keyCode === 27 && self.library && self.library.gameSelected) {

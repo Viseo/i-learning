@@ -22,14 +22,20 @@ function setUtil(_util){
 }
 
 var test = function(){
-    var textarea = new svg.getSvgr().createDOM("textarea");
-    svg.getSvgr().add(svg.getSvgr().anchor("content"), textarea);
-    var textPourGetBBox = new svg.Text("Le texte");
-    mainManipulator.ordonator.set(0, textPourGetBBox);
-    var dim = textPourGetBBox.component.getBoundingClientRect() || textPourGetBBox.component.target.getBoundingClientRect();
-    var rect = new svg.Rect(dim.width, dim.height);
-    mainManipulator.ordonator.set(1, rect);
-}
+    var rect = new svg.Rect(50, 50).color(myColors.blue, 3, myColors.black).position(200, 200);
+    mainManipulator.last.add(rect);
+    var handler = function (event) {
+        if(event.keyCode === 27) { // echap
+            console.log("ECHAP");
+            rect.color(myColors.red, 10, myColors.black);
+        }
+    };
+    svg.runtime.addGlobalEvent("keydown", function (event) {
+        if(handler(event)) {
+            event.preventDefault();
+        }
+    });
+};
 if (typeof exports !== "undefined") {
     exports.test = test;
     exports.setSvg = setSvg;
