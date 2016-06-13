@@ -7,7 +7,12 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg, gui, runtime;
+var svg, gui, runtime, param;
+
+/* istanbul ignore next */
+if(!param) {
+    param = {speed: 5, step: 100};
+}
 
 /* istanbul ignore next */
 if(typeof SVG != "undefined") {

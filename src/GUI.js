@@ -3,10 +3,15 @@
  */
 'use strict';
 
-var domain, svg, gui, runtime, playerMode;
+var domain, svg, gui, runtime, playerMode, param;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
+}
+
+/* istanbul ignore next */
+if(!param) {
+    param = {speed: 5, step: 100};
 }
 
 function setSVG(_svg){
