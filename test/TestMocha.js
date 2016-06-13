@@ -47,6 +47,7 @@ var adminModule;
 var testModule;
 var dbListenerModule;
 var inscriptionModule;
+var connexionModule;
 
 describe('Quizz game', function () {
 
@@ -61,6 +62,7 @@ describe('Quizz game', function () {
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
         inscriptionModule = require("../src/inscription");
+        connexionModule = require("../src/connection");
         dbListenerModule = require("../src/dbListener");
         runtime.declareAnchor('content');
         util.SVGUtil();
@@ -75,6 +77,7 @@ describe('Quizz game', function () {
         testModule.setUtil(util);
         testModule.setSvg(svg);
         inscriptionModule.setSvg(svg);
+        connexionModule.setSvg(svg);
         //quizzManagerModule.setSvg(svg);
         //quizzManagerModule.setUtil(util);
         domain.setUtil(util);
@@ -177,6 +180,19 @@ describe('Quizz game', function () {
             checkScenario(
                 function () {
                     inscriptionModule.inscription();
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+    it("Connection page", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testConnection.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    connexionModule.connexion();
                 }, jsonFile, 'content', runtime, done);
         };
         runTest(jsonFile, execute);

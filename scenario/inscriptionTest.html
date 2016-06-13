@@ -2,34 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Administrator area</title>
+    <title>Inscription</title>
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
+<script src="../node_modules/twin-bcrypt/twin-bcrypt.min.js"></script>
 <script src="../lib/module.js"></script>
 <script src="../lib/targetruntime.js"></script>
 <script src="../lib/runtimemock.js"></script>
 <script src="../lib/svghandler.js"></script>
 <script src="../lib/svggui.js"></script>
+<script src="../src/dbListener.js"></script>
 <script src="../lib/scenario.js"></script>
 <script>
+    var dbListener = new DbListener(false, true);
     let targetRuntime = require("../lib/targetruntime").targetRuntime;
     let SVG = require("../lib/svghandler").SVG;
     svg = SVG(targetRuntime());
 </script>
-<script src="Util.js"></script>
-<script src="Domain.js"></script>
-<script src="GUI.js"></script>
-<script src="main.js"></script>
+<script src="../src/Util.js"></script>
+<script src="../src/Domain.js"></script>
+<script src="../src/GUI.js"></script>
+<script src="../src/main.js"></script>
 <script>
     Bdd();
     SVGGlobalHandler();
     Domain();
     SVGUtil();
     LearningGUI();
+    setGlobalVariable();
 </script>
 <script>
-    main(myQuizzTest);
+    var inscriptionManager = new InscriptionManager();
+        inscriptionManager.display();
 </script>
 </body>
 </html>
