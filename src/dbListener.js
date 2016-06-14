@@ -33,32 +33,26 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpGet(theUrl, callback) {
-        if (token) {
-            theUrl+= `?token=${token}`;
-        }
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                isWriting && register(JSON.parse(xmlHttp.responseText));
-                callback(xmlHttp.responseText);
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200) {
+                isWriting && register(JSON.parse(request.responseText));
+                callback(request.responseText);
             }
         };
-        xmlHttp.open("GET", theUrl, true); // true for asynchronous
-        xmlHttp.send(null);
+        request.open("GET", theUrl, true); // true for asynchronous
+        request.send(null);
     }
 
     function httpPost(theUrl, body, callback, ignoredData) {
-        if (token) {
-            body.token = token;
-        }
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200)
+                callback(request.responseText);
         };
-        xmlHttp.open("POST", theUrl, true); // true for asynchronous
-        xmlHttp.setRequestHeader("Content-type", "application/json");
-        xmlHttp.send(JSON.stringify(body, ignoredData));
+        request.open('POST', theUrl, true); // true for asynchronous
+        request.setRequestHeader('Content-type', 'application/json');
+        request.send(JSON.stringify(body, ignoredData));
     }
 
     function httpMockGet(theUrl, callback) {

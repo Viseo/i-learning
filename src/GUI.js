@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var domain, svg, gui, runtime, playerMode, param, token;
+var domain, svg, gui, runtime, playerMode, param;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules

@@ -1267,7 +1267,7 @@ ConnectionManager = function () {
     self.connectionButtonLabel = "Connexion";
     self.tabForm =[];
 
-    let listFormations = function() {
+    self.listFormations = function() {
         let callback = function (data) {
             let myFormations = JSON.parse(data).myCollection;
             console.log(myFormations);
@@ -1293,10 +1293,10 @@ ConnectionManager = function () {
             },5000);
         } else {
             let callback = function(data) {
-                token = data ? JSON.parse(data).token : '';
-                if(token){
-                    listFormations();
-                }else {
+                let status = JSON.parse(data).status;
+                if (status === 'OK') {
+                    self.listFormations();
+                } else {
                     var message = autoAdjustText("Adresse et/ou mot de passe invalide(s)", 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
                     svg.timeout(function(){
@@ -1305,7 +1305,7 @@ ConnectionManager = function () {
                     },5000);
                 }
             };
-            dbListener.httpPostAsync("/connectUser/" ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
+            dbListener.httpPostAsync('/auth/connect/' ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
 
 
         }

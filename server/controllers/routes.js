@@ -39,7 +39,7 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.post('/connectUser', function(req, res) {
+    app.post('/auth/connect', function(req, res) {
         var collection = db.get().collection('users');
         collection.find().toArray(function(err, docs) {
             var result = docs.find(user => user.mailAddress===req.body.mailAddress);
@@ -48,28 +48,46 @@ module.exports = function (app, fs) {
                     return console.error(err.name, err.message);
                 } else {
                     var user = {
-                        id: result._id
+                        mail: result.mailAddress
                     };
-                    var token = jwt.encode('VISEO', {user: user}, function (err, token) {
+                    jwt.encode('VISEO', {user: user}, function (err, token) {
+                        res.set('Set-cookie', `token=${token}; path=/;max-age=360`);
                         res.send({
-                            'token': token,
-                            'lastName': result.lastName,
-                            'firstName': result.firstName
+                            status: 'OK',
+                            lastName: result.lastName,
+                            firstName: result.firstName
                         });
-                        /*jwt.decode('VISEO', token, function (err, decode) {
-                            if (err) {
-                                return console.error(err.name, err.message);
-                            } else {
-                                console.log(decode);
-                            }
-                        });*/
                     });
-                    console.log(token);
                 }
             } else {
-                res.send();
+                res.send({status: 'error'});
             }
         });
+    });
+
+    app.get('/auth/verify', function(req, res) {
+        var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if(token) {
+            jwt.decode('VISEO', token, function (err, decode) {
+                if (err) {
+                    return console.error(err.name, err.message);
+                } else {
+                    console.log(decode);
+                    var collection = db.get().collection('users');
+                    collection.find().toArray(function (err, docs) {
+                        var user = docs.find(user => user.mailAddress === decode.user.mail);
+
+                        if (user) {
+                            res.send({status: 'OK'});
+                        } else {
+                            res.send({status: 'error'});
+                        }
+                    });
+                }
+            });
+        } else {
+            res.send({status: 'no cookie'});
+        }
     });
 
     app.get('/getAllFormations', function(req, res) {
