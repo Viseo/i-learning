@@ -352,6 +352,7 @@ function Domain() {
             quizz: 0,
             bd: 0
         };
+        self._id = (formation._id || null);
         self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2);
@@ -407,7 +408,7 @@ function Domain() {
                 var result = formValid(self);
 
                 if (result.isValid) {
-                    self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     self.errorMessageSave = new svg.Text(result.messageSave)
                         .position(0, -self.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
@@ -427,41 +428,64 @@ function Domain() {
             });
 
             if (validation) {
-                var callback = function (data) {
-                    setTimeout(function(){
-                        self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                var callbackInsertion = function (data) {
+                    svg.timeout(function () {
+                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     }, 5000);
                     console.log("Votre travail a été bien enregistré");
 
                 };
+                var callbackCheck = function (data) {
+                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                    let oldFormation= JSON.parse(data).formation;
+                    if (oldFormation){
+                        //if(self.id)
+                        let newFormation = getObjectToSave();
+                        newFormation=JSON.stringify(newFormation, ignoredData);
+                        delete oldFormation["_id"];
+                        oldFormation = JSON.stringify(oldFormation);
+                        console.log(oldFormation);
+                        console.log(newFormation);
+                        if (oldFormation==newFormation) {
+                            //Affichage du message d'erreur
+                            console.log("La formation n'a pas été modifié");
+                        }
+                        else {
+                            //suppression
+                            dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                        }
+                    }
+                    else{
+                        dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                    }
 
-                var saveLevelsTab = function () {
+                    //  else(getWashedFormation)
+
+                };
+
+                var getObjectToSave = function () {
                     var levelsTab = [];
-                    self.levelsTab.forEach(function(level, i) {
-                        var gamesTab=[];
-                        levelsTab.push({gamesTab:gamesTab});
-                        level.gamesTab.forEach(function(game) {
-                            game.parentGames.length===0 && levelsTab[i].gamesTab.push(game);
+                    self.levelsTab.forEach(function (level, i) {
+                        var gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(function (game) {
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
                     });
-                    return levelsTab;
+                    var tmpFormationObject = {
+                        label: self.label,
+                        gamesCounter: self.gamesCounter,
+                        levelsTab: levelsTab
+                    };
+                    return tmpFormationObject;
                 };
 
-                let levelsTab = saveLevelsTab();
 
-                var tmpFormationObject = {
-                    label: self.label,
-                    gamesCounter: self.gamesCounter,
-                    gamesId: self.gamesId,
-                    levelsTab: levelsTab
-                };
-                let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                dbListener.httpGetAsync("/id", () => {
-                });
-                dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
+                Server.getFormationByName(self.label, callbackCheck);
             }
         };
         self.loadFormation = function(formation) {
+            self._id=formation._id;
             self.gamesCounter = formation.gamesCounter;
             for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];
@@ -471,12 +495,12 @@ function Domain() {
                 level.gamesTab.forEach(function (game, j) {
                     self.levelsTab[i].gamesTab[j] = new Quizz(game, true, self);
                     game.childrenGames.forEach(function (child) {
-                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
-                        !self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames && (self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames = []);
+                        let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
+                        childGame = new Quizz(child, true, self);
+                        !childGame.parentGames && (childGame.parentGames = []);
                         !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        self.levelsTab[i].gamesTab[j].childrenGames.push(self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]);
-                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames.push(self.levelsTab[i].gamesTab[j]);
-
+                        self.levelsTab[i].gamesTab[j].childrenGames.push(childGame);
+                        childGame.parentGames.push(self.levelsTab[i].gamesTab[j]);
                     });
                 });
             });
@@ -1071,13 +1095,8 @@ function Domain() {
                 !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
-            }
-            if (self.previewMode) {
-                if (self.currentQuestionIndex === -1) {
-                    self.currentQuestionIndex = 0;//numéro de la question affichée
-                    functionDisplayInAllCases();
-                }
-            } else {
+            };
+            var callback = function () {
                 if (++self.currentQuestionIndex < self.tabQuestions.length) {
                     functionDisplayInAllCases();
                 } else {
@@ -1085,6 +1104,14 @@ function Domain() {
                     self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
                     self.displayResult();
                 }
+            };
+            if (self.previewMode) {
+                if (self.currentQuestionIndex === -1) {
+                    self.currentQuestionIndex = 0;//numéro de la question affichée
+                    functionDisplayInAllCases();
+                }
+            } else {
+                Server.sendProgressToServer(self, callback);
             }
         };
 
@@ -1274,7 +1301,7 @@ ConnectionManager = function () {
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
         };
-        dbListener.httpGetAsync("/getAllFormationsNames", callback);
+        Server.getAllFormationsNames(callback);
     };
 
     self.connectionButtonHandler = function(){
@@ -1292,7 +1319,7 @@ ConnectionManager = function () {
                 });
             },5000);
         } else {
-            let callback = function(data) {
+            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
                 let status = JSON.parse(data).status;
                 if (status === 'OK') {
                     self.listFormations();
@@ -1304,8 +1331,7 @@ ConnectionManager = function () {
 
                     },5000);
                 }
-            };
-            dbListener.httpPostAsync('/auth/connect/' ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
+            });
 
 
         }

@@ -22,7 +22,7 @@ function setUtil(_util){
 
 function connexion(){
     let manager = new ConnectionManager();
-    dbListener.httpGetAsync('/auth/verify', data => {
+    Server.checkCookie(data => {
         let status = JSON.parse(data).status;
         if (status === 'OK') {
             manager.listFormations();
