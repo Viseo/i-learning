@@ -812,7 +812,39 @@ function SVGUtil() {
         svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
         self.icon.cadre.color(myColors.white, 1, myColors.black);
         return self;
+    };
+}
+
+class Server {
+    constructor() {}
+
+    static getAllFormationsNames(callback) {
+        dbListener.httpGetAsync('/getAllFormationsNames', callback);
     }
+
+    static getFormationByName(name, callback) {
+        dbListener.httpGetAsync("/getFormationByName/" + name, callback);
+    }
+
+    static getUserByMail(mail, callback) {
+        dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
+    }
+
+    static getFormationById(id, callback) {
+        dbListener.httpGetAsync("/getFormationById/" + id, callback);
+    }
+
+    static sendProgressToServer(quiz, callback) {
+        var data = {
+            indexQuestion: quiz.currentQuestionIndex+1,
+            tabWrongAnswers: [],
+            game: quiz.title,
+            formation: quiz.parentFormation ? quiz.parentFormation.label : ""
+        };
+        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
+        dbListener.httpPostAsync("/sendProgress", data, callback);
+    };
+
 }
 
 /////////////// Bdd.js //////////////////
@@ -834,7 +866,7 @@ function Bdd() {
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
         "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
-        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature"];
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea"];
 
     myColors = {
         darkBlue: [25, 25, 112],
@@ -2084,6 +2116,7 @@ if (typeof exports !== "undefined") {
     exports.Bdd = Bdd;
     exports.setGui = setGui;
     exports.setRuntime = setRuntime;
+    exports.Server = Server;
 }
 
 /*var FormationVersionStructure =
@@ -2120,3 +2153,4 @@ if (typeof exports !== "undefined") {
  tabGames: [myQuizz]
  }]
  };*/
+

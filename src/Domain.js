@@ -352,6 +352,7 @@ function Domain() {
             quizz: 0,
             bd: 0
         };
+        self._id = (formation._id || null);
         self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2);
@@ -407,7 +408,7 @@ function Domain() {
                 var result = formValid(self);
 
                 if (result.isValid) {
-                    self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     self.errorMessageSave = new svg.Text(result.messageSave)
                         .position(0, -self.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
@@ -427,41 +428,64 @@ function Domain() {
             });
 
             if (validation) {
-                var callback = function (data) {
-                    setTimeout(function(){
-                        self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                var callbackInsertion = function (data) {
+                    svg.timeout(function () {
+                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     }, 5000);
                     console.log("Votre travail a été bien enregistré");
 
                 };
+                var callbackCheck = function (data) {
+                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                    let oldFormation= JSON.parse(data).formation;
+                    if (oldFormation){
+                        //if(self.id)
+                        let newFormation = getObjectToSave();
+                        newFormation=JSON.stringify(newFormation, ignoredData);
+                        delete oldFormation["_id"];
+                        oldFormation = JSON.stringify(oldFormation);
+                        console.log(oldFormation);
+                        console.log(newFormation);
+                        if (oldFormation==newFormation) {
+                            //Affichage du message d'erreur
+                            console.log("La formation n'a pas été modifié");
+                        }
+                        else {
+                            //suppression
+                            dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                        }
+                    }
+                    else{
+                        dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                    }
 
-                var saveLevelsTab = function () {
+                    //  else(getWashedFormation)
+
+                };
+
+                var getObjectToSave = function () {
                     var levelsTab = [];
-                    self.levelsTab.forEach(function(level, i) {
-                        var gamesTab=[];
-                        levelsTab.push({gamesTab:gamesTab});
-                        level.gamesTab.forEach(function(game) {
-                            game.parentGames.length===0 && levelsTab[i].gamesTab.push(game);
+                    self.levelsTab.forEach(function (level, i) {
+                        var gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(function (game) {
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
                     });
-                    return levelsTab;
+                    var tmpFormationObject = {
+                        label: self.label,
+                        gamesCounter: self.gamesCounter,
+                        levelsTab: levelsTab
+                    };
+                    return tmpFormationObject;
                 };
 
-                let levelsTab = saveLevelsTab();
 
-                var tmpFormationObject = {
-                    label: self.label,
-                    gamesCounter: self.gamesCounter,
-                    gamesId: self.gamesId,
-                    levelsTab: levelsTab
-                };
-                let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                dbListener.httpGetAsync("/id", () => {
-                });
-                dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
+                Server.getFormationByName(self.label, callbackCheck);
             }
         };
         self.loadFormation = function(formation) {
+            self._id=formation._id;
             self.gamesCounter = formation.gamesCounter;
             for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];
@@ -606,7 +630,7 @@ function Domain() {
             };
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
-                svg.addEvent(self.messageDragDrop, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.messageDragDrop.text, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back.component, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
@@ -1072,34 +1096,22 @@ function Domain() {
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
             };
-            var sendProgressToServer = function () {
-                var callback = function () {
-                    if (++self.currentQuestionIndex < self.tabQuestions.length) {
-                        functionDisplayInAllCases();
-                    } else {
-                        console.log("Final score: " + self.score);
-                        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
-                        self.displayResult();
-                    }
-                };
-                var data = {
-                    indexQuestion: self.currentQuestionIndex+1,
-                    tabWrongAnswers: [],
-                    game: self.title,
-                    formation: self.parentFormation ? self.parentFormation.label : ""
-                };
-                self.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
-                dbListener.httpPostAsync("/sendProgress", data, callback);
+            var callback = function () {
+                if (++self.currentQuestionIndex < self.tabQuestions.length) {
+                    functionDisplayInAllCases();
+                } else {
+                    console.log("Final score: " + self.score);
+                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+                    self.displayResult();
+                }
             };
-
             if (self.previewMode) {
                 if (self.currentQuestionIndex === -1) {
                     self.currentQuestionIndex = 0;//numéro de la question affichée
                     functionDisplayInAllCases();
                 }
             } else {
-                // REQUETE
-                sendProgressToServer();
+                Server.sendProgressToServer(self, callback);
             }
         };
 

@@ -48,6 +48,7 @@ var testModule;
 var dbListenerModule;
 var inscriptionModule;
 var connexionModule;
+var server;
 
 describe('Quizz game', function () {
 
@@ -90,6 +91,7 @@ describe('Quizz game', function () {
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
+        Server = util.Server;
     });
 
     it("TEST GLOBAL EVENT", function (done) {
@@ -248,6 +250,7 @@ describe('Admin use', function () {
         gui.setGui(guiSvgModule);
         gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
+        Server = util.Server;
     });
 
     it("a short admin use (to Formation)", function (done) {

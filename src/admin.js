@@ -30,7 +30,7 @@ function admin() {
         formationsManager = new FormationsManager(myFormations);
         formationsManager.display();
     };
-    var result1 = dbListener.httpGetAsync("/getAllFormationsNames", callback);
+    var result1 = Server.getAllFormationsNames(callback);
     function resizePaper(event){
         !runtime && document.activeElement.blur();
         //event.defaultPrevented=true;
