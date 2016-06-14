@@ -2240,6 +2240,7 @@ function InscriptionManagerDisplay(labels={}) {
         else if (self.passwordConfirmationField.labelSecret !== "" && self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret){
             self.passwordField.cadre.color(myColors.white, 3, myColors.red);
             self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
+            self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
             var message = autoAdjustText(self.passwordConfirmationField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
             message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
         }
@@ -2252,7 +2253,7 @@ function InscriptionManagerDisplay(labels={}) {
             self.passwordField.cadre.color(myColors.white, 1, myColors.black);
             self.passwordManipulator.ordonator.unset(3);
         }
-        var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret=== self.passwordField.labelSecret);
+        var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret);
         return result;
     }
 
