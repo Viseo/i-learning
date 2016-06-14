@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var domain, svg, gui, runtime, playerMode, param;
+var domain, svg, gui, runtime, playerMode, param, token;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
@@ -2367,40 +2367,6 @@ function ConnectionManagerDisplay() {
 
     displayField("passwordField", self.passwordManipulator);
 
-
-    self.connectionButtonHandler = function(){
-        var emptyAreas = self.tabForm.filter(field=> field.label === "");
-        emptyAreas.forEach(function(emptyArea){
-            emptyArea.cadre.color(myColors.white, 3, myColors.red);
-        });
-        if (emptyAreas.length>0){
-            var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
-            message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
-            svg.timeout(function(){
-                self.connectionButtonManipulator.ordonator.unset(3);
-                emptyAreas.forEach(function(emptyArea){
-                    emptyArea.cadre.color(myColors.white, 1, myColors.black);
-                });
-            },5000);
-        } else {
-            let callback = function(user){
-                console.log(user);
-                if(user){
-
-                }else {
-                    var message = autoAdjustText("Adresse et/ou mot de passe invalide(s)", 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height+MARGIN);
-                    svg.timeout(function(){
-                        self.connectionButtonManipulator.ordonator.unset(3);
-
-                    },5000);
-                }
-            };
-            dbListener.httpPostAsync("/connectUser/" ,{mailAddress: self.mailAddressField.label,password:self.passwordField.labelSecret}, callback);
-
-
-        }
-    };
     self.connectionButton = displayText(self.connectionButtonLabel, self.connectionButtonWidth, self.connectionButtonHeight, myColors.black, myColors.white, 20, null, self.connectionButtonManipulator);
     self.connectionButtonManipulator.first.move(0, 2.5*drawing.height/10);
     svg.addEvent(self.connectionButton.content, "click", self.connectionButtonHandler);

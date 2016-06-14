@@ -2,6 +2,7 @@ module.exports = function (app, fs) {
 
     var db = require('../db');
     var TwinBcrypt=require('twin-bcrypt');
+    var jwt = require('json-web-token');
 
     try {
         fs.accessSync(path, fs.F_OK);
@@ -43,7 +44,21 @@ module.exports = function (app, fs) {
         collection.find().toArray(function(err, docs) {
             let result = docs.find(user => user.mailAddress===req.body.mailAddress);
             if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
-                res.send({user: result});
+                if (err) {
+                    return console.error(err.name, err.message);
+                } else {
+                    let token = jwt.encode('VISEO', {user: result}, function (err, token) {
+                        res.send({'token': token});
+                        /*jwt.decode('VISEO', token, function (err, decode) {
+                            if (err) {
+                                return console.error(err.name, err.message);
+                            } else {
+                                console.log(decode);
+                            }
+                        });*/
+                    });
+                    console.log(token);
+                }
             }else{
                 res.send();
             }

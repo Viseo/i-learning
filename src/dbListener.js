@@ -45,6 +45,9 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpPost(theUrl, body, callback, ignoredData) {
+        if (token) {
+            body.token = token;
+        }
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
