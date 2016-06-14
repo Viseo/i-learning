@@ -70,8 +70,8 @@ function HttpRequests(isWriting, isMock, listener) {
 
     return {
         httpGetRequest:httpGetAsync,
-        httpPostRequest:httpPostAsync,
-        httpPutRequest:httpPutAsync
+        httpPostRequest:httpPostAsync
+        //httpPutRequest:httpPutAsync
     };
 }
 
