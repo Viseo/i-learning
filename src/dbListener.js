@@ -56,6 +56,17 @@ function HttpRequests(isWriting, isMock, listener) {
         xmlHttp.send(JSON.stringify(body, ignoredData));
     }
 
+    function httpPut(theUrl, body, callback, ignoredData) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                callback(xmlHttp.responseText);
+        };
+        xmlHttp.open("PUT", theUrl, true); // true for asynchronous
+        xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.send(JSON.stringify(body, ignoredData));
+    }
+
     function httpMockGet(theUrl, callback) {
         var obj = parent.data.shift();
         callback(obj);
@@ -65,8 +76,13 @@ function HttpRequests(isWriting, isMock, listener) {
         callback(body);
     }
 
+    function httpMockPut(theUrl, body, callback, ignoredData) {
+        callback(body);
+    }
+
     let httpGetAsync = isMock ? httpMockGet : httpGet;
     let httpPostAsync = isMock ? httpMockPost : httpPost;
+    let httpPutAsync = isMock ? httpMockPut : httpPut;
 
     return {
         httpGetRequest:httpGetAsync,
