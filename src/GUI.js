@@ -963,7 +963,6 @@ function FormationsManagerDisplay() {
     }
 
     function onClickFormation(formation) {
-        formation.displayFormation();
         var callback = function (data) {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
