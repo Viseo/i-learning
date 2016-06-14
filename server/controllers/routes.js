@@ -40,15 +40,22 @@ module.exports = function (app, fs) {
     });
 
     app.post('/connectUser', function(req, res) {
-        let collection = db.get().collection('users');
+        var collection = db.get().collection('users');
         collection.find().toArray(function(err, docs) {
-            let result = docs.find(user => user.mailAddress===req.body.mailAddress);
-            if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
+            var result = docs.find(user => user.mailAddress===req.body.mailAddress);
+            if (result && TwinBcrypt.compareSync(req.body.password,result.password)) {
                 if (err) {
                     return console.error(err.name, err.message);
                 } else {
-                    let token = jwt.encode('VISEO', {user: result}, function (err, token) {
-                        res.send({'token': token});
+                    var user = {
+                        id: result._id
+                    };
+                    var token = jwt.encode('VISEO', {user: user}, function (err, token) {
+                        res.send({
+                            'token': token,
+                            'lastName': result.lastName,
+                            'firstName': result.firstName
+                        });
                         /*jwt.decode('VISEO', token, function (err, decode) {
                             if (err) {
                                 return console.error(err.name, err.message);
@@ -59,7 +66,7 @@ module.exports = function (app, fs) {
                     });
                     console.log(token);
                 }
-            }else{
+            } else {
                 res.send();
             }
         });

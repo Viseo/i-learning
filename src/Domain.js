@@ -1275,7 +1275,7 @@ ConnectionManager = function () {
             formationsManager.display();
         };
         dbListener.httpGetAsync("/getAllFormationsNames", callback);
-    }
+    };
 
     self.connectionButtonHandler = function(){
         var emptyAreas = self.tabForm.filter(field=> field.label === "");

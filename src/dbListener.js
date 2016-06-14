@@ -33,6 +33,9 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpGet(theUrl, callback) {
+        if (token) {
+            theUrl+= `?token=${token}`;
+        }
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
