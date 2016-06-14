@@ -51,13 +51,6 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.get('/getAllFormations', function(req, res) {
-        var collection = db.get().collection('formations');
-        var obj = collection.find().toArray(function(err, docs) {
-            res.send({myCollection: docs});
-        });
-    });
-
     app.get('/getFormationByName/:name', function(req, res) {
         var collection = db.get().collection('formations');
         var result;

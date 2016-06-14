@@ -869,7 +869,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
                     dbListener.httpPostAsync("/insert", tmpFormationObject, function(){}, ignoredData);
                 }
             };
-            dbListener.httpGetAsync("/getFormationByName/" + self.label, callback);
+            server.getFormationByName(self.label, callback);
     };
 
     svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
@@ -970,7 +970,7 @@ function FormationsManagerDisplay() {
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && dbListener.httpGetAsync("/getFormationByName/" + formation.label, callback, formation.label);
+        !playerMode && server.getFormationByName(formation.label, callback);
     }
 
     function onClickNewFormation() {
@@ -2323,7 +2323,7 @@ function InscriptionManagerDisplay(labels={}) {
                     console.log(tempObject);
                 }
             };
-            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+            server.getUserByMail(self.mailAddressField.label, callback);
         }
         else if (!AllOk()){
             var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";

@@ -479,7 +479,7 @@ function Domain() {
                 };
 
 
-                dbListener.httpGetAsync("/getFormationByName/" + self.label, callbackCheck);
+                server.getFormationByName(self.label, callbackCheck);
             }
         };
         self.loadFormation = function(formation) {

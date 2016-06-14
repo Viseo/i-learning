@@ -2120,3 +2120,22 @@ if (typeof exports !== "undefined") {
  tabGames: [myQuizz]
  }]
  };*/
+
+class Server {
+    constructor() {}
+
+    getAllFormationsNames(callback) {
+        dbListener.httpGetAsync('/getAllFormationsNames', callback);
+    }
+
+    getFormationByName(name, callback) {
+        dbListener.httpGetAsync("/getFormationByName/" + name, callback);
+    }
+
+    getUserByMail(mail, callback) {
+        dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
+    }
+    
+}
+
+server = new Server();
