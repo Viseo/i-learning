@@ -1085,7 +1085,7 @@ function Domain() {
                 var data = {
                     indexQuestion: self.currentQuestionIndex+1,
                     tabWrongAnswers: [],
-                    quiz: self.title,
+                    game: self.title,
                     formation: self.parentFormation ? self.parentFormation.label : ""
                 };
                 self.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
