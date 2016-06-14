@@ -688,6 +688,8 @@ function FormationDisplayFormation(){
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
         if(typeof self.panel === "undefined") {
             self.panel = new gui.Panel(w, h);
+            let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+            var trueWidth = self.findLongestLevel()[0].gamesTab.length*spaceOccupiedByAGame;
         }
         else {
             self.panel.resize(w, h);
@@ -699,6 +701,7 @@ function FormationDisplayFormation(){
                     level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
                 });
             });
+            self.panel.resizeContentW(trueWidth-1);
         }
 
         function controlPositionH(x) {
@@ -789,7 +792,9 @@ function FormationDisplayFormation(){
 
         self.panel.resizeContent(height);
 
-        self.panel.resizeContentW(self.levelWidth-1);// merci pour ce -1, chrome. ._.
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        var trueWidth = self.findLongestLevel()[0].gamesTab.length*spaceOccupiedByAGame;
+        self.panel.resizeContentW(trueWidth-1);
         self.panel.back.parent.parentManip = self.graphManipulator;
 
         self.updateAllLinks();
