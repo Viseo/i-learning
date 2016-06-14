@@ -495,12 +495,12 @@ function Domain() {
                 level.gamesTab.forEach(function (game, j) {
                     self.levelsTab[i].gamesTab[j] = new Quizz(game, true, self);
                     game.childrenGames.forEach(function (child) {
-                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
-                        !self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames && (self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames = []);
+                        let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
+                        childGame = new Quizz(child, true, self);
+                        !childGame.parentGames && (childGame.parentGames = []);
                         !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        self.levelsTab[i].gamesTab[j].childrenGames.push(self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]);
-                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].parentGames.push(self.levelsTab[i].gamesTab[j]);
-
+                        self.levelsTab[i].gamesTab[j].childrenGames.push(childGame);
+                        childGame.parentGames.push(self.levelsTab[i].gamesTab[j]);
                     });
                 });
             });
