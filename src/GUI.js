@@ -822,7 +822,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
             var exist = false;
 
             var callback = function (data) {
-                var myFormation = JSON.parse(data).formation;
+                var myFormation = data && JSON.parse(data).formation;
                 if (myFormation) {
                     self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
                     var messageText = "Le nom de cette formation est déjà utilisé !";
@@ -866,11 +866,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
                         levelsTab: self.levelsTab
                     };
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    dbListener.httpPostAsync("/insert", tmpFormationObject, null, ignoredData);
-
-                    //Update
-                    /*dbListener.httpPutAsync("/update", tmpFormationObject, thing, ignoredData);
-                     console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
+                    dbListener.httpPostAsync("/insert", tmpFormationObject, function(){}, ignoredData);
                 }
             };
             dbListener.httpGetAsync("/getFormationByName/" + self.label, callback);
@@ -2256,6 +2252,8 @@ function InscriptionManagerDisplay(labels={}) {
             self.passwordField.cadre.color(myColors.white, 1, myColors.black);
             self.passwordManipulator.ordonator.unset(3);
         }
+        var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret=== self.passwordField.labelSecret);
+        return result;
     }
 
     self.passwordField={label:labels.passwordField || "", labelSecret:labels.passwordSecret || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
@@ -2291,7 +2289,7 @@ function InscriptionManagerDisplay(labels={}) {
     };
 
     self.saveButtonHandler = function(){
-        if (!emptyAreasHandler(true) && AllOk){
+        if (!emptyAreasHandler(true) && AllOk()){
             var callback = function(data){
                 var myUser=JSON.parse(data).user;
                 if (myUser){
@@ -2315,7 +2313,7 @@ function InscriptionManagerDisplay(labels={}) {
                     var callback = function (data) {
                         var messageText = "Votre compte a bien été créé !";
                         var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);;
+                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);
                         setTimeout(function(){
                             self.saveButtonManipulator.ordonator.unset(3);
                         }, 10000);
@@ -2325,6 +2323,11 @@ function InscriptionManagerDisplay(labels={}) {
                 }
             };
             dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+        }
+        else if (!AllOk()){
+            var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";
+            var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
     };
     self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;

@@ -4,9 +4,10 @@ module.exports = function (app, fs) {
     var TwinBcrypt=require('twin-bcrypt');
 
     try {
-        fs.accessSync(path, fs.F_OK);
+        fs.accessSync("./log/db.json", fs.F_OK);
         fs.writeFileSync("./log/db.json", "");
     } catch (e) {
+        console.log("Can't access to db.json");
         // It isn't accessible
     }
     var ObjectID = require('mongodb').ObjectID;
@@ -87,13 +88,14 @@ module.exports = function (app, fs) {
 
     app.post('/data', function (req, res) {
         try {
-            fs.accessSync(path, fs.F_OK);
+            fs.accessSync("./log/db.json", fs.F_OK);
             // Do something
             console.log(req.body);
             fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
             res.send({ack:'ok'});
         } catch (e) {
             // It isn't accessible
+            console.log("Can't access to db.json");
             res.send({ack:'ok'});
         }
     });
