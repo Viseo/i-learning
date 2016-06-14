@@ -867,6 +867,10 @@ function FormationDisplaySaveButton(x, y, w, h) {
                     };
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                     dbListener.httpPostAsync("/insert", tmpFormationObject, null, ignoredData);
+
+                    //Update
+                    /*dbListener.httpPutAsync("/update", tmpFormationObject, thing, ignoredData);
+                     console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
                 }
             };
             dbListener.httpGetAsync("/getFormationByName/" + self.label, callback);

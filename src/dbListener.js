@@ -21,6 +21,7 @@ function DbListener(isWriting, isMock) {
     self.runtime = HttpRequests(isWriting, isMock, this);
     self.httpGetAsync = self.runtime.httpGetRequest;
     self.httpPostAsync = self.runtime.httpPostRequest;
+    self.httpPutAsync = self.runtime.httpPutRequest;
 }
 
 function HttpRequests(isWriting, isMock, listener) {
@@ -69,7 +70,8 @@ function HttpRequests(isWriting, isMock, listener) {
 
     return {
         httpGetRequest:httpGetAsync,
-        httpPostRequest:httpPostAsync
+        httpPostRequest:httpPostAsync,
+        httpPutRequest:httpPutAsync
     };
 }
 

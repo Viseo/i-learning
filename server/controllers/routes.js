@@ -97,4 +97,19 @@ module.exports = function (app, fs) {
             res.send({ack:'ok'});
         }
     });
+
+    //update par ID
+    app.put('/update', function(req, res) {
+        var collection = db.get().collection('formations');
+        if (id = ObjectID("575ecd9034b0a1242c2cb381")){
+            var obj = collection.update({'_id': id},req.body, function(err, docs) {
+                res.send(JSON.stringify(obj));
+
+            });
+        }
+    });
+
+
+
+
 };
