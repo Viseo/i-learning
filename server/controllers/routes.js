@@ -73,7 +73,7 @@ module.exports = function (app, fs) {
         var result= [];
         var obj = collection.find().toArray(function(err, docs) {
             docs.forEach(function(formation){
-                result.push({label: formation.label, status: formation.status});
+                result.push({id: formation.id, label: formation.label, status: formation.status});
             });
             res.send({myCollection: result});
         });

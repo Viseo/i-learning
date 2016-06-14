@@ -407,7 +407,7 @@ function Domain() {
                 var result = formValid(self);
 
                 if (result.isValid) {
-                    self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     self.errorMessageSave = new svg.Text(result.messageSave)
                         .position(0, -self.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
@@ -427,38 +427,59 @@ function Domain() {
             });
 
             if (validation) {
-                var callback = function (data) {
-                    setTimeout(function(){
-                        self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                var callbackInsertion = function (data) {
+                    svg.timeout(function () {
+                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     }, 5000);
                     console.log("Votre travail a été bien enregistré");
 
                 };
+                var callbackCheck = function (data) {
+                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                    let oldFormation= JSON.parse(data).formation;
+                    if (oldFormation){
+                        let newFormation = getObjectToSave();
+                        newFormation=JSON.stringify(newFormation, ignoredData);
+                        delete oldFormation["_id"];
+                        oldFormation = JSON.stringify(oldFormation);
+                        console.log(oldFormation);
+                        console.log(newFormation);
+                        if (oldFormation==newFormation) {
+                            //Affichage du message d'erreur
+                            console.log("La formation n'a pas été modifié");
+                        }
+                        else {
+                            //suppression
+                            dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                        }
+                    }
+                    else{
+                        dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                    }
 
-                var saveLevelsTab = function () {
+                    //  else(getWashedFormation)
+
+                };
+
+                var getObjectToSave = function () {
                     var levelsTab = [];
-                    self.levelsTab.forEach(function(level, i) {
-                        var gamesTab=[];
-                        levelsTab.push({gamesTab:gamesTab});
-                        level.gamesTab.forEach(function(game) {
-                            game.parentGames.length===0 && levelsTab[i].gamesTab.push(game);
+                    self.levelsTab.forEach(function (level, i) {
+                        var gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(function (game) {
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
                     });
-                    return levelsTab;
+                    var tmpFormationObject = {
+                        label: self.label,
+                        gamesCounter: self.gamesCounter,
+                        levelsTab: levelsTab
+                    };
+                    return tmpFormationObject;
                 };
 
-                let levelsTab = saveLevelsTab();
 
-                var tmpFormationObject = {
-                    label: self.label,
-                    gamesCounter: self.gamesCounter,
-                    gamesId: self.gamesId,
-                    levelsTab: levelsTab
-                };
-                let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                dbListener.httpGetAsync("/id", () => {
-                });
-                dbListener.httpPostAsync("/insert", tmpFormationObject, callback, ignoredData);
+                dbListener.httpGetAsync("/getFormationByName/" + self.label, callbackCheck);
             }
         };
         self.loadFormation = function(formation) {
@@ -606,7 +627,7 @@ function Domain() {
             };
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
-                svg.addEvent(self.messageDragDrop, "mouseup", self.mouseUpGraphBlock);
+                svg.addEvent(self.messageDragDrop.text, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back.component, "mouseup", self.mouseUpGraphBlock);
                 self.levelsTab.forEach(function (e) {
                     svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);

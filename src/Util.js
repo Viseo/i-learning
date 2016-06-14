@@ -834,7 +834,7 @@ function Bdd() {
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
         "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
-        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature"];
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea"];
 
     myColors = {
         darkBlue: [25, 25, 112],
