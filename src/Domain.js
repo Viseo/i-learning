@@ -352,6 +352,7 @@ function Domain() {
             quizz: 0,
             bd: 0
         };
+        self._id = (formation._id || null);
         self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
         self.manipulatorMiniature.addOrdonator(2);
@@ -438,6 +439,7 @@ function Domain() {
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                     let oldFormation= JSON.parse(data).formation;
                     if (oldFormation){
+                        //if(self.id)
                         let newFormation = getObjectToSave();
                         newFormation=JSON.stringify(newFormation, ignoredData);
                         delete oldFormation["_id"];
@@ -483,6 +485,7 @@ function Domain() {
             }
         };
         self.loadFormation = function(formation) {
+            self._id=formation._id;
             self.gamesCounter = formation.gamesCounter;
             for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];

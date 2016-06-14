@@ -2135,6 +2135,10 @@ class Server {
     getUserByMail(mail, callback) {
         dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
     }
+
+    getFormationById(id, callback) {
+        dbListener.httpGetAsync("/getFormationById/" + id, callback);
+    }
     
 }
 

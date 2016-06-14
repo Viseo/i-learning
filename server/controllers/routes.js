@@ -32,8 +32,7 @@ module.exports = function (app, fs) {
     app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
         var collection = db.get().collection('users');
         var result;
-        var obj=collection.find().
-        toArray(function(err, docs) {
+        collection.find().toArray(function(err, docs) {
             result = docs.find(user => user.mailAddress===req.params.mailAddress);
             res.send({user: result});
         });
@@ -54,36 +53,35 @@ module.exports = function (app, fs) {
     app.get('/getFormationByName/:name', function(req, res) {
         var collection = db.get().collection('formations');
         var result;
-        var obj=collection.find().
-        toArray(function(err, docs) {
+        collection.find().toArray(function(err, docs) {
             result = docs.find(formation => formation.label===req.params.name);
             res.send({formation: result});
         });
     });
 
+    app.get('/getFormationById/:id', function(req, res) {
+        var collection = db.get().collection('formations');
+        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function(err, docs) {
+            res.send({formation: docs[0]});
+            });
+    });
+
     app.get('/getAllFormationsNames', function(req, res) {
         var collection = db.get().collection('formations');
         var result= [];
-        var obj = collection.find().toArray(function(err, docs) {
+        collection.find().toArray(function(err, docs) {
             docs.forEach(function(formation){
-                result.push({id: formation.id, label: formation.label, status: formation.status});
+                result.push({_id: formation._id, label: formation.label, status: formation.status});
             });
             res.send({myCollection: result});
         });
-    });
-
-    app.get('/id', function (req, res) {
-        var collection = db.get().collection('exists');
-        collection.find().toArray(function (err, docs) {
-            res.send({id: docs})
-        })
     });
 
     app.post('/data', function (req, res) {
         try {
             fs.accessSync("./log/db.json", fs.F_OK);
             // Do something
-            console.log(req.body);
+            //console.log(req.body);
             fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
             res.send({ack:'ok'});
         } catch (e) {

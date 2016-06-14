@@ -969,7 +969,7 @@ function FormationsManagerDisplay() {
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && server.getFormationByName(formation.label, callback);
+        !playerMode && server.getFormationById(formation._id, callback);
     }
 
     function onClickNewFormation() {
@@ -2322,7 +2322,7 @@ function InscriptionManagerDisplay(labels={}) {
                     console.log(tempObject);
                 }
             };
-            server.getUserByMail(self.mailAddressField.label, callback);
+            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
         }
         else if (!AllOk()){
             var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";
