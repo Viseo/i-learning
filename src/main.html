@@ -17,6 +17,7 @@
     let SVG = require("../lib/svghandler").SVG;
     svg = SVG(targetRuntime());
 </script>
+<script src="dbListener.js"></script>
 <script src="Util.js"></script>
 <script src="Domain.js"></script>
 <script src="GUI.js"></script>
@@ -29,6 +30,7 @@
     AdminGUI();
 </script>
 <script>
+    var dbListener = new DbListener(true, false);
     main(myQuizz);
 </script>
 </body>

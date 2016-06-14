@@ -33,8 +33,7 @@ function main(targetQuizz) {
     !util && setGlobalVariable();
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     var quizz = new Quizz(quizzCopy);
-
-    console.log('Length: '+quizz.tabQuestions.length);
+    
     quizz.puzzleLines=1;
     quizz.puzzleRows=3;
     quizz.run(0,0, drawing.width, drawing.height);

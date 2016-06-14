@@ -51,6 +51,20 @@ module.exports = function (app, fs) {
         });
     });
 
+    app.post('/sendProgress', function(req, res) {
+        console.log(req.body);
+        // var collection = db.get().collection('users');
+        // collection.find().toArray(function(err, docs) {
+        //     var result = docs.find(user => user.mailAddress===req.body.mailAddress);
+        //     if(result && TwinBcrypt.compareSync(req.body.password,result.password)){
+        //         res.send({user: result});
+        //     }else{
+        //         res.send();
+        //     }
+        // });
+        res.send({ack: 'ok'});
+    });
+
     app.get('/getAllFormations', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = collection.find().toArray(function(err, docs) {

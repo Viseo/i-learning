@@ -1071,20 +1071,35 @@ function Domain() {
                 !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
-            }
+            };
+            var sendProgressToServer = function () {
+                var callback = function () {
+                    if (++self.currentQuestionIndex < self.tabQuestions.length) {
+                        functionDisplayInAllCases();
+                    } else {
+                        console.log("Final score: " + self.score);
+                        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+                        self.displayResult();
+                    }
+                };
+                var data = {
+                    indexQuestion: self.currentQuestionIndex+1,
+                    tabWrongAnswers: [],
+                    quiz: self.title,
+                    formation: self.parentFormation ? self.parentFormation.label : ""
+                };
+                self.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
+                dbListener.httpPostAsync("/sendProgress", data, callback);
+            };
+
             if (self.previewMode) {
                 if (self.currentQuestionIndex === -1) {
                     self.currentQuestionIndex = 0;//numéro de la question affichée
                     functionDisplayInAllCases();
                 }
             } else {
-                if (++self.currentQuestionIndex < self.tabQuestions.length) {
-                    functionDisplayInAllCases();
-                } else {
-                    console.log("Final score: " + self.score);
-                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
-                    self.displayResult();
-                }
+                // REQUETE
+                sendProgressToServer();
             }
         };
 
