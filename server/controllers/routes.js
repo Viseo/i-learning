@@ -66,7 +66,7 @@ module.exports = function (app, fs) {
                 collection.updateOne({formation: req.body.formation, user: user}, {$set: {tabGame: result.tabGame}});
                 res.send({ack: 'ok'});
             } else {
-                let obj = {
+                var obj = {
                     user: user,
                     formation: req.body.formation,
                     tabGame: [game]
