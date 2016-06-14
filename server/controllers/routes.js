@@ -53,7 +53,7 @@ module.exports = function (app, fs) {
     app.post('/sendProgress', function(req, res) {
         var collection = db.get().collection('UsersFormations');
         var obj = collection.find().toArray(function (err, docs) {
-            var user = "debesson";
+            var user = "debesson"; // à changer avec JWT
             var result = docs.find(x => x.formation === req.body.formation && x.user === user);
             var game = {
                 game: req.body.game,

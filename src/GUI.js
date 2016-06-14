@@ -959,7 +959,7 @@ function FormationsManagerDisplay() {
         self.panel.content.children.indexOf(self.formationsManipulator.first)===-1 && self.panel.content.add(self.formationsManipulator.first);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
-        self.formationsManipulator.translator.move(self.tileWidth/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
+        self.formationsManipulator.translator.move((self.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
     }
 
     function onClickFormation(formation) {
