@@ -2109,6 +2109,8 @@ function InscriptionManagerDisplay(labels={}) {
     var x = drawing.width/9;
     var trueValue = "";
 
+    let focusedField;
+
     var clickEditionField = function (field, manipulator) {
         return function () {
             let contentarea = svg.runtime.createDOM("textarea");
@@ -2183,6 +2185,7 @@ function InscriptionManagerDisplay(labels={}) {
                 }
                 contentarea.remove();
             }
+            focusedField = self[field];
         };
     };
     var displayField = function(field, manipulator){
@@ -2344,6 +2347,23 @@ function InscriptionManagerDisplay(labels={}) {
     self.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
     svg.addEvent(self.saveButton.content, "click", self.saveButtonHandler);
     svg.addEvent(self.saveButton.cadre, "click", self.saveButtonHandler);
+
+    let nextField = function() {
+        let index = self.tabForm.indexOf(focusedField);
+        if (index !== -1) {
+            if(++index === self.tabForm.length) index = 0;
+            self.tabForm[index].cadre.component.listeners.click();
+        }
+    };
+
+    svg.runtime.addGlobalEvent("keydown", function (event) {
+        if (event.keyCode === 9) { // TAB
+            event.preventDefault();
+            nextField();
+        } else if (event.keyCode === 13) { // Entrée
+            self.saveButton.cadre.component.listeners.click();
+        }
+    });
 }
 
 function ConnectionManagerDisplay() {
