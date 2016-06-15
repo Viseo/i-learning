@@ -23,8 +23,9 @@ function setUtil(_util){
 function connexion(){
     let manager = new ConnectionManager();
     Server.checkCookie(data => {
-        let status = JSON.parse(data).status;
-        if (status === 'OK') {
+        data = data && JSON.parse(data);
+        if (data.ack === 'OK') {
+            window.username = `${data.lastName} ${data.firstName}`;
             manager.listFormations();
         } else {
             manager.display();

@@ -831,7 +831,7 @@ class Server {
     }
     
     static checkCookie(callback) {
-        dbListener.httpGetAsync('/auth/verify', callback);
+        dbListener.httpGetAsync('/auth/verify/', callback);
     }
 
     static getUserByMail(mail, callback) {
