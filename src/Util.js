@@ -527,6 +527,7 @@ function SVGUtil() {
      * @param fontSize
      * @param font
      * @param manipulator
+     * @param layer
      */
     autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
         let words = content.split(' '),
