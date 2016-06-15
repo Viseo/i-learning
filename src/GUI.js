@@ -2352,9 +2352,10 @@ function ConnectionManagerDisplay() {
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
-    var w = drawing.width/6;
-    var x = drawing.width/10;
-    var trueValue = "";
+    let w = drawing.width/6;
+    let x = drawing.width/10;
+
+    let focusedField;
 
     var clickEditionField = function (field, manipulator) {
         return function () {
@@ -2379,42 +2380,34 @@ function ConnectionManagerDisplay() {
             svg.runtime.add(svg.runtime.anchor('content'), contentarea);
             !runtime && contentarea.focus();
 
-            var displayErrorMessage = function(trueManipulator=manipulator){
-                if (!(field==="passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)){
-                    var message = autoAdjustText(self[field].errorMessage, 0, 0, drawing.width, self.h, 20, null, trueManipulator, 3);
-                    message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
-                }
-            };
-
-
-            contentarea.onblur = function(){
+            contentarea.onblur = function() {
                 if(self[field].secret){
-                    self[field].label='';
-                    self[field].labelSecret=contentarea.value;
-                    for(let i=0;i<contentarea.value.length;i++){
-                        self[field].label += '●';
+                    self[field].label = '';
+                    self[field].labelSecret = contentarea.value;
+                    for(let i = 0; i < contentarea.value.length; i++){
+                        self[field].label+= '●';
                     }
 
-                }else{
-                    self[field].label=contentarea.value;
+                } else {
+                    self[field].label = contentarea.value;
                 }
                 displayField(field, manipulator);
-                //self[field].cadre.color(myColors.white, 1, myColors.black);
                 manipulator.ordonator.unset(3);
                 contentarea.remove();
-            }
+            };
+            focusedField = self[field];
         };
     };
     var displayField = function(field, manipulator){
         var fieldTitle = new svg.Text(self[field].title).position(0,0);
         fieldTitle.font("Arial", 20).anchor("end");
         manipulator.ordonator.set(2, fieldTitle);
-        manipulator.first.move(-drawing.width/10, self[field].line*drawing.height/10);
-        self.h = 1.5*svg.runtime.boundingRect(fieldTitle.component).height;
+        manipulator.first.move(-drawing.width/10, self[field].line*drawing.height / 10);
+        self.h = 1.5 * svg.runtime.boundingRect(fieldTitle.component).height;
         var displayText = displayTextWithoutCorners(self[field].label, w, self.h, myColors.black, myColors.white, 20, null, manipulator);
         self[field].content = displayText.content;
         self[field].cadre = displayText.cadre;
-        var y = -svg.runtime.boundingRect(fieldTitle.component).height/4;
+        var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
         self[field].content.position(x,0);
         self[field].cadre.position(x,y);
         var clickEdition = clickEditionField(field, manipulator);
@@ -2423,23 +2416,47 @@ function ConnectionManagerDisplay() {
         self.tabForm.indexOf(self[field])===-1 && self.tabForm.push(self[field]);
     };
 
-    self.mailAddressField={label:"", title:self.mailAddressLabel, line:-1};
+    self.mailAddressField = {label: "", title: self.mailAddressLabel, line: -1};
     self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-    self.mailAddressField.checkInput = function(){
-        var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+    self.mailAddressField.checkInput = function() {
+        let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
         return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
     };
     displayField("mailAddressField", self.mailAddressManipulator);
 
 
-    self.passwordField={label:"", labelSecret:"", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField = {
+        label: '', 
+        labelSecret: '',
+        title: self.passwordLabel, 
+        line: 0,
+        secret: true,
+        errorMessage: "La confirmation du mot de passe n'est pas valide"
+    };
 
-    displayField("passwordField", self.passwordManipulator);
+    displayField('passwordField', self.passwordManipulator);
 
     self.connectionButton = displayText(self.connectionButtonLabel, self.connectionButtonWidth, self.connectionButtonHeight, myColors.black, myColors.white, 20, null, self.connectionButtonManipulator);
-    self.connectionButtonManipulator.first.move(0, 2.5*drawing.height/10);
+    self.connectionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
     svg.addEvent(self.connectionButton.content, "click", self.connectionButtonHandler);
     svg.addEvent(self.connectionButton.cadre, "click", self.connectionButtonHandler);
+
+    let nextField = function() {
+        let index = self.tabForm.indexOf(focusedField);
+        if (index !== -1) {
+            if(++index === self.tabForm.length) index = 0;
+            self.tabForm[index].cadre.component.listeners.click();
+        }
+    };
+
+    svg.runtime.addGlobalEvent("keydown", function (event) {
+        if (event.keyCode === 9) { // TAB
+            event.preventDefault();
+            nextField();
+        } else if (event.keyCode === 13) { // Entrée
+            self.connectionButton.cadre.component.listeners.click();
+        }
+    });
 }
 
 var AdminGUI = function (){
