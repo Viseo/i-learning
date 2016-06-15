@@ -891,7 +891,8 @@ function FormationsManagerDisplay() {
     self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
-
+    self.header.display();
+    self.header.drawBody();
     if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
         self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -1105,7 +1106,30 @@ function HeaderDisplay () {
 
     self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
     self.manipulator.ordonator.set(0, self.line);
-
+    self.manipulator.last.children.indexOf(self.userManipulator.first)===-1 && self.manipulator.last.add(self.userManipulator.first);
+    //var body = new svg.Circle(20).color(myColors.black);
+    self.drawBody = function(){
+        var body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black).position(0, -5);
+        var head = new svg.Circle(12).color(myColors.black, 2, myColors.white).position(0, -20);
+        self.userManipulator.ordonator.set(0, body);
+        self.userManipulator.ordonator.set(1, head);
+        self.userManipulator.translator.move(3*drawing.width/4, 30);
+        self.userManipulator.scalor.scale(0.65);
+        var user = {firstName: "Tony", name:"Stark"};
+        drawing.username || (drawing.username= user.firstName + " " + user.name);
+        var userText = autoAdjustText(drawing.username, 0, 0, 200, 50, 30, null, self.userManipulator, 3);
+        userText.text.position(100, 0);
+        var deconnection = displayText("Déconnexion", 200, 50, myColors.white, myColors.white, 30, null, self.userManipulator, 4, 5);
+        deconnection.content.position(300,0);
+        deconnection.cadre.position(300, -30/2);
+        var deconnexionHandler = function(){
+            document.cookie = "token=; path=/; max-age=0;"
+            drawing.username = null;
+            connexion();
+        }
+        svg.addEvent(deconnection.content, "click", deconnexionHandler);
+        svg.addEvent(deconnection.cadre, "click", deconnexionHandler);
+    }
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
@@ -1736,13 +1760,11 @@ function QuizzDisplay(x,y,w,h) {
     self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
     self.answerHeightWithImage = heightPage * self.answerPercentageWithImage -  MARGIN;
 
-    var object = displayText(self.title, (self.titleArea.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
-    self.titleBox = object.cadre;
-    self.titleText = object.content;
-
     //self.quizzManipulator.ordonator.set(1,self.titleText);
     //self.quizzManipulator.ordonator.set(0,self.titleBox);
     self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
+    self.header.display();
+    self.header.drawBody();
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
@@ -1905,8 +1927,9 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        self.header = new Header ();
+        self.header = new Header (target.parentFormation.label);
         self.header.display();
+        self.header.drawBody();
     };
 
     svg.addEvent(self.returnButton, "click", returnHandler);
@@ -2101,7 +2124,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 
 function InscriptionManagerDisplay(labels={}) {
     let self = this;
-    self.header = new Header();
+    self.header = new Header("Inscription");
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
@@ -2348,7 +2371,7 @@ function InscriptionManagerDisplay(labels={}) {
 
 function ConnectionManagerDisplay() {
     let self = this;
-    self.header = new Header("S'identifier");
+    self.header = new Header("Connexion");
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);

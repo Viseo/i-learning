@@ -68,7 +68,7 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', function(req, res) {
-        var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var token = req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         if(token) {
             jwt.decode('VISEO', token, function (err, decode) {
                 if (err) {

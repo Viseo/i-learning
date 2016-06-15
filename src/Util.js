@@ -467,14 +467,14 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1=0, layer2=1) {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;
         }
-        var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+        var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator, layer2).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-        manipulator.ordonator.set(0, cadre);
+        manipulator.ordonator.set(layer1, cadre);
         return {content: content, cadre: cadre};
     };
 
@@ -1292,10 +1292,11 @@ function Bdd() {
     };
 
     myQuizz = {
-        title: "Qui veut gagner des millions ? Quiz n°1",
+        title: "Quiz n°1",
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
+        parentFormation : {label: "Qui veut gagner des millions ?"},
         tabQuestions: [
             questionWithLabelImageAndMultipleAnswers, myQuestion2,
             {
