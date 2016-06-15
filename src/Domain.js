@@ -666,10 +666,10 @@ function Domain() {
      * Created by ACA3502 on 14/04/2016.
      */
 
-    FormationsManager = function (formations, additionalMessage) {
+    FormationsManager = function (formations) {
         var self = this;
 
-        self.header = new Header(additionalMessage);
+        self.header = new Header("Liste des formations");
         self.x = MARGIN;
         self.tileHeight = 150;
         self.tileWidth = self.tileHeight*(16/9);
@@ -717,6 +717,8 @@ function Domain() {
         additionalMessage && (self.addMessage = additionalMessage);
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(3);
+        self.userManipulator = new Manipulator(self);
+        self.userManipulator.addOrdonator(5);
         self.label = "I-learning";
         self.size = 0.05; // 5%
         self.setMessage = function (additionalMessage) {
@@ -1005,7 +1007,6 @@ function Domain() {
      */
     Quizz = function (quizz, previewMode, parentFormation) {
         var self = this;
-
         self.miniatureManipulator = new Manipulator(self);
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
@@ -1032,6 +1033,7 @@ function Domain() {
         quizz.fontSize ? (self.fontSize = quizz.fontSize) : (self.fontSize = 20);
         quizz.colorBordure ? (self.colorBordure = quizz.colorBordure) : (self.colorBordure = myColors.black);
         quizz.bgColor ? (self.bgColor = quizz.bgColor) : (self.bgColor = myColors.none);
+        quizz.parentFormation ? (self.parentFormation = quizz.parentFormation) : (self.parentFormation="Rien");
         self.resultArea = {
             x: drawing.width / 2,
             y: 220,
@@ -1057,6 +1059,8 @@ function Domain() {
         self.title = quizz.title ? quizz.title : '';
         self.currentQuestionIndex = -1;
         self.finalMessage = "";
+        self.header = new Header(self.parentFormation.label + " - " + self.title);
+
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
                 if (self.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {

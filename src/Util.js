@@ -1284,7 +1284,8 @@ function Bdd() {
     };
 
     myQuizz = {
-        title: "Qui veut gagner des millions ? Quiz n°1",
+        title: "Quiz n°1",
+        parentFormation: {label: "Qui veut gagner des millions ?"},
         bgColor: myColors.raspberry,
         puzzleLines: 3,
         puzzleRows: 1,
