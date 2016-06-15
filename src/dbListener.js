@@ -38,7 +38,7 @@ function HttpRequests(isWriting, isMock, listener) {
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 isWriting && register(JSON.parse(xmlHttp.responseText));
-                callback(xmlHttp.responseText);
+                callback && callback(xmlHttp.responseText);
             }
         };
         xmlHttp.open("GET", theUrl, true); // true for asynchronous
@@ -49,7 +49,7 @@ function HttpRequests(isWriting, isMock, listener) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
+                callback && callback(xmlHttp.responseText);
         };
         xmlHttp.open("POST", theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader("Content-type", "application/json");
@@ -60,7 +60,7 @@ function HttpRequests(isWriting, isMock, listener) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
+                callback && callback(xmlHttp.responseText);
         };
         xmlHttp.open("PUT", theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader("Content-type", "application/json");
@@ -69,11 +69,11 @@ function HttpRequests(isWriting, isMock, listener) {
 
     function httpMockGet(theUrl, callback) {
         var obj = parent.data.shift();
-        callback(obj);
+        callback && callback(obj);
     }
 
     function httpMockPost(theUrl, body, callback, ignoredData) {
-        callback(body);
+        callback && callback(body);
     }
 
     function httpMockPut(theUrl, body, callback, ignoredData) {
