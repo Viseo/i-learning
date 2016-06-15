@@ -27,10 +27,10 @@ function DbListener(isWriting, isMock) {
 function HttpRequests(isWriting, isMock, listener) {
     this.parent = listener;
     function register(data) {
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("POST", "/data", true); // true for asynchronous
-        xmlHttp.setRequestHeader("Content-type", "application/json");
-        xmlHttp.send(JSON.stringify(data));
+        var request = new XMLHttpRequest();
+        request.open("POST", "/data", true); // true for asynchronous
+        request.setRequestHeader("Content-type", "application/json");
+        request.send(JSON.stringify(data));
     }
 
     function httpGet(theUrl, callback) {
@@ -38,7 +38,7 @@ function HttpRequests(isWriting, isMock, listener) {
         request.onreadystatechange = function() {
             if (request.readyState == 4 && request.status == 200) {
                 isWriting && register(JSON.parse(request.responseText));
-                callback(request.responseText);
+                callback && callback(request.responseText);
             }
         };
         request.open("GET", theUrl, true); // true for asynchronous
@@ -49,7 +49,7 @@ function HttpRequests(isWriting, isMock, listener) {
         var request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (request.readyState == 4 && request.status == 200)
-                callback(request.responseText);
+                callback && callback(request.responseText);
         };
         request.open('POST', theUrl, true); // true for asynchronous
         request.setRequestHeader('Content-type', 'application/json');
@@ -60,7 +60,7 @@ function HttpRequests(isWriting, isMock, listener) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                callback(xmlHttp.responseText);
+                callback && callback(xmlHttp.responseText);
         };
         xmlHttp.open("PUT", theUrl, true); // true for asynchronous
         xmlHttp.setRequestHeader("Content-type", "application/json");
@@ -69,11 +69,11 @@ function HttpRequests(isWriting, isMock, listener) {
 
     function httpMockGet(theUrl, callback) {
         var obj = parent.data.shift();
-        callback(obj);
+        callback && callback(obj);
     }
 
     function httpMockPost(theUrl, body, callback, ignoredData) {
-        callback(body);
+        callback && callback(body);
     }
 
     function httpMockPut(theUrl, body, callback, ignoredData) {

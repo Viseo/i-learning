@@ -689,7 +689,8 @@ function FormationDisplayFormation(){
         if(typeof self.panel === "undefined") {
             self.panel = new gui.Panel(w, h);
             let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-            var trueWidth = self.findLongestLevel()[0].gamesTab.length*spaceOccupiedByAGame;
+            let longestLevel = self.findLongestLevel()[0];
+            var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame;
         }
         else {
             self.panel.resize(w, h);
@@ -793,7 +794,8 @@ function FormationDisplayFormation(){
         self.panel.resizeContent(height);
 
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-        var trueWidth = self.findLongestLevel()[0].gamesTab.length*spaceOccupiedByAGame;
+        let longestLevel = self.findLongestLevel()[0];
+        var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame;
         self.panel.resizeContentW(trueWidth-1);
         self.panel.back.parent.parentManip = self.graphManipulator;
 
