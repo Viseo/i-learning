@@ -2,6 +2,7 @@ module.exports = function (app, fs) {
 
     var db = require('../db');
     var TwinBcrypt=require('twin-bcrypt');
+    var jwt = require('json-web-token');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -37,17 +38,56 @@ module.exports = function (app, fs) {
             res.send({user: result});
         });
     });
+    
+    var sendCookie = function (res, user) {
+        jwt.encode('VISEO', {user: user}, function (err, token) {
+            res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
+            res.send({
+                ack: 'OK',
+                lastName: user.lastName,
+                firstName: user.firstName
+            });
+            console.log(`${new Date().toLocaleTimeString('fr-FR')} : User "${user.firstName} ${user.lastName}" connected.`)
+        });
+    };
 
-    app.post('/connectUser', function(req, res) {
+    app.post('/auth/connect', function(req, res) {
         var collection = db.get().collection('users');
         collection.find().toArray(function(err, docs) {
-            var result = docs.find(user => user.mailAddress===req.body.mailAddress);
-            if(result && TwinBcrypt.compareSync(req.body.password,result.password)) {
-                res.send({user: result});
+            var user = docs.find(user => user.mailAddress === req.body.mailAddress);
+            if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
+                if (err) {
+                    return console.error(err.name, err.message);
+                } else {
+                    sendCookie(res, user);
+                }
             } else {
-                res.send();
+                res.send({status: 'error'});
             }
         });
+    });
+
+    app.get('/auth/verify', function(req, res) {
+        var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if(token) {
+            jwt.decode('VISEO', token, function (err, decode) {
+                if (err) {
+                    return console.error(err.name, err.message);
+                } else {
+                    var collection = db.get().collection('users');
+                    collection.find().toArray(function (err, docs) {
+                        var user = docs.find(user => user.mailAddress === decode.user.mailAddress);
+                        if (user) {
+                            sendCookie(res, user);
+                        } else {
+                            res.send({status: 'error'});
+                        }
+                    });
+                }
+            });
+        } else {
+            res.send({status: 'no cookie'});
+        }
     });
 
     app.post('/sendProgress', function(req, res) {

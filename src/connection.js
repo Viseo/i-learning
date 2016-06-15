@@ -21,8 +21,16 @@ function setUtil(_util){
 }
 
 function connexion(){
-   let manager=new ConnectionManager();
-    manager.display();
+    let manager = new ConnectionManager();
+    Server.checkCookie(data => {
+        data = data && JSON.parse(data);
+        if (data.ack === 'OK') {
+            window.username = `${data.lastName} ${data.firstName}`;
+            manager.listFormations();
+        } else {
+            manager.display();
+        }
+    });
 }
 
 if (typeof exports !== "undefined") {

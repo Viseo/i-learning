@@ -825,6 +825,14 @@ class Server {
     static getFormationByName(name, callback) {
         dbListener.httpGetAsync("/getFormationByName/" + name, callback);
     }
+    
+    static connect(mail, password, callback) {
+        dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password}, callback);
+    }
+    
+    static checkCookie(callback) {
+        dbListener.httpGetAsync('/auth/verify/', callback);
+    }
 
     static getUserByMail(mail, callback) {
         dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
