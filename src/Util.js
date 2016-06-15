@@ -852,7 +852,15 @@ class Server {
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
-    };
+    }
+
+    static replaceFormation(id, newFormation, callback, ignoredData) {
+        dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, callback, ignoredData);
+    }
+    
+    static insertFormation(newFormation, callback, ignoredData) {
+        dbListener.httpPostAsync("/insert", newFormation, callback, ignoredData);
+    }
 
 }
 

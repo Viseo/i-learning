@@ -392,7 +392,7 @@ function Domain() {
         self.levelsTab = [];
         self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
-        self.label = formation.label ? formation.label : "Nouvelle formation";
+        self.label = formation.label ? formation.label : self.labelDefault;
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
 
@@ -403,6 +403,7 @@ function Domain() {
 
 
         self.saveFormation = function () {
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             var validation = true;
             formationValidation.forEach(formValid => {
                 var result = formValid(self);
@@ -426,43 +427,80 @@ function Domain() {
 
                 validation = validation && result.isValid;
             });
+            var callbackInsertion = function (data) {
+                self._id=JSON.parse(data);
+                svg.timeout(function () {
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                }, 5000);
+            };
+            var addNewFormation = function () {
+                var callbackCheckName = function (data) {
+                    let formationWithSameName = JSON.parse(data).formation;
+                    if (!formationWithSameName) {
+                        Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
+                    }
+                    else {
+                        self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                        var messageText = "Le nom de cette formation est déjà utilisé !";
+                        self.errorMessage = new svg.Text(messageText)
+                            .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
+                            .font("Arial", 15)
+                            .anchor('start').color(myColors.red);
+                        setTimeout(function () {
+                            self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                        }, 1);
+                    }
+                }
+                Server.getFormationByName(self.label, callbackCheckName);
+            }
+            var replaceFormation = function () {
+                var callbackCheckName = function (data) {
+                    let formationWithSameName = JSON.parse(data).formation;
+                    if(formationWithSameName) {
+                        var id = formationWithSameName._id;
+                        delete formationWithSameName._id;
+                        formationWithSameName = JSON.stringify(formationWithSameName);
+                        let newFormation = getObjectToSave();
+                        newFormation = JSON.stringify(newFormation, ignoredData);
+                        if (formationWithSameName && id === self._id) {
+                            if (formationWithSameName == newFormation) {
+                                (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                                self.errorMessageSave = new svg.Text("Votre travail a déjà été enregistré")
+                                    .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                                    .font("Arial", 20)
+                                    .anchor('middle').color(myColors.green);
+                                self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+                            }
+                            else {
+                                var replaceCallback = function () {
+                                    console.log('la formation a bien été remplacé');
+                                };
+                                Server.replaceFormation(self._id, getObjectToSave(), replaceCallback, ignoredData);
+                            }
+                        }
+                        else if (formationWithSameName && formationWithSameName._id !== self._id) {
+                            self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                            var messageText = "Le nom de cette formation est déjà utilisé !";
+                            self.errorMessage = new svg.Text(messageText)
+                                .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
+                                .font("Arial", 15)
+                                .anchor('start').color(myColors.red);
+                            setTimeout(function () {
+                                self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                            }, 1);
+                        }
+                    }
+                    else {
+                        var replaceCallback = function () {
+                            console.log('la formation a bien été remplacé');
+                        };
+                        Server.replaceFormation(self._id, getObjectToSave(), replaceCallback, ignoredData);
+                    }
+                }
+                Server.getFormationByName(self.label, callbackCheckName);
+            }
 
             if (validation) {
-                var callbackInsertion = function (data) {
-                    svg.timeout(function () {
-                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                    }, 5000);
-                    console.log("Votre travail a été bien enregistré");
-
-                };
-                var callbackCheck = function (data) {
-                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    let oldFormation= JSON.parse(data).formation;
-                    if (oldFormation){
-                        //if(self.id)
-                        let newFormation = getObjectToSave();
-                        newFormation=JSON.stringify(newFormation, ignoredData);
-                        delete oldFormation["_id"];
-                        oldFormation = JSON.stringify(oldFormation);
-                        console.log(oldFormation);
-                        console.log(newFormation);
-                        if (oldFormation==newFormation) {
-                            //Affichage du message d'erreur
-                            console.log("La formation n'a pas été modifié");
-                        }
-                        else {
-                            //suppression
-                            dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
-                        }
-                    }
-                    else{
-                        dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
-                    }
-
-                    //  else(getWashedFormation)
-
-                };
-
                 var getObjectToSave = function () {
                     var levelsTab = [];
                     self.levelsTab.forEach(function (level, i) {
@@ -472,93 +510,57 @@ function Domain() {
                             game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
                     });
-                    var tmpFormationObject = {
-                        label: self.label,
-                        gamesCounter: self.gamesCounter,
-                        levelsTab: levelsTab
-                    };
-                    return tmpFormationObject;
+                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
                 };
 
-
-                Server.getFormationByName(self.label, callbackCheck);
+                self._id ? replaceFormation() : addNewFormation();
             }
         };
         self.loadFormation = function(formation) {
+            var loadChildren= function(game) {
+                game.childrenGames.forEach(function (child) {
+                    if(! self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]){
+                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
+                    }
+                    let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
+                    let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex];
+                    !childGame.parentGames && (childGame.parentGames = []);
+                    !parentGame.childrenGames && (parentGame.childrenGames = []);
+                    parentGame.childrenGames.push(childGame);
+                    childGame.parentGames.push(parentGame);
+                    loadChildren(child);
+                })
+            };
+
             self._id=formation._id;
             self.gamesCounter = formation.gamesCounter;
             for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];
                 self.levelsTab.push(new Level(self, gamesTab));
             }
-            formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-                level.gamesTab.forEach(function (game, j) {
-                    self.levelsTab[i].gamesTab[j] = new Quizz(game, true, self);
-                    game.childrenGames.forEach(function (child) {
-                        let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
-                        childGame = new Quizz(child, true, self);
-                        !childGame.parentGames && (childGame.parentGames = []);
-                        !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        self.levelsTab[i].gamesTab[j].childrenGames.push(childGame);
-                        childGame.parentGames.push(self.levelsTab[i].gamesTab[j]);
+            formation.levelsTab && formation.levelsTab.forEach(function (level) {
+                level.gamesTab.forEach(function (game) {
+                    self.levelsTab[game.levelIndex].gamesTab[game.gameIndex] = new Quizz(game, true, self);
+                    loadChildren(game);//Pour ABL
                     });
                 });
-            });
-        };
-        self.findLongestLevel = function(){
-            var longestLevelCandidates = [];
-            longestLevelCandidates.index = 0;
-            self.levelsTab.forEach(level=>{
-                if(level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                    if(level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                        longestLevelCandidates.push(level);
-                    }else{
-                        longestLevelCandidates = [];
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index = level.index-1;
+    };
+    self.findLongestLevel = function() {
+        var longestLevelCandidates = [];
+        longestLevelCandidates.index = 0;
+        self.levelsTab.forEach(level=> {
+            if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    longestLevelCandidates.push(level);
+                } else {
+                    longestLevelCandidates = [];
+                    longestLevelCandidates.push(level);
                 }
-            });
-            return longestLevelCandidates;
-        };
-     // formation.levelsTab.forEach(function (level) {
-            //     var gamesTab = [];
-            //     level.gamesTab.forEach(function (game) {
-            //         gamesTab.push(new Quizz(game, true, self));
-            //     });
-            //     self.levelsTab.push(new Level(self, gamesTab));
-            // });
-            // self.matchGame = function(childrenGame, levelIndex){
-            //     for(var game of self.levelsTab[levelIndex].gamesTab)
-            //     {
-            //         if(game.title===childrenGame.title){
-            //             return game;
-            //         }
-            //     }
-            // };
-
-            // self.loadDependencies = function () {
-            //     formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-            //         level.gamesTab.forEach(function (game, j) {
-            //             game.childrenGames.forEach(function (childrenGame) {
-            //            if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
-            //                let match =  self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
-            //                !match.parentGames && (match.parentGames = []);
-            //                !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-            //                self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-            //                match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-            //            }
-            //         });
-                        //    if(self.levelsTab[i+1]){
-                        //        var match= self.matchGame(childrenGame, i+1);
-                        //        !match.parentGames  && (match.parentGames = []);
-                        //        !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        //        self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                        //        self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                        //    }
-                        //})
-
-            // self.loadDependencies();
+                longestLevelCandidates.index = level.index - 1;
+            }
+        });
+        return longestLevelCandidates;
+    };
 
 
         self.redim = function() {

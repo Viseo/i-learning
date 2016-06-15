@@ -17,8 +17,8 @@ module.exports = function (app, fs) {
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = req.body;
-        collection.insert(obj, function(err, docs) {
-            res.send(JSON.stringify(obj));
+        collection.insert(obj, function (err, docs) {
+            res.send(docs.insertedIds[0]);
         });
     });
 
@@ -178,4 +178,15 @@ module.exports = function (app, fs) {
             });
         }
     });
+
+    app.post('/replaceFormation/:id', function (req, res) {
+        var collection = db.get().collection('formations');
+        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
+            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
+               // res.send(JSON.stringify(obj));
+            });
+        });
+    });
+
 };
+

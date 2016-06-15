@@ -880,8 +880,8 @@ function FormationDisplaySaveButton(x, y, w, h) {
             Server.getFormationByName(self.label, callback);
     };
 
-    svg.addEvent(self.saveFormationButton.cadre, "click", saveFormationFunction);
-    svg.addEvent(self.saveFormationButton.content, "click", saveFormationFunction);
+    svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
+    svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
     self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
