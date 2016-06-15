@@ -1111,7 +1111,8 @@ function Domain() {
                     functionDisplayInAllCases();
                 }
             } else {
-                Server.sendProgressToServer(self, callback);
+                Server.sendProgressToServer(self);
+                callback();
             }
         };
 
