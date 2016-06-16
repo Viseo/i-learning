@@ -21,7 +21,68 @@ function setSvg(_svg) {
     svg = _svg;
     // call setSvg on modules
 }
+class Answer {
+    constructor(answerParameters, parent) {
+        this.parent = parent;
+        var answer = {
+            label: '',
+            imageSrc: null,
+            correct: false
+        };
+        answerParameters && (answer = answerParameters);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(5);
+        this.label = answer.label;
+        this.imageSrc = answer.imageSrc;
+        this.correct = answer.correct;
+        this.selected = false;
 
+        this.fontSize = answer.fontSize ? answer.fontSize : 20;
+        answer.font && (this.font = answer.font);
+
+        this.imageLoaded = false;
+
+        if (answer.imageSrc) {
+            this.image = imageController.getImage(this.imageSrc, function () {
+                this.imageLoaded = true;
+                this.dimImage = {width: this.image.width, height: this.image.height};
+            });
+            this.imageLoaded = false;
+        } else {
+            this.imageLoaded = true;
+        }
+
+        this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
+        this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
+
+        this.bordure = null;
+        this.content = null;
+    }
+
+
+    isEditable (editor, editable) {
+        this.editable = editable;
+        this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
+        this._acceptDrop = editable;
+        this.editor = editor;
+        this.checkInputContentArea = editable ? function (objCont) {
+            if (objCont.contentarea.value.match(REGEX)) {
+                this.label = objCont.contentarea.value;
+                objCont.remove();
+                objCont.contentarea.onblur = objCont.onblur;
+                objCont.contentarea.style.border = "none";
+                objCont.contentarea.style.outline = "none";
+            } else {
+                objCont.display();
+                objCont.contentarea.onblur = function () {
+                    objCont.contentarea.value = "";
+                    objCont.onblur();
+                    objCont.remove();
+                }
+            }
+        } : null;
+    }
+}
 function Domain() {
 
     util && util.SVGUtil();
