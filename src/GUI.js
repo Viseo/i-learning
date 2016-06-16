@@ -2076,13 +2076,12 @@ function InscriptionManagerDisplay(labels={}) {
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     var w = drawing.width/5;
     var x = drawing.width/9;
-    var trueValue = "";
 
     let focusedField;
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = svg.runtime.createDOM("textarea");
+            let contentarea = svg.runtime.createDOM("input");
             contentarea.value = self[field].label;
             var width = w;
             var height = self.h;
@@ -2098,6 +2097,7 @@ function InscriptionManagerDisplay(labels={}) {
                 "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
                 (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
                 "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
+            self[field].secret && svg.runtime.attr(contentarea, 'type','password');
             manipulator.ordonator.unset(1, self[field].content.text);
             svg.runtime.add(svg.runtime.anchor('content'), contentarea);
             !runtime && contentarea.focus();
@@ -2111,22 +2111,7 @@ function InscriptionManagerDisplay(labels={}) {
             };
 
             contentarea.oninput = function(){
-                var staredContentarea = function(){
-                    contentarea.value = "";
-                    for (var i = 0; i<trueValue.length; i++){
-                        contentarea.value+="*";
-                    }
-                }
-                if (self[field].secret && trueValue.length<contentarea.value.length){
-                    trueValue += contentarea.value.substring(contentarea.value.length-1);
-                    staredContentarea();
-                }
-                else if (self[field].secret){
-                    trueValue = trueValue.substring(0, contentarea.value.length);
-                    staredContentarea();
-                }
                 self[field].label = contentarea.value;
-                self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
                 if ((field === "lastNameField" || field==='firstNameField' ) && !self[field].checkInput()){
                     displayErrorMessage();
                     self[field].cadre.color(myColors.white, 3, myColors.red);
@@ -2137,23 +2122,27 @@ function InscriptionManagerDisplay(labels={}) {
                 }
             };
             contentarea.onblur = function(){
-                self[field].label = contentarea.value;
+                if(self[field].secret){
+                    self[field].label = '';
+                    self[field].labelSecret = contentarea.value;
+                    for(let i = 0; i < contentarea.value.length; i++){
+                        self[field].label+= '●';
+                    }
+
+                } else {
+                    self[field].label = contentarea.value;
+                }
                 displayField(field, manipulator);
                 if (self[field].checkInput()){
-                    if (self[field].secret && self.passwordField.label===self.passwordConfirmationField.label){
-                        self.passwordField.labelSecret = trueValue;
-                    }
-                    else {
-                        self[field].cadre.color(myColors.white, 1, myColors.black);
-                        field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
-                    }
+                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                    field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
                 }
                 else {
                     self[field].secret || displayErrorMessage();
                     self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
                 }
                 contentarea.remove();
-            }
+            };
             focusedField = self[field];
         };
     };
@@ -2172,7 +2161,7 @@ function InscriptionManagerDisplay(labels={}) {
         var clickEdition = clickEditionField(field, manipulator);
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
-        self.tabForm.push(self[field]);
+        self.tabForm.indexOf(self[field])===-1 && self.tabForm.push(self[field]);
         self.formLabels[field] = self[field].label;
     };
 
@@ -2234,7 +2223,7 @@ function InscriptionManagerDisplay(labels={}) {
         }
         var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret);
         return result;
-    }
+    };
 
     self.passwordField={label:labels.passwordField || "", labelSecret:labels.passwordSecret || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
@@ -2317,10 +2306,12 @@ function InscriptionManagerDisplay(labels={}) {
     svg.addEvent(self.saveButton.content, "click", self.saveButtonHandler);
     svg.addEvent(self.saveButton.cadre, "click", self.saveButtonHandler);
 
-    let nextField = function() {
+    let nextField = function(backwards = false) {
         let index = self.tabForm.indexOf(focusedField);
         if (index !== -1) {
-            if(++index === self.tabForm.length) index = 0;
+            backwards ? index-- : index++;
+            if(index === self.tabForm.length) index = 0;
+            if(index === -1) index = self.tabForm.length - 1;
             self.tabForm[index].cadre.component.listeners.click();
         }
     };
@@ -2328,7 +2319,7 @@ function InscriptionManagerDisplay(labels={}) {
     svg.runtime.addGlobalEvent("keydown", function (event) {
         if (event.keyCode === 9) { // TAB
             event.preventDefault();
-            nextField();
+            nextField(event.shiftKey);
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
@@ -2432,10 +2423,12 @@ function ConnectionManagerDisplay() {
     svg.addEvent(self.connectionButton.content, "click", self.connectionButtonHandler);
     svg.addEvent(self.connectionButton.cadre, "click", self.connectionButtonHandler);
 
-    let nextField = function() {
+    let nextField = function(backwards = false) {
         let index = self.tabForm.indexOf(focusedField);
         if (index !== -1) {
-            if(++index === self.tabForm.length) index = 0;
+            backwards ? index-- : index++;
+            if(index === self.tabForm.length) index = 0;
+            if(index === -1) index = self.tabForm.length - 1;
             self.tabForm[index].cadre.component.listeners.click();
         }
     };
@@ -2443,7 +2436,7 @@ function ConnectionManagerDisplay() {
     svg.runtime.addGlobalEvent("keydown", function (event) {
         if (event.keyCode === 9) { // TAB
             event.preventDefault();
-            nextField();
+            nextField(event.shiftKey);
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
