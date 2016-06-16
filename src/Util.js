@@ -553,10 +553,12 @@ function SVGUtil() {
                         text += ' ';
                         let longWord = word;
                         for (let j = 0; j < longWord.length; j++) {
-                            t.message(text + ' ' + longWord.charAt(j));
+                            t.message(text + " " + longWord.charAt(j));
                             if (svg.runtime.boundingRect(t.component).width <= w) {
                                 text += longWord.charAt(j);
                             } else {
+                                text = text.slice(0, -1);
+                                j--;
                                 text += '-\n';
                                 words.unshift(longWord.slice(j));
                                 break;
