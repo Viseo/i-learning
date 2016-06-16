@@ -2005,7 +2005,6 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
 function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var self = this;
     self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
-
     var saveFunction = function () {
         var thing = function (data) {
         };
@@ -2021,10 +2020,9 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             gameIndex: self.parentFormation.levelsTab[0].gamesTab[0].gameIndex,*/
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-       // };
-        dbListener.httpGetAsync("/id", thing);
-        dbListener.httpPostAsync("/insert", tmpQuizzObject, thing, ignoredData);
+
+        // };
+        dbListener.httpPostAsync('/replaceQuizz/'+self.levelIndex+"/"+self.gameIndex, tmpQuizzObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
 /*
         dbListener.httpPutAsync("/update", tmpQuizzObject, thing, ignoredData);

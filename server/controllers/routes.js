@@ -208,16 +208,16 @@ module.exports = function (app, fs) {
         });
     });
 
-    // app.post('/replaceQuizz/:levelIndex/:gameIndex', function (req, res) {
-    //     console.log(req.params.levelIndex);
-    //     console.log(req.params.gameIndex);
-    //     var collection = db.get().collection('formations');
-    //     collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
-    //         db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
-    //             // res.send(JSON.stringify(obj));
-    //         });
-    //     });
-    // });
+    app.post('/replaceQuizz/:levelIndex/:gameIndex', function (req, res) {
+        console.log(req.params.levelIndex);
+        console.log(req.params.gameIndex);
+        var collection = db.get().collection('formations');
+        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
+            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
+                // res.send(JSON.stringify(obj));
+            });
+        });
+    });
 
 };
 
