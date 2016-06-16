@@ -126,7 +126,7 @@ function AnswerDisplay (x, y, w, h) {
                     marginErrorMessagePreviewButton = 0.03,
                     position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN),
                     anchor = 'middle';
-                self.errorMessage = new svg.Text(REGEXERROR)
+                self.errorMessage = new svg.Text(REGEX_ERROR)
                     .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
                 self.editor.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
@@ -589,7 +589,7 @@ function FormationDisplayFormation(){
             removeErrorMessage();
             self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
             var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEXERRORFORMATION)
+            self.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                 .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
@@ -1668,7 +1668,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             var anchor = 'middle';
             var quizzInfoHeightRatio = 0.05;
             var questionsPuzzleHeightRatio = 0.25;
-            self.errorMessage = new svg.Text(REGEXERROR)
+            self.errorMessage = new svg.Text(REGEX_ERROR)
                 .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
@@ -1963,7 +1963,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             removeErrorMessage();
             self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
             var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEXERROR)
+            self.errorMessage = new svg.Text(REGEX_ERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.quizzInfoManipulator.ordonator.set(3, self.errorMessage);
@@ -2302,7 +2302,7 @@ function InscriptionManagerDisplay(labels={}) {
             save && emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
         if (emptyAreas.length>0 && save){
-            var message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+            var message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
         else {

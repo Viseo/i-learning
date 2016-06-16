@@ -386,7 +386,7 @@ function Domain() {
         self.graphCreaHeightRatio = 0.85;
 
         self.x = MARGIN;
-        self.regex = /^([A-Za-z0-9.éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
+        self.regex = FORMATION_TITLE_REGEX;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
         self.targetLevelIndex = 0;
         self.levelsTab = [];
@@ -1312,7 +1312,7 @@ ConnectionManager = function () {
         emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red)});
 
         if (emptyAreas.length > 0) {
-            let message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
+            let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height + MARGIN);
             svg.timeout(function() {
                 self.connectionButtonManipulator.ordonator.unset(3);
