@@ -380,7 +380,7 @@ function Domain() {
         self.quizzManager.parentFormation = self;
 
         self.labelDefault = "Entrer le nom de la formation";
-        self.needUpdate=true;
+        self.needUpdate = true;
         // WIDTH
         self.libraryWidthRatio = 0.15;
         self.graphWidthRatio = 1 - self.libraryWidthRatio;
@@ -395,7 +395,7 @@ function Domain() {
         self.levelsTab = [];
         self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
-        self.label = formation.label ? formation.label : self.labelDefault;
+        self.label = formation.label ? formation.label : "";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
 

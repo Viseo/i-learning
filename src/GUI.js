@@ -543,7 +543,7 @@ function FormationDisplayFormation(){
 
 
     var showTitle = function() {
-        var text = (self.label) ? self.label : (self.label=self.labelDefault);
+        var text = (self.label==="") ? self.labelDefault : self.label;
         var color = (self.label) ? myColors.black : myColors.grey;
         var bgcolor = myColors.grey;
         self.formationLabelWidth = 400 ;
