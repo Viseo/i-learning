@@ -1632,25 +1632,27 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         var globalPointCenter = self.questionBlock.title.content.globalPoint(-(self.w)/2, -((self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2))/2);
         var contentareaStyle = {
             height: (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2),
-            toppx: (self.linkedQuestion.image) ? (this.height + 1 - drawing.height + globalPointCenter.y) : (- drawing.height + globalPointCenter.y),
+            toppx: (self.linkedQuestion.image) ? (this.height + 1 + globalPointCenter.y) : (globalPointCenter.y),
             leftpx: (globalPointCenter.x+1/12*self.w),
             width: (self.w*5/6)
         };
 
-        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(myColors.white, 0, myColors.black);
-        textarea.message(self.linkedQuestion.label);
-        textarea.font("Arial", 20);
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+            .color(myColors.white, 0, myColors.black)
+            .message(self.linkedQuestion.label)
+            .font("Arial", 20);
 
         drawings.screen.add(textarea);
         textarea.focus();
         self.questionManipulator.ordonator.unset(1);
-        var onblur = function () {
-            if(textarea.value){
-                self.label = textarea.value;
-                self.linkedQuestion.label=textarea.value;
-            }
 
-            svg.runtime.anchor("content").removeChild(textarea);
+        var onblur = function () {
+            textarea.messageText = textarea.component.value;
+            if(textarea.messageText){
+                self.label = textarea.messageText;
+                self.linkedQuestion.label=textarea.messageText;
+            }
+            drawings.screen.remove(textarea);
             showTitle();
             self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
         };
@@ -1684,7 +1686,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-        svg.runtime.addEvent(textarea.component, "onblur", onblur);
+        svg.runtime.addEvent(textarea.component, "blur", onblur);
     };
 
     x && (self.x = x);
