@@ -1758,7 +1758,7 @@ function QuizzDisplayScore(color){
     } else {
         usedColor = color;
     }
-    
+
     self.resultManipulator && (self.quizzManipulator.last.children.indexOf(self.resultManipulator.first) !== -1) && self.quizzManipulator.last.remove(self.resultManipulator.first);
 
     self.resultManipulator = new Manipulator(self);
