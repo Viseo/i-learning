@@ -689,7 +689,7 @@ function FormationDisplayFormation(){
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
         let longestLevel = self.findLongestLevel()[0];
-        var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        var trueWidth = longestLevel ? longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame : w;
         if(typeof self.panel === "undefined") {
             self.panel = new gui.Panel(w, h);
 
