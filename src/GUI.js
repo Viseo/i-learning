@@ -1606,15 +1606,13 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             width: (self.w*5/6)
         };
 
-        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(myColors.none, 0, myColors.black);
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(myColors.white, 0, myColors.black);
         textarea.message(self.linkedQuestion.label);
+        textarea.font("Arial", 20);
 
         drawings.screen.add(textarea);
-
+        textarea.focus();
         self.questionManipulator.ordonator.unset(1);
-
-        //svg.runtime.attr(textarea, "style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
-        //svg.runtime.anchor("content").appendChild(textarea).focus();
         var onblur = function () {
             if(textarea.value){
                 self.label = textarea.value;
@@ -1655,7 +1653,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-        textarea.onblur = onblur;
+        svg.runtime.addEvent(textarea.component, "onblur", onblur);
     };
 
     x && (self.x = x);
