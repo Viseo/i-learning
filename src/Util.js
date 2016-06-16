@@ -63,11 +63,12 @@ function SVGGlobalHandler() {
         }
     };
 
-    Drawings = function (w, h, anchor) {
+    Drawings = function (w, h, anchor = "content") {
         var self = this;
 
-        !anchor && (anchor = "content");
-        self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
+        self.screen = new svg.Screen(w, h).show(anchor);
+        self.drawing = new svg.Drawing(w, h).position(0, 0);
+        self.screen.add(self.drawing);
         self.drawing.manipulator = new Manipulator(self);
         self.drawing.manipulator.addOrdonator(3);
         self.piste = new Manipulator(self);

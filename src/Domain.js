@@ -6,7 +6,7 @@ var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg
 setUtil = function(_util){
     util = _util;
 };
-setGlobalVariables = function(gv){
+setGlobalVariables = function(gv) {
     drawing = gv.drawing;
     mainManipulator = gv.mainManipulator;
     clientWidth = gv.clientWidth;
