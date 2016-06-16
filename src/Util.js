@@ -2041,16 +2041,7 @@ function Bdd() {
             message: "Vous devez remplir au moins une réponse."
         })
     ];
-
-    formationValidation = [
-        // Check Formation Name:
-        formation => ({
-            isValid: formation.label !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'),
-            messageSave: "Votre travail a bien été enregistré.",
-            messageError: "Vous devez remplir le nom de la formation."
-
-        })
-    ];
+    
 
     myQuizzType = {
         tab: [

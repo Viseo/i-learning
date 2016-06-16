@@ -560,8 +560,8 @@ function FormationDisplayFormation(){
 
         svg.addEvent(self.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
         svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
-        self.formationCreator = formationValidation;
-    };
+        // self.formationCreator = formationValidation;
+};
 
     var dblclickEditionFormationLabel = function () {
         var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
@@ -580,7 +580,7 @@ function FormationDisplayFormation(){
         svg.runtime.anchor("content").appendChild(contentarea).focus();
 
         var removeErrorMessage = function () {
-            self.formationCreator.formationNameValidInput = true;
+            self.formationNameValidInput = true;
             self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
             self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
         };
@@ -597,7 +597,7 @@ function FormationDisplayFormation(){
             self.labelValidInput = false;
         };
         var onblur = function () {
-            self.formationCreator.formationNameValidInput && (self.label = contentarea.value);
+            self.formationNameValidInput && (self.label = contentarea.value);
             contentarea.remove();
             showTitle();
         };
@@ -622,14 +622,14 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var targetQuizz = drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
-        self.quizzManager.loadQuizz(targetQuizz);
-        self.quizzDisplayed = targetQuizz;
-        self.saveFormation();
-        self.quizzManager.display();
-        self.selectedArrow = null;
-        self.selectedGame = null;
-
+        if(self.saveFormation()) {
+            var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzDisplayed = targetQuizz;
+            self.quizzManager.display();
+            self.selectedArrow = null;
+            self.selectedGame = null;
+        }
         if (!runtime && window.getSelection)
             window.getSelection().removeAllRanges();
         else if (!runtime && document.selection)
@@ -824,66 +824,11 @@ function FormationRemoveErrorMessage(message) {
 function FormationDisplaySaveButton(x, y, w, h) {
         var self = this;
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
-        self.formationCreator.errorMessageSave && self.formationCreator.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.formationCreator.errorMessageSave);
+        self.errorMessageSave && self.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
 
-        var saveFormationFunction = function () {
-            var validation = true;
-            var exist = false;
-
-            var callback = function (data) {
-                var myFormation = data && JSON.parse(data).formation;
-                if (myFormation) {
-                    self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                    var messageText = "Le nom de cette formation est déjà utilisé !";
-                    self.errorMessage = new svg.Text(messageText)
-                        .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
-                        .font("Arial", 15)
-                        .anchor('start').color(myColors.red);
-                    setTimeout(function () {
-                        self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
-                    }, 1);
-                    exist = true;
-                }
-
-                formationValidation.forEach(formValid => {
-                    var result = formValid(self);
-
-                    if (result.isValid && !exist) {
-                        self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                        self.errorMessageSave = new svg.Text(result.messageSave)
-                            .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                            .font("Arial", 20)
-                            .anchor('middle').color(myColors.green);
-                        self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                    }
-                    else if (!result.isValid) {
-                        self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                        self.errorMessageSave = new svg.Text(result.messageError)
-                            .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                            .font("Arial", 20)
-                            .anchor('middle').color(myColors.red);
-                        self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                    }
-
-                    validation = validation && result.isValid;
-                });
-
-                if (validation && !exist) {
-                    var tmpFormationObject = {
-                        label: self.label,
-                        gamesCounter: self.gamesCounter,
-                        levelsTab: self.levelsTab
-                    };
-                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    dbListener.httpPostAsync("/insert", tmpFormationObject, function(){}, ignoredData);
-                }
-            };
-            Server.getFormationByName(self.label, callback);
-    };
-
-    svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
-    svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
-    self.saveFormationButtonManipulator.translator.move(x, y);
+        svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
+        svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
+        self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
 function FormationsManagerDisplay() {

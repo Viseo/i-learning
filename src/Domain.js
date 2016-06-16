@@ -404,117 +404,108 @@ function Domain() {
 
         self.saveFormation = function () {
             let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-            var validation = true;
-            formationValidation.forEach(formValid => {
-                var result = formValid(self);
+            var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
+            var messageSave = "Votre travail a bien été enregistré.";
+            var messageError = "Vous devez remplir le nom de la formation.";
+            var messageReplace =  "Les modifications ont bien été enregistrées";
+            var messageUsedName = "Le nom de cette formation est déjà utilisé !";
+            var messageNoModification = "Les modifications ont déjà été enregistrées";
 
-                if (result.isValid) {
-                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                    self.errorMessageSave = new svg.Text(result.messageSave)
-                        .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.green);
-                    self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                }
-                else {
-                    // self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                    self.errorMessageSave = new svg.Text(result.messageError)
-                        .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.red);
-                    self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                }
+            var displayErrorMessage = function (message){
+                validation = false;
+                self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                self.errorMessage = new svg.Text(message)
+                    .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
+                    .font("Arial", 15)
+                    .anchor('start').color(myColors.red);
 
-                validation = validation && result.isValid;
-            });
-            var callbackInsertion = function (data) {
-                self._id=JSON.parse(data);
+                setTimeout(function () {
+                    self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                }, 1);
+            };
+
+            var displaySaveMessage = function (message){
+                validation = false;
+                (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                self.errorMessageSave = new svg.Text(message)
+                    .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                    .font("Arial", 20)
+                    .anchor('middle').color(myColors.green);
+                self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
                 svg.timeout(function () {
                     (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                 }, 5000);
             };
-            var addNewFormation = function () {
-                var callbackCheckName = function (data) {
-                    let formationWithSameName = JSON.parse(data).formation;
-                    if (!formationWithSameName) {
-                        Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
-                    }
-                    else {
-                        self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                        var messageText = "Le nom de cette formation est déjà utilisé !";
-                        self.errorMessage = new svg.Text(messageText)
-                            .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
-                            .font("Arial", 15)
-                            .anchor('start').color(myColors.red);
-                        setTimeout(function () {
-                            self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
-                        }, 1);
-                    }
-                };
-                Server.getFormationByName(self.label, callbackCheckName);
-            };
-            var replaceFormation = function () {
-                var callbackCheckName = function (data) {
-                    let formationWithSameName = JSON.parse(data).formation;
-                    if(formationWithSameName) {
-                        var id = formationWithSameName._id;
-                        delete formationWithSameName._id;
-                        formationWithSameName = JSON.stringify(formationWithSameName);
-                        let newFormation = getObjectToSave();
-                        newFormation = JSON.stringify(newFormation, ignoredData);
-                        if (formationWithSameName && id === self._id) {
-                            if (formationWithSameName == newFormation) {
-                                (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                                self.errorMessageSave = new svg.Text("Votre travail a déjà été enregistré")
-                                    .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                                    .font("Arial", 20)
-                                    .anchor('middle').color(myColors.green);
-                                self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                            }
-                            else {
-                                var replaceCallback = function () {
-                                    console.log('la formation a bien été remplacé');
-                                };
-                                Server.replaceFormation(self._id, getObjectToSave(), replaceCallback, ignoredData);
-                            }
-                        }
-                        else if (formationWithSameName && formationWithSameName._id !== self._id) {
-                            self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                            var messageText = "Le nom de cette formation est déjà utilisé !";
-                            self.errorMessage = new svg.Text(messageText)
-                                .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
-                                .font("Arial", 15)
-                                .anchor('start').color(myColors.red);
-                            setTimeout(function () {
-                                self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
-                            }, 1);
-                        }
-                    }
-                    else {
-                        var replaceCallback = function () {
-                            console.log('la formation a bien été remplacé');
-                        };
-                        Server.replaceFormation(self._id, getObjectToSave(), replaceCallback, ignoredData);
-                    }
-                };
-                Server.getFormationByName(self.label, callbackCheckName);
-            };
 
             if (validation) {
-                var getObjectToSave = function () {
-                    var levelsTab = [];
-                    self.levelsTab.forEach(function (level, i) {
-                        var gamesTab = [];
-                        levelsTab.push({gamesTab: gamesTab});
-                        level.gamesTab.forEach(function (game) {
-                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
-                        });
-                    });
-                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
+                var addNewFormation = function () {
+                    var callbackInsertion = function (data) {
+                        self._id=JSON.parse(data);
+                        displaySaveMessage(messageSave);
+
+                    };
+                    var callbackCheckName = function (data) {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if (!formationWithSameName) {
+                            Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
+                        }
+                        else {
+                            displayErrorMessage(messageUsedName);
+                        }
+                    };
+                    Server.getFormationByName(self.label, callbackCheckName);
+                };
+                var replaceFormation = function () {
+                    var callbackCheckName = function (data) {
+                        var callbackReplace = function () {
+                            displaySaveMessage(messageReplace);
+                        };
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if(formationWithSameName) {
+                            var id = formationWithSameName._id;
+                            delete formationWithSameName._id;
+                            formationWithSameName = JSON.stringify(formationWithSameName);
+                            let newFormation = getObjectToSave();
+                            newFormation = JSON.stringify(newFormation, ignoredData);
+                            if (formationWithSameName && id === self._id) {
+                                if (formationWithSameName == newFormation) {
+                                    displaySaveMessage(messageNoModification);
+                                }
+                                else {
+                                    Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
+                                }
+                            }
+                            else if (formationWithSameName && formationWithSameName._id !== self._id) {
+                                displayErrorMessage(messageUsedName);
+                            }
+                        }
+                        else {
+
+                            Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
+                        }
+                    };
+                    Server.getFormationByName(self.label, callbackCheckName);
                 };
 
-                self._id ? replaceFormation() : addNewFormation();
+
+                    var getObjectToSave = function () {
+                        var levelsTab = [];
+                        self.levelsTab.forEach(function (level, i) {
+                            var gamesTab = [];
+                            levelsTab.push({gamesTab: gamesTab});
+                            level.gamesTab.forEach(function (game) {
+                                game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
+                            });
+                        });
+                        return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
+                    };
+
+                    self._id ? replaceFormation() : addNewFormation();
             }
+            else {
+                displayErrorMessage(messageError);
+            }
+            return validation;
         };
         self.loadFormation = function(formation) {
             var loadChildren= function(game) {
