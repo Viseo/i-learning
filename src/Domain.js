@@ -21,7 +21,68 @@ function setSvg(_svg) {
     svg = _svg;
     // call setSvg on modules
 }
+class Answer {
+    constructor(answerParameters, parent) {
+        this.parent = parent;
+        var answer = {
+            label: '',
+            imageSrc: null,
+            correct: false
+        };
+        answerParameters && (answer = answerParameters);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(5);
+        this.label = answer.label;
+        this.imageSrc = answer.imageSrc;
+        this.correct = answer.correct;
+        this.selected = false;
 
+        this.fontSize = answer.fontSize ? answer.fontSize : 20;
+        answer.font && (this.font = answer.font);
+
+        this.imageLoaded = false;
+
+        if (answer.imageSrc) {
+            this.image = imageController.getImage(this.imageSrc, function () {
+                this.imageLoaded = true;
+                this.dimImage = {width: this.image.width, height: this.image.height};
+            });
+            this.imageLoaded = false;
+        } else {
+            this.imageLoaded = true;
+        }
+
+        this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
+        this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
+
+        this.bordure = null;
+        this.content = null;
+    }
+
+
+    isEditable (editor, editable) {
+        this.editable = editable;
+        this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
+        this._acceptDrop = editable;
+        this.editor = editor;
+        this.checkInputContentArea = editable ? function (objCont) {
+            if (objCont.contentarea.value.match(REGEX)) {
+                this.label = objCont.contentarea.value;
+                objCont.remove();
+                objCont.contentarea.onblur = objCont.onblur;
+                objCont.contentarea.style.border = "none";
+                objCont.contentarea.style.outline = "none";
+            } else {
+                objCont.display();
+                objCont.contentarea.onblur = function () {
+                    objCont.contentarea.value = "";
+                    objCont.onblur();
+                    objCont.remove();
+                }
+            }
+        } : null;
+    }
+}
 function Domain() {
 
     util && util.SVGUtil();
@@ -93,66 +154,7 @@ function Domain() {
      * @param answerParameters
      * @param parent
      */
-    Answer = function (answerParameters, parent) {
-        var self = this;
-        self.parent = parent;
-        var answer = {
-            label: '',
-            imageSrc: null,
-            correct: false
-        };
-        answerParameters && (answer = answerParameters);
-        self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(5);
-        self.label = answer.label;
-        self.imageSrc = answer.imageSrc;
-        self.correct = answer.correct;
-        self.selected = false;
 
-        self.fontSize = answer.fontSize ? answer.fontSize : 20;
-        answer.font && (self.font = answer.font);
-
-        self.imageLoaded = false;
-
-        if (answer.imageSrc) {
-            self.image = imageController.getImage(self.imageSrc, function () {
-                self.imageLoaded = true;
-                self.dimImage = {width: self.image.width, height: self.image.height};
-            });
-            self.imageLoaded = false;
-        } else {
-            self.imageLoaded = true;
-        }
-
-        self.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
-        self.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
-
-        self.bordure = null;
-        self.content = null;
-
-        self.isEditable = function(editor, editable) {
-            self.editable = editable;
-            self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
-            self._acceptDrop = editable;
-            self.editor = editor;
-            self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.value.match(REGEX)) {
-                    self.label = objCont.contentarea.value;
-                    objCont.remove();
-                    objCont.contentarea.onblur = objCont.onblur;
-                    objCont.contentarea.style.border = "none";
-                    objCont.contentarea.style.outline = "none";
-                } else {
-                    objCont.display();
-                    objCont.contentarea.onblur = function () {
-                        objCont.contentarea.value = "";
-                        objCont.onblur();
-                        objCont.remove();
-                    }
-                }
-            } : null;
-        };
-    };
 
 //////////////////// end of Answer.js ////////////////
 
