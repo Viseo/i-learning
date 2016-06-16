@@ -2050,6 +2050,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var saveFunction = function () {
         var thing = function (data) {
         };
+        // var callback = function (data) {
     for(var i = 0;i<self.quizz.tabQuestions.length-1;i++){
         typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
         (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
@@ -2057,10 +2058,21 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
         var tmpQuizzObject = {
             title: self.quizzName,
             tabQuestions: self.tabQuestions
+         /* levelIndex: self.parentFormation.levelsTab[0].gamesTab[0].levelIndex,
+            gameIndex: self.parentFormation.levelsTab[0].gamesTab[0].gameIndex,*/
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+       // };
+        dbListener.httpGetAsync("/id", thing);
         dbListener.httpPostAsync("/insert", tmpQuizzObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
+/*
+        dbListener.httpPutAsync("/update", tmpQuizzObject, thing, ignoredData);
+         console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
+        //dbListener.httpGetAsync("/getQuizzByLevelIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].levelIndex, callback);
+        //dbListener.httpGetAsync("/getQuizzByGameIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].gameIndex, callback);
+
     };
 
     svg.addEvent(self.saveButton.cadre, "click", saveFunction);
@@ -2448,9 +2460,9 @@ function ConnectionManagerDisplay() {
 
 
     self.passwordField = {
-        label: '', 
+        label: '',
         labelSecret: '',
-        title: self.passwordLabel, 
+        title: self.passwordLabel,
         line: 0,
         secret: true,
         errorMessage: "La confirmation du mot de passe n'est pas valide"

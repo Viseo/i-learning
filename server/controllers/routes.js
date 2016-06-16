@@ -38,7 +38,7 @@ module.exports = function (app, fs) {
             res.send({user: result});
         });
     });
-    
+
     var sendCookie = function (res, user) {
         jwt.encode('VISEO', {user: user}, function (err, token) {
             res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
@@ -143,6 +143,26 @@ module.exports = function (app, fs) {
             });
     });
 
+    /*    app.get('/getQuizzByLevelIndex/:levelIndex', function(req, res) {
+     var collection = db.get().collection('formations');
+     var result;
+     var obj=collection.find().
+     toArray(function(err, docs) {
+     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.levelIndex);
+     res.send({formation: result});
+     });
+     });
+
+     app.get('/getQuizzByGameIndex/:gameIndex', function(req, res) {
+     var collection = db.get().collection('formations');
+     var result;
+     var obj=collection.find().
+     toArray(function(err, docs) {
+     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.gameIndex);
+     res.send({formation: result});
+     });
+     });*/
+
     app.get('/getAllFormationsNames', function(req, res) {
         var collection = db.get().collection('formations');
         var result= [];
@@ -169,15 +189,15 @@ module.exports = function (app, fs) {
     });
 
     //update par ID
-    // app.put('/update', function(req, res) {
-    //     var collection = db.get().collection('formations');
-    //     if (id = ObjectID("575ecd9034b0a1242c2cb381")){
-    //         var obj = collection.update({'_id': id},req.body, function(err, docs) {
-    //             res.send(JSON.stringify(obj));
-    //
-    //         });
-    //     }
-    // });
+/*     app.put('/update', function(req, res) {
+         var collection = db.get().collection('formations');
+         if (id = ObjectID("575ecd9034b0a1242c2cb381")){
+             var obj = collection.update({'_id': id},req.body, function(err, docs) {
+                 res.send(JSON.stringify(obj));
+
+             });
+         }
+     });*/
 
     app.post('/replaceFormation/:id', function (req, res) {
         var collection = db.get().collection('formations');
