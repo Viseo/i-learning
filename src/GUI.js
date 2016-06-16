@@ -687,15 +687,17 @@ function FormationDisplayFormation(){
 
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         if(typeof self.panel === "undefined") {
             self.panel = new gui.Panel(w, h);
-            let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-            let longestLevel = self.findLongestLevel()[0];
-            var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+
         }
         else {
             self.panel.resize(w, h);
             self.panel.hHandle.horizontal(-w/2,w/2,h/2);
+            self.messageDragDropManipulator.first.move(-w/2+trueWidth/2,0);
         }
         if(typeof self.panel.hHandle === "undefined"){
             self.panel.addhHandle(function () {
@@ -709,6 +711,8 @@ function FormationDisplayFormation(){
                 var y = self.panel.content.y;
                 var x = -position * self.panel.content.width / self.panel.view.width + self.panel.view.width / 2;
                 self.panel.content.move(x, y);
+                self.miniaturesManipulator.first.move(-w/2+trueWidth/2,0);
+
                 self.levelsTab.forEach(function (level) {
                     level.manipulator.first.move(-self.graphCreaWidth/2-x, level.y-self.graphCreaHeight/2);// ici !_!
                 });

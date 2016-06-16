@@ -639,16 +639,17 @@ function Domain() {
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
+
             level.gamesTab.forEach(function (game) {
                 !game.parentGames && (game.parentGames = []);
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x =-self.graphCreaWidth/2+self.levelWidth/2;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
-                if (pos.gameIndex < nbOfGames / 2) {// !_! pk pas levelWidth dans ce calcul ?
-                    game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
+                if (pos.gameIndex < nbOfGames / 2){// !_! pk pas levelWidth dans ce calcul ?
+                    game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
-                    game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2) + self.borderSize + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+                    game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2)  + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
                 }
                 game.miniaturePosition.y = -self.graphCreaHeight / 2 + (level.index - 1 / 2) * self.levelHeight;
             });
