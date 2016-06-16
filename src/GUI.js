@@ -1629,22 +1629,23 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     var dblclickEditionQuestionBlock = function () {
-        var textarea = svg.runtime.createDOM("textarea");
-        textarea.value = self.linkedQuestion.label;
-        textarea.width = self.w;
-        textarea.height = (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
+        var globalPointCenter = self.questionBlock.title.content.globalPoint(-(self.w)/2, -((self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2))/2);
+        var contentareaStyle = {
+            height: (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2),
+            toppx: (self.linkedQuestion.image) ? (this.height + 1 - drawing.height + globalPointCenter.y) : (- drawing.height + globalPointCenter.y),
+            leftpx: (globalPointCenter.x+1/12*self.w),
+            width: (self.w*5/6)
+        };
+
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(myColors.none, 0, myColors.black);
+        textarea.message(self.linkedQuestion.label);
+
+        drawings.screen.add(textarea);
 
         self.questionManipulator.ordonator.unset(1);
-        textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
 
-        var contentareaStyle = {
-            toppx: (self.linkedQuestion.image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
-            leftpx: (textarea.globalPointCenter.x+1/12*self.w),
-            width: (self.w*5/6),
-            height: (textarea.height)
-        };
-        svg.runtime.attr(textarea, "style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
-        svg.runtime.anchor("content").appendChild(textarea).focus();
+        //svg.runtime.attr(textarea, "style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
+        //svg.runtime.anchor("content").appendChild(textarea).focus();
         var onblur = function () {
             if(textarea.value){
                 self.label = textarea.value;
