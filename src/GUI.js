@@ -77,7 +77,7 @@ function AnswerDisplay (x, y, w, h) {
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
-            self.obj.cadre.fillOpacity(0.001);
+            self.answerNameValidInput ? (self.obj.cadre.color([0,0,0,0],1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color([0,0,0,0],2,myColors.red).fillOpacity(0.001));
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
@@ -90,27 +90,34 @@ function AnswerDisplay (x, y, w, h) {
         };
 
         let dblclickEditionAnswer = function () {
-            let contentarea = svg.runtime.createDOM('textarea');
-            contentarea.value = self.label;
-            contentarea.width = w;
+            let contentarea={};
             contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
-            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(w)/2,-(contentarea.height)/2);
             let contentareaStyle = {
                 toppx: contentarea.globalPointCenter.y - (contentarea.height/2) * 2/3 ,
                 leftpx: contentarea.globalPointCenter.x + (1/12) * self.obj.cadre.width,
                 height: self.image ? contentarea.height : h * 0.5,
                 width: self.obj.cadre.width * 5/6
             };
+            contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
+            color([0,0,0,0],0,myColors.black).
+            message('hep!').
+            font("Arial",20);//svg.runtime.createDOM('textarea');
+            contentarea.component.value = self.label || "";
+            contentarea.width = w;
+            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
 
-            svg.runtime.attr(contentarea, 'style',
-                `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
-                `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
-                `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
+            //svg.runtime.attr(contentarea, 'style',
+            //    `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
+            //    `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
+            //    `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
 
-            self.manipulator.ordonator.unset(1, self.obj.content);
+            self.manipulator.ordonator.unset(1);
 
-            svg.runtime.anchor('content').appendChild(contentarea).focus();
+           // svg.runtime.anchor('content').appendChild(contentarea).focus();
+            drawings.screen.add(contentarea);
+            contentarea.focus();
 
             let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
@@ -135,8 +142,9 @@ function AnswerDisplay (x, y, w, h) {
             };
 
             let onblur = function () {
-                self.answerNameValidInput && (self.label = contentarea.value);
-                contentarea.remove();
+                contentarea.messageText=contentarea.component.value;
+                self.label = contentarea.messageText;
+                drawings.screen.remove(contentarea);
                 showTitle();
                 if(typeof self.obj.checkbox === 'undefined') {
                     self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
@@ -144,7 +152,8 @@ function AnswerDisplay (x, y, w, h) {
                 }
             };
 
-            contentarea.oninput = function () {
+
+            svg.addEvent(contentarea,'input',function () {
                 self.checkInputContentArea({
                     contentarea: contentarea,
                     border: self.obj.cadre,
@@ -152,12 +161,12 @@ function AnswerDisplay (x, y, w, h) {
                     remove: removeErrorMessage,
                     display: displayErrorMessage
                 });
-            };
+            });
+            svg.addEvent(contentarea,'blur',onblur);
 
-            contentarea.onblur = onblur;
             self.checkInputContentArea({
                 contentarea: contentarea,
-                border: self.label.cadre,
+                border: self.obj.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage

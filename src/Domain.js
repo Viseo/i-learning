@@ -108,7 +108,7 @@ function Domain() {
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;
         self.selected = false;
-
+        self.answerNameValidInput = true;
         self.fontSize = answer.fontSize ? answer.fontSize : 20;
         answer.font && (self.font = answer.font);
 
@@ -136,19 +136,20 @@ function Domain() {
             self._acceptDrop = editable;
             self.editor = editor;
             self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.value.match(REGEX)) {
-                    self.label = objCont.contentarea.value;
+                if (objCont.contentarea.component.value.match(REGEX)) {
+                    self.label = objCont.contentarea.component.value;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;
-                    objCont.contentarea.style.border = "none";
-                    objCont.contentarea.style.outline = "none";
+                    objCont.contentarea.component.style.border = "none";
+                    objCont.contentarea.component.style.outline = "none";
                 } else {
+                    self.label = objCont.contentarea.component.value;
                     objCont.display();
-                    objCont.contentarea.onblur = function () {
-                        objCont.contentarea.value = "";
-                        objCont.onblur();
-                        objCont.remove();
-                    }
+                    //svg.addEvent(objCont.contentarea,'blur',function () {
+                    //    objCont.contentarea.component.value = "";
+                    //    objCont.onblur();
+                    //    objCont.remove();
+                    //});
                 }
             } : null;
         };
