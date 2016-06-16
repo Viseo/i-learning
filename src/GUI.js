@@ -625,6 +625,7 @@ function FormationDisplayFormation(){
         var targetQuizz = drawings.background.getTarget(event.clientX,event.clientY).parent.parentManip.parentObject;
         self.quizzManager.loadQuizz(targetQuizz);
         self.quizzDisplayed = targetQuizz;
+        self.saveFormation();
         self.quizzManager.display();
         self.selectedArrow = null;
         self.selectedGame = null;
@@ -2058,7 +2059,6 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
             tabQuestions: self.tabQuestions
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        dbListener.httpGetAsync("/id", thing);
         dbListener.httpPostAsync("/insert", tmpQuizzObject, thing, ignoredData);
         console.log("Votre travail a été bien enregistré");
     };
