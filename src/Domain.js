@@ -450,9 +450,9 @@ function Domain() {
                             self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
                         }, 1);
                     }
-                }
+                };
                 Server.getFormationByName(self.label, callbackCheckName);
-            }
+            };
             var replaceFormation = function () {
                 var callbackCheckName = function (data) {
                     let formationWithSameName = JSON.parse(data).formation;
@@ -496,9 +496,9 @@ function Domain() {
                         };
                         Server.replaceFormation(self._id, getObjectToSave(), replaceCallback, ignoredData);
                     }
-                }
+                };
                 Server.getFormationByName(self.label, callbackCheckName);
-            }
+            };
 
             if (validation) {
                 var getObjectToSave = function () {
