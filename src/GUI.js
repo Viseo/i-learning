@@ -2361,6 +2361,8 @@ function InscriptionManagerDisplay(labels={}) {
             event.preventDefault();
             nextField();
         } else if (event.keyCode === 13) { // Entrée
+            event.preventDefault();
+            document.activeElement && document.activeElement.blur();
             self.saveButton.cadre.component.listeners.click();
         }
     });
@@ -2474,6 +2476,8 @@ function ConnectionManagerDisplay() {
             event.preventDefault();
             nextField();
         } else if (event.keyCode === 13) { // Entrée
+            event.preventDefault();
+            document.activeElement && document.activeElement.blur();
             self.connectionButton.cadre.component.listeners.click();
         }
     });
