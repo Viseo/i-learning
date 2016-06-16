@@ -162,14 +162,12 @@ function SVGGlobalHandler() {
     };
     gui.Panel.prototype.addhHandle = function (callback) {
         var self = this;
-        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
+        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], ()=>{}).horizontal(-this.width/2, this.width/2, this.height/2);
         this.component.add(self.hHandle.component);
-        function hHandleCallback(position) {
-            var y = self.content.y;
-            var x = -position * self.content.width / self.view.width + self.view.width / 2;
-            self.content.move(x, y);
-            callback(x);
-        }
+
+        var x = -self.hHandle.point * self.content.width / self.view.width + self.view.width / 2;
+        callback(x);
+
     };
     gui.Panel.prototype.resizeContentW = function (width) {
         this.back.color(myColors.white).opacity(0.001);

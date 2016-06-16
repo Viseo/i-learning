@@ -691,7 +691,7 @@ function FormationDisplayFormation(){
             self.panel = new gui.Panel(w, h);
             let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
             let longestLevel = self.findLongestLevel()[0];
-            var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame;
+            var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         }
         else {
             self.panel.resize(w, h);
@@ -700,9 +700,19 @@ function FormationDisplayFormation(){
         if(typeof self.panel.hHandle === "undefined"){
             self.panel.addhHandle(function () {
                 self.levelsTab.forEach(function (level) {
-                    level.manipulator.first.move(-w/2-self.panel.content.x, -h/2+level.y);
+                    level.manipulator.first.move(-w/2+trueWidth/2, -h/2+level.y);
                 });
+                self.miniaturesManipulator.first.move(-w/2+trueWidth/2,0);
+                self.messageDragDropManipulator.first.move(-w/2+trueWidth/2,0);
             });
+            self.panel.hHandle.callback=function(position) {
+                var y = self.panel.content.y;
+                var x = -position * self.panel.content.width / self.panel.view.width + self.panel.view.width / 2;
+                self.panel.content.move(x, y);
+                self.levelsTab.forEach(function (level) {
+                    level.manipulator.first.move(-self.graphCreaWidth/2-x, level.y-self.graphCreaHeight/2);// ici !_!
+                });
+            };
             self.panel.resizeContentW(trueWidth-1);
         }
 
@@ -782,9 +792,9 @@ function FormationDisplayFormation(){
 
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
         self.graphBlock = {rect: new svg.Rect(self.levelWidth-self.borderSize, height-self.borderSize).color(myColors.white, self.borderSize, myColors.none)};//.position(w / 2 - self.borderSize, 0 + h / 2)};
-        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.graphManipulator).text;
+        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.messageDragDropManipulator).text;
         self.messageDragDrop._acceptDrop = true;
-        (self.levelsTab.length !== 0) && (self.messageDragDrop.x = (self.levelsTab.length !== 0) ? svg.runtime.boundingRect(self.levelsTab[self.levelsTab.length - 1].obj.content.component).width/2 + (self.levelWidth - self.graphCreaWidth)/2 :0);
+        self.messageDragDrop.x =0;
         self.messageDragDrop.y = self.messageDragDropMargin - self.graphCreaHeight/2 + (self.levelsTab.length) * self.levelHeight;
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
@@ -796,7 +806,7 @@ function FormationDisplayFormation(){
 
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
         let longestLevel = self.findLongestLevel()[0];
-        var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame;
+        var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         self.panel.resizeContentW(trueWidth-1);
         self.panel.back.parent.parentManip = self.graphManipulator;
 
