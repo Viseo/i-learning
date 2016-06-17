@@ -552,17 +552,18 @@ function FormationDisplayFormation(){
 
 
     var showTitle = function() {
-        var text = (self.label==="") ? self.labelDefault : self.label;
-        var color = (self.label) ? myColors.black : myColors.grey;
-        var bgcolor = myColors.grey;
+        var text = (self.label) ? self.label : (self.label=self.labelDefault);
+        var color = (self.label) ? myColors.black : myColors.lightgrey;
+        var bgcolor = myColors.lightgrey;
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
         self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
 
         self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
-        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2).fillOpacity(0.1);
+        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN);
+        self.labelValidInput ? self.formationLabel.cadre.color(bgcolor) : self.formationLabel.cadre.color(bgcolor, 2, myColors.red);
+        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2);
 
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
@@ -576,27 +577,33 @@ function FormationDisplayFormation(){
         var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
-
-        let contentarea = svg.runtime.createDOM("textarea");
-        contentarea.value = self.label;
         var contentareaStyle = {
-            toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            leftpx: (svg.runtime.boundingRect(self.title.component).width+ 2 * MARGIN + 1),
-            width: 400,
-            height:(self.labelHeight+3)
+            toppx:(drawing.height*0.075 - self.labelHeight),
+            leftpx: (svg.runtime.boundingRect(self.title.component).width + 2*MARGIN),
+            width: self.formationLabel.cadre.width-MARGIN,
+            height:(self.labelHeight)
         };
-        svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        svg.runtime.anchor("content").appendChild(contentarea).focus();
+        //let contentarea = svg.runtime.createDOM("textarea");
+        let contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        contentarea.component.value = self.label;
+        contentarea.color(myColors.lightgrey, 0, myColors.black)
+            .message(self.label)
+            .font("Arial", 15)
+            .anchor("start");
+        drawings.screen.add(contentarea);
+        contentarea.focus();
+        //svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        //svg.runtime.anchor("content").appendChild(contentarea).focus();
 
         var removeErrorMessage = function () {
             self.formationNameValidInput = true;
             self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
-            self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
+            self.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
         };
 
         var displayErrorMessage = function () {
             removeErrorMessage();
-            self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
+            self.formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                 .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
@@ -606,11 +613,13 @@ function FormationDisplayFormation(){
             self.labelValidInput = false;
         };
         var onblur = function () {
-            self.formationNameValidInput && (self.label = contentarea.value);
-            contentarea.remove();
+            self.formationNameValidInput && (self.label = contentarea.component.value);
+            //contentarea.remove();
+            drawings.screen.remove(contentarea);
             showTitle();
         };
-        contentarea.oninput = function () {
+        svg.addEvent(contentarea, "blur", onblur);
+        var oninput = function () {
             self.checkInputTextArea({
                 textarea: contentarea,
                 border: self.formationLabel.cadre,
@@ -619,7 +628,7 @@ function FormationDisplayFormation(){
                 display: displayErrorMessage
             });
         };
-        contentarea.onblur = onblur;
+        svg.addEvent(contentarea, "input", oninput);
         self.checkInputTextArea({
             textarea: contentarea,
             border: self.formationLabel.cadre,
