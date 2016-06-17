@@ -693,19 +693,19 @@ function FormationDisplayFormation(){
         if(typeof self.panel === "undefined") {
             self.panel = new gui.Panel(w, h);
 
-        }
-        else {
+        } else {
             self.panel.resize(w, h);
             self.panel.hHandle.horizontal(-w/2,w/2,h/2);
             self.messageDragDropManipulator.first.move(-w/2+trueWidth/2,0);
         }
         if(typeof self.panel.hHandle === "undefined"){
             self.panel.addhHandle(function () {
+                let x = trueWidth > w ? -w/2+trueWidth/2 : 0;
                 self.levelsTab.forEach(function (level) {
-                    level.manipulator.first.move(-w/2+trueWidth/2, -h/2+level.y);
+                    level.manipulator.first.move(x, -h/2+level.y);
                 });
-                self.miniaturesManipulator.first.move(-w/2+trueWidth/2,0);
-                self.messageDragDropManipulator.first.move(-w/2+trueWidth/2,0);
+                self.miniaturesManipulator.first.move(x, 0);
+                self.messageDragDropManipulator.first.move(x, 0);
             });
             self.panel.hHandle.callback=function(position) {
                 var y = self.panel.content.y;
