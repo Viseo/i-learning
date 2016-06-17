@@ -202,22 +202,23 @@ module.exports = function (app, fs) {
     app.post('/replaceFormation/:id', function (req, res) {
         var collection = db.get().collection('formations');
         collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
-            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
+            collection.replaceOne(docs[0], req.body, function (err, docs) {
                res.send({ack:'ok'});
             });
         });
     });
 
-    app.post('/replaceQuizz/:levelIndex/:gameIndex', function (req, res) {
-        console.log(req.params.levelIndex);
-        console.log(req.params.gameIndex);
+    app.post('/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
         var collection = db.get().collection('formations');
-        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
-            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
-                // res.send(JSON.stringify(obj));
+        var placeholder = {};
+        placeholder["levelsTab." + req.params.levelIndex + ".gamesTab."+req.params.gameIndex] = req.body;
+        console.log(placeholder);
+        collection.update({"_id": new ObjectID(req.params.id)}, {$set:placeholder},function (err, docs) {
+                console.log(docs);
+                res.send({ack:'ok'});
             });
         });
-    });
+
 
 };
 

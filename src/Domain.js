@@ -476,17 +476,10 @@ function Domain() {
                     Server.getFormationByName(self.label, callbackCheckName);
                 };
 
-                var getObjectToSave = function () {
-                    var levelsTab = [];
-                    self.levelsTab.forEach(function (level, i) {
-                        var gamesTab = [];
-                        levelsTab.push({gamesTab: gamesTab});
-                        level.gamesTab.forEach(function (game) {
-                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
-                        });
-                    });
-                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
-                };
+
+                    var getObjectToSave = function () {
+                        return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: self.levelsTab}
+                    };
 
                 self._id ? replaceFormation() : addNewFormation();
             } else {
@@ -494,51 +487,49 @@ function Domain() {
             }
             return validation;
         };
+
         self.loadFormation = function(formation) {
-            var loadChildren= function(game) {
-                game.childrenGames.forEach(function (child) {
-                    if(! self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]){
-                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
-                    }
-                    let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
-                    let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex];
-                    !childGame.parentGames && (childGame.parentGames = []);
-                    !parentGame.childrenGames && (parentGame.childrenGames = []);
-                    parentGame.childrenGames.push(childGame);
-                    childGame.parentGames.push(parentGame);
-                    loadChildren(child);
+            self.gamesCounter = formation.gamesCounter;
+            formation.levelsTab.forEach(function (level) {
+                var gamesTab = [];
+                level.gamesTab.forEach(function (game) {
+                    game.tabQuestions && gamesTab.push(new Quizz(game, true, self));
+                    game.tabQuestions || gamesTab.push(new Bd(game, self));
+                });
+                self.levelsTab.push(new Level(self, gamesTab));
+            });
+
+            self.loadDependencies = function () {
+                formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
+                    level.gamesTab.forEach(function (game, j) {
+                        game.childrenGames.forEach(function (childrenGame) {
+                            var match = self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab && self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
+                            !match.parentGames && (match.parentGames = []);
+                            !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
+                            self.levelsTab[i].gamesTab[j].childrenGames.push(match);
+                            match.parentGames.push(self.levelsTab[i].gamesTab[j]);
+                        });
+                    })
                 })
             };
-
-            self._id=formation._id;
-            self.gamesCounter = formation.gamesCounter;
-            for (let i = 0; i < formation.levelsTab.length; i++) {
-                var gamesTab = [];
-                self.levelsTab.push(new Level(self, gamesTab));
-            }
-            formation.levelsTab && formation.levelsTab.forEach(function (level) {
-                level.gamesTab.forEach(function (game) {
-                    self.levelsTab[game.levelIndex].gamesTab[game.gameIndex] = new Quizz(game, true, self);
-                    loadChildren(game);//Pour ABL
-                });
-            });
+            self.loadDependencies();
         };
-        self.findLongestLevel = function() {
-            var longestLevelCandidates = [];
-            longestLevelCandidates.index = 0;
-            self.levelsTab.forEach(level=> {
-                if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                    if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                        longestLevelCandidates.push(level);
-                    } else {
-                        longestLevelCandidates = [];
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index = level.index - 1;
+    self.findLongestLevel = function() {
+        var longestLevelCandidates = [];
+        longestLevelCandidates.index = 0;
+        self.levelsTab.forEach(level=> {
+            if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    longestLevelCandidates.push(level);
+                } else {
+                    longestLevelCandidates = [];
+                    longestLevelCandidates.push(level);
                 }
-            });
-            return longestLevelCandidates;
-        };
+                longestLevelCandidates.index = level.index - 1;
+            }
+        });
+        return longestLevelCandidates;
+    };
 
 
         self.redim = function() {
@@ -991,6 +982,9 @@ function Domain() {
             }
         };
         self.loadQuestions(quizz);
+        if(self.levelIndex === undefined ){self.levelIndex = quizz.levelIndex;}
+        if(self.gameIndex === undefined) { self.gameIndex = quizz.gameIndex;}
+        //self.childrenGames=quizz.childrenGames;
         (previewMode) ? (self.previewMode = previewMode) : (self.previewMode = false);
         quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows) : (self.puzzleRows = 2);
         quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines) : (self.puzzleLines = 2);
@@ -1116,7 +1110,7 @@ function Domain() {
         self.quizzNameValidInput = true;
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
-            self.quizz = new Quizz(quizz, parentFormation);
+            self.quizz = new Quizz(quizz, true, parentFormation);
             self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);

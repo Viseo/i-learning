@@ -653,7 +653,7 @@ function FormationDisplayFormation(){
     var onclickQuizzHandler = function(event){
         if(self.saveFormation()) {
             var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-            self.quizzManager.loadQuizz(targetQuizz);
+            self.quizzManager.loadQuizz(targetQuizz, self);
             self.quizzDisplayed = targetQuizz;
             self.quizzManager.display();
             self.selectedArrow = null;
@@ -2035,26 +2035,31 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
     var saveFunction = function () {
         var thing = function (data) {
+            self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
+            console.log("UPDATE Old DOC : Votre travail a été bien enregistré");
         };
         // var callback = function (data) {
-    for(var i = 0;i<self.quizz.tabQuestions.length-1;i++){
-        typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
-        (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
-    }
+        for(var i = 0;i<self.quizz.tabQuestions.length-1;i++){
+            typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
+            (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
+        }
+        self.quizz.title=self.quizzName;
+        self.quizz.tabQuestions=self.tabQuestions;
         var tmpQuizzObject = {
             title: self.quizzName,
-            tabQuestions: self.tabQuestions
-         /* levelIndex: self.parentFormation.levelsTab[0].gamesTab[0].levelIndex,
-            gameIndex: self.parentFormation.levelsTab[0].gamesTab[0].gameIndex,*/
+            tabQuestions: self.tabQuestions,
+            childrenGames: self.quizz.childrenGames,
+            levelIndex: self.quizz.levelIndex,
+            gameIndex: self.quizz.gameIndex
         };
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
 
         // };
-        dbListener.httpPostAsync('/replaceQuizz/'+self.levelIndex+"/"+self.gameIndex, tmpQuizzObject, thing, ignoredData);
-        console.log("Votre travail a été bien enregistré");
-/*
-        dbListener.httpPutAsync("/update", tmpQuizzObject, thing, ignoredData);
-         console.log("UPDATE Old DOC : Votre travail a été bien enregistré");*/
+        console.log(self.quizz.levelIndex);
+        console.log(self.quizz.gameIndex);
+        dbListener.httpPostAsync('/replaceQuizz/'+self.parentFormation._id+"/"+self.quizz.levelIndex+"/"+self.quizz.gameIndex, tmpQuizzObject, thing, ignoredData);
+        //dbListener.httpPutAsync("/update", tmpQuizzObject, thing, ignoredData);
+
         //dbListener.httpGetAsync("/getQuizzByLevelIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].levelIndex, callback);
         //dbListener.httpGetAsync("/getQuizzByGameIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].gameIndex, callback);
 
