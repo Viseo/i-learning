@@ -712,13 +712,16 @@ function FormationDisplayFormation(){
                 var y = self.panel.content.y;
                 var x = -position * self.panel.content.width / self.panel.view.width + self.panel.view.width / 2;
                 self.panel.content.move(x, y);
-                self.miniaturesManipulator.first.move(-w/2+trueWidth/2,0);
+                let z = trueWidth > w ? -w/2+trueWidth/2 : 0;
+
+                self.miniaturesManipulator.first.move(z,0);
 
                 self.levelsTab.forEach(function (level) {
                     level.manipulator.first.move(-self.graphCreaWidth/2-x, level.y-self.graphCreaHeight/2);// ici !_!
                 });
             };
-            self.panel.resizeContentW(trueWidth-1);
+            var t= Math.max(self.levelWidth,trueWidth);
+            self.panel.resizeContentW(t);
         }
 
         function controlPositionH(x) {
@@ -804,16 +807,22 @@ function FormationDisplayFormation(){
         self.messageDragDrop.position(self.messageDragDrop.x, self.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
         self.graphBlock.rect._acceptDrop = true;
         self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
+        //let x = self.levelWidth > w ? -w/2+self.levelWidth/2 : 0;
+        //self.messageDragDropManipulator.first.move(x,0);
+        //self.miniaturesManipulator.first.move(x,0);
 
         self.panel.back._acceptDrop = true;
+
 
         self.panel.resizeContent(height);
 
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
         let longestLevel = self.findLongestLevel()[0];
         var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
-        self.panel.resizeContentW(trueWidth-1);
+        var t= Math.max(self.levelWidth,trueWidth);
+        self.panel.resizeContentW(t);
         self.panel.back.parent.parentManip = self.graphManipulator;
+
 
         self.updateAllLinks();
     };
