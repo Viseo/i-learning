@@ -153,12 +153,6 @@ function SVGGlobalHandler() {
             }
         }
         clean(self.translator);
-        //clean(self.rotator);
-        //clean(self.scalor);
-        //for(var i =0 ; i<self.ordonator.children.length;i++){
-        //    self.ordonator.unset(i);
-        //}
-
     };
     gui.Panel.prototype.addhHandle = function (callback) {
         var self = this;

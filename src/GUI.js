@@ -630,10 +630,11 @@ function FormationDisplayFormation(){
             self.selectedArrow = null;
             self.selectedGame = null;
         }
-        if (!runtime && window.getSelection)
+        if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
-        else if (!runtime && document.selection)
+        } else if (!runtime && document.selection) {
             document.selection.empty();
+        }
     };
 
     self.displayLevel = function(w, h, level){

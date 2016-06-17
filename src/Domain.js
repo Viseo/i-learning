@@ -428,7 +428,7 @@ function Domain() {
             };
 
             var displaySaveMessage = function (message){
-                validation = false;
+                validation = true;
                 (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                 self.errorMessageSave = new svg.Text(message)
                     .position(0, -self.saveButtonHeight / 2 - MARGIN)
@@ -473,39 +473,33 @@ function Domain() {
                             if (formationWithSameName && id === self._id) {
                                 if (formationWithSameName == newFormation) {
                                     displaySaveMessage(messageNoModification);
-                                }
-                                else {
+                                } else {
                                     Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
                                 }
-                            }
-                            else if (formationWithSameName && formationWithSameName._id !== self._id) {
+                            } else if (formationWithSameName && formationWithSameName._id !== self._id) {
                                 displayErrorMessage(messageUsedName);
                             }
-                        }
-                        else {
-
+                        } else {
                             Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
                         }
                     };
                     Server.getFormationByName(self.label, callbackCheckName);
                 };
 
-
-                    var getObjectToSave = function () {
-                        var levelsTab = [];
-                        self.levelsTab.forEach(function (level, i) {
-                            var gamesTab = [];
-                            levelsTab.push({gamesTab: gamesTab});
-                            level.gamesTab.forEach(function (game) {
-                                game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
-                            });
+                var getObjectToSave = function () {
+                    var levelsTab = [];
+                    self.levelsTab.forEach(function (level, i) {
+                        var gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(function (game) {
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
-                        return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
-                    };
+                    });
+                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
+                };
 
-                    self._id ? replaceFormation() : addNewFormation();
-            }
-            else {
+                self._id ? replaceFormation() : addNewFormation();
+            } else {
                 displayErrorMessage(messageError);
             }
             return validation;
