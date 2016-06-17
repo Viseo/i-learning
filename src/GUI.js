@@ -1923,7 +1923,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(3);
+            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
             self.quizzLabel.cadre.color(myColors.grey);
             self.quizzNameValidInput = true;
         };
@@ -1935,7 +1935,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.errorMessage = new svg.Text(REGEX_ERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            self.quizzInfoManipulator.ordonator.set(3, self.errorMessage);
+            self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
             self.quizzNameValidInput = false;
         };

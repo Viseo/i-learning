@@ -1170,7 +1170,7 @@ function Domain() {
         self.questionsPuzzleManipulator = new Manipulator(self);
         self.questionsPuzzleManipulator.addOrdonator(1);
         self.quizzInfoManipulator = new Manipulator(self);
-        self.quizzInfoManipulator.addOrdonator(5);
+        self.quizzInfoManipulator.addOrdonator(6);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
