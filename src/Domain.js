@@ -917,7 +917,7 @@ function Domain() {
         self.manipulator.last.add(self.saveQuizButtonManipulator.first);
 
         self.questionNameValidInput = true;
-        self.quizzNameValidInput = true;
+
 
         self.labelDefault = "Cliquer deux fois pour ajouter la question";
         self.quizzType = myQuizzType.tab;
@@ -950,18 +950,19 @@ function Domain() {
 
         self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.value.match(REGEX)) {
+            if (myObj.textarea.component.value.match(REGEX)) {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                !runtime && (myObj.textarea.style.border = "none");
-                !runtime && (myObj.textarea.style.outline = "none");
+                !runtime && (myObj.textarea.border = "none");
+                !runtime && (myObj.textarea.outline = "none");
+                self.quizzNameValidInput = true;
             } else {
                 myObj.display();
-                myObj.textarea.onblur = function () {
-                    myObj.textarea.value = "";
-                    myObj.onblur();
-                    myObj.remove();
-                }
+                //myObj.textarea.onblur = function () {
+                //    myObj.textarea.component.value = "";
+                //    myObj.onblur();
+                //    myObj.remove();
+                //}
             }
         };
     };
@@ -1147,11 +1148,11 @@ function Domain() {
     QuizzManager = function (quizz) {
         var self = this;
 
-
         self.quizzName = "";
         self.quizzNameDefault = "Ecrire ici le nom du quiz";
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
+        self.quizzNameValidInput = true;
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, parentFormation);
@@ -1268,6 +1269,10 @@ InscriptionManager = function () {
     self.formLabels = {};
 };
 
+////////////////// end of InscriptionManager.js //////////////////////////
+
+////////////////// ConnectionManager.js //////////////////////////
+
 ConnectionManager = function () {
 
     let self = this;
@@ -1337,8 +1342,7 @@ ConnectionManager = function () {
         }
     };
 };
-
-////////////////// end of QuizzManager.js //////////////////////////
+////////////////// end of ConnectionManager.js //////////////////////////
 
 if(typeof exports !== "undefined") {
     exports.Domain = Domain;
