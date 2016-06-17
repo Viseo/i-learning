@@ -1904,8 +1904,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
-        var color = (self.quizzName) ? myColors.black : myColors.grey;
-        var bgcolor = myColors.grey;
+        var color = (self.quizzName) ? myColors.black : myColors.lightgrey;
+        var bgcolor = myColors.lightgrey;
 
         self.quizzLabel = {};
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
@@ -1913,8 +1913,9 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
-        self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
+        self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
+        self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
+        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
@@ -1929,27 +1930,34 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzInfoManipulator.ordonator.unset(1);
 
-        var textarea = svg.runtime.createDOM("textarea");
-        textarea.value = self.quizzName;
         var contentareaStyle = {
-            toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),
-            leftpx: (x + MARGIN/2 + 1),
-            width: 700,
-            height:(self.quizzNameHeight+3)
+            toppx:(self.quizzInfoHeight-self.quizzNameHeight/2),
+            leftpx: (x + MARGIN/2),
+            width: 700 - MARGIN,
+            height:(self.quizzNameHeight+3)-MARGIN/2
         };
-        svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        svg.runtime.anchor("content").appendChild(textarea).focus();
+        //var textarea = svg.runtime.createDOM("textarea");
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        textarea.color(myColors.lightgrey, 0, myColors.black)
+            .message(self.label)
+            .font("Arial", 15)
+            .anchor("start");
+        drawings.screen.add(textarea);
+        textarea.focus();
+        textarea.value = self.quizzName;
+        //svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        //svg.runtime.anchor("content").appendChild(textarea).focus();
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
-            self.quizzLabel.cadre.color(myColors.grey);
+            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(3);
+            self.quizzLabel.cadre.color(myColors.lightgrey);
             self.quizzNameValidInput = true;
         };
 
         var displayErrorMessage = function () {
             removeErrorMessage();
-            self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
+            self.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEX_ERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
@@ -1959,11 +1967,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.quizzNameValidInput = false;
         };
         var onblur = function () {
-            self.quizzNameValidInput && (self.quizzName = textarea.value);
-            textarea.remove();
+            self.quizzName = textarea.component.value;
+            drawings.screen.remove(textarea);
             showTitle();
         };
-        textarea.oninput = function () {
+        var oninput = function () {
             self.questionCreator.checkInputTextArea({
                 textarea: textarea,
                 border: self.quizzLabel.cadre,
@@ -1972,7 +1980,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-        textarea.onblur = onblur;
+        svg.addEvent(textarea, "input", oninput);
+        svg.addEvent(textarea, "blur", onblur);
         self.questionCreator.checkInputTextArea({
             textarea: textarea,
             border: self.quizzLabel.cadre,
