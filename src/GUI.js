@@ -721,7 +721,7 @@ function FormationDisplayFormation(){
                 });
             };
             var t= Math.max(self.levelWidth,trueWidth);
-            self.panel.resizeContentW(t);
+            self.panel.resizeContentW(t-1);
         }
 
         function controlPositionH(x) {
@@ -820,7 +820,7 @@ function FormationDisplayFormation(){
         let longestLevel = self.findLongestLevel()[0];
         var trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         var t= Math.max(self.levelWidth,trueWidth);
-        self.panel.resizeContentW(t);
+        self.panel.resizeContentW(t-1);
         self.panel.back.parent.parentManip = self.graphManipulator;
 
 
