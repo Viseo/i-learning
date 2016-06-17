@@ -395,7 +395,7 @@ function Domain() {
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : self.labelDefault;
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
-
+        self.labelValidInput = true ;
 
         self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
@@ -592,15 +592,16 @@ function Domain() {
         self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.value.match(self.regex)) {
+            if (myObj.textarea.component.value.match(self.regex)) {
+                self.labelValidInput = true;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.style.border = "none";
-                myObj.textarea.style.outline = "none";
+                myObj.textarea.border = "none";
+                myObj.textarea.outline = "none";
             } else {
                 myObj.display();
                 myObj.textarea.onblur = function () {
-                    myObj.textarea.value = "";
+                    myObj.textarea.component.value = "";
                     myObj.onblur();
                     myObj.remove();
                 }
