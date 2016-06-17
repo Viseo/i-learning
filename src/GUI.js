@@ -2035,6 +2035,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
     var saveFunction = function () {
         var thing = function (data) {
+            self.quizz.childrenGames=self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex].childrenGames;
             self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
             console.log("UPDATE Old DOC : Votre travail a été bien enregistré");
         };
