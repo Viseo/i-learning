@@ -2141,8 +2141,7 @@ function InscriptionManagerDisplay(labels={}) {
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = svg.runtime.createDOM("textarea");
-            contentarea.value = self[field].label;
+            //let contentarea = svg.runtime.createDOM("textarea");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
@@ -2150,16 +2149,22 @@ function InscriptionManagerDisplay(labels={}) {
             var contentareaStyle = {
                 toppx: globalPointCenter.y ,
                 leftpx: globalPointCenter.x,
-                height: height,
-                width: self[field].cadre.width
+                height: height-MARGIN/2,
+                width: width-MARGIN/2
             };
-            svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-                "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-                (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-                "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
+            let contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+            contentarea.component.value = self[field].label;
+            contentarea.color([0,0,0,0], 0, myColors.black).
+            font("Arial",20);
+
+            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
+            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
+            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
+            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
             manipulator.ordonator.unset(1, self[field].content.text);
-            svg.runtime.add(svg.runtime.anchor('content'), contentarea);
-            !runtime && contentarea.focus();
+            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
+            drawings.screen.add(contentarea);
+            contentarea.focus();
 
             var displayErrorMessage = function(trueManipulator=manipulator){
                 emptyAreasHandler();
@@ -2169,22 +2174,22 @@ function InscriptionManagerDisplay(labels={}) {
                 }
             };
 
-            contentarea.oninput = function(){
+            var oninput = function(){
                 var staredContentarea = function(){
-                    contentarea.value = "";
+                    contentarea.component.value = "";
                     for (var i = 0; i<trueValue.length; i++){
-                        contentarea.value+="*";
+                        contentarea.component.value+="*";
                     }
                 }
-                if (self[field].secret && trueValue.length<contentarea.value.length){
-                    trueValue += contentarea.value.substring(contentarea.value.length-1);
+                if (self[field].secret && trueValue.length<contentarea.component.value.length){
+                    trueValue += contentarea.component.value.substring(contentarea.component.value.length-1);
                     staredContentarea();
                 }
                 else if (self[field].secret){
-                    trueValue = trueValue.substring(0, contentarea.value.length);
+                    trueValue = trueValue.substring(0, contentarea.component.value.length);
                     staredContentarea();
                 }
-                self[field].label = contentarea.value;
+                self[field].label = contentarea.component.value;
                 self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
                 if ((field === "lastNameField" || field==='firstNameField' ) && !self[field].checkInput()){
                     displayErrorMessage();
@@ -2195,8 +2200,9 @@ function InscriptionManagerDisplay(labels={}) {
                     self[field].cadre.color(myColors.white, 1, myColors.black);
                 }
             };
-            contentarea.onblur = function(){
-                self[field].label = contentarea.value;
+            svg.addEvent(contentarea, "input", oninput);
+            var onblur = function(){
+                self[field].label = contentarea.component.value;
                 displayField(field, manipulator);
                 if (self[field].checkInput()){
                     if (self[field].secret && self.passwordField.label===self.passwordConfirmationField.label){
@@ -2211,8 +2217,9 @@ function InscriptionManagerDisplay(labels={}) {
                     self[field].secret || displayErrorMessage();
                     self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
                 }
-                contentarea.remove();
-            }
+                drawings.screen.remove(contentarea);
+            };
+            svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
         };
     };
@@ -2409,42 +2416,50 @@ function ConnectionManagerDisplay() {
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = svg.runtime.createDOM("input");
-            contentarea.value = self[field].labelSecret||self[field].label;
+            //let contentarea = svg.runtime.createDOM("input");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
-
             var contentareaStyle = {
                 toppx: globalPointCenter.y ,
                 leftpx: globalPointCenter.x,
                 height: height,
                 width: self[field].cadre.width
             };
-            svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-                "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-                (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-                "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
-            self[field].secret && svg.runtime.attr(contentarea, 'type','password');
-            manipulator.ordonator.unset(1, self[field].content.text);
-            svg.runtime.add(svg.runtime.anchor('content'), contentarea);
-            !runtime && contentarea.focus();
+            let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
-            contentarea.onblur = function() {
+            contentarea.component.value = self[field].labelSecret||self[field].label;
+            contentarea.color([0,0,0,0], 0, myColors.black).
+            font("Arial",20);
+
+            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
+            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
+            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
+            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
+            //self[field].secret && svg.runtime.attr(contentarea, 'type','password');
+            self[field].secret && contentarea.type('password');
+            manipulator.ordonator.unset(1, self[field].content.text);
+            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
+            drawings.screen.add(contentarea);
+            contentarea.focus();
+
+            var onblur = function() {
                 if(self[field].secret){
                     self[field].label = '';
-                    self[field].labelSecret = contentarea.value;
-                    for(let i = 0; i < contentarea.value.length; i++){
+                    self[field].labelSecret = contentarea.component.value;
+                    for(let i = 0; i < contentarea.component.value.length; i++){
                         self[field].label+= '●';
                     }
 
                 } else {
-                    self[field].label = contentarea.value;
+                    self[field].label = contentarea.component.value;
                 }
                 displayField(field, manipulator);
                 manipulator.ordonator.unset(3);
-                contentarea.remove();
+                drawings.screen.remove(contentarea);
+                //contentarea.remove();
             };
+            svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
         };
     };

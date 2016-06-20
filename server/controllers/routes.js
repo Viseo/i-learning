@@ -68,7 +68,7 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', function(req, res) {
-        var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         if(token) {
             jwt.decode('VISEO', token, function (err, decode) {
                 if (err) {
@@ -93,7 +93,7 @@ module.exports = function (app, fs) {
     app.post('/sendProgress', function(req, res) {
         var collection = db.get().collection('UsersFormations');
         var obj = collection.find().toArray(function (err, docs) {
-            var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
             jwt.decode('VISEO', token, function (err, decode) {
                 var user = '';
                 if (!err) {
