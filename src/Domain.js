@@ -967,6 +967,7 @@ function Domain() {
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
+        self.childrenGames = [];
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];

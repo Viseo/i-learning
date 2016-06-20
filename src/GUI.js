@@ -2059,11 +2059,6 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
         console.log(self.quizz.levelIndex);
         console.log(self.quizz.gameIndex);
         dbListener.httpPostAsync('/replaceQuizz/'+self.parentFormation._id+"/"+self.quizz.levelIndex+"/"+self.quizz.gameIndex, tmpQuizzObject, thing, ignoredData);
-        //dbListener.httpPutAsync("/update", tmpQuizzObject, thing, ignoredData);
-
-        //dbListener.httpGetAsync("/getQuizzByLevelIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].levelIndex, callback);
-        //dbListener.httpGetAsync("/getQuizzByGameIndex/" + self.parentFormation.levelsTab[0].gamesTab[0].gameIndex, callback);
-
     };
 
     svg.addEvent(self.saveButton.cadre, "click", saveFunction);
