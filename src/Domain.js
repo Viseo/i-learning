@@ -370,7 +370,7 @@ function Domain() {
         self.miniaturesManipulator = new Manipulator(self);
         self.graphManipulator.last.add(self.miniaturesManipulator.first);
         self.graphManipulator.last.add(self.arrowsManipulator.first);
-        self.graphManipulator.last.add(self.messageDragDropManipulator.first);
+        //self.graphManipulator.last.add(self.messageDragDropManipulator.first);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator.addOrdonator(2);
