@@ -407,7 +407,7 @@ function Domain() {
 
 
         self.saveFormation = function () {
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            let ignoredData = (key, value) => (myParentsList.some(parent => key === parent) ? undefined : value);
             var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
             var messageSave = "Votre travail a bien été enregistré.";
             var messageError = "Vous devez remplir le nom de la formation.";
