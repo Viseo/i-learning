@@ -405,16 +405,15 @@ function Domain() {
             var messageNoModification = "Les modifications ont déjà été enregistrées";
 
             var displayErrorMessage = function (message){
-                validation = false;
                 self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
                 self.errorMessage = new svg.Text(message)
                     .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
                     .font("Arial", 15)
                     .anchor('start').color(myColors.red);
-
                 setTimeout(function () {
                     self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
                 }, 1);
+                validation = false;
             };
 
             var displaySaveMessage = function (message){
@@ -428,6 +427,7 @@ function Domain() {
                 svg.timeout(function () {
                     (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                 }, 5000);
+                validation = true;
             };
 
             if (validation) {
@@ -985,7 +985,6 @@ function Domain() {
         self.loadQuestions(quizz);
         if(self.levelIndex === undefined ){self.levelIndex = quizz.levelIndex;}
         if(self.gameIndex === undefined) { self.gameIndex = quizz.gameIndex;}
-        //self.childrenGames=quizz.childrenGames;
         (previewMode) ? (self.previewMode = previewMode) : (self.previewMode = false);
         quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows) : (self.puzzleRows = 2);
         quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines) : (self.puzzleLines = 2);
@@ -1112,6 +1111,7 @@ function Domain() {
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, true, parentFormation);
+            self.quizz.childrenGames = quizz.childrenGames;
             self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
@@ -1131,6 +1131,35 @@ function Domain() {
         } else {
             self.loadQuizz(quizz);
         }
+
+        self.saveQuizz = function () {
+
+            var getObjectToSave = function () {
+                self.tabQuestions=self.quizz.tabQuestions;
+                self.tabQuestions.pop();
+                self.tabQuestions.forEach(function(question){
+                    question.tabAnswer.pop();
+                });
+
+                return{
+                    title: self.quizzName,
+                    tabQuestions: self.quizz.tabQuestions,
+                    childrenGames: self.quizz.childrenGames,
+                    levelIndex: self.quizz.levelIndex,
+                    gameIndex: self.quizz.gameIndex
+                };
+            };
+            var callback = function () {
+                self.quizz.title=self.quizzName;
+                self.quizz.tabQuestions=self.tabQuestions;
+                self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
+                console.log("Votre travail a été bien enregistré");
+            };
+
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            Server.replaceQuizz(getObjectToSave(), self.parentFormation._id, self.quizz.levelIndex, self.quizz.gameIndex, callback, ignoredData)
+        };
+
         self.questionCreator = new QuestionCreator(self, self.quizz.tabQuestions[self.indexOfEditedQuestion]);
         self.library = new Library(myLibraryImage);
         self.quizz.tabQuestions[0].selected = true;

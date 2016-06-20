@@ -651,6 +651,7 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
+        var bool = self.saveFormation();
         if(self.saveFormation()) {
             var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
             self.quizzManager.loadQuizz(targetQuizz, self);
@@ -2033,36 +2034,8 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
 function QuizzManagerDisplaySaveButton(x, y, w, h) {
     var self = this;
     self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
-    var saveFunction = function () {
-        var thing = function (data) {
-            self.quizz.childrenGames=self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex].childrenGames;
-            self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
-            console.log("UPDATE Old DOC : Votre travail a été bien enregistré");
-        };
-        // var callback = function (data) {
-        for(var i = 0;i<self.quizz.tabQuestions.length-1;i++){
-            typeof (self.quizz.tabQuestions[i].tabAnswer) !== "undefined" &&(self.tabQuestions[i] = self.quizz.tabQuestions[i]);
-            (self.tabQuestions[i].tabAnswer[self.tabQuestions[i].tabAnswer.length-1] instanceof AddEmptyElement) && self.tabQuestions[i].tabAnswer.pop();
-        }
-        self.quizz.title=self.quizzName;
-        self.quizz.tabQuestions=self.tabQuestions;
-        var tmpQuizzObject = {
-            title: self.quizzName,
-            tabQuestions: self.tabQuestions,
-            childrenGames: self.quizz.childrenGames,
-            levelIndex: self.quizz.levelIndex,
-            gameIndex: self.quizz.gameIndex
-        };
-        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-
-        // };
-        console.log(self.quizz.levelIndex);
-        console.log(self.quizz.gameIndex);
-        dbListener.httpPostAsync('/replaceQuizz/'+self.parentFormation._id+"/"+self.quizz.levelIndex+"/"+self.quizz.gameIndex, tmpQuizzObject, thing, ignoredData);
-    };
-
-    svg.addEvent(self.saveButton.cadre, "click", saveFunction);
-    svg.addEvent(self.saveButton.content, "click", saveFunction);
+    svg.addEvent(self.saveButton.cadre, "click", self.saveQuizz);
+    svg.addEvent(self.saveButton.content, "click", self.saveQuizz);
     self.saveQuizButtonManipulator.translator.move(x, y);
 }
 

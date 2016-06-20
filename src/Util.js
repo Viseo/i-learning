@@ -749,6 +749,9 @@ class Server {
         dbListener.httpPostAsync("/insert", newFormation, callback, ignoredData);
     }
 
+    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, callback, ignoredData) {
+        dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, callback, ignoredData);
+    }
 }
 
 /////////////// Bdd.js //////////////////
