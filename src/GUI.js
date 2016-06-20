@@ -100,8 +100,7 @@ function AnswerDisplay (x, y, w, h) {
                 width: self.obj.cadre.width * 5/6
             };
             contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
-            color([0,0,0,0],0,myColors.black).
-            message('hep!').
+            color(null,0,myColors.black).
             font("Arial",20);//svg.runtime.createDOM('textarea');
             contentarea.component.value = self.label || "";
             contentarea.width = w;
@@ -557,7 +556,7 @@ function FormationDisplayFormation(){
         var bgcolor = myColors.lightgrey;
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
-        self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
+        self.formationLabel.content = autoAdjustText(text, 0, 0, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
 
         self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
@@ -584,7 +583,7 @@ function FormationDisplayFormation(){
             height:(self.labelHeight)
         };
         //let contentarea = svg.runtime.createDOM("textarea");
-        let contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         contentarea.component.value = self.label;
         contentarea.color(myColors.lightgrey, 0, myColors.black)
             .message(self.label)
@@ -2127,13 +2126,14 @@ function InscriptionManagerDisplay(labels={}) {
             var contentareaStyle = {
                 toppx: globalPointCenter.y ,
                 leftpx: globalPointCenter.x,
-                height: height-MARGIN/2,
-                width: width-MARGIN/2
+                height: height,
+                width: width
             };
-            let contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+            let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
             contentarea.component.value = self[field].label;
-            contentarea.color([0,0,0,0], 0, myColors.black).
+            contentarea.color(null, 0, myColors.black).
             font("Arial",20);
+            self[field].secret ? contentarea.type('password') : contentarea.type("text");
 
             //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
             //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
@@ -2156,7 +2156,7 @@ function InscriptionManagerDisplay(labels={}) {
                 var staredContentarea = function(){
                     contentarea.component.value = "";
                     for (var i = 0; i<trueValue.length; i++){
-                        contentarea.component.value+="*";
+                        contentarea.component.value+='●';
                     }
                 }
                 if (self[field].secret && trueValue.length<contentarea.component.value.length){
@@ -2396,7 +2396,7 @@ function ConnectionManagerDisplay() {
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
             var contentareaStyle = {
-                toppx: globalPointCenter.y ,
+                toppx: globalPointCenter.y,
                 leftpx: globalPointCenter.x,
                 height: height,
                 width: self[field].cadre.width
@@ -2404,7 +2404,7 @@ function ConnectionManagerDisplay() {
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
             contentarea.component.value = self[field].labelSecret||self[field].label;
-            contentarea.color([0,0,0,0], 0, myColors.black).
+            contentarea.color(null, 0, myColors.black).
             font("Arial",20);
 
             //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
