@@ -1745,7 +1745,7 @@ function QuizzDisplayResult (color){
 
 function GameDisplayMiniature(size){
     var self = this;
-    return new Miniature(self,size);
+    return new Miniature(self, size);
 }
 
 function QuizzDisplayScore(color){
@@ -1836,6 +1836,17 @@ function QuizzManagerDisplay(){
         var element = target.parent.parentManip.parentObject;
         self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         element.selected = true;
+        if(typeof element.redCrossManipulator === "undefined"){
+            element.redCrossManipulator = new Manipulator(element);
+            element.redCross = drawRedCross(0, 0, 20, 20, element.redCrossManipulator);
+            (element.redCrossManipulator.last.children.indexOf(element.redCross) === -1) && element.redCrossManipulator.last.add(element.redCross);
+            element.questionManipulator.ordonator.set(6, element.redCrossManipulator);
+        }
+        else{
+            element.redCrossManipulator.translator.move(0, 0);
+        }
+
+
         self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
         self.indexOfEditedQuestion = self.quizz.tabQuestions.indexOf(element);
         self.questionCreator.loadQuestion(element);

@@ -103,7 +103,7 @@ function Domain() {
         };
         answerParameters && (answer = answerParameters);
         self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(5);
+        self.manipulator.addOrdonator(6);
         self.label = answer.label;
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;
@@ -802,7 +802,7 @@ function Domain() {
     Question = function (question, quizz) {
         var self = this;
         self.questionManipulator = new Manipulator(self);
-        self.questionManipulator.addOrdonator(5);
+        self.questionManipulator.addOrdonator(6);
         self.answersManipulator = new Manipulator(self);
         self.questionManipulator.last.add(self.answersManipulator.first);
         self.resetManipulator = new Manipulator(self);
@@ -897,7 +897,7 @@ function Domain() {
         self.questionCreatorManipulator = new Manipulator(self);
         self.questionCreatorManipulator.addOrdonator(1);
         self.questionManipulator = new Manipulator(self);
-        self.questionManipulator.addOrdonator(5);
+        self.questionManipulator.addOrdonator(6);
         self.toggleButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
