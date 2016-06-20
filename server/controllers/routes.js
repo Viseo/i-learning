@@ -17,8 +17,8 @@ module.exports = function (app, fs) {
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = req.body;
-        collection.insert(obj, function(err, docs) {
-            res.send(JSON.stringify(obj));
+        collection.insert(obj, function (err, docs) {
+            res.send(docs.insertedIds[0]);
         });
     });
 
@@ -38,7 +38,7 @@ module.exports = function (app, fs) {
             res.send({user: result});
         });
     });
-    
+
     var sendCookie = function (res, user) {
         jwt.encode('VISEO', {user: user}, function (err, token) {
             res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
@@ -68,7 +68,7 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', function(req, res) {
-        var token = req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         if(token) {
             jwt.decode('VISEO', token, function (err, decode) {
                 if (err) {
@@ -93,28 +93,38 @@ module.exports = function (app, fs) {
     app.post('/sendProgress', function(req, res) {
         var collection = db.get().collection('UsersFormations');
         var obj = collection.find().toArray(function (err, docs) {
-            var user = "debesson"; // à changer avec JWT
-            var result = docs.find(x => x.formation === req.body.formation && x.user === user);
-            var game = {
-                game: req.body.game,
-                tabWrongAnswers: req.body.tabWrongAnswers,
-                index: req.body.indexQuestion
-            };
-            if(result) {
-                var games = result.tabGame.find(x => x.game === req.body.game);
-                games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
-                collection.updateOne({formation: req.body.formation, user: user}, {$set: {tabGame: result.tabGame}});
-                res.send({ack: 'ok'});
-            } else {
-                var obj = {
-                    user: user,
-                    formation: req.body.formation,
-                    tabGame: [game]
+            var token = req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            jwt.decode('VISEO', token, function (err, decode) {
+                var user = '';
+                if (!err) {
+                    user = decode.user._id;
+                }
+                var result = docs.find(x => x.formation === req.body.formation && x.user === user);
+                var game = {
+                    game: req.body.game,
+                    tabWrongAnswers: req.body.tabWrongAnswers,
+                    index: req.body.indexQuestion
                 };
-                collection.insertOne(obj, function(err, docs) {
-                res.send({ack: 'ok'});
+                if (result) {
+                    var games = result.tabGame.find(x => x.game === req.body.game);
+                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    collection.updateOne({
+                        formation: req.body.formation,
+                        user: user
+                    }, {$set: {tabGame: result.tabGame}});
+                    res.send({ack: 'ok'});
+                } else {
+                    var obj = {
+                        user: user,
+                        formation: req.body.formation,
+                        tabGame: [game]
+                    };
+                    collection.insertOne(obj, function (err, docs) {
+                        res.send({ack: 'ok'});
+                    });
+                }
             });
-        }})
+        })
     });
 
     app.get('/getFormationByName/:name', function(req, res) {
@@ -132,6 +142,26 @@ module.exports = function (app, fs) {
             res.send({formation: docs[0]});
             });
     });
+
+    /*    app.get('/getQuizzByLevelIndex/:levelIndex', function(req, res) {
+     var collection = db.get().collection('formations');
+     var result;
+     var obj=collection.find().
+     toArray(function(err, docs) {
+     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.levelIndex);
+     res.send({formation: result});
+     });
+     });
+
+     app.get('/getQuizzByGameIndex/:gameIndex', function(req, res) {
+     var collection = db.get().collection('formations');
+     var result;
+     var obj=collection.find().
+     toArray(function(err, docs) {
+     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.gameIndex);
+     res.send({formation: result});
+     });
+     });*/
 
     app.get('/getAllFormationsNames', function(req, res) {
         var collection = db.get().collection('formations');
@@ -159,13 +189,35 @@ module.exports = function (app, fs) {
     });
 
     //update par ID
-    app.put('/update', function(req, res) {
-        var collection = db.get().collection('formations');
-        if (id = ObjectID("575ecd9034b0a1242c2cb381")){
-            var obj = collection.update({'_id': id},req.body, function(err, docs) {
-                res.send(JSON.stringify(obj));
+/*     app.put('/update', function(req, res) {
+         var collection = db.get().collection('formations');
+         if (id = ObjectID("575ecd9034b0a1242c2cb381")){
+             var obj = collection.update({'_id': id},req.body, function(err, docs) {
+                 res.send(JSON.stringify(obj));
 
+             });
+         }
+     });*/
+
+    app.post('/replaceFormation/:id', function (req, res) {
+        var collection = db.get().collection('formations');
+        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
+            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
+               res.send({ack:'ok'});
             });
-        }
+        });
     });
+
+    app.post('/replaceQuizz/:levelIndex/:gameIndex', function (req, res) {
+        console.log(req.params.levelIndex);
+        console.log(req.params.gameIndex);
+        var collection = db.get().collection('formations');
+        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
+            db.get().collection('formations').replaceOne(docs[0], req.body, function (err, docs) {
+                // res.send(JSON.stringify(obj));
+            });
+        });
+    });
+
 };
+

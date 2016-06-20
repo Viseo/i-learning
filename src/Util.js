@@ -153,23 +153,15 @@ function SVGGlobalHandler() {
             }
         }
         clean(self.translator);
-        //clean(self.rotator);
-        //clean(self.scalor);
-        //for(var i =0 ; i<self.ordonator.children.length;i++){
-        //    self.ordonator.unset(i);
-        //}
-
     };
     gui.Panel.prototype.addhHandle = function (callback) {
         var self = this;
-        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-this.width/2, this.width/2, this.height/2);
+        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], ()=>{}).horizontal(-this.width/2, this.width/2, this.height/2);
         this.component.add(self.hHandle.component);
-        function hHandleCallback(position) {
-            var y = self.content.y;
-            var x = -position * self.content.width / self.view.width + self.view.width / 2;
-            self.content.move(x, y);
-            callback(x);
-        }
+
+        var x = -self.hHandle.point * self.content.width / self.view.width + self.view.width / 2;
+        callback(x);
+
     };
     gui.Panel.prototype.resizeContentW = function (width) {
         this.back.color(myColors.white).opacity(0.001);
@@ -527,6 +519,7 @@ function SVGUtil() {
      * @param fontSize
      * @param font
      * @param manipulator
+     * @param layer
      */
     autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
         let words = content.split(' '),
@@ -552,10 +545,12 @@ function SVGUtil() {
                         text += ' ';
                         let longWord = word;
                         for (let j = 0; j < longWord.length; j++) {
-                            t.message(text + ' ' + longWord.charAt(j));
+                            t.message(text + " " + longWord.charAt(j));
                             if (svg.runtime.boundingRect(t.component).width <= w) {
                                 text += longWord.charAt(j);
                             } else {
+                                text = text.slice(0, -1);
+                                j--;
                                 text += '-\n';
                                 words.unshift(longWord.slice(j));
                                 break;
@@ -851,7 +846,15 @@ class Server {
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
-    };
+    }
+
+    static replaceFormation(id, newFormation, callback, ignoredData) {
+        dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, callback, ignoredData);
+    }
+    
+    static insertFormation(newFormation, callback, ignoredData) {
+        dbListener.httpPostAsync("/insert", newFormation, callback, ignoredData);
+    }
 
 }
 
@@ -862,9 +865,10 @@ class Server {
 function Bdd() {
     HEADER_SIZE = 0.05;
     REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
-    REGEXERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-    REGEXERRORFORMATION = "Le nom de la formation doit être composé de caractères alphanumériques et ne pas dépasser 50 caractères"
-    EMPTYFIELDERROR = "Veuillez remplir tous les champs";
+    FORMATION_TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
+    REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
+    REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
+    EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
     MARGIN = 10;
     myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "questionManipulator",
         "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
@@ -2030,16 +2034,7 @@ function Bdd() {
             message: "Vous devez remplir au moins une réponse."
         })
     ];
-
-    formationValidation = [
-        // Check Formation Name:
-        formation => ({
-            isValid: formation.label !== "" && formation.label !== formation.labelDefault && (typeof formation.label !== 'undefined'),
-            messageSave: "Votre travail a bien été enregistré.",
-            messageError: "Vous devez remplir le nom de la formation."
-
-        })
-    ];
+    
 
     myQuizzType = {
         tab: [

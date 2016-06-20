@@ -364,10 +364,13 @@ function Domain() {
         self.formationInfoManipulator.addOrdonator(3);
         self.graphManipulator = new Manipulator(self);
         self.graphManipulator.addOrdonator(10);
+        self.messageDragDropManipulator=new Manipulator(self);
+        self.messageDragDropManipulator.addOrdonator(2);
         self.arrowsManipulator = new Manipulator(self);
         self.miniaturesManipulator = new Manipulator(self);
         self.graphManipulator.last.add(self.miniaturesManipulator.first);
         self.graphManipulator.last.add(self.arrowsManipulator.first);
+        self.graphManipulator.last.add(self.messageDragDropManipulator.first);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator.addOrdonator(2);
@@ -377,7 +380,7 @@ function Domain() {
         self.quizzManager.parentFormation = self;
 
         self.labelDefault = "Entrer le nom de la formation";
-        self.needUpdate=true;
+        self.needUpdate = true;
         // WIDTH
         self.libraryWidthRatio = 0.15;
         self.graphWidthRatio = 1 - self.libraryWidthRatio;
@@ -386,13 +389,13 @@ function Domain() {
         self.graphCreaHeightRatio = 0.85;
 
         self.x = MARGIN;
-        self.regex = /^([A-Za-z0-9.éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
+        self.regex = FORMATION_TITLE_REGEX;
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
         self.targetLevelIndex = 0;
         self.levelsTab = [];
         self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
-        self.label = formation.label ? formation.label : "Nouvelle formation";
+        self.label = formation.label ? formation.label : "";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
 
 
@@ -403,64 +406,84 @@ function Domain() {
 
 
         self.saveFormation = function () {
-            var validation = true;
-            formationValidation.forEach(formValid => {
-                var result = formValid(self);
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
+            var messageSave = "Votre travail a bien été enregistré.";
+            var messageError = "Vous devez remplir le nom de la formation.";
+            var messageReplace =  "Les modifications ont bien été enregistrées";
+            var messageUsedName = "Le nom de cette formation est déjà utilisé !";
+            var messageNoModification = "Les modifications ont déjà été enregistrées";
 
-                if (result.isValid) {
-                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                    self.errorMessageSave = new svg.Text(result.messageSave)
-                        .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.green);
-                    self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                }
-                else {
-                    // self.errorMessageSave &&  self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-                    self.errorMessageSave = new svg.Text(result.messageError)
-                        .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.red);
-                    self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                }
+            var displayErrorMessage = function (message){
+                validation = false;
+                self.errorMessageSave && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
+                self.errorMessage = new svg.Text(message)
+                    .position(self.formationLabel.cadre.width + self.formationWidth + MARGIN * 2, 0)
+                    .font("Arial", 15)
+                    .anchor('start').color(myColors.red);
 
-                validation = validation && result.isValid;
-            });
+                setTimeout(function () {
+                    self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                }, 1);
+            };
+
+            var displaySaveMessage = function (message){
+                validation = true;
+                (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                self.errorMessageSave = new svg.Text(message)
+                    .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                    .font("Arial", 20)
+                    .anchor('middle').color(myColors.green);
+                self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+                svg.timeout(function () {
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                }, 5000);
+            };
 
             if (validation) {
-                var callbackInsertion = function (data) {
-                    svg.timeout(function () {
-                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                    }, 5000);
-                    console.log("Votre travail a été bien enregistré");
+                var addNewFormation = function () {
+                    var callbackInsertion = function (data) {
+                        self._id=JSON.parse(data);
+                        displaySaveMessage(messageSave);
 
-                };
-                var callbackCheck = function (data) {
-                    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    let oldFormation= JSON.parse(data).formation;
-                    if (oldFormation){
-                        //if(self.id)
-                        let newFormation = getObjectToSave();
-                        newFormation=JSON.stringify(newFormation, ignoredData);
-                        delete oldFormation["_id"];
-                        oldFormation = JSON.stringify(oldFormation);
-                        console.log(oldFormation);
-                        console.log(newFormation);
-                        if (oldFormation==newFormation) {
-                            //Affichage du message d'erreur
-                            console.log("La formation n'a pas été modifié");
+                    };
+                    var callbackCheckName = function (data) {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if (!formationWithSameName) {
+                            Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
                         }
                         else {
-                            //suppression
-                            dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
+                            displayErrorMessage(messageUsedName);
                         }
-                    }
-                    else{
-                        dbListener.httpPostAsync("/insert", getObjectToSave(), callbackInsertion, ignoredData);
-                    }
-
-                    //  else(getWashedFormation)
-
+                    };
+                    Server.getFormationByName(self.label, callbackCheckName);
+                };
+                var replaceFormation = function () {
+                    var callbackCheckName = function (data) {
+                        var callbackReplace = function () {
+                            displaySaveMessage(messageReplace);
+                        };
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if(formationWithSameName) {
+                            var id = formationWithSameName._id;
+                            delete formationWithSameName._id;
+                            formationWithSameName = JSON.stringify(formationWithSameName);
+                            let newFormation = getObjectToSave();
+                            newFormation = JSON.stringify(newFormation, ignoredData);
+                            if (formationWithSameName && id === self._id) {
+                                if (formationWithSameName == newFormation) {
+                                    displaySaveMessage(messageNoModification);
+                                } else {
+                                    Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
+                                }
+                            } else if (formationWithSameName && formationWithSameName._id !== self._id) {
+                                displayErrorMessage(messageUsedName);
+                            }
+                        } else {
+                            Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
+                        }
+                    };
+                    Server.getFormationByName(self.label, callbackCheckName);
                 };
 
                 var getObjectToSave = function () {
@@ -472,93 +495,60 @@ function Domain() {
                             game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game);
                         });
                     });
-                    var tmpFormationObject = {
-                        label: self.label,
-                        gamesCounter: self.gamesCounter,
-                        levelsTab: levelsTab
-                    };
-                    return tmpFormationObject;
+                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
                 };
 
-
-                Server.getFormationByName(self.label, callbackCheck);
+                self._id ? replaceFormation() : addNewFormation();
+            } else {
+                displayErrorMessage(messageError);
             }
+            return validation;
         };
         self.loadFormation = function(formation) {
+            var loadChildren= function(game) {
+                game.childrenGames.forEach(function (child) {
+                    if(! self.levelsTab[child.levelIndex].gamesTab[child.gameIndex]){
+                        self.levelsTab[child.levelIndex].gamesTab[child.gameIndex] = new Quizz(child, true, self);
+                    }
+                    let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
+                    let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex];
+                    !childGame.parentGames && (childGame.parentGames = []);
+                    !parentGame.childrenGames && (parentGame.childrenGames = []);
+                    parentGame.childrenGames.push(childGame);
+                    childGame.parentGames.push(parentGame);
+                    loadChildren(child);
+                })
+            };
+
             self._id=formation._id;
             self.gamesCounter = formation.gamesCounter;
             for (let i = 0; i < formation.levelsTab.length; i++) {
                 var gamesTab = [];
                 self.levelsTab.push(new Level(self, gamesTab));
             }
-            formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-                level.gamesTab.forEach(function (game, j) {
-                    self.levelsTab[i].gamesTab[j] = new Quizz(game, true, self);
-                    game.childrenGames.forEach(function (child) {
-                        let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex];
-                        childGame = new Quizz(child, true, self);
-                        !childGame.parentGames && (childGame.parentGames = []);
-                        !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        self.levelsTab[i].gamesTab[j].childrenGames.push(childGame);
-                        childGame.parentGames.push(self.levelsTab[i].gamesTab[j]);
+            formation.levelsTab && formation.levelsTab.forEach(function (level) {
+                level.gamesTab.forEach(function (game) {
+                    self.levelsTab[game.levelIndex].gamesTab[game.gameIndex] = new Quizz(game, true, self);
+                    loadChildren(game);//Pour ABL
                     });
                 });
-            });
-        };
-        self.findLongestLevel = function(){
-            var longestLevelCandidates = [];
-            longestLevelCandidates.index = 0;
-            self.levelsTab.forEach(level=>{
-                if(level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                    if(level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length){
-                        longestLevelCandidates.push(level);
-                    }else{
-                        longestLevelCandidates = [];
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index = level.index-1;
+    };
+    self.findLongestLevel = function() {
+        var longestLevelCandidates = [];
+        longestLevelCandidates.index = 0;
+        self.levelsTab.forEach(level=> {
+            if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    longestLevelCandidates.push(level);
+                } else {
+                    longestLevelCandidates = [];
+                    longestLevelCandidates.push(level);
                 }
-            });
-            return longestLevelCandidates;
-        };
-     // formation.levelsTab.forEach(function (level) {
-            //     var gamesTab = [];
-            //     level.gamesTab.forEach(function (game) {
-            //         gamesTab.push(new Quizz(game, true, self));
-            //     });
-            //     self.levelsTab.push(new Level(self, gamesTab));
-            // });
-            // self.matchGame = function(childrenGame, levelIndex){
-            //     for(var game of self.levelsTab[levelIndex].gamesTab)
-            //     {
-            //         if(game.title===childrenGame.title){
-            //             return game;
-            //         }
-            //     }
-            // };
-
-            // self.loadDependencies = function () {
-            //     formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-            //         level.gamesTab.forEach(function (game, j) {
-            //             game.childrenGames.forEach(function (childrenGame) {
-            //            if(self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab ){
-            //                let match =  self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
-            //                !match.parentGames && (match.parentGames = []);
-            //                !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-            //                self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-            //                match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-            //            }
-            //         });
-                        //    if(self.levelsTab[i+1]){
-                        //        var match= self.matchGame(childrenGame, i+1);
-                        //        !match.parentGames  && (match.parentGames = []);
-                        //        !self.levelsTab[i].gamesTab[j].childrenGames  && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                        //        self.levelsTab[i+1] && self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                        //        self.levelsTab[i+1] && match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                        //    }
-                        //})
-
-            // self.loadDependencies();
+                longestLevelCandidates.index = level.index - 1;
+            }
+        });
+        return longestLevelCandidates;
+    };
 
 
         self.redim = function() {
@@ -643,16 +633,17 @@ function Domain() {
         self.adjustGamesPositions = function (level) {
             var nbOfGames = level.gamesTab.length;
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
+
             level.gamesTab.forEach(function (game) {
                 !game.parentGames && (game.parentGames = []);
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x =-self.graphCreaWidth/2+self.levelWidth/2;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
-                if (pos.gameIndex < nbOfGames / 2) {// !_! pk pas levelWidth dans ce calcul ?
-                    game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) - self.borderSize + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
+                if (pos.gameIndex < nbOfGames / 2){// !_! pk pas levelWidth dans ce calcul ?
+                    game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
-                    game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2) + self.borderSize + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+                    game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2)  + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
                 }
                 game.miniaturePosition.y = -self.graphCreaHeight / 2 + (level.index - 1 / 2) * self.levelHeight;
             });
@@ -1183,7 +1174,7 @@ function Domain() {
         self.questionsPuzzleManipulator = new Manipulator(self);
         self.questionsPuzzleManipulator.addOrdonator(1);
         self.quizzInfoManipulator = new Manipulator(self);
-        self.quizzInfoManipulator.addOrdonator(5);
+        self.quizzInfoManipulator.addOrdonator(6);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
@@ -1314,7 +1305,7 @@ ConnectionManager = function () {
         emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red)});
 
         if (emptyAreas.length > 0) {
-            let message = autoAdjustText(EMPTYFIELDERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
+            let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height + MARGIN);
             svg.timeout(function() {
                 self.connectionButtonManipulator.ordonator.unset(3);
