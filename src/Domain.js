@@ -202,13 +202,13 @@ function Domain() {
                     callback();
                 }
             }, 100);
-                runtime && self.itemsTab.forEach(e => {
-                    imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
-                });
-                if (runtime){
-                    self.display(x, y, w, h);
-                    callback();
-                }
+            runtime && self.itemsTab.forEach(e => {
+                imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
+            });
+            if (runtime){
+                self.display(x, y, w, h);
+                callback();
+            }
         };
 
         self.dropAction = function (element, event) {
@@ -244,7 +244,7 @@ function Domain() {
                     target.parent.parentManip.ordonator.set(1, oldQuest.content);
                 } else {
                     var formation = target.parent.parentManip.parentObject;
-                    formation.addNewGame(target, event, self);
+                    formation.addNewGame(event, self);
                 }
             }
             self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
@@ -364,8 +364,8 @@ function Domain() {
         self.levelHeight = 150;
         self.graphElementSize = self.levelHeight*0.65;
 
-        self.addNewGame = (target, event, lib) => {
-            var dropLocation = target.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
+        self.addNewGame = (event, lib) => {
+            var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
             let level = -1;
             while(dropLocation > -this.panel.content.height/2) {
                 dropLocation -= this.levelHeight;
@@ -519,35 +519,29 @@ function Domain() {
                 level.gamesTab.forEach(function (game) {
                     self.levelsTab[game.levelIndex].gamesTab[game.gameIndex] = new Quizz(game, true, self);
                     loadChildren(game);//Pour ABL
-                    });
                 });
-    };
-    self.findLongestLevel = function() {
-        var longestLevelCandidates = [];
-        longestLevelCandidates.index = 0;
-        self.levelsTab.forEach(level=> {
-            if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                    longestLevelCandidates.push(level);
-                } else {
-                    longestLevelCandidates = [];
-                    longestLevelCandidates.push(level);
+            });
+        };
+        self.findLongestLevel = function() {
+            var longestLevelCandidates = [];
+            longestLevelCandidates.index = 0;
+            self.levelsTab.forEach(level=> {
+                if (level.gamesTab.length >= self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    if (level.gamesTab.length === self.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                        longestLevelCandidates.push(level);
+                    } else {
+                        longestLevelCandidates = [];
+                        longestLevelCandidates.push(level);
+                    }
+                    longestLevelCandidates.index = level.index - 1;
                 }
-                longestLevelCandidates.index = level.index - 1;
-            }
-        });
-        return longestLevelCandidates;
-    };
+            });
+            return longestLevelCandidates;
+        };
 
 
         self.redim = function() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;
-            //self.manipulator.last.add(self.gamesLibraryManipulator.first);
-            //self.manipulator.last.add(self.graphManipulator.first);
-            //self.manipulatorMiniature.last.add(self.iconManipulator.first);
-            //self.manipulator.last.add(self.formationInfoManipulator.first);
-            //self.manipulator.last.add(self.saveFormationButtonManipulator.first);
-
             self.libraryWidth = drawing.width * self.libraryWidthRatio;
             self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
             self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio+MARGIN;
@@ -603,19 +597,11 @@ function Domain() {
                 self.library.gameSelected && self.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
                 self.library.gameSelected = null;
                 svg.removeEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
-                self.levelsTab.forEach(function (e) {
-                    svg.removeEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
-                });
             };
             if (self.library.gameSelected) {
                 svg.addEvent(self.panel.back, "mouseup", self.mouseUpGraphBlock);
                 svg.addEvent(self.messageDragDrop, "mouseup", self.mouseUpGraphBlock);
                 runtime && runtime.addEvent(self.panel.back.component, "mouseup", self.mouseUpGraphBlock);
-                self.levelsTab.forEach(function (e) {
-                    svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
-                    e.obj.cadre.component.target && svg.addEvent(e.obj.cadre, "mouseup", self.mouseUpGraphBlock);
-                    runtime && runtime.addEvent(e.obj.cadre.component, "mouseup", self.mouseUpGraphBlock);
-                });
             }
         };
 
