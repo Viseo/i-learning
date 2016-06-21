@@ -77,7 +77,7 @@ function AnswerDisplay (x, y, w, h) {
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
-            self.obj.cadre.fillOpacity(0.001);
+            self.answerNameValidInput ? (self.obj.cadre.color([0,0,0,0],1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color([0,0,0,0],2,myColors.red).fillOpacity(0.001));
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
@@ -90,27 +90,33 @@ function AnswerDisplay (x, y, w, h) {
         };
 
         let dblclickEditionAnswer = function () {
-            let contentarea = svg.runtime.createDOM('textarea');
-            contentarea.value = self.label;
-            contentarea.width = w;
+            let contentarea={};
             contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
-            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(w)/2,-(contentarea.height)/2);
             let contentareaStyle = {
                 toppx: contentarea.globalPointCenter.y - (contentarea.height/2) * 2/3 ,
                 leftpx: contentarea.globalPointCenter.x + (1/12) * self.obj.cadre.width,
                 height: self.image ? contentarea.height : h * 0.5,
                 width: self.obj.cadre.width * 5/6
             };
+            contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
+            color(null,0,myColors.black).
+            font("Arial",20);//svg.runtime.createDOM('textarea');
+            contentarea.component.value = self.label || "";
+            contentarea.width = w;
+            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
+            contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
 
-            svg.runtime.attr(contentarea, 'style',
-                `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
-                `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
-                `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
+            //svg.runtime.attr(contentarea, 'style',
+            //    `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
+            //    `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
+            //    `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
 
-            self.manipulator.ordonator.unset(1, self.obj.content);
+            self.manipulator.ordonator.unset(1);
 
-            svg.runtime.anchor('content').appendChild(contentarea).focus();
+           // svg.runtime.anchor('content').appendChild(contentarea).focus();
+            drawings.screen.add(contentarea);
+            contentarea.focus();
 
             let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
@@ -135,8 +141,9 @@ function AnswerDisplay (x, y, w, h) {
             };
 
             let onblur = function () {
-                self.answerNameValidInput && (self.label = contentarea.value);
-                contentarea.remove();
+                contentarea.messageText=contentarea.component.value;
+                self.label = contentarea.messageText;
+                drawings.screen.remove(contentarea);
                 showTitle();
                 if(typeof self.obj.checkbox === 'undefined') {
                     self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
@@ -144,7 +151,8 @@ function AnswerDisplay (x, y, w, h) {
                 }
             };
 
-            contentarea.oninput = function () {
+
+            svg.addEvent(contentarea,'input',function () {
                 self.checkInputContentArea({
                     contentarea: contentarea,
                     border: self.obj.cadre,
@@ -152,12 +160,12 @@ function AnswerDisplay (x, y, w, h) {
                     remove: removeErrorMessage,
                     display: displayErrorMessage
                 });
-            };
+            });
+            svg.addEvent(contentarea,'blur',onblur);
 
-            contentarea.onblur = onblur;
             self.checkInputContentArea({
                 contentarea: contentarea,
-                border: self.label.cadre,
+                border: self.obj.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
@@ -543,17 +551,18 @@ function FormationDisplayFormation(){
 
 
     var showTitle = function() {
-        var text = (self.label==="") ? self.labelDefault : self.label;
-        var color = (self.label) ? myColors.black : myColors.grey;
-        var bgcolor = myColors.grey;
+        var text = (self.label) ? self.label : (self.label=self.labelDefault);
+        var color = (self.label) ? myColors.black : myColors.lightgrey;
+        var bgcolor = myColors.lightgrey;
         self.formationLabelWidth = 400 ;
         self.formationLabel = {};
-        self.formationLabel.content = autoAdjustText(text, 0, 0, drawing.width, 20, 15, "Arial", self.formationInfoManipulator).text;
+        self.formationLabel.content = autoAdjustText(text, 0, 0, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
         self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
 
         self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
-        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN).color(bgcolor);
-        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2).fillOpacity(0.1);
+        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN);
+        self.labelValidInput ? self.formationLabel.cadre.color(bgcolor) : self.formationLabel.cadre.color(bgcolor, 2, myColors.red);
+        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2);
 
         self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
         self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
@@ -567,27 +576,33 @@ function FormationDisplayFormation(){
         var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
-
-        let contentarea = svg.runtime.createDOM("textarea");
-        contentarea.value = self.label;
         var contentareaStyle = {
-            toppx:(self.labelHeight/2+drawing.height*0.075-2*MARGIN+3),
-            leftpx: (svg.runtime.boundingRect(self.title.component).width+ 2 * MARGIN + 1),
-            width: 400,
-            height:(self.labelHeight+3)
+            toppx:(drawing.height*0.075 - self.labelHeight),
+            leftpx: (svg.runtime.boundingRect(self.title.component).width + 2*MARGIN),
+            width: self.formationLabel.cadre.width-MARGIN,
+            height:(self.labelHeight)
         };
-        svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        svg.runtime.anchor("content").appendChild(contentarea).focus();
+        //let contentarea = svg.runtime.createDOM("textarea");
+        let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        contentarea.component.value = self.label;
+        contentarea.color(myColors.lightgrey, 0, myColors.black)
+            .message(self.label)
+            .font("Arial", 15)
+            .anchor("start");
+        drawings.screen.add(contentarea);
+        contentarea.focus();
+        //svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        //svg.runtime.anchor("content").appendChild(contentarea).focus();
 
         var removeErrorMessage = function () {
             self.formationNameValidInput = true;
             self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
-            self.formationLabel.cadre.color(myColors.grey, 1, myColors.none);
+            self.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
         };
 
         var displayErrorMessage = function () {
             removeErrorMessage();
-            self.formationLabel.cadre.color(myColors.grey, 2, myColors.red);
+            self.formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                 .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
@@ -597,11 +612,13 @@ function FormationDisplayFormation(){
             self.labelValidInput = false;
         };
         var onblur = function () {
-            self.formationNameValidInput && (self.label = contentarea.value);
-            contentarea.remove();
+            self.formationNameValidInput && (self.label = contentarea.component.value);
+            //contentarea.remove();
+            drawings.screen.remove(contentarea);
             showTitle();
         };
-        contentarea.oninput = function () {
+        svg.addEvent(contentarea, "blur", onblur);
+        var oninput = function () {
             self.checkInputTextArea({
                 textarea: contentarea,
                 border: self.formationLabel.cadre,
@@ -610,7 +627,7 @@ function FormationDisplayFormation(){
                 display: displayErrorMessage
             });
         };
-        contentarea.onblur = onblur;
+        svg.addEvent(contentarea, "input", oninput);
         self.checkInputTextArea({
             textarea: contentarea,
             border: self.formationLabel.cadre,
@@ -1116,71 +1133,74 @@ function HeaderDisplay () {
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
-    let self = this;
-    self.startPosition = startPosition;
-    self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
-    self.questionWithBadAnswersManipulator = new Manipulator(self);
-    self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
-
-    let removeArrows = function (){
-        if (self.leftArrowManipulator.last.children.length > 1) self.leftArrowManipulator.flush();
-        if (self.rightArrowManipulator.last.children.length > 1) self.rightArrowManipulator.flush();
+    let removeArrows = () =>{
+        if (this.leftArrowManipulator.last.children.length > 1) this.leftArrowManipulator.flush();
+        if (this.rightArrowManipulator.last.children.length > 1) this.rightArrowManipulator.flush();
     };
 
-    let handlerLeftArrow = function (){
+    let handlerLeftArrow = ()=>{
         removeArrows();
-        if (self.rows === 1 && startPosition !== 0) {
-            self.display(x, y, w, h, startPosition - 1);
-        } else if (startPosition - self.rows + 1 <= 0) {
-            self.display(x, y, w, h, 0);
+        if (this.rows === 1 && startPosition !== 0) {
+            this.display(x, y, w, h, startPosition - 1);
+        } else if (startPosition - this.rows + 1 <= 0) {
+            this.display(x, y, w, h, 0);
         } else {
-            self.display(x, y, w, h, startPosition - self.rows + 1);
+            this.display(x, y, w, h, startPosition - this.rows + 1);
         }
     };
 
-    if (self.rows < self.totalRows) {
-        let leftArrow = drawArrow(0, 0, 75, 75, self.leftArrowManipulator);
+    let handlerRightArrow = () =>{
+        removeArrows();
+        if(this.rows === 1 && startPosition !== this.totalRows - 1) {
+            this.display(x, y, w, h, startPosition + 1);
+        } else if(2*this.rows + startPosition >= this.totalRows) {
+            let newStartPosition = this.totalRows - this.rows;
+            this.display(x, y, w, h, newStartPosition);
+        } else {
+            let newStartPosition = startPosition + this.rows - 1;
+            this.display(x, y, w, h, newStartPosition);
+        }
+    };
+
+    let showLeftChevron = ()=>{
+        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator);
         if (startPosition === 0) {
-            leftArrow.color(myColors.grey);
-            if (leftArrow.onClick !== null) {
-                svg.removeEvent(leftArrow, 'click', leftArrow.onClick);
+            leftChevron.color(myColors.grey);
+            if (leftChevron.onClick !== null) {
+                svg.removeEvent(leftChevron, 'click', leftChevron.onClick);
             }
         } else {
-            leftArrow.color(myColors.black);
-            svg.addEvent(leftArrow, "click", handlerLeftArrow);
+            leftChevron.color(myColors.black);
+            svg.addEvent(leftChevron, "click", handlerleftChevron);
         }
+        this.leftChevronManipulator.rotator.rotate(180);
+        this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
+    };
 
-        self.leftArrowManipulator.rotator.rotate(180);
-        self.leftArrowManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
-
-        let handlerRightArrow = function () {
-            removeArrows();
-            if(self.rows === 1 && startPosition !== self.totalRows - 1) {
-                self.display(x, y, w, h, startPosition + 1);
-            } else if(2*self.rows + startPosition >= self.totalRows) {
-                let newStartPosition = self.totalRows - self.rows;
-                self.display(x, y, w, h, newStartPosition);
-            } else {
-                let newStartPosition = startPosition + self.rows - 1;
-                self.display(x, y, w, h, newStartPosition);
-            }
-        };
-
-        let rightArrow = drawArrow(0, 0, 75, 75, self.rightArrowManipulator);
-        if (startPosition + self.rows >= self.totalRows) {
-            rightArrow.color(myColors.grey);
-            if (rightArrow.onClick !== null) {
-                svg.removeEvent(rightArrow, 'click', rightArrow.onClick);
+    let showRightChevron = ()=>{
+        let rightChevron = drawChevron(0, 0, 75, 75, this.rightArrowManipulator);
+        if (startPosition + this.rows >= this.totalRows) {
+            rightChevron.color(myColors.grey);
+            if (rightChevron.onClick !== null) {
+                svg.removeEvent(rightChevron, 'click', rightChevron.onClick);
             }
         } else {
-            rightArrow.color(myColors.black);
-            svg.addEvent(rightArrow, 'click', handlerRightArrow);
+            rightChevron.color(myColors.black);
+            svg.addEvent(rightChevron, 'click', handlerRightArrow);
         }
+        this.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
+    };
 
-        self.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
-        self.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
+    this.startPosition = startPosition;
+    this.puzzleManipulator.last.remove(this.questionWithBadAnswersManipulator.first);
+    this.questionWithBadAnswersManipulator = new Manipulator(this);
+    this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
+    if (this.rows < this.totalRows) {
+        showLeftChevron();
+        showRightChevron();
+        this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
     } else {
-        self.initTiles(x, y, w, h, startPosition);
+        this.initTiles(x, y, w, h, startPosition);
     }
 }
 
@@ -1194,74 +1214,74 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     var posY = y;
     var count = startPosition * self.lines;
     if((self.tileHeight > 0) && (self.tileWidth > 0)){
-    if (self.reverseMode) {
-        // Valable pour 2 lignes 4 col
-        for (var i = startPosition; i < (startPosition + self.lines); i++) {
-            for (var j = 0; j < self.rows; j++) {
-                if (count < self.questionsTab.length) {
-                    self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                    if (!(self.virtualTab[i][j].bordure)) {
-                        self.virtualTab[i][j].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
-                        if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].bordure, 'click', self.virtualTab[i][j].bordureEventHandler);
+        if (self.reverseMode) {
+            // Valable pour 2 lignes 4 col
+            for (var i = startPosition; i < (startPosition + self.lines); i++) {
+                for (var j = 0; j < self.rows; j++) {
+                    if (count < self.questionsTab.length) {
+                        self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
+                        if (!(self.completeBanner[i][j].bordure)) {
+                            self.completeBanner[i][j].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
+                            if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
+                            }
+                            if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
+                            }
+                            if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
+                            }
                         }
-                        if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].content, 'click', self.virtualTab[i][j].contentEventHandler);
-                        }
-                        if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].raphImage, 'click', self.virtualTab[i][j].imageEventHandler);
-                        }
-                    }
-                    self.virtualTab[i][j].manipulator.first.move(posX + self.tileWidth / 2 + MARGIN, posY + MARGIN);
+                        self.completeBanner[i][j].manipulator.first.move(posX + self.tileWidth / 2 + MARGIN, posY + MARGIN);
 
-                    posX += self.tileWidth + MARGIN;
-                    count++;
+                        posX += self.tileWidth + MARGIN;
+                        count++;
+                    }
+                    else {
+                        break;
+                    }
                 }
-                else {
-                    break;
-                }
+                posY += self.tileHeight + MARGIN;
+                posX = 0;
             }
-            posY += self.tileHeight + MARGIN;
-            posX = 0;
-        }
-    } else {
-        for (i = startPosition; i < (startPosition + self.rows); i++) {
-            for (j = 0; j < self.lines; j++) {
-                if (count < self.questionsTab.length) {
-                    if (self.virtualTab[i][j] instanceof AddEmptyElement) {
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                    } else {
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                        self.virtualTab[i][j].questionManipulator.ordonator.unset(3);
-                    }
-                    self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
-                    if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].bordure, 'click', self.virtualTab[i][j].bordureEventHandler);
-                    }
-                    if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].content, 'click', self.virtualTab[i][j].contentEventHandler);
-                    }
-                    if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].raphImage, 'click', self.virtualTab[i][j].imageEventHandler);
-                    }
+        } else {
+            for (i = startPosition; i < (startPosition + self.rows); i++) {
+                for (j = 0; j < self.lines; j++) {
+                    if (count < self.questionsTab.length) {
+                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
+                        } else {
+                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].questionManipulator.first);
+                            self.completeBanner[i][j].questionManipulator.ordonator.unset(3);
+                        }
+                        self.completeBanner[i][j].display(0, 0, self.tileWidth, self.tileHeight);
+                        if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
+                        }
+                        if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
+                        }
+                        if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
+                        }
 
-                    if (self.virtualTab[i][j] instanceof AddEmptyElement) {
-                        self.virtualTab[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                    } else {
-                        self.virtualTab[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                    }
+                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
+                        } else {
+                            self.completeBanner[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
+                        }
 
-                    posY += self.tileHeight + MARGIN;
-                    count++;
-                } else {
-                    break;
+                        posY += self.tileHeight + MARGIN;
+                        count++;
+                    } else {
+                        break;
+                    }
                 }
+                posX += self.tileWidth + MARGIN;
+                posY = y;
             }
-            posX += self.tileWidth + MARGIN;
-            posY = y;
         }
     }
-}
 }
 
 function QuestionDisplay(x, y, w, h) {
@@ -1578,25 +1598,25 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     self.margin = (w-lengthToUse)/2;
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
-    (!self.virtualTab) && (self.virtualTab = []);
+    (!self.completeBanner) && (self.completeBanner = []);
     self.quizzType.forEach(function(type){
 
-        if(self.virtualTab[i] && self.virtualTab[i].manipulator){
-            self.toggleButtonManipulator.last.remove(self.virtualTab[i].manipulator.first);
+        if(self.completeBanner[i] && self.completeBanner[i].manipulator){
+            self.toggleButtonManipulator.last.remove(self.completeBanner[i].manipulator.first);
         }
 
-        self.virtualTab[i] = {};
+        self.completeBanner[i] = {};
 
-        self.virtualTab[i].manipulator = new Manipulator(self);
-        self.virtualTab[i].manipulator.addOrdonator(2);
-        self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
-        (type.label == clicked) ? (self.virtualTab[i].color = SELECTION_COLOR) : (self.virtualTab[i].color = myColors.white);
-        self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, 20, null, self.virtualTab[i].manipulator);
-        self.virtualTab[i].toggleButton.content.color(getComplementary(self.virtualTab[i].color), 0, myColors.black);
-        self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
+        self.completeBanner[i].manipulator = new Manipulator(self);
+        self.completeBanner[i].manipulator.addOrdonator(2);
+        self.toggleButtonManipulator.last.add(self.completeBanner[i].manipulator.first);
+        (type.label == clicked) ? (self.completeBanner[i].color = SELECTION_COLOR) : (self.completeBanner[i].color = myColors.white);
+        self.completeBanner[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.completeBanner[i].color, 20, null, self.completeBanner[i].manipulator);
+        self.completeBanner[i].toggleButton.content.color(getComplementary(self.completeBanner[i].color), 0, myColors.black);
+        self.completeBanner[i].manipulator.translator.move(self.x,MARGIN+h/2);
         self.x += self.toggleButtonWidth + MARGIN;
-        (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));
-        (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.cadre, "click", toggleHandler));
+        (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.content, "click", toggleHandler));
+        (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.cadre, "click", toggleHandler));
 
         i++;
     });
@@ -1635,29 +1655,30 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     };
 
     var dblclickEditionQuestionBlock = function () {
-        var textarea = svg.runtime.createDOM("textarea");
-        textarea.value = self.linkedQuestion.label;
-        textarea.width = self.w;
-        textarea.height = (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2);
-
-        self.questionManipulator.ordonator.unset(1);
-        textarea.globalPointCenter = self.questionBlock.title.content.globalPoint(-(textarea.width)/2, -(textarea.height)/2);
-
+        var globalPointCenter = self.questionBlock.title.content.globalPoint(-(self.w)/2, -((self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2))/2);
         var contentareaStyle = {
-            toppx: (self.linkedQuestion.image) ? (-textarea.height + 1 - drawing.height + textarea.globalPointCenter.y) : (- drawing.height + textarea.globalPointCenter.y),
-            leftpx: (textarea.globalPointCenter.x+1/12*self.w),
-            width: (self.w*5/6),
-            height: (textarea.height)
+            height: (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2),
+            toppx: (self.linkedQuestion.image) ? (this.height + 1 + globalPointCenter.y) : (globalPointCenter.y),
+            leftpx: (globalPointCenter.x+1/12*self.w),
+            width: (self.w*5/6)
         };
-        svg.runtime.attr(textarea, "style", "position: relative; top:" +contentareaStyle.toppx+ "px; left:" + contentareaStyle.leftpx + "px; width:" +contentareaStyle.width+ "px; height:" +contentareaStyle.height+ "px; text-align: center; display: table-cell; font-family: Arial; font-size: 20px; resize: none; outline: none; border: none; background-color: transparent; padding-top:" + ((textarea.height - 4 * MARGIN)/2 - 20) + "px; overflow: hidden;");
-        svg.runtime.anchor("content").appendChild(textarea).focus();
-        var onblur = function () {
-            if(textarea.value){
-                self.label = textarea.value;
-                self.linkedQuestion.label=textarea.value;
-            }
 
-            svg.runtime.anchor("content").removeChild(textarea);
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+            .color(myColors.white, 0, myColors.black)
+            .message(self.linkedQuestion.label)
+            .font("Arial", 20);
+
+        drawings.screen.add(textarea);
+        textarea.focus();
+        self.questionManipulator.ordonator.unset(1);
+
+        var onblur = function () {
+            textarea.messageText = textarea.component.value;
+            if(textarea.messageText){
+                self.label = textarea.messageText;
+                self.linkedQuestion.label=textarea.messageText;
+            }
+            drawings.screen.remove(textarea);
             showTitle();
             self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
         };
@@ -1691,7 +1712,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-        textarea.onblur = onblur;
+        svg.runtime.addEvent(textarea.component, "blur", onblur);
     };
 
     x && (self.x = x);
@@ -1761,7 +1782,7 @@ function QuizzDisplayResult (color){
 
 function GameDisplayMiniature(size){
     var self = this;
-    return new Miniature(self,size);
+    return new Miniature(self, size);
 }
 
 function QuizzDisplayScore(color){
@@ -1847,16 +1868,24 @@ function QuizzManagerDisplay(){
     drawing.currentPageDisplayed = 'QuizManager';
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
-    self.questionClickHandler = function(event){
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
-        var element = target.parent.parentManip.parentObject;
-        self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
+    self.questionClickHandler = event =>{
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        let element = target.parent.parentManip.parentObject;
+        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
         element.selected = true;
-        self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
-        self.indexOfEditedQuestion = self.quizz.tabQuestions.indexOf(element);
-        self.questionCreator.loadQuestion(element);
-        //self.questionCreatorManipulator.flush();
-        self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
+        if(!element.redCrossManipulator){
+            element.redCrossManipulator = new Manipulator(element);
+            element.redCross = drawRedCross(0, 0, 20, 20, element.redCrossManipulator);
+            element.redCrossManipulator.last.add(element.redCross);
+            element.questionManipulator.last.add(element.redCrossManipulator.first);
+        }
+        else{
+            element.redCrossManipulator.translator.move(0, 0);
+        }
+        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
+        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(element);
+        this.questionCreator.loadQuestion(element);
+        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
     };
 
     var displayFunctions = function(){
@@ -1889,7 +1918,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.returnText=new svg.Text("Retour");
     self.quizzInfoManipulator.ordonator.set(3, self.returnText);
 
-    self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
+    self.returnButton=drawChevron(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
@@ -1919,8 +1948,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
-        var color = (self.quizzName) ? myColors.black : myColors.grey;
-        var bgcolor = myColors.grey;
+        var color = (self.quizzName) ? myColors.black : myColors.lightgrey;
+        var bgcolor = myColors.lightgrey;
 
         self.quizzLabel = {};
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
@@ -1928,8 +1957,9 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
-        self.quizzLabel.cadre = new svg.Rect(width, 0.5*h).color(bgcolor);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height).fillOpacity(0.1);
+        self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
+        self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
+        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
 
@@ -1944,27 +1974,34 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzInfoManipulator.ordonator.unset(1);
 
-        var textarea = svg.runtime.createDOM("textarea");
-        textarea.value = self.quizzName;
         var contentareaStyle = {
-            toppx:(self.quizzInfoHeight-self.quizzNameHeight/4+3),
-            leftpx: (x + MARGIN/2 + 1),
-            width: 700,
-            height:(self.quizzNameHeight+3)
+            toppx:(self.quizzInfoHeight-self.quizzNameHeight/2),
+            leftpx: (x + MARGIN/2),
+            width: 700 - MARGIN,
+            height:(self.quizzNameHeight+3)-MARGIN/2
         };
-        svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        svg.runtime.anchor("content").appendChild(textarea).focus();
+        //var textarea = svg.runtime.createDOM("textarea");
+        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        textarea.color(myColors.lightgrey, 0, myColors.black)
+            .message(self.label)
+            .font("Arial", 15)
+            .anchor("start");
+        drawings.screen.add(textarea);
+        textarea.focus();
+        textarea.value = self.quizzName;
+        //svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
+        //svg.runtime.anchor("content").appendChild(textarea).focus();
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
-            self.quizzLabel.cadre.color(myColors.grey);
+            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(3);
+            self.quizzLabel.cadre.color(myColors.lightgrey);
             self.quizzNameValidInput = true;
         };
 
         var displayErrorMessage = function () {
             removeErrorMessage();
-            self.quizzLabel.cadre.color(myColors.grey, 2, myColors.red);
+            self.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
             self.errorMessage = new svg.Text(REGEX_ERROR)
                 .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
@@ -1974,11 +2011,11 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.quizzNameValidInput = false;
         };
         var onblur = function () {
-            self.quizzNameValidInput && (self.quizzName = textarea.value);
-            textarea.remove();
+            self.quizzName = textarea.component.value;
+            drawings.screen.remove(textarea);
             showTitle();
         };
-        textarea.oninput = function () {
+        var oninput = function () {
             self.questionCreator.checkInputTextArea({
                 textarea: textarea,
                 border: self.quizzLabel.cadre,
@@ -1987,7 +2024,8 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-        textarea.onblur = onblur;
+        svg.addEvent(textarea, "input", oninput);
+        svg.addEvent(textarea, "blur", onblur);
         self.questionCreator.checkInputTextArea({
             textarea: textarea,
             border: self.quizzLabel.cadre,
@@ -2093,20 +2131,17 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     border.color([], 2, myColors.black);
     self.questionsPuzzleManipulator.ordonator.set(0, border);
     self.questionsPuzzleManipulator.first.move(self.qPuzzleX + self.qPuzzleW / 2, self.qPuzzleY);
-
     self.coordinatesQuestion = {
         x: 0,
         y: -self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2,
         w: border.width - self.globalMargin.width / 2,
         h: self.questionsPuzzleHeight - self.globalMargin.height
     };
-
     for(var i=0;i<self.quizz.tabQuestions.length;i++){
         self.quizz.tabQuestions[i].bordureEventHandler=self.questionClickHandler;
         self.quizz.tabQuestions[i].contentEventHandler=self.questionClickHandler;
         self.quizz.tabQuestions[i].imageEventHandler=self.questionClickHandler;
     }
-
     self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.puzzleManipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
@@ -2120,13 +2155,12 @@ function InscriptionManagerDisplay(labels={}) {
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     var w = drawing.width/5;
     var x = drawing.width/9;
-
+    var trueValue = "";
     let focusedField;
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = svg.runtime.createDOM("input");
-            contentarea.value = self[field].label;
+            //let contentarea = svg.runtime.createDOM("textarea");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
@@ -2135,16 +2169,22 @@ function InscriptionManagerDisplay(labels={}) {
                 toppx: globalPointCenter.y ,
                 leftpx: globalPointCenter.x,
                 height: height,
-                width: self[field].cadre.width
+                width: width
             };
-            svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-                "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-                (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-                "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
-            self[field].secret && svg.runtime.attr(contentarea, 'type','password');
+            let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+            contentarea.component.value = self[field].label;
+            contentarea.color(null, 0, myColors.black).
+            font("Arial",20);
+            self[field].secret ? contentarea.type('password') : contentarea.type("text");
+
+            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
+            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
+            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
+            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
             manipulator.ordonator.unset(1, self[field].content.text);
-            svg.runtime.add(svg.runtime.anchor('content'), contentarea);
-            !runtime && contentarea.focus();
+            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
+            drawings.screen.add(contentarea);
+            contentarea.focus();
 
             var displayErrorMessage = function(trueManipulator=manipulator){
                 emptyAreasHandler();
@@ -2154,8 +2194,23 @@ function InscriptionManagerDisplay(labels={}) {
                 }
             };
 
-            contentarea.oninput = function(){
-                self[field].label = contentarea.value;
+            var oninput = function(){
+                var staredContentarea = function(){
+                    contentarea.component.value = "";
+                    for (var i = 0; i<trueValue.length; i++){
+                        contentarea.component.value+='●';
+                    }
+                }
+                if (self[field].secret && trueValue.length<contentarea.component.value.length){
+                    trueValue += contentarea.component.value.substring(contentarea.component.value.length-1);
+                    staredContentarea();
+                }
+                else if (self[field].secret){
+                    trueValue = trueValue.substring(0, contentarea.component.value.length);
+                    staredContentarea();
+                }
+                self[field].label = contentarea.component.value;
+                self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
                 if ((field === "lastNameField" || field==='firstNameField' ) && !self[field].checkInput()){
                     displayErrorMessage();
                     self[field].cadre.color(myColors.white, 3, myColors.red);
@@ -2165,17 +2220,9 @@ function InscriptionManagerDisplay(labels={}) {
                     self[field].cadre.color(myColors.white, 1, myColors.black);
                 }
             };
-            contentarea.onblur = function(){
-                if(self[field].secret){
-                    self[field].label = '';
-                    self[field].labelSecret = contentarea.value;
-                    for(let i = 0; i < contentarea.value.length; i++){
-                        self[field].label+= '●';
-                    }
-
-                } else {
-                    self[field].label = contentarea.value;
-                }
+            svg.addEvent(contentarea, "input", oninput);
+            var onblur = function(){
+                self[field].label = contentarea.component.value;
                 displayField(field, manipulator);
                 if (self[field].checkInput()){
                     self[field].cadre.color(myColors.white, 1, myColors.black);
@@ -2185,8 +2232,9 @@ function InscriptionManagerDisplay(labels={}) {
                     self[field].secret || displayErrorMessage();
                     self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
                 }
-                contentarea.remove();
+                drawings.screen.remove(contentarea);
             };
+            svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
         };
     };
@@ -2386,42 +2434,50 @@ function ConnectionManagerDisplay() {
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            let contentarea = svg.runtime.createDOM("input");
-            contentarea.value = self[field].labelSecret||self[field].label;
+            //let contentarea = svg.runtime.createDOM("input");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
-
             var contentareaStyle = {
-                toppx: globalPointCenter.y ,
+                toppx: globalPointCenter.y,
                 leftpx: globalPointCenter.x,
                 height: height,
                 width: self[field].cadre.width
             };
-            svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-                "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-                (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-                "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
-            self[field].secret && svg.runtime.attr(contentarea, 'type','password');
-            manipulator.ordonator.unset(1, self[field].content.text);
-            svg.runtime.add(svg.runtime.anchor('content'), contentarea);
-            !runtime && contentarea.focus();
+            let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
-            contentarea.onblur = function() {
+            contentarea.component.value = self[field].labelSecret||self[field].label;
+            contentarea.color(null, 0, myColors.black).
+            font("Arial",20);
+
+            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
+            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
+            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
+            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
+            //self[field].secret && svg.runtime.attr(contentarea, 'type','password');
+            self[field].secret && contentarea.type('password');
+            manipulator.ordonator.unset(1, self[field].content.text);
+            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
+            drawings.screen.add(contentarea);
+            contentarea.focus();
+
+            var onblur = function() {
                 if(self[field].secret){
                     self[field].label = '';
-                    self[field].labelSecret = contentarea.value;
-                    for(let i = 0; i < contentarea.value.length; i++){
+                    self[field].labelSecret = contentarea.component.value;
+                    for(let i = 0; i < contentarea.component.value.length; i++){
                         self[field].label+= '●';
                     }
 
                 } else {
-                    self[field].label = contentarea.value;
+                    self[field].label = contentarea.component.value;
                 }
                 displayField(field, manipulator);
                 manipulator.ordonator.unset(3);
-                contentarea.remove();
+                drawings.screen.remove(contentarea);
+                //contentarea.remove();
             };
+            svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
         };
     };

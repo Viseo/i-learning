@@ -173,6 +173,50 @@ describe('Quizz game', function () {
         };
         runTest(jsonFile, execute);
     });
+});
+describe('Inscritpion/Connexion', function () {
+
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
+        util = require("../src/Util");
+        gui = require("../src/GUI");
+        domain = require("../src/Domain");
+        mainModule = require("../src/main");
+        adminModule = require("../src/admin");
+        testModule = require("../test/testTest");
+        inscriptionModule = require("../src/inscription");
+        connexionModule = require("../src/connection");
+        dbListenerModule = require("../src/dbListener");
+        runtime.declareAnchor('content');
+        util.SVGUtil();
+        util.Bdd();
+        util.setSvg(svg);
+        util.setGui(guiSvgModule);
+        util.setRuntime(runtime);
+        mainModule.setSvg(svg);
+        mainModule.setUtil(util);
+        adminModule.setSvg(svg);
+        adminModule.setUtil(util);
+        testModule.setUtil(util);
+        testModule.setSvg(svg);
+        inscriptionModule.setSvg(svg);
+        connexionModule.setSvg(svg);
+        //quizzManagerModule.setSvg(svg);
+        //quizzManagerModule.setUtil(util);
+        domain.setUtil(util);
+        domain.Domain();
+        domain.setRuntime(runtime);
+        domain.setSvg(svg);
+        gui.setDomain(domain);
+        gui.LearningGUI();
+        gui.setSVG(svg);
+        gui.setGui(guiSvgModule);
+        gui.setRuntime(runtime);
+        dbListener = new dbListenerModule.DbListener(false, true);
+        Server = util.Server;
+    });
     it("Inscription page", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testInscription.json";

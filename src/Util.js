@@ -63,11 +63,12 @@ function SVGGlobalHandler() {
         }
     };
 
-    Drawings = function (w, h, anchor) {
+    Drawings = function (w, h, anchor = "content") {
         var self = this;
 
-        !anchor && (anchor = "content");
-        self.drawing = new svg.Drawing(w, h).show(anchor).position(0, 0);
+        self.screen = new svg.Screen(w, h).show(anchor);
+        self.drawing = new svg.Drawing(w, h).position(0, 0);
+        self.screen.add(self.drawing);
         self.drawing.manipulator = new Manipulator(self);
         self.drawing.manipulator.addOrdonator(3);
         self.piste = new Manipulator(self);
@@ -604,6 +605,13 @@ function SVGUtil() {
         return path;
     };
 
+    drawRedCross = function(x, y, w, h, manipulator){
+        var redCross = drawPlus(0, 0, w, h);
+        redCross.color(myColors.red, 1, myColors.black);
+        manipulator.rotator.rotate(45);
+        manipulator.translator.move(x, y);
+        return redCross;
+    };
     /**
      *
      * @param x
@@ -627,7 +635,7 @@ function SVGUtil() {
      * @param h
      * @param manipulator
      */
-    drawArrow = function (x, y, w, h, manipulator) {
+    drawChevron = function (x, y, w, h, manipulator) {
         var baseWidth = 160;//295-55;
         var baseHeight = 300;//385-10;
         var arrowManipulator = manipulator;
@@ -694,12 +702,9 @@ function SVGUtil() {
         var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
         var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
-        self.redCross = drawPlus(0, 0, 20, 20);
         self.redCrossManipulator = new Manipulator(self);
+        self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, 20, self.redCrossManipulator);
         self.redCrossManipulator.last.add(self.redCross);
-        self.redCross.color(myColors.red, 1, myColors.black);
-        self.redCrossManipulator.rotator.rotate(45);
-        self.redCrossManipulator.translator.move((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2);
 
         var removeLink = function(parentGame,childGame) {
             parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
@@ -744,13 +749,9 @@ function SVGUtil() {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-        self.redCross = drawPlus(0, 0, 20, 20);
         self.redCrossManipulator = new Manipulator(self);
-        self.redCrossManipulator.last.add(self.redCross);
-        self.redCross.color(myColors.red, 1, myColors.black);
-        self.redCrossManipulator.rotator.rotate(45);
-        self.redCrossManipulator.translator.move(size / 2, -size / 2);
-
+        self.redCross = drawRedCross(size / 2, -size / 2, 20, 20, self.redCrossManipulator);
+        (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
         var removeAllLinks = function () {
             game.childrenGames.forEach(function (childGame) {
                 childGame.parentGames.splice(childGame.parentGames.indexOf(game), 1);
