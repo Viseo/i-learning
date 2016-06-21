@@ -523,8 +523,7 @@ function Domain() {
                                 game.id = "bd" + gamesCounter.bd;
                                 gamesCounter.bd ++;
                             }
-
-                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game) ;
+                            levelsTab[i].gamesTab.push(game) ;
                         });
                     });
                     return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
