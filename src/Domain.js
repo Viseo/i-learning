@@ -395,8 +395,8 @@ function Domain() {
             this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
         };
 
-        self.saveFormation = function () {
-            let ignoredData = (key, value) => (myParentsList.some(parent => key === parent) ? undefined : value);
+        self.saveFormation = function (displayQuizzManager) {
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
             var messageSave = "Votre travail a bien été enregistré.";
             var messageError = "Vous devez remplir le nom de la formation.";
@@ -413,11 +413,10 @@ function Domain() {
                 setTimeout(function () {
                     self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
                 }, 1);
-                validation = false;
             };
 
-            var displaySaveMessage = function (message){
-                validation = true;
+            var displaySaveMessage = function (message, displayQuizzManager){
+                (displayQuizzManager.__proto__ ===  Function.prototype) && displayQuizzManager();
                 (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                 self.errorMessageSave = new svg.Text(message)
                     .position(0, -self.saveButtonHeight / 2 - MARGIN)
@@ -427,14 +426,13 @@ function Domain() {
                 svg.timeout(function () {
                     (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                 }, 5000);
-                validation = true;
             };
 
             if (validation) {
                 var addNewFormation = function () {
                     var callbackInsertion = function (data) {
                         self._id=JSON.parse(data);
-                        displaySaveMessage(messageSave);
+                        displaySaveMessage(messageSave, displayQuizzManager);
 
                     };
                     var callbackCheckName = function (data) {
@@ -451,7 +449,7 @@ function Domain() {
                 var replaceFormation = function () {
                     var callbackCheckName = function (data) {
                         var callbackReplace = function () {
-                            displaySaveMessage(messageReplace);
+                            displaySaveMessage(messageReplace, displayQuizzManager);
                         };
                         let formationWithSameName = JSON.parse(data).formation;
                         if(formationWithSameName) {
@@ -462,7 +460,7 @@ function Domain() {
                             newFormation = JSON.stringify(newFormation, ignoredData);
                             if (formationWithSameName && id === self._id) {
                                 if (formationWithSameName == newFormation) {
-                                    displaySaveMessage(messageNoModification);
+                                    displaySaveMessage(messageNoModification, displayQuizzManager);
                                 } else {
                                     Server.replaceFormation(self._id, getObjectToSave(), callbackReplace, ignoredData);
                                 }
@@ -485,7 +483,6 @@ function Domain() {
             } else {
                 displayErrorMessage(messageError);
             }
-            return validation;
         };
 
         self.loadFormation = function(formation) {
@@ -985,6 +982,7 @@ function Domain() {
         self.loadQuestions(quizz);
         if(self.levelIndex === undefined ){self.levelIndex = quizz.levelIndex;}
         if(self.gameIndex === undefined) { self.gameIndex = quizz.gameIndex;}
+        //self.childrenGames=quizz.childrenGames;
         (previewMode) ? (self.previewMode = previewMode) : (self.previewMode = false);
         quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows) : (self.puzzleRows = 2);
         quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines) : (self.puzzleLines = 2);

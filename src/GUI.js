@@ -651,8 +651,7 @@ function FormationDisplayFormation(){
     showTitle();
 
     var onclickQuizzHandler = function(event){
-        var bool = self.saveFormation();
-        if(self.saveFormation()) {
+        var displayQuizzManager= function() {
             var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
             self.quizzManager.loadQuizz(targetQuizz, self);
             self.quizzDisplayed = targetQuizz;
@@ -660,6 +659,8 @@ function FormationDisplayFormation(){
             self.selectedArrow = null;
             self.selectedGame = null;
         }
+        self.saveFormation(displayQuizzManager);
+
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -808,7 +809,6 @@ function FormationDisplaySaveButton(x, y, w, h) {
         var self = this;
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.errorMessageSave && self.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-
         svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
         svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
         self.saveFormationButtonManipulator.translator.move(x, y);
@@ -1883,6 +1883,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var returnHandler = function(event){
         var target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentFormation.quizzManager.quizzManagerManipulator.flush();
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
         self.header = new Header (target.parentFormation.label);
