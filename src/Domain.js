@@ -639,13 +639,13 @@ function Domain() {
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x =-self.graphCreaWidth/2+self.levelWidth/2;//+ level.parentFormation.levelWidth/2-self.graphCreaWidth
+                game.miniaturePosition.x = 0;
                 if (pos.gameIndex < nbOfGames / 2){// !_! pk pas levelWidth dans ce calcul ?
                     game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
                 } else {
                     game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2)  + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
                 }
-                game.miniaturePosition.y = -self.graphCreaHeight / 2 + (level.index - 1 / 2) * self.levelHeight;
+                game.miniaturePosition.y = -self.panel.height / 2 + (level.index - 1 / 2) * self.levelHeight;
             });
         }
     };

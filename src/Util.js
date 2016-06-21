@@ -108,6 +108,7 @@ function SVGGlobalHandler() {
 
         var onmouseupHandler = function (event) {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
+            console.log(self.target);
             if (self.target) {
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
@@ -154,118 +155,7 @@ function SVGGlobalHandler() {
         }
         clean(self.translator);
     };
-    gui.Panel.prototype.addhHandle = function (callback) {
-        var self = this;
-        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], ()=>{}).horizontal(-this.width/2, this.width/2, this.height/2);
-        this.component.add(self.hHandle.component);
 
-        var x = -self.hHandle.point * self.content.width / self.view.width + self.view.width / 2;
-        callback(x);
-
-    };
-    gui.Panel.prototype.resizeContentW = function (width) {
-        this.back.color(myColors.white).opacity(0.001);
-        if (width>=this.width-1) {//feat. MC Alexis, tabascologue de son état
-            this.content.width = width;
-            this.updateHandleHorizontal();
-        }
-        return this;
-    };
-    gui.Panel.prototype.updateHandleHorizontal = function () {
-        this.hHandle.dimension(this.view.width, this.content.width)
-            .position((this.view.width/2-this.content.x)/(this.content.width)*this.view.width);
-        return this;
-    };
-    gui.Panel.prototype.moveContent = function (y) {
-        let completeMovement = progress => {
-            this.updateHandle();
-            if (progress === 1) {
-                delete this.animation;
-            }
-        };
-        if (!this.animation) {
-            this.animation = true;
-            let ly = this.controlPosition(y);
-            this.content.onChannel().smoothy(param.speed, param.step)
-                .execute(completeMovement).moveTo(this.content.x, ly);
-        }
-        return this;
-    };
-    gui.Panel.prototype.controlPositionH = function(x) {
-        if (x > 0) {
-            x = 0;
-        }
-        if (x < -this.content.width + this.view.width) {
-            x = -this.content.width + this.view.width;
-        }
-        return x;
-    };
-    gui.Panel.prototype.moveContentH = function (x) {
-        var self=this;
-        if (!self.animation) {
-            self.animation = true;
-            var lx = this.controlPositionH(x);
-            this.content.onChannel().smoothy(param.speed, param.step)
-                .execute(completeMovement).moveTo(lx, this.content.y);
-        }
-        function completeMovement(progress) {
-            self.updateHandleHorizontal();
-            if (progress===1) {
-                delete self.animation;
-            }
-        }
-        return this;
-    };
-    gui.Panel.prototype.functionOnMoveH = function (callback) {
-        this.moveContentH = function (x) {
-            var self=this;
-            if (!self.animation) {
-                self.animation = true;
-                var lx = this.controlPositionH(x);
-                this.content.onChannel().smoothy(param.speed, param.step)
-                    .execute(completeMovement).moveTo(lx, this.content.y);
-                callback(x);
-            }
-            function completeMovement(progress) {
-                self.updateHandleHorizontal();
-                if (progress===1) {
-                    delete self.animation;
-                }
-            }
-            return this;
-        }
-    };
-    gui.Panel.prototype.processKeys = function(keycode) {
-        if (isUpArrow(keycode)) {
-            this.moveContent(this.content.y + 100);
-        }
-        else if (isDownArrow(keycode)) {
-            this.moveContent(this.content.y - 100);
-        }
-        else if(isLeftArrow(keycode)) {
-            this.moveContentH(this.content.x+100);
-        }
-        else if(isRightArrow(keycode)) {
-            this.moveContentH(this.content.x-100);
-        }
-        else {
-            return false;
-        }
-        return true;
-
-        function isUpArrow(keycode) {
-            return keycode === 38;
-        }
-        function isLeftArrow(keycode) {
-            return keycode === 37;
-        }
-        function isRightArrow(keycode) {
-            return keycode === 39;
-        }
-        function isDownArrow(keycode) {
-            return keycode === 40;
-        }
-    };
     ImageController = function (imageRuntime) {
         return imageRuntime || {
                 getImage: function (imgUrl, onloadHandler) {

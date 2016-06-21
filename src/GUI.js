@@ -655,7 +655,6 @@ function FormationDisplayFormation(){
         level.manipulator.ordonator.set(2, level.obj.line);
         level.obj.cadre.position((w-self.borderSize)/2, self.levelHeight/2).opacity(0.001);
         level.obj.content.position(svg.runtime.boundingRect(level.obj.content.component).width, svg.runtime.boundingRect(level.obj.content.component).height);
-        //self.messageDragDrop.position(w/2, svg.runtime.boundingRect(self.title.component).height + 3*self.messageDragDropMargin);
         level.obj.cadre._acceptDrop = true;
         level.obj.content._acceptDrop = true;
         level.w = w;
@@ -688,21 +687,19 @@ function FormationDisplayFormation(){
 
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
-        if(typeof self.panel === "undefined") {
-            self.panel = new gui.ScrollablePanel(w, h);
-            self.panel.contentV.add(self.messageDragDropManipulator.first);
-        } else {
-            let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-            let longestLevel = self.findLongestLevel()[0];
-            let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
-            let t= Math.max(self.levelWidth,trueWidth);
-            self.panel.resizeContent(t-1, height);
-            self.messageDragDropManipulator.first.move(-w/2+trueWidth/2,0);
+        if(typeof self.panel !== "undefined") {
+            self.clippingManipulator.last.remove(self.panel.component);
         }
-
-        self.panel.resizeContent(self.levelHeight*(self.levelsTab.length));
+        self.panel = new gui.ScrollablePanel(w, h, myColors.white);
+        self.panel.contentV.add(self.messageDragDropManipulator.first);
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        let t= Math.max(self.levelWidth,trueWidth);
+        self.miniaturesManipulator.first.move((trueWidth-self.panel.width)/2, 0);
+        self.panel.resizeContent(trueWidth, self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
-        (self.clippingManipulator.last.children.indexOf(self.panel.component) === -1) && self.clippingManipulator.last.add(self.panel.component);
+        self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.contentH.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -737,6 +734,7 @@ function FormationDisplayFormation(){
                     tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
                 }
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                console.log(tabElement.miniaturePosition);
 
                 if(tabElement instanceof Quizz){
                     svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", onclickQuizzHandler);
@@ -1640,12 +1638,12 @@ function QuizzDisplay(x,y,w,h) {
     var heightPage = drawing.height;
 
     self.headerHeight = heightPage * self.headerPercentage - MARGIN;
-    self.questionHeight = heightPage * self.questionPercentage -  MARGIN;
-    self.answerHeight = heightPage * self.answerPercentage -  MARGIN;
-    self.questionHeightWithoutImage = heightPage * self.questionPercentage -  MARGIN;
-    self.answerHeightWithoutImage = heightPage * self.answerPercentage -  MARGIN;
-    self.questionHeightWithImage = heightPage * self.questionPercentageWithImage -  MARGIN;
-    self.answerHeightWithImage = heightPage * self.answerPercentageWithImage -  MARGIN;
+    self.questionHeight = heightPage * self.questionPercentage - MARGIN;
+    self.answerHeight = heightPage * self.answerPercentage - MARGIN;
+    self.questionHeightWithoutImage = heightPage * self.questionPercentage - MARGIN;
+    self.answerHeightWithoutImage = heightPage * self.answerPercentage - MARGIN;
+    self.questionHeightWithImage = heightPage * self.questionPercentageWithImage - MARGIN;
+    self.answerHeightWithImage = heightPage * self.answerPercentageWithImage - MARGIN;
 
     var object = displayText(self.title, (self.titleArea.w ), (self.headerHeight ), self.colorBordure, self.bgColor, self.fontSize, self.font, self.quizzManipulator);
     self.titleBox = object.cadre;
