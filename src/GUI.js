@@ -1098,7 +1098,7 @@ function HeaderDisplay () {
         let svgwidth = x => svg.runtime.boundingRect(x.component).width;
         let pos = 0;
 
-        let deconnection = displayText("Déconnexion", 200, 50, myColors.none, myColors.none, 30, null, self.userManipulator, 4, 5);
+        let deconnection = displayText("Déconnexion", 220, 50, myColors.none, myColors.none, 30, null, self.userManipulator, 4, 5);
         pos-= svgwidth(deconnection.cadre)/2 + 40;
         deconnection.content.position(pos, 0);
         deconnection.cadre.position(pos, -30/2);
@@ -1133,13 +1133,13 @@ function HeaderDisplay () {
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
-    let removeArrows = () =>{
-        if (this.leftArrowManipulator.last.children.length > 1) this.leftArrowManipulator.flush();
-        if (this.rightArrowManipulator.last.children.length > 1) this.rightArrowManipulator.flush();
+    let removeChevrons = () =>{
+        if (this.leftChevronManipulator.last.children.length > 1) this.leftChevronManipulator.flush();
+        if (this.rightChevronManipulator.last.children.length > 1) this.rightChevronManipulator.flush();
     };
 
-    let handlerLeftArrow = ()=>{
-        removeArrows();
+    let handlerLeftChevron = ()=>{
+        removeChevrons();
         if (this.rows === 1 && startPosition !== 0) {
             this.display(x, y, w, h, startPosition - 1);
         } else if (startPosition - this.rows + 1 <= 0) {
@@ -1149,8 +1149,8 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
         }
     };
 
-    let handlerRightArrow = () =>{
-        removeArrows();
+    let handlerRightChevron = () =>{
+        removeChevrons();
         if(this.rows === 1 && startPosition !== this.totalRows - 1) {
             this.display(x, y, w, h, startPosition + 1);
         } else if(2*this.rows + startPosition >= this.totalRows) {
@@ -1162,7 +1162,7 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
         }
     };
 
-    let showLeftChevron = ()=>{
+    this.showLeftChevron = ()=>{
         let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator);
         if (startPosition === 0) {
             leftChevron.color(myColors.grey);
@@ -1171,14 +1171,14 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
             }
         } else {
             leftChevron.color(myColors.black);
-            svg.addEvent(leftChevron, "click", handlerleftChevron);
+            svg.addEvent(leftChevron, "click", handlerLeftChevron);
         }
         this.leftChevronManipulator.rotator.rotate(180);
         this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
     };
 
-    let showRightChevron = ()=>{
-        let rightChevron = drawChevron(0, 0, 75, 75, this.rightArrowManipulator);
+    this.showRightChevron = ()=>{
+        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator);
         if (startPosition + this.rows >= this.totalRows) {
             rightChevron.color(myColors.grey);
             if (rightChevron.onClick !== null) {
@@ -1186,9 +1186,9 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
             }
         } else {
             rightChevron.color(myColors.black);
-            svg.addEvent(rightChevron, 'click', handlerRightArrow);
+            svg.addEvent(rightChevron, 'click', handlerRightChevron);
         }
-        this.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
+        this.rightChevronManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
     };
 
     this.startPosition = startPosition;
@@ -1196,8 +1196,8 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
     this.questionWithBadAnswersManipulator = new Manipulator(this);
     this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
     if (this.rows < this.totalRows) {
-        showLeftChevron();
-        showRightChevron();
+        this.showLeftChevron();
+        this.showRightChevron();
         this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
     } else {
         this.initTiles(x, y, w, h, startPosition);

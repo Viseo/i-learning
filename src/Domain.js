@@ -750,14 +750,14 @@ function Domain() {
         var count = 0;
         self.completeBanner = [];
         self.puzzleManipulator = new Manipulator(self);
-        self.leftArrowManipulator = new Manipulator(self);
-        self.leftArrowManipulator.addOrdonator(1);
-        self.rightArrowManipulator = new Manipulator(self);
-        self.rightArrowManipulator.addOrdonator(1);
+        self.leftChevronManipulator = new Manipulator(self);
+        self.leftChevronManipulator.addOrdonator(1);
+        self.rightChevronManipulator = new Manipulator(self);
+        self.rightChevronManipulator.addOrdonator(1);
         self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
-        self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
-        self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+        self.puzzleManipulator.last.add(self.leftChevronManipulator.first);
+        self.puzzleManipulator.last.add(self.rightChevronManipulator.first);
 
         if (self.reverseMode) {
             for (var i = 0; i < self.lines; i++) {
