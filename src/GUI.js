@@ -2113,7 +2113,7 @@ function InscriptionManagerDisplay(labels={}) {
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     var w = drawing.width/5;
     var x = drawing.width/9;
-
+    var trueValue = "";
     let focusedField;
 
     var clickEditionField = function (field, manipulator) {

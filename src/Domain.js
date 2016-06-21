@@ -913,6 +913,7 @@ function Domain() {
 
         self.loadQuestion = function (quest) {
             self.linkedQuestion = quest;
+            quest.label && (self.label = quest.label);
             if (typeof quest.multipleChoice !== 'undefined') {
                 self.multipleChoice = quest.multipleChoice;
             } else {
