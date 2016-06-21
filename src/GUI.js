@@ -29,14 +29,16 @@ function setRuntime(_runtime){
 function AnswerDisplay (x, y, w, h) {
     let self = this;
 
+
+    if (typeof x !== "undefined")(self.x = x);
+    if (typeof y !== "undefined")(self.y = y);
+    if (typeof w !== "undefined")(self.w = w);
+    if (typeof h !== "undefined")(self.h = h);
+
     if(self.editable) {
-        answerEditableDisplay(x, y, w, h);
+        answerEditableDisplay(self.x, self.y, self.w, self.h);
         return;
     }
-    x && (self.x = x);
-    y && (self.y = y);
-    w && (self.w = w);
-    h && (self.h = h);
 
     if (self.label && self.imageSrc) { // Question avec Texte ET image
         let obj = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator,self.image);
@@ -71,7 +73,44 @@ function AnswerDisplay (x, y, w, h) {
                 color = (self.label) ? myColors.black : myColors.grey;
 
             if(self.image){
-                self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                if(typeof self.obj.image==='undefined'){
+                    self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                    let redCrossClickHandler=()=>{
+                        self.redCrossManipulator.flush();
+                        self.manipulator.ordonator.unset(2);//image
+                        self.image = null;
+                        self.imageSrc = null;
+                        self.display();
+                    };
+                    let mouseleaveHandler= ()=>{
+                        svg.timeout(()=>{
+                            self.redCrossManipulator.flush();
+                        },2000);
+                    };
+                    let mouseoverHandler=()=>{
+                        if(typeof self.redCrossManipulator === 'undefined'){
+                            self.redCrossManipulator=new Manipulator(self);
+                            self.redCrossManipulator.addOrdonator(2);
+                            self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
+                        }
+                        let redCross={};
+
+                        redCross=drawRedCross(self.image.width/2,-self.image.height/2,15,15,self.redCrossManipulator);
+
+                        svg.addEvent(redCross,'click',redCrossClickHandler);
+                        self.redCrossManipulator.ordonator.set(1,redCross);
+                        //console.log('héo');
+                        //self.linkedQuestion.image.component.listeners.mouseout();
+                    };
+
+                    svg.addEvent(self.obj.image,'mouseover',mouseoverHandler);
+                    svg.addEvent(self.obj.image,'mouseout',mouseleaveHandler);
+                }else{
+                    self.manipulator.ordonator.set(0, self.obj.cadre);
+                    self.obj.content && self.manipulator.ordonator.set(1, self.obj.content);
+                    self.manipulator.ordonator.set(2, self.obj.image);
+                    self.manipulator.ordonator.set(3, self.obj.checkbox);
+                }
             } else {
                 self.obj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
@@ -142,7 +181,7 @@ function AnswerDisplay (x, y, w, h) {
                 drawings.screen.remove(contentarea);
                 showTitle();
                 if(typeof self.obj.checkbox === 'undefined') {
-                    self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+                    self.obj.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
                     self.obj.checkbox.answerParent = self;
                 }
             };
@@ -169,7 +208,7 @@ function AnswerDisplay (x, y, w, h) {
         showTitle();
 
         if(typeof self.obj.checkbox === 'undefined') {
-            self.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.obj.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }
 
@@ -1508,17 +1547,17 @@ function QuestionSelectedQuestion() {
 
 function QuestionCreatorDisplay (x, y, w, h) {
     var self = this;
-    self.previousX = x;
-    self.previousY = y;
-    self.previousW = w;
-    self.previousH = h;
+    x && (self.previousX = x);
+    y && (self.previousY = y);
+    w && (self.previousW = w);
+    h && (self.previousH = h);
     self.manipulator.last.children.indexOf(self.questionCreatorManipulator.first)===-1 && self.manipulator.last.add(self.questionCreatorManipulator.first);
-    self.questionCreatorHeight = Math.floor(h * (1 - self.headerHeight) - 80);
-    self.questionCreatorManipulator.translator.move(x, 0);
+    self.questionCreatorHeight = Math.floor(self.previousH * (1 - self.headerHeight) - 80);
+    self.questionCreatorManipulator.translator.move(self.previousX, 0);
     self.toggleButtonHeight = 40;
-    self.displayQuestionCreator(MARGIN + x, y, w, h);
+    self.displayQuestionCreator(MARGIN + self.previousX, self.previousY, self.previousW, self.previousH);
     var clickedButton = self.multipleChoice ? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
-    self.displayToggleButton(MARGIN + x, MARGIN/2+y, w, self.toggleButtonHeight-MARGIN, clickedButton);
+    self.displayToggleButton(MARGIN + self.previousX, MARGIN/2+self.previousY, self.previousW, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
 function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
@@ -1613,6 +1652,38 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
+            let redCrossClickHandler=()=>{
+                self.redCrossManipulator.flush();
+                self.questionManipulator.ordonator.unset(2);//image
+                self.linkedQuestion.image = null;
+                self.linkedQuestion.imageSrc = null;
+                self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
+                self.display();
+            };
+            let mouseleaveHandler= ()=>{
+                svg.timeout(()=>{
+                    self.redCrossManipulator.flush();
+                },2000);
+            };
+            let mouseoverHandler=()=>{
+                if(typeof self.redCrossManipulator === 'undefined'){
+                    self.redCrossManipulator=new Manipulator(self);
+                    self.redCrossManipulator.addOrdonator(2);
+                    self.questionManipulator && self.questionManipulator.last.add(self.redCrossManipulator.first);
+                }
+                let redCross={};
+
+                redCross=drawRedCross(self.linkedQuestion.image.width/2,-self.linkedQuestion.image.height/2,15,15,self.redCrossManipulator);
+
+                svg.addEvent(redCross,'click',redCrossClickHandler);
+                self.redCrossManipulator.ordonator.set(1,redCross);
+                //console.log('héo');
+                //self.linkedQuestion.image.component.listeners.mouseout();
+            };
+
+            svg.addEvent(self.questionBlock.title.image,'mouseover',mouseoverHandler);
+            svg.addEvent(self.questionBlock.title.image,'mouseout',mouseleaveHandler);
+
             self.questionBlock.title.image._acceptDrop = true;
         } else {
             self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);

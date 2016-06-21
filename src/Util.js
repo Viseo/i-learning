@@ -94,10 +94,25 @@ function SVGGlobalHandler() {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
                 svg.event(self.target, "mousemove", event);
+                if(self.target.component.listeners && self.target.component.listeners.mouseover){
+                    svg.event(self.target, "mouseover", event);
+                }
+                if(self.target.component.listeners && self.target.component.listeners.mouseout){
+                    svg.event(self.target, "mouseout", event);
+                }
             }
         };
 
         svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
+
+        //var onmouseoverHandler = function (event) {
+        //    self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
+        //    if (self.target) {
+        //        svg.event(self.target, "mouseover", event);
+        //    }
+        //};
+        //
+        //svg.addEvent(self.glass, "mouseover", onmouseoverHandler);
 
         var ondblclickHandler = function (event) {
             self.target = self.background.getTarget(event.clientX, event.clientY);

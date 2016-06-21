@@ -242,28 +242,19 @@ function Domain() {
                     oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
                     oldQuest.content.position(newQuest.content.x, newQuest.content.y);
                     newQuest.image._acceptDrop = true;
-                    // adding mouseover event for deletion (red cross)
-                    let redCrossClickHandler=()=>{
-
-                    };
-                    let mouseoverHandler=()=>{
-
-                        let redCross=drawRedCross();
-                        svg.addEvent(redCross,'click',redCrossClickHandler);
-                        newQuest.manipulator.ordonator.set(3,redCross);
-
-
-                    };
 
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
                             target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
                             target.parent.parentManip.parentObject.parent.displayQuestionsPuzzle(null, null, null, null, target.parent.parentManip.parentObject.parent.questionPuzzle.startPosition);
+                            target.parent.parentManip.parentObject.display();
                             break;
                         case target.parent.parentManip.parentObject.editable:
                             target.parent.parentManip.parentObject.image = newQuest.image;
                             target.parent.parentManip.parentObject.imageSrc = newQuest.image.src;
+                            target.parent.parentManip.parentObject.display(-target.parent.parentManip.parentObject.w/2,-target.parent.parentManip.parentObject.h/2);
+
                             break;
                     }
                     target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
