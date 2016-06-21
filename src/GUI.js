@@ -274,10 +274,6 @@ function LibraryDisplay(x, y, w, h) {
                                     e.cadre.color(myColors.white, 3, SELECTION_COLOR);
                                     self.gameSelected = e;
                                 }
-                                //else {
-                                //    e.cadre.color(myColors.white, 1, myColors.black);
-                                //    self.gameSelected = null;
-                                //}
                                 else {
                                     e.cadre.color(myColors.white, 1, myColors.black);
                                     self.gameSelected = null;
@@ -542,6 +538,22 @@ function FormationDisplayFormation(){
     if (playerMode) return;
 
 
+    self.resizePanel = function () {
+        var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        let widthMAX = Math.max(self.panel.width, trueWidth);
+        self.panel.resizeContent(widthMAX-1, height);
+    };
+    self.movePanelContent = function () {
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        let widthMAX = Math.max(self.panel.width, trueWidth);
+        self.miniaturesManipulator.first.move((widthMAX-self.panel.width)/2, 0);
+    };
+
     var showTitle = function() {
         var text = (self.label==="") ? self.labelDefault : self.label;
         var color = (self.label) ? myColors.black : myColors.grey;
@@ -644,19 +656,17 @@ function FormationDisplayFormation(){
         }
         self.panel.contentV.add(level.manipulator.first);
 
-        level.obj = displayTextWithoutCorners("Niveau "+level.index, w-3*self.borderSize, self.levelHeight, myColors.none, myColors.white, 20, null, level.manipulator);
+        level.obj = autoAdjustText("Niveau "+level.index, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
         (self.textLevelNumberDimensions = {
-            width: svg.runtime.boundingRect(level.obj.content.component).width,
-            height: svg.runtime.boundingRect(level.obj.content.component).height
+            width: svg.runtime.boundingRect(level.obj.text.component).width,
+            height: svg.runtime.boundingRect(level.obj.text.component).height
         });
         level.manipulator.ordonator.set(2, level.obj.line);
-        level.obj.cadre.position((w-self.borderSize)/2, self.levelHeight/2).opacity(0.001);
-        level.obj.content.position(svg.runtime.boundingRect(level.obj.content.component).width, svg.runtime.boundingRect(level.obj.content.component).height);
-        level.obj.cadre._acceptDrop = true;
-        level.obj.content._acceptDrop = true;
+        level.obj.text.position(svg.runtime.boundingRect(level.obj.text.component).width, svg.runtime.boundingRect(level.obj.text.component).height);
+        level.obj.text._acceptDrop = true;
         level.w = w;
         level.h = h;
         level.y = (level.index-1) * level.parentFormation.levelHeight;
@@ -692,18 +702,15 @@ function FormationDisplayFormation(){
         }
         self.panel = new gui.ScrollablePanel(w, h, myColors.white);
         self.panel.contentV.add(self.messageDragDropManipulator.first);
-        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-        let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
-        let t= Math.max(self.levelWidth,trueWidth);
-        self.miniaturesManipulator.first.move((trueWidth-self.panel.width)/2, 0);
-        self.panel.resizeContent(trueWidth, self.levelHeight*(self.levelsTab.length));
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
         self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.contentH.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+
+        self.resizePanel();
+        self.movePanelContent();
     };
     self.updateAllLinks = function() {
         self.arrowsManipulator.flush();
@@ -716,7 +723,9 @@ function FormationDisplayFormation(){
            }) ;
         });
     };
-    self.displayGraph = function (w, h){
+    self.displayGraph = (w, h) => {
+        this.movePanelContent();
+        this.resizePanel();
         if (typeof w !== "undefined") self.graphW = w;
         if (typeof h !== "undefined") self.graphH = h;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
@@ -734,7 +743,6 @@ function FormationDisplayFormation(){
                     tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
                 }
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                console.log(tabElement.miniaturePosition);
 
                 if(tabElement instanceof Quizz){
                     svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", onclickQuizzHandler);
@@ -755,22 +763,16 @@ function FormationDisplayFormation(){
         self.graphBlock.rect._acceptDrop = true;
         self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
         self.panel.back._acceptDrop = true;
-        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-        let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
-        let t= Math.max(self.levelWidth,trueWidth);
-        self.panel.resizeContent(t-1, height);
+
+        self.resizePanel();
+
         self.panel.back.parent.parentManip = self.graphManipulator;
-
-
         self.updateAllLinks();
     };
 
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
     self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
-    //self.title.component.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
-    //self.title.component.target && self.title.component.target.getBoundingClientRect && self.gamesLibraryManipulator.translator.move(0, self.graphCreaHeight/2);
     self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight); ////15: Height Message Error
 }
 

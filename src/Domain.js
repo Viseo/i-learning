@@ -243,47 +243,8 @@ function Domain() {
                     target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
                     target.parent.parentManip.ordonator.set(1, oldQuest.content);
                 } else {
-                    var formation;
-                    var dropLocation = target.parent.parentManip.parentObject;
-                    if(dropLocation instanceof Formation){
-                        formation = dropLocation;
-                        formation.addNewLevel();
-                        formation.targetLevelIndex = formation.levelsTab.length-1;
-                    }else{
-                        if(dropLocation instanceof Level){
-                            var level = dropLocation;
-                            formation = level.parentFormation;
-                            formation.targetLevelIndex = formation.levelsTab.indexOf(level);
-                        }
-                    }
-
-                    var objectToBeAddedLabel = self.draggedObjectLabel ? self.draggedObjectLabel : (self.gameSelected.content.messageText ? self.gameSelected.content.messageText : false);
-                    switch (objectToBeAddedLabel) {
-                        case ("Quiz"):
-                            var newQuizz = new Quizz(defaultQuizz, false, formation);
-                            formation.gamesCounter.quizz++;
-                            newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                            newQuizz.title = objectToBeAddedLabel + " " + formation.gamesCounter.quizz;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newQuizz);
-                            break;
-                        case ("Bd"):
-                            var newBd = new Bd({}, formation);
-                            formation.gamesCounter.bd++;
-                            newBd.title = objectToBeAddedLabel + " " + formation.gamesCounter.bd;
-                            formation.levelsTab[formation.targetLevelIndex].gamesTab.push(newBd);
-                            break;
-                    }
-                    level = formation.levelsTab[formation.targetLevelIndex];
-                    var nbOfGames = level.gamesTab.length;
-                    var spaceOccupied = (nbOfGames) * (formation.minimalMarginBetweenGraphElements) + formation.graphElementSize * nbOfGames;
-                    if(spaceOccupied > (level.parentFormation.levelWidth)){
-                        formation.levelWidth += (formation.minimalMarginBetweenGraphElements + formation.graphElementSize);
-                        level.obj.line = new svg.Line(level.obj.line.x1, level.obj.line.y1, level.obj.line.x1 + formation.levelWidth, level.obj.line.y2).color(myColors.black, 3, myColors.black);
-                        level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
-                        level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
-                        level.manipulator.ordonator.set(2, level.obj.line);
-                    }
-                    formation.displayGraph(formation.graphCreaWidth, formation.graphCreaHeight);
+                    var formation = target.parent.parentManip.parentObject;
+                    formation.addNewGame(target, event, self);
                 }
             }
             self.gameSelected && formation && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
@@ -370,7 +331,6 @@ function Domain() {
         self.miniaturesManipulator = new Manipulator(self);
         self.graphManipulator.last.add(self.miniaturesManipulator.first);
         self.graphManipulator.last.add(self.arrowsManipulator.first);
-        //self.graphManipulator.last.add(self.messageDragDropManipulator.first);
         self.clippingManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator = new Manipulator(self);
         self.saveFormationButtonManipulator.addOrdonator(2);
@@ -404,6 +364,35 @@ function Domain() {
         self.levelHeight = 150;
         self.graphElementSize = self.levelHeight*0.65;
 
+        self.addNewGame = (target, event, lib) => {
+            var dropLocation = target.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
+            let level = -1;
+            while(dropLocation > -this.panel.content.height/2) {
+                dropLocation -= this.levelHeight;
+                level++;
+            }
+            if (level >= this.levelsTab.length) {
+                level = this.levelsTab.length;
+                this.addNewLevel(level);
+            }
+            var objectToBeAddedLabel = lib.draggedObjectLabel ? lib.draggedObjectLabel : (lib.gameSelected.content.messageText ? lib.gameSelected.content.messageText : false);
+            switch (objectToBeAddedLabel) {
+                case ("Quiz"):
+                    var newQuizz = new Quizz(defaultQuizz, false, this);
+                    this.gamesCounter.quizz++;
+                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
+                    this.levelsTab[level].gamesTab.push(newQuizz);
+                    break;
+                case ("Bd"):
+                    var newBd = new Bd({}, this);
+                    this.gamesCounter.bd++;
+                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
+                    this.levelsTab[level].gamesTab.push(newBd);
+                    break;
+            }
+            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+        };
 
         self.saveFormation = function () {
             let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
@@ -639,12 +628,7 @@ function Domain() {
                 !game.childrenGames && (game.childrenGames = []);
 
                 var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = 0;
-                if (pos.gameIndex < nbOfGames / 2){// !_! pk pas levelWidth dans ce calcul ?
-                    game.miniaturePosition.x -= -self.minimalMarginBetweenGraphElements * (3 / 2) + (nbOfGames / 2 - pos.gameIndex) * spaceOccupied / nbOfGames;
-                } else {
-                    game.miniaturePosition.x += +self.minimalMarginBetweenGraphElements * (3 / 2)  + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                }
+                game.miniaturePosition.x = self.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
                 game.miniaturePosition.y = -self.panel.height / 2 + (level.index - 1 / 2) * self.levelHeight;
             });
         }
