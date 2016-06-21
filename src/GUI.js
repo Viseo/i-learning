@@ -2379,21 +2379,23 @@ function ConnectionManagerDisplay() {
 
             var alreadyDeleted = false;
             var onblur = function() {
-                contentarea.enter();
-                if(self[field].secret){
-                    self[field].label = '';
-                    self[field].labelSecret = contentarea.messageText;
-                    for(let i = 0; i < contentarea.messageText.length; i++){
-                        self[field].label+= '●';
-                    }
+                if (!alreadyDeleted) {
+                    contentarea.enter();
+                    if (self[field].secret) {
+                        self[field].label = '';
+                        self[field].labelSecret = contentarea.messageText;
+                        for (let i = 0; i < contentarea.messageText.length; i++) {
+                            self[field].label += '●';
+                        }
 
-                } else {
-                    self[field].label = contentarea.messageText;
+                    } else {
+                        self[field].label = contentarea.messageText;
+                    }
+                    displayField(field, manipulator);
+                    manipulator.ordonator.unset(3);
+                    alreadyDeleted || drawings.screen.remove(contentarea);
+                    alreadyDeleted = true;
                 }
-                displayField(field, manipulator);
-                manipulator.ordonator.unset(3);
-                alreadyDeleted || drawings.screen.remove(contentarea);
-                alreadyDeleted = true;
             };
             svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];

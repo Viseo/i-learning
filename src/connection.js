@@ -46,7 +46,7 @@ function connexion(){
         }
     }
     setTimeout(function(){
-        window.onresize = resizePaper;
+        svg.runtime.addGlobalEvent("resize", resizePaper);
     },200);
 }
 
