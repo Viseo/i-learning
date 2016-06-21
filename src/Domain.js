@@ -242,6 +242,18 @@ function Domain() {
                     oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
                     oldQuest.content.position(newQuest.content.x, newQuest.content.y);
                     newQuest.image._acceptDrop = true;
+                    // adding mouseover event for deletion (red cross)
+                    let redCrossClickHandler=()=>{
+
+                    };
+                    let mouseoverHandler=()=>{
+
+                        let redCross=
+                        newQuest.manipulator.ordonator.set()
+
+
+                    };
+
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
