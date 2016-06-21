@@ -746,7 +746,7 @@ function Domain() {
         }
 
         var count = 0;
-        self.virtualTab = [];
+        self.completeBanner = [];
         self.puzzleManipulator = new Manipulator(self);
         self.leftArrowManipulator = new Manipulator(self);
         self.leftArrowManipulator.addOrdonator(1);
@@ -759,10 +759,10 @@ function Domain() {
 
         if (self.reverseMode) {
             for (var i = 0; i < self.lines; i++) {
-                self.virtualTab[i] = [];
+                self.completeBanner[i] = [];
                 for (var j = 0; j < self.rows; j++) {
                     if (count < self.questionsTab.length) {
-                        self.virtualTab[i][j] = self.questionsTab[count];
+                        self.completeBanner[i][j] = self.questionsTab[count];
                         count++;
                     } else {
                         break;
@@ -771,12 +771,12 @@ function Domain() {
             }
         } else {
             for (i = 0; i < self.totalRows; i++) {
-                self.virtualTab[i] = [];
+                self.completeBanner[i] = [];
                 for (j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
-                        self.virtualTab[i][j] = self.questionsTab[count];
-                        if ((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first) {
-                            self.virtualTab[i][j].questionManipulator.flush();
+                        self.completeBanner[i][j] = self.questionsTab[count];
+                        if ((self.completeBanner[i][j] instanceof Question) && self.completeBanner[i][j].answersManipulator.first) {
+                            self.completeBanner[i][j].questionManipulator.flush();
                         }
                         count++;
                     } else {

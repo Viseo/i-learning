@@ -1096,71 +1096,74 @@ function HeaderDisplay () {
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
-    let self = this;
-    self.startPosition = startPosition;
-    self.puzzleManipulator.last.remove(self.questionWithBadAnswersManipulator.first);
-    self.questionWithBadAnswersManipulator = new Manipulator(self);
-    self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
-
-    let removeArrows = function (){
-        if (self.leftArrowManipulator.last.children.length > 1) self.leftArrowManipulator.flush();
-        if (self.rightArrowManipulator.last.children.length > 1) self.rightArrowManipulator.flush();
+    let removeArrows = () =>{
+        if (this.leftArrowManipulator.last.children.length > 1) this.leftArrowManipulator.flush();
+        if (this.rightArrowManipulator.last.children.length > 1) this.rightArrowManipulator.flush();
     };
 
-    let handlerLeftArrow = function (){
+    let handlerLeftArrow = ()=>{
         removeArrows();
-        if (self.rows === 1 && startPosition !== 0) {
-            self.display(x, y, w, h, startPosition - 1);
-        } else if (startPosition - self.rows + 1 <= 0) {
-            self.display(x, y, w, h, 0);
+        if (this.rows === 1 && startPosition !== 0) {
+            this.display(x, y, w, h, startPosition - 1);
+        } else if (startPosition - this.rows + 1 <= 0) {
+            this.display(x, y, w, h, 0);
         } else {
-            self.display(x, y, w, h, startPosition - self.rows + 1);
+            this.display(x, y, w, h, startPosition - this.rows + 1);
         }
     };
 
-    if (self.rows < self.totalRows) {
-        let leftArrow = drawArrow(0, 0, 75, 75, self.leftArrowManipulator);
+    let handlerRightArrow = () =>{
+        removeArrows();
+        if(this.rows === 1 && startPosition !== this.totalRows - 1) {
+            this.display(x, y, w, h, startPosition + 1);
+        } else if(2*this.rows + startPosition >= this.totalRows) {
+            let newStartPosition = this.totalRows - this.rows;
+            this.display(x, y, w, h, newStartPosition);
+        } else {
+            let newStartPosition = startPosition + this.rows - 1;
+            this.display(x, y, w, h, newStartPosition);
+        }
+    };
+
+    let showLeftChevron = ()=>{
+        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator);
         if (startPosition === 0) {
-            leftArrow.color(myColors.grey);
-            if (leftArrow.onClick !== null) {
-                svg.removeEvent(leftArrow, 'click', leftArrow.onClick);
+            leftChevron.color(myColors.grey);
+            if (leftChevron.onClick !== null) {
+                svg.removeEvent(leftChevron, 'click', leftChevron.onClick);
             }
         } else {
-            leftArrow.color(myColors.black);
-            svg.addEvent(leftArrow, "click", handlerLeftArrow);
+            leftChevron.color(myColors.black);
+            svg.addEvent(leftChevron, "click", handlerleftChevron);
         }
+        this.leftChevronManipulator.rotator.rotate(180);
+        this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
+    };
 
-        self.leftArrowManipulator.rotator.rotate(180);
-        self.leftArrowManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
-
-        let handlerRightArrow = function () {
-            removeArrows();
-            if(self.rows === 1 && startPosition !== self.totalRows - 1) {
-                self.display(x, y, w, h, startPosition + 1);
-            } else if(2*self.rows + startPosition >= self.totalRows) {
-                let newStartPosition = self.totalRows - self.rows;
-                self.display(x, y, w, h, newStartPosition);
-            } else {
-                let newStartPosition = startPosition + self.rows - 1;
-                self.display(x, y, w, h, newStartPosition);
-            }
-        };
-
-        let rightArrow = drawArrow(0, 0, 75, 75, self.rightArrowManipulator);
-        if (startPosition + self.rows >= self.totalRows) {
-            rightArrow.color(myColors.grey);
-            if (rightArrow.onClick !== null) {
-                svg.removeEvent(rightArrow, 'click', rightArrow.onClick);
+    let showRightChevron = ()=>{
+        let rightChevron = drawChevron(0, 0, 75, 75, this.rightArrowManipulator);
+        if (startPosition + this.rows >= this.totalRows) {
+            rightChevron.color(myColors.grey);
+            if (rightChevron.onClick !== null) {
+                svg.removeEvent(rightChevron, 'click', rightChevron.onClick);
             }
         } else {
-            rightArrow.color(myColors.black);
-            svg.addEvent(rightArrow, 'click', handlerRightArrow);
+            rightChevron.color(myColors.black);
+            svg.addEvent(rightChevron, 'click', handlerRightArrow);
         }
+        this.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
+    };
 
-        self.rightArrowManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
-        self.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
+    this.startPosition = startPosition;
+    this.puzzleManipulator.last.remove(this.questionWithBadAnswersManipulator.first);
+    this.questionWithBadAnswersManipulator = new Manipulator(this);
+    this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
+    if (this.rows < this.totalRows) {
+        showLeftChevron();
+        showRightChevron();
+        this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
     } else {
-        self.initTiles(x, y, w, h, startPosition);
+        this.initTiles(x, y, w, h, startPosition);
     }
 }
 
@@ -1174,74 +1177,74 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     var posY = y;
     var count = startPosition * self.lines;
     if((self.tileHeight > 0) && (self.tileWidth > 0)){
-    if (self.reverseMode) {
-        // Valable pour 2 lignes 4 col
-        for (var i = startPosition; i < (startPosition + self.lines); i++) {
-            for (var j = 0; j < self.rows; j++) {
-                if (count < self.questionsTab.length) {
-                    self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                    if (!(self.virtualTab[i][j].bordure)) {
-                        self.virtualTab[i][j].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
-                        if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].bordure, 'click', self.virtualTab[i][j].bordureEventHandler);
+        if (self.reverseMode) {
+            // Valable pour 2 lignes 4 col
+            for (var i = startPosition; i < (startPosition + self.lines); i++) {
+                for (var j = 0; j < self.rows; j++) {
+                    if (count < self.questionsTab.length) {
+                        self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
+                        if (!(self.completeBanner[i][j].bordure)) {
+                            self.completeBanner[i][j].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
+                            if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
+                            }
+                            if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
+                            }
+                            if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
+                                svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
+                            }
                         }
-                        if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].content, 'click', self.virtualTab[i][j].contentEventHandler);
-                        }
-                        if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
-                            svg.addEvent(self.virtualTab[i][j].raphImage, 'click', self.virtualTab[i][j].imageEventHandler);
-                        }
-                    }
-                    self.virtualTab[i][j].manipulator.first.move(posX + self.tileWidth / 2 + MARGIN, posY + MARGIN);
+                        self.completeBanner[i][j].manipulator.first.move(posX + self.tileWidth / 2 + MARGIN, posY + MARGIN);
 
-                    posX += self.tileWidth + MARGIN;
-                    count++;
+                        posX += self.tileWidth + MARGIN;
+                        count++;
+                    }
+                    else {
+                        break;
+                    }
                 }
-                else {
-                    break;
-                }
+                posY += self.tileHeight + MARGIN;
+                posX = 0;
             }
-            posY += self.tileHeight + MARGIN;
-            posX = 0;
-        }
-    } else {
-        for (i = startPosition; i < (startPosition + self.rows); i++) {
-            for (j = 0; j < self.lines; j++) {
-                if (count < self.questionsTab.length) {
-                    if (self.virtualTab[i][j] instanceof AddEmptyElement) {
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].manipulator.first);
-                    } else {
-                        self.questionWithBadAnswersManipulator.last.add(self.virtualTab[i][j].questionManipulator.first);
-                        self.virtualTab[i][j].questionManipulator.ordonator.unset(3);
-                    }
-                    self.virtualTab[i][j].display(0, 0, self.tileWidth, self.tileHeight);
-                    if (self.virtualTab[i][j].bordure && self.virtualTab[i][j].bordureEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].bordure, 'click', self.virtualTab[i][j].bordureEventHandler);
-                    }
-                    if (self.virtualTab[i][j].content && self.virtualTab[i][j].contentEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].content, 'click', self.virtualTab[i][j].contentEventHandler);
-                    }
-                    if (self.virtualTab[i][j].raphImage && self.virtualTab[i][j].imageEventHandler) {
-                        svg.addEvent(self.virtualTab[i][j].raphImage, 'click', self.virtualTab[i][j].imageEventHandler);
-                    }
+        } else {
+            for (i = startPosition; i < (startPosition + self.rows); i++) {
+                for (j = 0; j < self.lines; j++) {
+                    if (count < self.questionsTab.length) {
+                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
+                        } else {
+                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].questionManipulator.first);
+                            self.completeBanner[i][j].questionManipulator.ordonator.unset(3);
+                        }
+                        self.completeBanner[i][j].display(0, 0, self.tileWidth, self.tileHeight);
+                        if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
+                        }
+                        if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
+                        }
+                        if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
+                            svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
+                        }
 
-                    if (self.virtualTab[i][j] instanceof AddEmptyElement) {
-                        self.virtualTab[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                    } else {
-                        self.virtualTab[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                    }
+                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
+                        } else {
+                            self.completeBanner[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
+                        }
 
-                    posY += self.tileHeight + MARGIN;
-                    count++;
-                } else {
-                    break;
+                        posY += self.tileHeight + MARGIN;
+                        count++;
+                    } else {
+                        break;
+                    }
                 }
+                posX += self.tileWidth + MARGIN;
+                posY = y;
             }
-            posX += self.tileWidth + MARGIN;
-            posY = y;
         }
     }
-}
 }
 
 function QuestionDisplay(x, y, w, h) {
@@ -1558,25 +1561,25 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     self.margin = (w-lengthToUse)/2;
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
-    (!self.virtualTab) && (self.virtualTab = []);
+    (!self.completeBanner) && (self.completeBanner = []);
     self.quizzType.forEach(function(type){
 
-        if(self.virtualTab[i] && self.virtualTab[i].manipulator){
-            self.toggleButtonManipulator.last.remove(self.virtualTab[i].manipulator.first);
+        if(self.completeBanner[i] && self.completeBanner[i].manipulator){
+            self.toggleButtonManipulator.last.remove(self.completeBanner[i].manipulator.first);
         }
 
-        self.virtualTab[i] = {};
+        self.completeBanner[i] = {};
 
-        self.virtualTab[i].manipulator = new Manipulator(self);
-        self.virtualTab[i].manipulator.addOrdonator(2);
-        self.toggleButtonManipulator.last.add(self.virtualTab[i].manipulator.first);
-        (type.label == clicked) ? (self.virtualTab[i].color = SELECTION_COLOR) : (self.virtualTab[i].color = myColors.white);
-        self.virtualTab[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.virtualTab[i].color, 20, null, self.virtualTab[i].manipulator);
-        self.virtualTab[i].toggleButton.content.color(getComplementary(self.virtualTab[i].color), 0, myColors.black);
-        self.virtualTab[i].manipulator.translator.move(self.x,MARGIN+h/2);
+        self.completeBanner[i].manipulator = new Manipulator(self);
+        self.completeBanner[i].manipulator.addOrdonator(2);
+        self.toggleButtonManipulator.last.add(self.completeBanner[i].manipulator.first);
+        (type.label == clicked) ? (self.completeBanner[i].color = SELECTION_COLOR) : (self.completeBanner[i].color = myColors.white);
+        self.completeBanner[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.completeBanner[i].color, 20, null, self.completeBanner[i].manipulator);
+        self.completeBanner[i].toggleButton.content.color(getComplementary(self.completeBanner[i].color), 0, myColors.black);
+        self.completeBanner[i].manipulator.translator.move(self.x,MARGIN+h/2);
         self.x += self.toggleButtonWidth + MARGIN;
-        (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.content, "click", toggleHandler));
-        (type.label != clicked) && (svg.addEvent(self.virtualTab[i].toggleButton.cadre, "click", toggleHandler));
+        (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.content, "click", toggleHandler));
+        (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.cadre, "click", toggleHandler));
 
         i++;
     });
@@ -1831,27 +1834,24 @@ function QuizzManagerDisplay(){
     drawing.currentPageDisplayed = 'QuizManager';
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
-    self.questionClickHandler = function(event){
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
-        var element = target.parent.parentManip.parentObject;
-        self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
+    self.questionClickHandler = event =>{
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        let element = target.parent.parentManip.parentObject;
+        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
         element.selected = true;
-        if(typeof element.redCrossManipulator === "undefined"){
+        if(!element.redCrossManipulator){
             element.redCrossManipulator = new Manipulator(element);
             element.redCross = drawRedCross(0, 0, 20, 20, element.redCrossManipulator);
-            (element.redCrossManipulator.last.children.indexOf(element.redCross) === -1) && element.redCrossManipulator.last.add(element.redCross);
-            element.questionManipulator.ordonator.set(6, element.redCrossManipulator);
+            element.redCrossManipulator.last.add(element.redCross);
+            element.questionManipulator.last.add(element.redCrossManipulator.first);
         }
         else{
             element.redCrossManipulator.translator.move(0, 0);
         }
-
-
-        self.displayQuestionsPuzzle(null, null, null, null, self.questionPuzzle.startPosition);
-        self.indexOfEditedQuestion = self.quizz.tabQuestions.indexOf(element);
-        self.questionCreator.loadQuestion(element);
-        //self.questionCreatorManipulator.flush();
-        self.questionCreator.display(self.questionCreator.previousX,self.questionCreator.previousY,self.questionCreator.previousW,self.questionCreator.previousH);
+        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
+        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(element);
+        this.questionCreator.loadQuestion(element);
+        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
     };
 
     var displayFunctions = function(){
@@ -1884,7 +1884,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     self.returnText=new svg.Text("Retour");
     self.quizzInfoManipulator.ordonator.set(3, self.returnText);
 
-    self.returnButton=drawArrow(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
+    self.returnButton=drawChevron(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
     var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
@@ -2097,20 +2097,17 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     border.color([], 2, myColors.black);
     self.questionsPuzzleManipulator.ordonator.set(0, border);
     self.questionsPuzzleManipulator.first.move(self.qPuzzleX + self.qPuzzleW / 2, self.qPuzzleY);
-
     self.coordinatesQuestion = {
         x: 0,
         y: -self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2,
         w: border.width - self.globalMargin.width / 2,
         h: self.questionsPuzzleHeight - self.globalMargin.height
     };
-
     for(var i=0;i<self.quizz.tabQuestions.length;i++){
         self.quizz.tabQuestions[i].bordureEventHandler=self.questionClickHandler;
         self.quizz.tabQuestions[i].contentEventHandler=self.questionClickHandler;
         self.quizz.tabQuestions[i].imageEventHandler=self.questionClickHandler;
     }
-
     self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.puzzleManipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);

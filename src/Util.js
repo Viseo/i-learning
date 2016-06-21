@@ -632,7 +632,7 @@ function SVGUtil() {
      * @param h
      * @param manipulator
      */
-    drawArrow = function (x, y, w, h, manipulator) {
+    drawChevron = function (x, y, w, h, manipulator) {
         var baseWidth = 160;//295-55;
         var baseHeight = 300;//385-10;
         var arrowManipulator = manipulator;
