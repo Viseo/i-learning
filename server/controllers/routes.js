@@ -14,14 +14,6 @@ module.exports = function (app, fs) {
     var ObjectID = require('mongodb').ObjectID;
     var id = new ObjectID();
 
-    app.post('/insert', function(req, res) {
-        var collection = db.get().collection('formations');
-        var obj = req.body;
-        collection.insert(obj, function (err, docs) {
-            res.send(docs.insertedIds[0]);
-        });
-    });
-
     app.post('/inscription', function(req, res) {
         var collection = db.get().collection('users');
         var obj = req.body;
@@ -110,6 +102,14 @@ module.exports = function (app, fs) {
         })
     });
 
+    app.post('/insert', function(req, res) {
+        var collection = db.get().collection('formations');
+        var obj = req.body;
+        collection.insert(obj, function (err, docs) {
+            res.send(docs.insertedIds[0]);
+        });
+    });
+
     app.get('/getFormationByName/:name', function(req, res) {
         var collection = db.get().collection('formations');
         var result;
@@ -134,15 +134,6 @@ module.exports = function (app, fs) {
      result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.levelIndex);
      res.send({formation: result});
      });
-     });
-
-     app.get('/getQuizzByGameIndex/:gameIndex', function(req, res) {
-     var collection = db.get().collection('formations');
-     var result;
-     var obj=collection.find().
-     toArray(function(err, docs) {
-     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.gameIndex);
-     res.send({formation: result});
      });
      });*/
 

@@ -507,6 +507,28 @@ function Domain() {
                     var getObjectToSave = function () {
                         return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: self.levelsTab}
                     };
+                var getObjectToSave = function () {
+                    var levelsTab = [];
+                    var gamesCounter = {quizz: 0 , bd : 0};
+                    self.levelsTab.forEach(function (level, i) {
+                        var gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(function (game) {
+                            game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
+                            if (game.tabQuestions) {
+                                game.id = "quizz"  + gamesCounter.quizz;
+                                gamesCounter.quizz ++;
+                            }
+                            else {
+                                game.id = "bd" + gamesCounter.bd;
+                                gamesCounter.bd ++;
+                            }
+
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game) ;
+                        });
+                    });
+                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
+                };
 
                 self._id ? replaceFormation() : addNewFormation();
             } else {
