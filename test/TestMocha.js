@@ -49,6 +49,7 @@ var dbListenerModule;
 var inscriptionModule;
 var connexionModule;
 var server;
+var twinBcrypt;
 
 describe('Quizz game', function () {
 
@@ -189,6 +190,7 @@ describe('Inscritpion/Connexion', function () {
         inscriptionModule = require("../src/inscription");
         connexionModule = require("../src/connection");
         dbListenerModule = require("../src/dbListener");
+        TwinBcrypt = require("../node_modules/twin-bcrypt/twin-bcrypt.min.js");
         runtime.declareAnchor('content');
         util.SVGUtil();
         util.Bdd();
@@ -230,9 +232,35 @@ describe('Inscritpion/Connexion', function () {
         };
         runTest(jsonFile, execute);
     });
+    it("Inscription Ok", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testInscriptionOK.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    inscriptionModule.inscription();
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
     it("Connection page", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testConnection.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    connexionModule.connexion();
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+    it("Connection texfield filled but no click on the connection button", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testConnectionSansClick.json";
         var execute = function () {
             var globalVariables = mainModule.setGlobalVariable();
             domain.setGlobalVariables(globalVariables);

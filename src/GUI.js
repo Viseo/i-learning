@@ -2083,11 +2083,9 @@ function InscriptionManagerDisplay(labels={}) {
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            //let contentarea = svg.runtime.createDOM("textarea");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
-
             var contentareaStyle = {
                 toppx: globalPointCenter.y ,
                 leftpx: globalPointCenter.x,
@@ -2095,20 +2093,13 @@ function InscriptionManagerDisplay(labels={}) {
                 width: width
             };
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-            contentarea.component.value = self[field].label;
+            contentarea.message(self[field].label);
             contentarea.color(null, 0, myColors.black).
             font("Arial",20);
             self[field].secret ? contentarea.type('password') : contentarea.type("text");
-
-            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
             manipulator.ordonator.unset(1, self[field].content.text);
-            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
             drawings.screen.add(contentarea);
             contentarea.focus();
-
             var displayErrorMessage = function(trueManipulator=manipulator){
                 emptyAreasHandler();
                 if (!(field==="passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)){
@@ -2116,46 +2107,54 @@ function InscriptionManagerDisplay(labels={}) {
                     message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
                 }
             };
-
+            var alreadyInput
             var oninput = function(){
-                var staredContentarea = function(){
-                    contentarea.component.value = "";
-                    for (var i = 0; i<trueValue.length; i++){
-                        contentarea.component.value+='●';
+                if (!alreadyInput) {
+                    if (self[field].secret && trueValue.length < contentarea.messageText.length) {
+                        trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
                     }
-                }
-                if (self[field].secret && trueValue.length<contentarea.component.value.length){
-                    trueValue += contentarea.component.value.substring(contentarea.component.value.length-1);
-                    staredContentarea();
-                }
-                else if (self[field].secret){
-                    trueValue = trueValue.substring(0, contentarea.component.value.length);
-                    staredContentarea();
-                }
-                self[field].label = contentarea.component.value;
-                self[field].labelSecret!== "undefined" && (self[field].labelSecret = trueValue);
-                if ((field === "lastNameField" || field==='firstNameField' ) && !self[field].checkInput()){
-                    displayErrorMessage();
-                    self[field].cadre.color(myColors.white, 3, myColors.red);
-                }
-                else {
-                    field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
-                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                    else if (self[field].secret) {
+                        trueValue = trueValue.substring(0, contentarea.messageText.length);
+                    }
+                    self[field].label = contentarea.messageText;
+                    self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
+                    if ((field === "lastNameField" || field === 'firstNameField' ) && !self[field].checkInput()) {
+                        displayErrorMessage();
+                        self[field].cadre.color(myColors.white, 3, myColors.red);
+                    }
+                    else {
+                        field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                        self[field].cadre.color(myColors.white, 1, myColors.black);
+                    }
+                    alreadyInput = true;
                 }
             };
             svg.addEvent(contentarea, "input", oninput);
+            var alreadyDeleted = false;
             var onblur = function(){
-                self[field].label = contentarea.component.value;
-                displayField(field, manipulator);
-                if (self[field].checkInput()){
-                    self[field].cadre.color(myColors.white, 1, myColors.black);
-                    field!== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                if (!alreadyDeleted) {
+                    contentarea.enter();
+                    if (self[field].secret) {
+                        self[field].label = '';
+                        self[field].labelSecret = contentarea.messageText;
+                        for (let i = 0; i < contentarea.messageText.length; i++) {
+                            self[field].label += '●';
+                        }
+                    } else {
+                        self[field].label = contentarea.messageText;
+                    }
+                    displayField(field, manipulator);
+                    if (self[field].checkInput()) {
+                        self[field].cadre.color(myColors.white, 1, myColors.black);
+                        field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                    }
+                    else {
+                        self[field].secret || displayErrorMessage();
+                        self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
+                    }
+                    drawings.screen.remove(contentarea);
+                    alreadyDeleted = true;
                 }
-                else {
-                    self[field].secret || displayErrorMessage();
-                    self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
-                }
-                drawings.screen.remove(contentarea);
             };
             svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
@@ -2327,7 +2326,8 @@ function InscriptionManagerDisplay(labels={}) {
             backwards ? index-- : index++;
             if(index === self.tabForm.length) index = 0;
             if(index === -1) index = self.tabForm.length - 1;
-            self.tabForm[index].cadre.component.listeners.click();
+            svg.event(self.tabForm[index].cadre, "click", self.saveButtonHandler);
+            //self.tabForm[index].cadre.component.listeners.click();
         }
     };
 
@@ -2338,7 +2338,8 @@ function InscriptionManagerDisplay(labels={}) {
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            self.saveButton.cadre.component.listeners.click();
+            svg.event(self.tabForm[index].cadre, "click", self.saveButtonHandler);
+            //self.saveButton.cadre.component.listeners.click();
         }
     });
 }
@@ -2357,7 +2358,6 @@ function ConnectionManagerDisplay() {
 
     var clickEditionField = function (field, manipulator) {
         return function () {
-            //let contentarea = svg.runtime.createDOM("input");
             var width = w;
             var height = self.h;
             var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
@@ -2369,36 +2369,31 @@ function ConnectionManagerDisplay() {
             };
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
-            contentarea.component.value = self[field].labelSecret||self[field].label;
+            contentarea.message(self[field].labelSecret||self[field].label);
             contentarea.color(null, 0, myColors.black).
             font("Arial",20);
-
-            //svg.runtime.attr(contentarea, 'style', "position: absolute; top:" + (contentareaStyle.toppx) +
-            //    "px; left:" + (contentareaStyle.leftpx) + "px; width:" + contentareaStyle.width + "px; height:" +
-            //    (contentareaStyle.height) + "px; overflow:hidden; text-align:center; font-family: Arial;" +
-            //    "font-size: 20px; resize: none; border: none; outline : none; background-color: transparent;");
-            //self[field].secret && svg.runtime.attr(contentarea, 'type','password');
             self[field].secret && contentarea.type('password');
             manipulator.ordonator.unset(1, self[field].content.text);
-            //svg.runtime.add(svg.runtime.anchor('content'), contentarea);
             drawings.screen.add(contentarea);
             contentarea.focus();
 
+            var alreadyDeleted = false;
             var onblur = function() {
+                contentarea.enter();
                 if(self[field].secret){
                     self[field].label = '';
-                    self[field].labelSecret = contentarea.component.value;
-                    for(let i = 0; i < contentarea.component.value.length; i++){
+                    self[field].labelSecret = contentarea.messageText;
+                    for(let i = 0; i < contentarea.messageText.length; i++){
                         self[field].label+= '●';
                     }
 
                 } else {
-                    self[field].label = contentarea.component.value;
+                    self[field].label = contentarea.messageText;
                 }
                 displayField(field, manipulator);
                 manipulator.ordonator.unset(3);
-                drawings.screen.remove(contentarea);
-                //contentarea.remove();
+                alreadyDeleted || drawings.screen.remove(contentarea);
+                alreadyDeleted = true;
             };
             svg.addEvent(contentarea, "blur", onblur);
             focusedField = self[field];
@@ -2453,7 +2448,8 @@ function ConnectionManagerDisplay() {
             backwards ? index-- : index++;
             if(index === self.tabForm.length) index = 0;
             if(index === -1) index = self.tabForm.length - 1;
-            self.tabForm[index].cadre.component.listeners.click();
+            //self.tabForm[index].cadre.component.listeners.click();
+            svg.event(self.tabForm[index].cadre, "click", self.connectionButtonHandler);
         }
     };
 
@@ -2464,7 +2460,8 @@ function ConnectionManagerDisplay() {
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            self.connectionButton.cadre.component.listeners.click();
+            svg.event(self.tabForm[index].cadre, "click", self.connectionButtonHandler);
+            //self.connectionButton.cadre.component.listeners.click();
         }
     });
 }

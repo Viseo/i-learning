@@ -1222,7 +1222,6 @@ InscriptionManager = function () {
     let self = this;
 
     self.manipulator = new Manipulator(self);
-    self.manipulator.addOrdonator(6);
     self.firstNameManipulator = new Manipulator(self);
     self.firstNameManipulator.addOrdonator(4);
     self.lastNameManipulator = new Manipulator(self);
