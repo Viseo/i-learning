@@ -567,8 +567,11 @@ function SVGUtil() {
         let finalHeight = svg.runtime.boundingRect(t.component).height;
         (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
         (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
+        let finalWidth = svg.runtime.boundingRect(t.component).width;
+        (typeof finalWidth === 'undefined' && t.messageText !== '') && (finalWidth = runtime.boundingRect(t.component).width);
+        (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
         t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
-        return {finalHeight: finalHeight, text: t};
+        return {finalHeight, finalWidth, text: t};
     };
 
     /**
