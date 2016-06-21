@@ -248,8 +248,9 @@ function Domain() {
                     };
                     let mouseoverHandler=()=>{
 
-                        let redCross=
-                        newQuest.manipulator.ordonator.set()
+                        let redCross=drawRedCross();
+                        svg.addEvent(redCross,'click',redCrossClickHandler);
+                        newQuest.manipulator.ordonator.set(3,redCross);
 
 
                     };
