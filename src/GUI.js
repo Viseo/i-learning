@@ -878,7 +878,10 @@ function FormationsManagerDisplay() {
     self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
+
+    self.header = new Header();
     self.header.display();
+
     if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
         self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -1767,6 +1770,8 @@ function QuizzDisplay(x,y,w,h) {
     //self.quizzManipulator.ordonator.set(1,self.titleText);
     //self.quizzManipulator.ordonator.set(0,self.titleBox);
     self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
+
+    self.header = new Header(this.title);
     self.header.display();
 
     if(self.currentQuestionIndex===-1){// on passe à la première question

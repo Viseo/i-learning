@@ -661,8 +661,7 @@ function Domain() {
 
     FormationsManager = function (formations) {
         var self = this;
-
-        self.header = new Header("Liste Formations");
+        
         self.x = MARGIN;
         self.tileHeight = 150;
         self.tileWidth = self.tileHeight*(16/9);
@@ -1029,7 +1028,6 @@ function Domain() {
         quizz.fontSize ? (self.fontSize = quizz.fontSize) : (self.fontSize = 20);
         quizz.colorBordure ? (self.colorBordure = quizz.colorBordure) : (self.colorBordure = myColors.black);
         quizz.bgColor ? (self.bgColor = quizz.bgColor) : (self.bgColor = myColors.none);
-        quizz.parentFormation ? (self.parentFormation = quizz.parentFormation) : (self.parentFormation = {label:"formation"}) ;
         self.resultArea = {
             x: drawing.width / 2,
             y: 220,
@@ -1055,7 +1053,6 @@ function Domain() {
         self.title = quizz.title ? quizz.title : '';
         self.currentQuestionIndex = -1;
         self.finalMessage = "";
-        self.header = new Header(self.parentFormation.label + " - " + self.title);
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
                 if (self.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
