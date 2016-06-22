@@ -28,6 +28,7 @@ var test = function(){
         if(event.keyCode === 27) { // echap
             console.log("ECHAP");
             rect.color(myColors.red, 10, myColors.black);
+            return true;
         }
     };
     svg.runtime.addGlobalEvent("keydown", function (event) {

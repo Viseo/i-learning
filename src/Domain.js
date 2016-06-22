@@ -6,7 +6,7 @@ var util, drawing, mainManipulator, iRuntime, runtime, asyncTimerController, svg
 setUtil = function(_util){
     util = _util;
 };
-setGlobalVariables = function(gv){
+setGlobalVariables = function(gv) {
     drawing = gv.drawing;
     mainManipulator = gv.mainManipulator;
     clientWidth = gv.clientWidth;
@@ -103,12 +103,12 @@ function Domain() {
         };
         answerParameters && (answer = answerParameters);
         self.manipulator = new Manipulator(self);
-        self.manipulator.addOrdonator(5);
+        self.manipulator.addOrdonator(6);
         self.label = answer.label;
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;
         self.selected = false;
-
+        self.answerNameValidInput = true;
         self.fontSize = answer.fontSize ? answer.fontSize : 20;
         answer.font && (self.font = answer.font);
 
@@ -136,19 +136,20 @@ function Domain() {
             self._acceptDrop = editable;
             self.editor = editor;
             self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.value.match(REGEX)) {
-                    self.label = objCont.contentarea.value;
+                if (objCont.contentarea.component.value.match(REGEX)) {
+                    self.label = objCont.contentarea.component.value;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;
-                    objCont.contentarea.style.border = "none";
-                    objCont.contentarea.style.outline = "none";
+                    objCont.contentarea.component.style.border = "none";
+                    objCont.contentarea.component.style.outline = "none";
                 } else {
+                    self.label = objCont.contentarea.component.value;
                     objCont.display();
-                    objCont.contentarea.onblur = function () {
-                        objCont.contentarea.value = "";
-                        objCont.onblur();
-                        objCont.remove();
-                    }
+                    //svg.addEvent(objCont.contentarea,'blur',function () {
+                    //    objCont.contentarea.component.value = "";
+                    //    objCont.onblur();
+                    //    objCont.remove();
+                    //});
                 }
             } : null;
         };
@@ -357,7 +358,7 @@ function Domain() {
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : "";
         self.status = formation.status ? formation.status : statusEnum.NotPublished;
-
+        self.labelValidInput = true ;
 
         self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
@@ -395,7 +396,7 @@ function Domain() {
         };
 
         self.saveFormation = function () {
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            let ignoredData = (key, value) => (myParentsList.some(parent => key === parent) ? undefined : value);
             var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
             var messageSave = "Votre travail a bien été enregistré.";
             var messageError = "Vous devez remplir le nom de la formation.";
@@ -562,15 +563,16 @@ function Domain() {
         self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.value.match(self.regex)) {
+            if (myObj.textarea.component.value.match(self.regex)) {
+                self.labelValidInput = true;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.style.border = "none";
-                myObj.textarea.style.outline = "none";
+                myObj.textarea.border = "none";
+                myObj.textarea.outline = "none";
             } else {
                 myObj.display();
                 myObj.textarea.onblur = function () {
-                    myObj.textarea.value = "";
+                    myObj.textarea.component.value = "";
                     myObj.onblur();
                     myObj.remove();
                 }
@@ -627,10 +629,9 @@ function Domain() {
      * Created by ACA3502 on 14/04/2016.
      */
 
-    FormationsManager = function (formations, additionalMessage) {
+    FormationsManager = function (formations) {
         var self = this;
-
-        self.header = new Header(additionalMessage);
+        
         self.x = MARGIN;
         self.tileHeight = 150;
         self.tileWidth = self.tileHeight*(16/9);
@@ -678,6 +679,8 @@ function Domain() {
         additionalMessage && (self.addMessage = additionalMessage);
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(3);
+        self.userManipulator = new Manipulator(self);
+        self.userManipulator.addOrdonator(6);
         self.label = "I-learning";
         self.size = 0.05; // 5%
         self.setMessage = function (additionalMessage) {
@@ -714,23 +717,23 @@ function Domain() {
         }
 
         var count = 0;
-        self.virtualTab = [];
+        self.completeBanner = [];
         self.puzzleManipulator = new Manipulator(self);
-        self.leftArrowManipulator = new Manipulator(self);
-        self.leftArrowManipulator.addOrdonator(1);
-        self.rightArrowManipulator = new Manipulator(self);
-        self.rightArrowManipulator.addOrdonator(1);
+        self.leftChevronManipulator = new Manipulator(self);
+        self.leftChevronManipulator.addOrdonator(1);
+        self.rightChevronManipulator = new Manipulator(self);
+        self.rightChevronManipulator.addOrdonator(1);
         self.questionWithBadAnswersManipulator = new Manipulator(self);
         self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
-        self.puzzleManipulator.last.add(self.leftArrowManipulator.first);
-        self.puzzleManipulator.last.add(self.rightArrowManipulator.first);
+        self.puzzleManipulator.last.add(self.leftChevronManipulator.first);
+        self.puzzleManipulator.last.add(self.rightChevronManipulator.first);
 
         if (self.reverseMode) {
             for (var i = 0; i < self.lines; i++) {
-                self.virtualTab[i] = [];
+                self.completeBanner[i] = [];
                 for (var j = 0; j < self.rows; j++) {
                     if (count < self.questionsTab.length) {
-                        self.virtualTab[i][j] = self.questionsTab[count];
+                        self.completeBanner[i][j] = self.questionsTab[count];
                         count++;
                     } else {
                         break;
@@ -739,12 +742,12 @@ function Domain() {
             }
         } else {
             for (i = 0; i < self.totalRows; i++) {
-                self.virtualTab[i] = [];
+                self.completeBanner[i] = [];
                 for (j = 0; j < self.lines; j++) {
                     if (count < self.questionsTab.length) {
-                        self.virtualTab[i][j] = self.questionsTab[count];
-                        if ((self.virtualTab[i][j] instanceof Question) && self.virtualTab[i][j].answersManipulator.first) {
-                            self.virtualTab[i][j].questionManipulator.flush();
+                        self.completeBanner[i][j] = self.questionsTab[count];
+                        if ((self.completeBanner[i][j] instanceof Question) && self.completeBanner[i][j].answersManipulator.first) {
+                            self.completeBanner[i][j].questionManipulator.flush();
                         }
                         count++;
                     } else {
@@ -770,7 +773,7 @@ function Domain() {
     Question = function (question, quizz) {
         var self = this;
         self.questionManipulator = new Manipulator(self);
-        self.questionManipulator.addOrdonator(5);
+        self.questionManipulator.addOrdonator(6);
         self.answersManipulator = new Manipulator(self);
         self.questionManipulator.last.add(self.answersManipulator.first);
         self.resetManipulator = new Manipulator(self);
@@ -865,7 +868,7 @@ function Domain() {
         self.questionCreatorManipulator = new Manipulator(self);
         self.questionCreatorManipulator.addOrdonator(1);
         self.questionManipulator = new Manipulator(self);
-        self.questionManipulator.addOrdonator(5);
+        self.questionManipulator.addOrdonator(6);
         self.toggleButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
@@ -874,13 +877,14 @@ function Domain() {
         self.manipulator.last.add(self.saveQuizButtonManipulator.first);
 
         self.questionNameValidInput = true;
-        self.quizzNameValidInput = true;
+
 
         self.labelDefault = "Cliquer deux fois pour ajouter la question";
         self.quizzType = myQuizzType.tab;
 
         self.loadQuestion = function (quest) {
             self.linkedQuestion = quest;
+            quest.label && (self.label = quest.label);
             if (typeof quest.multipleChoice !== 'undefined') {
                 self.multipleChoice = quest.multipleChoice;
             } else {
@@ -907,18 +911,19 @@ function Domain() {
 
         self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.value.match(REGEX)) {
+            if (myObj.textarea.component.value.match(REGEX)) {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                !runtime && (myObj.textarea.style.border = "none");
-                !runtime && (myObj.textarea.style.outline = "none");
+                !runtime && (myObj.textarea.border = "none");
+                !runtime && (myObj.textarea.outline = "none");
+                self.quizzNameValidInput = true;
             } else {
                 myObj.display();
-                myObj.textarea.onblur = function () {
-                    myObj.textarea.value = "";
-                    myObj.onblur();
-                    myObj.remove();
-                }
+                //myObj.textarea.onblur = function () {
+                //    myObj.textarea.component.value = "";
+                //    myObj.onblur();
+                //    myObj.remove();
+                //}
             }
         };
     };
@@ -1104,11 +1109,11 @@ function Domain() {
     QuizzManager = function (quizz) {
         var self = this;
 
-
         self.quizzName = "";
         self.quizzNameDefault = "Ecrire ici le nom du quiz";
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
+        self.quizzNameValidInput = true;
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, parentFormation);
@@ -1225,6 +1230,10 @@ InscriptionManager = function () {
     self.formLabels = {};
 };
 
+////////////////// end of InscriptionManager.js //////////////////////////
+
+////////////////// ConnectionManager.js //////////////////////////
+
 ConnectionManager = function () {
 
     let self = this;
@@ -1281,7 +1290,7 @@ ConnectionManager = function () {
             Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
-                    window.username = `${data.firstName} ${data.lastName}`;
+                    drawing.username = `${data.firstName} ${data.lastName}`;
                     self.listFormations();
                 } else {
                     let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
@@ -1294,8 +1303,7 @@ ConnectionManager = function () {
         }
     };
 };
-
-////////////////// end of QuizzManager.js //////////////////////////
+////////////////// end of ConnectionManager.js //////////////////////////
 
 if(typeof exports !== "undefined") {
     exports.Domain = Domain;

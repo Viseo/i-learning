@@ -25,7 +25,7 @@ function connexion(){
     Server.checkCookie(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
-            window.username = `${data.lastName} ${data.firstName}`;
+            drawing.username = `${data.lastName} ${data.firstName}`;
             manager.listFormations();
         } else {
             manager.display();
