@@ -1,8 +1,8 @@
 module.exports = function (app, fs) {
 
-    var db = require('../db');
-    var TwinBcrypt=require('twin-bcrypt');
-    var jwt = require('json-web-token');
+    let db = require('../db'),
+        TwinBcrypt = require('twin-bcrypt'),
+        cookies = require('../cookies');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -39,21 +39,6 @@ module.exports = function (app, fs) {
         });
     });
 
-    var sendCookie = function (res, user) {
-        jwt.encode('VISEO', {user: user}, function (err, token) {
-            res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
-            res.send({
-                ack: 'OK',
-                user: {
-                    lastName: user.lastName,
-                    firstName: user.firstName,
-                    admin: user.admin
-                }
-            });
-            console.log(`${new Date().toLocaleTimeString('fr-FR')} : User "${user.firstName} ${user.lastName}" connected.`)
-        });
-    };
-
     app.post('/auth/connect', function(req, res) {
         var collection = db.get().collection('users');
         collection.find().toArray(function(err, docs) {
@@ -62,7 +47,7 @@ module.exports = function (app, fs) {
                 if (err) {
                     return console.error(err.name, err.message);
                 } else {
-                    sendCookie(res, user);
+                    cookies.send(res, user);
                 }
             } else {
                 res.send({status: 'error'});
@@ -71,24 +56,20 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', function(req, res) {
-        var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        if(token) {
-            jwt.decode('VISEO', token, function (err, decode) {
-                if (err) {
-                    return console.error(err.name, err.message);
-                } else {
-                    var collection = db.get().collection('users');
-                    collection.find().toArray(function (err, docs) {
-                        var user = docs.find(user => user.mailAddress === decode.user.mailAddress);
-                        if (user) {
-                            sendCookie(res, user);
-                        } else {
-                            res.send({status: 'error'});
-                        }
-                    });
-                }
-            });
-        } else {
+        let hasCookie = cookies.verify(req, (err, decode) => {
+            if (!err) {
+                var collection = db.get().collection('users');
+                collection.find().toArray(function (err, docs) {
+                    var user = docs.find(user => user.mailAddress === decode.user.mailAddress);
+                    if (user) {
+                        cookies.send(res, user);
+                    } else {
+                        res.send({status: 'error'});
+                    }
+                });
+            }
+        });
+        if (!hasCookie) {
             res.send({status: 'no cookie'});
         }
     });
@@ -96,8 +77,7 @@ module.exports = function (app, fs) {
     app.post('/sendProgress', function(req, res) {
         var collection = db.get().collection('UsersFormations');
         var obj = collection.find().toArray(function (err, docs) {
-            var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-            jwt.decode('VISEO', token, function (err, decode) {
+            cookies.verify(req, function (err, decode) {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;
