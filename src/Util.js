@@ -290,12 +290,11 @@ function SVGUtil() {
             h = 1;
         }
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
-        var bbox= svg.runtime.boundingRect(text.component);
-        var textHeight = bbox.height;
-        (typeof textHeight === "undefined") && (textHeight = fontSize+2);
+
+        var textHeight = h*0.25;
         text.position(0, (h - textHeight) / 2);//w*1/6
-        var newWidth = previousImage && w === previousImage.width ? w : w - 2 * MARGIN;
-        var newHeight = previousImage && h === previousImage.height ? h : h - textHeight - 3 * MARGIN;
+        var newWidth = previousImage && w === previousImage.width ? w : w ;
+        var newHeight = previousImage && h === previousImage.height ? h : (h - textHeight)*0.8 ;
         var image = displayImage(imageSrc, imageObj, newWidth, newHeight);//
         image.image.position(0, -textHeight / 2);
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
@@ -509,8 +508,8 @@ function SVGUtil() {
         return path;
     };
 
-    drawRedCross = function(x, y, w, h, manipulator){
-        var redCross = drawPlus(0, 0, w, h);
+    drawRedCross = function(x, y, size, manipulator){
+        var redCross = drawPlus(0, 0, size, size);
         redCross.color(myColors.red, 1, myColors.black);
         manipulator.rotator.rotate(45);
         manipulator.translator.move(x, y);
@@ -607,7 +606,7 @@ function SVGUtil() {
         var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
         self.redCrossManipulator = new Manipulator(self);
-        self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, 20, self.redCrossManipulator);
+        self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, self.redCrossManipulator);
         self.redCrossManipulator.last.add(self.redCross);
 
         var removeLink = function(parentGame,childGame) {
@@ -654,7 +653,7 @@ function SVGUtil() {
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
         self.redCrossManipulator = new Manipulator(self);
-        self.redCross = drawRedCross(size / 2, -size / 2, 20, 20, self.redCrossManipulator);
+        self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
         var removeAllLinks = function () {
             game.childrenGames.forEach(function (childGame) {

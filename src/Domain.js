@@ -245,20 +245,21 @@ function Domain() {
 
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                            target.parent.parentManip.parentObject.linkedQuestion.image = newQuest.image;
-                            target.parent.parentManip.parentObject.linkedQuestion.imageSrc = newQuest.image.src;
-                            target.parent.parentManip.parentObject.parent.displayQuestionsPuzzle(null, null, null, null, target.parent.parentManip.parentObject.parent.questionPuzzle.startPosition);
-                            target.parent.parentManip.parentObject.display();
+                            let questionCreator = target.parent.parentManip.parentObject;
+                            questionCreator.linkedQuestion.image = newQuest.image;
+                            questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                            questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                            questionCreator.display();
                             break;
                         case target.parent.parentManip.parentObject.editable:
-                            target.parent.parentManip.parentObject.image = newQuest.image;
-                            target.parent.parentManip.parentObject.imageSrc = newQuest.image.src;
-                            target.parent.parentManip.parentObject.display(-target.parent.parentManip.parentObject.w/2,-target.parent.parentManip.parentObject.h/2);
-
+                            let answer = target.parent.parentManip.parentObject;
+                            answer.image = newQuest.image;
+                            answer.imageSrc = newQuest.image.src;
+                            answer.display(-answer.w/2,-answer.h/2);
                             break;
                     }
                     target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-                    target.parent.parentManip.ordonator.set(1, oldQuest.content);
+                    //target.parent.parentManip.ordonator.set(1, oldQuest.content);
                 } else {
                     var formation = target.parent.parentManip.parentObject;
                     formation.addNewGame(event, self);

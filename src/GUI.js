@@ -67,7 +67,33 @@ function AnswerDisplay (x, y, w, h) {
 
     function answerEditableDisplay(x, y, w, h) {
         self.checkboxSize = h * 0.2;
+        let redCrossClickHandler=()=>{
+            self.redCrossManipulator.flush();
+            self.manipulator.ordonator.unset(2);//image
+            self.image = null;
+            self.imageSrc = null;
+            self.display();
+        };
+        let mouseleaveHandler= ()=>{
+            svg.timeout(()=>{
+                self.redCrossManipulator.flush();
+            },2000);
+        };
+        let mouseoverHandler=()=>{
+            if(typeof self.redCrossManipulator === 'undefined'){
+                self.redCrossManipulator=new Manipulator(self);
+                self.redCrossManipulator.addOrdonator(2);
+                self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
+            }
+            let redCross={};
+            let redCrossSize = 15;
+            redCross = drawRedCross(self.image.width/2 + redCrossSize/2, -self.image.height/2-redCrossSize, redCrossSize, self.redCrossManipulator);
 
+            svg.addEvent(redCross,'click',redCrossClickHandler);
+            self.redCrossManipulator.ordonator.set(1,redCross);
+            //console.log('héo');
+            //self.linkedQuestion.image.component.listeners.mouseout();
+        };
         let showTitle = function () {
             let text = (self.label) ? self.label : self.labelDefault,
                 color = (self.label) ? myColors.black : myColors.grey;
@@ -75,40 +101,15 @@ function AnswerDisplay (x, y, w, h) {
             if(self.image){
                 if(typeof self.obj.image==='undefined'){
                     self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
-                    let redCrossClickHandler=()=>{
-                        self.redCrossManipulator.flush();
-                        self.manipulator.ordonator.unset(2);//image
-                        self.image = null;
-                        self.imageSrc = null;
-                        self.display();
-                    };
-                    let mouseleaveHandler= ()=>{
-                        svg.timeout(()=>{
-                            self.redCrossManipulator.flush();
-                        },2000);
-                    };
-                    let mouseoverHandler=()=>{
-                        if(typeof self.redCrossManipulator === 'undefined'){
-                            self.redCrossManipulator=new Manipulator(self);
-                            self.redCrossManipulator.addOrdonator(2);
-                            self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
-                        }
-                        let redCross={};
-
-                        redCross=drawRedCross(self.image.width/2,-self.image.height/2,15,15,self.redCrossManipulator);
-
-                        svg.addEvent(redCross,'click',redCrossClickHandler);
-                        self.redCrossManipulator.ordonator.set(1,redCross);
-                        //console.log('héo');
-                        //self.linkedQuestion.image.component.listeners.mouseout();
-                    };
 
                     svg.addEvent(self.obj.image,'mouseover',mouseoverHandler);
                     svg.addEvent(self.obj.image,'mouseout',mouseleaveHandler);
                 }else{
                     self.manipulator.ordonator.set(0, self.obj.cadre);
                     self.obj.content && self.manipulator.ordonator.set(1, self.obj.content);
-                    self.manipulator.ordonator.set(2, self.obj.image);
+                    svg.addEvent(self.image,'mouseover',mouseoverHandler);
+                    svg.addEvent(self.image,'mouseout',mouseleaveHandler);
+                    self.manipulator.ordonator.set(2, self.image);
                     self.manipulator.ordonator.set(3, self.obj.checkbox);
                 }
             } else {
@@ -208,7 +209,7 @@ function AnswerDisplay (x, y, w, h) {
         showTitle();
 
         if(typeof self.obj.checkbox === 'undefined') {
-            self.obj.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.obj.checkbox = displayCheckbox(-self.w/2+self.checkboxSize,self.h/2 - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }
 
@@ -1672,8 +1673,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
                     self.questionManipulator && self.questionManipulator.last.add(self.redCrossManipulator.first);
                 }
                 let redCross={};
-
-                redCross=drawRedCross(self.linkedQuestion.image.width/2,-self.linkedQuestion.image.height/2,15,15,self.redCrossManipulator);
+                let redCrossSize = 15;
+                redCross = drawRedCross(self.linkedQuestion.image.width/2 + redCrossSize/2, -self.linkedQuestion.image.height/2-redCrossSize, redCrossSize, self.redCrossManipulator);
 
                 svg.addEvent(redCross,'click',redCrossClickHandler);
                 self.redCrossManipulator.ordonator.set(1,redCross);
@@ -1778,7 +1779,6 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     showTitle();
     // bloc Answers
     if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
-
         self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
     self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.puzzleManipulator.first);
@@ -1922,11 +1922,28 @@ function QuizzManagerDisplay(){
 
     self.questionClickHandler = event =>{
         let target = drawings.background.getTarget(event.clientX,event.clientY);
+        let element = target.parent.parentManip.parentObject;
+        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
+        element.selected = true;
+
+        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
+        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(element);
+        this.questionCreator.loadQuestion(element);
+        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
         let question = target.parent.parentManip.parentObject;
         let quizzManager = question.parentQuizz.parentFormation.quizzManager;
         let quizz = quizzManager.quizz;
         let tabQuestions = quizz.tabQuestions;
         let questionCreator = quizzManager.questionCreator;
+        if(!question.redCrossManipulator){
+            question.redCrossManipulator = new Manipulator(question);
+            question.redCross = drawRedCross(0, 0, 20, question.redCrossManipulator);
+            question.redCrossManipulator.last.add(question.redCross);
+            question.questionManipulator.last.add(question.redCrossManipulator.first);
+        }
+        else{
+            question.redCrossManipulator.translator.move(0, 0);
+        }
         tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
         question.selected = true;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
