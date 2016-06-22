@@ -125,7 +125,8 @@ function AnswerDisplay (x, y, w, h) {
                 let libraryRatio = 0.2,
                     previewButtonHeightRatio = 0.1,
                     marginErrorMessagePreviewButton = 0.03,
-                    position = (window.innerWidth / 2 - 0.5 * libraryRatio * drawing.width + 2 * MARGIN),
+                    //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
+                    position = 0.5*libraryRatio * drawing.width + (self.editor.parent.questCreaWidth/2),//-self.editor.parent.globalMargin.width)/2,
                     anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEX_ERROR)
                     .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
@@ -137,7 +138,6 @@ function AnswerDisplay (x, y, w, h) {
 
             let onblur = function () {
                 contentarea.enter();
-                contentarea.message(contentarea.component.value);
                 self.label = contentarea.messageText;
                 drawings.screen.remove(contentarea);
                 showTitle();

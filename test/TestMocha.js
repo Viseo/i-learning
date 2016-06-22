@@ -354,6 +354,21 @@ describe('Admin use', function () {
         });
         this.timeout(100000);
     });
+    it("an admin quizz textareas Ok and not", function (done) {
+        var jsonFile = "./log/testAdminQuizzTextAreas.json";
+        testutils.retrieveDB("./log/dbtestAdminQuizzTextAreas.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
+    });
     it("an admin goes to formation and creates games and save", function (done) {
         var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
         testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {
