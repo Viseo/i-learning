@@ -291,7 +291,7 @@ function SVGUtil() {
         }
         var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
 
-        var textHeight = h*0.25;
+        var textHeight = (label !== "")? h*0.25:0;
         text.position(0, (h - textHeight) / 2);//w*1/6
         var newWidth = previousImage && w === previousImage.width ? w : w ;
         var newHeight = previousImage && h === previousImage.height ? h : (h - textHeight)*0.8 ;

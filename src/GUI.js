@@ -1273,7 +1273,7 @@ function QuestionDisplay(x, y, w, h) {
     h && (self.height = h);
 
     // Question avec Texte ET image
-    if (typeof self.label !== "undefined" && self.imageSrc) {
+    if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
         let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
         self.bordure = obj.cadre;
         self.content = obj.content;
@@ -1284,13 +1284,11 @@ function QuestionDisplay(x, y, w, h) {
         var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
         self.bordure = object.cadre;
         self.content = object.content;
-
     }
     // Question avec Image uniquement
     else if (self.imageSrc && !self.label) {
-        self.raphImage = displayImage(self.imageSrc, self.dimImage, self.w, self.height).image;
+        self.raphImage = displayImage(self.imageSrc, {width:self.image.width,height:self.image.height}, self.w, self.height).image;
         self.questionManipulator.ordonator.set(2, self.raphImage);
-
     }
     else {
         self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
@@ -1536,7 +1534,7 @@ function QuestionSelectedQuestion() {
         };
         this.redCrossManipulator = new Manipulator(this);
         let size = 20;
-        this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, size, this.redCrossManipulator);
+        this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, this.redCrossManipulator);
         svg.addEvent(this.redCross, "click", redCrossClickHandler);
         this.redCrossManipulator.last.add(this.redCross);
         this.questionManipulator.last.add(this.redCrossManipulator.first);
@@ -1707,7 +1705,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         var globalPointCenter = self.questionBlock.title.content.globalPoint(-(self.w)/2, -((self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2))/2);
         var contentareaStyle = {
             height: (self.linkedQuestion.image) ? svg.runtime.boundingRect(self.questionBlock.title.content.component).height : ((self.h * .25)/2),
-            toppx: (self.linkedQuestion.image) ? (this.height + 1 + globalPointCenter.y) : (globalPointCenter.y),
+            toppx: globalPointCenter.y,
             leftpx: (globalPointCenter.x+1/12*self.w),
             width: (self.w*5/6)
         };
@@ -1722,7 +1720,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
 
         var onblur = function () {
             textarea.enter();
-            self.linkedQuestion.label = textarea.messageText;
+            self.linkedQuestion.label = textarea.messageText || '';
             if(textarea.messageText){
                 self.label = textarea.messageText;
                 self.linkedQuestion.label=textarea.messageText;
@@ -1935,15 +1933,6 @@ function QuizzManagerDisplay(){
         let quizz = quizzManager.quizz;
         let tabQuestions = quizz.tabQuestions;
         let questionCreator = quizzManager.questionCreator;
-        if(!question.redCrossManipulator){
-            question.redCrossManipulator = new Manipulator(question);
-            question.redCross = drawRedCross(0, 0, 20, question.redCrossManipulator);
-            question.redCrossManipulator.last.add(question.redCross);
-            question.questionManipulator.last.add(question.redCrossManipulator.first);
-        }
-        else{
-            question.redCrossManipulator.translator.move(0, 0);
-        }
         tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
         question.selected = true;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
