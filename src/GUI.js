@@ -100,27 +100,22 @@ function AnswerDisplay (x, y, w, h) {
                 width: self.obj.cadre.width * 5/6
             };
             contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
-            color(null,0,myColors.black).
-            font("Arial",20);//svg.runtime.createDOM('textarea');
-            contentarea.component.value = self.label || "";
+            color(null, 0, myColors.black).
+            font("Arial", 20);
+            (self.label==="" || self.label===self.labelDefault) && contentarea.placeHolder(self.labelDefault);
+            contentarea.message(self.label || "");
             contentarea.width = w;
-            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
             contentarea.globalPointCenter = self.obj.content.globalPoint(-(contentarea.width)/2,-(contentarea.height)/2);
-
-            //svg.runtime.attr(contentarea, 'style',
-            //    `position: absolute; top: ${contentareaStyle.toppx}px; left: ${contentareaStyle.leftpx}px;` +
-            //    `width: ${contentareaStyle.width}px; height: ${contentareaStyle.height}px; overflow:hidden;` +
-            //    `text-align:center; font-family: Arial; font-size: 20px; resize: none; border: none; background-color: transparent;`);
-
-            self.manipulator.ordonator.unset(1);
-
-           // svg.runtime.anchor('content').appendChild(contentarea).focus();
             drawings.screen.add(contentarea);
+            contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
+            self.manipulator.ordonator.unset(1);
+            //contentarea.position(contentarea.globalPointCenter.x, contentarea.globalPointCenter.y);
+            //contentarea.dimension(contentarea.width, contentarea.height);
             contentarea.focus();
 
             let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
-                self.errorMessage && self.editor.questionCreatorManipulator.ordonator.unset(0);
+                self.errorMessage && self.editor.parent.questionCreatorManipulator.ordonator.unset(0);
                 self.obj.cadre.color(myColors.white, 1, myColors.black);
             };
 
@@ -135,13 +130,14 @@ function AnswerDisplay (x, y, w, h) {
                 self.errorMessage = new svg.Text(REGEX_ERROR)
                     .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
-                self.editor.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
+                self.editor.parent.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
 
             let onblur = function () {
-                contentarea.messageText=contentarea.component.value;
+                contentarea.enter();
+                contentarea.message(contentarea.component.value);
                 self.label = contentarea.messageText;
                 drawings.screen.remove(contentarea);
                 showTitle();
@@ -150,9 +146,8 @@ function AnswerDisplay (x, y, w, h) {
                     self.obj.checkbox.answerParent = self;
                 }
             };
-
-
             svg.addEvent(contentarea,'input',function () {
+                contentarea.enter();
                 self.checkInputContentArea({
                     contentarea: contentarea,
                     border: self.obj.cadre,
@@ -162,7 +157,6 @@ function AnswerDisplay (x, y, w, h) {
                 });
             });
             svg.addEvent(contentarea,'blur',onblur);
-
             self.checkInputContentArea({
                 contentarea: contentarea,
                 border: self.obj.cadre,
@@ -171,7 +165,6 @@ function AnswerDisplay (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-
         self.manipulator.flush();
         showTitle();
 
@@ -594,16 +587,14 @@ function FormationDisplayFormation(){
             width: self.formationLabel.cadre.width-MARGIN,
             height:(self.labelHeight)
         };
-        //let contentarea = svg.runtime.createDOM("textarea");
         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         contentarea.color(myColors.lightgrey, 0, myColors.black)
-            .message(self.label)
             .font("Arial", 15)
             .anchor("start");
+        (self.label==="" || self.label===self.labelDefault) ? contentarea.placeHolder(self.labelDefault) : contentarea.message(self.label)
+
         drawings.screen.add(contentarea);
         contentarea.focus();
-        //svg.runtime.attr(contentarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        //svg.runtime.anchor("content").appendChild(contentarea).focus();
 
         var removeErrorMessage = function () {
             self.formationNameValidInput = true;
@@ -1595,7 +1586,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         self.questionManipulator.ordonator.set(4, self.questNum);
         self.questionBlock.title.content.color(color);
         self.questionBlock.title.content._acceptDrop = true;
-        self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure);
+        self.questionNameValidInput ? self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure) :
+            self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 2, myColors.red);
         self.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
@@ -1616,13 +1608,13 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             .color(myColors.white, 0, myColors.black)
             .message(self.linkedQuestion.label)
             .font("Arial", 20);
-
         drawings.screen.add(textarea);
         textarea.focus();
         self.questionManipulator.ordonator.unset(1);
 
         var onblur = function () {
-            textarea.messageText = textarea.component.value;
+            textarea.enter();
+            self.linkedQuestion.label = textarea.messageText;
             if(textarea.messageText){
                 self.label = textarea.messageText;
                 self.linkedQuestion.label=textarea.messageText;
@@ -1652,7 +1644,8 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             self.questionNameValidInput = false;
         };
 
-        textarea.oninput = function () {
+        var oninput = function () {
+            textarea.enter();
             self.checkInputTextArea({
                 textarea: textarea,
                 border: self.questionBlock.title.cadre,
@@ -1662,6 +1655,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
             });
         };
         svg.runtime.addEvent(textarea.component, "blur", onblur);
+        svg.runtime.addEvent(textarea.component, "input", oninput);
     };
 
     x && (self.x = x);
@@ -1932,21 +1926,19 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             width: 700 - MARGIN,
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
-        //var textarea = svg.runtime.createDOM("textarea");
-        var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        var textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         textarea.color(myColors.lightgrey, 0, myColors.black)
-            .message(self.label)
+            .message(self.quizzName)
             .font("Arial", 15)
             .anchor("start");
+        (self.quizzNameDefault || self.quizzName==="") && textarea.placeHolder(self.quizzNameDefault);
         drawings.screen.add(textarea);
         textarea.focus();
         textarea.value = self.quizzName;
-        //svg.runtime.attr(textarea, "style", "position: absolute; top:" + contentareaStyle.toppx + "px; left:" + contentareaStyle.leftpx + "px; width:" + (contentareaStyle.width) + "px; height:" + contentareaStyle.height + "px; resize: none; border: none; outline:none; overflow:hidden; font-family: Arial; font-size: 15px; background-color: transparent;");
-        //svg.runtime.anchor("content").appendChild(textarea).focus();
 
         var removeErrorMessage = function () {
             self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(3);
+            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
             self.quizzLabel.cadre.color(myColors.lightgrey);
             self.quizzNameValidInput = true;
         };
@@ -1963,11 +1955,13 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.quizzNameValidInput = false;
         };
         var onblur = function () {
-            self.quizzName = textarea.component.value;
+            textarea.enter();
+            self.quizzName = textarea.messageText;
             drawings.screen.remove(textarea);
             showTitle();
         };
         var oninput = function () {
+            textarea.enter();
             self.questionCreator.checkInputTextArea({
                 textarea: textarea,
                 border: self.quizzLabel.cadre,
@@ -2109,10 +2103,8 @@ function InscriptionManagerDisplay(labels={}) {
                     message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
                 }
             };
-            //var alreadyInput
             var oninput = function(){
                 contentarea.enter();
-                //if (!alreadyInput) {
                     if (self[field].secret && trueValue.length < contentarea.messageText.length) {
                         trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
                     }
@@ -2129,8 +2121,6 @@ function InscriptionManagerDisplay(labels={}) {
                         field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
                         self[field].cadre.color(myColors.white, 1, myColors.black);
                     }
-                    //alreadyInput = true;
-                //}
             };
             svg.addEvent(contentarea, "input", oninput);
             var alreadyDeleted = false;

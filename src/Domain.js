@@ -136,14 +136,14 @@ function Domain() {
             self._acceptDrop = editable;
             self.editor = editor;
             self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.component.value.match(REGEX)) {
-                    self.label = objCont.contentarea.component.value;
+                if (objCont.contentarea.messageText.match(REGEX)) {
+                    self.label = objCont.contentarea.messageText;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;
-                    objCont.contentarea.component.style.border = "none";
-                    objCont.contentarea.component.style.outline = "none";
+                    //objCont.contentarea.component.style.border = "none";
+                    //objCont.contentarea.component.style.outline = "none";
                 } else {
-                    self.label = objCont.contentarea.component.value;
+                    self.label = objCont.contentarea.messageText;
                     objCont.display();
                     //svg.addEvent(objCont.contentarea,'blur',function () {
                     //    objCont.contentarea.component.value = "";
@@ -900,7 +900,7 @@ function Domain() {
 
         self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.component.value.match(REGEX)) {
+            if (myObj.textarea.messageText.match(REGEX)) {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
                 !runtime && (myObj.textarea.border = "none");
@@ -1179,6 +1179,7 @@ function Domain() {
         self.quizzInfoManipulator = new Manipulator(self);
         self.quizzInfoManipulator.addOrdonator(6);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
+        self.questionCreatorManipulator.addOrdonator(1);
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
         self.saveQuizButtonManipulator = new Manipulator(self);
