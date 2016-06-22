@@ -761,6 +761,8 @@ function FormationDisplayFormation(){
                 if(typeof tabElement.miniature === "undefined"){
                     tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
                 }
+                console.log(self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first));
+                (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
                 if(tabElement instanceof Quizz){

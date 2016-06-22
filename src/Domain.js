@@ -1110,6 +1110,7 @@ function Domain() {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, true, parentFormation);
             self.quizz.childrenGames = quizz.childrenGames;
+            self.quizz.parentGames=quizz.parentGames;
             self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
@@ -1149,8 +1150,16 @@ function Domain() {
             };
             var callback = function () {
                 self.quizz.title=self.quizzName;
-                self.quizz.tabQuestions=self.tabQuestions;
+                self.quizz.tabQuestions=self.tabQuestions;;
+                let quizz = self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex];
+                self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                quizz.miniatureManipulator.ordonator.unset(0);
+                quizz.miniatureManipulator.ordonator.unset(1);
                 self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
+                quizz.parentGames.forEach(function(parent){
+                    let index = parent.childrenGames.indexOf(quizz);
+                    parent.childrenGames.splice(index,1,self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]);
+                });
                 console.log("Votre travail a été bien enregistré");
             };
 
