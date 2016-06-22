@@ -245,6 +245,19 @@ describe('Inscritpion/Connexion', function () {
         };
         runTest(jsonFile, execute);
     });
+    it("Inscription Errors", function (done) {
+        this.timeout(100000);
+        var jsonFile = "./log/testInscriptionErrors.json";
+        var execute = function () {
+            var globalVariables = mainModule.setGlobalVariable();
+            domain.setGlobalVariables(globalVariables);
+            checkScenario(
+                function () {
+                    inscriptionModule.inscription();
+                }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
     it("Connection page", function (done) {
         this.timeout(100000);
         var jsonFile = "./log/testConnection.json";
@@ -326,7 +339,21 @@ describe('Admin use', function () {
         });
         this.timeout(100000);
     });
-
+    it("an admin use formationLabel correct and not", function (done) {
+        var jsonFile = "./log/testAdminFormationLabel.json";
+        testutils.retrieveDB("./log/dbtestAdminFormationLabel.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        adminModule.admin();
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
+    });
     it("an admin goes to formation and creates games and save", function (done) {
         var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
         testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {

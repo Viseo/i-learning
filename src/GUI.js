@@ -596,7 +596,6 @@ function FormationDisplayFormation(){
         };
         //let contentarea = svg.runtime.createDOM("textarea");
         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-        contentarea.component.value = self.label;
         contentarea.color(myColors.lightgrey, 0, myColors.black)
             .message(self.label)
             .font("Arial", 15)
@@ -624,13 +623,15 @@ function FormationDisplayFormation(){
             self.labelValidInput = false;
         };
         var onblur = function () {
-            self.formationNameValidInput && (self.label = contentarea.component.value);
-            //contentarea.remove();
+            contentarea.enter();
+            self.label = contentarea.messageText;
+            //self.formationNameValidInput && (
             drawings.screen.remove(contentarea);
             showTitle();
         };
         svg.addEvent(contentarea, "blur", onblur);
         var oninput = function () {
+            contentarea.enter();
             self.checkInputTextArea({
                 textarea: contentarea,
                 border: self.formationLabel.cadre,
@@ -638,6 +639,7 @@ function FormationDisplayFormation(){
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
+            showTitle();
         };
         svg.addEvent(contentarea, "input", oninput);
         self.checkInputTextArea({
@@ -2107,9 +2109,10 @@ function InscriptionManagerDisplay(labels={}) {
                     message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
                 }
             };
-            var alreadyInput
+            //var alreadyInput
             var oninput = function(){
-                if (!alreadyInput) {
+                contentarea.enter();
+                //if (!alreadyInput) {
                     if (self[field].secret && trueValue.length < contentarea.messageText.length) {
                         trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
                     }
@@ -2126,8 +2129,8 @@ function InscriptionManagerDisplay(labels={}) {
                         field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
                         self[field].cadre.color(myColors.white, 1, myColors.black);
                     }
-                    alreadyInput = true;
-                }
+                    //alreadyInput = true;
+                //}
             };
             svg.addEvent(contentarea, "input", oninput);
             var alreadyDeleted = false;

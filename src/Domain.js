@@ -551,7 +551,7 @@ function Domain() {
         self.manipulator.last.add(self.saveFormationButtonManipulator.first);
 
         self.checkInputTextArea = function (myObj) {
-            if (myObj.textarea.component.value.match(self.regex)) {
+            if (myObj.textarea.messageText.match(self.regex)) {
                 self.labelValidInput = true;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
@@ -559,11 +559,12 @@ function Domain() {
                 myObj.textarea.outline = "none";
             } else {
                 myObj.display();
-                myObj.textarea.onblur = function () {
-                    myObj.textarea.component.value = "";
-                    myObj.onblur();
-                    myObj.remove();
-                }
+                self.labelValidInput = false;
+                //myObj.textarea.onblur = function () {
+                //    myObj.textarea.messageText = "";
+                //    myObj.onblur();
+                //    myObj.remove();
+                //}
             }
         };
 
