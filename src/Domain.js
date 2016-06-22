@@ -337,6 +337,10 @@ function Domain() {
             quizz: 0,
             bd: 0
         };
+        self.link = {
+            parentGame : "parent",
+            childGame : "child"
+        };
         self._id = (formation._id || null);
         self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
@@ -379,6 +383,8 @@ function Domain() {
         self.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
         self.targetLevelIndex = 0;
         self.levelsTab = [];
+        self.gamesTab = [];
+        self.link = [];
         self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : "";
@@ -514,7 +520,7 @@ function Domain() {
                         var gamesTab = [];
                         levelsTab.push({gamesTab: gamesTab});
                         level.gamesTab.forEach(function (game) {
-                            game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
+                                game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
                             if (game.tabQuestions) {
                                 game.id = "quizz"  + gamesCounter.quizz;
                                 gamesCounter.quizz ++;
@@ -523,10 +529,22 @@ function Domain() {
                                 game.id = "bd" + gamesCounter.bd;
                                 gamesCounter.bd ++;
                             }
-                            levelsTab[i].gamesTab.push(game) ;
+                            game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game) ;
+                            //levelsTab[i].gamesTab.push(game) ;
                         });
                     });
-                    return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: levelsTab}
+
+                    self.levelsTab.forEach(function(level) {
+                        level.gamesTab.forEach(function (game) {
+                            game.childrenGames.forEach(function () {
+                                let parentGame = game.id;
+                                let childGame = game.childrenGames[game.gameIndex].id;
+                                game.gameIndex ++;
+                                self.link.push([{parentGame: parentGame, childGame: childGame}]);
+                            });
+                        });
+                    });
+                    return {label: self.label, gamesCounter: self.gamesCounter, link: self.link, levelsTab: levelsTab}
                 };
 
                 self._id ? replaceFormation() : addNewFormation();
