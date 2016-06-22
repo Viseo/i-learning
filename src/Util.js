@@ -701,6 +701,12 @@ function SVGUtil() {
         self.icon.cadre.color(myColors.white, 1, myColors.black);
         return self;
     };
+
+    resetQuestionsIndex = function(quizz){
+        for(let i = 0; i<quizz.tabQuestions.length-1; i++) {
+            quizz.tabQuestions[i].questionNum = i + 1;
+        }
+    };
 }
 
 class Server {

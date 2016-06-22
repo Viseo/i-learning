@@ -439,7 +439,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
                 break;
             case 'question':
                 self.parent.quizz.tabQuestions.pop();
-                self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false;
+                (self.parent.quizz.tabQuestions.length>0) && (self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false);
                 self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
 
                 let newQuestion = new Question(null, self.parent.quizz);
@@ -646,7 +646,7 @@ function FormationDisplayFormation(){
     var onclickQuizzHandler = function(event){
         var displayQuizzManager= function() {
             var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-            self.quizzManager.loadQuizz(targetQuizz, self);
+            self.quizzManager.loadQuizz(targetQuizz, targetQuizz.parentFormation);
             self.quizzDisplayed = targetQuizz;
             self.quizzManager.display();
             self.selectedArrow = null;
@@ -1465,6 +1465,45 @@ function QuestionDisplayAnswers(x, y, w, h) {
 
 function QuestionSelectedQuestion() {
     this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
+    if(!this.redCrossManipulator){
+        let redCrossClickHandler = () =>{
+            let quizzManager = this.parentQuizz.parentFormation.quizzManager;
+            let questionCreator = quizzManager.questionCreator;
+            let questionPuzzle = quizzManager.questionPuzzle;
+            let questionsArray = questionPuzzle.questionsTab;
+            let index = questionsArray.indexOf(this);
+            this.delete();
+            (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
+            resetQuestionsIndex(this.parentQuizz);
+            if(index !== -1) {
+                let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
+                let nextQuestionY = questionsArray[index].bordure.globalPoint(0, 0).y;
+                quizzManager.indexOfEditedQuestion = index;
+                questionsArray[quizzManager.indexOfEditedQuestion].bordure.component.listeners.click({
+                    clientX: nextQuestionX,
+                    clientY: nextQuestionY
+                });
+            }
+            else{
+                let addEmptyElementX = questionsArray[0].obj.cadre.globalPoint(0, 0).x;
+                let addEmptyElementY = questionsArray[0].obj.cadre.globalPoint(0, 0).y;
+                quizzManager.indexOfEditedQuestion = index++;
+                questionsArray[0].obj.cadre.component.listeners.dblclick({
+                    clientX: addEmptyElementX,
+                    clientY: addEmptyElementY
+                }); // dernier élément du tableau (AddEmptyElement)
+            }
+        };
+        this.redCrossManipulator = new Manipulator(this);
+        let size = 20;
+        this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, size, this.redCrossManipulator);
+        svg.addEvent(this.redCross, "click", redCrossClickHandler);
+        this.redCrossManipulator.last.add(this.redCross);
+        this.questionManipulator.last.add(this.redCrossManipulator.first);
+    }
+    else{
+        this.redCrossManipulator.last.add(this.redCross);
+    }
 }
 
 function QuestionCreatorDisplay (x, y, w, h) {
@@ -1812,22 +1851,17 @@ function QuizzManagerDisplay(){
 
     self.questionClickHandler = event =>{
         let target = drawings.background.getTarget(event.clientX,event.clientY);
-        let element = target.parent.parentManip.parentObject;
-        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
-        element.selected = true;
-        if(!element.redCrossManipulator){
-            element.redCrossManipulator = new Manipulator(element);
-            element.redCross = drawRedCross(0, 0, 20, 20, element.redCrossManipulator);
-            element.redCrossManipulator.last.add(element.redCross);
-            element.questionManipulator.last.add(element.redCrossManipulator.first);
-        }
-        else{
-            element.redCrossManipulator.translator.move(0, 0);
-        }
-        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
-        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(element);
-        this.questionCreator.loadQuestion(element);
-        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
+        let question = target.parent.parentManip.parentObject;
+        let quizzManager = question.parentQuizz.parentFormation.quizzManager;
+        let quizz = quizzManager.quizz;
+        let tabQuestions = quizz.tabQuestions;
+        let questionCreator = quizzManager.questionCreator;
+        tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
+        question.selected = true;
+        quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
+        quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.startPosition);
+        questionCreator.loadQuestion(question);
+        questionCreator.display(questionCreator.previousX,questionCreator.previousY,questionCreator.previousW,questionCreator.previousH);
     };
 
     var displayFunctions = function(){
@@ -2054,9 +2088,9 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         h: self.questionsPuzzleHeight - self.globalMargin.height
     };
     for(var i=0;i<self.quizz.tabQuestions.length;i++){
-        self.quizz.tabQuestions[i].bordureEventHandler=self.questionClickHandler;
-        self.quizz.tabQuestions[i].contentEventHandler=self.questionClickHandler;
-        self.quizz.tabQuestions[i].imageEventHandler=self.questionClickHandler;
+        self.quizz.tabQuestions[i].bordureEventHandler = self.questionClickHandler;
+        self.quizz.tabQuestions[i].contentEventHandler = self.questionClickHandler;
+        self.quizz.tabQuestions[i].imageEventHandler = self.questionClickHandler;
     }
     self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.puzzleManipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);

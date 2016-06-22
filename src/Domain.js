@@ -130,6 +130,18 @@ function Domain() {
         self.bordure = null;
         self.content = null;
 
+        self.delete = function(){
+            let index = self.parentQuestion.tabAnswer.indexOf(self);
+            if(index!== -1){
+                self.parentQuestion.tabAnswer.splice(index, 1);
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
+
+
         self.isEditable = function(editor, editable) {
             self.editable = editable;
             self.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
@@ -263,6 +275,11 @@ function Domain() {
         var self = this;
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(3);
+
+        self.delete = function() {
+            console.log("Tentative de suppression d'AddEmptyElement");
+        };
+
         type && (self.type = type);
         switch (type) {
             case 'question':
@@ -620,7 +637,7 @@ function Domain() {
 
     FormationsManager = function (formations) {
         var self = this;
-        
+
         self.x = MARGIN;
         self.tileHeight = 150;
         self.tileWidth = self.tileHeight*(16/9);
@@ -780,6 +797,17 @@ function Domain() {
         self.tabAnswer = [];
         self.fontSize = 20;
         self.questionNum = self.parentQuizz.tabQuestions.length+1;
+
+        self.delete = function(){
+            let index = self.parentQuizz.tabQuestions.indexOf(self);
+            if(index!== -1){
+                self.parentQuizz.tabQuestions.splice(index, 1);
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
 
         if (!question) {
             self.label = "";
@@ -1201,6 +1229,11 @@ function Domain() {
         self.previewButtonHeightRatio = 0.1;
         self.saveButtonHeightRatio = 0.1;
         self.marginRatio = 0.03;
+
+        self.selectNextQuestion = () =>{
+            self.indexOfEditedQuestion++;
+        };
+
     };
 
 ////////////////// end of QuizzManager.js //////////////////////////
