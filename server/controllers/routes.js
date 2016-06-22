@@ -44,8 +44,11 @@ module.exports = function (app, fs) {
             res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
             res.send({
                 ack: 'OK',
-                lastName: user.lastName,
-                firstName: user.firstName
+                user: {
+                    lastName: user.lastName,
+                    firstName: user.firstName,
+                    admin: user.admin
+                }
             });
             console.log(`${new Date().toLocaleTimeString('fr-FR')} : User "${user.firstName} ${user.lastName}" connected.`)
         });

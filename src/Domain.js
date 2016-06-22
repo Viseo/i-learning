@@ -1207,15 +1207,12 @@ function Domain() {
 }
 
 User = function () {
-
     let self = this;
     self.firstName;
     self.lastName;
     self.mailAddress;
     self.password;
-
-
-}
+};
 ////////////////// InscriptionManager.js //////////////////////////
 
 
@@ -1297,13 +1294,12 @@ ConnectionManager = function () {
     self.connectionButtonLabel = "Connexion";
     self.tabForm =[];
 
-    self.listFormations = function() {
-        let callback = function (data) {
+    let listFormations = function() {
+        Server.getAllFormationsNames(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
-        };
-        Server.getAllFormationsNames(callback);
+        });
     };
 
     self.connectionButtonHandler = function() {
@@ -1322,16 +1318,15 @@ ConnectionManager = function () {
             Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
-                    drawing.username = `${data.firstName} ${data.lastName}`;
-                    self.listFormations();
+                    drawing.username = `${data.user.lastName} ${data.user.firstName}`;
+                    data.user.admin ? AdminGUI() : LearningGUI();
+                    listFormations();
                 } else {
                     let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height + MARGIN);
                     svg.timeout(() => {self.connectionButtonManipulator.ordonator.unset(3)}, 5000);
                 }
             });
-
-
         }
     };
 };

@@ -1042,8 +1042,7 @@ function HeaderDisplay () {
         pos-= svgwidth(deconnection.cadre)/2 + 40;
         deconnection.content.position(pos, 0);
         deconnection.cadre.position(pos, -30/2);
-        pos-= svgwidth(deconnection.cadre)/2 + 30;
-        drawing.username || (drawing.username = "Henri Darmet");
+        pos-= svgwidth(deconnection.cadre)/2 + 80;
         let body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black);
         let head = new svg.Circle(12).color(myColors.black, 2, myColors.white);
         self.userManipulator.ordonator.set(0, body);
@@ -1056,7 +1055,6 @@ function HeaderDisplay () {
         let userText = autoAdjustText(drawing.username, 0, 0, 200, 50, 30, null, self.userManipulator, 3);
         userText.text.anchor('end');
         userText.text.position(pos, 0);
-        pos-= userText.finalWidth + 40;
 
         self.userManipulator.translator.move(self.width, self.height * 0.75);
 
@@ -1068,8 +1066,7 @@ function HeaderDisplay () {
         svg.addEvent(deconnection.content, "click", deconnexionHandler);
         svg.addEvent(deconnection.cadre, "click", deconnexionHandler);
     };
-    displayUser();
-
+    drawing.username && displayUser();
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
@@ -2068,6 +2065,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 
 function InscriptionManagerDisplay(labels={}) {
     let self = this;
+    drawing.currentPageDisplayed = "InscriptionManager";
     self.header = new Header("Inscription");
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
@@ -2493,6 +2491,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
     QuizzManager.prototype.displayQuizSaveButton = QuizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
+    ConnectionManager.prototype.display = ConnectionManagerDisplay;
 };
 
 var LearningGUI = function (){
