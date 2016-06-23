@@ -104,6 +104,7 @@ function Domain() {
         answerParameters && (answer = answerParameters);
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(6);
+
         self.label = answer.label;
         self.imageSrc = answer.imageSrc;
         self.correct = answer.correct;

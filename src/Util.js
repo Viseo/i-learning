@@ -96,7 +96,7 @@ function SVGGlobalHandler() {
             if (self.target) {
                 svg.event(self.target, "mousemove", event);
                 if(self.target.component.listeners && self.target.component.listeners.mouseover){
-                    console.log('over!');
+                    //console.log('over!');
                     mousedOverTarget={target:self.target};
                     svg.event(self.target, "mouseover", event);
                 }
@@ -104,7 +104,7 @@ function SVGGlobalHandler() {
                 let bool;
                 mousedOverTarget && mousedOverTarget.target &&(bool= mousedOverTarget.target.inside(event.clientX,event.clientY));
                 if(mousedOverTarget && mousedOverTarget.target && mousedOverTarget.target.component.listeners && mousedOverTarget.target.component.listeners.mouseout && !bool){
-                    console.log('out!');
+                    //console.log('out!');
                     svg.event(mousedOverTarget.target, "mouseout", event);
                     mousedOverTarget=null;
                 }
