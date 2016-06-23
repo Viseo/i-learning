@@ -111,7 +111,7 @@ function answerDisplay (x, y, w, h) {
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
             let redCrossSize = 15;
-            let redCross = drawRedCross(self.width/2 , -self.height/2, redCrossSize, self.redCrossManipulator);
+            let redCross = drawRedCross(self.width/2 - redCrossSize, -self.height/2 + redCrossSize, redCrossSize, self.redCrossManipulator);
 
             svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
