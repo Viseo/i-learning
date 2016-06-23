@@ -65,6 +65,7 @@ function SVGGlobalHandler() {
 
     Drawings = function (w, h, anchor = "content") {
         var self = this;
+        let mousedOverTarget;
 
         self.screen = new svg.Screen(w, h).show(anchor);
         self.drawing = new svg.Drawing(w, h).position(0, 0);
@@ -95,24 +96,22 @@ function SVGGlobalHandler() {
             if (self.target) {
                 svg.event(self.target, "mousemove", event);
                 if(self.target.component.listeners && self.target.component.listeners.mouseover){
+                    console.log('over!');
+                    mousedOverTarget={target:self.target};
                     svg.event(self.target, "mouseover", event);
                 }
-                if(self.target.component.listeners && self.target.component.listeners.mouseout){
-                    svg.event(self.target, "mouseout", event);
+                //console.log(mousedOverTarget);
+                let bool;
+                mousedOverTarget && mousedOverTarget.target &&(bool= mousedOverTarget.target.inside(event.clientX,event.clientY));
+                if(mousedOverTarget && mousedOverTarget.target && mousedOverTarget.target.component.listeners && mousedOverTarget.target.component.listeners.mouseout && !bool){
+                    console.log('out!');
+                    svg.event(mousedOverTarget.target, "mouseout", event);
+                    mousedOverTarget=null;
                 }
             }
         };
 
         svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
-
-        //var onmouseoverHandler = function (event) {
-        //    self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
-        //    if (self.target) {
-        //        svg.event(self.target, "mouseover", event);
-        //    }
-        //};
-        //
-        //svg.addEvent(self.glass, "mouseover", onmouseoverHandler);
 
         var ondblclickHandler = function (event) {
             self.target = self.background.getTarget(event.clientX, event.clientY);
