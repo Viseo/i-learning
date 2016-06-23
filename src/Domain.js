@@ -95,7 +95,7 @@ function Domain() {
      */
     Answer = function (answerParameters, parent) {
         var self = this;
-        self.parent = parent;
+        self.parentQuestion = parent;
         var answer = {
             label: '',
             imageSrc: null,
@@ -897,7 +897,7 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.manipulatorQuizzInfo = new Manipulator(self);
         self.questionCreatorManipulator = new Manipulator(self);
-        self.questionCreatorManipulator.addOrdonator(1);
+        self.questionCreatorManipulator.addOrdonator(6);
         self.questionManipulator = new Manipulator(self);
         self.questionManipulator.addOrdonator(6);
         self.toggleButtonManipulator = new Manipulator(self);

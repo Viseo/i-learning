@@ -66,7 +66,7 @@ function SVGGlobalHandler() {
 
     Drawings = function (w, h, anchor = "content") {
         var self = this;
-        let mousedOverTarget;
+        //self.mousedOverTarget;
 
         self.screen = new svg.Screen(w, h).show(anchor);
         self.drawing = new svg.Drawing(w, h).position(0, 0);
@@ -95,20 +95,24 @@ function SVGGlobalHandler() {
         var onmousemoveHandler = function (event) {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
             if (self.target) {
+                let bool;
+                if(self.drawing.mousedOverTarget && self.drawing.mousedOverTarget.target){
+                    (bool= self.drawing.mousedOverTarget.target.inside(event.clientX,event.clientY));
+                    if(self.drawing.mousedOverTarget.target.component.listeners && self.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool){
+                        //console.log('out!');
+                        svg.event(self.drawing.mousedOverTarget.target, "mouseout", event);
+                        self.drawing.mousedOverTarget=null;
+                    }
+                }
+
                 svg.event(self.target, "mousemove", event);
                 if(self.target.component.listeners && self.target.component.listeners.mouseover){
                     //console.log('over!');
-                    mousedOverTarget={target:self.target};
+                    self.drawing.mousedOverTarget={target:self.target};
                     svg.event(self.target, "mouseover", event);
                 }
-                //console.log(mousedOverTarget);
-                let bool;
-                mousedOverTarget && mousedOverTarget.target &&(bool= mousedOverTarget.target.inside(event.clientX,event.clientY));
-                if(mousedOverTarget && mousedOverTarget.target && mousedOverTarget.target.component.listeners && mousedOverTarget.target.component.listeners.mouseout && !bool){
-                    //console.log('out!');
-                    svg.event(mousedOverTarget.target, "mouseout", event);
-                    mousedOverTarget=null;
-                }
+                //console.log(drawing.mousedOverTarget);
+
             }
         };
 
@@ -827,7 +831,7 @@ function Bdd() {
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
         "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
-        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator"];
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion"];
 
     myColors = {
         darkBlue: [25, 25, 112],
