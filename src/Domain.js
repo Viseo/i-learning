@@ -1191,7 +1191,7 @@ function Domain() {
                 self.quizz.title=self.quizzName;
                 self.quizz.tabQuestions=self.tabQuestions;;
                 let quizz = self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex];
-                self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                (self.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first)!==-1) && self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
                 quizz.parentGames.forEach(function(parent){
                     let index = parent.childrenGames.indexOf(quizz);
