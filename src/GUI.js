@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var domain, svg, gui, runtime, playerMode, param;
+var domain, svg, gui, runtime, playerMode, param, header;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
@@ -569,6 +569,7 @@ function FormationDisplayMiniature (w,h) {
 function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
+    header.display();
     self.formationsManager.formationDisplayed = self;
     self.globalMargin = {
         height: self.marginRatio * drawing.height,
@@ -926,7 +927,7 @@ function FormationsManagerDisplay() {
         self.heightAllocatedToPanel = drawing.height - (playerMode ?
             self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
             self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
-        self.headerHeightFormation = drawing.height * self.header.size ;
+        self.headerHeightFormation = drawing.height * header.size ;
         self.spaceBetweenElements = {
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
             height: self.panel?0.030*self.panel.height:0.030*drawing.height
@@ -978,7 +979,6 @@ function FormationsManagerDisplay() {
 
     function onClickNewFormation() {
         var formation = new Formation({}, self);
-        self.header.redim();
         self.formationDisplayed=formation;
         formation.parent = self;
         formation.displayFormation();
@@ -1031,7 +1031,7 @@ function FormationsManagerDisplay() {
             return 0
         });
     };
-    self.header.display();
+    header.display();
     self.displayHeaderFormations();
     (self.tileHeight < 0) && (self.tileHeight = undefined);
     (!self.tileHeight || self.tileHeight > 0) && displayPanel();
@@ -1089,7 +1089,8 @@ function HeaderDisplay () {
 
     let manip = this.manipulator,
         userManip = this.userManipulator,
-        message = this.addMessage;
+        message = this.addMessage,
+        messageText;
     
     let text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
         line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
@@ -1100,26 +1101,28 @@ function HeaderDisplay () {
 
     let displayUser = () => {
         let svgwidth = x => svg.runtime.boundingRect(x.component).width;
-        let pos = 0;
+        let pos = 0,
+            deconnectionWidth = 220;
 
-        let deconnection = displayText("Déconnexion", 220, 50, myColors.none, myColors.none, 30, null, userManip, 4, 5);
-        let body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black);
-        let head = new svg.Circle(12).color(myColors.black, 2, myColors.white);
-        let userText = autoAdjustText(drawing.username, 0, 0, 200, 50, 30, null, userManip, 3);
+        let deconnection = displayText("Déconnexion", deconnectionWidth, 50, myColors.none, myColors.none, 30, null, userManip, 4, 5),
+            body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black),
+            head = new svg.Circle(12).color(myColors.black, 2, myColors.white),
+            userText = autoAdjustText(drawing.username, 0, 0, 400, 50, 30, null, userManip, 3);
 
-        pos-= svgwidth(deconnection.cadre)/2 + 40;
+        if (typeof this.usernameWidth === 'undefined') this.usernameWidth = userText.finalWidth;
+        pos-= deconnectionWidth / 2;
         deconnection.content.position(pos, 0);
         deconnection.cadre.position(pos, -30/2);
-        pos-= svgwidth(deconnection.cadre)/2 + 80;
+        pos-= deconnectionWidth / 2 + 40;
+        userText.text.anchor('end');
+        userText.text.position(pos, 0);
+        pos-= this.usernameWidth + MARGIN;
         userManip.ordonator.set(0, body);
         userManip.ordonator.set(1, head);
         userManip.scalor.scale(0.65);
         pos-= svgwidth(body)/2 + MARGIN;
         body.position(pos, -5);
         head.position(pos, -20);
-        pos-= svgwidth(body)/2 + MARGIN * 2;
-        userText.text.anchor('end');
-        userText.text.position(pos, 0);
         userManip.translator.move(this.width, this.height * 0.75);
 
         let deconnexionHandler = function() {
@@ -1131,13 +1134,13 @@ function HeaderDisplay () {
         svg.addEvent(deconnection.cadre, "click", deconnexionHandler);
     };
 
-    this.redim = () => {
-        line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
-        message && (this.addMessageText = new svg.Text(message).position(this.width/2, this.height/2+MARGIN).font('Arial', 32));
-    };
+    if (message) {
+        messageText = new svg.Text(message).position(this.width / 2, this.height / 2 + MARGIN).font('Arial', 32);
+        manip.ordonator.set(2, messageText);
+    } else {
+        manip.ordonator.unset(2);
+    }
 
-    this.redim();
-    message ? manip.ordonator.set(2, this.addMessageText) : manip.ordonator.unset(2);
     manip.last.children.indexOf(userManip.first)===-1 && manip.last.add(userManip.first);
     drawing.username && displayUser();
 }
@@ -1843,8 +1846,7 @@ function QuizzDisplay(x,y,w,h) {
     //self.quizzManipulator.ordonator.set(0,self.titleBox);
     self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
 
-    self.header = new Header(this.title);
-    self.header.display();
+    header.display();
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
@@ -1986,7 +1988,7 @@ function QuizzManagerDisplay(){
         self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, self.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
-        self.header.display();
+        header.display();
     };
 
     if (self.resizing){
@@ -2028,8 +2030,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
         target.parentFormation.quizzManager.quizzManagerManipulator.flush();
         target.parentFormation.quizzDisplayed = false;
         target.parentFormation.displayFormation();
-        self.header = new Header (target.parentFormation.label);
-        self.header.display();
     };
 
     svg.addEvent(self.returnButton, "click", returnHandler);
@@ -2213,7 +2213,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 function InscriptionManagerDisplay(labels={}) {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
-    self.header.display();
+    header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     var w = drawing.width/5;
@@ -2484,7 +2484,7 @@ function InscriptionManagerDisplay(labels={}) {
 function ConnectionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
-    self.header.display();
+    header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     let w = drawing.width/6;
@@ -2636,6 +2636,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.displayQuizSaveButton = QuizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
     ConnectionManager.prototype.display = ConnectionManagerDisplay;
+    header = new Header();
 };
 
 var LearningGUI = function (){
@@ -2659,6 +2660,7 @@ var LearningGUI = function (){
     Quizz.prototype.displayScore = QuizzDisplayScore;
     InscriptionManager.prototype.display = InscriptionManagerDisplay;
     ConnectionManager.prototype.display = ConnectionManagerDisplay;
+    header = new Header();
 };
 if (typeof exports !== "undefined") {
     exports.AdminGUI = AdminGUI;

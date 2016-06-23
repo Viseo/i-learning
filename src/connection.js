@@ -29,35 +29,31 @@ function connexion(){
         if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);//attr("preserveAspectRatio", "xMinYMin meet") ;
             drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
-            let formation;
+            let formation, quizzManager;
             if (typeof formationsManager !== 'undefined') formation = formationsManager.formationDisplayed;
-
+            if (typeof formation !== 'undefined') quizzManager = formation.quizzManager;
             switch (drawing.currentPageDisplayed) {
                 case "ConnectionManager":
-                    connectionManager.header.display();
                     connectionManager.display();
                     break;
                 case "FormationsManager":
                     (formationsManager.clippingManipulator.last.children.indexOf(formationsManager.panel.component) !== -1) && formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
-                    formationsManager.header.display();
                     formationsManager.display();
                     break;
                 case "Formation":
                     formation.gamesLibraryManipulator.flush();
-                    //formation.clippingManipulator.last.remove(formation.panel.component);
                     formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
-                    formationsManager.header.display();
                     formation.displayFormation();
                     break;
                 case "QuizManager":
                     formation.library.libraryManipulator.flush();
-                    formation.quizzManager.library.libraryManipulator.flush();
-                    formation.quizzManager.resizing = true;
-                    formation.quizzManager.display();
+                    quizzManager.library.libraryManipulator.flush();
+                    quizzManager.resizing = true;
+                    quizzManager.display();
                     break;
                 case "QuizPreview":
-                    formation.quizzManager.quizz.quizzManipulator.flush();
-                    formation.quizzManager.displayEditedQuestion();
+                    quizzManager.quizz.quizzManipulator.flush();
+                    quizzManager.displayEditedQuestion();
                     break;
             }
         }
@@ -75,7 +71,7 @@ function connexion(){
     Server.checkCookie(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
-            drawing.username = `${data.user.lastName} ${data.user.firstName}`;
+            drawing.username = `${data.user.firstName} ${data.user.lastName}`;
             data.user.admin ? AdminGUI() : LearningGUI();
             listFormations();
         } else {
