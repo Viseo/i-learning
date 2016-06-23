@@ -1102,7 +1102,7 @@ function HeaderDisplay (message) {
         let pos = 0,
             deconnectionWidth = 220;
 
-        let deconnection = displayText("Déconnexion", deconnectionWidth, 50, myColors.none, myColors.none, 30, null, userManip, 4, 5),
+        let deconnection = displayText("Déconnexion", deconnectionWidth, 50, myColors.none, myColors.white, 30, null, userManip, 4, 5),
             body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black),
             head = new svg.Circle(12).color(myColors.black, 2, myColors.white),
             userText = autoAdjustText(drawing.username, 0, 0, 400, 50, 30, null, userManip, 3);
