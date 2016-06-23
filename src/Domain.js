@@ -1366,7 +1366,7 @@ ConnectionManager = function () {
             Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
-                    drawing.username = `${data.user.lastName} ${data.user.firstName}`;
+                    drawing.username = `${data.user.firstName} ${data.user.lastName}`;
                     data.user.admin ? AdminGUI() : LearningGUI();
                     listFormations();
                 } else {

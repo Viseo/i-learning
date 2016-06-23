@@ -569,7 +569,7 @@ function FormationDisplayMiniature (w,h) {
 function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
-    header.display();
+    header.display(this.label);
     self.formationsManager.formationDisplayed = self;
     self.globalMargin = {
         height: self.marginRatio * drawing.height,
@@ -632,21 +632,21 @@ function FormationDisplayFormation(){
         var dblclickEditionFormationLabel = function () {
             var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
 
-        self.formationInfoManipulator.ordonator.unset(1);
-        var contentareaStyle = {
-            toppx:(drawing.height*0.075 - self.labelHeight),
-            leftpx: (svg.runtime.boundingRect(self.title.component).width + 2*MARGIN),
-            width: self.formationLabel.cadre.width-MARGIN,
-            height:(self.labelHeight)
-        };
-        let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-        contentarea.color(myColors.lightgrey, 0, myColors.black)
-            .font("Arial", 15)
-            .anchor("start");
-        (self.label==="" || self.label===self.labelDefault) ? contentarea.placeHolder(self.labelDefault) : contentarea.message(self.label)
+            self.formationInfoManipulator.ordonator.unset(1);
+            var contentareaStyle = {
+                toppx:(drawing.height*0.075 - self.labelHeight),
+                leftpx: (svg.runtime.boundingRect(self.title.component).width + 2*MARGIN),
+                width: self.formationLabel.cadre.width-MARGIN,
+                height:(self.labelHeight)
+            };
+            let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+            contentarea.color(myColors.lightgrey, 0, myColors.black)
+                .font("Arial", 15)
+                .anchor("start");
+            (self.label==="" || self.label===self.labelDefault) ? contentarea.placeHolder(self.labelDefault) : contentarea.message(self.label)
 
-        drawings.screen.add(contentarea);
-        contentarea.focus();
+            drawings.screen.add(contentarea);
+            contentarea.focus();
 
             var removeErrorMessage = function () {
                 self.formationNameValidInput = true;
@@ -654,27 +654,37 @@ function FormationDisplayFormation(){
                 self.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
             };
 
-        var displayErrorMessage = function () {
-            removeErrorMessage();
-            self.formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
-            var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
-                .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
-                .font("Arial", 15).color(myColors.red).anchor(anchor);
-            self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
-            contentarea.focus();
-            self.labelValidInput = false;
-        };
-        var onblur = function () {
-            contentarea.enter();
-            self.label = contentarea.messageText;
-            //self.formationNameValidInput && (
-            drawings.screen.remove(contentarea);
-            showTitle();
-        };
-        svg.addEvent(contentarea, "blur", onblur);
-        var oninput = function () {
-            contentarea.enter();
+            var displayErrorMessage = function () {
+                removeErrorMessage();
+                self.formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
+                var anchor = 'start';
+                self.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
+                    .position(self.formationLabel.cadre.width + self.formationWidth + 2 * MARGIN,0)
+                    .font("Arial", 15).color(myColors.red).anchor(anchor);
+                self.formationInfoManipulator.ordonator.set(2, self.errorMessage);
+                contentarea.focus();
+                self.labelValidInput = false;
+            };
+            var onblur = function () {
+                contentarea.enter();
+                self.label = contentarea.messageText;
+                //self.formationNameValidInput && (
+                drawings.screen.remove(contentarea);
+                showTitle();
+            };
+            svg.addEvent(contentarea, "blur", onblur);
+            var oninput = function () {
+                contentarea.enter();
+                self.checkInputTextArea({
+                    textarea: contentarea,
+                    border: self.formationLabel.cadre,
+                    onblur: onblur,
+                    remove: removeErrorMessage,
+                    display: displayErrorMessage
+                });
+                showTitle();
+            };
+            svg.addEvent(contentarea, "input", oninput);
             self.checkInputTextArea({
                 textarea: contentarea,
                 border: self.formationLabel.cadre,
@@ -682,17 +692,7 @@ function FormationDisplayFormation(){
                 remove: removeErrorMessage,
                 display: displayErrorMessage
             });
-            showTitle();
         };
-        svg.addEvent(contentarea, "input", oninput);
-        self.checkInputTextArea({
-            textarea: contentarea,
-            border: self.formationLabel.cadre,
-            onblur: onblur,
-            remove: removeErrorMessage,
-            display: displayErrorMessage
-        });
-    };
         showTitle();
         self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
         self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight);
@@ -1083,15 +1083,13 @@ function FormationsManagerDisplay() {
     (self.tileHeight > 0) && self.displayFormations();
 }
 
-function HeaderDisplay () {
+function HeaderDisplay (message) {
     this.width = drawing.width;
     this.height = this.size * drawing.height;
 
     let manip = this.manipulator,
-        userManip = this.userManipulator,
-        message = this.addMessage,
-        messageText;
-    
+        userManip = this.userManipulator;
+
     let text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
         line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
     manip.ordonator.set(1, text);
@@ -1135,7 +1133,7 @@ function HeaderDisplay () {
     };
 
     if (message) {
-        messageText = new svg.Text(message).position(this.width / 2, this.height / 2 + MARGIN).font('Arial', 32);
+        let messageText = new svg.Text(message).position(this.width / 2, this.height / 2 + MARGIN).font('Arial', 32);
         manip.ordonator.set(2, messageText);
     } else {
         manip.ordonator.unset(2);
@@ -1988,8 +1986,7 @@ function QuizzManagerDisplay(){
         self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, self.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
-        header.addMessage = "Formation : " + self.parentFormation.label;
-        header.display();
+        header.display("Formation : " + self.parentFormation.label);
     };
 
     if (self.resizing){
@@ -2007,9 +2004,6 @@ function QuizzManagerDisplay(){
 function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
     self.quizzInfoManipulator.last.children.indexOf(self.returnButtonManipulator.first)===-1 && self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
-    self.formationLabel = new svg.Text("Formation : " + self.parentFormation.label).position(drawing.width/2,0);
-    self.formationLabel.font("Arial", 20).anchor("middle");
-    self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
 
     var returnHandler = function(event){
         var target = drawings.background.getTarget(event.clientX,event.clientY);
