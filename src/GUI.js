@@ -2443,7 +2443,7 @@ function InscriptionManagerDisplay(labels={}) {
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            svg.event(self.tabForm[index].cadre, "click", self.saveButtonHandler);
+            self.saveButtonHandler();
             //self.saveButton.cadre.component.listeners.click();
         }
     });
@@ -2567,8 +2567,7 @@ function ConnectionManagerDisplay() {
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            svg.event(self.tabForm[index].cadre, "click", self.connectionButtonHandler);
-            //self.connectionButton.cadre.component.listeners.click();
+            self.connectionButtonHandler();
         }
     });
 }
