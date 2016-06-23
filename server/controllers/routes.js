@@ -75,7 +75,7 @@ module.exports = function (app, fs) {
     });
 
     app.post('/sendProgress', (req, res) => {
-        var collection = db.get().collection('UsersFormations');
+        var collection = db.get().collection('usersFormations');
         var obj = collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
                 var user = '';

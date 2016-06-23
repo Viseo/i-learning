@@ -590,7 +590,8 @@ function FormationDisplayFormation(){
             self.selectedGame = null;
         }
         !playerMode && self.saveFormation(displayQuizzManager);
-        playerMode && play(targetQuizz);
+        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        playerMode && play(JSON.parse(JSON.stringify(targetQuizz,ignoredData)));
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -620,9 +621,9 @@ function FormationDisplayFormation(){
             self.graphManipulator.ordonator.order(self.graphManipulator.ordonator.children.length + 1);
         }
         self.panel.contentV.add(level.manipulator.first);
-
-        level.obj = autoAdjustText("Niveau "+level.index, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
-        var lineColor = ( playerMode ? myColors.grey : myColors.black);
+        var lineColor = playerMode ? myColors.grey : myColors.black;
+        var levelText =  playerMode ? "" : "Niveau "+level.index;
+        level.obj = autoAdjustText(levelText, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(lineColor , 3, lineColor);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
