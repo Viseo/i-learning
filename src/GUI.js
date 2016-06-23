@@ -1042,7 +1042,8 @@ function FormationsManagerDisplay() {
             count = 0,
             totalLines = 1;
         self.formations.forEach(formation => {
-            if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
+            // temp, ask cde
+            //if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
 
             if (count > (self.rows - 1)) {
                 count = 0;
