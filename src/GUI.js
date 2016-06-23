@@ -878,9 +878,6 @@ function FormationsManagerDisplay() {
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
 
-    self.header = new Header();
-    self.header.display();
-
     if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
         self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
@@ -1910,6 +1907,9 @@ function QuizzDisplayScore(color){
 function QuizzManagerDisplay(){
     var self = this;
 
+    let verticalPosition = drawing.height * HEADER_SIZE;
+    self.height = drawing.height - drawing.height * HEADER_SIZE;
+    self.quizzManagerManipulator.first.move(0, verticalPosition);
     self.quizzManagerManipulator.last.children.indexOf(self.libraryIManipulator.first)===-1 && self.quizzManagerManipulator.last.add(self.libraryIManipulator.first);
     self.quizzManagerManipulator.last.children.indexOf(self.quizzInfoManipulator.first)===-1 && self.quizzManagerManipulator.last.add(self.quizzInfoManipulator.first);
     self.quizzManagerManipulator.last.children.indexOf(self.questionsPuzzleManipulator.first)===-1 && self.quizzManagerManipulator.last.add(self.questionsPuzzleManipulator.first);
@@ -1918,15 +1918,15 @@ function QuizzManagerDisplay(){
     self.quizzManagerManipulator.last.children.indexOf(self.saveQuizButtonManipulator.first)===-1 && self.quizzManagerManipulator.last.add(self.saveQuizButtonManipulator.first);
     self.libraryWidth = drawing.width * self.libraryWidthRatio;
     self.questCreaWidth = drawing.width * self.questCreaWidthRatio;
-    self.quizzInfoHeight = drawing.height * self.quizzInfoHeightRatio;
-    self.questionsPuzzleHeight = drawing.height * self.questionsPuzzleHeightRatio;
-    self.libraryHeight = drawing.height * self.libraryHeightRatio;
-    self.questCreaHeight = drawing.height * self.questCreaHeightRatio;
-    self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
-    self.previewButtonHeight = drawing.height * self.previewButtonHeightRatio;
+    self.quizzInfoHeight = self.height * self.quizzInfoHeightRatio;
+    self.questionsPuzzleHeight = self.height * self.questionsPuzzleHeightRatio;
+    self.libraryHeight = self.height * self.libraryHeightRatio;
+    self.questCreaHeight = self.height * self.questCreaHeightRatio;
+    self.saveButtonHeight = self.height * self.saveButtonHeightRatio;
+    self.previewButtonHeight = self.height * self.previewButtonHeightRatio;
     self.ButtonWidth = 150;
     self.globalMargin = {
-        height: self.marginRatio * drawing.height,
+        height: self.marginRatio * self.height,
         width: self.marginRatio * drawing.width
     };
     self.questionPuzzleCoordinates = {
@@ -1935,6 +1935,7 @@ function QuizzManagerDisplay(){
         w: (drawing.width - self.globalMargin.width),
         h: (self.questionsPuzzleHeight - self.globalMargin.height)
     };
+    
     drawing.currentPageDisplayed = 'QuizManager';
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
@@ -1965,16 +1966,17 @@ function QuizzManagerDisplay(){
         questionCreator.display(questionCreator.previousX,questionCreator.previousY,questionCreator.previousW,questionCreator.previousH);
     };
 
-    var displayFunctions = function(){
+    var displayFunctions = () => {
         self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
         self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
         self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight);
-        self.displayPreviewButton(drawing.width/2-self.ButtonWidth, drawing.height - self.previewButtonHeight/2-MARGIN/2,
+        self.displayPreviewButton(drawing.width/2-self.ButtonWidth, self.height - self.previewButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
-        self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, drawing.height - self.saveButtonHeight/2-MARGIN/2,
+        self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, self.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
+        self.header.display();
     };
 
     if (self.resizing){
@@ -2201,7 +2203,6 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 function InscriptionManagerDisplay(labels={}) {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
-    self.header = new Header("Inscription");
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
@@ -2473,7 +2474,6 @@ function InscriptionManagerDisplay(labels={}) {
 function ConnectionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
-    self.header = new Header("Connexion");
     self.header.display();
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);

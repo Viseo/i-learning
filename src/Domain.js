@@ -662,6 +662,7 @@ function Domain() {
             self.formations[count] = new Formation(formation, self);
         });
         self.manipulator = new Manipulator();
+        self.header = new Header();
         self.headerManipulator = new Manipulator();
         self.headerManipulator.addOrdonator(1);
         self.addButtonManipulator = new Manipulator();
@@ -1203,6 +1204,7 @@ function Domain() {
         };
 
         self.questionCreator = new QuestionCreator(self, self.quizz.tabQuestions[self.indexOfEditedQuestion]);
+        self.header = new Header();
         self.library = new Library(myLibraryImage);
         self.quizz.tabQuestions[0].selected = true;
         self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
@@ -1260,6 +1262,7 @@ InscriptionManager = function () {
     let self = this;
 
     self.manipulator = new Manipulator(self);
+    self.header = new Header("Inscription");
     self.firstNameManipulator = new Manipulator(self);
     self.firstNameManipulator.addOrdonator(4);
     self.lastNameManipulator = new Manipulator(self);
@@ -1308,8 +1311,7 @@ ConnectionManager = function () {
 
     self.manipulator = new Manipulator(self);
     self.manipulator.addOrdonator(6);
-
-
+    self.header = new Header("Connexion");
     self.mailAddressManipulator = new Manipulator(self);
     self.mailAddressManipulator.addOrdonator(4);
     self.passwordManipulator = new Manipulator(self);
