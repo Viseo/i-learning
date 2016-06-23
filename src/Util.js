@@ -509,6 +509,7 @@ function SVGUtil() {
 
     drawRedCross = function(x, y, size, manipulator){
         var redCross = drawPlus(0, 0, size, size);
+        redCross.size = size;
         redCross.color(myColors.red, 1, myColors.black);
         manipulator.rotator.rotate(45);
         manipulator.translator.move(x, y);

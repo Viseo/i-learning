@@ -1534,6 +1534,7 @@ function QuestionSelectedQuestion() {
         this.questionManipulator.last.add(this.redCrossManipulator.first);
     }
     else{
+        this.redCrossManipulator.translator.move(-this.questNum.x, this.questNum.y - this.redCross.size/2);
         this.redCrossManipulator.last.add(this.redCross);
     }
 }
@@ -1645,7 +1646,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
         if(self.linkedQuestion.image){
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
-            let redCrossClickHandler=()=>{
+            let redCrossClickHandler = ()=>{
                 self.redCrossManipulator.flush();
                 self.questionManipulator.ordonator.unset(2);//image
                 self.linkedQuestion.image = null;
@@ -1914,20 +1915,19 @@ function QuizzManagerDisplay(){
 
     self.questionClickHandler = event =>{
         if(typeof event.clientX == "undefined" || typeof event.clientY == "undefined"){
-            element = event.question;
+            question = event.question;
         }
         else{
             var target = drawings.background.getTarget(event.clientX,event.clientY);
-            var element = target.parent.parentManip.parentObject;
+            var question = target.parent.parentManip.parentObject;
         }
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
-        element.selected = true;
+        question.selected = true;
 
         this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
-        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(element);
-        this.questionCreator.loadQuestion(element);
+        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
+        this.questionCreator.loadQuestion(question);
         this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
-        let question = target.parent.parentManip.parentObject;
         let quizzManager = question.parentQuizz.parentFormation.quizzManager;
         let quizz = quizzManager.quizz;
         let tabQuestions = quizz.tabQuestions;
