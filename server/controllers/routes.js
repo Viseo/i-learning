@@ -41,7 +41,7 @@ module.exports = function (app, fs) {
 
     app.post('/auth/connect', function(req, res) {
         var collection = db.get().collection('users');
-        collection.find().toArray(function(err, docs) {
+        collection.find().toArray((err, docs) => {
             var user = docs.find(user => user.mailAddress === req.body.mailAddress);
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
                 if (err) {
@@ -55,11 +55,11 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.get('/auth/verify', function(req, res) {
+    app.get('/auth/verify', (req, res) => {
         let hasCookie = cookies.verify(req, (err, decode) => {
             if (!err) {
                 var collection = db.get().collection('users');
-                collection.find().toArray(function (err, docs) {
+                collection.find().toArray((err, docs) => {
                     var user = docs.find(user => user.mailAddress === decode.user.mailAddress);
                     if (user) {
                         cookies.send(res, user);
@@ -74,10 +74,10 @@ module.exports = function (app, fs) {
         }
     });
 
-    app.post('/sendProgress', function(req, res) {
+    app.post('/sendProgress', (req, res) => {
         var collection = db.get().collection('UsersFormations');
         var obj = collection.find().toArray(function (err, docs) {
-            cookies.verify(req, function (err, decode) {
+            cookies.verify(req, (err, decode) => {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;

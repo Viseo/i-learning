@@ -5,7 +5,7 @@
 let jwt = require('json-web-token');
 
 let sendCookie = (res, user) => {
-    jwt.encode('VISEO', {user: user}, function (err, token) {
+    jwt.encode('VISEO', {user: user}, (err, token) => {
         res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
         res.send({
             ack: 'OK',
