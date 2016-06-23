@@ -1226,8 +1226,9 @@ function Domain() {
         self.previewButtonManipulator.addOrdonator(2);
         self.saveQuizButtonManipulator = new Manipulator(self);
         self.saveQuizButtonManipulator.addOrdonator(2);
-        self.returnButtonManipulator=new Manipulator(self);
+        self.returnButtonManipulator = new Manipulator(self);
         self.returnButtonManipulator.addOrdonator(1);
+        self.returnButton = new ReturnButton(self);
         self.libraryIManipulator = self.library.libraryManipulator;
 
         // WIDTH

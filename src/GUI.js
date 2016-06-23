@@ -2007,32 +2007,19 @@ function QuizzManagerDisplay(){
 function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
     self.quizzInfoManipulator.last.children.indexOf(self.returnButtonManipulator.first)===-1 && self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
-    self.returnText=new svg.Text("Retour");
-    self.quizzInfoManipulator.ordonator.set(3, self.returnText);
-
-    self.returnButton=drawChevron(-2*MARGIN, 0,20,20, self.returnButtonManipulator);
-    var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
-    self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
-    self.returnButtonManipulator.translator.move(0,returnButtonHeight);
-    self.returnButtonManipulator.rotator.rotate(180);
-    var textSize = svg.runtime.boundingRect(self.returnText.component);
-    self.returnTextCadre = new svg.Rect(textSize.width + svg.runtime.boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
-    self.returnTextCadre.position(textSize.width/2 + svg.runtime.boundingRect(self.returnButton.component).width/2 + MARGIN/2, -MARGIN);
-    self.quizzInfoManipulator.ordonator.set(4, self.returnTextCadre);
-    self.returnTextCadre.parentFormation=self.parentFormation;
-    self.returnText.parentFormation=self.parentFormation;
-    self.returnButton.parentFormation=self.parentFormation;
+    self.formationLabel = new svg.Text("Formation : " + self.parentFormation.label).position(drawing.width/2,0);
+    self.formationLabel.font("Arial", 20).anchor("middle");
+    self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
 
     var returnHandler = function(event){
         var target = drawings.background.getTarget(event.clientX,event.clientY);
-        target.parentFormation.quizzManager.quizzManagerManipulator.flush();
-        target.parentFormation.quizzDisplayed = false;
-        target.parentFormation.displayFormation();
+        target.parentObj.parent.quizzManagerManipulator.flush();
+        target.parentObj.parent.quizzDisplayed = false;
+        target.parentObj.parent.parentFormation.displayFormation();
     };
 
-    svg.addEvent(self.returnButton, "click", returnHandler);
-    svg.addEvent(self.returnText, "click", returnHandler);
-    svg.addEvent(self.returnTextCadre, "click", returnHandler);
+    self.returnButton.display(-2*MARGIN, 0, 20, 20);
+    self.returnButton.setHandler(returnHandler);
 
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;

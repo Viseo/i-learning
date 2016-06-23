@@ -60,6 +60,7 @@ function SVGGlobalHandler() {
             self.ordonator = new svg.Ordered(layerNumber);
             self.ordonator.parentManip = self;
             self.scalor.add(self.ordonator);
+            return self;    
         }
     };
 
@@ -123,6 +124,7 @@ function SVGGlobalHandler() {
 
         var onmouseupHandler = function (event) {
             self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
+            console.log(self.target);
             if (self.target) {
                 svg.event(self.target, "mouseup", event);
                 svg.event(self.target, "click", event);
@@ -539,9 +541,9 @@ function SVGUtil() {
      * @param manipulator
      */
     drawChevron = function (x, y, w, h, manipulator) {
-        var baseWidth = 160;//295-55;
-        var baseHeight = 300;//385-10;
-        var arrowManipulator = manipulator;
+        var baseWidth = 160;
+        var baseHeight = 300;
+        var chevronManipulator = manipulator;
         var chevron = new svg.Path(x, y).line(x - 100, y + 100)
             .cubic(x - 140, y + 140, x - 85, y + 185, x - 50, y + 150)
             .line(x + 60, y + 40)
@@ -551,7 +553,7 @@ function SVGUtil() {
             .line(x, y);
         chevron.tempWidth = baseWidth;
         chevron.tempHeight = baseHeight;
-        arrowManipulator.ordonator.set(0,chevron);
+        chevronManipulator.ordonator.set(0,chevron);
         if (chevron.tempWidth > w) {
             chevron.tempHeight *= w / chevron.tempWidth;
             chevron.tempWidth = w;
@@ -560,7 +562,7 @@ function SVGUtil() {
             chevron.tempWidth *= h / chevron.tempHeight;
             chevron.tempHeight = h;
         }
-        arrowManipulator.scalor.scale(chevron.tempHeight / baseHeight);
+        chevronManipulator.scalor.scale(chevron.tempHeight / baseHeight);
         return chevron;
     };
 
@@ -721,6 +723,38 @@ function SVGUtil() {
             quizz.tabQuestions[i].questionNum = i + 1;
         }
     };
+}
+
+class ReturnButton {
+    constructor(parent) {
+        this.parent = parent;
+        this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
+        this.manipulator.addOrdonator(1);
+        this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
+        this.manipulator.last.add(this.chevronManipulator.first);
+
+    }
+
+    setHandler(returnHandler) {
+        svg.addEvent(this.returnButton, "click", returnHandler);
+        svg.addEvent(this.returnText, "click", returnHandler);
+    }
+
+    display(x, y, w, h) {
+        this.returnText = new svg.Text("Retour");
+        this.returnButton = drawChevron(x, y, w, h, this.chevronManipulator);
+        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
+        let textSize = svg.runtime.boundingRect(this.returnText.component);
+        let padding = 5;
+        this.returnButton.color(myColors.black, 0, []);
+        this.returnText.position(returnButtonSize.width, padding).font("Arial", 20).anchor("start");
+        this.manipulator.translator.move(0, -padding);
+        this.chevronManipulator.rotator.rotate(180);
+        this.manipulator.ordonator.set(0, this.returnText);
+
+        this.returnText.parentObj = this;
+        this.returnButton.parentObj = this;
+    }
 }
 
 class Server {
@@ -2037,6 +2071,7 @@ if (typeof exports !== "undefined") {
     exports.setGui = setGui;
     exports.setRuntime = setRuntime;
     exports.Server = Server;
+    exports.ReturnButton = ReturnButton;
 }
 
 /*var FormationVersionStructure =
