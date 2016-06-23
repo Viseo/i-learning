@@ -441,16 +441,20 @@ function Domain() {
             };
 
             var displaySaveMessage = function (message, displayQuizzManager){
-                (displayQuizzManager.__proto__ ===  Function.prototype) && displayQuizzManager();
-                (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave)!==-1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                self.errorMessageSave = new svg.Text(message)
-                    .position(0, -self.saveButtonHeight / 2 - MARGIN)
-                    .font("Arial", 20)
-                    .anchor('middle').color(myColors.green);
-                self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
-                svg.timeout(function () {
+                if (displayQuizzManager.__proto__ ===  Function.prototype){
+                    displayQuizzManager();
+                }
+                else {
                     (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
-                }, 5000);
+                    self.errorMessageSave = new svg.Text(message)
+                        .position(0, -self.saveButtonHeight / 2 - MARGIN)
+                        .font("Arial", 20)
+                        .anchor('middle').color(myColors.green);
+                    self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
+                    svg.timeout(function () {
+                        (self.saveFormationButtonManipsulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                    }, 5000);
+                }
             };
 
             if (validation) {
