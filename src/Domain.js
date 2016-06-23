@@ -509,10 +509,6 @@ function Domain() {
                     Server.getFormationByName(self.label, callbackCheckName);
                 };
 
-
-                    var getObjectToSave = function () {
-                        return {label: self.label, gamesCounter: self.gamesCounter, levelsTab: self.levelsTab}
-                    };
                 var getObjectToSave = function () {
                     var levelsTab = [];
                     var gamesCounter = {quizz: 0 , bd : 0};
@@ -529,7 +525,6 @@ function Domain() {
                                 game.id = "bd" + gamesCounter.bd;
                                 gamesCounter.bd ++;
                             }
-                            //game.parentGames.length === 0 && levelsTab[i].gamesTab.push(game) ;
                             levelsTab[i].gamesTab.push(game) ;
                         });
                     });
@@ -539,7 +534,13 @@ function Domain() {
                             game.childrenGames.forEach(function (child) {
                                 let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex].id;
                                 let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].id;
-                                self.link.push([{parentGame: parentGame, childGame: childGame}]);
+                                var toBeAdd = true;
+                               self.link.forEach(function(links) {
+                                    if(links[0].parentGame === parentGame && links[0].childGame === childGame){
+                                        toBeAdd = false;
+                                    }
+                                   });
+                                toBeAdd && self.link.push([{parentGame: parentGame, childGame: childGame}]);
                             });
                         });
                     });
@@ -1045,7 +1046,6 @@ function Domain() {
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
-//        self.childrenGames = [];
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
