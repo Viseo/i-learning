@@ -1055,48 +1055,43 @@ function FormationsManagerDisplay() {
 }
 
 function HeaderDisplay () {
-    let self = this;
+    this.width = drawing.width;
+    this.height = this.size * drawing.height;
 
-    self.width = drawing.width;
-    self.height = 0.05 * drawing.height;
+    let manip = this.manipulator,
+        userManip = this.userManipulator,
+        message = this.addMessage;
+    
+    let text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
+        line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
+    manip.ordonator.set(1, text);
+    manip.ordonator.set(0, line);
 
-    let text = new svg.Text(self.label).position(MARGIN, self.height * 0.75).font('Arial', 20).anchor('start');
-    self.manipulator.ordonator.set(1, text);
+    mainManipulator.ordonator.set(0, manip.first);
 
-    mainManipulator.ordonator.set(0, self.manipulator.first);
-    self.redim = function() {
-        self.line = new svg.Line(0, self.height, self.width, self.height).color(myColors.black, 3, myColors.black);
-        self.addMessage && (self.addMessageText = new svg.Text(self.addMessage).position(self.width/2, self.height/2+MARGIN).font('Arial', 32));
-    };
-    self.redim();
-
-    self.addMessage ? self.manipulator.ordonator.set(2, self.addMessageText) : self.manipulator.ordonator.unset(2);
-    self.manipulator.ordonator.set(0, self.line);
-    self.manipulator.last.children.indexOf(self.userManipulator.first)===-1 && self.manipulator.last.add(self.userManipulator.first);
-    //var body = new svg.Circle(20).color(myColors.black);
-    let displayUser = function() {
+    let displayUser = () => {
         let svgwidth = x => svg.runtime.boundingRect(x.component).width;
         let pos = 0;
 
-        let deconnection = displayText("Déconnexion", 220, 50, myColors.none, myColors.none, 30, null, self.userManipulator, 4, 5);
+        let deconnection = displayText("Déconnexion", 220, 50, myColors.none, myColors.none, 30, null, userManip, 4, 5);
+        let body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black);
+        let head = new svg.Circle(12).color(myColors.black, 2, myColors.white);
+        let userText = autoAdjustText(drawing.username, 0, 0, 200, 50, 30, null, userManip, 3);
+
         pos-= svgwidth(deconnection.cadre)/2 + 40;
         deconnection.content.position(pos, 0);
         deconnection.cadre.position(pos, -30/2);
         pos-= svgwidth(deconnection.cadre)/2 + 80;
-        let body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black);
-        let head = new svg.Circle(12).color(myColors.black, 2, myColors.white);
-        self.userManipulator.ordonator.set(0, body);
-        self.userManipulator.ordonator.set(1, head);
-        self.userManipulator.scalor.scale(0.65);
+        userManip.ordonator.set(0, body);
+        userManip.ordonator.set(1, head);
+        userManip.scalor.scale(0.65);
         pos-= svgwidth(body)/2 + MARGIN;
         body.position(pos, -5);
         head.position(pos, -20);
         pos-= svgwidth(body)/2 + MARGIN * 2;
-        let userText = autoAdjustText(drawing.username, 0, 0, 200, 50, 30, null, self.userManipulator, 3);
         userText.text.anchor('end');
         userText.text.position(pos, 0);
-
-        self.userManipulator.translator.move(self.width, self.height * 0.75);
+        userManip.translator.move(this.width, this.height * 0.75);
 
         let deconnexionHandler = function() {
             document.cookie = "token=; path=/; max-age=0;";
@@ -1106,6 +1101,15 @@ function HeaderDisplay () {
         svg.addEvent(deconnection.content, "click", deconnexionHandler);
         svg.addEvent(deconnection.cadre, "click", deconnexionHandler);
     };
+
+    this.redim = () => {
+        line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
+        message && (this.addMessageText = new svg.Text(message).position(this.width/2, this.height/2+MARGIN).font('Arial', 32));
+    };
+
+    this.redim();
+    message ? manip.ordonator.set(2, this.addMessageText) : manip.ordonator.unset(2);
+    manip.last.children.indexOf(userManip.first)===-1 && manip.last.add(userManip.first);
     drawing.username && displayUser();
 }
 
