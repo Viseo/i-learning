@@ -29,7 +29,7 @@ function setGlobalVariable() {
 }
 
 
-function main(targetQuizz) {
+function play(targetQuizz) {
     !util && setGlobalVariable();
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     var quizz = new Quizz(quizzCopy);
@@ -71,7 +71,7 @@ function main(targetQuizz) {
 
 }
 if (typeof exports !== "undefined") {
-    exports.main = main;
+    exports.play = play;
     exports.setSvg = setSvg;
     exports.setUtil = setUtil;
     exports.setGlobalVariable = setGlobalVariable;

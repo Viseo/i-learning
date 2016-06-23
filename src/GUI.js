@@ -569,78 +569,67 @@ function FormationDisplayMiniature (w,h) {
 function FormationDisplayFormation(){
     var self = this;
     drawing.currentPageDisplayed = "Formation";
-    self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
     self.formationsManager.formationDisplayed = self;
-
-    self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
-    self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
-
-    self.gamesLibraryManipulator = self.library.libraryManipulator;
-    self.manipulator.ordonator.set(2, self.gamesLibraryManipulator.first);
-    self.manipulator.ordonator.set(4, self.formationInfoManipulator.first);
-
-    self.libraryWidth = drawing.width * self.libraryWidthRatio;
-
-    self.y = drawing.height * HEADER_SIZE ;
-
     self.globalMargin = {
         height: self.marginRatio * drawing.height,
         width: self.marginRatio * drawing.width
     };
-
     //self.clippingManipulator.flush();
-
     self.borderSize = 3;
-
     self.manipulator.first.move(0, drawing.height*0.075);
+
     mainManipulator.ordonator.set(1, self.manipulator.first);
-    self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
-    self.manipulator.ordonator.set(0,self.title);
-    self.formationWidth = svg.runtime.boundingRect(self.title.component).width;
-
-    if (playerMode) return;
 
 
-    self.resizePanel = function () {
-        var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
-        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-        let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
-        let widthMAX = Math.max(self.panel.width, trueWidth);
-        self.panel.resizeContent(widthMAX-1, height);
-    };
-    self.movePanelContent = function () {
-        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
-        let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel ? longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame : 0;
-        let widthMAX = Math.max(self.panel.width, trueWidth);
-        self.miniaturesManipulator.first.move((widthMAX-self.panel.width)/2, 0);
-    };
+    if (playerMode) {
+        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaWidth = drawing.width  - 2 *  MARGIN;
+        self.header = new Header(self.label);
+        self.header.display();
+    }
+    else{
 
-    var showTitle = function() {
-        var text = (self.label) ? self.label : (self.label=self.labelDefault);
-        var color = (self.label) ? myColors.black : myColors.lightgrey;
-        var bgcolor = myColors.lightgrey;
-        self.formationLabelWidth = 400 ;
-        self.formationLabel = {};
-        self.formationLabel.content = autoAdjustText(text, 0, 0, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
-        self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
+        self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
 
-        self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
-        self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN);
-        self.labelValidInput ? self.formationLabel.cadre.color(bgcolor) : self.formationLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2);
+        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
-        self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
-        self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+        self.gamesLibraryManipulator = self.library.libraryManipulator;
+        self.manipulator.ordonator.set(2, self.gamesLibraryManipulator.first);
+        self.manipulator.ordonator.set(4, self.formationInfoManipulator.first);
 
-        svg.addEvent(self.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
-        svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
-        // self.formationCreator = formationValidation;
-};
+        self.libraryWidth = drawing.width * self.libraryWidthRatio;
 
-    var dblclickEditionFormationLabel = function () {
-        var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
+        self.y = drawing.height * HEADER_SIZE ;
+
+        self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
+        self.manipulator.ordonator.set(0,self.title);
+        self.formationWidth = svg.runtime.boundingRect(self.title.component).width;
+
+        var showTitle = function() {
+            var text = (self.label) ? self.label : (self.label=self.labelDefault);
+            var color = (self.label) ? myColors.black : myColors.lightgrey;
+            var bgcolor = myColors.lightgrey;
+            self.formationLabelWidth = 400 ;
+            self.formationLabel = {};
+            self.formationLabel.content = autoAdjustText(text, 0, 0, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
+            self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
+
+            self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
+            self.formationLabel.cadre = new svg.Rect(self.formationLabelWidth, self.labelHeight + MARGIN);
+            self.labelValidInput ? self.formationLabel.cadre.color(bgcolor) : self.formationLabel.cadre.color(bgcolor, 2, myColors.red);
+            self.formationLabel.cadre.position(self.formationTitleWidth + self.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2);
+
+            self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
+            self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+
+            svg.addEvent(self.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
+            svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
+            // self.formationCreator = formationValidation;
+        };
+
+        var dblclickEditionFormationLabel = function () {
+            var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
 
         self.formationInfoManipulator.ordonator.unset(1);
         var contentareaStyle = {
@@ -658,11 +647,11 @@ function FormationDisplayFormation(){
         drawings.screen.add(contentarea);
         contentarea.focus();
 
-        var removeErrorMessage = function () {
-            self.formationNameValidInput = true;
-            self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
-            self.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
-        };
+            var removeErrorMessage = function () {
+                self.formationNameValidInput = true;
+                self.errorMessage && self.formationInfoManipulator.ordonator.unset(2);
+                self.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
+            };
 
         var displayErrorMessage = function () {
             removeErrorMessage();
@@ -703,19 +692,37 @@ function FormationDisplayFormation(){
             display: displayErrorMessage
         });
     };
-    showTitle();
+        showTitle();
+        self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
+        self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight);
+    }
 
-    var onclickQuizzHandler = function(event){
-        var displayQuizzManager= function() {
-            var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-            self.quizzManager.loadQuizz(targetQuizz, targetQuizz.parentFormation);
+    self.resizePanel = function () {
+        var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        let widthMAX = Math.max(self.panel.width, trueWidth);
+        self.panel.resizeContent(widthMAX-1, height);
+    };
+    self.movePanelContent = function () {
+        let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
+        let longestLevel = self.findLongestLevel()[0];
+        let trueWidth = longestLevel && longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame;
+        let widthMAX = Math.max(self.panel.width, trueWidth);
+        self.miniaturesManipulator.first.move((widthMAX - self.panel.width) / 2, 0);
+    }
+    var onclickQuizzHandler = function(event) {
+        var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        var displayQuizzManager = function () {
+            self.quizzManager.loadQuizz(targetQuizz, self);
             self.quizzDisplayed = targetQuizz;
             self.quizzManager.display();
             self.selectedArrow = null;
             self.selectedGame = null;
         }
-        self.saveFormation(displayQuizzManager);
-
+        !playerMode && self.saveFormation(displayQuizzManager);
+        playerMode && play(targetQuizz);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -731,7 +738,8 @@ function FormationDisplayFormation(){
         self.panel.contentV.add(level.manipulator.first);
 
         level.obj = autoAdjustText("Niveau "+level.index, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
-        level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(myColors.black, 3, myColors.black);
+        var lineColor = ( playerMode ? myColors.grey : myColors.black);
+        level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(lineColor , 3, lineColor);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
         (self.textLevelNumberDimensions = {
@@ -770,7 +778,10 @@ function FormationDisplayFormation(){
         };
 
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
+        !playerMode && self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
+        playerMode && self.clippingManipulator.translator.move(MARGIN, drawing.height*HEADER_SIZE);
+        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+
         if(typeof self.panel !== "undefined") {
             self.clippingManipulator.last.remove(self.panel.component);
         }
@@ -789,12 +800,12 @@ function FormationDisplayFormation(){
     self.updateAllLinks = function() {
         self.arrowsManipulator.flush();
         self.levelsTab.forEach(function(level){
-           level.gamesTab.forEach(function(parentGame){
-               parentGame.childrenGames.forEach(function(game){
-                   var arrow = new Arrow(parentGame,game);
-                   parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
-               });
-           }) ;
+            level.gamesTab.forEach(function(parentGame){
+                parentGame.childrenGames.forEach(function(game){
+                    var arrow = new Arrow(parentGame,game);
+                    parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
+                });
+            }) ;
         });
     };
     self.displayGraph = (w, h) => {
@@ -816,7 +827,6 @@ function FormationDisplayFormation(){
                 if(typeof tabElement.miniature === "undefined"){
                     tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
                 }
-                console.log(self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first));
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
@@ -845,11 +855,10 @@ function FormationDisplayFormation(){
         self.panel.back.parent.parentManip = self.graphManipulator;
         self.updateAllLinks();
     };
-
     self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
     self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-    self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
-    self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight); ////15: Height Message Error
+
+ ////15: Height Message Error
 }
 
 function FormationDisplayErrorMessage(message){
@@ -963,7 +972,8 @@ function FormationsManagerDisplay() {
             self.formationDisplayed = formation;
             self.formationDisplayed.displayFormation();
         };
-        !playerMode && Server.getFormationById(formation._id, callback);
+        //!playerMode &&
+        Server.getFormationById(formation._id, callback);
     }
 
     function onClickNewFormation() {
