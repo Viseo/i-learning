@@ -81,7 +81,7 @@ function AnswerDisplay (x, y, w, h) {
         };
         let mouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
-                self.redCrossManipulator=new Manipulator(self);
+                self.redCrossManipulator = new Manipulator(self);
                 self.redCrossManipulator.addOrdonator(2);
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
@@ -590,7 +590,7 @@ function FormationDisplayFormation(){
     self.movePanelContent = function () {
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
         let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
+        let trueWidth = longestLevel ? longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame : 0;
         let widthMAX = Math.max(self.panel.width, trueWidth);
         self.miniaturesManipulator.first.move((widthMAX-self.panel.width)/2, 0);
     };
@@ -1517,19 +1517,13 @@ function QuestionSelectedQuestion() {
                 let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
                 let nextQuestionY = questionsArray[index].bordure.globalPoint(0, 0).y;
                 quizzManager.indexOfEditedQuestion = index;
-                questionsArray[quizzManager.indexOfEditedQuestion].bordure.component.listeners.click({
-                    clientX: nextQuestionX,
-                    clientY: nextQuestionY
-                });
+                svg.event(questionsArray[quizzManager.indexOfEditedQuestion].bordure, "click", {question:questionsArray[quizzManager.indexOfEditedQuestion]});
             }
             else{
                 let addEmptyElementX = questionsArray[0].obj.cadre.globalPoint(0, 0).x;
                 let addEmptyElementY = questionsArray[0].obj.cadre.globalPoint(0, 0).y;
                 quizzManager.indexOfEditedQuestion = index++;
-                questionsArray[0].obj.cadre.component.listeners.dblclick({
-                    clientX: addEmptyElementX,
-                    clientY: addEmptyElementY
-                }); // dernier élément du tableau (AddEmptyElement)
+                svg.event(questionsArray[0].obj.cadre, "dblclick", {}); // dernier élément du tableau (AddEmptyElement)
             }
         };
         this.redCrossManipulator = new Manipulator(this);
@@ -1919,8 +1913,13 @@ function QuizzManagerDisplay(){
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
     self.questionClickHandler = event =>{
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
-        let element = target.parent.parentManip.parentObject;
+        if(typeof event.clientX == "undefined" || typeof event.clientY == "undefined"){
+            element = event.question;
+        }
+        else{
+            var target = drawings.background.getTarget(event.clientX,event.clientY);
+            var element = target.parent.parentManip.parentObject;
+        }
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
         element.selected = true;
 
