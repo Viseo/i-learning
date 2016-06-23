@@ -631,8 +631,8 @@ function Domain() {
 
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x = self.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                //game.miniaturePosition.y = -self.panel.height / 2 + (level.index - 1 / 2) * self.levelHeight;
-                game.miniaturePosition.y =-self.panel.height / 2;
+                game.miniaturePosition.y = -self.panel.height / 2 + (level.index - 1 / 2) * self.levelHeight;
+                //game.miniaturePosition.y =-self.panel.height / 2;
             });
         }
     };
@@ -1174,14 +1174,14 @@ function Domain() {
 
             var getObjectToSave = function () {
                 self.tabQuestions=self.quizz.tabQuestions;
-                self.tabQuestions.pop();
+                (self.tabQuestions[self.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && self.tabQuestions.pop();
                 self.tabQuestions.forEach(function(question){
                     question.tabAnswer.pop();
                 });
 
                 return{
                     title: self.quizzName,
-                    tabQuestions: self.quizz.tabQuestions,
+                    tabQuestions: self.tabQuestions,
                     childrenGames: self.quizz.childrenGames,
                     levelIndex: self.quizz.levelIndex,
                     gameIndex: self.quizz.gameIndex
@@ -1189,7 +1189,6 @@ function Domain() {
             };
             var callback = function () {
                 self.quizz.title=self.quizzName;
-                self.quizz.tabQuestions=self.tabQuestions;;
                 let quizz = self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex];
                 (self.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first)!==-1) && self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
