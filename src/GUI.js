@@ -1988,6 +1988,7 @@ function QuizzManagerDisplay(){
         self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, self.height - self.saveButtonHeight/2-MARGIN/2,
             self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
         mainManipulator.ordonator.unset(0);
+        header.addMessage = "Formation : " + self.parentFormation.label;
         header.display();
     };
 
@@ -2013,9 +2014,6 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     var returnButtonHeight= -svg.runtime.boundingRect(self.returnText.component).height/2;
     self.returnText.position(svg.runtime.boundingRect(self.returnButton.component).width,0).font("Arial", 20).anchor("start");
     self.returnButtonManipulator.translator.move(0,returnButtonHeight);
-    self.formationLabel = new svg.Text("Formation : " + self.parentFormation.label).position(drawing.width/2,0);
-    self.formationLabel.font("Arial", 20).anchor("middle");
-    self.quizzInfoManipulator.ordonator.set(2,self.formationLabel);
     self.returnButtonManipulator.rotator.rotate(180);
     var textSize = svg.runtime.boundingRect(self.returnText.component);
     self.returnTextCadre = new svg.Rect(textSize.width + svg.runtime.boundingRect(self.returnButton.component).width + MARGIN, textSize.height + MARGIN).color(myColors.white).opacity(0.001);
