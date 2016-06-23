@@ -536,10 +536,9 @@ function Domain() {
 
                     self.levelsTab.forEach(function(level) {
                         level.gamesTab.forEach(function (game) {
-                            game.childrenGames.forEach(function () {
-                                let parentGame = game.id;
-                                let childGame = game.childrenGames[game.gameIndex].id;
-                                game.gameIndex ++;
+                            game.childrenGames.forEach(function (child) {
+                                let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex].id;
+                                let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].id;
                                 self.link.push([{parentGame: parentGame, childGame: childGame}]);
                             });
                         });
@@ -1046,7 +1045,7 @@ function Domain() {
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
-        self.childrenGames = [];
+//        self.childrenGames = [];
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
