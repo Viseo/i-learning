@@ -1049,7 +1049,7 @@ function FormationsManagerDisplay() {
             count++;
             posx += (self.tileWidth+ self.spaceBetweenElements.width);
         });
-        self.panel.resizeContent(totalLines*(MARGIN+self.tileHeight)+self.tileHeight/2);
+        self.panel.resizeContent(totalLines*(self.spaceBetweenElements.height+self.tileHeight)+self.spaceBetweenElements.height-MARGIN);
     };
     (self.tileHeight > 0) && self.displayFormations();
 }
