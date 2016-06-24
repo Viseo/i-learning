@@ -729,8 +729,10 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
                 if(tabElement instanceof Quizz){
-                    svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", dblclickQuizzHandler);
-                    svg.addEvent(tabElement.miniature.icon.content, "dblclick", dblclickQuizzHandler);
+                    let eventToBeUse;
+                    playerMode ? (eventToBeUse="click") : (eventToBeUse="dblclick");
+                    svg.addEvent(tabElement.miniature.icon.cadre, eventToBeUse, dblclickQuizzHandler);
+                    svg.addEvent(tabElement.miniature.icon.content, eventToBeUse, dblclickQuizzHandler);
                 }else if(tabElement instanceof Bd){
                     // Ouvrir le Bd creator du futur jeu Bd
                 }

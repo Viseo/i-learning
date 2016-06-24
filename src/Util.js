@@ -715,8 +715,8 @@ function SVGUtil() {
             self.selected = !self.selected;
         }
 
-        svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
-        svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
+        !playerMode && svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
+        !playerMode && svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
         self.icon.cadre.color(myColors.white, 1, myColors.black);
         return self;
     };
