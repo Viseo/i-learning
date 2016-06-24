@@ -1849,15 +1849,14 @@ function QuizzDisplay(x,y,w,h) {
     x && (self.resultArea.x = x);
     w && (self.titleArea.w = w);
     x && (self.quizzMarginX = x);
-    self.headerPercentage = 0.1;
+    self.headerPercentage = HEADER_SIZE;
     self.questionPercentageWithImage = 0.3;
     self.questionPercentage = 0.2;
     self.answerPercentageWithImage = 0.6;
     self.answerPercentage = 0.7;
 
     var heightPage = drawing.height;
-
-    self.headerHeight = heightPage * self.headerPercentage - MARGIN;
+    self.headerHeight = heightPage * self.headerPercentage;
     self.questionHeight = heightPage * self.questionPercentage - MARGIN;
     self.answerHeight = heightPage * self.answerPercentage - MARGIN;
     self.questionHeightWithoutImage = heightPage * self.questionPercentage - MARGIN;
@@ -1865,9 +1864,9 @@ function QuizzDisplay(x,y,w,h) {
     self.questionHeightWithImage = heightPage * self.questionPercentageWithImage - MARGIN;
     self.answerHeightWithImage = heightPage * self.answerPercentageWithImage - MARGIN;
 
-    //self.quizzManipulator.ordonator.set(1,self.titleText);
-    //self.quizzManipulator.ordonator.set(0,self.titleBox);
-    self.quizzManipulator.translator.move(self.questionArea.w/2,self.headerHeight/2);
+    self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
+
+    self.returnButton.display(MARGIN-w/2, self.headerHeight/2, 20, 20);
 
     header.display();
 

@@ -745,15 +745,15 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text("Retour");
-        this.returnButton = drawChevron(x, y, w, h, this.chevronManipulator);
-        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
-        let textSize = svg.runtime.boundingRect(this.returnText.component);
-        let padding = 5;
+        this.returnButton = drawChevron(0, 0, w, h, this.chevronManipulator);
         this.returnButton.color(myColors.black, 0, []);
-        this.returnText.position(returnButtonSize.width, padding).font("Arial", 20).anchor("start");
-        this.manipulator.translator.move(0, -padding);
-        this.chevronManipulator.rotator.rotate(180);
+        this.returnText.font("Arial", 20).anchor("start").position(0, 0);
+        let textSize = svg.runtime.boundingRect(this.returnText.component);
+        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
         this.manipulator.ordonator.set(0, this.returnText);
+        this.returnText.position(w+returnButtonSize.width, textSize.height/2+returnButtonSize.height/4);
+        this.manipulator.translator.move(x+w, y);
+        this.chevronManipulator.rotator.rotate(180);
 
         this.returnText.parentObj = this;
         this.returnButton.parentObj = this;
@@ -830,7 +830,7 @@ function Bdd() {
         "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
-        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
+        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
         "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion"];
 
     myColors = {

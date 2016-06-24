@@ -30,7 +30,7 @@ function setGlobalVariable() {
 
 
 function play(targetQuizz) {
-    //!util && setGlobalVariable();
+    !util && setGlobalVariable();
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     var quizz = new Quizz(quizzCopy);
     
@@ -49,7 +49,7 @@ function play(targetQuizz) {
             for(let i = 0; i < qManip.ordonator.children.length; i++) {
                 qManip.ordonator.unset(i);
             }
-            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2 + MARGIN,
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight + quizz.questionHeight/2 + MARGIN,
                 quizz.questionArea.w , quizz.questionHeight);
             quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN + quizz.questionHeight,
                 quizz.questionArea.w , quizz.answerHeight);

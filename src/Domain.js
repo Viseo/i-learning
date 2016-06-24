@@ -741,7 +741,7 @@ function Domain() {
         self.userManipulator = new Manipulator(self);
         self.userManipulator.addOrdonator(6);
         self.label = "I-learning";
-        self.size = 0.05; // 5%
+        self.size = HEADER_SIZE;
         self.setMessage = function (additionalMessage) {
             self.addMessage = additionalMessage;
         };
@@ -1046,6 +1046,9 @@ function Domain() {
         self.parentFormation = parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
+        self.returnButtonManipulator = new Manipulator(self);
+        self.returnButton = new ReturnButton(self);
+        self.quizzManipulator.last.add(self.returnButtonManipulator.first);
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
@@ -1129,7 +1132,7 @@ function Domain() {
                 }
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
-                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
+                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight + self.questionHeight/ 2 + MARGIN,
                     self.questionArea.w, self.questionHeight);
                 !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
