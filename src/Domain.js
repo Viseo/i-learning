@@ -1213,7 +1213,6 @@ function Domain() {
         }
 
         self.saveQuizz = function () {
-
             var getObjectToSave = function () {
                 console.log(self.tabQuestions);
                 self.tabQuestions=self.quizz.tabQuestions;

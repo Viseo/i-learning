@@ -581,7 +581,7 @@ function FormationDisplayFormation(){
 
     mainManipulator.ordonator.set(1, self.manipulator.first);
 
-    var onclickQuizzHandler = function(event) {
+    var dblclickQuizzHandler = function(event) {
         var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
         var displayQuizzManager = function () {
             self.quizzManager.loadQuizz(targetQuizz, self);
@@ -589,7 +589,7 @@ function FormationDisplayFormation(){
             self.quizzManager.display();
             self.selectedArrow = null;
             self.selectedGame = null;
-        }
+        };
         !playerMode && self.saveFormation(displayQuizzManager);
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
         playerMode && play(JSON.parse(JSON.stringify(targetQuizz,ignoredData)));
@@ -725,13 +725,12 @@ function FormationDisplayFormation(){
                 if(typeof tabElement.miniature === "undefined"){
                     tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
                 }
-//                console.log(self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first));
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
                 if(tabElement instanceof Quizz){
-                    svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", onclickQuizzHandler);
-                    svg.addEvent(tabElement.miniature.icon.content, "dblclick", onclickQuizzHandler);
+                    svg.addEvent(tabElement.miniature.icon.cadre, "dblclick", dblclickQuizzHandler);
+                    svg.addEvent(tabElement.miniature.icon.content, "dblclick", dblclickQuizzHandler);
                 }else if(tabElement instanceof Bd){
                     // Ouvrir le Bd creator du futur jeu Bd
                 }
@@ -1622,7 +1621,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
             self.linkedQuestion.tabAnswer.forEach(function(answer){
                 if(answer.editable){
                     answer.multipleAnswer = answer.correct;
-                    answer.parent.multipleChoice=answer.correct;
+                    answer.parentQuestion.multipleChoice=answer.correct;
                     (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
                     answer.correct = answer.simpleAnswer;
                     answer.correct = answer.simpleAnswer;
@@ -1632,7 +1631,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
             self.linkedQuestion.tabAnswer.forEach(function(answer){
                 if(answer.editable){
                     answer.simpleAnswer = answer.correct;
-                    answer.parent.multipleChoice=!answer.correct;
+                    answer.parentQuestion.multipleChoice=!answer.correct;
                     (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
                     answer.correct = answer.multipleAnswer;
                     answer.correct = answer.multipleAnswer;
