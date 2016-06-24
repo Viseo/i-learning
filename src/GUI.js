@@ -1091,7 +1091,7 @@ function FormationsManagerDisplay() {
     (self.tileHeight > 0) && self.displayFormations();
 }
 
-function HeaderDisplay (message) {
+function HeaderDisplay (message, special) {
     this.width = drawing.width;
     this.height = this.size * drawing.height;
 
@@ -1134,6 +1134,7 @@ function HeaderDisplay (message) {
         let deconnexionHandler = function() {
             document.cookie = "token=; path=/; max-age=0;";
             drawing.username = null;
+            userManip.flush();
             connexion();
         };
         svg.addEvent(deconnection.content, "click", deconnexionHandler);
@@ -1149,6 +1150,20 @@ function HeaderDisplay (message) {
 
     manip.last.children.indexOf(userManip.first)===-1 && manip.last.add(userManip.first);
     drawing.username && displayUser();
+    if (message === "Inscription" || message === "Connexion"){
+        var link;
+        message === "Inscription" ? (link = "Connexion") : (link = "Inscription");
+        var clickHandler = function(){
+            (link === "Inscription") ? inscription() : connexion();
+        };
+        let special = displayText(link, 220, 40, myColors.none, myColors.white, 25, 'Arial', userManip, 4, 5);
+        special.content.anchor("end");
+        userManip.translator.move(this.width, this.height * 0.5);
+        userManip.scalor.scale(1);
+        svg.addEvent(special.content, "click", clickHandler);
+        svg.addEvent(special.cadre, "click", clickHandler);
+    }
+
 }
 
 function PuzzleDisplay(x, y, w, h, startPosition) {
@@ -2201,7 +2216,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 function InscriptionManagerDisplay(labels={}) {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
-    header.display();
+    header.display("Inscription");
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     var w = drawing.width/5;
@@ -2472,7 +2487,8 @@ function InscriptionManagerDisplay(labels={}) {
 function ConnectionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
-    header.display();
+    header.display("Connexion");
+
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.first.move(drawing.width/2, drawing.height/2);
     let w = drawing.width/6;
