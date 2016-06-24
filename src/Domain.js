@@ -366,7 +366,9 @@ function Domain() {
         self.library.formation = self;
         self.quizzManager = new QuizzManager();
         self.quizzManager.parentFormation = self;
-
+        self.returnButtonManipulator = new Manipulator(self);
+        self.returnButtonManipulator.addOrdonator(1);
+        self.returnButton = new ReturnButton(self);
         self.labelDefault = "Entrer le nom de la formation";
         self.needUpdate = true;
         // WIDTH
