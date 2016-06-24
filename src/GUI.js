@@ -588,8 +588,9 @@ function FormationDisplayFormation(){
         target.parentObj.parent.quizzDisplayed = false;
         target.parentObj.parent.formationsManager.display();
     };
-
+    self.manipulator.last.children.indexOf(self.returnButtonManipulator.first) === -1 && self.manipulator.last.add(self.returnButtonManipulator.first);
     self.returnButton.display(-2*MARGIN, 0, 20, 20);
+    self.returnButton.height = svg.runtime.boundingRect(self.returnButton.returnButton.component).height;
     self.returnButton.setHandler(returnHandler);
 
     var dblclickQuizzHandler = function(event) {
@@ -634,7 +635,7 @@ function FormationDisplayFormation(){
         }
         self.panel.contentV.add(level.manipulator.first);
         var lineColor = playerMode ? myColors.grey : myColors.black;
-        var levelText =  playerMode ? "" : "Niveau "+level.index;
+        var levelText =  playerMode ? "" : "Niveau " + level.index;
         level.obj = autoAdjustText(levelText, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(lineColor , 3, lineColor);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
@@ -758,16 +759,16 @@ function FormationDisplayFormation(){
     };
 
     if (playerMode) {
-        self.graphCreaHeightRatio =1;
-        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaHeightRatio = 1;
+        self.graphCreaHeight = (drawing.height - 40 - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
         self.graphCreaWidth = drawing.width  - 2 *  MARGIN;
         self.displayFrame(self.graphCreaWidth, self.graphCreaHeight);
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
+        self.clippingManipulator.translator.move((drawing.width - self.graphCreaWidth)/2, (drawing.height - header.height - self.returnButton.height - self.graphCreaHeight)/2);
     } else {
-
         self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
 
-        self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaHeight = (drawing.height - header.height - 40 - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
         self.graphCreaWidth = drawing.width * self.graphWidthRatio - MARGIN;
 
         self.gamesLibraryManipulator = self.library.libraryManipulator;
@@ -778,7 +779,7 @@ function FormationDisplayFormation(){
 
         self.y = drawing.height * HEADER_SIZE ;
 
-        self.title = new svg.Text("Formation : ").position(MARGIN, 0).font("Arial", 20).anchor("start");
+        self.title = new svg.Text("Formation : ").position(MARGIN, self.returnButton.height).font("Arial", 20).anchor("start");
         self.manipulator.ordonator.set(0,self.title);
         self.formationWidth = svg.runtime.boundingRect(self.title.component).width;
 
@@ -798,19 +799,19 @@ function FormationDisplayFormation(){
 
             self.formationInfoManipulator.ordonator.set(0, self.formationLabel.cadre);
             self.formationLabel.content.position(self.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-
+            self.formationInfoManipulator.translator.move(0, self.returnButton.height);
             svg.addEvent(self.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
             svg.addEvent(self.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
             // self.formationCreator = formationValidation;
         };
 
         var dblclickEditionFormationLabel = function () {
-            var width = svg.runtime.boundingRect(self.formationLabel.content.component).width;
-
+            let bounds = svg.runtime.boundingRect(self.formationLabel.cadre.component);
             self.formationInfoManipulator.ordonator.unset(1);
+            let globalPointCenter = self.formationLabel.cadre.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
             var contentareaStyle = {
-                toppx:(drawing.height*0.075 - self.labelHeight),
-                leftpx: (svg.runtime.boundingRect(self.title.component).width + 2*MARGIN),
+                toppx: globalPointCenter.y + 4,
+                leftpx: globalPointCenter.x + 4,
                 width: self.formationLabel.cadre.width-MARGIN,
                 height:(self.labelHeight)
             };
