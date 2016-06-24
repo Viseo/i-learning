@@ -585,7 +585,6 @@ function FormationDisplayFormation(){
     let returnHandler = (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.manipulator.flush();
-        target.parentObj.parent.quizzDisplayed = false;
         target.parentObj.parent.formationsManager.display();
     };
     self.manipulator.last.children.indexOf(self.returnButtonManipulator.first) === -1 && self.manipulator.last.add(self.returnButtonManipulator.first);
