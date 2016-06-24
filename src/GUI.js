@@ -1876,6 +1876,13 @@ function QuizzDisplay(x,y,w,h) {
     self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
 
     self.returnButton.display(MARGIN-w/2, self.headerHeight/2, 20, 20);
+    self.returnButton.setHandler(self.previewMode ? (event) => {
+        var target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.quizzManipulator.flush();
+        target.parentObj.parent.parentFormation.quizzManager.display();
+    } : (event) => {
+
+    });
 
     header.display();
 
@@ -2160,19 +2167,16 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
         });
 
         self.displayEditedQuestion = function () {
-            self.tabQuestions[self.indexOfEditedQuestion] = self.quizz.tabQuestions[self.indexOfEditedQuestion];
-            (self.tabQuestions[self.indexOfEditedQuestion].tabAnswer[self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.length - 1] instanceof AddEmptyElement) && self.tabQuestions[self.indexOfEditedQuestion].tabAnswer.pop();
             var tmpQuizzObject = {
                 title: self.quizzName,
                 bgColor: myColors.white,
-                tabQuestions: [self.tabQuestions[self.indexOfEditedQuestion]],
+                tabQuestions: self.tabQuestions,
                 puzzleLines: 3,
                 puzzleRows: 3
             };
-
             self.quizzManagerManipulator.flush();
 
-            var tmpQuizz = new Quizz(tmpQuizzObject, true);
+            var tmpQuizz = new Quizz(self.quizz, true);
             tmpQuizz.run(1, 1, drawing.width, drawing.height);//
         };
         if(validation) {

@@ -1038,7 +1038,7 @@ function Domain() {
         var self = this;
 
         self.miniatureManipulator = new Manipulator(self);
-        self.parentFormation = parentFormation;
+        self.parentFormation = parentFormation || quizz.parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
         self.returnButtonManipulator = new Manipulator(self);
