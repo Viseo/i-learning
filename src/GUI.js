@@ -1207,7 +1207,7 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
     };
 
     this.showLeftChevron = ()=>{
-        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator);
+        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator, "left");
         if (startPosition === 0) {
             leftChevron.color(myColors.grey);
             if (leftChevron.onClick !== null) {
@@ -1217,12 +1217,11 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
             leftChevron.color(myColors.black);
             svg.addEvent(leftChevron, "click", handlerLeftChevron);
         }
-        this.leftChevronManipulator.rotator.rotate(180);
         this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
     };
 
     this.showRightChevron = ()=>{
-        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator);
+        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator, "right");
         if (startPosition + this.rows >= this.totalRows) {
             rightChevron.color(myColors.grey);
             if (rightChevron.onClick !== null) {

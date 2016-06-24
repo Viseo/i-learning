@@ -543,20 +543,32 @@ function SVGUtil() {
      * @param h
      * @param manipulator
      */
-    drawChevron = function (x, y, w, h, manipulator) {
-        var baseWidth = 160;
-        var baseHeight = 300;
-        var chevronManipulator = manipulator;
-        var chevron = new svg.Path(x, y).line(x - 100, y + 100)
-            .cubic(x - 140, y + 140, x - 85, y + 185, x - 50, y + 150)
-            .line(x + 60, y + 40)
-            .cubic(x + 95, y + 5, x + 95, y - 5, x + 60, y - 40)
-            .line(x - 50, y - 150)
-            .cubic(x - 85, y - 190, x - 145, y - 140, x - 100, y - 100)
-            .line(x, y);
+    drawChevron = function (x, y, w, h, manipulator, side = "right") {
+        let baseWidth = 160;
+        let baseHeight = 300;
+        let chevronManipulator = manipulator;
+        if(side === "right") {
+            var chevron = new svg.Path(0, 0).line(-100, 100)
+                .cubic(-140, 140, -85, 185, - 50, 150)
+                .line(60, 40)
+                .cubic(95, 5, 95, -5, 60, -40)
+                .line(-50, -150)
+                .cubic(-85, -190, -145, -140, -100, -100)
+                .line(0, 0);
+        }
+        else if(side === "left"){
+             chevron = new svg.Path(0, 0).line(100, -100)
+                .cubic(140, -140, 85, -185, 50, -150)
+                .line(-60, -40)
+                .cubic(-95, -5, -95, 5, -60, 40)
+                .line(50, 150)
+                .cubic(85, 190, 145, 140, 100, 100)
+                .line(0, 0);
+        }
         chevron.tempWidth = baseWidth;
         chevron.tempHeight = baseHeight;
-        chevronManipulator.ordonator.set(0,chevron);
+        chevronManipulator.translator.move(x, y);
+        chevronManipulator.ordonator.set(0, chevron);
         if (chevron.tempWidth > w) {
             chevron.tempHeight *= w / chevron.tempWidth;
             chevron.tempWidth = w;
@@ -745,7 +757,7 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text("Retour");
-        this.returnButton = drawChevron(0, 0, w, h, this.chevronManipulator);
+        this.returnButton = drawChevron(0, 0, w, h, this.chevronManipulator, "left");
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);
         let textSize = svg.runtime.boundingRect(this.returnText.component);
