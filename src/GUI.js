@@ -847,6 +847,7 @@ function FormationDisplayFormation(){
                 //self.formationNameValidInput && (
                 drawings.screen.remove(contentarea);
                 showTitle();
+                header.display(self.label);
             };
             svg.addEvent(contentarea, "blur", onblur);
             var oninput = function () {
