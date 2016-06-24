@@ -589,7 +589,7 @@ function FormationDisplayFormation(){
         target.parentObj.parent.formationsManager.display();
     };
     self.manipulator.last.children.indexOf(self.returnButtonManipulator.first) === -1 && self.manipulator.last.add(self.returnButtonManipulator.first);
-    self.returnButton.display(-2*MARGIN, 0, 20, 20);
+    self.returnButton.display(0, -5, 20, 20);
     self.returnButton.height = svg.runtime.boundingRect(self.returnButton.returnButton.component).height;
     self.returnButton.setHandler(returnHandler);
 
@@ -2071,18 +2071,16 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     };
 
     var dblclickEditionQuizz = function () {
-        var width;
-        width = svg.runtime.boundingRect(self.quizzLabel.content.component).width;
-
         self.quizzInfoManipulator.ordonator.unset(1);
-
-        var contentareaStyle = {
-            toppx:(self.quizzInfoHeight-self.quizzNameHeight/2),
-            leftpx: (x + MARGIN/2),
+        let bounds = svg.runtime.boundingRect(self.quizzLabel.cadre.component);
+        let globalPointCenter = self.quizzLabel.cadre.globalPoint(- bounds.width/2, - bounds.height/2);
+        let contentareaStyle = {
+            toppx: globalPointCenter.y + 1,
+            leftpx: globalPointCenter.x,
             width: 700 - MARGIN,
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
-        var textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+        let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         textarea.color(myColors.lightgrey, 0, myColors.black)
             .message(self.quizzName)
             .font("Arial", 15)
