@@ -1100,7 +1100,7 @@ function FormationsManagerDisplay() {
     (self.tileHeight > 0) && self.displayFormations();
 }
 
-function HeaderDisplay (message, special) {
+function HeaderDisplay (message) {
     this.width = drawing.width;
     this.height = this.size * drawing.height;
 

@@ -453,7 +453,7 @@ function Domain() {
                     displayQuizzManager();
                 }
                 else {
-                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
                     self.errorMessageSave = new svg.Text(message)
                         .position(0, -self.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
@@ -735,21 +735,14 @@ function Domain() {
      * Created by qde3485 on 14/04/16.
      */
 
-    Header = function (additionalMessage) {
+    Header = function () {
         var self = this;
-        additionalMessage && (self.addMessage = additionalMessage);
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(3);
         self.userManipulator = new Manipulator(self);
         self.userManipulator.addOrdonator(6);
         self.label = "I-learning";
         self.size = HEADER_SIZE;
-        self.setMessage = function (additionalMessage) {
-            self.addMessage = additionalMessage;
-        };
-        self.removeMessage = function () {
-            self.addMessage = null;
-        };
     };
 ////////////////// end of Header.js //////////////////////////
 
@@ -1296,16 +1289,7 @@ function Domain() {
 ////////////////// end of QuizzManager.js //////////////////////////
 }
 
-User = function () {
-    let self = this;
-    self.firstName;
-    self.lastName;
-    self.mailAddress;
-    self.password;
-};
 ////////////////// InscriptionManager.js //////////////////////////
-
-
 InscriptionManager = function () {
 
     let self = this;
@@ -1349,11 +1333,9 @@ InscriptionManager = function () {
     self.tabForm =[];
     self.formLabels = {};
 };
-
 ////////////////// end of InscriptionManager.js //////////////////////////
 
 ////////////////// ConnectionManager.js //////////////////////////
-
 ConnectionManager = function () {
 
     let self = this;
