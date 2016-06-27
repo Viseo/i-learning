@@ -565,7 +565,7 @@ function FormationDisplayMiniature (w,h) {
 
 }
 
-function FormationDisplayFormation(){
+function FormationDisplayFormation() {
     var self = this;
     drawing.currentPageDisplayed = "Formation";
     header.display(this.label);
@@ -1022,13 +1022,13 @@ function FormationsManagerDisplay() {
     }
 
     self.displayHeaderFormations = function () {
-        self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
-        self.headerManipulator.ordonator.set(0, self.title);
+        // self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
+        // self.headerManipulator.ordonator.set(0, self.title);
         self.headerManipulator.translator.move(0,2*MARGIN);
-        self.addFormationButton=displayText("Ajouter une formation",drawing.width/7,self.addButtonHeight,myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
+        self.addFormationButton = displayText("Ajouter une formation", drawing.width/7, self.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         var addFormationButtonTextBr = svg.runtime.boundingRect(self.addFormationButton.content.component);
-        self.addFormationButton.cadre.position(MARGIN +addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
-        self.addFormationButton.content.position(self.plusDim+svg.runtime.boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
+        self.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
+        self.addFormationButton.content.position(self.plusDim + svg.runtime.boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
         self.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, self.addButtonHeight, self.addButtonHeight);
         self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
         self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
@@ -1068,7 +1068,7 @@ function FormationsManagerDisplay() {
             return 0
         });
     };
-    header.display();
+    header.display("Liste des formations");
     self.displayHeaderFormations();
     (self.tileHeight < 0) && (self.tileHeight = undefined);
     (!self.tileHeight || self.tileHeight > 0) && displayPanel();
