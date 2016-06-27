@@ -102,6 +102,32 @@ module.exports = function (app, fs) {
         })
     });
 
+    app.get('/getProgress/:formation/:game', (req, res) => {
+        var collection = db.get().collection('usersFormations');
+        var obj = collection.find().toArray(function (err, docs) {
+            cookies.verify(req, (err, decode) => {
+                var user = '';
+                if (!err) {
+                    user = decode.user._id;
+                }
+                var result = docs.find(x => x.formation === req.params.formation && x.user === user);
+                //var game = {
+                //    game: req.params.game,
+                //    tabWrongAnswers: req.body.tabWrongAnswers,
+                //    index: req.body.indexQuestion
+                //};
+                if (result) {
+                    var games = result.tabGame.find(x => x.game === req.params.game);
+                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    res.send(games);
+                } else {
+                    res.send({result: "none"});
+                }
+            });
+        })
+    });
+
+
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = req.body;
