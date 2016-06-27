@@ -204,10 +204,6 @@ function AnswerDisplay (x, y, w, h) {
                 self.label = contentarea.messageText;
                 drawings.screen.remove(contentarea);
                 showTitle();
-                if(typeof self.obj.checkbox === 'undefined') {
-                    self.obj.checkbox = displayCheckbox(x + self.checkboxSize, y + h - self.checkboxSize, self.checkboxSize, self).checkbox;
-                    self.obj.checkbox.answerParent = self;
-                }
             };
             svg.addEvent(contentarea,'input',function () {
                 contentarea.enter();
@@ -234,6 +230,8 @@ function AnswerDisplay (x, y, w, h) {
         if(typeof self.obj.checkbox === 'undefined') {
             self.obj.checkbox = displayCheckbox(-self.w/2+self.checkboxSize,self.h/2 - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
+        }else{
+            console.log("quelque chose");
         }
 
         self.manipulator.ordonator.children.forEach(function(e) {
