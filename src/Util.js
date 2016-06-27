@@ -765,7 +765,6 @@ class ReturnButton {
         this.manipulator.ordonator.set(0, this.returnText);
         this.returnText.position(w+returnButtonSize.width, textSize.height/2+returnButtonSize.height/4);
         this.manipulator.translator.move(x+w, y);
-        this.chevronManipulator.rotator.rotate(180);
 
         this.returnText.parentObj = this;
         this.returnButton.parentObj = this;
