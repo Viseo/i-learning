@@ -1065,7 +1065,7 @@ function FormationsManagerDisplay() {
             count = 0,
             totalLines = 1;
         self.formations.forEach(formation => {
-            // temp, ask cde
+            // we can't publish a formation yet
             //if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
 
             if (count > (self.rows - 1)) {
@@ -1881,12 +1881,11 @@ function QuizzDisplay(x,y,w,h) {
     self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
 
     self.returnButton.display(MARGIN-w/2, self.headerHeight/2, 20, 20);
-    self.returnButton.setHandler(self.previewMode ? (event) => {
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
+    self.returnButton.setHandler((event) => {
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.quizzManager.display();
-    } : (event) => {
-
+        if (playerMode) target.parentObj.parent.parentFormation.displayFormation();
+        else target.parentObj.parent.parentFormation.quizzManager.display();
     });
 
     header.display();
