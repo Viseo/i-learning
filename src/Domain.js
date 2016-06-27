@@ -1199,16 +1199,18 @@ function Domain() {
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
         self.quizzNameValidInput = true;
-        self.loadQuizz = function (quizz, parentFormation) {
-            self.indexOfEditedQuestion = 0;
-            self.quizz = new Quizz(quizz, true, parentFormation);
-            self.id = quizz.id
+        self.loadQuizz = function (quizz, indexOfEditedQuestion) {
+            self.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;
+            self.quizz = new Quizz(quizz, true);
             self.quizz.childrenGames = quizz.childrenGames;
             self.quizz.parentGames=quizz.parentGames;
             self.quizzName = self.quizz.title;
-            self.quizz.tabQuestions[0].selected = true;
-            self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+            self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = true;
+            self.questionCreator.loadQuestion(self.quizz.tabQuestions[self.indexOfEditedQuestion]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+            self.quizz.tabQuestions.forEach(function(question){
+                !(question instanceof AddEmptyElement) && !(question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) && question.tabAnswer.push(new AddEmptyElement(self.questionCreator, 'answer'));
+            })
         };
         if (!quizz) {
             var initialQuizzObject = {
@@ -1251,6 +1253,8 @@ function Domain() {
                     let index = parent.childrenGames.indexOf(quizz);
                     parent.childrenGames.splice(index,1,self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]);
                 });
+                self.loadQuizz(self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex], self.quizz.tabQuestions.indexOf(self.questionCreator.linkedQuestion));
+                self.display();
                 console.log("Votre travail a été bien enregistré");
             };
 

@@ -593,7 +593,7 @@ function FormationDisplayFormation() {
     let dblclickQuizzHandler = (event) => {
         let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
         let displayQuizzManager = function () {
-            self.quizzManager.loadQuizz(targetQuizz, self);
+            self.quizzManager.loadQuizz(targetQuizz);
             self.quizzDisplayed = targetQuizz;
             self.quizzManager.display();
             self.selectedArrow = null;
@@ -2023,11 +2023,11 @@ function QuizzManagerDisplay(){
             var target = drawings.background.getTarget(event.clientX,event.clientY);
             var question = target.parent.parentManip.parentObject;
         }
-        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = false;
+        this.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         question.selected = true;
 
         this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
-        this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
+        //this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
         this.questionCreator.loadQuestion(question);
         this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
         let quizzManager = question.parentQuizz.parentFormation.quizzManager;
