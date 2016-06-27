@@ -31,9 +31,7 @@ function setGlobalVariable() {
 
 function play(targetQuizz) {
     !drawing && setGlobalVariable();
-    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-    let quizzCopy = JSON.parse(JSON.stringify(targetQuizz, ignoredData));
-    let quizz = new Quizz(quizzCopy);
+    let quizz = new Quizz(targetQuizz);
     quizz.puzzleLines = 1;
     quizz.puzzleRows = 3;
     quizz.run(0,0, drawing.width, drawing.height);
