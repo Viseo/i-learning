@@ -592,18 +592,28 @@ function FormationDisplayFormation(){
     self.returnButton.height = svg.runtime.boundingRect(self.returnButton.returnButton.component).height;
     self.returnButton.setHandler(returnHandler);
 
-    var dblclickQuizzHandler = function(event) {
-        var targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-        var displayQuizzManager = function () {
+    let dblclickQuizzHandler = (event) => {
+        let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        let displayQuizzManager = function () {
             self.quizzManager.loadQuizz(targetQuizz, self);
             self.quizzDisplayed = targetQuizz;
             self.quizzManager.display();
             self.selectedArrow = null;
             self.selectedGame = null;
         };
-        !playerMode && self.saveFormation(displayQuizzManager);
+        self.saveFormation(displayQuizzManager);
         let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        playerMode && play(JSON.parse(JSON.stringify(targetQuizz,ignoredData)));
+        if (!runtime && window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (!runtime && document.selection) {
+            document.selection.empty();
+        }
+    };
+
+    let clickQuizHandler = (event) => {
+        let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+        play(JSON.parse(JSON.stringify(targetQuizz,ignoredData)));
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -740,10 +750,9 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
                 if(tabElement instanceof Quizz){
-                    let eventToBeUse;
-                    playerMode ? (eventToBeUse="click") : (eventToBeUse="dblclick");
-                    svg.addEvent(tabElement.miniature.icon.cadre, eventToBeUse, dblclickQuizzHandler);
-                    svg.addEvent(tabElement.miniature.icon.content, eventToBeUse, dblclickQuizzHandler);
+                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
+                    svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
+                    svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
                 }else if(tabElement instanceof Bd){
                     // Ouvrir le Bd creator du futur jeu Bd
                 }
