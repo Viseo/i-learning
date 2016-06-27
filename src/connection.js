@@ -42,7 +42,6 @@ function connexion(){
                     break;
                 case "Formation":
                     formation.gamesLibraryManipulator.flush();
-                    formation.library.libraryManipulator.last.remove(formation.library.arrowModeManipulator.first);
                     formation.displayFormation();
                     break;
                 case "QuizManager":
