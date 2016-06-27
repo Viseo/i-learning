@@ -1896,9 +1896,9 @@ function QuizzDisplayResult (color){
     self.puzzle.display(0, self.questionHeight/2, drawing.width, self.answerHeight, self.puzzle.startPosition);
 }
 
-function GameDisplayMiniature(size){
+function GameDisplayMiniature(size, special){
     var self = this;
-    return new Miniature(self, size);
+    return new Miniature(self, size, special);
 }
 
 function QuizzDisplayScore(color){

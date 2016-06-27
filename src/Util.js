@@ -665,7 +665,7 @@ function SVGUtil() {
         return self;
     };
 
-    Miniature = function(game, size) {
+    Miniature = function(game, size, special) {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
@@ -730,6 +730,38 @@ function SVGUtil() {
         !playerMode && svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
         !playerMode && svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
         self.icon.cadre.color(myColors.white, 1, myColors.black);
+
+        if (playerMode){
+            var iconsize = 20;
+            self.infosManipulator = new Manipulator(self);
+            self.infosManipulator.addOrdonator(4);
+            switch (special){
+                case "notAvailable":
+                    self.icon.cadre.color(myColors.grey, 1, myColors.black);
+                    break;
+                case "done":
+                    var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
+                    iconInfos.color(myColors.none, 5, myColors.green);
+                    var rect = new svg.Rect(iconsize, iconsize);
+                    rect.color(myColors.white, 1, myColors.green);
+                    rect.position(size/2, -size/2);
+                    self.infosManipulator.ordonator.set(0, rect);
+                    self.infosManipulator.ordonator.set(1, iconInfos);
+                    game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    break;
+                case "inProgress":
+                    var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
+                    var iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
+                    var iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
+                    var iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
+                    self.infosManipulator.ordonator.set(0, iconInfos);
+                    self.infosManipulator.ordonator.set(1, iconInfosdot1);
+                    self.infosManipulator.ordonator.set(2, iconInfosdot2);
+                    self.infosManipulator.ordonator.set(3, iconInfosdot3);
+                    game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    break;
+            }
+        }
         return self;
     };
 
