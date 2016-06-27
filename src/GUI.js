@@ -600,7 +600,6 @@ function FormationDisplayFormation() {
             self.selectedGame = null;
         };
         self.saveFormation(displayQuizzManager);
-        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -745,7 +744,8 @@ function FormationDisplayFormation() {
                 svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                 svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
             } else if(tabElement instanceof Bd) {
-                // Ouvrir le Bd creator du futur jeu Bd
+            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+            // Ouvrir le Bd creator du futur jeu Bd
             }
         };
 
@@ -1647,27 +1647,9 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var toggleHandler = function(event){
         self.target = drawings.background.getTarget(event.clientX, event.clientY);
         var questionType = self.target.parent.children[1].messageText;
-        if (self.multipleChoice){
-            self.linkedQuestion.tabAnswer.forEach(function(answer){
-                if(answer.editable){
-                    answer.multipleAnswer = answer.correct;
-                    answer.parentQuestion.multipleChoice=answer.correct;
-                    (typeof answer.simpleAnswer === 'undefined') && (answer.simpleAnswer = false);
-                    answer.correct = answer.simpleAnswer;
-                    answer.correct = answer.simpleAnswer;
-                }
-            });
-        } else {
-            self.linkedQuestion.tabAnswer.forEach(function(answer){
-                if(answer.editable){
-                    answer.simpleAnswer = answer.correct;
-                    answer.parentQuestion.multipleChoice=!answer.correct;
-                    (typeof answer.multipleAnswer==='undefined') && (answer.multipleAnswer = false);
-                    answer.correct = answer.multipleAnswer;
-                    answer.correct = answer.multipleAnswer;
-                }
-            });
-        }
+        self.linkedQuestion.tabAnswer.forEach(function(answer){
+            answer.correct = false;
+        });
 
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
 
@@ -1870,20 +1852,37 @@ function QuizzDisplay(x,y,w,h) {
     var self = this;
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
-    x && (self.x = x);
-    y && (self.y = y);
-    w && (self.questionArea.w = w);
-    (w && x) && (self.resultArea.w = w );
-    x && (self.resultArea.x = x);
-    w && (self.titleArea.w = w);
-    x && (self.quizzMarginX = x);
-    self.headerPercentage = HEADER_SIZE;
-    self.questionPercentageWithImage = 0.3;
-    self.questionPercentage = 0.2;
-    self.answerPercentageWithImage = 0.6;
-    self.answerPercentage = 0.7;
+    function setSizes() {
+        x && (self.x = x);
+        y && (self.y = y);
+        w && (self.questionArea.w = w);
+        (w && x) && (self.resultArea.w = w );
+        x && (self.resultArea.x = x);
+        w && (self.titleArea.w = w);
+        x && (self.quizzMarginX = x);
+        self.headerPercentage = HEADER_SIZE;
+        self.questionPercentageWithImage = 0.3;
+        self.questionPercentage = 0.2;
+        self.answerPercentageWithImage = 0.6;
+        self.answerPercentage = 0.7;
+    }
+    function setPreviewSizes() {
+        x && (self.x = x+w*0.15);
+        y && (self.y = y);
+        w && (self.questionArea.w = w*0.7);
+        (w && x) && (self.resultArea.w = w*0.85);
+        x && (self.resultArea.x = x+w*0.15);
+        w && (self.titleArea.w = w*0.85);
+        x && (self.quizzMarginX = x+w*0.15);
+        self.headerPercentage = HEADER_SIZE;
+        self.questionPercentageWithImage = 0.3;
+        self.questionPercentage = 0.2;
+        self.answerPercentageWithImage = 0.6;
+        self.answerPercentage = 0.7;
+    }
+    this.previewMode ? setPreviewSizes() : setSizes();
 
-    var heightPage = drawing.height;
+    let heightPage = drawing.height;
     self.headerHeight = heightPage * self.headerPercentage;
     self.questionHeight = heightPage * self.questionPercentage - MARGIN;
     self.answerHeight = heightPage * self.answerPercentage - MARGIN;
@@ -1894,12 +1893,21 @@ function QuizzDisplay(x,y,w,h) {
 
     self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
 
-    self.returnButton.display(MARGIN-w/2, self.headerHeight/2, 20, 20);
-    self.returnButton.setHandler((event) => {
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
+    if(this.previewMode) {
+        drawChevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
+        drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+    }
+
+    self.returnButton.display(MARGIN-w*0.35, self.headerHeight/2, 20, 20);
+    self.returnButton.setHandler(self.previewMode ? (event) => {
+        var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        if (playerMode) target.parentObj.parent.parentFormation.displayFormation();
-        else target.parentObj.parent.parentFormation.quizzManager.display();
+        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.parentFormation);
+        target.parentObj.parent.parentFormation.quizzManager.display();
+    } : (event) => {
+        var target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.quizzManipulator.flush();
+        target.parentObj.parent.parentFormation.quizzManager.display();
     });
 
     header.display();
@@ -2185,17 +2193,15 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
         });
 
         self.displayEditedQuestion = function () {
-            var tmpQuizzObject = {
-                title: self.quizzName,
-                bgColor: myColors.white,
-                tabQuestions: self.tabQuestions,
-                puzzleLines: 3,
-                puzzleRows: 3
-            };
             self.quizzManagerManipulator.flush();
 
-            var tmpQuizz = new Quizz(self.quizz, true);
-            tmpQuizz.run(1, 1, drawing.width, drawing.height);//
+            self.quizz.tabQuestions.pop();
+            self.quizz.tabQuestions.forEach((it) => {
+                it.tabAnswer.pop();
+            });
+
+            this.previewQuiz = new Quizz(self.quizz, true);
+            this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
         };
         if(validation) {
             self.displayEditedQuestion();

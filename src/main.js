@@ -46,9 +46,9 @@ function play(targetQuizz) {
             for(let i = 0; i < qManip.ordonator.children.length; i++) {
                 qManip.ordonator.unset(i);
             }
-            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight + quizz.questionHeight/2 + MARGIN,
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(self.x, quizz.headerHeight + quizz.questionHeight/2 + MARGIN,
                 quizz.questionArea.w , quizz.questionHeight);
-            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN + quizz.questionHeight,
+            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(self.x, quizz.headerHeight + MARGIN + quizz.questionHeight,
                 quizz.questionArea.w , quizz.answerHeight);
         } else {
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);

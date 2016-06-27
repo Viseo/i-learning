@@ -429,7 +429,6 @@ function Domain() {
         };
 
         self.saveFormation = function (displayQuizzManager) {
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
             var messageSave = "Votre travail a bien été enregistré.";
             var messageError = "Vous devez remplir le nom de la formation.";
@@ -1046,6 +1045,18 @@ function Domain() {
         self.returnButtonManipulator = new Manipulator(self);
         self.returnButton = new ReturnButton(self);
         self.quizzManipulator.last.add(self.returnButtonManipulator.first);
+
+        if(previewMode) {
+            this.chevronManipulator = new Manipulator(self);
+            this.leftChevronManipulator = new Manipulator(self);
+            this.rightChevronManipulator = new Manipulator(self);
+            this.leftChevronManipulator.addOrdonator(1);
+            this.rightChevronManipulator.addOrdonator(1);
+            this.quizzManipulator.last.add(this.chevronManipulator.first);
+            this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+            this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+        }
+
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
@@ -1129,10 +1140,10 @@ function Domain() {
                 }
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
-                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight + self.questionHeight/ 2 + MARGIN,
+                self.tabQuestions[self.currentQuestionIndex].display(self.x, self.headerHeight + self.questionHeight/ 2 + MARGIN,
                     self.questionArea.w, self.questionHeight);
                 !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.x, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
             };
             var callback = function () {
@@ -1146,9 +1157,10 @@ function Domain() {
             };
             if (self.previewMode) {
                 if (self.currentQuestionIndex === -1) {
-                    self.currentQuestionIndex = 0;//numéro de la question affichée
-                    functionDisplayInAllCases();
+                    self.currentQuestionIndex++;
                 }
+                console.log(self.currentQuestionIndex);
+                functionDisplayInAllCases();
             } else {
                 Server.sendProgressToServer(self);
                 callback();
@@ -1215,7 +1227,6 @@ function Domain() {
 
         self.saveQuizz = function () {
             var getObjectToSave = function () {
-                console.log(self.tabQuestions);
                 self.tabQuestions=self.quizz.tabQuestions;
                 (self.tabQuestions[self.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && self.tabQuestions.pop();
                 self.tabQuestions.forEach(function(question){
@@ -1243,7 +1254,6 @@ function Domain() {
                 console.log("Votre travail a été bien enregistré");
             };
 
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             Server.replaceQuizz(getObjectToSave(), self.parentFormation._id, self.quizz.levelIndex, self.quizz.gameIndex, callback, ignoredData)
         };
 
