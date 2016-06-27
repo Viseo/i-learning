@@ -610,8 +610,7 @@ function FormationDisplayFormation(){
 
     let clickQuizHandler = (event) => {
         let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-        play(JSON.parse(JSON.stringify(targetQuizz,ignoredData)));
+        play(targetQuizz);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {

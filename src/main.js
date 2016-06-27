@@ -31,18 +31,17 @@ function setGlobalVariable() {
 
 function play(targetQuizz) {
     !drawing && setGlobalVariable();
-    var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
-    var quizz = new Quizz(quizzCopy);
-    
-    quizz.puzzleLines=1;
-    quizz.puzzleRows=3;
+    let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+    let quizzCopy = JSON.parse(JSON.stringify(targetQuizz, ignoredData));
+    let quizz = new Quizz(quizzCopy);
+    quizz.puzzleLines = 1;
+    quizz.puzzleRows = 3;
     quizz.run(0,0, drawing.width, drawing.height);
-
     function resizePaper(){
-        drawing.dimension(svg.screenSize().width,svg.screenSize().height);//attr("preserveAspectRatio", "xMinYMin meet") ;
+        drawing.dimension(svg.screenSize().width,svg.screenSize().height);
         drawings.glass.dimension(drawing.width,drawing.height);
 
-        quizz.display(0,0,drawing.width,drawing.height);
+        quizz.display(0, 0, drawing.width, drawing.height);
 
         if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
             let qManip = quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
@@ -57,7 +56,6 @@ function play(targetQuizz) {
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
-            //quizz.puzzle.display(0, quizz.answerHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.answerHeight, quizz.puzzle.startPosition);
         }
 
     }
