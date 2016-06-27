@@ -741,17 +741,37 @@ function FormationDisplayFormation(){
                 tabElement.miniatureManipulator.addOrdonator(2);
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 if(typeof tabElement.miniature === "undefined"){
-                    tabElement.miniature = tabElement.displayMiniature(self.graphElementSize);
+                    var special = null;
+                    var callback = function(data){
+                        let results = JSON.parse(data);
+                        console.log(results);
+                        special = results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done");
+                        tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
+                        (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                        tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                        if(tabElement instanceof Quizz){
+                            let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
+                            svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
+                            svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
+                        }else if(tabElement instanceof Bd){
+                            // Ouvrir le Bd creator du futur jeu Bd
+                        }
+                        self.updateAllLinks();
+                    }
+                    playerMode && Server.getProgress(self.label, tabElement.title, callback);
+                    !playerMode && (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
                 }
-                (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
-                tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                if (!playerMode){
+                    (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                    tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
 
-                if(tabElement instanceof Quizz){
-                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
-                    svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
-                    svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
-                }else if(tabElement instanceof Bd){
-                    // Ouvrir le Bd creator du futur jeu Bd
+                    if(tabElement instanceof Quizz){
+                        let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
+                        svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
+                        svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
+                    }else if(tabElement instanceof Bd){
+                        // Ouvrir le Bd creator du futur jeu Bd
+                    }
                 }
             });
         }
@@ -759,8 +779,8 @@ function FormationDisplayFormation(){
         self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
         self.resizePanel();
 
-        self.panel.back.parent.parentManip = self.graphManipulator;
-        self.updateAllLinks();
+        !playerMode && (self.panel.back.parent.parentManip = self.graphManipulator);
+        !playerMode && self.updateAllLinks();
     };
 
     if (playerMode) {

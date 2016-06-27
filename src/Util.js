@@ -841,6 +841,10 @@ class Server {
         dbListener.httpPostAsync("/sendProgress", data, callback);
     }
 
+    static getProgress(formation, game, callback) {
+        dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    }
+
     static replaceFormation(id, newFormation, callback, ignoredData) {
         dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, callback, ignoredData);
     }

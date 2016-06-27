@@ -82,7 +82,12 @@ module.exports = function (app, fs) {
                 };
                 if (result) {
                     var games = result.tabGame.find(x => x.game === req.body.game);
-                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    if(games){
+                        game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    }
+                    else {
+                        result.tabGame.push(game);
+                    }
                     collection.updateOne({
                         formation: req.body.formation,
                         user: user
@@ -111,15 +116,9 @@ module.exports = function (app, fs) {
                     user = decode.user._id;
                 }
                 var result = docs.find(x => x.formation === req.params.formation && x.user === user);
-                //var game = {
-                //    game: req.params.game,
-                //    tabWrongAnswers: req.body.tabWrongAnswers,
-                //    index: req.body.indexQuestion
-                //};
                 if (result) {
                     var games = result.tabGame.find(x => x.game === req.params.game);
-                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
-                    res.send(games);
+                    games ? res.send(games): res.send({result: "none"}) ;
                 } else {
                     res.send({result: "none"});
                 }
