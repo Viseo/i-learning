@@ -127,7 +127,7 @@ module.exports = function (app, fs) {
                     formation.levelsTab.find(function(gamesTab){
                         var resultGame = gamesTab.gamesTab.find(game=>game.id === req.params.game);
                         resultGame && (gameForAvailability = resultGame);
-                    })
+                    });
                     //var gameForAvailability = forAvailability.tabGame.find(x => x.game === req.params.game);
                     if (gameForAvailability && formation.link.every(function(linkElement){
                             (linkElement[0].childGame === gameForAvailability.id)

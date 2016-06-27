@@ -761,7 +761,7 @@ function FormationDisplayFormation() {
                             special = results.special || (results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done"));
                         tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
                         manageMiniature(tabElement);
-                        (i === self.levelsTab.length) && updateAllLinks();
+                        (i === self.levelsTab.length - 1) && updateAllLinks();
                     };
                     if (playerMode) Server.getProgress(self.label, tabElement.title, callback);
                     else (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
