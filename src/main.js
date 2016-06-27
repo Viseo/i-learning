@@ -30,7 +30,7 @@ function setGlobalVariable() {
 
 
 function play(targetQuizz) {
-    !util && setGlobalVariable();
+    !drawing && setGlobalVariable();
     var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
     var quizz = new Quizz(quizzCopy);
     
