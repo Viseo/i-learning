@@ -537,7 +537,7 @@ function Domain() {
                                 let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex].id;
                                 let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].id;
                                 var toBeAdd = true;
-                               self.link.forEach(function(links) {
+                                self.link.forEach(function(links) {
                                     if(links[0].parentGame === parentGame && links[0].childGame === childGame){
                                         toBeAdd = false;
                                     }
@@ -557,11 +557,13 @@ function Domain() {
 
         self.loadFormation = function(formation) {
             self.gamesCounter = formation.gamesCounter;
+            self.link = formation.link;
             formation.levelsTab.forEach(function (level) {
                 var gamesTab = [];
                 level.gamesTab.forEach(function (game) {
                     game.tabQuestions && gamesTab.push(new Quizz(game, true, self));
                     game.tabQuestions || gamesTab.push(new Bd(game, self));
+                    gamesTab[gamesTab.length-1].id = game.id;
                 });
                 self.levelsTab.push(new Level(self, gamesTab));
             });
@@ -1188,6 +1190,7 @@ function Domain() {
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, true, parentFormation);
+            self.id = quizz.id
             self.quizz.childrenGames = quizz.childrenGames;
             self.quizz.parentGames=quizz.parentGames;
             self.quizzName = self.quizz.title;

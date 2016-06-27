@@ -835,6 +835,7 @@ class Server {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
             game: quiz.title,
+            gameId: quiz.id,
             formation: quiz.parentFormation ? quiz.parentFormation.label : ""
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));

@@ -758,7 +758,7 @@ function FormationDisplayFormation() {
                 if (typeof tabElement.miniature === "undefined") {
                     let callback = (data) => {
                         let results = JSON.parse(data),
-                            special = results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done");
+                            special = results.special || (results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done"));
                         tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
                         manageMiniature(tabElement);
                         (i === self.levelsTab.length) && updateAllLinks();
