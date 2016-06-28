@@ -834,16 +834,19 @@ class Server {
         var data = {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
-            game: quiz.title,
-            gameId: quiz.id,
+            game: quiz.id,
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
     }
 
-    static getProgress(formation, game, callback) {
-        dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // static getProgress(formation, game, callback) {
+    //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // }
+
+    static getUser(callback) {
+        dbListener.httpGetAsync("/getUser", callback);
     }
 
     static replaceFormation(id, newFormation, callback, ignoredData) {

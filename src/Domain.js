@@ -566,6 +566,24 @@ function Domain() {
         });
         return longestLevelCandidates;
     };
+    self.findGameById = function (id){
+        self.levelsTab.forEach(function(level){
+            let theGame = level.gamesTab.find(game => game.id === id);
+            if(theGame)return theGame;
+        })
+    };
+    self.isGameAvailable = function (game){
+        var hasParent;
+        self.link.forEach(function(linkElement){
+            if(linkElement[0].childGame===game.id)
+            {
+                hasParent=true;
+                let parentGame = self.findGameById(linkElement[0].parentGame);
+                if( !parentGame.status || (parentGame.status && parentGame.status !== "done"))return false;
+            }
+        });
+        return !hasParent;
+    }
 
         self.redim = function() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;
@@ -1000,7 +1018,7 @@ function Domain() {
      */
     Quizz = function (quizz, previewMode, parentFormation) {
         var self = this;
-
+        self.id=quizz.id;
         self.miniatureManipulator = new Manipulator(self);
         self.parentFormation = parentFormation || quizz.parentFormation;
         self.quizzManipulator = new Manipulator(self);

@@ -745,8 +745,8 @@ function formationDisplayFormation() {
                 svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                 svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
             } else if(tabElement instanceof Bd) {
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-            // Ouvrir le Bd creator du futur jeu Bd
+                let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                // Ouvrir le Bd creator du futur jeu Bd
             }
         };
 
@@ -757,26 +757,38 @@ function formationDisplayFormation() {
                 tabElement.miniatureManipulator.addOrdonator(2);
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 if (typeof tabElement.miniature === "undefined") {
-                    let callback = (data) => {
-                        let results = JSON.parse(data),
-                            special = results.special || (results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done"));
-                        tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
-                        manageMiniature(tabElement);
-                        (i === self.levelsTab.length - 1) && updateAllLinks();
-                    };
-                    if (playerMode) Server.getProgress(self.label, tabElement.title, callback);
-                    else (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
+                    (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
                 }
-                (!playerMode) && manageMiniature(tabElement);
+                manageMiniature(tabElement);
+                !playerMode && self.displayMessageDragAndDrop();
+                self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
+                resizePanel();
+
+                self.panel.back.parent.parentManip = self.graphManipulator;
             });
         }
-        !playerMode && displayMessageDragAndDrop();
-        self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
-        resizePanel();
-
-        !playerMode && (self.panel.back.parent.parentManip = self.graphManipulator);
-        !playerMode && updateAllLinks();
+        updateAllLinks();
     };
+    // let callback = (data) => {
+                    //     let results = JSON.parse(data),
+                    //         special = results.special || (results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done"));
+                    //    console.log(results);
+
+
+                    //if (playerMode)Server.getUser(callback);
+                    //else
+                    //tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
+                    // (i === self.levelsTab.length - 1) && updateAllLinks();
+
+                //(!playerMode) && manageMiniature(tabElement);
+
+        // !playerMode && displayMessageDragAndDrop();
+        // self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
+        // resizePanel();
+
+        // !playerMode && (self.panel.back.parent.parentManip = self.graphManipulator);
+        // !playerMode && updateAllLinks();
+
 
     if (playerMode) {
         self.graphCreaHeightRatio = 1;
@@ -1005,14 +1017,40 @@ function formationsManagerDisplay() {
     }
 
     function onClickFormation(formation) {
-        var callback = function (data) {
+        var callbackFormation = function (data) {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             self.formationDisplayed = formation;
+            var callbackUser = function (data) {
+                var user = JSON.parse(data);
+                var formationUser = user.formationsTab.find(formation => formation === self.formationDisplayed._id);
+                var theGame;
+                formationUser && formationUser.gamesTab.forEach(function(game){
+                    self.formationDisplayed.levelsTab.find(function(level){
+                        theGame = level.gamesTab.find(gameFormation => gameFormation.id === game.game);
+                    })
+                    if(game.index === theGame.tabQuestions.length) {
+                        theGame.status = "done";
+
+                    }
+                    else{
+                        theGame.status ="inProgress";
+                    }
+                })
+                self.formationDisplayed.levelsTab.forEach(function(level){
+                    level.gamesTab.forEach(function (game) {
+                        if(!self.formationDisplayed.isGameAvailable(game))
+                        {
+                            game.status = "notAvailable";
+                        }
+                    });
+                });
+            }
+            Server.getUser(callbackUser);
             self.formationDisplayed.displayFormation();
         };
         //!playerMode &&
-        Server.getFormationById(formation._id, callback);
+        Server.getFormationById(formation._id, callbackFormation);
     }
 
     function onClickNewFormation() {
