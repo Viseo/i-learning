@@ -26,7 +26,7 @@ function setRuntime(_runtime){
     runtime = _runtime;
 }
 
-function AnswerDisplay (x, y, w, h) {
+function answerDisplay (x, y, w, h) {
     let self = this;
 
 
@@ -240,7 +240,7 @@ function AnswerDisplay (x, y, w, h) {
     }
 }
 
-function LibraryDisplay(x, y, w, h) {
+function libraryDisplay(x, y, w, h) {
     var self = this;
     if (typeof x !== "undefined")(self.x = x);
     if (typeof y !== "undefined")(self.y = y);
@@ -466,7 +466,7 @@ function LibraryDisplay(x, y, w, h) {
     }
 }
 
-function AddEmptyElementDisplay(x, y, w, h) {
+function addEmptyElementDisplay(x, y, w, h) {
     let self = this;
 
     self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
@@ -538,7 +538,7 @@ function AddEmptyElementDisplay(x, y, w, h) {
     svg.addEvent(self.obj.cadre, "dblclick", dblclickAdd);
 }
 
-function FormationDisplayMiniature (w,h) {
+function formationDisplayMiniature (w, h) {
     var self = this;
     self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
     self.miniature.cadre.corners(50, 50);
@@ -565,7 +565,7 @@ function FormationDisplayMiniature (w,h) {
 
 }
 
-function FormationDisplayFormation() {
+function formationDisplayFormation() {
     var self = this;
     drawing.currentPageDisplayed = "Formation";
     header.display(this.label);
@@ -899,17 +899,17 @@ function FormationDisplayFormation() {
  ////15: Height Message Error
 }
 
-function FormationDisplayErrorMessage(message){
+function formationDisplayErrorMessage(message){
     var self = this;
     self.errorMessageDisplayed = autoAdjustText(message, 0, 0, self.graphCreaWidth, self.graphCreaHeight, 20, null, self.manipulator).text
         .color(myColors.red).position(drawing.width - MARGIN, 0).anchor("end");
 }
 
-function FormationRemoveErrorMessage(message) {
+function formationRemoveErrorMessage(message) {
     message && message.parent && message.parent.remove(message);
 }
 
-function FormationDisplaySaveButton(x, y, w, h) {
+function formationDisplaySaveButton(x, y, w, h) {
         var self = this;
         self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
         self.errorMessageSave && self.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
@@ -918,7 +918,7 @@ function FormationDisplaySaveButton(x, y, w, h) {
         self.saveFormationButtonManipulator.translator.move(x, y);
 }
 
-function FormationsManagerDisplay() {
+function formationsManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "FormationsManager";
     self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
@@ -1121,7 +1121,7 @@ function FormationsManagerDisplay() {
     (self.tileHeight > 0) && self.displayFormations();
 }
 
-function HeaderDisplay (message) {
+function headerDisplay (message) {
     this.width = drawing.width;
     this.height = this.size * drawing.height;
 
@@ -1196,7 +1196,7 @@ function HeaderDisplay (message) {
 
 }
 
-function PuzzleDisplay(x, y, w, h, startPosition) {
+function puzzleDisplay(x, y, w, h, startPosition) {
     let removeChevrons = () =>{
         if (this.leftChevronManipulator.last.children.length > 1) this.leftChevronManipulator.flush();
         if (this.rightChevronManipulator.last.children.length > 1) this.rightChevronManipulator.flush();
@@ -1267,7 +1267,7 @@ function PuzzleDisplay(x, y, w, h, startPosition) {
     }
 }
 
-function PuzzleInitTiles(x, y, w, h, startPosition) {
+function puzzleInitTiles(x, y, w, h, startPosition) {
     var self = this;
     self.w = w;
     self.h = h;
@@ -1347,7 +1347,7 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
     }
 }
 
-function QuestionDisplay(x, y, w, h) {
+function questionDisplay(x, y, w, h) {
     var self = this;
     self.x = x ? x : 0;
     self.y = y ? y : 0;
@@ -1383,7 +1383,7 @@ function QuestionDisplay(x, y, w, h) {
     self.selected && self.selectedQuestion();
 }
 
-function QuestionElementClicked(sourceElement) {
+function questionElementClicked(sourceElement) {
     var self = this;
     if(self.multipleChoice === false){// question normale, une seule réponse possible
         if(sourceElement.correct) {
@@ -1426,7 +1426,7 @@ function QuestionElementClicked(sourceElement) {
     }
 }
 
-function QuestionDisplayAnswers(x, y, w, h) {
+function questionDisplayAnswers(x, y, w, h) {
     var self = this;
     if (self.rows !== 0) {
         if(typeof x !=='undefined'){
@@ -1583,7 +1583,7 @@ function QuestionDisplayAnswers(x, y, w, h) {
     }
 }
 
-function QuestionSelectedQuestion() {
+function questionSelectedQuestion() {
     this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
     if(!this.redCrossManipulator){
         let redCrossClickHandler = () =>{
@@ -1621,7 +1621,7 @@ function QuestionSelectedQuestion() {
     }
 }
 
-function QuestionCreatorDisplay (x, y, w, h) {
+function questionCreatorDisplay (x, y, w, h) {
     var self = this;
     x && (self.previousX = x);
     y && (self.previousY = y);
@@ -1636,7 +1636,7 @@ function QuestionCreatorDisplay (x, y, w, h) {
     self.displayToggleButton(MARGIN + self.previousX, MARGIN/2+self.previousY, self.previousW, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
-function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
+function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var self = this;
     var size = self.puzzle.tileHeight*0.2;
     self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
@@ -1697,7 +1697,7 @@ function QuestionCreatorDisplayToggleButton (x, y, w, h, clicked){
     self.toggleButtonManipulator.translator.move(0, y);
 }
 
-function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
+function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
     self.questionCreatorManipulator.flush();
@@ -1844,7 +1844,7 @@ function QuestionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
 }
 
-function QuizzDisplay(x,y,w,h) {
+function quizzDisplay(x, y, w, h) {
     var self = this;
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
@@ -1913,18 +1913,18 @@ function QuizzDisplay(x,y,w,h) {
     }
 }
 
-function QuizzDisplayResult (color){
+function quizzDisplayResult (color){
     var self = this;
     self.displayScore(color);
     self.puzzle.display(0, self.questionHeight/2, drawing.width, self.answerHeight, self.puzzle.startPosition);
 }
 
-function GameDisplayMiniature(size, special){
+function gameDisplayMiniature(size, special){
     var self = this;
     return new Miniature(self, size, special);
 }
 
-function QuizzDisplayScore(color){
+function quizzDisplayScore(color){
     let self = this;
     let autoColor;
     switch(this.score) {
@@ -1976,7 +1976,7 @@ function QuizzDisplayScore(color){
     displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
 }
 
-function QuizzManagerDisplay(){
+function quizzManagerDisplay(){
     var self = this;
 
     let verticalPosition = drawing.height * HEADER_SIZE;
@@ -2063,7 +2063,7 @@ function QuizzManagerDisplay(){
         });
 }
 
-function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
+function quizzManagerDisplayQuizzInfo (x, y, w, h) {
     var self = this;
     self.quizzInfoManipulator.last.children.indexOf(self.returnButtonManipulator.first)===-1 && self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
 
@@ -2166,7 +2166,7 @@ function QuizzManagerDisplayQuizzInfo (x, y, w, h) {
     showTitle();
 }
 
-function QuizzManagerDisplayPreviewButton (x, y, w, h) {
+function quizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
 
@@ -2208,7 +2208,7 @@ function QuizzManagerDisplayPreviewButton (x, y, w, h) {
     self.previewButtonManipulator.translator.move(x, y);
 }
 
-function QuizzManagerDisplaySaveButton(x, y, w, h) {
+function quizzManagerDisplaySaveButton(x, y, w, h) {
     var self = this;
     self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
     svg.addEvent(self.saveButton.cadre, "click", self.saveQuizz);
@@ -2216,7 +2216,7 @@ function QuizzManagerDisplaySaveButton(x, y, w, h) {
     self.saveQuizButtonManipulator.translator.move(x, y);
 }
 
-function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
+function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     var self = this;
     var index = ind ? ind : 0;
     x && (self.qPuzzleX=x);
@@ -2244,7 +2244,7 @@ function QuizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
 }
 
-function InscriptionManagerDisplay(labels={}) {
+function inscriptionManagerDisplay(labels={}) {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
     header.display("Inscription");
@@ -2515,7 +2515,7 @@ function InscriptionManagerDisplay(labels={}) {
     });
 }
 
-function ConnectionManagerDisplay() {
+function connectionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
     header.display("Connexion");
@@ -2641,61 +2641,61 @@ function ConnectionManagerDisplay() {
 var AdminGUI = function (){
     domain && domain.Domain();
     playerMode = false;
-    Answer.prototype.display = AnswerDisplay;
-    Library.prototype.display = LibraryDisplay;
-    Header.prototype.display = HeaderDisplay;
-    AddEmptyElement.prototype.display = AddEmptyElementDisplay;
-    Formation.prototype.displayMiniature = FormationDisplayMiniature;
-    Formation.prototype.displayFormation = FormationDisplayFormation;
-    Formation.prototype.removeErrorMessage = FormationRemoveErrorMessage;
-    Formation.prototype.displayErrorMessage = FormationDisplayErrorMessage;
-    Formation.prototype.displayFormationSaveButton = FormationDisplaySaveButton;
-    FormationsManager.prototype.display = FormationsManagerDisplay;
-    Question.prototype.display = QuestionDisplay;
-    Question.prototype.displayAnswers = QuestionDisplayAnswers;
-    Question.prototype.selectedQuestion = QuestionSelectedQuestion;
-    Question.prototype.elementClicked = QuestionElementClicked;
-    QuestionCreator.prototype.display = QuestionCreatorDisplay;
-    QuestionCreator.prototype.displayToggleButton = QuestionCreatorDisplayToggleButton;
-    QuestionCreator.prototype.displayQuestionCreator = QuestionCreatorDisplayQuestionCreator;
-    Quizz.prototype.display = QuizzDisplay;
-    Quizz.prototype.displayResult = QuizzDisplayResult;
-    Quizz.prototype.displayMiniature = GameDisplayMiniature;
-    Bd.prototype.displayMiniature = GameDisplayMiniature;
-    Quizz.prototype.displayScore = QuizzDisplayScore;
-    Puzzle.prototype.display = PuzzleDisplay;
-    Puzzle.prototype.initTiles = PuzzleInitTiles;
-    QuizzManager.prototype.display = QuizzManagerDisplay;
-    QuizzManager.prototype.displayQuizzInfo = QuizzManagerDisplayQuizzInfo;
-    QuizzManager.prototype.displayPreviewButton = QuizzManagerDisplayPreviewButton;
-    QuizzManager.prototype.displayQuizSaveButton = QuizzManagerDisplaySaveButton;
-    QuizzManager.prototype.displayQuestionsPuzzle = QuizzManagerDisplayQuestionPuzzle;
-    ConnectionManager.prototype.display = ConnectionManagerDisplay;
+    Answer.prototype.display = answerDisplay;
+    Library.prototype.display = libraryDisplay;
+    Header.prototype.display = headerDisplay;
+    AddEmptyElement.prototype.display = addEmptyElementDisplay;
+    Formation.prototype.displayMiniature = formationDisplayMiniature;
+    Formation.prototype.displayFormation = formationDisplayFormation;
+    Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
+    Formation.prototype.displayErrorMessage = formationDisplayErrorMessage;
+    Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
+    FormationsManager.prototype.display = formationsManagerDisplay;
+    Question.prototype.display = questionDisplay;
+    Question.prototype.displayAnswers = questionDisplayAnswers;
+    Question.prototype.selectedQuestion = questionSelectedQuestion;
+    Question.prototype.elementClicked = questionElementClicked;
+    QuestionCreator.prototype.display = questionCreatorDisplay;
+    QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
+    QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
+    Quizz.prototype.display = quizzDisplay;
+    Quizz.prototype.displayResult = quizzDisplayResult;
+    Quizz.prototype.displayMiniature = gameDisplayMiniature;
+    Bd.prototype.displayMiniature = gameDisplayMiniature;
+    Quizz.prototype.displayScore = quizzDisplayScore;
+    Puzzle.prototype.display = puzzleDisplay;
+    Puzzle.prototype.initTiles = puzzleInitTiles;
+    QuizzManager.prototype.display = quizzManagerDisplay;
+    QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
+    QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
+    QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
+    QuizzManager.prototype.displayQuestionsPuzzle = quizzManagerDisplayQuestionPuzzle;
+    ConnectionManager.prototype.display = connectionManagerDisplay;
     header = new Header();
 };
 
 var LearningGUI = function (){
     domain && domain.Domain();
     playerMode = true;
-    Answer.prototype.display = AnswerDisplay;
-    Library.prototype.display = LibraryDisplay;
-    Header.prototype.display = HeaderDisplay;
-    Formation.prototype.displayFormation = FormationDisplayFormation;
-    Formation.prototype.displayMiniature = FormationDisplayMiniature;
-    FormationsManager.prototype.display = FormationsManagerDisplay;
-    Question.prototype.display = QuestionDisplay;
-    Question.prototype.displayAnswers = QuestionDisplayAnswers;
-    Question.prototype.elementClicked = QuestionElementClicked;
-    Question.prototype.selectedQuestion = QuestionSelectedQuestion;
-    Puzzle.prototype.display = PuzzleDisplay;
-    Puzzle.prototype.initTiles = PuzzleInitTiles;
-    Quizz.prototype.display = QuizzDisplay;
-    Quizz.prototype.displayResult = QuizzDisplayResult;
-    Quizz.prototype.displayMiniature = GameDisplayMiniature;
-    Quizz.prototype.displayScore = QuizzDisplayScore;
-    InscriptionManager.prototype.display = InscriptionManagerDisplay;
-    ConnectionManager.prototype.display = ConnectionManagerDisplay;
-    Bd.prototype.displayMiniature = GameDisplayMiniature;
+    Answer.prototype.display = answerDisplay;
+    Library.prototype.display = libraryDisplay;
+    Header.prototype.display = headerDisplay;
+    Formation.prototype.displayFormation = formationDisplayFormation;
+    Formation.prototype.displayMiniature = formationDisplayMiniature;
+    FormationsManager.prototype.display = formationsManagerDisplay;
+    Question.prototype.display = questionDisplay;
+    Question.prototype.displayAnswers = questionDisplayAnswers;
+    Question.prototype.elementClicked = questionElementClicked;
+    Question.prototype.selectedQuestion = questionSelectedQuestion;
+    Puzzle.prototype.display = puzzleDisplay;
+    Puzzle.prototype.initTiles = puzzleInitTiles;
+    Quizz.prototype.display = quizzDisplay;
+    Quizz.prototype.displayResult = quizzDisplayResult;
+    Quizz.prototype.displayMiniature = gameDisplayMiniature;
+    Quizz.prototype.displayScore = quizzDisplayScore;
+    InscriptionManager.prototype.display = inscriptionManagerDisplay;
+    ConnectionManager.prototype.display = connectionManagerDisplay;
+    Bd.prototype.displayMiniature = gameDisplayMiniature;
     header = new Header();
 };
 if (typeof exports !== "undefined") {
