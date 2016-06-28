@@ -1893,7 +1893,7 @@ function quizzDisplay(x, y, w, h) {
     self.returnButton.setHandler(self.previewMode ? (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, 0);
+        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
         target.parentObj.parent.parentFormation.quizzManager.display();
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
