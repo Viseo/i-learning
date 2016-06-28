@@ -836,7 +836,7 @@ class Server {
             tabWrongAnswers: [],
             game: quiz.title,
             gameId: quiz.id,
-            formation: quiz.parentFormation ? quiz.parentFormation.label : ""
+            formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
