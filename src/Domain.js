@@ -1037,7 +1037,6 @@ function Domain() {
         self.loadQuestions(quizz);
         if(self.levelIndex === undefined ){self.levelIndex = quizz.levelIndex;}
         if(self.gameIndex === undefined) { self.gameIndex = quizz.gameIndex;}
-        //self.childrenGames=quizz.childrenGames;
         (previewMode) ? (self.previewMode = previewMode) : (self.previewMode = false);
         quizz.puzzleRows ? (self.puzzleRows = quizz.puzzleRows) : (self.puzzleRows = 2);
         quizz.puzzleLines ? (self.puzzleLines = quizz.puzzleLines) : (self.puzzleLines = 2);

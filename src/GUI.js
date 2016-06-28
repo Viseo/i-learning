@@ -392,14 +392,11 @@ function libraryDisplay(x, y, w, h) {
         };
         let createLink = function (parentGame, childGame) {
             if (isChildOf(parentGame,childGame)) return;
-            //if (parentGame.childrenGames.indexOf(childGame) != -1) return;
-
             if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
             parentGame.parentFormation.link.push({parentGame : parentGame.id,childGame : childGame.id});
             let arrow = new Arrow(parentGame, childGame);
             parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         };
-
 
         let arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
         arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
@@ -630,7 +627,7 @@ function formationDisplayFormation() {
     this.movePanelContent = () => {
         let spaceOccupiedByAGame = (self.graphElementSize + self.minimalMarginBetweenGraphElements);
         let longestLevel = self.findLongestLevel()[0];
-        let trueWidth = longestLevel && longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame;
+        let trueWidth = longestLevel ? longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame : 0;
         let widthMAX = Math.max(self.panel.width, trueWidth);
         self.miniaturesManipulator.first.move((widthMAX - self.panel.width) / 2, 0);
     };
