@@ -149,22 +149,19 @@
 			"score": 0,
 			"title": "Quiz 2",
 			"currentQuestionIndex": -1,
-			"finalMessage": "",
-			"childrenGames": []
+			"finalMessage": ""
 		}, {
 			"title": "Bd 1",
 			"miniaturePosition": {
 				"x": 1,
 				"y": -113.11874999999998
-			},
-			"childrenGames": []
+			}
 		}, {
 			"title": "Bd 2",
 			"miniaturePosition": {
 				"x": 191.4,
 				"y": -113.11874999999998
-			},
-			"childrenGames": []
+			}
 		}],
 		"x": 197.1,
 		"y": 196.23749999999998,

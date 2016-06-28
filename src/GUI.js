@@ -75,7 +75,9 @@ function answerDisplay (x, y, w, h) {
             self.display();
         };
         let mouseleaveHandler= ()=>{
-            self.redCrossManipulator.flush();
+            svg.timeout(()=>{
+                self.redCrossManipulator.flush();
+            },2000);
         };
         let ImageMouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
@@ -84,7 +86,7 @@ function answerDisplay (x, y, w, h) {
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
             let redCrossSize = 15;
-            let redCross = drawRedCross(self.obj.image.x + self.obj.image.width/2 - redCrossSize/2 , self.obj.image.y -self.obj.image.height/2 + redCrossSize/2, redCrossSize, self.redCrossManipulator);
+            let redCross = drawRedCross(self.image.width/2 + redCrossSize/2, -self.image.height/2-redCrossSize, redCrossSize, self.redCrossManipulator);
 
             svg.addEvent(redCross,'click',imageRedCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
@@ -92,19 +94,16 @@ function answerDisplay (x, y, w, h) {
             //self.linkedQuestion.image.component.listeners.mouseout();
         };
         let redCrossClickHandler=()=>{
-            //self.redCrossManipulator.flush();
-            let index = self.parentQuestion.tabAnswer.indexOf(self);
-            //self.manipulator.flush();
-            //self.manipulator.first.parent.remove(self.manipulator.first);
-            drawing.mousedOverTarget=null;
-            self.parentQuestion.tabAnswer.splice(index,1);
-            //self.parent.tabAnswer.shift();
-            let questionCreator=self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+            self.redCrossManipulator.flush();
+            let index = self.parent.tabAnswer.indexOf(self);
+            self.parent.tabAnswer.splice(index,1);
+            //on splice le tableau
+            let questionCreator=self.parent.parentQuizz.parentFormation.quizzManager.questionCreator;
 
-            if(self.parentQuestion.tabAnswer.length<3){
-                svg.event(self.parentQuestion.tabAnswer[self.parentQuestion.tabAnswer.length-1].plus,'dblclick',{});
+            if(self.parent.tabAnswer.length<3){
+                svg.event(self.parent.tabAnswer[self.parent.tabAnswer.length-1].plus,'dblclick',{});
                 if(index===0){
-                    [self.parentQuestion.tabAnswer[0],self.parentQuestion.tabAnswer[1]]=[self.parentQuestion.tabAnswer[1],self.parentQuestion.tabAnswer[0]];
+                    [self.parent.tabAnswer[0],self.parent.tabAnswer[1]]=[self.parent.tabAnswer[1],self.parent.tabAnswer[0]];
                 }
             }
 
@@ -117,7 +116,7 @@ function answerDisplay (x, y, w, h) {
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
             let redCrossSize = 15;
-            let redCross = drawRedCross(self.w/2 - redCrossSize, -self.h/2 + redCrossSize, redCrossSize, self.redCrossManipulator);
+            let redCross = drawRedCross(self.w/2 , -self.h/2, redCrossSize, self.redCrossManipulator);
 
             svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
@@ -137,7 +136,7 @@ function answerDisplay (x, y, w, h) {
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
-            self.answerNameValidInput ? (self.obj.cadre.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color(myColors.white,2,myColors.red).fillOpacity(0.001));
+            self.answerNameValidInput ? (self.obj.cadre.color([0,0,0,0],1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color([0,0,0,0],2,myColors.red).fillOpacity(0.001));
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
@@ -388,13 +387,15 @@ function libraryDisplay(x, y, w, h) {
         self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)===-1 && self.libraryManipulator.last.add(self.arrowModeManipulator.first);
         self.arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
 
+        let isChildOf = function (parentGame,childGame){
+            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
+        };
         let createLink = function (parentGame, childGame) {
-            if (parentGame.childrenGames.indexOf(childGame) != -1) return;
+            if (isChildOf(parentGame,childGame)) return;
+            //if (parentGame.childrenGames.indexOf(childGame) != -1) return;
+
             if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
-
-            parentGame.childrenGames.push(childGame);
-            childGame.parentGames.push(parentGame);
-
+            parentGame.parentFormation.link.push({parentGame : parentGame.id,childGame : childGame.id});
             let arrow = new Arrow(parentGame, childGame);
             parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         };
@@ -681,7 +682,7 @@ function formationDisplayFormation() {
 
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         !playerMode && self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
-        playerMode && self.clippingManipulator.translator.move(MARGIN, 0);
+        playerMode && self.clippingManipulator.translator.move(MARGIN, drawing.height*HEADER_SIZE);
         self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height*0.1;//-15-self.saveButtonHeight;//15: Height Message Error
 
         if(typeof self.panel !== "undefined") {
@@ -702,13 +703,16 @@ function formationDisplayFormation() {
 
     let updateAllLinks = () => {
         self.arrowsManipulator.flush();
-        self.levelsTab.forEach((level) => {
-            level.gamesTab.forEach((parentGame) => {
-                parentGame.childrenGames.forEach((game) => {
-                    let arrow = new Arrow(parentGame,game);
-                    parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);/// !_! attention, peut-être pas remove
-                });
-            }) ;
+        var childElement, parentElement;
+        self.link.forEach(function (links) {
+            self.levelsTab.forEach(function (level) {
+                level.gamesTab.forEach(function (game) {
+                    game.id === links.childGame && (childElement = game);
+                    game.id === links.parentGame && (parentElement = game);
+                })
+            });
+            let arrow = new Arrow(parentElement, childElement);
+            parentElement.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         });
     };
 
@@ -1701,9 +1705,8 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
     self.questionCreatorManipulator.flush();
-    self.questionBlock = {rect: new svg.Rect(w, h).color(myColors.red, 3, myColors.black).position(w / 2, y + h / 2)};
-    self.questionBlock.rect.fillOpacity(0.001);
-    self.questionCreatorManipulator.ordonator.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.ordonator.set(5,self.questionBlock.rect);
+    self.questionBlock = {rect: new svg.Rect(w, h).color([], 3, myColors.black).position(w / 2, y + h / 2)};
+    self.questionCreatorManipulator.last.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.last.add(self.questionBlock.rect);
     self.questionCreatorManipulator.last.children.indexOf(self.questionManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
         var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
@@ -1712,35 +1715,35 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
             let redCrossClickHandler = ()=>{
-                self.questionBlock.redCrossManipulator.flush();
+                self.redCrossManipulator.flush();
                 self.questionManipulator.ordonator.unset(2);//image
                 self.linkedQuestion.image = null;
                 self.linkedQuestion.imageSrc = null;
                 self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
                 self.display();
             };
-
-            let mouseleaveHandler = ()=>{
-                self.questionBlock.redCrossManipulator && self.questionBlock.redCrossManipulator.flush();
+            let mouseleaveHandler= ()=>{
+                svg.timeout(()=>{
+                    self.redCrossManipulator.flush();
+                },2000);
             };
-
-            let mouseoverHandler = ()=>{
-                if(typeof self.questionBlock.redCrossManipulator === 'undefined'){
-                    self.questionBlock.redCrossManipulator=new Manipulator(self);
-                    self.questionBlock.redCrossManipulator.addOrdonator(2);
-                    self.questionManipulator && self.questionManipulator.last.add(self.questionBlock.redCrossManipulator.first);
+            let mouseoverHandler=()=>{
+                if(typeof self.redCrossManipulator === 'undefined'){
+                    self.redCrossManipulator=new Manipulator(self);
+                    self.redCrossManipulator.addOrdonator(2);
+                    self.questionManipulator && self.questionManipulator.last.add(self.redCrossManipulator.first);
                 }
                 let redCrossSize = 15;
-                let redCross = drawRedCross(self.questionBlock.title.image.x + self.questionBlock.title.image.width/2 - redCrossSize/2, self.questionBlock.title.image.y -self.questionBlock.title.image.height/2 + redCrossSize/2, redCrossSize, self.questionBlock.redCrossManipulator);
+                let redCross = drawRedCross(self.linkedQuestion.image.width/2 + redCrossSize/2, -self.linkedQuestion.image.height/2-redCrossSize, redCrossSize, self.redCrossManipulator);
 
                 svg.addEvent(redCross,'click',redCrossClickHandler);
-                self.questionBlock.redCrossManipulator.ordonator.set(1,redCross);
+                self.redCrossManipulator.ordonator.set(1,redCross);
                 //console.log('héo');
                 //self.linkedQuestion.image.component.listeners.mouseout();
             };
 
-            svg.addEvent(self.questionBlock.title.image, 'mouseover', mouseoverHandler);
-            svg.addEvent(self.questionBlock.title.image, 'mouseout', mouseleaveHandler);
+            svg.addEvent(self.questionBlock.title.image,'mouseover',mouseoverHandler);
+            svg.addEvent(self.questionBlock.title.image,'mouseout',mouseleaveHandler);
 
             self.questionBlock.title.image._acceptDrop = true;
         } else {
