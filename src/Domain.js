@@ -716,65 +716,65 @@ function Domain() {
      * Created by ABL3483 on 29/02/2016.
      */
 
-    Puzzle = function (lines, rows, questionsTab, resultArea, reverseMode, parent) {
-        var self = this;
-
-        self.lines = lines;
-        self.rows = rows;
-        self.tilesTab = [];
-        self.questionsTab = questionsTab;
-        self.startPosition = 0;
-        self.reverseMode = reverseMode;
-        self.parent = parent;
-        self.totalRows = 0;
-        if (self.questionsTab.length % self.lines === 0) {
-            self.totalRows = self.questionsTab.length / self.lines;
-        }
-        else {
-            self.totalRows = Math.floor(self.questionsTab.length / self.lines) + 1;
-        }
-
-        var count = 0;
-        self.completeBanner = [];
-        self.puzzleManipulator = new Manipulator(self);
-        self.leftChevronManipulator = new Manipulator(self);
-        self.leftChevronManipulator.addOrdonator(1);
-        self.rightChevronManipulator = new Manipulator(self);
-        self.rightChevronManipulator.addOrdonator(1);
-        self.questionWithBadAnswersManipulator = new Manipulator(self);
-        self.puzzleManipulator.last.add(self.questionWithBadAnswersManipulator.first);
-        self.puzzleManipulator.last.add(self.leftChevronManipulator.first);
-        self.puzzleManipulator.last.add(self.rightChevronManipulator.first);
-
-        if (self.reverseMode) {
-            for (var i = 0; i < self.lines; i++) {
-                self.completeBanner[i] = [];
-                for (var j = 0; j < self.rows; j++) {
-                    if (count < self.questionsTab.length) {
-                        self.completeBanner[i][j] = self.questionsTab[count];
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        } else {
-            for (i = 0; i < self.totalRows; i++) {
-                self.completeBanner[i] = [];
-                for (j = 0; j < self.lines; j++) {
-                    if (count < self.questionsTab.length) {
-                        self.completeBanner[i][j] = self.questionsTab[count];
-                        if ((self.completeBanner[i][j] instanceof Question) && self.completeBanner[i][j].answersManipulator.first) {
-                            self.completeBanner[i][j].questionManipulator.flush();
-                        }
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-    };
+    //Puzzle = function (lines, rows, questionsTab, resultArea, reverseMode, parent) {
+    //    var self = this;
+    //
+    //    self.lines = lines;
+    //    self.rows = rows;
+    //    self.tilesTab = [];
+    //    self.questionsTab = questionsTab;
+    //    self.startPosition = 0;
+    //    self.reverseMode = reverseMode;
+    //    self.parent = parent;
+    //    self.totalRows = 0;
+    //    if (self.questionsTab.length % self.lines === 0) {
+    //        self.totalRows = self.questionsTab.length / self.lines;
+    //    }
+    //    else {
+    //        self.totalRows = Math.floor(self.questionsTab.length / self.lines) + 1;
+    //    }
+    //
+    //    var count = 0;
+    //    self.completeBanner = [];
+    //    self.manipulator = new Manipulator(self);
+    //    self.leftChevronManipulator = new Manipulator(self);
+    //    self.leftChevronManipulator.addOrdonator(1);
+    //    self.rightChevronManipulator = new Manipulator(self);
+    //    self.rightChevronManipulator.addOrdonator(1);
+    //    self.questionWithBadAnswersManipulator = new Manipulator(self);
+    //    self.manipulator.last.add(self.questionWithBadAnswersManipulator.first);
+    //    self.manipulator.last.add(self.leftChevronManipulator.first);
+    //    self.manipulator.last.add(self.rightChevronManipulator.first);
+    //
+    //    if (self.reverseMode) {
+    //        for (var i = 0; i < self.lines; i++) {
+    //            self.completeBanner[i] = [];
+    //            for (var j = 0; j < self.rows; j++) {
+    //                if (count < self.questionsTab.length) {
+    //                    self.completeBanner[i][j] = self.questionsTab[count];
+    //                    count++;
+    //                } else {
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    } else {
+    //        for (i = 0; i < self.totalRows; i++) {
+    //            self.completeBanner[i] = [];
+    //            for (j = 0; j < self.lines; j++) {
+    //                if (count < self.questionsTab.length) {
+    //                    self.completeBanner[i][j] = self.questionsTab[count];
+    //                    if ((self.completeBanner[i][j] instanceof Question) && self.completeBanner[i][j].answersManipulator.first) {
+    //                        self.completeBanner[i][j].manipulator.flush();
+    //                    }
+    //                    count++;
+    //                } else {
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //};
 
 ////////////////// end of Puzzle.js //////////////////////////
 
@@ -790,10 +790,10 @@ function Domain() {
 
     Question = function (question, quizz) {
         var self = this;
-        self.questionManipulator = new Manipulator(self);
-        self.questionManipulator.addOrdonator(6);
+        self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(6);
         self.answersManipulator = new Manipulator(self);
-        self.questionManipulator.last.add(self.answersManipulator.first);
+        self.manipulator.last.add(self.answersManipulator.first);
         self.resetManipulator = new Manipulator(self);
         self.resetManipulator.addOrdonator(2);
         self.answersManipulator.last.add(self.resetManipulator.first);
@@ -1089,7 +1089,7 @@ function Domain() {
         // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
             if (self.currentQuestionIndex !== -1) {
-                self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
+                self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].manipulator.first);
             }
             self.displayCurrentQuestion = function(){
                 if (self.tabQuestions[self.currentQuestionIndex].imageSrc){
@@ -1100,11 +1100,11 @@ function Domain() {
                     self.questionHeight = self.questionHeightWithoutImage;
                     self.answerHeight = self.answerHeightWithoutImage;
                 }
-                self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
+                self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].manipulator.first);
+                self.tabQuestions[self.currentQuestionIndex].manipulator.flush();
                 self.tabQuestions[self.currentQuestionIndex].display(self.x, self.headerHeight + self.questionHeight/ 2 + MARGIN,
                     self.questionArea.w, self.questionHeight);
-                !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
+                !self.previewMode && self.tabQuestions[self.currentQuestionIndex].manipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
                 self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.x, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
             };
@@ -1113,7 +1113,7 @@ function Domain() {
                     self.displayCurrentQuestion();
                 } else {
                     console.log("Final score: " + self.score);
-                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+                    self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, "leftToRight", self);
                     self.displayResult();
                 }
             };

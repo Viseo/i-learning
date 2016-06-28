@@ -543,12 +543,12 @@ function SVGUtil() {
      * @param h
      * @param manipulator
      */
-    drawChevron = function (x, y, w, h, manipulator, side = "right") {
+    Chevron = function (x, y, w, h, manipulator, side = "right") {
         let baseWidth = 160;
         let baseHeight = 300;
         let chevronManipulator = manipulator;
         if(side === "right") {
-            var chevron = new svg.Path(0, 0).line(-100, 100)
+            this.chevron = new svg.Path(0, 0).line(-100, 100)
                 .cubic(-140, 140, -85, 185, - 50, 150)
                 .line(60, 40)
                 .cubic(95, 5, 95, -5, 60, -40)
@@ -557,7 +557,7 @@ function SVGUtil() {
                 .line(0, 0);
         }
         else if(side === "left"){
-             chevron = new svg.Path(0, 0).line(100, -100)
+             this.chevron = new svg.Path(0, 0).line(100, -100)
                 .cubic(140, -140, 85, -185, 50, -150)
                 .line(-60, -40)
                 .cubic(-95, -5, -95, 5, -60, 40)
@@ -565,20 +565,32 @@ function SVGUtil() {
                 .cubic(85, 190, 145, 140, 100, 100)
                 .line(0, 0);
         }
-        chevron.tempWidth = baseWidth;
-        chevron.tempHeight = baseHeight;
+        this.chevron.tempWidth = baseWidth;
+        this.chevron.tempHeight = baseHeight;
         chevronManipulator.translator.move(x, y);
-        chevronManipulator.ordonator.set(0, chevron);
-        if (chevron.tempWidth > w) {
-            chevron.tempHeight *= w / chevron.tempWidth;
-            chevron.tempWidth = w;
+        chevronManipulator.ordonator.set(0, this.chevron);
+        if (this.chevron.tempWidth > w) {
+            this.chevron.tempHeight *= w / this.chevron.tempWidth;
+            this.chevron.tempWidth = w;
         }
-        if (chevron.tempHeight > h) {
-            chevron.tempWidth *= h / chevron.tempHeight;
-            chevron.tempHeight = h;
+        if (this.chevron.tempHeight > h) {
+            this.chevron.tempWidth *= h / this.chevron.tempHeight;
+            this.chevron.tempHeight = h;
         }
-        chevronManipulator.scalor.scale(chevron.tempHeight / baseHeight);
-        return chevron;
+        chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
+        this.chevron.activate = function(handler, eventType){
+            this._activated = true;
+            this.color(myColors.black, 1, myColors.black);
+            this.eventType = eventType;
+            this.handler = handler;
+            svg.addEvent(this, eventType, handler);
+        };
+        this.chevron.desactivate = function(){
+            this._activated = false;
+            this.color(myColors.grey, 1, myColors.grey);
+            svg.addEvent(this, this.eventType, function(){});
+        };
+        return this.chevron;
     };
 
     manageDnD = function (svgItem, manipulator) {
@@ -789,7 +801,7 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text("Retour");
-        this.returnButton = drawChevron(0, 0, w, h, this.chevronManipulator, "left");
+        this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);
         let textSize = svg.runtime.boundingRect(this.returnText.component);
@@ -800,6 +812,179 @@ class ReturnButton {
 
         this.returnText.parentObj = this;
         this.returnButton.parentObj = this;
+    }
+}
+
+class Puzzle {
+    constructor(rows, columns, elementsArray , orientation = "upToDown", parentObject) {
+        this.rows = rows;
+        this.columns = columns;
+        this.nbOfVisibleElements = this.rows * this.columns;
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(this.nbOfVisibleElements+2); // Pour les chevrons
+        this.leftChevronManipulator = new Manipulator(this);
+        this.leftChevronManipulator.addOrdonator(3);
+        this.rightChevronManipulator = new Manipulator(this);
+        this.rightChevronManipulator.addOrdonator(3);
+        this.elementsArray = elementsArray;
+        this.visibleElementsArray = [];
+        this.indexOfFirstVisibleElement = 0;
+        this.fillVisibleElementsArray(orientation);
+        this.chevronMaxSize = 75;
+        this.chevronMinSize = 15;
+        this.orientation = orientation;
+        this.parentObject = parentObject;
+    }
+
+    drawChevrons(){
+        var self = this;
+        let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
+        let updateRightChevron = this.rightChevron && this.rightChevron._activated;
+        this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron((this.width - this.chevronSize)/2, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
+        this.leftChevron.handler = function(){
+            self.updateStartPosition("left");
+            self.fillVisibleElementsArray(self.orientation);
+            self.display();
+        };
+        this.rightChevron.handler = function(){
+            self.updateStartPosition("right");
+            self.fillVisibleElementsArray(self.orientation);
+            self.display();
+        };
+        updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
+        updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
+        this.manipulator.ordonator.set(0, this.leftChevronManipulator.first);
+        this.manipulator.ordonator.set(1, this.rightChevronManipulator.first);
+    }
+
+    hideChevrons(){
+        this.manipulator.ordonator.unset(1);
+        this.manipulator.ordonator.unset(2);
+    }
+
+    updateStartPosition(leftOrRight){
+        if(leftOrRight ===  'right'){
+            var orientation = 1;
+        }
+        else if(leftOrRight ===  'left'){
+            orientation = -1;
+        }
+        if(this.rows === 1){
+            //this.indexOfFirstVisibleElement
+        }
+        else{
+            let shift = (this.columns - 1)*this.rows*orientation;
+            let temporaryIndex = this.indexOfFirstVisibleElement + shift;
+            if(temporaryIndex>0){
+                let overflow = (temporaryIndex+shift)-(this.elementsArray.length);
+                let result = ((overflow/this.rows)%1 === 0) ? overflow/this.rows : Math.floor(overflow/this.rows)+1;
+                if(result>0){
+                    temporaryIndex -= result * this.rows;
+                }
+            }
+            else{
+                temporaryIndex = 0;
+
+            }
+            this.indexOfFirstVisibleElement = temporaryIndex;
+        }
+        if(this.indexOfFirstVisibleElement === 0) {
+            this.leftChevron.desactivate();
+            this.rightChevron.activate(this.rightChevron.handler, 'click');
+        }
+        else if(this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length){
+            this.leftChevron.activate(this.leftChevron.handler, 'click');
+            this.rightChevron.activate(this.rightChevron.handler, 'click');
+        }
+        else{
+            this.rightChevron.desactivate();
+            this.leftChevron.activate(this.leftChevron.handler, 'click');
+        }
+    }
+
+    fillVisibleElementsArray(orientation){
+        this.visibleElementsArray = [];
+        if(orientation === "leftToRight"){
+            var count = this.indexOfFirstVisibleElement;
+            var stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement+1) + this.nbOfVisibleElements));
+            for(var row = 0; row < this.rows; row++){
+                var rowArray = [];
+                for(var column = 0; column < this.columns ; column++){
+                    //console.log(rowArray);
+                    let index = this.indexOfFirstVisibleElement+(this.rows-1)*row+column;
+                    if(typeof this.elementsArray[index] !== "undefined") {
+                        (this.elementsArray[index].puzzleRowIndex = row);
+                        (this.elementsArray[index].puzzleColumnIndex = column);
+                        rowArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows - 1) * row + column]);
+                    }
+                }
+                if(count<stop){
+                    this.visibleElementsArray.push(rowArray);
+                    count++;
+                }
+            }
+        }else if(orientation === "upToDown"){
+            var count = this.indexOfFirstVisibleElement;
+            var stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement+1) + this.nbOfVisibleElements));
+            for(var column = 0; column < this.columns; column++){
+                var columnsArray = [];
+                for(var row = 0; row < this.rows ; row++){
+                    //console.log(columnsArray);
+                    //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleRowIndex = row;
+                    //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleColumnIndex = column;
+                    columnsArray.push(this.elementsArray[this.indexOfFirstVisibleElement+(this.rows)*column+row]);
+                }
+                if(count<stop){
+                    this.visibleElementsArray.push(columnsArray);
+                    count++;
+                }
+            }
+        }
+    }
+    
+    adjustElementsDimensions(){
+        this.elementWidth = this.visibleArea.width/this.columns;
+        this.elementHeight = this.visibleArea.height/this.rows;
+        for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
+            if(typeof this.elementsArray[i] !== "undefined") {
+                this.elementsArray[i].width = this.elementWidth;
+                this.elementsArray[i].height = this.elementHeight;
+            }
+        }
+    }
+
+    adjustElementsPositions(){
+        for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
+            if(typeof this.elementsArray[i] !== "undefined") {
+                this.elementsArray[i].x = -this.visibleArea.width / 2 + this.elementsArray[i].puzzleColumnIndex * this.elementWidth;
+                this.elementsArray[i].y = -this.visibleArea.height / 2 + this.elementsArray[i].puzzleRowIndex * this.elementHeight;
+            }
+        }
+    }
+
+    display(x, y, w, h, needChevrons = true){
+        (typeof x !== "undefined") && (this.x = x);
+        (typeof y !== "undefined") && (this.y = y);
+        (typeof w !== "undefined") && (this.width = w);
+        (typeof h !== "undefined") && (this.height = h);
+        this.chevronSize = Math.max(Math.min(this.height*0.15, this.width*0.1, this.chevronMaxSize), this.chevronMinSize);
+        this.visibleArea = {
+            width: this.width - 2*this.chevronSize,
+            height: this.height
+        };
+        this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
+        this.manipulator.ordonator.set(0,this.puzzleCadre);
+        this.chevronsDisplayed = ((this.elementsArray.length > this.nbOfVisibleElements) && needChevrons);
+        this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
+        this.adjustElementsDimensions();
+        this.adjustElementsPositions();
+        this.visibleElementsArray.forEach(rows =>{
+            rows.forEach(elem => {
+                elem.display();
+                this.manipulator.ordonator.set(this.elementsArray.indexOf(elem)+2, elem.manipulator.first); // +2 pour les chevrons
+            });
+        });
     }
 }
 
@@ -871,9 +1056,9 @@ function Bdd() {
     REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
     EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
     MARGIN = 10;
-    myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "questionManipulator",
+    myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
         "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
-        "previewButtonManipulator", "saveQuizButtonManipulator","saveFormationButtonManipulator", "toggleButtonManipulator", "puzzleManipulator",
+        "previewButtonManipulator", "saveQuizButtonManipulator","saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
         "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
         "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
@@ -2005,7 +2190,7 @@ function Bdd() {
         }),
         // Check Question Name:
         quiz => ({
-            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.manipulator.ordonator.children[2] instanceof svg.Image),
             message: "Vous devez remplir le nom de la question."
         }),
         // Check 1 Correct Answer:
@@ -2028,7 +2213,7 @@ function Bdd() {
         }),
         // Check Question Name:
         quiz => ({
-            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.manipulator.ordonator.children[2] instanceof svg.Image),
             message: "Vous devez remplir le nom de la question."
         }),
         // Check at least 1 valid answer:

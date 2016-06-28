@@ -34,10 +34,17 @@
     setGlobalVariable();
 </script>
 <script>
-    var puzzle = new gui.Puzzle();
+    var puzzle = new Puzzle(3, 2);
     mainManipulator.last.add(puzzle.manipulator.first);
     mainManipulator.translator.move(drawing.width/2, drawing.height/2);
+    puzzle.elementsArray = [15,14,13,12,11,10,9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
+    puzzle.fillVisibleElementsArray("upToDown");
     puzzle.display(drawing.width/2, drawing.height/2, 500, 500);
+    puzzle.updateStartPosition("left");
+
+//    puzzle.rightChevron.activate(puzzle.rightChevron.handler, "click");
+
+    //    puzzle.leftChevron.desactivate();
 </script>
 </body>
 </html>

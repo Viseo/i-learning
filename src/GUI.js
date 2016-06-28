@@ -29,33 +29,32 @@ function setRuntime(_runtime){
 function answerDisplay (x, y, w, h) {
     let self = this;
 
-
     if (typeof x !== "undefined")(self.x = x);
     if (typeof y !== "undefined")(self.y = y);
-    if (typeof w !== "undefined")(self.w = w);
-    if (typeof h !== "undefined")(self.h = h);
+    if (typeof w !== "undefined")(self.width = w);
+    if (typeof h !== "undefined")(self.height = h);
 
     if(self.editable) {
-        answerEditableDisplay(self.x, self.y, self.w, self.h);
+        answerEditableDisplay(self.x, self.y, self.width, self.height);
         return;
     }
 
     if (self.label && self.imageSrc) { // Question avec Texte ET image
-        let obj = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator,self.image);
+        let obj = displayImageWithTitle(self.label, self.imageSrc, self.dimImage, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator,self.image);
         self.bordure = obj.cadre;
         self.content = obj.text;
         self.image = obj.image;
     } else if (self.label && !self.imageSrc) { // Question avec Texte uniquement
-        let obj = displayText(self.label, self.w, self.h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+        let obj = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
         self.bordure = obj.cadre;
         self.content = obj.content;
 
     } else if (self.imageSrc && !self.label) { // Question avec Image uniquement
-        let obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.w, self.h, self.manipulator);
+        let obj = displayImageWithBorder(self.imageSrc, self.dimImage, self.width, self.height, self.manipulator);
         self.image = obj.image;
         self.bordure = obj.cadre;
     } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
-        self.bordure = new svg.Rect(self.w, self.h).color(self.bgColor, 1, myColors.black).corners(25, 25);
+        self.bordure = new svg.Rect(self.width, self.height).color(self.bgColor, 1, myColors.black).corners(25, 25);
         self.manipulator.last.children.indexOf(self.bordure)===-1 && self.manipulator.last.add(self.bordure);
 
     }
@@ -74,12 +73,12 @@ function answerDisplay (x, y, w, h) {
             self.imageSrc = null;
             self.display();
         };
-        let mouseleaveHandler= ()=>{
+        let mouseleaveHandler = ()=>{
             svg.timeout(()=>{
                 self.redCrossManipulator.flush();
             },2000);
         };
-        let ImageMouseoverHandler=()=>{
+        let ImageMouseoverHandler = ()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
                 self.redCrossManipulator = new Manipulator(self);
                 self.redCrossManipulator.addOrdonator(2);
@@ -116,7 +115,7 @@ function answerDisplay (x, y, w, h) {
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
             let redCrossSize = 15;
-            let redCross = drawRedCross(self.w/2 , -self.h/2, redCrossSize, self.redCrossManipulator);
+            let redCross = drawRedCross(self.width/2 , -self.height/2, redCrossSize, self.redCrossManipulator);
 
             svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
@@ -142,7 +141,7 @@ function answerDisplay (x, y, w, h) {
             self.obj.content._acceptDrop = true;
 
             let editor = (self.editor.puzzle ? self.editor : self.editor.parent);
-            editor.puzzle.puzzleManipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
+            editor.puzzle.manipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
 
             svg.addEvent(self.obj.content, 'dblclick', dblclickEditionAnswer);
             svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
@@ -227,7 +226,7 @@ function answerDisplay (x, y, w, h) {
         showTitle();
 
         if(typeof self.obj.checkbox === 'undefined') {
-            self.obj.checkbox = displayCheckbox(-self.w/2+self.checkboxSize,self.h/2 - self.checkboxSize, self.checkboxSize, self).checkbox;
+            self.obj.checkbox = displayCheckbox(-self.width/2+self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;
         }else{
             console.log("quelque chose");
@@ -466,11 +465,23 @@ function libraryDisplay(x, y, w, h) {
 
 function addEmptyElementDisplay(x, y, w, h) {
     let self = this;
+    if(typeof x !== 'undefined'){
+        self.x = x;
+    }
+    if(typeof y !== 'undefined' ){
+        self.y = y;
+    }
+    if(typeof w !== 'undefined' ) {
+        w && (self.width = w);
+    }
+    if(typeof h !== 'undefined' ) {
+        h && (self.height = h);
+    }
 
-    self.obj = displayText(self.label, w, h, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-    self.plus = drawPlus(0, 0, h * 0.3, h * 0.3);
+    self.obj = displayText(self.label, self.width, self.height, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
+    self.plus = drawPlus(0, 0, self.height * 0.3, self.height * 0.3);
     self.manipulator.ordonator.set(2, self.plus);
-    self.obj.content.position(0, h * 0.35);
+    self.obj.content.position(0, self.height * 0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
@@ -489,12 +500,11 @@ function addEmptyElementDisplay(x, y, w, h) {
                     self.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
                 }
 
-                self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, self.parent.coordinatesAnswers, true, self);
-                self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
+                self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, "leftToRight", self);
+                self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.manipulator.first);
                 self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
                     self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w,
-                    self.parent.coordinatesAnswers.h,
-                    0);
+                    self.parent.coordinatesAnswers.h, false);
                 break;
             case 'question':
                 self.parent.quizz.tabQuestions.pop();
@@ -1197,76 +1207,76 @@ function headerDisplay (message) {
 
 }
 
-function puzzleDisplay(x, y, w, h, startPosition) {
-    let removeChevrons = () =>{
-        if (this.leftChevronManipulator.last.children.length > 1) this.leftChevronManipulator.flush();
-        if (this.rightChevronManipulator.last.children.length > 1) this.rightChevronManipulator.flush();
-    };
-
-    let handlerLeftChevron = ()=>{
-        removeChevrons();
-        if (this.rows === 1 && startPosition !== 0) {
-            this.display(x, y, w, h, startPosition - 1);
-        } else if (startPosition - this.rows + 1 <= 0) {
-            this.display(x, y, w, h, 0);
-        } else {
-            this.display(x, y, w, h, startPosition - this.rows + 1);
-        }
-    };
-
-    let handlerRightChevron = () =>{
-        removeChevrons();
-        if(this.rows === 1 && startPosition !== this.totalRows - 1) {
-            this.display(x, y, w, h, startPosition + 1);
-        } else if(2*this.rows + startPosition >= this.totalRows) {
-            let newStartPosition = this.totalRows - this.rows;
-            this.display(x, y, w, h, newStartPosition);
-        } else {
-            let newStartPosition = startPosition + this.rows - 1;
-            this.display(x, y, w, h, newStartPosition);
-        }
-    };
-
-    this.showLeftChevron = ()=>{
-        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator, "left");
-        if (startPosition === 0) {
-            leftChevron.color(myColors.grey);
-            if (leftChevron.onClick !== null) {
-                svg.removeEvent(leftChevron, 'click', leftChevron.onClick);
-            }
-        } else {
-            leftChevron.color(myColors.black);
-            svg.addEvent(leftChevron, "click", handlerLeftChevron);
-        }
-        this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
-    };
-
-    this.showRightChevron = ()=>{
-        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator, "right");
-        if (startPosition + this.rows >= this.totalRows) {
-            rightChevron.color(myColors.grey);
-            if (rightChevron.onClick !== null) {
-                svg.removeEvent(rightChevron, 'click', rightChevron.onClick);
-            }
-        } else {
-            rightChevron.color(myColors.black);
-            svg.addEvent(rightChevron, 'click', handlerRightChevron);
-        }
-        this.rightChevronManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
-    };
-
-    this.startPosition = startPosition;
-    this.puzzleManipulator.last.remove(this.questionWithBadAnswersManipulator.first);
-    this.questionWithBadAnswersManipulator = new Manipulator(this);
-    this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
-    if (this.rows < this.totalRows) {
-        this.showLeftChevron();
-        this.showRightChevron();
-        this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
-    } else {
-        this.initTiles(x, y, w, h, startPosition);
-    }
-}
+//function puzzleDisplay(x, y, w, h, startPosition) {
+//    let removeChevrons = () =>{
+//        if (this.leftChevronManipulator.last.children.length > 1) this.leftChevronManipulator.flush();
+//        if (this.rightChevronManipulator.last.children.length > 1) this.rightChevronManipulator.flush();
+//    };
+//
+//    let handlerLeftChevron = ()=>{
+//        removeChevrons();
+//        if (this.rows === 1 && startPosition !== 0) {
+//            this.display(x, y, w, h, startPosition - 1);
+//        } else if (startPosition - this.rows + 1 <= 0) {
+//            this.display(x, y, w, h, 0);
+//        } else {
+//            this.display(x, y, w, h, startPosition - this.rows + 1);
+//        }
+//    };
+//
+//    let handlerRightChevron = () =>{
+//        removeChevrons();
+//        if(this.rows === 1 && startPosition !== this.totalRows - 1) {
+//            this.display(x, y, w, h, startPosition + 1);
+//        } else if(2*this.rows + startPosition >= this.totalRows) {
+//            let newStartPosition = this.totalRows - this.rows;
+//            this.display(x, y, w, h, newStartPosition);
+//        } else {
+//            let newStartPosition = startPosition + this.rows - 1;
+//            this.display(x, y, w, h, newStartPosition);
+//        }
+//    };
+//
+//    this.showLeftChevron = ()=>{
+//        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator, "left");
+//        if (startPosition === 0) {
+//            leftChevron.color(myColors.grey);
+//            if (leftChevron.onClick !== null) {
+//                svg.removeEvent(leftChevron, 'click', leftChevron.onClick);
+//            }
+//        } else {
+//            leftChevron.color(myColors.black);
+//            svg.addEvent(leftChevron, "click", handlerLeftChevron);
+//        }
+//        this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
+//    };
+//
+//    this.showRightChevron = ()=>{
+//        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator, "right");
+//        if (startPosition + this.rows >= this.totalRows) {
+//            rightChevron.color(myColors.grey);
+//            if (rightChevron.onClick !== null) {
+//                svg.removeEvent(rightChevron, 'click', rightChevron.onClick);
+//            }
+//        } else {
+//            rightChevron.color(myColors.black);
+//            svg.addEvent(rightChevron, 'click', handlerRightChevron);
+//        }
+//        this.rightChevronManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
+//    };
+//
+//    this.startPosition = startPosition;
+//    this.puzzleManipulator.last.remove(this.questionWithBadAnswersManipulator.first);
+//    this.questionWithBadAnswersManipulator = new Manipulator(this);
+//    this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
+//    if (this.rows < this.totalRows) {
+//        this.showLeftChevron();
+//        this.showRightChevron();
+//        this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
+//    } else {
+//        this.initTiles(x, y, w, h, startPosition);
+//    }
+//}
 
 function puzzleInitTiles(x, y, w, h, startPosition) {
     var self = this;
@@ -1315,8 +1325,8 @@ function puzzleInitTiles(x, y, w, h, startPosition) {
                         if (self.completeBanner[i][j] instanceof AddEmptyElement) {
                             self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
                         } else {
-                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].questionManipulator.first);
-                            self.completeBanner[i][j].questionManipulator.ordonator.unset(3);
+                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
+                            self.completeBanner[i][j].manipulator.ordonator.unset(3);
                         }
                         self.completeBanner[i][j].display(0, 0, self.tileWidth, self.tileHeight);
                         if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
@@ -1332,7 +1342,7 @@ function puzzleInitTiles(x, y, w, h, startPosition) {
                         if (self.completeBanner[i][j] instanceof AddEmptyElement) {
                             self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
                         } else {
-                            self.completeBanner[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
+                            self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
                         }
 
                         posY += self.tileHeight + MARGIN;
@@ -1350,37 +1360,45 @@ function puzzleInitTiles(x, y, w, h, startPosition) {
 
 function questionDisplay(x, y, w, h) {
     var self = this;
-    self.x = x || self.x || 0;
-    self.y = y || self.y || 0;
-    w && (self.width = w);
-    h && (self.height = h);
+    if(typeof x !== 'undefined'){
+        self.x = x;
+    }
+    if(typeof y !== 'undefined' ){
+        self.y = y;
+    }
+    if(typeof w !== 'undefined' ) {
+        w && (self.width = w);
+    }
+    if(typeof h !== 'undefined' ) {
+        h && (self.height = h);
+    }
 
     // Question avec Texte ET image
     if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
-        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.questionManipulator, self.raphImage);
+        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.raphImage);
         self.bordure = obj.cadre;
         self.content = obj.content;
         self.raphImage = obj.image;
     }
     // Question avec Texte uniquement
     else if (typeof self.label !== "undefined" && !self.imageSrc) {
-        var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.questionManipulator);
+        var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.manipulator);
         self.bordure = object.cadre;
         self.content = object.content;
     }
     // Question avec Image uniquement
     else if (self.imageSrc && !self.label) {
-        self.raphImage = displayImage(self.imageSrc, {width:self.image.width,height:self.image.height}, self.w, self.height).image;
-        self.questionManipulator.ordonator.set(2, self.raphImage);
+        self.raphImage = displayImage(self.imageSrc, {width:self.image.width,height:self.image.height}, self.width, self.height).image;
+        self.manipulator.ordonator.set(2, self.raphImage);
     }
     else {
         self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
-        self.questionManipulator.ordonator.set(0, self.bordure);
+        self.manipulator.ordonator.set(0, self.bordure);
     }
-    var fontSize = Math.min(20, h*0.1);
-    self.questNum = new svg.Text(self.questionNum).position(-w/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -h/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
-    self.questionManipulator.ordonator.set(4, self.questNum);
-    self.questionManipulator.translator.move(self.x,self.y);
+    var fontSize = Math.min(20, self.height*0.1);
+    self.questNum = new svg.Text(self.questionNum).position(-self.width/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
+    self.manipulator.ordonator.set(4, self.questNum);
+    self.manipulator.translator.move(self.x,self.y);
     self.selected && self.selectedQuestion();
 }
 
@@ -1455,7 +1473,7 @@ function questionDisplayAnswers(x, y, w, h) {
                 self.tileHeight = tmpTileHeight;
             }
         }
-        self.questionManipulator.ordonator.set(3, self.answersManipulator.first);
+        self.manipulator.ordonator.set(3, self.answersManipulator.first);
 
         self.answersManipulator.translator.move(0, self.height/2 + (self.tileHeight)/2);
 
@@ -1614,7 +1632,7 @@ function questionSelectedQuestion() {
         this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, this.redCrossManipulator);
         svg.addEvent(this.redCross, "click", redCrossClickHandler);
         this.redCrossManipulator.last.add(this.redCross);
-        this.questionManipulator.last.add(this.redCrossManipulator.first);
+        this.manipulator.last.add(this.redCrossManipulator.first);
     }
     else{
         this.redCrossManipulator.translator.move(-this.questNum.x, this.questNum.y - this.redCross.size/2);
@@ -1703,7 +1721,9 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     // bloc Question
     self.questionCreatorManipulator.flush();
     self.questionBlock = {rect: new svg.Rect(w, h).color([], 3, myColors.black).position(w / 2, y + h / 2)};
+    self.questionBlock.rect.fillOpacity(0.001);
     self.questionCreatorManipulator.last.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.last.add(self.questionBlock.rect);
+    //self.questionCreatorManipulator.ordonator.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.ordonator.set(5, self.questionBlock.rect);
     self.questionCreatorManipulator.last.children.indexOf(self.questionManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
         var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
@@ -1712,7 +1732,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
             let redCrossClickHandler = ()=>{
-                self.redCrossManipulator.flush();
+                self.questionBlock.redCrossManipulator.flush();
                 self.questionManipulator.ordonator.unset(2);//image
                 self.linkedQuestion.image = null;
                 self.linkedQuestion.imageSrc = null;
@@ -1724,9 +1744,9 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                     self.redCrossManipulator.flush();
                 },2000);
             };
-            let mouseoverHandler=()=>{
+            let mouseoverHandler =()=>{
                 if(typeof self.redCrossManipulator === 'undefined'){
-                    self.redCrossManipulator=new Manipulator(self);
+                    self.redCrossManipulator = new Manipulator(self);
                     self.redCrossManipulator.addOrdonator(2);
                     self.questionManipulator && self.questionManipulator.last.add(self.redCrossManipulator.first);
                 }
@@ -1744,7 +1764,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
             self.questionBlock.title.image._acceptDrop = true;
         } else {
-            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
+            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.manipulator);
         }
         var fontSize = Math.min(20, self.h*0.1);
         self.questNum = new svg.Text(self.linkedQuestion.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.linkedQuestion.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
@@ -1757,7 +1777,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
 
-        self.questionManipulator.first.move(w/2, y + self.toggleButtonHeight + 2 * MARGIN + self.questionBlock.title.cadre.height/2);
+        self.manipulator.first.move(w/2, y + self.toggleButtonHeight + 2 * MARGIN + self.questionBlock.title.cadre.height/2);
     };
 
     var dblclickEditionQuestionBlock = function () {
@@ -1775,7 +1795,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             .font("Arial", 20);
         drawings.screen.add(textarea);
         textarea.focus();
-        self.questionManipulator.ordonator.unset(1);
+        self.manipulator.ordonator.unset(1);
 
         var onblur = function () {
             textarea.enter();
@@ -1838,10 +1858,10 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
         self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
-    self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.puzzleManipulator.first);
-    self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, self.coordinatesAnswers, true, self);
-    self.questionCreatorManipulator.last.children.indexOf(self.puzzle.puzzleManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);
-    self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
+    self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.manipulator.first);
+    self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, "leftToRight", self);
+    self.questionCreatorManipulator.last.children.indexOf(self.puzzle.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
+    self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
 }
 
 function quizzDisplay(x, y, w, h) {
@@ -1947,7 +1967,7 @@ function quizzDisplay(x, y, w, h) {
 function quizzDisplayResult (color){
     var self = this;
     self.displayScore(color);
-    self.puzzle.display(0, self.questionHeight/2, drawing.width, self.answerHeight, self.puzzle.startPosition);
+    self.puzzle.display(0, self.questionHeight/2, drawing.width, self.answerHeight);
 }
 
 function gameDisplayMiniature(size, special){
@@ -2001,7 +2021,7 @@ function quizzDisplayScore(color){
     self.scoreManipulator.addOrdonator(2);
     self.resultManipulator.translator.move(0, self.questionHeight/2 + self.headerHeight/2 + MARGIN);
     self.resultManipulator.last.add(self.scoreManipulator.first);
-    self.resultManipulator.last.add(self.puzzle.puzzleManipulator.first);
+    self.resultManipulator.last.add(self.puzzle.manipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
 
     displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
@@ -2254,7 +2274,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     y && (self.qPuzzleY=y);
     w && (self.qPuzzleW=w);
     h && (self.qPuzzleH=h);
-    self.questionPuzzle.puzzleManipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.puzzleManipulator.first);
+    self.questionPuzzle.manipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.puzzleManipulator.first);
     var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
     border.color([], 2, myColors.black);
     self.questionsPuzzleManipulator.ordonator.set(0, border);
@@ -2270,9 +2290,9 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         self.quizz.tabQuestions[i].contentEventHandler = self.questionClickHandler;
         self.quizz.tabQuestions[i].imageEventHandler = self.questionClickHandler;
     }
-    self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
-    self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.puzzleManipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
-    self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
+    self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self);
+    self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.manipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.manipulator.first);
+    self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, true);
 }
 
 function inscriptionManagerDisplay(labels={}) {
@@ -2694,8 +2714,6 @@ var AdminGUI = function (){
     Quizz.prototype.displayMiniature = gameDisplayMiniature;
     Bd.prototype.displayMiniature = gameDisplayMiniature;
     Quizz.prototype.displayScore = quizzDisplayScore;
-    Puzzle.prototype.display = puzzleDisplay;
-    Puzzle.prototype.initTiles = puzzleInitTiles;
     QuizzManager.prototype.display = quizzManagerDisplay;
     QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
     QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
@@ -2718,8 +2736,6 @@ var LearningGUI = function (){
     Question.prototype.displayAnswers = questionDisplayAnswers;
     Question.prototype.elementClicked = questionElementClicked;
     Question.prototype.selectedQuestion = questionSelectedQuestion;
-    Puzzle.prototype.display = puzzleDisplay;
-    Puzzle.prototype.initTiles = puzzleInitTiles;
     Quizz.prototype.display = quizzDisplay;
     Quizz.prototype.displayResult = quizzDisplayResult;
     Quizz.prototype.displayMiniature = gameDisplayMiniature;
