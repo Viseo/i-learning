@@ -1349,8 +1349,8 @@ function puzzleInitTiles(x, y, w, h, startPosition) {
 
 function questionDisplay(x, y, w, h) {
     var self = this;
-    self.x = x || 0;
-    self.y = y || 0;
+    self.x = x || self.x || 0;
+    self.y = y || self.y || 0;
     w && (self.width = w);
     h && (self.height = h);
 
@@ -1849,8 +1849,8 @@ function quizzDisplay(x, y, w, h) {
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
-        self.x = x || 0;
-        self.y = y || 0;
+        self.x = x || self.x || 0;
+        self.y = y || self.y || 0;
         w && (self.questionArea.w = w);
         (w && x) && (self.resultArea.w = w );
         x && (self.resultArea.x = x);
@@ -1863,8 +1863,8 @@ function quizzDisplay(x, y, w, h) {
         self.answerPercentage = 0.7;
     }
     function setPreviewSizes() {
-        x && (self.x = x+w*0.15);
-        y && (self.y = y);
+        self.x = x+w*0.15 || self.x || 0;
+        self.y = y || self.y || 0;
         w && (self.questionArea.w = w*0.7);
         (w && x) && (self.resultArea.w = w*0.85);
         x && (self.resultArea.x = x+w*0.15);
@@ -1894,7 +1894,7 @@ function quizzDisplay(x, y, w, h) {
         drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
     }
 
-    self.returnButton.display(MARGIN-w*0.35, self.headerHeight/2, 20, 20);
+    self.returnButton.display(MARGIN-w*0.5+self.x, self.headerHeight/2, 20, 20);
     self.returnButton.setHandler(self.previewMode ? (event) => {
         var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
