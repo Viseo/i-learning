@@ -1889,19 +1889,14 @@ function quizzDisplay(x, y, w, h) {
 
     self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
 
-    if(this.previewMode) {
-        drawChevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
-        drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
-    }
-
     self.returnButton.display(MARGIN-w*0.5+self.x, self.headerHeight/2, 20, 20);
     self.returnButton.setHandler(self.previewMode ? (event) => {
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.parentFormation);
+        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, 0);
         target.parentObj.parent.parentFormation.quizzManager.display();
     } : (event) => {
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
         target.parentObj.parent.parentFormation.quizzManager.display();
     });
@@ -1910,6 +1905,42 @@ function quizzDisplay(x, y, w, h) {
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
+    }
+
+    if(this.previewMode) {
+        this.leftChevron = drawChevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
+        this.rightChevron = drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+        this.leftChevron.parentObj = this;
+        this.rightChevron.parentObj = this;
+
+        let updateColorChevrons = (quiz) => {
+            quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length-1 ? myColors.grey : myColors.black);
+            quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
+        };
+
+        let leftChevronHandler = (event) => {
+            let target = drawings.background.getTarget(event.clientX,event.clientY);
+            if(target.parentObj.currentQuestionIndex > 0) {
+                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].questionManipulator.first);
+                target.parentObj.currentQuestionIndex--;
+                updateColorChevrons(target.parentObj);
+                target.parentObj.displayCurrentQuestion();
+            }
+        };
+        let rightChevronHandler = (event) => {
+            let target = drawings.background.getTarget(event.clientX,event.clientY);
+            if(target.parentObj.currentQuestionIndex < target.parentObj.tabQuestions.length-1) {
+                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].questionManipulator.first);
+                target.parentObj.currentQuestionIndex++;
+                updateColorChevrons(target.parentObj);
+                target.parentObj.displayCurrentQuestion();
+            }
+        };
+
+        updateColorChevrons(this);
+
+        svg.addEvent(this.leftChevron, "click", leftChevronHandler);
+        svg.addEvent(this.rightChevron, "click", rightChevronHandler);
     }
 }
 

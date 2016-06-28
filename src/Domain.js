@@ -1088,10 +1088,10 @@ function Domain() {
 
         // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
-            if (self.currentQuestionIndex !== -1 && !self.previewMode) {
+            if (self.currentQuestionIndex !== -1) {
                 self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
             }
-            var functionDisplayInAllCases = function(){
+            self.displayCurrentQuestion = function(){
                 if (self.tabQuestions[self.currentQuestionIndex].imageSrc){
                     self.questionHeight = self.questionHeightWithImage;
                     self.answerHeight = self.answerHeightWithImage;
@@ -1110,7 +1110,7 @@ function Domain() {
             };
             var callback = function () {
                 if (++self.currentQuestionIndex < self.tabQuestions.length) {
-                    functionDisplayInAllCases();
+                    self.displayCurrentQuestion();
                 } else {
                     console.log("Final score: " + self.score);
                     self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
@@ -1122,7 +1122,7 @@ function Domain() {
                     self.currentQuestionIndex++;
                 }
                 console.log(self.currentQuestionIndex);
-                functionDisplayInAllCases();
+                self.displayCurrentQuestion();
             } else {
                 Server.sendProgressToServer(self);
                 callback();
@@ -1168,8 +1168,8 @@ function Domain() {
             self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[self.indexOfEditedQuestion]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
-            self.quizz.tabQuestions.forEach(function(question){
-                !(question instanceof AddEmptyElement) && !(question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) && question.tabAnswer.push(new AddEmptyElement(self.questionCreator, 'answer'));
+            self.quizz.tabQuestions.forEach((question) => {
+                (question instanceof AddEmptyElement) || (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(self.questionCreator, 'answer'));
             })
         };
         if (!quizz) {
