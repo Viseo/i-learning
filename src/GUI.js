@@ -390,9 +390,7 @@ function LibraryDisplay(x, y, w, h) {
         self.arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
 
         let isChildOf = function (parentGame,childGame){
-            parentGame.parentFormation.link.some(function(links){
-                links.parentGame === parentGame.id && links.childGame === childGame.id;
-            })
+            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
         };
         let createLink = function (parentGame, childGame) {
             if (isChildOf(parentGame,childGame)) return;
