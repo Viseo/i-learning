@@ -1349,8 +1349,8 @@ function puzzleInitTiles(x, y, w, h, startPosition) {
 
 function questionDisplay(x, y, w, h) {
     var self = this;
-    self.x = x ? x : 0;
-    self.y = y ? y : 0;
+    self.x = x || 0;
+    self.y = y || 0;
     w && (self.width = w);
     h && (self.height = h);
 
@@ -1849,8 +1849,8 @@ function quizzDisplay(x, y, w, h) {
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
-        self.x = x ? x : 0;
-        self.y = y ? y : 0;
+        self.x = x || 0;
+        self.y = y || 0;
         w && (self.questionArea.w = w);
         (w && x) && (self.resultArea.w = w );
         x && (self.resultArea.x = x);
