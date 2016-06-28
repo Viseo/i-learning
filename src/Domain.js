@@ -337,10 +337,7 @@ function Domain() {
             quizz: 0,
             bd: 0
         };
-        self.link = {
-            parentGame : "parent",
-            childGame : "child"
-        };
+        self.link = [];
         self._id = (formation._id || null);
         self.formationsManager = formationsManager;
         self.manipulatorMiniature = new Manipulator();
@@ -384,7 +381,6 @@ function Domain() {
         self.targetLevelIndex = 0;
         self.levelsTab = [];
         self.gamesTab = [];
-        self.link = [];
         self.saveButtonHeightRatio = 0.07;
         self.marginRatio = 0.03;
         self.label = formation.label ? formation.label : "";
@@ -411,15 +407,17 @@ function Domain() {
             switch (objectToBeAddedLabel) {
                 case ("Quiz"):
                     var newQuizz = new Quizz(defaultQuizz, false, this);
-                    this.gamesCounter.quizz++;
                     newQuizz.tabQuestions[0].parentQuizz = newQuizz;
                     newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
+                    newQuizz.id = "quizz" + this.gamesCounter.quizz;
+                    this.gamesCounter.quizz++;
                     this.levelsTab[level].gamesTab.push(newQuizz);
                     break;
                 case ("Bd"):
                     var newBd = new Bd({}, this);
-                    this.gamesCounter.bd++;
                     newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
+                    newBd.id = "bd" + this.gamesCounter.bd;
+                    this.gamesCounter.bd++;
                     this.levelsTab[level].gamesTab.push(newBd);
                     break;
             }
@@ -518,30 +516,14 @@ function Domain() {
                         level.gamesTab.forEach(function (game) {
                                 game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
                             if (game.tabQuestions) {
-                                game.id = "quizz"  + gamesCounter.quizz;
+                                game.id || (game.id = "quizz"  + gamesCounter.quizz);
                                 gamesCounter.quizz ++;
                             }
                             else {
-                                game.id = "bd" + gamesCounter.bd;
+                                game.id || (game.id = "bd" + gamesCounter.bd);
                                 gamesCounter.bd ++;
                             }
                             levelsTab[i].gamesTab.push(game) ;
-                        });
-                    });
-
-                    self.levelsTab.forEach(function(level) {
-                        level.gamesTab.forEach(function (game) {
-                            game.childrenGames.forEach(function (child) {
-                                let parentGame = self.levelsTab[game.levelIndex].gamesTab[game.gameIndex].id;
-                                let childGame = self.levelsTab[child.levelIndex].gamesTab[child.gameIndex].id;
-                                var toBeAdd = true;
-                               self.link.forEach(function(links) {
-                                    if(links[0].parentGame === parentGame && links[0].childGame === childGame){
-                                        toBeAdd = false;
-                                    }
-                                   });
-                                toBeAdd && self.link.push([{parentGame: parentGame, childGame: childGame}]);
-                            });
                         });
                     });
                     return {label: self.label, gamesCounter: self.gamesCounter, link: self.link, levelsTab: levelsTab}
@@ -555,30 +537,18 @@ function Domain() {
 
         self.loadFormation = function(formation) {
             self.gamesCounter = formation.gamesCounter;
+            formation.link ? self.link = formation.link : self.link = [];
             formation.levelsTab.forEach(function (level) {
                 var gamesTab = [];
                 level.gamesTab.forEach(function (game) {
                     game.tabQuestions && gamesTab.push(new Quizz(game, true, self));
                     game.tabQuestions || gamesTab.push(new Bd(game, self));
+                    gamesTab[gamesTab.length-1].id = game.id;
                 });
                 self.levelsTab.push(new Level(self, gamesTab));
             });
-
-            self.loadDependencies = function () {
-                formation.levelsTab && formation.levelsTab.forEach(function (level, i) {
-                    level.gamesTab.forEach(function (game, j) {
-                        game.childrenGames.forEach(function (childrenGame) {
-                            var match = self.levelsTab && self.levelsTab[childrenGame.levelIndex].gamesTab && self.levelsTab[childrenGame.levelIndex].gamesTab[childrenGame.gameIndex];
-                            !match.parentGames && (match.parentGames = []);
-                            !self.levelsTab[i].gamesTab[j].childrenGames && (self.levelsTab[i].gamesTab[j].childrenGames = []);
-                            self.levelsTab[i].gamesTab[j].childrenGames.push(match);
-                            match.parentGames.push(self.levelsTab[i].gamesTab[j]);
-                        });
-                    })
-                })
-            };
-            self.loadDependencies();
         };
+
     self.findLongestLevel = function() {
         var longestLevelCandidates = [];
         longestLevelCandidates.index = 0;
@@ -595,7 +565,6 @@ function Domain() {
         });
         return longestLevelCandidates;
     };
-
 
         self.redim = function() {
             self.gamesLibraryManipulator = self.library.libraryManipulator;
@@ -669,13 +638,9 @@ function Domain() {
             var spaceOccupied = (nbOfGames) * (self.minimalMarginBetweenGraphElements) + self.graphElementSize * nbOfGames;
 
             level.gamesTab.forEach(function (game) {
-                !game.parentGames && (game.parentGames = []);
-                !game.childrenGames && (game.childrenGames = []);
-
                 var pos = game.getPositionInFormation();
                 game.miniaturePosition.x = self.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
                 game.miniaturePosition.y = -self.panel.height / 2 + (level.index - 1 / 2) * self.levelHeight;
-                //game.miniaturePosition.y =-self.panel.height / 2;
             });
         }
     };
@@ -1190,8 +1155,7 @@ function Domain() {
         self.loadQuizz = function (quizz, parentFormation) {
             self.indexOfEditedQuestion = 0;
             self.quizz = new Quizz(quizz, true, parentFormation);
-            self.quizz.childrenGames = quizz.childrenGames;
-            self.quizz.parentGames=quizz.parentGames;
+            self.id = self.quizz.id;
             self.quizzName = self.quizz.title;
             self.quizz.tabQuestions[0].selected = true;
             self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
@@ -1225,7 +1189,6 @@ function Domain() {
                 return{
                     title: self.quizzName,
                     tabQuestions: self.quizz.tabQuestions,
-                    childrenGames: self.quizz.childrenGames,
                     levelIndex: self.quizz.levelIndex,
                     gameIndex: self.quizz.gameIndex
                 };
@@ -1236,10 +1199,6 @@ function Domain() {
                 let quizz = self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex];
                 (self.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first)!==-1) && self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
-                quizz.parentGames.forEach(function(parent){
-                    let index = parent.childrenGames.indexOf(quizz);
-                    parent.childrenGames.splice(index,1,self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]);
-                });
                 console.log("Votre travail a été bien enregistré");
             };
 
