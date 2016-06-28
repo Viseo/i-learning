@@ -363,7 +363,9 @@ function Domain() {
         self.library.formation = self;
         self.quizzManager = new QuizzManager();
         self.quizzManager.parentFormation = self;
-
+        self.returnButtonManipulator = new Manipulator(self);
+        self.returnButtonManipulator.addOrdonator(1);
+        self.returnButton = new ReturnButton(self);
         self.labelDefault = "Entrer le nom de la formation";
         self.needUpdate = true;
         // WIDTH
@@ -425,7 +427,6 @@ function Domain() {
         };
 
         self.saveFormation = function (displayQuizzManager) {
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             var validation = self.label !== "" && self.label !== self.labelDefault && (typeof self.label !== 'undefined');
             var messageSave = "Votre travail a bien été enregistré.";
             var messageError = "Vous devez remplir le nom de la formation.";
@@ -449,7 +450,7 @@ function Domain() {
                     displayQuizzManager();
                 }
                 else {
-                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                    (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
                     self.errorMessageSave = new svg.Text(message)
                         .position(0, -self.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
@@ -698,21 +699,14 @@ function Domain() {
      * Created by qde3485 on 14/04/16.
      */
 
-    Header = function (additionalMessage) {
+    Header = function () {
         var self = this;
-        additionalMessage && (self.addMessage = additionalMessage);
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(3);
         self.userManipulator = new Manipulator(self);
         self.userManipulator.addOrdonator(6);
         self.label = "I-learning";
-        self.size = 0.05; // 5%
-        self.setMessage = function (additionalMessage) {
-            self.addMessage = additionalMessage;
-        };
-        self.removeMessage = function () {
-            self.addMessage = null;
-        };
+        self.size = HEADER_SIZE;
     };
 ////////////////// end of Header.js //////////////////////////
 
@@ -1008,9 +1002,24 @@ function Domain() {
         var self = this;
 
         self.miniatureManipulator = new Manipulator(self);
-        self.parentFormation = parentFormation;
+        self.parentFormation = parentFormation || quizz.parentFormation;
         self.quizzManipulator = new Manipulator(self);
         self.quizzManipulator.addOrdonator(2);
+        self.returnButtonManipulator = new Manipulator(self);
+        self.returnButton = new ReturnButton(self);
+        self.quizzManipulator.last.add(self.returnButtonManipulator.first);
+
+        if(previewMode) {
+            this.chevronManipulator = new Manipulator(self);
+            this.leftChevronManipulator = new Manipulator(self);
+            this.rightChevronManipulator = new Manipulator(self);
+            this.leftChevronManipulator.addOrdonator(1);
+            this.rightChevronManipulator.addOrdonator(1);
+            this.quizzManipulator.last.add(this.chevronManipulator.first);
+            this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+            this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+        }
+
         self.loadQuestions = function (quizz) {
             if (quizz && typeof quizz.tabQuestions !== 'undefined') {
                 self.tabQuestions = [];
@@ -1094,10 +1103,10 @@ function Domain() {
                 }
                 self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
                 self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
-                self.tabQuestions[self.currentQuestionIndex].display(0, self.headerHeight / 2 + self.questionHeight / 2 + MARGIN,
+                self.tabQuestions[self.currentQuestionIndex].display(self.x, self.headerHeight + self.questionHeight/ 2 + MARGIN,
                     self.questionArea.w, self.questionHeight);
                 !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(0, self.headerHeight + MARGIN + self.questionHeight,
+                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.x, self.headerHeight + MARGIN + self.questionHeight,
                     self.questionArea.w, self.answerHeight);
             };
             var callback = function () {
@@ -1111,9 +1120,10 @@ function Domain() {
             };
             if (self.previewMode) {
                 if (self.currentQuestionIndex === -1) {
-                    self.currentQuestionIndex = 0;//numéro de la question affichée
-                    functionDisplayInAllCases();
+                    self.currentQuestionIndex++;
                 }
+                console.log(self.currentQuestionIndex);
+                functionDisplayInAllCases();
             } else {
                 Server.sendProgressToServer(self);
                 callback();
@@ -1152,14 +1162,16 @@ function Domain() {
         self.tabQuestions = [defaultQuestion];
         self.questionPuzzle = {};
         self.quizzNameValidInput = true;
-        self.loadQuizz = function (quizz, parentFormation) {
-            self.indexOfEditedQuestion = 0;
-            self.quizz = new Quizz(quizz, true, parentFormation);
-            self.id = self.quizz.id;
+        self.loadQuizz = function (quizz, indexOfEditedQuestion) {
+            self.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;
+            self.quizz = new Quizz(quizz, true);
             self.quizzName = self.quizz.title;
-            self.quizz.tabQuestions[0].selected = true;
-            self.questionCreator.loadQuestion(self.quizz.tabQuestions[0]);
+            self.quizz.tabQuestions[self.indexOfEditedQuestion].selected = true;
+            self.questionCreator.loadQuestion(self.quizz.tabQuestions[self.indexOfEditedQuestion]);
             self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
+            self.quizz.tabQuestions.forEach(function(question){
+                !(question instanceof AddEmptyElement) && !(question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) && question.tabAnswer.push(new AddEmptyElement(self.questionCreator, 'answer'));
+            })
         };
         if (!quizz) {
             var initialQuizzObject = {
@@ -1177,9 +1189,7 @@ function Domain() {
         }
 
         self.saveQuizz = function () {
-
             var getObjectToSave = function () {
-                console.log(self.tabQuestions);
                 self.tabQuestions=self.quizz.tabQuestions;
                 (self.tabQuestions[self.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && self.tabQuestions.pop();
                 self.tabQuestions.forEach(function(question){
@@ -1199,10 +1209,11 @@ function Domain() {
                 let quizz = self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex];
                 (self.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first)!==-1) && self.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex]=self.quizz;
+                self.loadQuizz(self.parentFormation.levelsTab[self.quizz.levelIndex].gamesTab[self.quizz.gameIndex], self.quizz.tabQuestions.indexOf(self.questionCreator.linkedQuestion));
+                self.display();
                 console.log("Votre travail a été bien enregistré");
             };
 
-            let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
             Server.replaceQuizz(getObjectToSave(), self.parentFormation._id, self.quizz.levelIndex, self.quizz.gameIndex, callback, ignoredData)
         };
 
@@ -1251,16 +1262,7 @@ function Domain() {
 ////////////////// end of QuizzManager.js //////////////////////////
 }
 
-User = function () {
-    let self = this;
-    self.firstName;
-    self.lastName;
-    self.mailAddress;
-    self.password;
-};
 ////////////////// InscriptionManager.js //////////////////////////
-
-
 InscriptionManager = function () {
 
     let self = this;
@@ -1304,11 +1306,9 @@ InscriptionManager = function () {
     self.tabForm =[];
     self.formLabels = {};
 };
-
 ////////////////// end of InscriptionManager.js //////////////////////////
 
 ////////////////// ConnectionManager.js //////////////////////////
-
 ConnectionManager = function () {
 
     let self = this;

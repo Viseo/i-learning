@@ -543,20 +543,32 @@ function SVGUtil() {
      * @param h
      * @param manipulator
      */
-    drawChevron = function (x, y, w, h, manipulator) {
-        var baseWidth = 160;
-        var baseHeight = 300;
-        var chevronManipulator = manipulator;
-        var chevron = new svg.Path(x, y).line(x - 100, y + 100)
-            .cubic(x - 140, y + 140, x - 85, y + 185, x - 50, y + 150)
-            .line(x + 60, y + 40)
-            .cubic(x + 95, y + 5, x + 95, y - 5, x + 60, y - 40)
-            .line(x - 50, y - 150)
-            .cubic(x - 85, y - 190, x - 145, y - 140, x - 100, y - 100)
-            .line(x, y);
+    drawChevron = function (x, y, w, h, manipulator, side = "right") {
+        let baseWidth = 160;
+        let baseHeight = 300;
+        let chevronManipulator = manipulator;
+        if(side === "right") {
+            var chevron = new svg.Path(0, 0).line(-100, 100)
+                .cubic(-140, 140, -85, 185, - 50, 150)
+                .line(60, 40)
+                .cubic(95, 5, 95, -5, 60, -40)
+                .line(-50, -150)
+                .cubic(-85, -190, -145, -140, -100, -100)
+                .line(0, 0);
+        }
+        else if(side === "left"){
+             chevron = new svg.Path(0, 0).line(100, -100)
+                .cubic(140, -140, 85, -185, 50, -150)
+                .line(-60, -40)
+                .cubic(-95, -5, -95, 5, -60, 40)
+                .line(50, 150)
+                .cubic(85, 190, 145, 140, 100, 100)
+                .line(0, 0);
+        }
         chevron.tempWidth = baseWidth;
         chevron.tempHeight = baseHeight;
-        chevronManipulator.ordonator.set(0,chevron);
+        chevronManipulator.translator.move(x, y);
+        chevronManipulator.ordonator.set(0, chevron);
         if (chevron.tempWidth > w) {
             chevron.tempHeight *= w / chevron.tempWidth;
             chevron.tempWidth = w;
@@ -653,7 +665,7 @@ function SVGUtil() {
         return self;
     };
 
-    Miniature = function(game, size) {
+    Miniature = function(game, size, special) {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
@@ -715,9 +727,41 @@ function SVGUtil() {
             self.selected = !self.selected;
         }
 
-        svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
-        svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
+        !playerMode && svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
+        !playerMode && svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
         self.icon.cadre.color(myColors.white, 1, myColors.black);
+
+        if (playerMode){
+            var iconsize = 20;
+            self.infosManipulator = new Manipulator(self);
+            self.infosManipulator.addOrdonator(4);
+            switch (special){
+                case "notAvailable":
+                    self.icon.cadre.color(myColors.grey, 1, myColors.black);
+                    break;
+                case "done":
+                    var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
+                    iconInfos.color(myColors.none, 5, myColors.green);
+                    var rect = new svg.Rect(iconsize, iconsize);
+                    rect.color(myColors.white, 1, myColors.green);
+                    rect.position(size/2, -size/2);
+                    self.infosManipulator.ordonator.set(0, rect);
+                    self.infosManipulator.ordonator.set(1, iconInfos);
+                    game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    break;
+                case "inProgress":
+                    var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
+                    var iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
+                    var iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
+                    var iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
+                    self.infosManipulator.ordonator.set(0, iconInfos);
+                    self.infosManipulator.ordonator.set(1, iconInfosdot1);
+                    self.infosManipulator.ordonator.set(2, iconInfosdot2);
+                    self.infosManipulator.ordonator.set(3, iconInfosdot3);
+                    game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    break;
+            }
+        }
         return self;
     };
 
@@ -745,15 +789,14 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text("Retour");
-        this.returnButton = drawChevron(x, y, w, h, this.chevronManipulator);
-        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
-        let textSize = svg.runtime.boundingRect(this.returnText.component);
-        let padding = 5;
+        this.returnButton = drawChevron(0, 0, w, h, this.chevronManipulator, "left");
         this.returnButton.color(myColors.black, 0, []);
-        this.returnText.position(returnButtonSize.width, padding).font("Arial", 20).anchor("start");
-        this.manipulator.translator.move(0, -padding);
-        this.chevronManipulator.rotator.rotate(180);
+        this.returnText.font("Arial", 20).anchor("start").position(0, 0);
+        let textSize = svg.runtime.boundingRect(this.returnText.component);
+        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
         this.manipulator.ordonator.set(0, this.returnText);
+        this.returnText.position(w+returnButtonSize.width, textSize.height/2+returnButtonSize.height/4);
+        this.manipulator.translator.move(x+w, y);
 
         this.returnText.parentObj = this;
         this.returnButton.parentObj = this;
@@ -792,10 +835,15 @@ class Server {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
             game: quiz.title,
+            gameId: quiz.id,
             formation: quiz.parentFormation ? quiz.parentFormation.label : ""
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
+    }
+
+    static getProgress(formation, game, callback) {
+        dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
     }
 
     static replaceFormation(id, newFormation, callback, ignoredData) {
@@ -830,8 +878,10 @@ function Bdd() {
         "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
-        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames",
+        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
         "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion"];
+
+    ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
     myColors = {
         darkBlue: [25, 25, 112],

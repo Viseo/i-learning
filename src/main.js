@@ -30,34 +30,30 @@ function setGlobalVariable() {
 
 
 function play(targetQuizz) {
-    //!util && setGlobalVariable();
-    var quizzCopy=JSON.parse(JSON.stringify(targetQuizz));
-    var quizz = new Quizz(quizzCopy);
-    
-    quizz.puzzleLines=1;
-    quizz.puzzleRows=3;
+    !drawing && setGlobalVariable();
+    let quizz = new Quizz(targetQuizz);
+    quizz.puzzleLines = 1;
+    quizz.puzzleRows = 3;
     quizz.run(0,0, drawing.width, drawing.height);
-
     function resizePaper(){
-        drawing.dimension(svg.screenSize().width,svg.screenSize().height);//attr("preserveAspectRatio", "xMinYMin meet") ;
+        drawing.dimension(svg.screenSize().width,svg.screenSize().height);
         drawings.glass.dimension(drawing.width,drawing.height);
 
-        quizz.display(0,0,drawing.width,drawing.height);
+        quizz.display(0, 0, drawing.width, drawing.height);
 
         if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
             let qManip = quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator;
             for(let i = 0; i < qManip.ordonator.children.length; i++) {
                 qManip.ordonator.unset(i);
             }
-            quizz.tabQuestions[quizz.currentQuestionIndex].display(0, quizz.headerHeight/2 + quizz.questionHeight/2 + MARGIN,
+            quizz.tabQuestions[quizz.currentQuestionIndex].display(self.x, quizz.headerHeight + quizz.questionHeight/2 + MARGIN,
                 quizz.questionArea.w , quizz.questionHeight);
-            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(0, quizz.headerHeight + MARGIN + quizz.questionHeight,
+            quizz.tabQuestions[quizz.currentQuestionIndex].displayAnswers(self.x, quizz.headerHeight + MARGIN + quizz.questionHeight,
                 quizz.questionArea.w , quizz.answerHeight);
         } else {
             quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
             quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
             quizz.displayResult();
-            //quizz.puzzle.display(0, quizz.answerHeight/2+quizz.questionHeight/2, quizz.cadreResult.w,quizz.answerHeight, quizz.puzzle.startPosition);
         }
 
     }

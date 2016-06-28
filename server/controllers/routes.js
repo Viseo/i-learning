@@ -77,12 +77,18 @@ module.exports = function (app, fs) {
                 var result = docs.find(x => x.formation === req.body.formation && x.user === user);
                 var game = {
                     game: req.body.game,
+                    gameId: req.body.gameId,
                     tabWrongAnswers: req.body.tabWrongAnswers,
                     index: req.body.indexQuestion
                 };
                 if (result) {
-                    var games = result.tabGame.find(x => x.game === req.body.game);
-                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    var games = result.tabGame.find(x => x.gameId === req.body.gameId);
+                    if(games){
+                        game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    }
+                    else {
+                        result.tabGame.push(game);
+                    }
                     collection.updateOne({
                         formation: req.body.formation,
                         user: user
@@ -101,6 +107,47 @@ module.exports = function (app, fs) {
             });
         })
     });
+
+    app.get('/getProgress/:formation/:game', (req, res) => {
+        var collection = db.get().collection('usersFormations');
+        var obj = collection.find().toArray(function (err, docs) {
+            cookies.verify(req, (err, decode) => {
+                var user = '';
+                if (!err) {
+                    user = decode.user._id;
+                }
+                var available = true;
+                var special;
+                var collectionFormation = db.get().collection('formations');
+                var formation;
+                collectionFormation.find().toArray(function (err, docs) {
+                    result = docs.find(formation => formation.label===req.params.formation);
+                    formation = result;
+                    var gameForAvailability;
+                    formation.levelsTab.find(function(gamesTab){
+                        var resultGame = gamesTab.gamesTab.find(game=>game.id === req.params.game);
+                        resultGame && (gameForAvailability = resultGame);
+                    });
+                    //var gameForAvailability = forAvailability.tabGame.find(x => x.game === req.params.game);
+                    if (gameForAvailability && formation.link.every(function(linkElement){
+                            (linkElement[0].childGame === gameForAvailability.id)
+                            available = gameForAvailability.index && (linkElement[0].parentGame.tabQuestions.length=gameForAvailability.index);
+                            return !available;
+                        })){
+                        special = "notAvailable";
+                    }
+                    var result = docs.find(x => x.formation === req.params.formation && x.user === user);
+                    if (result) {
+                        var games = result.tabGame.find(x => x.game === req.params.game);
+                        games ? res.send({games, special}): res.send({special}) ;
+                    } else {
+                        res.send({special});
+                    }
+                });
+            });
+        })
+    });
+
 
     app.post('/insert', function(req, res) {
         var collection = db.get().collection('formations');
