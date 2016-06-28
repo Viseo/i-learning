@@ -1349,12 +1349,8 @@ function PuzzleInitTiles(x, y, w, h, startPosition) {
 
 function QuestionDisplay(x, y, w, h) {
     var self = this;
-    if(typeof x !== 'undefined'){
-        self.x = x;
-    }
-    if(typeof y !== 'undefined' ){
-        self.y=y;
-    }
+    self.x = x ? x : 0;
+    self.y = y ? y : 0;
     w && (self.width = w);
     h && (self.height = h);
 
