@@ -2699,6 +2699,7 @@ var LearningGUI = function (){
     Quizz.prototype.displayScore = QuizzDisplayScore;
     InscriptionManager.prototype.display = InscriptionManagerDisplay;
     ConnectionManager.prototype.display = ConnectionManagerDisplay;
+    Bd.prototype.displayMiniature = GameDisplayMiniature;
     header = new Header();
 };
 if (typeof exports !== "undefined") {
