@@ -1898,7 +1898,7 @@ function quizzDisplay(x, y, w, h) {
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.quizzManager.display();
+        target.parentObj.parent.parentFormation.displayFormation();
     });
 
     header.display();
