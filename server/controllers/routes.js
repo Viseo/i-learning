@@ -67,46 +67,75 @@ module.exports = function (app, fs) {
     });
 
     app.post('/sendProgress', (req, res) => {
-        var collection = db.get().collection('usersFormations');
-        var obj = collection.find().toArray(function (err, docs) {
+        var collection = db.get().collection('users');
+        var obj =collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;
                 }
-                var result = docs.find(x => x.formation === req.body.formation && x.user === user);
+                var result = docs.find(x=> x._id = new ObjectID(user));
                 var game = {
+                    formation: req.body.formation,
                     game: req.body.game,
-                    gameId: req.body.gameId,
                     tabWrongAnswers: req.body.tabWrongAnswers,
                     index: req.body.indexQuestion
                 };
-                if (result) {
-                    var games = result.tabGame.find(x => x.gameId === req.body.gameId);
-                    if(games){
-                        game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
-                    }
-                    else {
-                        result.tabGame.push(game);
-                    }
-                    collection.updateOne({
-                        formation: req.body.formation,
-                        user: user
-                    }, {$set: {tabGame: result.tabGame}});
-                    res.send({ack: 'ok'});
+                if (result.tabGame) {
+                    var games = result.tabGame.find(x => x.game === req.body.game);
+                    games && game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+                    collection.updateOne({"_id": new ObjectID(user)}, {$set: {tabGame: result.tabGame}}, function (err, docs) {
+                    });
                 } else {
-                    var obj = {
-                        user: user,
-                        formation: req.body.formation,
-                        tabGame: [game]
-                    };
-                    collection.insertOne(obj, function (err, docs) {
-                        res.send({ack: 'ok'});
+                    collection.updateOne({"_id": new ObjectID(user)}, {$set: {tabGame: [game]}}, function (err, docs) {
+                        res.send({ack:'ok'});
                     });
                 }
             });
         })
     });
+
+    // app.post('/sendProgress', (req, res) => {
+    //     var collection = db.get().collection('usersFormations');
+    //     var obj = collection.find().toArray(function (err, docs) {
+    //         cookies.verify(req, (err, decode) => {
+    //             var user = '';
+    //             if (!err) {
+    //                 user = decode.user._id;
+    //             }
+    //             var result = docs.find(x => x.formation === req.body.formation && x.user === user);
+    //             var game = {
+    //                 game: req.body.game,
+    //                 gameId: req.body.gameId,
+    //                 tabWrongAnswers: req.body.tabWrongAnswers,
+    //                 index: req.body.indexQuestion
+    //             };
+    //             if (result) {
+    //                 var games = result.tabGame.find(x => x.gameId === req.body.gameId);
+    //                 if(games){
+    //                     game.index > games.index && (result.tabGame[result.tabGame.indexOf(games)] = game);
+    //                 }
+    //                 else {
+    //                     result.tabGame.push(game);
+    //                 }
+    //                 collection.updateOne({
+    //                     formation: req.body.formation,
+    //                     user: user
+    //                 }, {$set: {tabGame: result.tabGame}});
+    //                 res.send({ack: 'ok'});
+    //             } else {
+    //                 var obj = {
+    //                     user: user,
+    //                     formation: req.body.formation,
+    //                     tabGame: [game]
+    //                 };
+    //                 collection.insertOne(obj, function (err, docs) {
+    //                     res.send({ack: 'ok'});
+    //                 });
+    //             }
+    //         });
+    //     })
+    // });
 
     app.get('/getProgress/:formation/:game', (req, res) => {
         var collection = db.get().collection('usersFormations');
