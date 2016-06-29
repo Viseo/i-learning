@@ -760,13 +760,13 @@ function formationDisplayFormation() {
                     (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
                 }
                 manageMiniature(tabElement);
-                !playerMode && self.displayMessageDragAndDrop();
-                self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
-                resizePanel();
 
-                self.panel.back.parent.parentManip = self.graphManipulator;
             });
         }
+        !playerMode && displayMessageDragAndDrop();
+        self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
+        resizePanel();
+        self.panel.back.parent.parentManip = self.graphManipulator;
         updateAllLinks();
     };
     // let callback = (data) => {
@@ -1023,31 +1023,28 @@ function formationsManagerDisplay() {
             self.formationDisplayed = formation;
             var callbackUser = function (data) {
                 var user = JSON.parse(data);
-                var formationUser = user.formationsTab.find(formation => formation === self.formationDisplayed._id);
-                var theGame;
-                formationUser && formationUser.gamesTab.forEach(function(game){
-                    self.formationDisplayed.levelsTab.find(function(level){
-                        theGame = level.gamesTab.find(gameFormation => gameFormation.id === game.game);
-                    })
-                    if(game.index === theGame.tabQuestions.length) {
-                        theGame.status = "done";
-
-                    }
-                    else{
-                        theGame.status ="inProgress";
-                    }
-                })
-                self.formationDisplayed.levelsTab.forEach(function(level){
-                    level.gamesTab.forEach(function (game) {
-                        if(!self.formationDisplayed.isGameAvailable(game))
-                        {
-                            game.status = "notAvailable";
+                if(user.formationsTab) {
+                    var formationUser = user.formationsTab.find(formation => formation.formation === self.formationDisplayed._id);
+                    formationUser && formationUser.gamesTab.forEach(function (game) {
+                        let theGame = self.formationDisplayed.findGameById(game.game);
+                        if (game.index === theGame.tabQuestions.length) {
+                            theGame.status = "done";
                         }
+                        else {
+                            theGame.status = "inProgress";
+                        }
+                    })
+                }
+                    self.formationDisplayed.levelsTab.forEach(function (level) {
+                        level.gamesTab.forEach(function (game) {
+                            if (!self.formationDisplayed.isGameAvailable(game)) {
+                                game.status = "notAvailable";
+                            }
+                        });
                     });
-                });
+                self.formationDisplayed.displayFormation();
             }
             Server.getUser(callbackUser);
-            self.formationDisplayed.displayFormation();
         };
         //!playerMode &&
         Server.getFormationById(formation._id, callbackFormation);

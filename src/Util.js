@@ -735,7 +735,7 @@ function SVGUtil() {
             var iconsize = 20;
             self.infosManipulator = new Manipulator(self);
             self.infosManipulator.addOrdonator(4);
-            switch (special){
+            switch (self.game.status){
                 case "notAvailable":
                     self.icon.cadre.color(myColors.grey, 1, myColors.black);
                     break;

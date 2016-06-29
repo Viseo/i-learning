@@ -74,7 +74,7 @@ module.exports = function (app, fs) {
                 if (!err) {
                     user = decode.user._id;
                 }
-                var result = docs.find(x=> x._id === user);
+                var result = docs.find(x=> x._id.toString() === user);
                 var newGame = {
                     game: req.body.game,
                     tabWrongAnswers: req.body.tabWrongAnswers,
@@ -117,7 +117,6 @@ module.exports = function (app, fs) {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;
-                    console.log(user);
                 }
                 var result = docs.find(x=> x._id.toString() === user);
             res.send(result);
