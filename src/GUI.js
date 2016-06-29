@@ -1705,6 +1705,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         });
 
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
+        (questionType === "Réponses multiples") ? (self.linkedQuestion.multipleChoice = true) : (self.linkedQuestion.multipleChoice = false);
 
         self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
