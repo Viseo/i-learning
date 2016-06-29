@@ -430,6 +430,7 @@ class Formation {
             case ("Quiz"):
                 var newQuizz = new Quizz(defaultQuizz, false, this);
                 newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
                 newQuizz.id = "quizz" + this.gamesCounter.quizz;
                 this.gamesCounter.quizz++;
                 newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
@@ -437,6 +438,7 @@ class Formation {
                 break;
             case ("Bd"):
                 var newBd = new Bd({}, this);
+                newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
                 newBd.id = "bd" + this.gamesCounter.bd;
                 this.gamesCounter.bd++;
                 newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
@@ -507,7 +509,7 @@ class Formation {
                     var gamesTab = [];
                     levelsTab.push({gamesTab: gamesTab});
                     level.gamesTab.forEach((game) => {
-                        game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
+                        //game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
                         if (game.tabQuestions) {
                             game.id || (game.id = "quizz"  + gamesCounter.quizz);
                             gamesCounter.quizz ++;
