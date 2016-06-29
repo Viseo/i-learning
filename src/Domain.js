@@ -1091,8 +1091,8 @@ function Domain() {
             h: 200
         };
         self.miniaturePosition = {x:0, y:0};
+        self.score = (quizz.score ? quizz.score : 0);
         self.questionsWithBadAnswers = [];
-        self.score = (self.questionsWithBadAnswers ? (self.tabQuestions.length - self.questionsWithBadAnswers.length) : 0 );
         self.drawing = drawing;
         self.title = quizz.title ? quizz.title : '';
         self.currentQuestionIndex = ( quizz.currentQuestionIndex ? quizz.currentQuestionIndex  : -1 );

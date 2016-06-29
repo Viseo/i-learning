@@ -917,10 +917,38 @@ function formationDisplayFormation() {
  ////15: Height Message Error
 }
 
-function formationDisplayErrorMessage(message){
+function playerModeDisplayFormation () {
     var self = this;
-    self.errorMessageDisplayed = autoAdjustText(message, 0, 0, self.graphCreaWidth, self.graphCreaHeight, 20, null, self.manipulator).text
-        .color(myColors.red).position(drawing.width - MARGIN, 0).anchor("end");
+    var callbackUser = function (data) {
+        var user = JSON.parse(data);
+        if (user.formationsTab) {
+            var formationUser = user.formationsTab.find(formation => formation.formation === self._id);
+            formationUser && formationUser.gamesTab.forEach(function (game) {
+                let theGame = self.findGameById(game.game);
+                if (theGame) {
+                    theGame.currentQuestionIndex = game.index;
+                    theGame.questionsWithBadAnswers = game.tabWrongAnswers;
+                    theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
+                    if (game.index === theGame.tabQuestions.length) {
+                        theGame.status = "done";
+                    }
+                    else {
+                        theGame.status = "inProgress";
+                    }
+                }
+            })
+        }
+        self.levelsTab.forEach(function (level) {
+            level.gamesTab.forEach(function (game) {
+                if (!self.isGameAvailable(game)) {
+                    game.status = "notAvailable";
+                }
+            });
+        });
+        self.displayFormation();
+    }
+
+    playerMode && Server.getUser(callbackUser);
 }
 
 function formationRemoveErrorMessage(message) {
@@ -1026,34 +1054,8 @@ function formationsManagerDisplay() {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             self.formationDisplayed = formation;
-            var callbackUser = function (data) {
-                var user = JSON.parse(data);
-                if(user.formationsTab) {
-                    var formationUser = user.formationsTab.find(formation => formation.formation === self.formationDisplayed._id);
-                    formationUser && formationUser.gamesTab.forEach(function (game) {
-                        let theGame = self.formationDisplayed.findGameById(game.game);
-                        if (theGame) {
-                            theGame.currentQuestionIndex = game.index;
-                            theGame.questionsWithBadAnswers = game.tabWrongAnswers;
-                            if ( game.index === theGame.tabQuestions.length) {
-                                theGame.status = "done";
-                            }
-                            else {
-                                theGame.status = "inProgress";
-                            }
-                        }
-                    })
-                }
-                    self.formationDisplayed.levelsTab.forEach(function (level) {
-                        level.gamesTab.forEach(function (game) {
-                            if (!self.formationDisplayed.isGameAvailable(game)) {
-                                game.status = "notAvailable";
-                            }
-                        });
-                    });
-                self.formationDisplayed.displayFormation();
-            }
-            Server.getUser(callbackUser);
+            playerMode && self.formationDisplayed.displayFormationPlayerMode();
+            !playerMode && self.formationDisplayed.displayFormation();
         };
         //!playerMode &&
         Server.getFormationById(formation._id, callbackFormation);
@@ -1952,7 +1954,8 @@ function quizzDisplay(x, y, w, h) {
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.displayFormation();
+        !playerMode && target.parentObj.parent.parentFormation.displayFormation();
+        playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
     });
 
     header.display();
@@ -2163,7 +2166,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
-        target.parentObj.parent.parentFormation.displayFormation();
+        target.parentObj.parent.parentFormation.displayFormation()
     };
 
     self.returnButton.display(-2*MARGIN, 0, 20, 20);
@@ -2749,7 +2752,6 @@ var AdminGUI = function (){
     Formation.prototype.displayMiniature = formationDisplayMiniature;
     Formation.prototype.displayFormation = formationDisplayFormation;
     Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
-    Formation.prototype.displayErrorMessage = formationDisplayErrorMessage;
     Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
     FormationsManager.prototype.display = formationsManagerDisplay;
     Question.prototype.display = questionDisplay;
@@ -2782,6 +2784,7 @@ var LearningGUI = function (){
     Library.prototype.display = libraryDisplay;
     Header.prototype.display = headerDisplay;
     Formation.prototype.displayFormation = formationDisplayFormation;
+    Formation.prototype.displayFormationPlayerMode = playerModeDisplayFormation;
     Formation.prototype.displayMiniature = formationDisplayMiniature;
     FormationsManager.prototype.display = formationsManagerDisplay;
     Question.prototype.display = questionDisplay;
