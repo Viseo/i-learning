@@ -430,16 +430,16 @@ class Formation {
             case ("Quiz"):
                 var newQuizz = new Quizz(defaultQuizz, false, this);
                 newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
                 newQuizz.id = "quizz" + this.gamesCounter.quizz;
                 this.gamesCounter.quizz++;
+                newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
                 this.levelsTab[level].gamesTab.push(newQuizz);
                 break;
             case ("Bd"):
                 var newBd = new Bd({}, this);
-                newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
                 newBd.id = "bd" + this.gamesCounter.bd;
                 this.gamesCounter.bd++;
+                newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
                 this.levelsTab[level].gamesTab.push(newBd);
                 break;
         }
@@ -557,6 +557,7 @@ class Formation {
     }
 
     loadFormation (formation) {
+        this.levelsTab = [];
         this.gamesCounter = formation.gamesCounter;
         formation.link ? this.link = formation.link : this.link = [];
         formation.levelsTab.forEach(level => {
@@ -585,6 +586,34 @@ class Formation {
             }
         });
         return longestLevelCandidates;
+    }
+
+    findGameById (id){
+        let theGame;
+        this.levelsTab.forEach(function(level){
+            level.gamesTab.forEach(function(game){
+                if(game.id === id)
+                {
+                    theGame = game;
+                }
+            });
+        });
+        return theGame;
+    };
+    
+    isGameAvailable (game) {
+        let available = true;
+        this.link.forEach(linkElement => {
+            if(linkElement.childGame === game.id)
+            {
+                let parentGame = this.findGameById(linkElement.parentGame);
+                if(parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
+                    available = false;
+                    return available
+                }
+            }
+        });
+        return available ;
     }
 
     redim () {
@@ -902,6 +931,7 @@ class QuizzManager {
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
             });
             return {
+                id: this.quizz.id,
                 title: this.quizzName,
                 tabQuestions: this.quizz.tabQuestions,
                 levelIndex: this.quizz.levelIndex,
@@ -931,6 +961,7 @@ class QuizzManager {
 
 class Quizz {
     constructor (quizz, previewMode, parentFormation) {
+        this.id=quizz.id;
         this.miniatureManipulator = new Manipulator(this);
         this.parentFormation = parentFormation || quizz.parentFormation;
         this.quizzManipulator = new Manipulator(this);
@@ -982,7 +1013,7 @@ class Quizz {
         this.score = 0;
         this.drawing = drawing;
         this.title = quizz.title ? quizz.title : '';
-        this.currentQuestionIndex = -1;
+        this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex  : -1;
         this.finalMessage = "";
     }
 

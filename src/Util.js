@@ -392,7 +392,6 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.position(0, Math.floor(svg.runtime.boundingRect(content.component).height)/4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -627,8 +626,11 @@ function SVGUtil() {
         self.redCrossManipulator.last.add(self.redCross);
 
         var removeLink = function(parentGame,childGame) {
-            parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
-            childGame.parentGames.splice(childGame.parentGames.indexOf(parentGame),1);
+            parentGame.parentFormation.link.forEach(function(linkElement){
+               if (linkElement.parentGame === parentGame.id && linkElement.childGame === childGame){
+                   parentGame.parentFormation.link.splice(link.indexOf(linkElement),1);
+               }
+            });
         };
 
         self.redCrossClickHandler = function () {
@@ -669,15 +671,15 @@ function SVGUtil() {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+        //self.icon.content.position(0,size/4);
         self.redCrossManipulator = new Manipulator(self);
         self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
         var removeAllLinks = function () {
-            game.childrenGames.forEach(function (childGame) {
-                childGame.parentGames.splice(childGame.parentGames.indexOf(game), 1);
-            });
-            game.parentGames.forEach(function (parentGame) {
-                parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game), 1);
+            game.parentFormation.link.forEach(function(linkElement){
+                if (linkElement.parentGame === game.id || linkElement.childGame === game.id){
+                    game.parentFormation.link.splice(game.parentFormation.link.indexOf(linkElement),1);
+                }
             });
         };
 
@@ -735,7 +737,7 @@ function SVGUtil() {
             var iconsize = 20;
             self.infosManipulator = new Manipulator(self);
             self.infosManipulator.addOrdonator(4);
-            switch (special){
+            switch (self.game.status){
                 case "notAvailable":
                     self.icon.cadre.color(myColors.grey, 1, myColors.black);
                     break;
@@ -779,7 +781,6 @@ class ReturnButton {
         this.manipulator.addOrdonator(1);
         this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
         this.manipulator.last.add(this.chevronManipulator.first);
-
     }
 
     setHandler(returnHandler) {
@@ -834,16 +835,19 @@ class Server {
         var data = {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
-            game: quiz.title,
-            gameId: quiz.id,
+            game: quiz.id,
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
     }
 
-    static getProgress(formation, game, callback) {
-        dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // static getProgress(formation, game, callback) {
+    //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // }
+
+    static getUser(callback) {
+        dbListener.httpGetAsync("/getUser", callback);
     }
 
     static replaceFormation(id, newFormation, callback, ignoredData) {
@@ -899,6 +903,7 @@ function Bdd() {
         yellow:[255,255,0],
         pink:[255,20,147],
         brown:[128,0,0],
+        primaryGreen:[0, 255, 0],
         none:[]
     };
 

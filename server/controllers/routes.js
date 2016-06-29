@@ -68,13 +68,13 @@ module.exports = function (app, fs) {
 
     app.post('/sendProgress', (req, res) => {
         var collection = db.get().collection('users');
-        var obj =collection.find().toArray(function (err, docs) {
+        collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;
                 }
-                var result = docs.find(x=> x._id = new ObjectID(user));
+                var result = docs.find(x=> x._id.toString() === user);
                 var newGame = {
                     game: req.body.game,
                     tabWrongAnswers: req.body.tabWrongAnswers,
@@ -97,7 +97,7 @@ module.exports = function (app, fs) {
                         }
                     }
                     else {
-                        result.formationsTab[result.formationsTab.length]=formation;
+                        result.formationsTab[result.formationsTab.length]=newFormation;
                     }
                     formationsTab = result.formationsTab;
                 } else {
@@ -105,43 +105,60 @@ module.exports = function (app, fs) {
                 }
                 collection.updateOne({"_id": new ObjectID(user)}, {$set: {formationsTab: formationsTab}}, function (err, docs) {
                     res.send({ack:'ok'});
-                    console.log(docs.result);
                 });
             });
         })
     });
 
-    app.get('/getProgress/:formation/:game', (req, res) => {
-        var collection = db.get().collection('usersFormations');
-        var obj = collection.find().toArray(function (err, docs) {
+    app.get('/getUser', function(req, res) {
+        var collection = db.get().collection('users');
+        collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
                 var user = '';
                 if (!err) {
                     user = decode.user._id;
                 }
+                var result = docs.find(x=> x._id.toString() === user);
+            res.send(result);
+            });
+        })
+    });
+
+    app.get('/getProgress/:formation/:game', (req, res) => {
+        var collection = db.get().collection('users');
+        collection.find().toArray(function (err, docs) {
+            cookies.verify(req, (err, decode) => {
+                var user = '';
+                if (!err) {
+                    user = decode.user._id;
+                }
+                var userDoc = docs.find(x => x._id.toString() === user);
                 var available = true;
                 var special;
                 var collectionFormation = db.get().collection('formations');
-                var formation;
-                collectionFormation.find().toArray(function (err, docs) {
-                    result = docs.find(formation => formation.label===req.params.formation);
-                    formation = result;
+                collectionFormation.find().toArray(function (err, docsFormation) {
+                    var formation = docsFormation.find(formation => formation._id.toString() === req.params.formation);
                     var gameForAvailability;
                     formation.levelsTab.find(function(gamesTab){
-                        var resultGame = gamesTab.gamesTab.find(game=>game.id === req.params.game);
-                        resultGame && (gameForAvailability = resultGame);
+                        gameForAvailability = gamesTab.gamesTab.find(game=>game.id === req.params.game);
                     });
                     //var gameForAvailability = forAvailability.tabGame.find(x => x.game === req.params.game);
                     if (gameForAvailability && formation.link.every(function(linkElement){
-                            (linkElement[0].childGame === gameForAvailability.id)
-                            available = gameForAvailability.index && (linkElement[0].parentGame.tabQuestions.length=gameForAvailability.index);
+                            if (linkElement[0].childGame === gameForAvailability.id) {
+                                var formationUser = userDoc.formationsTab.find(x => x.formation === req.params.formation);
+                                if(formationUser) {
+                                    var games = formationUser.gamesTab.find(x => x.game === linkElement[0].parentGame);
+                                    available = gameForAvailability.tabQuestions.length && (gameForAvailability.tabQuestions.length = games.index);
+                                }
+                            }
                             return !available;
                         })){
                         special = "notAvailable";
                     }
-                    var result = docs.find(x => x.formation === req.params.formation && x.user === user);
-                    if (result) {
-                        var games = result.tabGame.find(x => x.game === req.params.game);
+                    var result = docs.find(x => x._id.toString() === user);
+                    var formationUser = result.formationsTab.find(x => x.formation === req.params.formation);
+                    if(formationUser) {
+                        var games = formationUser.gamesTab.find(x => x.game === req.params.game);
                         games ? res.send({games, special}): res.send({special}) ;
                     } else {
                         res.send({special});
