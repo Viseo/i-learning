@@ -968,13 +968,14 @@ class Puzzle {
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
         (typeof h !== "undefined") && (this.height = h);
+        //this.manipulator.translator.move(this.x, this.y);
         this.chevronSize = Math.max(Math.min(this.height*0.15, this.width*0.1, this.chevronMaxSize), this.chevronMinSize);
         this.visibleArea = {
             width: this.width - 2*this.chevronSize,
             height: this.height
         };
         this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
-        this.manipulator.ordonator.set(0,this.puzzleCadre);
+        this.manipulator.ordonator.set(0, this.puzzleCadre);
         this.chevronsDisplayed = ((this.elementsArray.length > this.nbOfVisibleElements) && needChevrons);
         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
         this.adjustElementsDimensions();

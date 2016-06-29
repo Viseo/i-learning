@@ -523,13 +523,13 @@ function addEmptyElementDisplay(x, y, w, h) {
                         self.parent.questionPuzzleCoordinates.y,
                         self.parent.questionPuzzleCoordinates.w,
                         self.parent.questionPuzzleCoordinates.h,
-                        self.parent.questionPuzzle.startPosition + 1);
+                        self.parent.questionPuzzle.indexOfFirstVisibleElement + 1);
                 } else {
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x,
                         self.parent.questionPuzzleCoordinates.y,
                         self.parent.questionPuzzleCoordinates.w,
                         self.parent.questionPuzzleCoordinates.h,
-                        self.parent.questionPuzzle.startPosition);
+                        self.parent.questionPuzzle.indexOfFirstVisibleElement);
                 }
 
                 self.parent.questionCreator.loadQuestion(newQuestion);
@@ -1204,158 +1204,6 @@ function headerDisplay (message) {
         svg.addEvent(special.content, "click", clickHandler);
         svg.addEvent(special.cadre, "click", clickHandler);
     }
-
-}
-
-//function puzzleDisplay(x, y, w, h, startPosition) {
-//    let removeChevrons = () =>{
-//        if (this.leftChevronManipulator.last.children.length > 1) this.leftChevronManipulator.flush();
-//        if (this.rightChevronManipulator.last.children.length > 1) this.rightChevronManipulator.flush();
-//    };
-//
-//    let handlerLeftChevron = ()=>{
-//        removeChevrons();
-//        if (this.rows === 1 && startPosition !== 0) {
-//            this.display(x, y, w, h, startPosition - 1);
-//        } else if (startPosition - this.rows + 1 <= 0) {
-//            this.display(x, y, w, h, 0);
-//        } else {
-//            this.display(x, y, w, h, startPosition - this.rows + 1);
-//        }
-//    };
-//
-//    let handlerRightChevron = () =>{
-//        removeChevrons();
-//        if(this.rows === 1 && startPosition !== this.totalRows - 1) {
-//            this.display(x, y, w, h, startPosition + 1);
-//        } else if(2*this.rows + startPosition >= this.totalRows) {
-//            let newStartPosition = this.totalRows - this.rows;
-//            this.display(x, y, w, h, newStartPosition);
-//        } else {
-//            let newStartPosition = startPosition + this.rows - 1;
-//            this.display(x, y, w, h, newStartPosition);
-//        }
-//    };
-//
-//    this.showLeftChevron = ()=>{
-//        let leftChevron = drawChevron(0, 0, 75, 75, this.leftChevronManipulator, "left");
-//        if (startPosition === 0) {
-//            leftChevron.color(myColors.grey);
-//            if (leftChevron.onClick !== null) {
-//                svg.removeEvent(leftChevron, 'click', leftChevron.onClick);
-//            }
-//        } else {
-//            leftChevron.color(myColors.black);
-//            svg.addEvent(leftChevron, "click", handlerLeftChevron);
-//        }
-//        this.leftChevronManipulator.translator.move(-w/2 - MARGIN + 75/2, y + h/2);// marge post-rotation
-//    };
-//
-//    this.showRightChevron = ()=>{
-//        let rightChevron = drawChevron(0, 0, 75, 75, this.rightChevronManipulator, "right");
-//        if (startPosition + this.rows >= this.totalRows) {
-//            rightChevron.color(myColors.grey);
-//            if (rightChevron.onClick !== null) {
-//                svg.removeEvent(rightChevron, 'click', rightChevron.onClick);
-//            }
-//        } else {
-//            rightChevron.color(myColors.black);
-//            svg.addEvent(rightChevron, 'click', handlerRightChevron);
-//        }
-//        this.rightChevronManipulator.translator.move(w/2 - 75/2 + MARGIN, y + h/2);
-//    };
-//
-//    this.startPosition = startPosition;
-//    this.puzzleManipulator.last.remove(this.questionWithBadAnswersManipulator.first);
-//    this.questionWithBadAnswersManipulator = new Manipulator(this);
-//    this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
-//    if (this.rows < this.totalRows) {
-//        this.showLeftChevron();
-//        this.showRightChevron();
-//        this.initTiles(x + MARGIN + 50, y, w - 100 - MARGIN*2, h, startPosition);
-//    } else {
-//        this.initTiles(x, y, w, h, startPosition);
-//    }
-//}
-
-function puzzleInitTiles(x, y, w, h, startPosition) {
-    var self = this;
-    self.w = w;
-    self.h = h;
-    self.tileWidth = (w - (self.rows - 1) * MARGIN) / self.rows;
-    self.tileHeight = (h - (self.lines + 1) * MARGIN) / self.lines;
-    var posX = 0;
-    var posY = y;
-    var count = startPosition * self.lines;
-    if((self.tileHeight > 0) && (self.tileWidth > 0)){
-        if (self.reverseMode) {
-            // Valable pour 2 lignes 4 col
-            for (var i = startPosition; i < (startPosition + self.lines); i++) {
-                for (var j = 0; j < self.rows; j++) {
-                    if (count < self.questionsTab.length) {
-                        self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
-                        if (!(self.completeBanner[i][j].bordure)) {
-                            self.completeBanner[i][j].display(-self.tileWidth / 2, -self.tileHeight / 2, self.tileWidth, self.tileHeight);
-                            if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
-                                svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
-                            }
-                            if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
-                                svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
-                            }
-                            if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
-                                svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
-                            }
-                        }
-                        self.completeBanner[i][j].manipulator.first.move(posX + self.tileWidth / 2 + MARGIN, posY + MARGIN);
-
-                        posX += self.tileWidth + MARGIN;
-                        count++;
-                    }
-                    else {
-                        break;
-                    }
-                }
-                posY += self.tileHeight + MARGIN;
-                posX = 0;
-            }
-        } else {
-            for (i = startPosition; i < (startPosition + self.rows); i++) {
-                for (j = 0; j < self.lines; j++) {
-                    if (count < self.questionsTab.length) {
-                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
-                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
-                        } else {
-                            self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
-                            self.completeBanner[i][j].manipulator.ordonator.unset(3);
-                        }
-                        self.completeBanner[i][j].display(0, 0, self.tileWidth, self.tileHeight);
-                        if (self.completeBanner[i][j].bordure && self.completeBanner[i][j].bordureEventHandler) {
-                            svg.addEvent(self.completeBanner[i][j].bordure, 'click', self.completeBanner[i][j].bordureEventHandler);
-                        }
-                        if (self.completeBanner[i][j].content && self.completeBanner[i][j].contentEventHandler) {
-                            svg.addEvent(self.completeBanner[i][j].content, 'click', self.completeBanner[i][j].contentEventHandler);
-                        }
-                        if (self.completeBanner[i][j].raphImage && self.completeBanner[i][j].imageEventHandler) {
-                            svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
-                        }
-
-                        if (self.completeBanner[i][j] instanceof AddEmptyElement) {
-                            self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                        } else {
-                            self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
-                        }
-
-                        posY += self.tileHeight + MARGIN;
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-                posX += self.tileWidth + MARGIN;
-                posY = y;
-            }
-        }
-    }
 }
 
 function questionDisplay(x, y, w, h) {
@@ -1736,7 +1584,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                 self.questionManipulator.ordonator.unset(2);//image
                 self.linkedQuestion.image = null;
                 self.linkedQuestion.imageSrc = null;
-                self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
+                self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.indexOfFirstVisibleElement);
                 self.display();
             };
             let mouseleaveHandler= ()=>{
@@ -1806,7 +1654,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             }
             drawings.screen.remove(textarea);
             showTitle();
-            self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.startPosition);
+            self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.indexOfFirstVisibleElement);
         };
 
         var removeErrorMessage = function () {
@@ -1858,9 +1706,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
         self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
-    self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.manipulator.first);
-    self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, "leftToRight", self);
-    self.questionCreatorManipulator.last.children.indexOf(self.puzzle.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
+    //self.questionCreatorManipulator.last.children.indexOf(self.questionCreator.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
 }
 
@@ -2073,7 +1919,7 @@ function quizzManagerDisplay(){
         this.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         question.selected = true;
 
-        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
+        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.indexOfFirstVisibleElement);
         //this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
         this.questionCreator.loadQuestion(question);
         this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
@@ -2084,14 +1930,14 @@ function quizzManagerDisplay(){
         tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
         question.selected = true;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
-        quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.startPosition);
+        quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
         questionCreator.display(questionCreator.previousX,questionCreator.previousY,questionCreator.previousW,questionCreator.previousH);
     };
 
     var displayFunctions = () => {
         self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-        self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
+        //self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
         self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight);
         self.displayPreviewButton(drawing.width/2-self.ButtonWidth, self.height - self.previewButtonHeight/2-MARGIN/2,

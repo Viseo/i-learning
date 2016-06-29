@@ -908,7 +908,6 @@ function Domain() {
 
         self.questionNameValidInput = true;
 
-
         self.labelDefault = "Cliquer deux fois pour ajouter la question";
         self.quizzType = myQuizzType.tab;
 
@@ -934,11 +933,13 @@ function Domain() {
 
         if (!question) {
             // init default : 2 empty answers
-            self.linkedQuestion=new Question(defaultQuestion,self.parent.quizz);
+            self.linkedQuestion = new Question(defaultQuestion,self.parent.quizz);
         } else {
             self.loadQuestion(question);
         }
 
+        self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, "leftToRight", self);
+        self.manipulator.last.add(self.puzzle.manipulator.first);
         self.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         self.checkInputTextArea = function (myObj) {
             if (myObj.textarea.messageText.match(REGEX)) {
