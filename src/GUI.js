@@ -1034,7 +1034,7 @@ function formationsManagerDisplay() {
                         let theGame = self.formationDisplayed.findGameById(game.game);
                         if (theGame) {
                             theGame.currentQuestionIndex = game.index;
-                            theGame.questionsWithBadAnswers = game.questionsWithBadAnswers;
+                            theGame.questionsWithBadAnswers = game.tabWrongAnswers;
                             if ( game.index === theGame.tabQuestions.length) {
                                 theGame.status = "done";
                             }
