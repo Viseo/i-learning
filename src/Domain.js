@@ -410,16 +410,16 @@ function Domain() {
                 case ("Quiz"):
                     var newQuizz = new Quizz(defaultQuizz, false, this);
                     newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
                     newQuizz.id = "quizz" + this.gamesCounter.quizz;
                     this.gamesCounter.quizz++;
+                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
                     this.levelsTab[level].gamesTab.push(newQuizz);
                     break;
                 case ("Bd"):
                     var newBd = new Bd({}, this);
-                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
                     newBd.id = "bd" + this.gamesCounter.bd;
                     this.gamesCounter.bd++;
+                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
                     this.levelsTab[level].gamesTab.push(newBd);
                     break;
             }
@@ -457,7 +457,7 @@ function Domain() {
                         .anchor('middle').color(myColors.green);
                     self.saveFormationButtonManipulator.last.add(self.errorMessageSave);
                     svg.timeout(function () {
-                        (self.saveFormationButtonManipsulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
+                        (self.saveFormationButtonManipulator.last.children.indexOf(self.errorMessageSave) !== -1) && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave)
                     }, 5000);
                 }
             };
@@ -515,7 +515,7 @@ function Domain() {
                         var gamesTab = [];
                         levelsTab.push({gamesTab: gamesTab});
                         level.gamesTab.forEach(function (game) {
-                                game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
+                                //game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
                             if (game.tabQuestions) {
                                 game.id || (game.id = "quizz"  + gamesCounter.quizz);
                                 gamesCounter.quizz ++;

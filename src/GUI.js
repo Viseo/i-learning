@@ -1026,10 +1026,10 @@ function formationsManagerDisplay() {
                     var formationUser = user.formationsTab.find(formation => formation.formation === self.formationDisplayed._id);
                     formationUser && formationUser.gamesTab.forEach(function (game) {
                         let theGame = self.formationDisplayed.findGameById(game.game);
-                        if (game.index === theGame.tabQuestions.length) {
+                        if (theGame && game.index === theGame.tabQuestions.length) {
                             theGame.status = "done";
                         }
-                        else {
+                        else if (theGame){
                             theGame.status = "inProgress";
                         }
                     })
