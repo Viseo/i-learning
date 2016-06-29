@@ -93,6 +93,20 @@ describe('Quizz game', function () {
         gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
         Server = util.Server;
+        ReturnButton = util.ReturnButton;
+        Answer = domain.Answer;
+        Question = domain.Question;
+        QuestionCreator = domain.QuestionCreator;
+        AddEmptyElement = domain.AddEmptyElement;
+        Level = domain.Level;
+        FormationsManager = domain.FormationsManager;
+        Formation = domain.Formation;
+        Library = domain.Library;
+        Header = domain.Header;
+        Puzzle = domain.Puzzle;
+        QuizzManager = domain.QuizzManager;
+        Quizz = domain.Quizz;
+        Bd = domain.Bd;
     });
 
     // it("plays a complete quizz game using resize", function (done) {
@@ -218,6 +232,20 @@ describe('Inscritpion/Connexion', function () {
         gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
         Server = util.Server;
+        ReturnButton = util.ReturnButton;
+        Answer = domain.Answer;
+        Question = domain.Question;
+        QuestionCreator = domain.QuestionCreator;
+        AddEmptyElement = domain.AddEmptyElement;
+        Level = domain.Level;
+        FormationsManager = domain.FormationsManager;
+        Formation = domain.Formation;
+        Library = domain.Library;
+        Header = domain.Header;
+        Puzzle = domain.Puzzle;
+        QuizzManager = domain.QuizzManager;
+        Quizz = domain.Quizz;
+        Bd = domain.Bd;
     });
     it("Inscription page", function (done) {
         this.timeout(100000);
@@ -322,6 +350,20 @@ describe('Admin use', function () {
         gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
         Server = util.Server;
+        ReturnButton = util.ReturnButton;
+        Answer = domain.Answer;
+        Question = domain.Question;
+        QuestionCreator = domain.QuestionCreator;
+        AddEmptyElement = domain.AddEmptyElement;
+        Level = domain.Level;
+        FormationsManager = domain.FormationsManager;
+        Formation = domain.Formation;
+        Library = domain.Library;
+        Header = domain.Header;
+        Puzzle = domain.Puzzle;
+        QuizzManager = domain.QuizzManager;
+        Quizz = domain.Quizz;
+        Bd = domain.Bd;
     });
 
     it("a short admin use (to Formation)", function (done) {

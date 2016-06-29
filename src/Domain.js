@@ -1319,4 +1319,17 @@ if(typeof exports !== "undefined") {
     exports.setGlobalVariables = setGlobalVariables;
     exports.setRuntime = setRuntime;
     exports.setSvg = setSvg;
+    exports.Answer = Answer;
+    exports.Question = Question;
+    exports.QuestionCreator = QuestionCreator;
+    exports.AddEmptyElement = AddEmptyElement;
+    exports.Level = Level;
+    exports.FormationsManager = FormationsManager;
+    exports.Formation = Formation;
+    exports.Library = Library;
+    exports.Header = Header;
+    exports.Puzzle = Puzzle;
+    exports.QuizzManager = QuizzManager;
+    exports.Quizz = Quizz;
+    exports.Bd = Bd;
 }
