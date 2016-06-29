@@ -67,6 +67,7 @@ function answerDisplay (x, y, w, h) {
 
     function answerEditableDisplay(x, y, w, h) {
         self.checkboxSize = h * 0.2;
+        self.obj = {};
         let imageRedCrossClickHandler=()=>{
             self.redCrossManipulator.flush();
             self.manipulator.ordonator.unset(2);//image
@@ -127,11 +128,16 @@ function answerDisplay (x, y, w, h) {
                 color = (self.label) ? myColors.black : myColors.grey;
 
             if(self.image){
-                    self.obj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
-                    svg.addEvent(self.obj.image,'mouseover',ImageMouseoverHandler);
-                    svg.addEvent(self.obj.image,'mouseout',mouseleaveHandler);
+                var tempObj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj.cadre = tempObj.cadre;
+                self.obj.image = tempObj.image;
+                self.obj.content = tempObj.content;
+                svg.addEvent(self.obj.image,'mouseover',ImageMouseoverHandler);
+                svg.addEvent(self.obj.image,'mouseout',mouseleaveHandler);
             } else {
-                self.obj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                var tempObj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                self.obj.cadre = tempObj.cadre;
+                self.obj.content = tempObj.content;
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
