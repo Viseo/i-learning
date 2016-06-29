@@ -51,8 +51,15 @@ function connexion(){
                     quizzManager.display();
                     break;
                 case "QuizPreview":
-                    quizzManager.quizz.quizzManipulator.flush();
-                    quizzManager.displayEditedQuestion();
+                    let quizz = formation.quizzManager.previewQuiz;
+                    if (quizz.currentQuestionIndex !== -1) {
+                        quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator.first);
+                    }
+                    quizz.display(0, 0, drawing.width, drawing.height);
+
+                    if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                        quizz.displayCurrentQuestion();
+                    }
                     break;
             }
         }

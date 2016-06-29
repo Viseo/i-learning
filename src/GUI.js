@@ -1514,25 +1514,31 @@ function questionDisplayAnswers(x, y, w, h) {
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
-            (function(element) {
-                if(element.bordure) {
-                    svg.addEvent(element.bordure,"click",function() {
-                        self.elementClicked(element);
-                    });
+            if(self.parentQuizz.previewMode) {
+                if(self.tabAnswer[i].correct) {
+                    self.tabAnswer[i].bordure.color(self.tabAnswer[i].bordure.component.fillColor, 5, myColors.primaryGreen);
                 }
+            } else {
+                (function(element) {
+                    if(element.bordure) {
+                        svg.addEvent(element.bordure,"click",function() {
+                            self.elementClicked(element);
+                        });
+                    }
 
-                if(element.content) {
-                    svg.addEvent(element.content,"click",function() {
-                        self.elementClicked(element);
-                    });
-                }
+                    if(element.content) {
+                        svg.addEvent(element.content,"click",function() {
+                            self.elementClicked(element);
+                        });
+                    }
 
-                if (element.image) {
-                    svg.addEvent(element.image,"click",function() {
-                        self.elementClicked(element);
-                    });
-                }
-            })(self.tabAnswer[i]);
+                    if (element.image) {
+                        svg.addEvent(element.image,"click",function() {
+                            self.elementClicked(element);
+                        });
+                    }
+                })(self.tabAnswer[i]);
+            }
             count++;
         }
     }
@@ -1549,45 +1555,47 @@ function questionDisplayAnswers(x, y, w, h) {
         self.validateManipulator.translator.move(validateX + w/2, validateY + h/2);
 
         //button. onclick
-        var oclk = function(){
-            // test des valeurs, en gros si selectedAnswers === rigthAnswers
-            var allRight = false;
+        if(!self.parentQuizz.previewMode) {
+            var oclk = function(){
+                // test des valeurs, en gros si selectedAnswers === rigthAnswers
+                var allRight = false;
 
-            if(self.rightAnswers.length !== self.selectedAnswers.length){
-                allRight = false;
-            }else{
-                var subTotal = 0;
-                self.selectedAnswers.forEach(function(e){
-                    if(e.correct){
-                        subTotal++;
-                    }
-                });
-                allRight = (subTotal === self.rightAnswers.length);
-            }
+                if(self.rightAnswers.length !== self.selectedAnswers.length){
+                    allRight = false;
+                }else{
+                    var subTotal = 0;
+                    self.selectedAnswers.forEach(function(e){
+                        if(e.correct){
+                            subTotal++;
+                        }
+                    });
+                    allRight = (subTotal === self.rightAnswers.length);
+                }
 
-            if(allRight) {
-                self.parentQuizz.score++;
-                console.log("Bonne réponse!\n");
-            } else {
-                self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
-                var reponseD = "";
-                self.rightAnswers.forEach(function(e){
-                    if(e.label) {
-                        reponseD += e.label+"\n";
-                    }
-                    else if(e.imageSrc)
-                    {
-                        var tab = e.imageSrc.split('/');
-                        reponseD += tab[(tab.length-1)] + "\n";
-                    }
-                });
-                console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
-            }
-            self.parentQuizz.nextQuestion();
+                if(allRight) {
+                    self.parentQuizz.score++;
+                    console.log("Bonne réponse!\n");
+                } else {
+                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    var reponseD = "";
+                    self.rightAnswers.forEach(function(e){
+                        if(e.label) {
+                            reponseD += e.label+"\n";
+                        }
+                        else if(e.imageSrc)
+                        {
+                            var tab = e.imageSrc.split('/');
+                            reponseD += tab[(tab.length-1)] + "\n";
+                        }
+                    });
+                    console.log("Mauvaise réponse!\n  Bonnes réponses: "+reponseD);
+                }
+                self.parentQuizz.nextQuestion();
 
-        };
-        svg.addEvent(validateButton.cadre, 'click', oclk);
-        svg.addEvent(validateButton.content, 'click', oclk);
+            };
+            svg.addEvent(validateButton.cadre, 'click', oclk);
+            svg.addEvent(validateButton.content, 'click', oclk);
+        }
 
         //Button reset
         w = 0.1 * drawing.width;
@@ -1599,18 +1607,20 @@ function questionDisplayAnswers(x, y, w, h) {
         if(self.selectedAnswers.length !== 0){
             self.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
         }
-        self.reset = function(){
-            if(self.selectedAnswers.length > 0){
-                self.selectedAnswers.forEach(function(e){
-                    e.selected = false;
-                    e.bordure.color(e.bgColor, 1, e.colorBordure);
-                });
-                self.selectedAnswers.splice(0, self.selectedAnswers.length);
-                self.resetButton.cadre.color(myColors.grey, 1, myColors.grey);
-            }
-        };
-        svg.addEvent(self.resetButton.content, 'click', self.reset);
-        svg.addEvent(self.resetButton.cadre, 'click', self.reset);
+        if(!self.parentQuizz.previewMode) {
+            self.reset = function () {
+                if (self.selectedAnswers.length > 0) {
+                    self.selectedAnswers.forEach(function (e) {
+                        e.selected = false;
+                        e.bordure.color(e.bgColor, 1, e.colorBordure);
+                    });
+                    self.selectedAnswers.splice(0, self.selectedAnswers.length);
+                    self.resetButton.cadre.color(myColors.grey, 1, myColors.grey);
+                }
+            };
+            svg.addEvent(self.resetButton.content, 'click', self.reset);
+            svg.addEvent(self.resetButton.cadre, 'click', self.reset);
+        }
     }
     else {
         w = 0.5 * drawing.width;

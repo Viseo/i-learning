@@ -1150,7 +1150,6 @@ function Domain() {
                 if (self.currentQuestionIndex === -1) {
                     self.currentQuestionIndex++;
                 }
-                console.log(self.currentQuestionIndex);
                 self.displayCurrentQuestion();
             } else {
                 Server.sendProgressToServer(self);
