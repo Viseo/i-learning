@@ -149,7 +149,7 @@ function Domain() {
             self._acceptDrop = editable;
             self.editor = editor;
             self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.messageText && objCont.contentarea.messageText.match(REGEX)) {
+                if (objCont.contentarea.messageText.match(REGEX)) {
                     self.label = objCont.contentarea.messageText;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;
@@ -537,6 +537,7 @@ function Domain() {
         };
 
         self.loadFormation = function(formation) {
+            self.levelsTab = [];
             self.gamesCounter = formation.gamesCounter;
             formation.link ? self.link = formation.link : self.link = [];
             formation.levelsTab.forEach(function (level) {
@@ -1228,7 +1229,7 @@ function Domain() {
                     title: self.quizzName,
                     tabQuestions: self.quizz.tabQuestions,
                     levelIndex: self.quizz.levelIndex,
-                    gameIndex: self.quizz.gameIndex
+                    gameIndex: self.quizz.gameIndex,
                 };
             };
             var callback = function () {

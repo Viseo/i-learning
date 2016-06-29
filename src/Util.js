@@ -781,7 +781,6 @@ class ReturnButton {
         this.manipulator.addOrdonator(1);
         this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
         this.manipulator.last.add(this.chevronManipulator.first);
-
     }
 
     setHandler(returnHandler) {
