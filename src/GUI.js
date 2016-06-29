@@ -911,12 +911,11 @@ function formationRemoveErrorMessage(message) {
 }
 
 function formationDisplaySaveButton(x, y, w, h) {
-        var self = this;
-        self.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveFormationButtonManipulator);
-        self.errorMessageSave && self.errorMessageSave.parent && self.saveFormationButtonManipulator.last.remove(self.errorMessageSave);
-        svg.addEvent(self.saveFormationButton.cadre, "click", self.saveFormation);
-        svg.addEvent(self.saveFormationButton.content, "click", self.saveFormation);
-        self.saveFormationButtonManipulator.translator.move(x, y);
+    this.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
+    this.errorMessageSave && this.errorMessageSave.parent && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+    svg.addEvent(this.saveFormationButton.cadre, "click", () => this.saveFormation());
+    svg.addEvent(this.saveFormationButton.content, "click", () => this.saveFormation());
+    this.saveFormationButtonManipulator.translator.move(x, y);
 }
 
 function formationsManagerDisplay() {

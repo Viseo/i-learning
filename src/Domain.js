@@ -466,9 +466,8 @@ class Formation {
         };
 
         let displaySaveMessage = (message, displayQuizzManager) => {
-            if (displayQuizzManager.__proto__ ===  Function.prototype){
-                displayQuizzManager();
-            }
+            if (displayQuizzManager) displayQuizzManager();
+
             else {
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessageSave = new svg.Text(message)
@@ -477,19 +476,19 @@ class Formation {
                     .anchor('middle').color(myColors.green);
                 this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
                 svg.timeout(() => {
-                    (this.saveFormationButtonManipsulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave)
+                    (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave)
                 }, 5000);
             }
         };
 
         if (validation) {
             let addNewFormation = () => {
-                var callbackInsertion = function (data) {
-                    this._id=JSON.parse(data);
+                let callbackInsertion = (data) => {
+                    this._id = JSON.parse(data);
                     displaySaveMessage(messageSave, displayQuizzManager);
 
                 };
-                var callbackCheckName = function (data) {
+                let callbackCheckName = (data) => {
                     let formationWithSameName = JSON.parse(data).formation;
                     if (!formationWithSameName) {
                         Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
@@ -498,7 +497,7 @@ class Formation {
                         displayErrorMessage(messageUsedName);
                     }
                 };
-                Server.getFormationByName(self.label, callbackCheckName);
+                Server.getFormationByName(this.label, callbackCheckName);
             };
 
             let getObjectToSave = () => {
@@ -524,8 +523,8 @@ class Formation {
             };
             
             let replaceFormation = () => {
-                var callbackCheckName = function (data) {
-                    var callbackReplace = function () {
+                let callbackCheckName = data => {
+                    let callbackReplace = () => {
                         displaySaveMessage(messageReplace, displayQuizzManager);
                     };
                     let formationWithSameName = JSON.parse(data).formation;
@@ -551,7 +550,7 @@ class Formation {
                 Server.getFormationByName(this.label, callbackCheckName);
             };
 
-            self._id ? replaceFormation() : addNewFormation();
+            this._id ? replaceFormation() : addNewFormation();
         } else {
             displayErrorMessage(messageError);
         }
