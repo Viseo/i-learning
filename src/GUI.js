@@ -1593,7 +1593,7 @@ function questionSelectedQuestion() {
             let questionPuzzle = quizzManager.questionPuzzle;
             let questionsArray = questionPuzzle.questionsTab;
             let index = questionsArray.indexOf(this);
-            this.delete();
+            this.remove();
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
             resetQuestionsIndex(this.parentQuizz);
             if(index !== -1) {
