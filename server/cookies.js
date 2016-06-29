@@ -2,9 +2,9 @@
  * Easily manage your cookies.
  */
 
-let jwt = require('json-web-token');
+var jwt = require('json-web-token');
 
-let sendCookie = (res, user) => {
+var sendCookie = (res, user) => {
     jwt.encode('VISEO', {user: user}, (err, token) => {
         res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
         res.send({
@@ -19,8 +19,8 @@ let sendCookie = (res, user) => {
     });
 };
 
-let verify = (req, callback) => {
-    let token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+var verify = (req, callback) => {
+    var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
     if(token) {
         jwt.decode('VISEO', token, callback);
