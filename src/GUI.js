@@ -2373,13 +2373,15 @@ function inscriptionManagerDisplay(labels={}) {
                     if (self[field].secret) {
                         self[field].label = '';
                         self[field].labelSecret = contentarea.messageText;
-                        for (let i = 0; i < contentarea.messageText.length; i++) {
-                            self[field].label += '●';
+                        if (contentarea.messageText){
+                            for (let i = 0; i < contentarea.messageText.length; i++) {
+                                self[field].label += '●';
+                            }
                         }
                     } else {
                         self[field].label = contentarea.messageText;
                     }
-                    displayField(field, manipulator);
+                    contentarea.messageText && displayField(field, manipulator);
                     if (self[field].checkInput()) {
                         self[field].cadre.color(myColors.white, 1, myColors.black);
                         field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
@@ -2416,9 +2418,11 @@ function inscriptionManagerDisplay(labels={}) {
     };
 
     var nameCheckInput = function(field){
-        self[field].label = self[field].label.trim();
-        var regex = /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g;
-        return self[field].label.match(regex);
+        if (self[field].label){
+            self[field].label = self[field].label.trim();
+            var regex = /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g;
+            return self[field].label.match(regex);
+        }
     };
 
     var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
@@ -2435,14 +2439,17 @@ function inscriptionManagerDisplay(labels={}) {
     self.mailAddressField={label:labels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
     self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
     self.mailAddressField.checkInput = function(){
-        var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-        return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
+        if (self.mailAddressField.label){
+            var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+            return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
+        }
+
     };
     displayField("mailAddressField", self.mailAddressManipulator);
 
     var passwordCheckInput = function() {
-        var passTooShort = self.passwordField.labelSecret !== "" && self.passwordField.labelSecret.length<6;
-        var confTooShort = self.passwordConfirmationField.labelSecret !== "" && self.passwordConfirmationField.labelSecret.length<6;
+        var passTooShort = self.passwordField.labelSecret !== "" && self.passwordField.labelSecret && self.passwordField.labelSecret.length<6;
+        var confTooShort = self.passwordConfirmationField.labelSecret !== "" && self.passwordField.labelSecret && self.passwordConfirmationField.labelSecret.length<6;
         if (passTooShort || confTooShort){
             if (passTooShort){
                 self.passwordField.cadre.color(myColors.white, 3, myColors.red);
@@ -2462,7 +2469,7 @@ function inscriptionManagerDisplay(labels={}) {
             var message = autoAdjustText(self.passwordConfirmationField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
             message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
         }
-        else if (self.passwordField.labelSecret.length>=6){
+        else if (self.passwordField.labelSecret && self.passwordField.labelSecret.length>=6){
             self.passwordField.cadre.color(myColors.white, 1, myColors.black);
             self.passwordManipulator.ordonator.unset(3);
         }
@@ -2620,14 +2627,16 @@ function connectionManagerDisplay() {
                     if (self[field].secret) {
                         self[field].label = '';
                         self[field].labelSecret = contentarea.messageText;
-                        for (let i = 0; i < contentarea.messageText.length; i++) {
-                            self[field].label += '●';
+                        if (contentarea.messageText) {
+                            for (let i = 0; i < contentarea.messageText.length; i++) {
+                                self[field].label += '●';
+                            }
                         }
 
                     } else {
                         self[field].label = contentarea.messageText;
                     }
-                    displayField(field, manipulator);
+                    contentarea.messageText && displayField(field, manipulator);
                     manipulator.ordonator.unset(3);
                     alreadyDeleted || drawings.screen.remove(contentarea);
                     alreadyDeleted = true;
