@@ -627,8 +627,11 @@ function SVGUtil() {
         self.redCrossManipulator.last.add(self.redCross);
 
         var removeLink = function(parentGame,childGame) {
-            parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
-            childGame.parentGames.splice(childGame.parentGames.indexOf(parentGame),1);
+            parentGame.parentFormation.link.forEach(function(linkElement){
+               if (linkElement.parentGame === parentGame.id && linkElement.childGame === childGame){
+                   parentGame.parentFormation.link.splice(link.indexOf(linkElement),1);
+               }
+            });
         };
 
         self.redCrossClickHandler = function () {
@@ -673,11 +676,10 @@ function SVGUtil() {
         self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
         var removeAllLinks = function () {
-            game.childrenGames.forEach(function (childGame) {
-                childGame.parentGames.splice(childGame.parentGames.indexOf(game), 1);
-            });
-            game.parentGames.forEach(function (parentGame) {
-                parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game), 1);
+            game.parentFormation.link.forEach(function(linkElement){
+                if (linkElement.parentGame === game.id || linkElement.childGame === game.id){
+                    game.parentFormation.link.splice(game.parentFormation.link.indexOf(linkElement),1);
+                }
             });
         };
 
