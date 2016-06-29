@@ -367,7 +367,7 @@ function SVGUtil() {
      * @param manipulator
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1=0, layer2=1) {
+    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1) {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;

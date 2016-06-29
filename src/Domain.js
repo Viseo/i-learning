@@ -893,6 +893,7 @@ function Domain() {
         self.parent = parent;
 
         self.manipulator = new Manipulator(self);
+        self.manipulator.addOrdonator(10);
         self.manipulatorQuizzInfo = new Manipulator(self);
         self.questionCreatorManipulator = new Manipulator(self);
         self.questionCreatorManipulator.addOrdonator(6);
@@ -1228,7 +1229,6 @@ function Domain() {
         self.quizzInfoManipulator = new Manipulator(self);
         self.quizzInfoManipulator.addOrdonator(6);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
-        self.questionCreatorManipulator.addOrdonator(1);
         self.previewButtonManipulator = new Manipulator(self);
         self.previewButtonManipulator.addOrdonator(2);
         self.saveQuizButtonManipulator = new Manipulator(self);

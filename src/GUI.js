@@ -518,7 +518,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                 let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
                 self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
 
-                if (self.parent.questionPuzzle.questionsTab.length > self.parent.questionPuzzle.rows) {
+                if (self.parent.questionPuzzle.elementsArray.length > self.parent.questionPuzzle.rows) {
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x,
                         self.parent.questionPuzzleCoordinates.y,
                         self.parent.questionPuzzleCoordinates.w,
@@ -1609,7 +1609,7 @@ function questionSelectedQuestion() {
             let quizzManager = this.parentQuizz.parentFormation.quizzManager;
             let questionCreator = quizzManager.questionCreator;
             let questionPuzzle = quizzManager.questionPuzzle;
-            let questionsArray = questionPuzzle.questionsTab;
+            let questionsArray = questionPuzzle.elementsArray;
             let index = questionsArray.indexOf(this);
             this.delete();
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
@@ -1621,10 +1621,10 @@ function questionSelectedQuestion() {
                 svg.event(questionsArray[quizzManager.indexOfEditedQuestion].bordure, "click", {question:questionsArray[quizzManager.indexOfEditedQuestion]});
             }
             else{
-                let addEmptyElementX = questionsArray[0].obj.cadre.globalPoint(0, 0).x;
-                let addEmptyElementY = questionsArray[0].obj.cadre.globalPoint(0, 0).y;
+                let addEmptyElementX = questionsArray[0].bordure.globalPoint(0, 0).x;
+                let addEmptyElementY = questionsArray[0].bordure.globalPoint(0, 0).y;
                 quizzManager.indexOfEditedQuestion = index++;
-                svg.event(questionsArray[0].obj.cadre, "dblclick", {}); // dernier élément du tableau (AddEmptyElement)
+                svg.event(questionsArray[0].bordure, "dblclick", {}); // dernier élément du tableau (AddEmptyElement)
             }
         };
         this.redCrossManipulator = new Manipulator(this);
@@ -2274,7 +2274,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     y && (self.qPuzzleY=y);
     w && (self.qPuzzleW=w);
     h && (self.qPuzzleH=h);
-    self.questionPuzzle.manipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.puzzleManipulator.first);
+    self.questionPuzzle.manipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.manipulator.first);
     var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
     border.color([], 2, myColors.black);
     self.questionsPuzzleManipulator.ordonator.set(0, border);
