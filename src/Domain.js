@@ -924,7 +924,8 @@ class QuizzManager {
     }
     
     saveQuizz () {
-        let getObjectToSave =() => {
+        let getObjectToSave = () => {
+            console.log(this);
             this.tabQuestions = this.quizz.tabQuestions;
             (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
@@ -940,17 +941,18 @@ class QuizzManager {
         };
         
         let callback = () => {
-            this.quizz.title=this.quizzName;
-            this.quizz.tabQuestions=this.tabQuestions;
+            this.quizz.title = this.quizzName;
+            this.quizz.tabQuestions = this.tabQuestions;
             let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-            (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first)!==-1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+            (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
             this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
             this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
             this.display();
             console.log("Votre travail a été bien enregistré");
         };
 
-        Server.replaceQuizz(getObjectToSave(), this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
+        let quiz = getObjectToSave();
+        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
     };
 
     selectNextQuestion () {

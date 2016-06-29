@@ -2300,11 +2300,10 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
 }
 
 function quizzManagerDisplaySaveButton(x, y, w, h) {
-    var self = this;
-    self.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, self.saveQuizButtonManipulator);
-    svg.addEvent(self.saveButton.cadre, "click", self.saveQuizz);
-    svg.addEvent(self.saveButton.content, "click", self.saveQuizz);
-    self.saveQuizButtonManipulator.translator.move(x, y);
+    this.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
+    svg.addEvent(this.saveButton.cadre, "click", () => this.saveQuizz());
+    svg.addEvent(this.saveButton.content, "click", () => this.saveQuizz());
+    this.saveQuizButtonManipulator.translator.move(x, y);
 }
 
 function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
