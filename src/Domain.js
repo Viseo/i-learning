@@ -1012,7 +1012,7 @@ class Quizz {
         };
         this.miniaturePosition = {x:0, y:0};
         this.questionsWithBadAnswers = [];
-        this.score = 0;
+        this.score = (quizz.score ? quizz.score : 0);
         this.drawing = drawing;
         this.title = quizz.title ? quizz.title : '';
         this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex  : -1;

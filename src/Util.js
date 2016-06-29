@@ -883,7 +883,8 @@ function Bdd() {
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
         "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
-        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion"];
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
+        "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex"];
 
     ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
