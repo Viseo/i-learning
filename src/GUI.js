@@ -95,18 +95,17 @@ function answerDisplay (x, y, w, h) {
         };
         let redCrossClickHandler=()=>{
             self.redCrossManipulator.flush();
-            let index = self.parent.tabAnswer.indexOf(self);
-            self.parent.tabAnswer.splice(index,1);
+            let index = self.parentQuestion.tabAnswer.indexOf(self);
+            self.parentQuestion.tabAnswer.splice(index,1);
             //on splice le tableau
-            let questionCreator=self.parent.parentQuizz.parentFormation.quizzManager.questionCreator;
+            let questionCreator=self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
 
-            if(self.parent.tabAnswer.length<3){
-                svg.event(self.parent.tabAnswer[self.parent.tabAnswer.length-1].plus,'dblclick',{});
+            if(self.parentQuestion.tabAnswer.length<3){
+                svg.event(self.parentQuestion.tabAnswer[self.parentQuestion.tabAnswer.length-1].plus,'dblclick',{});
                 if(index===0){
-                    [self.parent.tabAnswer[0],self.parent.tabAnswer[1]]=[self.parent.tabAnswer[1],self.parent.tabAnswer[0]];
+                    [self.parentQuestion.tabAnswer[0],self.parentQuestion.tabAnswer[1]]=[self.parentQuestion.tabAnswer[1],self.parentQuestion.tabAnswer[0]];
                 }
             }
-
             questionCreator.display();
         };
         let mouseoverHandler=()=>{
