@@ -747,8 +747,8 @@ function formationDisplayFormation() {
             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
             if (tabElement instanceof Quizz) {
                 let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
-                svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
-                svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
             } else if(tabElement instanceof Bd) {
                 let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                 // Ouvrir le Bd creator du futur jeu Bd

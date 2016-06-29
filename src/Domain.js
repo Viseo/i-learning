@@ -149,7 +149,7 @@ function Domain() {
             self._acceptDrop = editable;
             self.editor = editor;
             self.checkInputContentArea = editable ? function (objCont) {
-                if (objCont.contentarea.messageText.match(REGEX)) {
+                if (objCont.contentarea.messageText && objCont.contentarea.messageText.match(REGEX)) {
                     self.label = objCont.contentarea.messageText;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;

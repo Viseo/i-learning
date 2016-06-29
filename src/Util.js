@@ -392,7 +392,6 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.position(0, Math.floor(svg.runtime.boundingRect(content.component).height)/4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -672,6 +671,7 @@ function SVGUtil() {
         var self = this;
         self.game = game;
         self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+        //self.icon.content.position(0,size/4);
         self.redCrossManipulator = new Manipulator(self);
         self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
