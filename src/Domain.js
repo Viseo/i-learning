@@ -584,7 +584,7 @@ function Domain() {
             if(linkElement.childGame===game.id)
             {
                 let parentGame = self.findGameById(linkElement.parentGame);
-                if( parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))
+                if(parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done")))
                 {
                     available = false;
                     return available
@@ -991,7 +991,7 @@ function Domain() {
         var self = this;
         self.miniatureManipulator = new Manipulator(self);
         self.parentFormation = parentFormation;
-        self.title = "BD";
+        self.title = bd.title || "BD";
         self.miniaturePosition = {x:0, y:0};
 
         self.getPositionInFormation = function () {
