@@ -1,6 +1,6 @@
 module.exports = function (app, fs) {
 
-    let db = require('../db'),
+    var db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies');
 
@@ -48,7 +48,7 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', (req, res) => {
-        let hasCookie = cookies.verify(req, (err, decode) => {
+        var hasCookie = cookies.verify(req, (err, decode) => {
             if (!err) {
                 var collection = db.get().collection('users');
                 collection.find().toArray((err, docs) => {
