@@ -1026,11 +1026,15 @@ function formationsManagerDisplay() {
                     var formationUser = user.formationsTab.find(formation => formation.formation === self.formationDisplayed._id);
                     formationUser && formationUser.gamesTab.forEach(function (game) {
                         let theGame = self.formationDisplayed.findGameById(game.game);
-                        if (theGame && game.index === theGame.tabQuestions.length) {
-                            theGame.status = "done";
-                        }
-                        else if (theGame){
-                            theGame.status = "inProgress";
+                        if (theGame) {
+                            theGame.currentQuestionIndex = game.index;
+                            theGame.questionsWithBadAnswers = game.questionsWithBadAnswers;
+                            if ( game.index === theGame.tabQuestions.length) {
+                                theGame.status = "done";
+                            }
+                            else {
+                                theGame.status = "inProgress";
+                            }
                         }
                     })
                 }
@@ -1939,6 +1943,13 @@ function quizzDisplay(x, y, w, h) {
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
+    }
+    else if (self.currentQuestionIndex < self.tabQuestions.length){
+        self.displayCurrentQuestion();
+    }
+    else {
+        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+        self.displayResult();
     }
 
     if(this.previewMode) {

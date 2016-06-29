@@ -1094,7 +1094,7 @@ function Domain() {
         self.score = 0;
         self.drawing = drawing;
         self.title = quizz.title ? quizz.title : '';
-        self.currentQuestionIndex = -1;
+        self.currentQuestionIndex = ( quizz.currentQuestionIndex ? quizz.currentQuestionIndex  : -1 );
         self.finalMessage = "";
         self.run = function (x, y, w, h) {
             var intervalToken = asyncTimerController.interval(function () {
@@ -1113,28 +1113,30 @@ function Domain() {
             runtime && self.display(x, y, w, h);
         };
 
+        self.displayCurrentQuestion = function(){
+            if (self.tabQuestions[self.currentQuestionIndex].imageSrc){
+                self.questionHeight = self.questionHeightWithImage;
+                self.answerHeight = self.answerHeightWithImage;
+            }
+            else {
+                self.questionHeight = self.questionHeightWithoutImage;
+                self.answerHeight = self.answerHeightWithoutImage;
+            }
+            self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
+            self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
+            self.tabQuestions[self.currentQuestionIndex].display(self.x, self.headerHeight + self.questionHeight/ 2 + MARGIN,
+                self.questionArea.w, self.questionHeight);
+            !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
+            self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.x, self.headerHeight + MARGIN + self.questionHeight,
+                self.questionArea.w, self.answerHeight);
+        };
+
         // !_! bof, y'a encore des display appelés ici
         self.nextQuestion = function(){
             if (self.currentQuestionIndex !== -1) {
                 self.quizzManipulator.last.remove(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
             }
-            self.displayCurrentQuestion = function(){
-                if (self.tabQuestions[self.currentQuestionIndex].imageSrc){
-                    self.questionHeight = self.questionHeightWithImage;
-                    self.answerHeight = self.answerHeightWithImage;
-                }
-                else {
-                    self.questionHeight = self.questionHeightWithoutImage;
-                    self.answerHeight = self.answerHeightWithoutImage;
-                }
-                self.quizzManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].questionManipulator.first);
-                self.tabQuestions[self.currentQuestionIndex].questionManipulator.flush();
-                self.tabQuestions[self.currentQuestionIndex].display(self.x, self.headerHeight + self.questionHeight/ 2 + MARGIN,
-                    self.questionArea.w, self.questionHeight);
-                !self.previewMode && self.tabQuestions[self.currentQuestionIndex].questionManipulator.last.add(self.tabQuestions[self.currentQuestionIndex].answersManipulator.translator);
-                self.tabQuestions[self.currentQuestionIndex].displayAnswers(self.x, self.headerHeight + MARGIN + self.questionHeight,
-                    self.questionArea.w, self.answerHeight);
-            };
+
             var callback = function () {
                 if (++self.currentQuestionIndex < self.tabQuestions.length) {
                     self.displayCurrentQuestion();

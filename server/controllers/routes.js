@@ -97,7 +97,7 @@ module.exports = function (app, fs) {
                         }
                     }
                     else {
-                        result.formationsTab[result.formationsTab.length]=formation;
+                        result.formationsTab[result.formationsTab.length]=newFormation;
                     }
                     formationsTab = result.formationsTab;
                 } else {
