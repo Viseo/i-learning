@@ -12,26 +12,31 @@
 <script src="lib/runtimemock.js"></script>
 <script src="lib/svghandler.js"></script>
 <script src="lib/svggui.js"></script>
+<script src="src/dbListener.js"></script>
+<script src="src/Domain.js"></script>
+<script src="src/Util.js"></script>
+<script src="src/GUI.js"></script>
+<script src="src/main.js"></script>
+<script src="test/Test-util.js"></script>
 <script>
     let targetRuntime = require("lib/targetruntime").targetRuntime;
     let SVG = require("lib/svghandler").SVG;
+    let gui = require("lib/svggui").Gui;
+    let Domain = require("src/Domain").Domain();
+    let Util = require("src/Util").Util();
+    let GUI = require("src/GUI").GUI;
+    let Gui = GUI();
+    Util.setRuntime(targetRuntime());
     svg = SVG(targetRuntime());
-</script>
-
-<script src="src/dbListener.js"></script>
-<script src="src/Util.js"></script>
-<script src="src/Domain.js"></script>
-<script src="src/GUI.js"></script>
-<script src="src/main.js"></script>
-<script>
-    SVGGlobalHandler();
-    Domain();
-    SVGUtil();
-    Bdd();
-    LearningGUI();
+    var param = {speed: 5, step: 100};
+    gui = gui(svg, param);
+    let domain = Domain.Domain();
+    Util.SVGGlobalHandler();
+    Gui.LearningGUI();
+    Util.SVGUtil();
+    Util.Bdd();
     setGlobalVariable();
     var dbListener = new DbListener(true, false);
-    var param = {speed: 5, step: 100};
     main();
 </script>
 </body>

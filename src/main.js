@@ -79,21 +79,21 @@ function main() {
     };
 
     let listFormations = function() {
-        Server.getAllFormationsNames(data => {
+        Util.Server.getAllFormationsNames(data => {
             let myFormations = JSON.parse(data).myCollection;
-            formationsManager = new FormationsManager(myFormations);
+            formationsManager = new Domain.FormationsManager(myFormations);
             formationsManager.display();
         });
     };
     
     inscriptionManager = new InscriptionManager();
     connexionManager = new ConnexionManager();
-    
-    Server.checkCookie(data => {
+
+    Util.Server.checkCookie(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-            data.user.admin ? AdminGUI() : LearningGUI();
+            data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
             listFormations();
         } else {
             connexionManager.display();
