@@ -360,11 +360,13 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for rectangle
+     * @param rgbCadre : color for rectangle
      * @param bgColor : background color for rectangle
      * @param textHeight : number, taille de la police
      * @param font
      * @param manipulator
+     * @param layer1
+     * @param layer2
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
     displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1=0, layer2=1) {
@@ -383,7 +385,7 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for circle
+     * @param rgbCadre : color for circle
      * @param bgColor : background color for circle
      * @param textHeight : number, taille de la police
      * @param font
@@ -402,7 +404,7 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for rectangle
+     * @param rgbCadre : color for rectangle
      * @param bgColor : background color for rectangle
      * @param textHeight : number, taille de la police
      * @param font
@@ -419,8 +421,8 @@ function SVGUtil() {
     /**
      * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
      * @param content: text to print
-     * @param x : X position
-     * @param y : Y position
+     * @param x : position
+     * @param y : position
      * @param wi : width
      * @param h : height
      * @param fontSize
@@ -541,6 +543,7 @@ function SVGUtil() {
      * @param w
      * @param h
      * @param manipulator
+     * @param side
      */
     drawChevron = function (x, y, w, h, manipulator, side = "right") {
         let baseWidth = 160;
@@ -1851,7 +1854,7 @@ function Bdd() {
             //            colorBordure: myColors.green, bgColor: myColors.grey
             //        },
             //        {
-            //            label: "1998", imageSrc: null, correct: false,
+            //            label: "1998", imageSrc: null, crrect: false,
             //            colorBordure: myColors.green, bgColor: myColors.grey
             //        },
             //        {

@@ -36,20 +36,34 @@ describe('Mocha marche bien', function() {
 var inspect = testutils.inspect;
 var checkScenario = testutils.checkScenario;
 
-var runtime;
-var svg;
-var guiSvgModule;
-var util;
-var gui;
-var domain;
-var mainModule;
-var adminModule;
-var testModule;
-var dbListenerModule;
-var inscriptionModule;
-var connexionModule;
-var server;
-var twinBcrypt;
+var runtime,
+    svg,
+    guiSvgModule,
+    util,
+    gui,
+    domain,
+    mainModule,
+    adminModule,
+    testModule,
+    dbListenerModule,
+    inscriptionModule,
+    connexionModule,
+    Server,
+    TwinBcrypt,
+    FormationsManager,
+    Level,
+    AddEmptyElement,
+    QuestionCreator,
+    Question,
+    Answer,
+    ReturnButton,
+    Formation,
+    Library,
+    Header,
+    Puzzle,
+    QuizzManager,
+    Quizz,
+    Bd;
 
 describe('Quizz game', function () {
 
@@ -61,10 +75,7 @@ describe('Quizz game', function () {
         gui = require("../src/GUI");
         domain = require("../src/Domain");
         mainModule = require("../src/main");
-        adminModule = require("../src/admin");
         testModule = require("../test/testTest");
-        inscriptionModule = require("../src/inscription");
-        connexionModule = require("../src/main");
         dbListenerModule = require("../src/dbListener");
         runtime.declareAnchor('content');
         util.SVGUtil();
@@ -72,27 +83,12 @@ describe('Quizz game', function () {
         util.setSvg(svg);
         util.setGui(guiSvgModule);
         util.setRuntime(runtime);
-        mainModule.setSvg(svg);
-        mainModule.setUtil(util);
-        adminModule.setSvg(svg);
-        adminModule.setUtil(util);
-        testModule.setUtil(util);
-        testModule.setSvg(svg);
-        inscriptionModule.setSvg(svg);
-        connexionModule.setSvg(svg);
-        //quizzManagerModule.setSvg(svg);
-        //quizzManagerModule.setUtil(util);
-        domain.setUtil(util);
-        domain.Domain();
-        domain.setRuntime(runtime);
-        domain.setSvg(svg);
-        gui.setDomain(domain);
-        gui.LearningGUI();
-        gui.setSVG(svg);
-        gui.setGui(guiSvgModule);
-        gui.setRuntime(runtime);
         dbListener = new dbListenerModule.DbListener(false, true);
         Server = util.Server;
+        mainModule.setSvg(svg);
+        mainModule.setUtil(util);
+        testModule.setUtil(util);
+        testModule.setSvg(svg);
         ReturnButton = util.ReturnButton;
         Answer = domain.Answer;
         Question = domain.Question;
@@ -107,34 +103,32 @@ describe('Quizz game', function () {
         QuizzManager = domain.QuizzManager;
         Quizz = domain.Quizz;
         Bd = domain.Bd;
+        domain.setUtil(util);
+        domain.Domain();
+        domain.setRuntime(runtime);
+        domain.setSvg(svg);
+        gui.setDomain(domain);
+        gui.LearningGUI(domain);
+        gui.setSVG(svg);
+        gui.setGui(guiSvgModule);
+        gui.setRuntime(runtime);
+
     });
 
-    // it("plays a complete quizz game using resize", function (done) {
-    //     this.timeout(100000);
-    //     var jsonFile = "./log/testQuizzResize.json";
-    //     var execute = function () {
-    //         var globalVariables = mainModule.setGlobalVariable();
-    //         domain.setGlobalVariables(globalVariables);
-    //         checkScenario(
-    //             function () {
-    //                 mainModule.main(myQuizzTest);
-    //             }, jsonFile, 'content', runtime, done);
-    //     };
-    //     runTest(jsonFile, execute);
-    // });
-
     it("plays a complete quizz game with 2 Answers correct", function (done) {
-        this.timeout(100000);
         var jsonFile = "./log/testQuizzTwoRightAnswers.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+        testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
+            var execute = function () {
+                var globalVariables = mainModule.setGlobalVariable();
+                domain.setGlobalVariables(globalVariables);
+                checkScenario(
+                    function () {
+                        mainModule.main(myQuizzTest);
+                    }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
+        this.timeout(100000);
     });
     it("plays a complete quizz game with all wrong", function (done) {
         this.timeout(100000);
