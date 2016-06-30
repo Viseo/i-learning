@@ -664,7 +664,7 @@ class Formation {
     }
 
     clickToAdd () {
-        this.mouseUpGraphBlock = function (event) {
+        this.mouseUpGraphBlock = event => {
             this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
             this.library.gameSelected && this.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
             this.library.gameSelected = null;
