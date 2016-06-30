@@ -751,6 +751,13 @@ function formationDisplayFormation() {
                 tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
             } else if(tabElement instanceof Bd) {
                 let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                var clickBdHandler = function(event){
+                    //TEMPORAIRE
+                    let targetBd = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+                    bdDisplay(targetBd);
+                }
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
                 // Ouvrir le Bd creator du futur jeu Bd
             }
         };
@@ -2019,6 +2026,25 @@ function gameDisplayMiniature(size, special){
     return new Miniature(self, size, special);
 }
 
+function bdDisplay(bd){
+    mainManipulator.ordonator.unset(1);
+    var header = new Header(bd.title);
+    header.display(bd.title);
+    (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
+    bd.returnButton.display(0, drawing.height*header.size + 2*MARGIN, 20, 20);
+    bd.returnButton.setHandler(self.previewMode ? (event) => {
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.manipulator.flush();
+        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
+        target.parentObj.parent.parentFormation.quizzManager.display();
+    } : (event) => {
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.manipulator.flush();
+        !playerMode && target.parentObj.parent.parentFormation.displayFormation();
+        playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
+    });
+}
+
 function quizzDisplayScore(color){
     let self = this;
     let autoColor;
@@ -2764,6 +2790,7 @@ var AdminGUI = function (){
     Quizz.prototype.displayResult = quizzDisplayResult;
     Quizz.prototype.displayMiniature = gameDisplayMiniature;
     Bd.prototype.displayMiniature = gameDisplayMiniature;
+    Bd.prototype.display = bdDisplay;
     Quizz.prototype.displayScore = quizzDisplayScore;
     Puzzle.prototype.display = puzzleDisplay;
     Puzzle.prototype.initTiles = puzzleInitTiles;

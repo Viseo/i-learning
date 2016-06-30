@@ -169,7 +169,7 @@ class Question {
         this.bordure = null;
         this.content = null;
     }
-    
+
     remove () {
         let index = this.parentQuizz.tabQuestions.indexOf(this);
         if(index!== -1){
@@ -179,7 +179,7 @@ class Question {
         else{
             return false;
         }
-    }    
+    }
 }
 
 class QuestionCreator {
@@ -215,7 +215,7 @@ class QuestionCreator {
 
         this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
     }
-    
+
     loadQuestion (quest) {
         this.linkedQuestion = quest;
         quest.label && (this.label = quest.label);
@@ -274,7 +274,7 @@ class AddEmptyElement {
         this.fontSize = 20;
         this.parent = parent;
     }
-    
+
     remove () {
         console.log("Tentative de suppression d'AddEmptyElement");
     };
@@ -299,7 +299,7 @@ class Level {
             this.gamesTab.splice(index, 1);
         }
     }
-    
+
     addGame (game, index) {
         if(!index) {
             this.gamesTab.push(game);
@@ -523,7 +523,7 @@ class Formation {
                 });
                 return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
             };
-            
+
             let replaceFormation = () => {
                 let callbackCheckName = data => {
                     let callbackReplace = () => {
@@ -602,7 +602,7 @@ class Formation {
         });
         return theGame;
     };
-    
+
     isGameAvailable (game) {
         let available = true;
         this.link.forEach(linkElement => {
@@ -636,7 +636,7 @@ class Formation {
         this.clippingManipulator.flush();
 
     }
-    
+
     checkInputTextArea (myObj) {
         if (myObj.textarea.messageText.match(this.regex)) {
             this.labelValidInput = true;
@@ -721,7 +721,7 @@ class Library {
         this.font = lib.font ? lib.font : "Arial";
         this.fontSize = lib.fontSize ? lib.fontSize : this.fontSize = 20;
     }
-    
+
 
     run (x, y, w, h, callback) {
         this.intervalToken = asyncTimerController.interval(() => {
@@ -924,7 +924,7 @@ class QuizzManager {
         this.saveButtonHeightRatio = 0.1;
         this.marginRatio = 0.03;
     }
-    
+
     saveQuizz () {
         let getObjectToSave = () => {
             console.log(this);
@@ -941,7 +941,7 @@ class QuizzManager {
                 gameIndex: this.quizz.gameIndex
             };
         };
-        
+
         let callback = () => {
             this.quizz.title = this.quizzName;
             this.quizz.tabQuestions = this.tabQuestions;
@@ -1035,7 +1035,7 @@ class Quizz {
             this.tabQuestions.push(new Question(defaultQuestion, this));
         }
     }
-    
+
     run (x, y, w, h) {
         var intervalToken = asyncTimerController.interval(() => {
             if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
@@ -1085,7 +1085,7 @@ class Quizz {
                 this.displayResult();
             }
         };
-        
+
         if (this.previewMode) {
             if (this.currentQuestionIndex === -1) {
                 this.currentQuestionIndex++;
@@ -1120,8 +1120,12 @@ class Bd {
         this.parentFormation = parentFormation;
         this.title = "BD";
         this.miniaturePosition = {x:0, y:0};
+        this.returnButtonManipulator = new Manipulator(this);
+        this.returnButton = new ReturnButton(this);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.last.add(this.returnButtonManipulator.first);
     }
-    
+
 
     getPositionInFormation () {
         var gameIndex, levelIndex;
