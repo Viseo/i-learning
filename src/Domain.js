@@ -493,13 +493,13 @@ exports.Domain = function() {
                     let callbackCheckName = (data) => {
                         let formationWithSameName = JSON.parse(data).formation;
                         if (!formationWithSameName) {
-                            Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
+                            Util.Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
                         }
                         else {
                             displayErrorMessage(messageUsedName);
                         }
                     };
-                    Server.getFormationByName(this.label, callbackCheckName);
+                    Util.Server.getFormationByName(this.label, callbackCheckName);
                 };
 
                 let getObjectToSave = () => {
@@ -540,16 +540,16 @@ exports.Domain = function() {
                                 if (formationWithSameName == newFormation) {
                                     displaySaveMessage(messageNoModification, displayQuizzManager);
                                 } else {
-                                    Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
+                                    Util.Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
                                 }
                             } else if (formationWithSameName && formationWithSameName._id !== this._id) {
                                 displayErrorMessage(messageUsedName);
                             }
                         } else {
-                            Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
+                            Util.Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
                         }
                     };
-                    Server.getFormationByName(this.label, callbackCheckName);
+                    Util.Server.getFormationByName(this.label, callbackCheckName);
                 };
 
                 this._id ? replaceFormation() : addNewFormation();
@@ -792,7 +792,7 @@ exports.Domain = function() {
             this.userManipulator = new Manipulator(this);
             this.userManipulator.addOrdonator(6);
             this.label = "I-learning";
-            this.size = Util.HEADER_SIZE;
+            this.size = HEADER_SIZE;
         }
     }
 
@@ -954,7 +954,7 @@ exports.Domain = function() {
             };
 
             let quiz = getObjectToSave();
-            Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
+            Util.Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
         };
 
         selectNextQuestion () {
@@ -1095,7 +1095,7 @@ exports.Domain = function() {
                 console.log(this.currentQuestionIndex);
                 this.displayCurrentQuestion();
             } else {
-                Server.sendProgressToServer(this);
+                Util.Server.sendProgressToServer(this);
                 callback();
             }
         }
@@ -1278,7 +1278,7 @@ exports.Domain = function() {
         self.tabForm =[];
 
         let listFormations = function() {
-            Server.getAllFormationsNames(data => {
+            Util.Server.getAllFormationsNames(data => {
                 let myFormations = JSON.parse(data).myCollection;
                 formationsManager = new FormationsManager(myFormations);
                 formationsManager.display();
@@ -1298,11 +1298,11 @@ exports.Domain = function() {
                     emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black)});
                 },5000);
             } else {
-                Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
+                Util.Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
                     data = data && JSON.parse(data);
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                        data.user.admin ? AdminGUI() : LearningGUI();
+                        data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
                         listFormations();
                     } else {
                         let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);

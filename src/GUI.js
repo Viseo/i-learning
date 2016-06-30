@@ -350,7 +350,7 @@ exports.GUI = function() {
                         manip.first.parent.remove(manip.first);
                         var target = drawings.background.getTarget(event.clientX, event.clientY);
                         if (target && target.parent && target.parent.parentManip) {
-                            if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                            if (!(target.parent.parentManip.parentObject instanceof Domain.Library)) {
                                 self.dropAction(svgObj, event);
                             }
                             else {
@@ -433,8 +433,8 @@ exports.GUI = function() {
                                 let targetChild = graph.getTarget(event.clientX, event.clientY);
                                 let booleanInstanceOfCorrect = function(e) {
                                     return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                        (e.parent.parentManip.parentObject instanceof Quizz ||
-                                        e.parent.parentManip.parentObject instanceof Bd);
+                                        (e.parent.parentManip.parentObject instanceof Domain.Quizz ||
+                                        e.parent.parentManip.parentObject instanceof Domain.Bd);
                                 };
                                 if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                     createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
@@ -483,10 +483,10 @@ exports.GUI = function() {
                     self.parent.linkedQuestion.tabAnswer.push(newAnswer);
 
                     if(self.parent.linkedQuestion.tabAnswer.length < self.parent.MAX_ANSWERS) {
-                        self.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
+                        self.parent.linkedQuestion.tabAnswer.push(new Domain.AddEmptyElement(self.parent, self.type));
                     }
 
-                    self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, self.parent.coordinatesAnswers, true, self);
+                    self.parent.puzzle = new Domain.Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, self.parent.coordinatesAnswers, true, self);
                     self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.puzzleManipulator.first);
                     self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
                         self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w,
@@ -498,11 +498,11 @@ exports.GUI = function() {
                     (self.parent.quizz.tabQuestions.length>0) && (self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false);
                     self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
 
-                    let newQuestion = new Question(null, self.parent.quizz);
+                    let newQuestion = new Domain.Question(null, self.parent.quizz);
                     newQuestion.selected = true;
                     self.parent.quizz.tabQuestions.push(newQuestion);
 
-                    let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
+                    let AddNewEmptyQuestion = new Domain.AddEmptyElement(self.parent, 'question');
                     self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
 
                     if (self.parent.questionPuzzle.questionsTab.length > self.parent.questionPuzzle.rows) {
@@ -603,7 +603,7 @@ exports.GUI = function() {
         let clickQuizHandler = (event) => {
             let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
             drawing.currentPageDisplayed = "QuizPreview";
-            let quizz = new Quizz(targetQuizz);
+            let quizz = new Domain.Quizz(targetQuizz);
             quizz.puzzleLines = 1;
             quizz.puzzleRows = 3;
             header.display(quizz.title);
@@ -1041,7 +1041,7 @@ exports.GUI = function() {
         }
 
         function onClickNewFormation() {
-            var formation = new Formation({}, self);
+            var formation = new Domain.Formation({}, self);
             self.formationDisplayed=formation;
             formation.parent = self;
             formation.displayFormation();
@@ -1334,7 +1334,7 @@ exports.GUI = function() {
                 for (i = startPosition; i < (startPosition + self.rows); i++) {
                     for (j = 0; j < self.lines; j++) {
                         if (count < self.questionsTab.length) {
-                            if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            if (self.completeBanner[i][j] instanceof Domain.AddEmptyElement) {
                                 self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].manipulator.first);
                             } else {
                                 self.questionWithBadAnswersManipulator.last.add(self.completeBanner[i][j].questionManipulator.first);
@@ -1351,7 +1351,7 @@ exports.GUI = function() {
                                 svg.addEvent(self.completeBanner[i][j].raphImage, 'click', self.completeBanner[i][j].imageEventHandler);
                             }
 
-                            if (self.completeBanner[i][j] instanceof AddEmptyElement) {
+                            if (self.completeBanner[i][j] instanceof Domain.AddEmptyElement) {
                                 self.completeBanner[i][j].manipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
                             } else {
                                 self.completeBanner[i][j].questionManipulator.translator.move(posX + self.tileWidth / 2 - w / 2, posY + self.tileHeight / 2 + MARGIN);
@@ -1622,7 +1622,7 @@ exports.GUI = function() {
                 let questionsArray = questionPuzzle.questionsTab;
                 let index = questionsArray.indexOf(this);
                 this.remove();
-                (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
+                (questionsArray[index] instanceof Domain.AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
                 resetQuestionsIndex(this.parentQuizz);
                 if(index !== -1) {
                     let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
@@ -1861,11 +1861,11 @@ exports.GUI = function() {
         };
         showTitle();
         // bloc Answers
-        if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
-            self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
+        if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof Domain.AddEmptyElement)) {
+            self.linkedQuestion.tabAnswer.push(new Domain.AddEmptyElement(self, 'answer'));
         }
         self.puzzle && self.questionCreatorManipulator.last.remove(self.puzzle.puzzleManipulator.first);
-        self.puzzle = new Puzzle(2, 4, self.linkedQuestion.tabAnswer, self.coordinatesAnswers, true, self);
+        self.puzzle = new Domain.Puzzle(2, 4, self.linkedQuestion.tabAnswer, self.coordinatesAnswers, true, self);
         self.questionCreatorManipulator.last.children.indexOf(self.puzzle.puzzleManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.puzzleManipulator.first);
         self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , 0);
     }
@@ -1934,7 +1934,7 @@ exports.GUI = function() {
             self.displayCurrentQuestion();
         }
         else {
-            self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+            self.puzzle = new Domain.Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
             self.displayResult();
         }
 
@@ -1985,7 +1985,7 @@ exports.GUI = function() {
     }
     function bdDisplay(bd){
         mainManipulator.ordonator.unset(1);
-        var header = new Header(bd.title);
+        var header = new Domain.Header(bd.title);
         header.display(bd.title);
         (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
         bd.returnButton.display(0, drawing.height*header.size + 2*MARGIN, 20, 20);
@@ -2311,7 +2311,7 @@ exports.GUI = function() {
             self.quizz.tabQuestions[i].contentEventHandler = self.questionClickHandler;
             self.quizz.tabQuestions[i].imageEventHandler = self.questionClickHandler;
         }
-        self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
+        self.questionPuzzle = new Domain.Puzzle(1, 6, self.quizz.tabQuestions, self.coordinatesQuestion, false, self);
         self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.puzzleManipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.puzzleManipulator.first);
         self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, index);
     }
@@ -2719,37 +2719,37 @@ exports.GUI = function() {
     var AdminGUI = function (){
         domain && domain.Domain();
         playerMode = false;
-        Answer.prototype.display = answerDisplay;
-        Library.prototype.display = libraryDisplay;
-        Header.prototype.display = headerDisplay;
-        AddEmptyElement.prototype.display = addEmptyElementDisplay;
-        Formation.prototype.displayMiniature = formationDisplayMiniature;
-        Formation.prototype.displayFormation = formationDisplayFormation;
-        Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
-        Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
-        FormationsManager.prototype.display = formationsManagerDisplay;
-        Question.prototype.display = questionDisplay;
-        Question.prototype.displayAnswers = questionDisplayAnswers;
-        Question.prototype.selectedQuestion = questionSelectedQuestion;
-        Question.prototype.elementClicked = questionElementClicked;
-        QuestionCreator.prototype.display = questionCreatorDisplay;
-        QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
-        QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
-        Quizz.prototype.display = quizzDisplay;
-        Quizz.prototype.displayResult = quizzDisplayResult;
-        Quizz.prototype.displayMiniature = gameDisplayMiniature;
-        Bd.prototype.displayMiniature = gameDisplayMiniature;
-        Bd.prototype.display = bdDisplay;
-        Quizz.prototype.displayScore = quizzDisplayScore;
-        Puzzle.prototype.display = puzzleDisplay;
-        Puzzle.prototype.initTiles = puzzleInitTiles;
-        QuizzManager.prototype.display = quizzManagerDisplay;
-        QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
-        QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
-        QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
-        QuizzManager.prototype.displayQuestionsPuzzle = quizzManagerDisplayQuestionPuzzle;
+        Domain.Answer.prototype.display = answerDisplay;
+        Domain.Library.prototype.display = libraryDisplay;
+        Domain.Header.prototype.display = headerDisplay;
+        Domain.AddEmptyElement.prototype.display = addEmptyElementDisplay;
+        Domain.Formation.prototype.displayMiniature = formationDisplayMiniature;
+        Domain.Formation.prototype.displayFormation = formationDisplayFormation;
+        Domain.Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
+        Domain.Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
+        Domain.FormationsManager.prototype.display = formationsManagerDisplay;
+        Domain.Question.prototype.display = questionDisplay;
+        Domain.Question.prototype.displayAnswers = questionDisplayAnswers;
+        Domain.Question.prototype.selectedQuestion = questionSelectedQuestion;
+        Domain.Question.prototype.elementClicked = questionElementClicked;
+        Domain.QuestionCreator.prototype.display = questionCreatorDisplay;
+        Domain.QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
+        Domain.QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
+        Domain.Quizz.prototype.display = quizzDisplay;
+        Domain.Quizz.prototype.displayResult = quizzDisplayResult;
+        Domain.Quizz.prototype.displayMiniature = gameDisplayMiniature;
+        Domain.Bd.prototype.displayMiniature = gameDisplayMiniature;
+        Domain.Bd.prototype.display = bdDisplay;
+        Domain.Quizz.prototype.displayScore = quizzDisplayScore;
+        Domain.Puzzle.prototype.display = puzzleDisplay;
+        Domain.Puzzle.prototype.initTiles = puzzleInitTiles;
+        Domain.QuizzManager.prototype.display = quizzManagerDisplay;
+        Domain.QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
+        Domain.QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
+        Domain.QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
+        Domain.QuizzManager.prototype.displayQuestionsPuzzle = quizzManagerDisplayQuestionPuzzle;
         ConnexionManager.prototype.display = connexionManagerDisplay;
-        header = new Header();
+        header = new Domain.Header();
     };
     var LearningGUI = function (){
         domain && domain.Domain();

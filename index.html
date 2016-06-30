@@ -32,9 +32,9 @@
     gui = gui(svg, param);
     let domain = Domain.Domain();
     Util.SVGGlobalHandler();
+    Util.Bdd();
     Gui.LearningGUI();
     Util.SVGUtil();
-    Util.Bdd();
     setGlobalVariable();
     var dbListener = new DbListener(true, false);
     main();
