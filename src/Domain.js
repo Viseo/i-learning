@@ -1053,28 +1053,28 @@ class Quizz {
         runtime && this.display(x, y, w, h);
     }
 
+    displayCurrentQuestion() {
+        if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
+            this.questionHeight = this.questionHeightWithImage;
+            this.answerHeight = this.answerHeightWithImage;
+        } else {
+            this.questionHeight = this.questionHeightWithoutImage;
+            this.answerHeight = this.answerHeightWithoutImage;
+        }
+        this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
+        this.tabQuestions[this.currentQuestionIndex].questionManipulator.flush();
+        this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight/ 2 + MARGIN,
+            this.questionArea.w, this.questionHeight);
+        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+        this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
+            this.questionArea.w, this.answerHeight);
+    };
+
     // !_! bof, y'a encore des display appelés ici
     nextQuestion () {
         if (this.currentQuestionIndex !== -1) {
             this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
         }
-
-        this.displayCurrentQuestion = () => {
-            if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
-                this.questionHeight = this.questionHeightWithImage;
-                this.answerHeight = this.answerHeightWithImage;
-            } else {
-                this.questionHeight = this.questionHeightWithoutImage;
-                this.answerHeight = this.answerHeightWithoutImage;
-            }
-            this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
-            this.tabQuestions[this.currentQuestionIndex].questionManipulator.flush();
-            this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight/ 2 + MARGIN,
-                this.questionArea.w, this.questionHeight);
-            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
-            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
-                this.questionArea.w, this.answerHeight);
-        };
 
         let callback = () => {
             if (++this.currentQuestionIndex < this.tabQuestions.length) {

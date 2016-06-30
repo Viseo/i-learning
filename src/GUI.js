@@ -2318,6 +2318,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
             });
 
             this.previewQuiz = new Quizz(self.quizz, true);
+            this.previewQuiz.currentQuestionIndex = self.indexOfEditedQuestion;
             this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
         };
         if(validation) {
