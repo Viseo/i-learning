@@ -108,6 +108,7 @@ function answerDisplay (x, y, w, h) {
 
             questionCreator.display();
         };
+
         let mouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
                 self.redCrossManipulator = new Manipulator(self);
@@ -122,6 +123,7 @@ function answerDisplay (x, y, w, h) {
             //console.log('héo');
             //self.linkedQuestion.image.component.listeners.mouseout();
         };
+
         let showTitle = function () {
             let text = (self.label) ? self.label : self.labelDefault,
                 color = (self.label) ? myColors.black : myColors.grey;
@@ -135,13 +137,13 @@ function answerDisplay (x, y, w, h) {
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
-            self.answerNameValidInput ? (self.obj.cadre.color([0,0,0,0],1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color([0,0,0,0],2,myColors.red).fillOpacity(0.001));
+            self.answerNameValidInput ? (self.obj.cadre.color([0, 0, 0, 0], 1, myColors.black).fillOpacity(0.001)):(self.obj.cadre.color([0,0,0,0],2,myColors.red).fillOpacity(0.001));
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
 
             let editor = (self.editor.puzzle ? self.editor : self.editor.parent);
-            editor.puzzle.manipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
+            //editor.puzzle.manipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
 
             svg.addEvent(self.obj.content, 'dblclick', dblclickEditionAnswer);
             svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
@@ -222,6 +224,7 @@ function answerDisplay (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
+
         self.manipulator.flush();
         showTitle();
 
@@ -1505,7 +1508,7 @@ function questionCreatorDisplay (x, y, w, h) {
 
 function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var self = this;
-    var size = self.puzzle.tileHeight*0.2;
+    var size = self.questionBlock.rect.height*0.05;
     self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
     var toggleHandler = function(event){
         self.target = drawings.background.getTarget(event.clientX, event.clientY);
@@ -1539,6 +1542,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
     (!self.completeBanner) && (self.completeBanner = []);
+
     self.quizzType.forEach(function(type){
 
         if(self.completeBanner[i] && self.completeBanner[i].manipulator){
@@ -1560,18 +1564,18 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
         i++;
     });
+
     self.activeQuizzType = (self.multipleChoice) ? self.quizzType[1] : self.quizzType[0];
-    self.toggleButtonManipulator.translator.move(0, y);
+    self.toggleButtonManipulator.translator.move(0,0);
 }
 
 function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
     self.questionCreatorManipulator.flush();
-    self.questionBlock = {rect: new svg.Rect(w, h).color([], 3, myColors.black).position(w / 2, y + h / 2)};
+    self.questionBlock = {rect: new svg.Rect(w, h).color([], 3, myColors.black)};
     self.questionBlock.rect.fillOpacity(0.001);
     self.questionCreatorManipulator.last.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.last.add(self.questionBlock.rect);
-    //self.questionCreatorManipulator.ordonator.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.ordonator.set(5, self.questionBlock.rect);
     self.questionCreatorManipulator.last.children.indexOf(self.questionManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.questionManipulator.first);
     var showTitle = function () {
         var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
@@ -1624,8 +1628,8 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         self.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(self.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
-
-        self.manipulator.first.move(w/2, y + self.toggleButtonHeight + 2 * MARGIN + self.questionBlock.title.cadre.height/2);
+        self.questionManipulator.translator.move(0, -self.h/2+self.questionBlock.title.cadre.height/2 + self.toggleButtonHeight + MARGIN);
+        self.manipulator.translator.move(w/2, y + h/2);
     };
 
     var dblclickEditionQuestionBlock = function () {
@@ -1691,13 +1695,13 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         svg.runtime.addEvent(textarea.component, "input", oninput);
     };
 
-    x && (self.x = x);
-    y && (self.y = y);
-    w && (self.w = w);
-    h && (self.h = h);
+    (typeof x !== "undefined") && (self.x = x);
+    (typeof y !== "undefined")  && (self.y = y);
+    (typeof w !== "undefined")  && (self.w = w);
+    (typeof h !== "undefined")  && (self.h = h);
     self.coordinatesAnswers = {
-        x: self.x + MARGIN,
-        y: self.y + 3 * MARGIN + self.h * 0.25,
+        x: self.x,
+        y: 0, //self.y + 3 * MARGIN ,
         w: self.w - 2 * MARGIN,
         h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
     };
@@ -1707,7 +1711,8 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
     //self.questionCreatorManipulator.last.children.indexOf(self.questionCreator.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
-    self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y+self.toggleButtonHeight + self.questionBlock.title.cadre.height/2 - 2*MARGIN, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
+    self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
+    self.puzzle.puzzleCadre.color(myColors.red,3, myColors.blue);
 }
 
 function quizzDisplay(x, y, w, h) {
@@ -1937,7 +1942,7 @@ function quizzManagerDisplay(){
 
     var displayFunctions = () => {
         self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-        //self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
+        self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
         self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
             self.questCreaWidth-self.globalMargin.width, self.questCreaHeight);
         self.displayPreviewButton(drawing.width/2-self.ButtonWidth, self.height - self.previewButtonHeight/2-MARGIN/2,
@@ -2127,7 +2132,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionsPuzzleManipulator.first.move(self.qPuzzleX + self.qPuzzleW / 2, self.qPuzzleY);
     self.coordinatesQuestion = {
         x: 0,
-        y: -self.questionsPuzzleHeight / 2 + self.globalMargin.height / 2,
+        y: 0,
         w: border.width - self.globalMargin.width / 2,
         h: self.questionsPuzzleHeight - self.globalMargin.height
     };
@@ -2139,6 +2144,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self);
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.manipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.manipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, true);
+    self.questionPuzzle.puzzleCadre.color(myColors.green,3, myColors.yellow);
 }
 
 function inscriptionManagerDisplay(labels={}) {

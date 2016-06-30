@@ -968,7 +968,7 @@ class Puzzle {
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
         (typeof h !== "undefined") && (this.height = h);
-        //this.manipulator.translator.move(this.x, this.y);
+        this.manipulator.translator.move(this.x, this.y);
         this.chevronSize = Math.max(Math.min(this.height*0.15, this.width*0.1, this.chevronMaxSize), this.chevronMinSize);
         this.visibleArea = {
             width: this.width - 2*this.chevronSize,
