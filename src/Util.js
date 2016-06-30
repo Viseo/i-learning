@@ -667,7 +667,8 @@ function SVGUtil() {
     Miniature = function(game, size, special) {
         var self = this;
         self.game = game;
-        self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+        var scoreSize = 13;
+        self.icon = displayTextWithCircle(game.title, size, size-scoreSize-MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
         self.redCrossManipulator = new Manipulator(self);
         self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
@@ -745,7 +746,10 @@ function SVGUtil() {
                     rect.position(size/2, -size/2);
                     self.infosManipulator.ordonator.set(0, rect);
                     self.infosManipulator.ordonator.set(1, iconInfos);
+                    var resultString = game.tabQuestions.length - game.questionsWithBadAnswers.length + " / " + game.tabQuestions.length;
                     game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    result = autoAdjustText(resultString, 0, 0, size/2, size/2, scoreSize, "Arial", game.miniatureManipulator, 2);
+                    result.text.position(0,size/2-MARGIN/2);
                     break;
                 case "inProgress":
                     var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);

@@ -766,7 +766,7 @@ function formationDisplayFormation() {
             displayLevel(self.graphCreaWidth, self.graphCreaHeight, self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
-                tabElement.miniatureManipulator.addOrdonator(2);
+                tabElement.miniatureManipulator.addOrdonator(3);
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 if (typeof tabElement.miniature === "undefined") {
                     (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
