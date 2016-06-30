@@ -1250,8 +1250,8 @@ InscriptionManager = function () {
 };
 ////////////////// end of InscriptionManager.js //////////////////////////
 
-////////////////// ConnectionManager.js //////////////////////////
-ConnectionManager = function () {
+////////////////// ConnexionManager.js //////////////////////////
+ConnexionManager = function () {
 
     let self = this;
 
@@ -1262,23 +1262,23 @@ ConnectionManager = function () {
     self.mailAddressManipulator.addOrdonator(4);
     self.passwordManipulator = new Manipulator(self);
     self.passwordManipulator.addOrdonator(4);
-    self.connectionButtonManipulator=new Manipulator(self);
-    self.connectionButtonManipulator.addOrdonator(4);
+    self.connexionButtonManipulator=new Manipulator(self);
+    self.connexionButtonManipulator.addOrdonator(4);
 
     self.manipulator.last.add(self.mailAddressManipulator.first);
     self.manipulator.last.add(self.passwordManipulator.first);
-    self.manipulator.last.add(self.connectionButtonManipulator.first);
+    self.manipulator.last.add(self.connexionButtonManipulator.first);
 
     // HEIGHT
-    self.connectionButtonHeightRatio = 0.075;
+    self.connexionButtonHeightRatio = 0.075;
 
-    self.connectionButtonHeight = drawing.height * self.connectionButtonHeightRatio;
-    self.connectionButtonWidth = 200;
+    self.connexionButtonHeight = drawing.height * self.connexionButtonHeightRatio;
+    self.connexionButtonWidth = 200;
 
     self.mailAddressLabel = "Adresse mail :";
     self.passwordLabel = "Mot de passe :";
 
-    self.connectionButtonLabel = "Connexion";
+    self.connexionButtonLabel = "Connexion";
     self.tabForm =[];
 
     let listFormations = function() {
@@ -1289,16 +1289,16 @@ ConnectionManager = function () {
         });
     };
 
-    self.connectionButtonHandler = function() {
+    self.connexionButtonHandler = function() {
 
         let emptyAreas = self.tabForm.filter(field => field.label === '');
         emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red)});
 
         if (emptyAreas.length > 0) {
-            let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
-            message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height + MARGIN);
+            let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
             svg.timeout(function() {
-                self.connectionButtonManipulator.ordonator.unset(3);
+                self.connexionButtonManipulator.ordonator.unset(3);
                 emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black)});
             },5000);
         } else {
@@ -1309,15 +1309,15 @@ ConnectionManager = function () {
                     data.user.admin ? AdminGUI() : LearningGUI();
                     listFormations();
                 } else {
-                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connectionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.connectionButton.cadre.height + MARGIN);
-                    svg.timeout(() => {self.connectionButtonManipulator.ordonator.unset(3)}, 5000);
+                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
+                    svg.timeout(() => {self.connexionButtonManipulator.ordonator.unset(3)}, 5000);
                 }
             });
         }
     };
 };
-////////////////// end of ConnectionManager.js //////////////////////////
+////////////////// end of ConnexionManager.js //////////////////////////
 
 if(typeof exports !== "undefined") {
     exports.Domain = Domain;

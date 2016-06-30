@@ -64,7 +64,7 @@ describe('Quizz game', function () {
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
         inscriptionModule = require("../src/inscription");
-        connexionModule = require("../src/connection");
+        connexionModule = require("../src/main");
         dbListenerModule = require("../src/dbListener");
         runtime.declareAnchor('content');
         util.SVGUtil();
@@ -202,7 +202,7 @@ describe('Inscritpion/Connexion', function () {
         adminModule = require("../src/admin");
         testModule = require("../test/testTest");
         inscriptionModule = require("../src/inscription");
-        connexionModule = require("../src/connection");
+        connexionModule = require("../src/main");
         dbListenerModule = require("../src/dbListener");
         TwinBcrypt = require("../node_modules/twin-bcrypt/twin-bcrypt.min.js");
         runtime.declareAnchor('content');

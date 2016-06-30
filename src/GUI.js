@@ -612,7 +612,12 @@ function formationDisplayFormation() {
 
     let clickQuizHandler = (event) => {
         let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
-        play(targetQuizz);
+        drawing.currentPageDisplayed = "QuizPreview";
+        let quizz = new Quizz(targetQuizz);
+        quizz.puzzleLines = 1;
+        quizz.puzzleRows = 3;
+        header.display(quizz.title);
+        quizz.run(0,0, drawing.width, drawing.height);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -1193,18 +1198,18 @@ function headerDisplay (message) {
     let displayUser = () => {
         let svgwidth = x => svg.runtime.boundingRect(x.component).width;
         let pos = 0,
-            deconnectionWidth = 220;
+            deconnexionWidth = 220;
 
-        let deconnection = displayText("Déconnexion", deconnectionWidth, 50, myColors.none, myColors.white, 30, null, userManip, 4, 5),
+        let deconnexion = displayText("Déconnexion", deconnexionWidth, 50, myColors.none, myColors.white, 30, null, userManip, 4, 5),
             body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black),
             head = new svg.Circle(12).color(myColors.black, 2, myColors.white),
             userText = autoAdjustText(drawing.username, 0, 0, 400, 50, 30, null, userManip, 3);
 
         if (typeof this.usernameWidth === 'undefined') this.usernameWidth = userText.finalWidth;
-        pos-= deconnectionWidth / 2;
-        deconnection.content.position(pos, 0);
-        deconnection.cadre.position(pos, -30/2);
-        pos-= deconnectionWidth / 2 + 40;
+        pos-= deconnexionWidth / 2;
+        deconnexion.content.position(pos, 0);
+        deconnexion.cadre.position(pos, -30/2);
+        pos-= deconnexionWidth / 2 + 40;
         userText.text.anchor('end');
         userText.text.position(pos, 0);
         pos-= this.usernameWidth + MARGIN;
@@ -1220,10 +1225,10 @@ function headerDisplay (message) {
             document.cookie = "token=; path=/; max-age=0;";
             drawing.username = null;
             userManip.flush();
-            connexion();
+            main();
         };
-        svg.addEvent(deconnection.content, "click", deconnexionHandler);
-        svg.addEvent(deconnection.cadre, "click", deconnexionHandler);
+        svg.addEvent(deconnexion.content, "click", deconnexionHandler);
+        svg.addEvent(deconnexion.cadre, "click", deconnexionHandler);
     };
 
     if (message) {
@@ -1239,7 +1244,7 @@ function headerDisplay (message) {
         var link;
         message === "Inscription" ? (link = "Connexion") : (link = "Inscription");
         var clickHandler = function(){
-            (link === "Inscription") ? inscription() : connexion();
+            (link === "Inscription") ? inscriptionManager.display() : connexionManager.display();
         };
         let special = displayText(link, 220, 40, myColors.none, myColors.white, 25, 'Arial', userManip, 4, 5);
         special.content.anchor("end");
@@ -1967,8 +1972,6 @@ function quizzDisplay(x, y, w, h) {
         playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
     });
 
-    //header.display();
-
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
     }
@@ -2645,7 +2648,7 @@ function inscriptionManagerDisplay(labels={}) {
     });
 }
 
-function connectionManagerDisplay() {
+function connexionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
     header.display("Connexion");
@@ -2742,10 +2745,10 @@ function connectionManagerDisplay() {
 
     displayField('passwordField', self.passwordManipulator);
 
-    self.connectionButton = displayText(self.connectionButtonLabel, self.connectionButtonWidth, self.connectionButtonHeight, myColors.black, myColors.white, 20, null, self.connectionButtonManipulator);
-    self.connectionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
-    svg.addEvent(self.connectionButton.content, "click", self.connectionButtonHandler);
-    svg.addEvent(self.connectionButton.cadre, "click", self.connectionButtonHandler);
+    self.connexionButton = displayText(self.connexionButtonLabel, self.connexionButtonWidth, self.connexionButtonHeight, myColors.black, myColors.white, 20, null, self.connexionButtonManipulator);
+    self.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
+    svg.addEvent(self.connexionButton.content, "click", self.connexionButtonHandler);
+    svg.addEvent(self.connexionButton.cadre, "click", self.connexionButtonHandler);
 
     let nextField = function(backwards = false) {
         let index = self.tabForm.indexOf(focusedField);
@@ -2754,7 +2757,7 @@ function connectionManagerDisplay() {
             if(index === self.tabForm.length) index = 0;
             if(index === -1) index = self.tabForm.length - 1;
             //self.tabForm[index].cadre.component.listeners.click();
-            svg.event(self.tabForm[index].cadre, "click", self.connectionButtonHandler);
+            svg.event(self.tabForm[index].cadre, "click", self.connexionButtonHandler);
         }
     };
 
@@ -2765,7 +2768,7 @@ function connectionManagerDisplay() {
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            self.connectionButtonHandler();
+            self.connexionButtonHandler();
         }
     });
 }
@@ -2802,7 +2805,7 @@ var AdminGUI = function (){
     QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
     QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
     QuizzManager.prototype.displayQuestionsPuzzle = quizzManagerDisplayQuestionPuzzle;
-    ConnectionManager.prototype.display = connectionManagerDisplay;
+    ConnexionManager.prototype.display = connexionManagerDisplay;
     header = new Header();
 };
 
@@ -2827,7 +2830,7 @@ var LearningGUI = function (){
     Quizz.prototype.displayMiniature = gameDisplayMiniature;
     Quizz.prototype.displayScore = quizzDisplayScore;
     InscriptionManager.prototype.display = inscriptionManagerDisplay;
-    ConnectionManager.prototype.display = connectionManagerDisplay;
+    ConnexionManager.prototype.display = connexionManagerDisplay;
     Bd.prototype.displayMiniature = gameDisplayMiniature;
     header = new Header();
 };
