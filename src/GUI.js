@@ -934,10 +934,12 @@ function playerModeDisplayFormation () {
                 let theGame = self.findGameById(game.game);
                 if (theGame) {
                     theGame.currentQuestionIndex = game.index;
-                    theGame.questionsWithBadAnswers = game.tabWrongAnswers;
-                    theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
+                    game.tabWrongAnswers.forEach(function(wrongAnswer){
+                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer]);
+                    })
                     if (game.index === theGame.tabQuestions.length) {
                         theGame.status = "done";
+                        theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
                     }
                     else {
                         theGame.status = "inProgress";
@@ -1965,7 +1967,7 @@ function quizzDisplay(x, y, w, h) {
         playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
     });
 
-    header.display();
+    //header.display();
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();

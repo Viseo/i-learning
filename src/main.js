@@ -34,6 +34,7 @@ function play(targetQuizz) {
     let quizz = new Quizz(targetQuizz);
     quizz.puzzleLines = 1;
     quizz.puzzleRows = 3;
+    header.display(quizz.title);
     quizz.run(0,0, drawing.width, drawing.height);
     function resizePaper(){
         drawing.dimension(svg.screenSize().width,svg.screenSize().height);

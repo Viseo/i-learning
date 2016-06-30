@@ -994,6 +994,7 @@ class Quizz {
         quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
         quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
         quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
+
         this.resultArea = {
             x: drawing.width / 2,
             y: 220,
@@ -1013,7 +1014,8 @@ class Quizz {
             h: 200
         };
         this.miniaturePosition = {x:0, y:0};
-        this.questionsWithBadAnswers = [];
+        //this.questionsWithBadAnswers = [];
+        this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
         this.score = (quizz.score ? quizz.score : 0);
         this.drawing = drawing;
         this.title = quizz.title ? quizz.title : '';
@@ -1080,7 +1082,7 @@ class Quizz {
             if (++this.currentQuestionIndex < this.tabQuestions.length) {
                 this.displayCurrentQuestion();
             } else {
-                console.log("Final score: " + this.score);
+                //console.log("Final score: " + this.score);
                 this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
                 this.displayResult();
             }
