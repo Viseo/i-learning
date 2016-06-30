@@ -1120,7 +1120,7 @@ class Bd {
     constructor (bd, parentFormation) {
         this.miniatureManipulator = new Manipulator(this);
         this.parentFormation = parentFormation;
-        this.title = "BD";
+        this.title = bd.title || "BD";
         this.miniaturePosition = {x:0, y:0};
         this.returnButtonManipulator = new Manipulator(this);
         this.returnButton = new ReturnButton(this);
