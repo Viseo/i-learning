@@ -659,7 +659,7 @@ function SVGUtil() {
             }
             self.selected = !self.selected;
         };
-        svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
+        !playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
         self.arrowPath.color(myColors.black, 1, myColors.black);
         return self;
     };
