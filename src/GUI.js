@@ -2409,11 +2409,11 @@ function inscriptionManagerDisplay(labels={}) {
             };
             var oninput = function(){
                 contentarea.enter();
-                    if (self[field].secret && trueValue.length < contentarea.messageText.length) {
+                    if (self[field].secret && trueValue &&  contentarea.messageText && trueValue.length < contentarea.messageText.length) {
                         trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
                     }
                     else if (self[field].secret) {
-                        trueValue = trueValue.substring(0, contentarea.messageText.length);
+                        trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
                     }
                     self[field].label = contentarea.messageText;
                     self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
@@ -2474,7 +2474,10 @@ function inscriptionManagerDisplay(labels={}) {
         var clickEdition = clickEditionField(field, manipulator);
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
-        self.tabForm.indexOf(self[field])===-1 && self.tabForm.push(self[field]);
+        var alreadyExist = self.tabForm.find(formElement => formElement.field === field);
+        self[field].field = field;
+        //alreadyExist || self.tabForm.push(self[field]);
+        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1) : self.tabForm.push(self[field]);
         self.formLabels[field] = self[field].label;
     };
 
@@ -2722,7 +2725,9 @@ function connexionManagerDisplay() {
         var clickEdition = clickEditionField(field, manipulator);
         svg.addEvent(self[field].content, "click", clickEdition);
         svg.addEvent(self[field].cadre, "click", clickEdition);
-        self.tabForm.indexOf(self[field])===-1 && self.tabForm.push(self[field]);
+        var alreadyExist = self.tabForm.find(formElement => formElement.field === field);
+        self[field].field = field;
+        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1) : self.tabForm.push(self[field]);
     };
 
     self.mailAddressField = {label: "", title: self.mailAddressLabel, line: -1};
