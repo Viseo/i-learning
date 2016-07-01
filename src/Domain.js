@@ -638,7 +638,7 @@ class Formation {
     }
 
     checkInputTextArea (myObj) {
-        if (myObj.textarea.messageText.match(this.regex)) {
+        if (myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) {
             this.labelValidInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
