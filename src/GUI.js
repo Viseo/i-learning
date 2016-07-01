@@ -1187,36 +1187,34 @@ function headerDisplay (message) {
     this.height = this.size * drawing.height;
 
     let manip = this.manipulator,
-        userManip = this.userManipulator;
-
-    let text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
+        userManip = this.userManipulator,
+        text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
         line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
     manip.ordonator.set(1, text);
     manip.ordonator.set(0, line);
-
     mainManipulator.ordonator.set(0, manip.first);
 
     let displayUser = () => {
         let svgwidth = x => svg.runtime.boundingRect(x.component).width;
+        userManip.scalor.scale(0.65);
         let pos = 0,
-            deconnexionWidth = 220;
-
-        let deconnexion = displayText("Déconnexion", deconnexionWidth, 50, myColors.none, myColors.white, 30, null, userManip, 4, 5),
+            deconnexionWidth = this.width/5,
+            deconnexion = displayText("Déconnexion", deconnexionWidth, 50, myColors.none, myColors.white, 30, null, userManip, 4, 5),
             body = new svg.CurvedShield(35, 30, 0.5).color(myColors.black),
             head = new svg.Circle(12).color(myColors.black, 2, myColors.white),
-            userText = autoAdjustText(drawing.username, 0, 0, 400, 50, 30, null, userManip, 3);
+            userText = autoAdjustText(drawing.username, 0, 0, this.width * 0.23, 50, 30, null, userManip, 3);
 
-        if (typeof this.usernameWidth === 'undefined') this.usernameWidth = userText.finalWidth;
+        //if (typeof this.usernameWidth === 'undefined') this.usernameWidth = userText.finalWidth;
         pos-= deconnexionWidth / 2;
         deconnexion.content.position(pos, 0);
         deconnexion.cadre.position(pos, -30/2);
         pos-= deconnexionWidth / 2 + 40;
         userText.text.anchor('end');
         userText.text.position(pos, 0);
-        pos-= this.usernameWidth + MARGIN;
+        pos-= userText.finalWidth/0.65 + MARGIN;
         userManip.ordonator.set(0, body);
         userManip.ordonator.set(1, head);
-        userManip.scalor.scale(0.65);
+
         pos-= svgwidth(body)/2 + MARGIN;
         body.position(pos, -5);
         head.position(pos, -20);
@@ -1233,8 +1231,9 @@ function headerDisplay (message) {
     };
 
     if (message) {
-        let messageText = new svg.Text(message).position(this.width / 2, this.height / 2 + MARGIN).font('Arial', 32);
-        manip.ordonator.set(2, messageText);
+        let messageText = autoAdjustText(message, 0, 0, this.width * 0.3, 50, 32, 'Arial', manip, 2);
+        messageText.text.position(this.width/2, this.height/2 + MARGIN);
+        //manip.ordonator.set(2, messageText);
     } else {
         manip.ordonator.unset(2);
     }
