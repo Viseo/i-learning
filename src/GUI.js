@@ -932,6 +932,7 @@ function playerModeDisplayFormation () {
                     }
                     else if(game.index !== theGame.tabQuestions.length){
                         theGame.status = "inProgress";
+                        theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     }
                 }
             })
