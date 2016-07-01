@@ -28,7 +28,7 @@ function main() {
         if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);
             drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
-            let formation, quizzManager;
+            let formation, quizzManager, quizz;
             if (typeof formationsManager !== 'undefined') formation = formationsManager.formationDisplayed;
             if (typeof formation !== 'undefined') quizzManager = formation.quizzManager;
             switch (drawing.currentPageDisplayed) {
@@ -53,7 +53,7 @@ function main() {
                     quizzManager.display();
                     break;
                 case "QuizPreview":
-                    let quizz = formation.quizzManager.previewQuiz;
+                    quizz = formation.quizzManager.previewQuiz;
                     if (quizz.currentQuestionIndex !== -1) {
                         quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator.first);
                     }
@@ -63,7 +63,8 @@ function main() {
                         quizz.displayCurrentQuestion();
                     }
                     break;
-                case "Quiz":
+                case "Quizz":
+                    quizz = formation.quizzDisplayed;
                     quizz.display(0, 0, drawing.width, drawing.height);
 
                     if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {

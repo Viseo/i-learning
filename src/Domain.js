@@ -1062,11 +1062,11 @@ class Quizz {
             this.questionHeight = this.questionHeightWithoutImage;
             this.answerHeight = this.answerHeightWithoutImage;
         }
-        this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
+        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
         this.tabQuestions[this.currentQuestionIndex].questionManipulator.flush();
         this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight/ 2 + MARGIN,
             this.questionArea.w, this.questionHeight);
-        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
         this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
             this.questionArea.w, this.answerHeight);
     };

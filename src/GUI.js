@@ -611,10 +611,10 @@ function formationDisplayFormation() {
         let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
         mainManipulator.ordonator.unset(1, self.manipulator.first);
         drawing.currentPageDisplayed = "QuizPreview";
-        let quizz = new Quizz(targetQuizz);
-        quizz.puzzleLines = 1;
-        quizz.puzzleRows = 3;
-        quizz.run(0,0, drawing.width, drawing.height);
+        self.quizzDisplayed = new Quizz(targetQuizz);
+        self.quizzDisplayed.puzzleLines = 1;
+        self.quizzDisplayed.puzzleRows = 3;
+        self.quizzDisplayed.run(0,0, drawing.width, drawing.height);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -1513,7 +1513,7 @@ function questionDisplayAnswers(x, y, w, h) {
                 posx = self.initialAnswersPosX;
             }
 
-            self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
+            self.answersManipulator.last.children.indexOf(self.tabAnswer[i].manipulator.first) === -1 && self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
             self.tabAnswer[i].display(-self.tileWidth/2, -self.tileHeight/2, self.tileWidth, self.tileHeight);
             self.tabAnswer[i].manipulator.translator.move(posx-(self.rows - 1)*self.tileWidth/2-(self.rows - 1)*MARGIN/2,posy+MARGIN);
 
@@ -1897,6 +1897,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
 function quizzDisplay(x, y, w, h) {
     var self = this;
+    drawing.currentPageDisplayed = "Quizz";
     header.display(this.title);
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
