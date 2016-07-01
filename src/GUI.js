@@ -941,8 +941,8 @@ function playerModeDisplayFormation () {
                 if (theGame) {
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(function(wrongAnswer){
-                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer]);
-                    })
+                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer-1]);
+                    });
                     if (game.index === theGame.tabQuestions.length) {
                         theGame.status = "done";
                         theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
@@ -961,7 +961,7 @@ function playerModeDisplayFormation () {
             });
         });
         self.displayFormation();
-    }
+    };
 
     playerMode && Server.getUser(callbackUser);
 }
