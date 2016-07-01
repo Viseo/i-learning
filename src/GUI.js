@@ -758,12 +758,11 @@ function formationDisplayFormation() {
             } else if(tabElement instanceof Bd) {
                 let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                 var clickBdHandler = function(event){
-                    //TEMPORAIRE
                     let targetBd = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
                     bdDisplay(targetBd);
-                }
-                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
-                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
+                };
+                playerMode && tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
+                playerMode && tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
                 // Ouvrir le Bd creator du futur jeu Bd
             }
         };
