@@ -908,6 +908,11 @@ function formationDisplayFormation() {
 
 function playerModeDisplayFormation () {
     var self = this;
+    self.levelsTab.forEach(function(level){
+        level.gamesTab.forEach(function(game){
+            delete game.miniature;
+        })
+    })
     var callbackUser = function (data) {
         var user = JSON.parse(data);
         if (user.formationsTab) {
@@ -917,13 +922,13 @@ function playerModeDisplayFormation () {
                 if (theGame) {
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(function(wrongAnswer){
-                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer-1]);
-                    });
-                    if (game.index === theGame.tabQuestions.length) {
+                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer]);
+                    })
+                    if (theGame.status !== "done" && game.index === theGame.tabQuestions.length) {
                         theGame.status = "done";
                         theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
                     }
-                    else {
+                    else if(theGame.status !== "done" && game.index !== theGame.tabQuestions.length){
                         theGame.status = "inProgress";
                     }
                 }
