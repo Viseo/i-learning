@@ -911,8 +911,10 @@ function playerModeDisplayFormation () {
     self.levelsTab.forEach(function(level){
         level.gamesTab.forEach(function(game){
             delete game.miniature;
+            delete game.status;
         })
     })
+    self.miniaturesManipulator.flush();
     var callbackUser = function (data) {
         var user = JSON.parse(data);
         if (user.formationsTab) {
@@ -922,13 +924,13 @@ function playerModeDisplayFormation () {
                 if (theGame) {
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(function(wrongAnswer){
-                        theGame.questionsWithBadAnswers.push(theGame.tabQuestions[wrongAnswer]);
+                        theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer-1]);
                     })
-                    if (theGame.status !== "done" && game.index === theGame.tabQuestions.length) {
+                    if (game.index === theGame.tabQuestions.length) {
                         theGame.status = "done";
                         theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
                     }
-                    else if(theGame.status !== "done" && game.index !== theGame.tabQuestions.length){
+                    else if(game.index !== theGame.tabQuestions.length){
                         theGame.status = "inProgress";
                     }
                 }
@@ -1431,7 +1433,7 @@ function questionElementClicked(sourceElement) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
         } else {
-            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.parentFormation.levelsTab[self.parentQuizz.levelIndex].gamesTab[self.parentQuizz.gameIndex].tabQuestions[self.parentQuizz.currentQuestionIndex]);
             var reponseD = "";
             self.rightAnswers.forEach(function(e){
                 if(e.label)
@@ -1578,7 +1580,7 @@ function questionDisplayAnswers(x, y, w, h) {
                     self.parentQuizz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
-                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.parentFormation.levelsTab[self.parentQuizz.levelIndex].gamesTab[self.parentQuizz.gameIndex].tabQuestions[self.parentQuizz.currentQuestionIndex]);
                     var reponseD = "";
                     self.rightAnswers.forEach(function(e){
                         if(e.label) {
