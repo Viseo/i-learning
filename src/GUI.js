@@ -2516,6 +2516,12 @@ function inscriptionManagerDisplay(labels={}) {
     var passwordCheckInput = function() {
         var passTooShort = self.passwordField.labelSecret !== "" && self.passwordField.labelSecret && self.passwordField.labelSecret.length<6;
         var confTooShort = self.passwordConfirmationField.labelSecret !== "" && self.passwordField.labelSecret && self.passwordConfirmationField.labelSecret.length<6;
+        var cleanIfEgality = function(){
+            if (self.passwordField.labelSecret === self.passwordConfirmationField.labelSecret){
+                self.passwordField.cadre.color(myColors.white, 1, myColors.black);
+                self.passwordConfirmationField.cadre.color(myColors.white, 1, myColors.black);
+            }
+        };
         if (passTooShort || confTooShort){
             if (passTooShort){
                 self.passwordField.cadre.color(myColors.white, 3, myColors.red);
@@ -2538,10 +2544,10 @@ function inscriptionManagerDisplay(labels={}) {
         else if (self.passwordField.labelSecret && self.passwordField.labelSecret.length>=6){
             self.passwordField.cadre.color(myColors.white, 1, myColors.black);
             self.passwordManipulator.ordonator.unset(3);
+            cleanIfEgality();
         }
         else {
-            self.passwordConfirmationField.cadre.color(myColors.white, 1, myColors.black);
-            self.passwordField.cadre.color(myColors.white, 1, myColors.black);
+            cleanIfEgality();
             self.passwordManipulator.ordonator.unset(3);
         }
         var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret);
