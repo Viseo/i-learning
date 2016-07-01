@@ -926,13 +926,12 @@ function playerModeDisplayFormation () {
                     game.tabWrongAnswers.forEach(function(wrongAnswer){
                         theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer-1]);
                     })
+                    theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     if (game.index === theGame.tabQuestions.length) {
                         theGame.status = "done";
-                        theGame.score = theGame.tabQuestions.length - theGame.questionsWithBadAnswers.length;
                     }
                     else if(game.index !== theGame.tabQuestions.length){
                         theGame.status = "inProgress";
-                        theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     }
                 }
             })
