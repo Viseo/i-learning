@@ -2451,8 +2451,7 @@ function inscriptionManagerDisplay(labels={}) {
         svg.addEvent(self[field].cadre, "click", clickEdition);
         var alreadyExist = self.tabForm.find(formElement => formElement.field === field);
         self[field].field = field;
-        //alreadyExist || self.tabForm.push(self[field]);
-        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1) : self.tabForm.push(self[field]);
+        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1,self[field]) : self.tabForm.push(self[field]);
         self.formLabels[field] = self[field].label;
     };
 
@@ -2482,7 +2481,6 @@ function inscriptionManagerDisplay(labels={}) {
             var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
             return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
         }
-
     };
     displayField("mailAddressField", self.mailAddressManipulator);
 
@@ -2611,8 +2609,7 @@ function inscriptionManagerDisplay(labels={}) {
             backwards ? index-- : index++;
             if(index === self.tabForm.length) index = 0;
             if(index === -1) index = self.tabForm.length - 1;
-            svg.event(self.tabForm[index].cadre, "click", self.saveButtonHandler);
-            //self.tabForm[index].cadre.component.listeners.click();
+            clickEditionField(self.tabForm[index].field, self.tabForm[index].cadre.parent.parentManip)();
         }
     };
 
@@ -2624,7 +2621,6 @@ function inscriptionManagerDisplay(labels={}) {
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
             self.saveButtonHandler();
-            //self.saveButton.cadre.component.listeners.click();
         }
     });
 }
@@ -2674,7 +2670,6 @@ function connexionManagerDisplay() {
                                 self[field].label += '●';
                             }
                         }
-
                     } else {
                         self[field].label = contentarea.messageText;
                     }
@@ -2705,7 +2700,7 @@ function connexionManagerDisplay() {
         svg.addEvent(self[field].cadre, "click", clickEdition);
         var alreadyExist = self.tabForm.find(formElement => formElement.field === field);
         self[field].field = field;
-        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1) : self.tabForm.push(self[field]);
+        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1, self[field]) : self.tabForm.push(self[field]);
     };
 
     self.mailAddressField = {label: "", title: self.mailAddressLabel, line: -1};
@@ -2715,8 +2710,6 @@ function connexionManagerDisplay() {
         return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
     };
     displayField("mailAddressField", self.mailAddressManipulator);
-
-
     self.passwordField = {
         label: '',
         labelSecret: '',
@@ -2727,7 +2720,6 @@ function connexionManagerDisplay() {
     };
 
     displayField('passwordField', self.passwordManipulator);
-
     self.connexionButton = displayText(self.connexionButtonLabel, self.connexionButtonWidth, self.connexionButtonHeight, myColors.black, myColors.white, 20, null, self.connexionButtonManipulator);
     self.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
     svg.addEvent(self.connexionButton.content, "click", self.connexionButtonHandler);
@@ -2739,7 +2731,7 @@ function connexionManagerDisplay() {
             backwards ? index-- : index++;
             if(index === self.tabForm.length) index = 0;
             if(index === -1) index = self.tabForm.length - 1;
-            //self.tabForm[index].cadre.component.listeners.click();
+            clickEditionField(self.tabForm[index].field, self.tabForm[index].cadre.parentManip);
             svg.event(self.tabForm[index].cadre, "click", self.connexionButtonHandler);
         }
     };
