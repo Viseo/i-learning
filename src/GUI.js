@@ -2375,7 +2375,7 @@ function inscriptionManagerDisplay(labels={}) {
                 width: width
             };
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-            contentarea.message(self[field].label);
+            contentarea.message(self[field].labelSecret || self[field].label);
             contentarea.color(null, 0, myColors.black).
             font("Arial",20);
             self[field].secret ? contentarea.type('password') : contentarea.type("text");
