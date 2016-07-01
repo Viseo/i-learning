@@ -89,8 +89,6 @@ function answerDisplay (x, y, w, h) {
 
             svg.addEvent(redCross,'click',imageRedCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
-            //console.log('héo');
-            //self.linkedQuestion.image.component.listeners.mouseout();
         };
         let redCrossClickHandler=()=>{
             //self.redCrossManipulator.flush();
@@ -121,8 +119,6 @@ function answerDisplay (x, y, w, h) {
 
             svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
-            //console.log('héo');
-            //self.linkedQuestion.image.component.listeners.mouseout();
         };
         let showTitle = function () {
             let text = (self.label) ? self.label : self.labelDefault,
@@ -761,8 +757,8 @@ function formationDisplayFormation() {
                     let targetBd = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
                     bdDisplay(targetBd);
                 };
-                playerMode && tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
-                playerMode && tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
                 // Ouvrir le Bd creator du futur jeu Bd
             }
         };
@@ -786,25 +782,6 @@ function formationDisplayFormation() {
         self.panel.back.parent.parentManip = self.graphManipulator;
         updateAllLinks();
     };
-    // let callback = (data) => {
-                    //     let results = JSON.parse(data),
-                    //         special = results.special || (results.index && (tabElement.tabQuestions.length>results.index ? "inProgress" : "done"));
-                    //    console.log(results);
-
-
-                    //if (playerMode)Server.getUser(callback);
-                    //else
-                    //tabElement.miniature = tabElement.displayMiniature(self.graphElementSize, special);
-                    // (i === self.levelsTab.length - 1) && updateAllLinks();
-
-                //(!playerMode) && manageMiniature(tabElement);
-
-        // !playerMode && displayMessageDragAndDrop();
-        // self.graphManipulator.translator.move(self.graphW/2, self.graphH/2);
-        // resizePanel();
-
-        // !playerMode && (self.panel.back.parent.parentManip = self.graphManipulator);
-        // !playerMode && updateAllLinks();
 
 
     if (playerMode) {
@@ -1805,8 +1782,6 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
                 svg.addEvent(redCross,'click',redCrossClickHandler);
                 self.questionBlock.redCrossManipulator.ordonator.set(1,redCross);
-                //console.log('héo');
-                //self.linkedQuestion.image.component.listeners.mouseout();
             };
 
             svg.addEvent(self.questionBlock.title.image, 'mouseover', mouseoverHandler);
@@ -2599,8 +2574,6 @@ function inscriptionManagerDisplay(labels={}) {
                 }
                 else {
                     self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
-                    //console.log(TwinBcrypt.compareSync(self.passwordField.labelSecret, self.passwordField.hash));
-                    //console.log(TwinBcrypt.compareSync("bbbbbb", self.passwordField.hash));
                     var tempObject = {
                         lastName: self.lastNameField.label,
                         firstName: self.firstNameField.label,
@@ -2616,7 +2589,6 @@ function inscriptionManagerDisplay(labels={}) {
                         }, 10000);
                     };
                     dbListener.httpPostAsync("/inscription", tempObject, callback);
-                    console.log(tempObject);
                 }
             };
             dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);

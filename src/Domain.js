@@ -927,7 +927,6 @@ class QuizzManager {
 
     saveQuizz () {
         let getObjectToSave = () => {
-            console.log(this);
             this.tabQuestions = this.quizz.tabQuestions;
             (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
@@ -1082,7 +1081,6 @@ class Quizz {
             if (++this.currentQuestionIndex < this.tabQuestions.length) {
                 this.displayCurrentQuestion();
             } else {
-                //console.log("Final score: " + this.score);
                 this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
                 this.displayResult();
             }
@@ -1092,7 +1090,6 @@ class Quizz {
             if (this.currentQuestionIndex === -1) {
                 this.currentQuestionIndex++;
             }
-            console.log(this.currentQuestionIndex);
             this.displayCurrentQuestion();
         } else {
             Server.sendProgressToServer(this);

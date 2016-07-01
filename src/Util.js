@@ -99,7 +99,6 @@ function SVGGlobalHandler() {
                 if(self.drawing.mousedOverTarget && self.drawing.mousedOverTarget.target){
                     (bool= self.drawing.mousedOverTarget.target.inside(event.clientX,event.clientY));
                     if(self.drawing.mousedOverTarget.target.component.listeners && self.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool){
-                        //console.log('out!');
                         svg.event(self.drawing.mousedOverTarget.target, "mouseout", event);
                         self.drawing.mousedOverTarget=null;
                     }
@@ -107,11 +106,9 @@ function SVGGlobalHandler() {
 
                 svg.event(self.target, "mousemove", event);
                 if(self.target.component.listeners && self.target.component.listeners.mouseover){
-                    //console.log('over!');
                     self.drawing.mousedOverTarget={target:self.target};
                     svg.event(self.target, "mouseover", event);
                 }
-                //console.log(drawing.mousedOverTarget);
 
             }
         };
