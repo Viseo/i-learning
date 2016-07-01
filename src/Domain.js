@@ -78,7 +78,7 @@ class Answer {
         this.editor = editor;
         let self = this;
         this.checkInputContentArea = editable ? function (objCont) {
-            if (objCont.contentarea.messageText.match(REGEX)) {
+            if (objCont.contentarea.messageText && objCont.contentarea.messageText.match(REGEX)) {
                 self.label = objCont.contentarea.messageText;
                 objCont.remove();
                 objCont.contentarea.onblur = objCont.onblur;
@@ -237,7 +237,7 @@ class QuestionCreator {
     }
 
     checkInputTextArea (myObj) {
-        if (myObj.textarea.messageText.match(REGEX)) {
+        if (myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) {
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             !runtime && (myObj.textarea.border = "none");
