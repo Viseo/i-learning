@@ -138,7 +138,7 @@ function answerDisplay (x, y, w, h) {
                 self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
             }
 
-            self.answerNameValidInput ? (self.obj.cadre.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color(myColors.white,2,myColors.red).fillOpacity(0.001));
+            (self.answerNameValidInput && text !== "") ? (self.obj.cadre.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color(myColors.white,2,myColors.red).fillOpacity(0.001));
             self.obj.content.color(color);
             self.obj.cadre._acceptDrop = true;
             self.obj.content._acceptDrop = true;
@@ -2191,7 +2191,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
-        self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
+        (self.quizzNameValidInput && self.quizzName) ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
         self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
@@ -2225,7 +2225,6 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.questionCreator.quizzNameValidInput = true;
             self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
             self.quizzLabel.cadre.color(myColors.lightgrey);
-            self.quizzNameValidInput = true;
         };
 
         var displayErrorMessage = function () {
@@ -2237,7 +2236,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
             textarea.focus();
-            self.quizzNameValidInput = false;
+            //self.quizzNameValidInput = false;
         };
         var onblur = function () {
             textarea.enter();
@@ -2247,7 +2246,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         };
         var oninput = function () {
             textarea.enter();
-            self.questionCreator.checkInputTextArea({
+            self.checkInputTextArea({
                 textarea: textarea,
                 border: self.quizzLabel.cadre,
                 onblur: onblur,
@@ -2257,7 +2256,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         };
         svg.addEvent(textarea, "input", oninput);
         svg.addEvent(textarea, "blur", onblur);
-        self.questionCreator.checkInputTextArea({
+        self.checkInputTextArea({
             textarea: textarea,
             border: self.quizzLabel.cadre,
             onblur: onblur,

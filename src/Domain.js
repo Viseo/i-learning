@@ -78,13 +78,17 @@ class Answer {
         this.editor = editor;
         let self = this;
         this.checkInputContentArea = editable ? function (objCont) {
-            if (objCont.contentarea.messageText && objCont.contentarea.messageText.match(REGEX)) {
-                self.label = objCont.contentarea.messageText;
-                objCont.remove();
-                objCont.contentarea.onblur = objCont.onblur;
-            } else {
-                self.label = objCont.contentarea.messageText;
-                objCont.display();
+            if(typeof objCont.contentarea.messageText !== "undefined"){
+                if (objCont.contentarea.messageText.match(REGEX)) {
+                    self.label = objCont.contentarea.messageText;
+                    objCont.remove();
+                    objCont.contentarea.onblur = objCont.onblur;
+                } else {
+                    self.label = objCont.contentarea.messageText;
+                    objCont.display();
+                }
+            }else{
+                self.label = "";
             }
         } : null;
     }
@@ -235,23 +239,6 @@ class QuestionCreator {
             }
         });
     }
-
-    checkInputTextArea (myObj) {
-        if (myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) {
-            myObj.remove();
-            myObj.textarea.onblur = myObj.onblur;
-            !runtime && (myObj.textarea.border = "none");
-            !runtime && (myObj.textarea.outline = "none");
-            this.quizzNameValidInput = true;
-        } else {
-            myObj.display();
-            //myObj.textarea.onblur = function () {
-            //    myObj.textarea.component.value = "";
-            //    myObj.onblur();
-            //    myObj.remove();
-            //}
-        }
-    };
 }
 
 class AddEmptyElement {
@@ -958,6 +945,19 @@ class QuizzManager {
 
     selectNextQuestion () {
         this.indexOfEditedQuestion++;
+    };
+
+    checkInputTextArea (myObj) {
+        if (typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) {
+            myObj.remove();
+            myObj.textarea.onblur = myObj.onblur;
+            !runtime && (myObj.textarea.border = "none");
+            !runtime && (myObj.textarea.outline = "none");
+            this.quizzNameValidInput = true;
+        } else {
+            myObj.display();
+            this.quizzNameValidInput = false;
+        }
     };
 
 }
