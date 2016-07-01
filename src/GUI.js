@@ -616,7 +616,6 @@ function formationDisplayFormation() {
         let quizz = new Quizz(targetQuizz);
         quizz.puzzleLines = 1;
         quizz.puzzleRows = 3;
-        header.display(quizz.title);
         quizz.run(0,0, drawing.width, drawing.height);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
@@ -1916,6 +1915,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
 function quizzDisplay(x, y, w, h) {
     var self = this;
+    header.display(this.title);
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
