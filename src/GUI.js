@@ -613,6 +613,7 @@ function formationDisplayFormation() {
 
     let clickQuizHandler = (event) => {
         let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        mainManipulator.ordonator.unset(1, self.manipulator.first);
         drawing.currentPageDisplayed = "QuizPreview";
         let quizz = new Quizz(targetQuizz);
         quizz.puzzleLines = 1;
