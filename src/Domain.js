@@ -24,7 +24,7 @@ function setSvg(_svg) {
 
 class Answer {
     constructor (answerParameters, parent) {
-        this.parent = parent;
+        this.parentQuestion = parent;
         var answer = {
             label: '',
             imageSrc: null,

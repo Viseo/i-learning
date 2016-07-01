@@ -2020,7 +2020,7 @@ function Bdd() {
         // Check 1 Correct Answer:
         quiz => ({
             isValid: quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && el.correct),
-            message: "Votre quiz doit avoir une bonne réponse."
+            message: "Votre question doit avoir une bonne réponse."
         }),
         // Check at least 1 valid answer:
         quiz => ({
