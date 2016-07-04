@@ -1161,7 +1161,7 @@ function Domain() {
         self.quizzName = "";
         self.quizzNameDefault = "Ecrire ici le nom du quiz";
         self.tabQuestions = [defaultQuestion];
-        self.questionPuzzle = {};
+        //self.questionPuzzle = {};
         self.quizzNameValidInput = true;
         self.loadQuizz = function (quizz, indexOfEditedQuestion) {
             self.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;

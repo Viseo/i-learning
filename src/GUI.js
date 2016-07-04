@@ -482,9 +482,10 @@ function addEmptyElementDisplay(x, y, w, h) {
     }
 
     self.obj = displayText(self.label, self.width, self.height, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-    self.plus = drawPlus(0, 0, self.height * 0.3, self.height * 0.3);
+    self.plus = drawPlus(self.x, 0, self.height * 0.3, self.height * 0.3);
     self.manipulator.ordonator.set(2, self.plus);
-    self.obj.content.position(0, self.height * 0.35);
+    self.obj.content.position(self.x, self.height * 0.35);
+    self.obj.cadre.position(self.x, 0);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
@@ -521,7 +522,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                 let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
                 self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
 
-                if (self.parent.questionPuzzle.elementsArray.length > self.parent.questionPuzzle.rows) {
+                if (self.parent.questionPuzzle.elementsArray.length > self.parent.questionPuzzle.columns) {
                     self.parent.displayQuestionsPuzzle(self.parent.questionPuzzleCoordinates.x,
                         self.parent.questionPuzzleCoordinates.y,
                         self.parent.questionPuzzleCoordinates.w,
@@ -2125,7 +2126,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     y && (self.qPuzzleY=y);
     w && (self.qPuzzleW=w);
     h && (self.qPuzzleH=h);
-    self.questionPuzzle.manipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.manipulator.first);
+    //self.questionPuzzle && self.questionPuzzle.manipulator && self.questionsPuzzleManipulator.last.remove(self.questionPuzzle.manipulator.first);
     var border = new svg.Rect(self.qPuzzleW, self.qPuzzleH);
     border.color([], 2, myColors.black);
     self.questionsPuzzleManipulator.ordonator.set(0, border);
@@ -2141,9 +2142,9 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         self.quizz.tabQuestions[i].contentEventHandler = self.questionClickHandler;
         self.quizz.tabQuestions[i].imageEventHandler = self.questionClickHandler;
     }
-    self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self);
+    self.questionPuzzle ? (self.questionPuzzle.updateStartPosition('right') || self.questionPuzzle.fillVisibleElementsArray("leftToRight") ): (self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self, index));
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.manipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.manipulator.first);
-    self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.coordinatesQuestion.w, self.coordinatesQuestion.h, true);
+    self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.qPuzzleW, self.qPuzzleH, true);
     self.questionPuzzle.puzzleCadre.color(myColors.green,3, myColors.yellow);
 }
 

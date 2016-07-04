@@ -871,7 +871,7 @@ class Puzzle {
             orientation = -1;
         }
         if(this.rows === 1){
-            //this.indexOfFirstVisibleElement
+            this.visibleElementsArray[0].length === 6 && (this.indexOfFirstVisibleElement +=orientation);
         }
         else{
             let shift = (this.columns - 1)*this.rows*orientation;
@@ -890,16 +890,16 @@ class Puzzle {
             this.indexOfFirstVisibleElement = temporaryIndex;
         }
         if(this.indexOfFirstVisibleElement === 0) {
-            this.leftChevron.desactivate();
-            this.rightChevron.activate(this.rightChevron.handler, 'click');
+            this.leftChevron && this.leftChevron.desactivate();
+            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
         }
         else if(this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length){
-            this.leftChevron.activate(this.leftChevron.handler, 'click');
-            this.rightChevron.activate(this.rightChevron.handler, 'click');
+            this.leftChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
+            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
         }
         else{
-            this.rightChevron.desactivate();
-            this.leftChevron.activate(this.leftChevron.handler, 'click');
+            this.rightChevron && this.rightChevron.desactivate();
+            this.rightChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
         }
     }
 
@@ -944,8 +944,8 @@ class Puzzle {
     }
     
     adjustElementsDimensions(){
-        this.elementWidth = this.visibleArea.width/this.columns;
-        this.elementHeight = this.visibleArea.height/this.rows;
+        this.elementWidth = (this.visibleArea.width - MARGIN*(this.columns-1))/this.columns;
+        this.elementHeight = (this.visibleArea.height - MARGIN)/this.rows;
         for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
             if(typeof this.elementsArray[i] !== "undefined") {
                 this.elementsArray[i].width = this.elementWidth;
@@ -957,8 +957,8 @@ class Puzzle {
     adjustElementsPositions(){
         for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
             if(typeof this.elementsArray[i] !== "undefined") {
-                this.elementsArray[i].x = -this.visibleArea.width / 2 + this.elementsArray[i].puzzleColumnIndex * this.elementWidth;
-                this.elementsArray[i].y = -this.visibleArea.height / 2 + this.elementsArray[i].puzzleRowIndex * this.elementHeight;
+                this.elementsArray[i].x = -(this.visibleArea.width - this.elementsArray[i].width)/ 2 + this.elementsArray[i].puzzleColumnIndex * (this.elementWidth + MARGIN);
+                this.elementsArray[i].y =  this.elementsArray[i].puzzleRowIndex * (this.elementHeight + MARGIN);
             }
         }
     }
@@ -982,8 +982,8 @@ class Puzzle {
         this.adjustElementsPositions();
         this.visibleElementsArray.forEach(rows =>{
             rows.forEach(elem => {
-                elem.display();
-                this.manipulator.ordonator.set(this.elementsArray.indexOf(elem)+2, elem.manipulator.first); // +2 pour les chevrons
+                this.manipulator.ordonator.set(this.visibleElementsArray[0].indexOf(elem)+2, elem.manipulator.first); // +2 pour les chevrons
+                elem.display(elem.x, elem.y, elem.width, elem.height);
             });
         });
     }
