@@ -362,7 +362,7 @@ class Formation {
         this.clippingManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator.addOrdonator(2);
-        this.library = new Library(myLibraryGames);
+        this.library = new GamesLibrary(myLibraryGames);
         this.library.formation = this;
         this.quizzManager = new QuizzManager();
         this.quizzManager.parentFormation = this;
@@ -680,8 +680,6 @@ class Library {
     constructor (lib) {
         this.libraryManipulator = new Manipulator(this);
         this.libraryManipulator.addOrdonator(2);
-        this.arrowModeManipulator = new Manipulator(this);
-        this.arrowModeManipulator.addOrdonator(3);
 
         this.title = lib.title;
 
@@ -692,23 +690,15 @@ class Library {
         this.imageWidth = 50;
         this.imageHeight = 50;
         this.libMargin = 5;
-        this.libraryGamesTab = [];
 
         for (var i = 0; i < this.itemsTab.length; i++) {
             this.libraryManipulators[i] = new Manipulator(this);
             this.libraryManipulators[i].addOrdonator(2);
-            if (this.itemsTab[i].imgSrc) {
-                let self = this;
-                this.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
-                    this.imageLoaded = true;
-                });
-            }
         }
 
-        this.font = lib.font ? lib.font : "Arial";
-        this.fontSize = lib.fontSize ? lib.fontSize : this.fontSize = 20;
+        this.font = lib.font || "Arial";
+        this.fontSize = lib.fontSize || 20;
     }
-
 
     run (x, y, w, h, callback) {
         this.intervalToken = asyncTimerController.interval(() => {
@@ -726,49 +716,73 @@ class Library {
             callback();
         }
     };
+}
+
+class GamesLibrary extends Library {
+
+    constructor (lib) {
+        super(lib);
+        this.arrowModeManipulator = new Manipulator(this);
+        this.arrowModeManipulator.addOrdonator(3);
+
+    }
 
     dropAction (element, event) {
         var target = drawings.background.getTarget(event.clientX, event.clientY);
         if (target && target._acceptDrop) {
-            if (element instanceof svg.Image) {
-                var oldQuest = {
-                    cadre: target.parent.parentManip.ordonator.get(0),
-                    content: target.parent.parentManip.ordonator.get(1)
-                };
-                target.parent.parentManip.ordonator.unset(0);
-                target.parent.parentManip.ordonator.unset(1);
-                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
-                    element.srcDimension,
-                    oldQuest.cadre.width, oldQuest.cadre.height,
-                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
-                );
-                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-                newQuest.image._acceptDrop = true;
-
-                switch (true) {
-                    case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                        let questionCreator = target.parent.parentManip.parentObject;
-                        questionCreator.linkedQuestion.image = newQuest.image;
-                        questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
-                        questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                        questionCreator.display();
-                        break;
-                    case target.parent.parentManip.parentObject.editable:
-                        let answer = target.parent.parentManip.parentObject;
-                        answer.image = newQuest.image;
-                        answer.imageSrc = newQuest.image.src;
-                        answer.display(-answer.w/2,-answer.h/2);
-                        break;
-                }
-                target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-                //target.parent.parentManip.ordonator.set(1, oldQuest.content);
-            } else {
-                var formation = target.parent.parentManip.parentObject;
-                formation.addNewGame(event, this);
-            }
+            var formation = target.parent.parentManip.parentObject;
+            formation.addNewGame(event, this);
         }
         this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+    }
+}
+
+class ImagesLibrary extends Library {
+    constructor (lib) {
+        super(lib);
+        for (var i = 0; i < this.itemsTab.length; i++) {
+            this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
+                this.imageLoaded = true; //this != library
+            });
+        }
+    }
+
+    dropAction (element, event) {
+        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        if (target && target._acceptDrop) {
+            var oldQuest = {
+                cadre: target.parent.parentManip.ordonator.get(0),
+                content: target.parent.parentManip.ordonator.get(1)
+            };
+            target.parent.parentManip.ordonator.unset(0);
+            target.parent.parentManip.ordonator.unset(1);
+            var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                element.srcDimension,
+                oldQuest.cadre.width, oldQuest.cadre.height,
+                oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+            );
+            oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+            oldQuest.content.position(newQuest.content.x, newQuest.content.y);
+            newQuest.image._acceptDrop = true;
+
+            switch (true) {
+                case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                    let questionCreator = target.parent.parentManip.parentObject;
+                    questionCreator.linkedQuestion.image = newQuest.image;
+                    questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                    questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                    questionCreator.display();
+                    break;
+                case target.parent.parentManip.parentObject.editable:
+                    let answer = target.parent.parentManip.parentObject;
+                    answer.image = newQuest.image;
+                    answer.imageSrc = newQuest.image.src;
+                    answer.display(-answer.w / 2, -answer.h / 2);
+                    break;
+            }
+            target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+            //target.parent.parentManip.ordonator.set(1, oldQuest.content);
+        }
     }
 }
 
@@ -877,7 +891,7 @@ class QuizzManager {
         }
         this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.header = new Header();
-        this.library = new Library(myLibraryImage);
+        this.library = new ImagesLibrary(myLibraryImage);
         this.quizz.tabQuestions[0].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
