@@ -699,23 +699,6 @@ class Library {
         this.font = lib.font || "Arial";
         this.fontSize = lib.fontSize || 20;
     }
-
-    run (x, y, w, h, callback) {
-        this.intervalToken = asyncTimerController.interval(() => {
-            if (this.itemsTab.every(e => e.imageLoaded)) {
-                asyncTimerController.clearInterval(this.intervalToken);
-                this.display(x, y, w, h);
-                callback();
-            }
-        }, 100);
-        runtime && this.itemsTab.forEach(e => {
-            imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
-        });
-        if (runtime){
-            this.display(x, y, w, h);
-            callback();
-        }
-    };
 }
 
 class GamesLibrary extends Library {
