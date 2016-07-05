@@ -1582,7 +1582,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         (type.label == clicked) ? (self.completeBanner[i].color = SELECTION_COLOR) : (self.completeBanner[i].color = myColors.white);
         self.completeBanner[i].toggleButton = displayTextWithoutCorners(type.label, self.toggleButtonWidth, h, myColors.black, self.completeBanner[i].color, 20, null, self.completeBanner[i].manipulator);
         self.completeBanner[i].toggleButton.content.color(getComplementary(self.completeBanner[i].color), 0, myColors.black);
-        self.completeBanner[i].manipulator.translator.move(self.x,MARGIN+h/2);
+        self.completeBanner[i].manipulator.translator.move(self.x-self.w/2, h - self.h/2);
         self.x += self.toggleButtonWidth + MARGIN;
         (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.content, "click", toggleHandler));
         (type.label != clicked) && (svg.addEvent(self.completeBanner[i].toggleButton.cadre, "click", toggleHandler));
