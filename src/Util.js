@@ -836,6 +836,10 @@ class Puzzle {
         this.parentObject = parentObject;
     }
 
+    updateElementsArray(newElementsArray){
+        this.elementsArray = newElementsArray;
+    }
+
     drawChevrons(){
         var self = this;
         this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
@@ -917,16 +921,18 @@ class Puzzle {
                 var rowArray = [];
                 for(var column = 0; column < this.columns ; column++){
                     //console.log(rowArray);
-                    let index = this.indexOfFirstVisibleElement+(this.rows-1)*row+column;
+                    //let index = this.indexOfFirstVisibleElement+(this.rows-1)*row+column;
+                    let index = count;
                     if(typeof this.elementsArray[index] !== "undefined") {
                         (this.elementsArray[index].puzzleRowIndex = row);
                         (this.elementsArray[index].puzzleColumnIndex = column);
-                        rowArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows - 1) * row + column]);
+                        count ++;
+                        rowArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows - 1) * row*this.columns + column]);
                     }
                 }
-                if(count<stop){
-                    this.visibleElementsArray.push(rowArray);
-                    count++;
+                this.visibleElementsArray.push(rowArray);
+                if(count>=stop){
+                    return true;
                 }
             }
         }else if(orientation === "upToDown"){
@@ -950,7 +956,7 @@ class Puzzle {
     
     adjustElementsDimensions(){
         this.elementWidth = (this.visibleArea.width - MARGIN*(this.columns-1))/this.columns;
-        this.elementHeight = (this.visibleArea.height - MARGIN)/this.rows;
+        this.elementHeight = (this.visibleArea.height - MARGIN*(this.rows+1))/this.rows;
         for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
             if(typeof this.elementsArray[i] !== "undefined") {
                 this.elementsArray[i].width = this.elementWidth;
@@ -963,7 +969,7 @@ class Puzzle {
         for(var i = this.indexOfFirstVisibleElement; i<this.indexOfFirstVisibleElement + this.nbOfVisibleElements; i++){
             if(typeof this.elementsArray[i] !== "undefined") {
                 this.elementsArray[i].x = -(this.visibleArea.width - this.elementsArray[i].width)/ 2 + this.elementsArray[i].puzzleColumnIndex * (this.elementWidth + MARGIN);
-                this.elementsArray[i].y =  this.elementsArray[i].puzzleRowIndex * (this.elementHeight + MARGIN);
+                this.elementsArray[i].y = -(this.visibleArea.height - this.elementsArray[i].height)/ 2 + this.elementsArray[i].puzzleRowIndex * (this.elementHeight + MARGIN) + MARGIN;
             }
         }
     }
@@ -985,12 +991,14 @@ class Puzzle {
         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
         this.adjustElementsDimensions();
         this.adjustElementsPositions();
+        let rowNumber = 0;
         this.visibleElementsArray.forEach(rows =>{
             rows.forEach(elem => {
-                rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
-                this.manipulator.ordonator.set(rows.indexOf(elem)+3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                rowNumber*this.columns + rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rowNumber*this.columns +rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
+                this.manipulator.ordonator.set(rowNumber*this.columns + rows.indexOf(elem)+3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                 elem.display(elem.x, elem.y, elem.width, elem.height);
             });
+            rowNumber++;
         });
     }
 }

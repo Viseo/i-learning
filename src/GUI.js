@@ -224,8 +224,8 @@ function answerDisplay (x, y, w, h) {
                 display: displayErrorMessage
             });
         };
-
         self.manipulator.flush();
+        self.manipulator.translator.move(x,y);
         showTitle();
 
         if(typeof self.obj.checkbox === 'undefined') {
@@ -482,10 +482,10 @@ function addEmptyElementDisplay(x, y, w, h) {
     }
 
     self.obj = displayText(self.label, self.width, self.height, myColors.black, myColors.white, self.fontSize, null, self.manipulator);
-    self.plus = drawPlus(self.x, 0, self.height * 0.3, self.height * 0.3);
+    self.plus = drawPlus(0, 0, self.height * 0.3, self.height * 0.3);
+    self.manipulator.translator.move(x, y);
     self.manipulator.ordonator.set(2, self.plus);
-    self.obj.content.position(self.x, self.height * 0.35);
-    self.obj.cadre.position(self.x, 0);
+    self.obj.content.position(0, self.height * 0.35);
 
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
@@ -503,11 +503,12 @@ function addEmptyElementDisplay(x, y, w, h) {
                 if(self.parent.linkedQuestion.tabAnswer.length < self.parent.MAX_ANSWERS) {
                     self.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(self.parent, self.type));
                 }
-
-                self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, "leftToRight", self);
+                self.parent.puzzle.updateElementsArray(self.parent.linkedQuestion.tabAnswer);
+                self.parent.puzzle && self.parent.puzzle.fillVisibleElementsArray("leftToRight");
+                //self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, "leftToRight", self);
                 self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.manipulator.first);
                 self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
-                    self.parent.coordinatesAnswers.y + self.parent.toggleButtonHeight + self.parent.questionBlock.title.cadre.height/2 - 2*MARGIN, self.parent.coordinatesAnswers.w,
+                    self.parent.coordinatesAnswers.y, self.parent.coordinatesAnswers.w,
                     self.parent.coordinatesAnswers.h, false);
                 break;
             case 'question':
@@ -1641,7 +1642,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
             self.questionBlock.title.image._acceptDrop = true;
         } else {
-            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.manipulator);
+            self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
         }
         var fontSize = Math.min(20, self.h*0.1);
         self.questNum = new svg.Text(self.linkedQuestion.questionNum).position(-self.w/2+2*MARGIN+(fontSize*(self.linkedQuestion.questionNum.toString.length)/2), -self.h*0.25/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
@@ -1724,18 +1725,21 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     (typeof y !== "undefined")  && (self.y = y);
     (typeof w !== "undefined")  && (self.w = w);
     (typeof h !== "undefined")  && (self.h = h);
-    self.coordinatesAnswers = {
-        x: self.x,
-        y: 0, //self.y + 3 * MARGIN ,
-        w: self.w - 2 * MARGIN,
-        h: (self.h - self.toggleButtonHeight - 2*MARGIN) * 0.75 - 3 * MARGIN - 20
-    };
     showTitle();
+    var height = self.h - self.toggleButtonHeight - self.questionBlock.title.cadre.height - 3*MARGIN;
+    self.coordinatesAnswers = {
+        x: 0,
+        y: (self.h-height)/2 -MARGIN, //self.y + 3 * MARGIN ,
+        w: self.w - 2 * MARGIN,
+        h: height
+    };
     // bloc Answers
     if (self.linkedQuestion.tabAnswer.length < self.MAX_ANSWERS && !(self.linkedQuestion.tabAnswer[self.linkedQuestion.tabAnswer.length-1] instanceof AddEmptyElement)) {
         self.linkedQuestion.tabAnswer.push(new AddEmptyElement(self, 'answer'));
     }
-    //self.questionCreatorManipulator.last.children.indexOf(self.questionCreator.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
+    self.puzzle.updateElementsArray(self.linkedQuestion.tabAnswer);
+    self.questionCreatorManipulator.last.children.indexOf(self.puzzle.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
+    self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
     self.puzzle.puzzleCadre.color(myColors.red,3, myColors.blue);
 }
