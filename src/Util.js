@@ -808,27 +808,27 @@ class Server {
     constructor() {}
 
     static getAllFormationsNames(callback) {
-        dbListener.httpGetAsync('/getAllFormationsNames', callback);
+        dbListener.httpGetAsync('/getAllFormationsNames').then(callback);
     }
 
-    static getFormationByName(name, callback) {
-        dbListener.httpGetAsync("/getFormationByName/" + name, callback);
+    static getFormationByName(name) {
+        return dbListener.httpGetAsync("/getFormationByName/" + name)
     }
     
     static connect(mail, password, callback) {
-        dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password}, callback);
+        dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password}).then(callback);
     }
     
     static checkCookie(callback) {
-        dbListener.httpGetAsync('/auth/verify/', callback);
+        dbListener.httpGetAsync('/auth/verify/').then(callback);
     }
 
     static getUserByMail(mail, callback) {
-        dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
+        dbListener.httpGetAsync("/getUserByMailAddress/" + mail).then(callback);
     }
 
     static getFormationById(id, callback) {
-        dbListener.httpGetAsync("/getFormationById/" + id, callback);
+        dbListener.httpGetAsync("/getFormationById/" + id).then(callback);
     }
 
     static sendProgressToServer(quiz, callback) {
@@ -839,7 +839,7 @@ class Server {
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
-        dbListener.httpPostAsync("/sendProgress", data, callback);
+        dbListener.httpPostAsync("/sendProgress", data).then(callback);
     }
 
     // static getProgress(formation, game, callback) {
@@ -847,19 +847,19 @@ class Server {
     // }
 
     static getUser(callback) {
-        dbListener.httpGetAsync("/getUser", callback);
+        dbListener.httpGetAsync("/getUser").then(callback);
     }
 
-    static replaceFormation(id, newFormation, callback, ignoredData) {
-        dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, callback, ignoredData);
+    static replaceFormation(id, newFormation, ignoredData) {
+        return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData)
     }
     
-    static insertFormation(newFormation, callback, ignoredData) {
-        dbListener.httpPostAsync("/insert", newFormation, callback, ignoredData);
+    static insertFormation(newFormation, ignoredData) {
+        return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
     }
 
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, callback, ignoredData) {
-        dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, callback, ignoredData);
+        dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData).then(callback);
     }
 }
 

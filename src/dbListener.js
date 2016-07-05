@@ -26,6 +26,7 @@ function DbListener(isWriting, isMock) {
 
 function HttpRequests(isWriting, isMock, listener) {
     this.parent = listener;
+    
     function register(data) {
         var request = new XMLHttpRequest();
         request.open("POST", "/data", true); // true for asynchronous
@@ -33,27 +34,31 @@ function HttpRequests(isWriting, isMock, listener) {
         request.send(JSON.stringify(data));
     }
 
-    function httpGet(theUrl, callback) {
-        var request = new XMLHttpRequest();
-        request.onreadystatechange = function() {
-            if (request.readyState == 4 && request.status == 200) {
-                isWriting && register(JSON.parse(request.responseText));
-                callback && callback(request.responseText);
-            }
-        };
-        request.open("GET", theUrl, true); // true for asynchronous
-        request.send(null);
+    function httpGet(theUrl) {
+        return new Promise((resolve) => {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                    isWriting && register(JSON.parse(request.responseText));
+                    resolve(request.responseText);
+                }
+            };
+            request.open("GET", theUrl, true); // true for asynchronous
+            request.send(null);
+        })
     }
 
-    function httpPost(theUrl, body, callback, ignoredData) {
-        var request = new XMLHttpRequest();
-        request.onreadystatechange = function () {
-            if (request.readyState == 4 && request.status == 200)
-                callback && callback(request.responseText);
-        };
-        request.open('POST', theUrl, true); // true for asynchronous
-        request.setRequestHeader('Content-type', 'application/json');
-        request.send(JSON.stringify(body, ignoredData));
+    function httpPost(theUrl, body, ignoredData) {
+        return new Promise((resolve) => {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200)
+                    resolve(request.responseText);
+            };
+            request.open('POST', theUrl, true); // true for asynchronous
+            request.setRequestHeader('Content-type', 'application/json');
+            request.send(JSON.stringify(body, ignoredData));
+        })
     }
 
     function httpPut(theUrl, body, callback, ignoredData) {
@@ -67,13 +72,17 @@ function HttpRequests(isWriting, isMock, listener) {
         xmlHttp.send(JSON.stringify(body, ignoredData));
     }
 
-    function httpMockGet(theUrl, callback) {
-        var obj = parent.data.shift();
-        callback && callback(obj);
+    function httpMockGet() {
+        return new Promise((resolve) => {
+            var obj = parent.data.shift();
+            resolve(obj);
+        });
     }
 
-    function httpMockPost(theUrl, body, callback, ignoredData) {
-        callback && callback(body);
+    function httpMockPost(theUrl, body, ignoredData) {
+        return new Promise((resolve) => {
+            resolve(body);
+        });
     }
 
     function httpMockPut(theUrl, body, callback, ignoredData) {

@@ -436,14 +436,14 @@ class Formation {
     }
 
     saveFormation (displayQuizzManager) {
-        let messageSave = "Votre travail a bien été enregistré.";
-        let messageError = "Vous devez remplir le nom de la formation.";
-        let messageReplace =  "Les modifications ont bien été enregistrées";
-        let messageUsedName = "Le nom de cette formation est déjà utilisé !";
-        let messageNoModification = "Les modifications ont déjà été enregistrées";
+        let messageSave = "Votre travail a bien été enregistré.",
+            messageError = "Vous devez remplir le nom de la formation.",
+            messageReplace =  "Les modifications ont bien été enregistrées",
+            messageUsedName = "Le nom de cette formation est déjà utilisé !",
+            messageNoModification = "Les modifications ont déjà été enregistrées";
 
         let displayErrorMessage = (message) => {
-            this.errorMessageSave && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+            (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
             this.errorMessage = new svg.Text(message)
                 .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
                 .font("Arial", 15)
@@ -454,9 +454,9 @@ class Formation {
         };
 
         let displaySaveMessage = (message, displayQuizzManager) => {
-            if (displayQuizzManager) displayQuizzManager();
-
-            else {
+            if (displayQuizzManager) {
+                displayQuizzManager();
+            } else {
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessageSave = new svg.Text(message)
                     .position(0, -this.saveButtonHeight / 2 - MARGIN)
@@ -466,6 +466,17 @@ class Formation {
                 svg.timeout(() => {
                     (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave)
                 }, 5000);
+            }
+        };
+
+        let displayMessage = message => {
+            switch (message) {
+                case messageError:
+                case messageUsedName:
+                    displayErrorMessage(message);
+                    break;
+                default:
+                    displaySaveMessage(message, displayQuizzManager);
             }
         };
 
@@ -491,52 +502,54 @@ class Formation {
             };
             
             let addNewFormation = () => {
-                let callbackInsertion = (data) => {
-                    this._id = JSON.parse(data);
-                    displaySaveMessage(messageSave, displayQuizzManager);
-
-                };
-                let callbackCheckName = (data) => {
+                Server.getFormationByName(this.label).then(data => {
                     let formationWithSameName = JSON.parse(data).formation;
                     if (!formationWithSameName) {
-                        Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
+                        Server.insertFormation(getObjectToSave(), ignoredData)
+                            .then(data => {
+                                this._id = JSON.parse(data);
+                                displayMessage(messageSave);
+                            })
                     } else {
-                        displayErrorMessage(messageUsedName);
+                        displayMessage(messageUsedName);
                     }
-                };
-                Server.getFormationByName(this.label, callbackCheckName);
+                })
             };
 
             let replaceFormation = () => {
-                let callbackCheckName = data => {
-                    let callbackReplace = () => {
-                        displaySaveMessage(messageReplace, displayQuizzManager);
-                    };
-                    let formationWithSameName = JSON.parse(data).formation;
-                    if(formationWithSameName) {
-                        let id = formationWithSameName._id;
-                        delete formationWithSameName._id;
-                        formationWithSameName = JSON.stringify(formationWithSameName);
-                        let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
-                        if (id === this._id) {
-                            if (formationWithSameName === newFormation) {
-                                displaySaveMessage(messageNoModification, displayQuizzManager);
+                Server.getFormationByName(this.label)
+                    .then(data => {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if(formationWithSameName) {
+                            let id = formationWithSameName._id;
+                            delete formationWithSameName._id;
+                            formationWithSameName = JSON.stringify(formationWithSameName);
+                            let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                            if (id === this._id) {
+                                if (formationWithSameName === newFormation) {
+                                    throw messageNoModification
+                                } else {
+                                    return getObjectToSave()
+                                }
                             } else {
-                                Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
+                                throw messageUsedName
                             }
                         } else {
-                            displayErrorMessage(messageUsedName);
+                            return getObjectToSave()
                         }
-                    } else {
-                        Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
-                    }
-                };
-                Server.getFormationByName(this.label, callbackCheckName);
+                    })
+                    .then((formation) => {
+                        Server.replaceFormation(this._id, formation, ignoredData)
+                            .then(() => {
+                                displayMessage(messageReplace);
+                            });
+                    })
+                    .catch(displayMessage)
             };
 
             this._id ? replaceFormation() : addNewFormation();
         } else {
-            displayErrorMessage(messageError);
+            displayMessage(messageError);
         }
     }
 
