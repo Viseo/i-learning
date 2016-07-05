@@ -436,7 +436,6 @@ class Formation {
     }
 
     saveFormation (displayQuizzManager) {
-        let validation = this.label !== "" && this.label !== this.labelDefault && (typeof this.label !== 'undefined');
         let messageSave = "Votre travail a bien été enregistré.";
         let messageError = "Vous devez remplir le nom de la formation.";
         let messageReplace =  "Les modifications ont bien été enregistrées";
@@ -470,7 +469,27 @@ class Formation {
             }
         };
 
-        if (validation) {
+        if (this.label && this.label !== this.labelDefault) {
+            let getObjectToSave = () => {
+                var levelsTab = [];
+                var gamesCounter = {quizz: 0 , bd : 0};
+                this.levelsTab.forEach((level, i) => {
+                    var gamesTab = [];
+                    levelsTab.push({gamesTab: gamesTab});
+                    level.gamesTab.forEach(game => {
+                        if (game.tabQuestions) {
+                            game.id || (game.id = "quizz"  + gamesCounter.quizz);
+                            gamesCounter.quizz ++;
+                        } else {
+                            game.id || (game.id = "bd" + gamesCounter.bd);
+                            gamesCounter.bd ++;
+                        }
+                        levelsTab[i].gamesTab.push(game);
+                    });
+                });
+                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
+            };
+            
             let addNewFormation = () => {
                 let callbackInsertion = (data) => {
                     this._id = JSON.parse(data);
@@ -481,34 +500,11 @@ class Formation {
                     let formationWithSameName = JSON.parse(data).formation;
                     if (!formationWithSameName) {
                         Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
-                    }
-                    else {
+                    } else {
                         displayErrorMessage(messageUsedName);
                     }
                 };
                 Server.getFormationByName(this.label, callbackCheckName);
-            };
-
-            let getObjectToSave = () => {
-                var levelsTab = [];
-                var gamesCounter = {quizz: 0 , bd : 0};
-                this.levelsTab.forEach((level, i) => {
-                    var gamesTab = [];
-                    levelsTab.push({gamesTab: gamesTab});
-                    level.gamesTab.forEach((game) => {
-                        //game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
-                        if (game.tabQuestions) {
-                            game.id || (game.id = "quizz"  + gamesCounter.quizz);
-                            gamesCounter.quizz ++;
-                        }
-                        else {
-                            game.id || (game.id = "bd" + gamesCounter.bd);
-                            gamesCounter.bd ++;
-                        }
-                        levelsTab[i].gamesTab.push(game) ;
-                    });
-                });
-                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
             };
 
             let replaceFormation = () => {
@@ -518,18 +514,17 @@ class Formation {
                     };
                     let formationWithSameName = JSON.parse(data).formation;
                     if(formationWithSameName) {
-                        var id = formationWithSameName._id;
+                        let id = formationWithSameName._id;
                         delete formationWithSameName._id;
                         formationWithSameName = JSON.stringify(formationWithSameName);
-                        let newFormation = getObjectToSave();
-                        newFormation = JSON.stringify(newFormation, ignoredData);
-                        if (formationWithSameName && id === this._id) {
-                            if (formationWithSameName == newFormation) {
+                        let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                        if (id === this._id) {
+                            if (formationWithSameName === newFormation) {
                                 displaySaveMessage(messageNoModification, displayQuizzManager);
                             } else {
                                 Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
                             }
-                        } else if (formationWithSameName && formationWithSameName._id !== this._id) {
+                        } else {
                             displayErrorMessage(messageUsedName);
                         }
                     } else {
