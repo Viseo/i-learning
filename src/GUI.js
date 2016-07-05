@@ -514,7 +514,9 @@ function addEmptyElementDisplay(x, y, w, h) {
                 self.parent.quizz.tabQuestions.pop();
                 (self.parent.quizz.tabQuestions.length>0) && (self.parent.quizz.tabQuestions[self.parent.indexOfEditedQuestion].selected = false);
                 self.parent.indexOfEditedQuestion = self.parent.quizz.tabQuestions.length;
-
+                self.parent.quizz.tabQuestions.forEach(question=>{
+                    question.redCrossManipulator && question.redCrossManipulator.flush();
+                    question.selected=false});
                 let newQuestion = new Question(null, self.parent.quizz);
                 newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
@@ -1237,6 +1239,11 @@ function questionDisplay(x, y, w, h) {
         var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.manipulator);
         self.bordure = object.cadre;
         self.content = object.content;
+        svg.addEvent(self.bordure, "click", function(){
+            self.selectedQuestion()});
+        svg.addEvent(self.content, "click", function(){
+            self.selectedQuestion()});
+
     }
     // Question avec Image uniquement
     else if (self.imageSrc && !self.label) {
@@ -1245,6 +1252,7 @@ function questionDisplay(x, y, w, h) {
     }
     else {
         self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
+        svg.addEvent(self.bordure, "click", function(){self.selectedQuestion});
         self.manipulator.ordonator.set(0, self.bordure);
     }
     var fontSize = Math.min(20, self.height*0.1);
@@ -1455,6 +1463,11 @@ function questionDisplayAnswers(x, y, w, h) {
 }
 
 function questionSelectedQuestion() {
+    this.parentQuizz.tabQuestions.forEach(question=>{
+        question.bordure && question.bordure.color(question.bgColor, 1, myColors.black);
+        question.redCrossManipulator && question.redCrossManipulator.flush();
+        question.selected = false;
+    });
     this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
     if(!this.redCrossManipulator){
         let redCrossClickHandler = () =>{
@@ -1465,30 +1478,41 @@ function questionSelectedQuestion() {
             let index = questionsArray.indexOf(this);
             this.delete();
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
-            resetQuestionsIndex(this.parentQuizz);
             if(index !== -1) {
-                let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
-                let nextQuestionY = questionsArray[index].bordure.globalPoint(0, 0).y;
+                //let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
+                //let nextQuestionY = questionsArray[index].bordure.globalPoint(0, 0).y;
                 quizzManager.indexOfEditedQuestion = index;
+                resetQuestionsIndex(this.parentQuizz);
+                questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
+                questionPuzzle.display();
                 svg.event(questionsArray[quizzManager.indexOfEditedQuestion].bordure, "click", {question:questionsArray[quizzManager.indexOfEditedQuestion]});
             }
             else{
-                let addEmptyElementX = questionsArray[0].bordure.globalPoint(0, 0).x;
-                let addEmptyElementY = questionsArray[0].bordure.globalPoint(0, 0).y;
-                quizzManager.indexOfEditedQuestion = index++;
+                //let addEmptyElementX = questionsArray[0].bordure.globalPoint(0, 0).x;
+                //let addEmptyElementY = questionsArray[0].bordure.globalPoint(0, 0).y;
+                this.parentQuizz.tabQuestions.splice(0,0, new Question(defaultQuestion, this.parentQuizz));
+                //this.parentQuizz.tabQuestions[0].display();
+                resetQuestionsIndex(this.parentQuizz);
+                if (questionPuzzle){
+                    questionPuzzle.visibleElementsArray[0].length === 6 && questionPuzzle.updateStartPosition('right');
+                    questionPuzzle.fillVisibleElementsArray("leftToRight");
+                }
+                quizzManager.indexOfEditedQuestion = ++index;
+                this.parentQuizz.tabQuestions[0].selected = true;
+                questionPuzzle.display();
                 svg.event(questionsArray[0].bordure, "dblclick", {}); // dernier élément du tableau (AddEmptyElement)
             }
         };
         this.redCrossManipulator = new Manipulator(this);
         let size = 20;
-        this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, this.redCrossManipulator);
+        this.redCross || (this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size/2, size, this.redCrossManipulator));
         svg.addEvent(this.redCross, "click", redCrossClickHandler);
-        this.redCrossManipulator.last.add(this.redCross);
+        this.redCrossManipulator.last.children.indexOf(this.redCross) === -1 && this.redCrossManipulator.last.add(this.redCross);
         this.manipulator.last.add(this.redCrossManipulator.first);
     }
     else{
         this.redCrossManipulator.translator.move(-this.questNum.x, this.questNum.y - this.redCross.size/2);
-        this.redCrossManipulator.last.add(this.redCross);
+        this.redCrossManipulator.last.children.indexOf(this.redCross) === -1 && this.redCrossManipulator.last.add(this.redCross);
     }
 }
 
@@ -2142,10 +2166,16 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         self.quizz.tabQuestions[i].contentEventHandler = self.questionClickHandler;
         self.quizz.tabQuestions[i].imageEventHandler = self.questionClickHandler;
     }
-    self.questionPuzzle ? (self.questionPuzzle.updateStartPosition('right') || self.questionPuzzle.fillVisibleElementsArray("leftToRight") ): (self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self, index));
+    if (self.questionPuzzle){
+        self.questionPuzzle.visibleElementsArray[0].length === 6 && self.questionPuzzle.updateStartPosition('right');
+        self.questionPuzzle.fillVisibleElementsArray("leftToRight");
+    }
+
+    else {
+        self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self);
+    }
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.manipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.manipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.qPuzzleW, self.qPuzzleH, true);
-    self.questionPuzzle.puzzleCadre.color(myColors.green,3, myColors.yellow);
 }
 
 function inscriptionManagerDisplay(labels={}) {

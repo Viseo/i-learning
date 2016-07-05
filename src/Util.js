@@ -821,7 +821,7 @@ class Puzzle {
         this.columns = columns;
         this.nbOfVisibleElements = this.rows * this.columns;
         this.manipulator = new Manipulator(this);
-        this.manipulator.addOrdonator(this.nbOfVisibleElements+2); // Pour les chevrons
+        this.manipulator.addOrdonator(this.nbOfVisibleElements+3); // Pour les chevrons
         this.leftChevronManipulator = new Manipulator(this);
         this.leftChevronManipulator.addOrdonator(3);
         this.rightChevronManipulator = new Manipulator(this);
@@ -838,8 +838,6 @@ class Puzzle {
 
     drawChevrons(){
         var self = this;
-        let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
-        let updateRightChevron = this.rightChevron && this.rightChevron._activated;
         this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron((this.width - this.chevronSize)/2, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
         this.leftChevron.handler = function(){
@@ -852,15 +850,33 @@ class Puzzle {
             self.fillVisibleElementsArray(self.orientation);
             self.display();
         };
+        this.updateChevrons();
+        let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
+        let updateRightChevron = this.rightChevron && this.rightChevron._activated;
         updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
         updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
-        this.manipulator.ordonator.set(0, this.leftChevronManipulator.first);
-        this.manipulator.ordonator.set(1, this.rightChevronManipulator.first);
+        this.manipulator.ordonator.set(1, this.leftChevronManipulator.first);
+        this.manipulator.ordonator.set(2, this.rightChevronManipulator.first);
     }
 
     hideChevrons(){
         this.manipulator.ordonator.unset(1);
         this.manipulator.ordonator.unset(2);
+    }
+
+    updateChevrons(){
+        if(this.indexOfFirstVisibleElement === 0) {
+            this.leftChevron && this.leftChevron.desactivate();
+            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
+        }
+        else if(this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length){
+            this.leftChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
+            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
+        }
+        else{
+            this.rightChevron && this.rightChevron.desactivate();
+            this.rightChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
+        }
     }
 
     updateStartPosition(leftOrRight){
@@ -871,7 +887,7 @@ class Puzzle {
             orientation = -1;
         }
         if(this.rows === 1){
-            this.visibleElementsArray[0].length === 6 && (this.indexOfFirstVisibleElement +=orientation);
+            this.indexOfFirstVisibleElement +=orientation;
         }
         else{
             let shift = (this.columns - 1)*this.rows*orientation;
@@ -889,18 +905,7 @@ class Puzzle {
             }
             this.indexOfFirstVisibleElement = temporaryIndex;
         }
-        if(this.indexOfFirstVisibleElement === 0) {
-            this.leftChevron && this.leftChevron.desactivate();
-            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
-        }
-        else if(this.indexOfFirstVisibleElement + this.nbOfVisibleElements < this.elementsArray.length){
-            this.leftChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
-            this.rightChevron && this.rightChevron.activate(this.rightChevron.handler, 'click');
-        }
-        else{
-            this.rightChevron && this.rightChevron.desactivate();
-            this.rightChevron && this.leftChevron.activate(this.leftChevron.handler, 'click');
-        }
+        this.updateChevrons();
     }
 
     fillVisibleElementsArray(orientation){
@@ -976,13 +981,14 @@ class Puzzle {
         };
         this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
         this.manipulator.ordonator.set(0, this.puzzleCadre);
-        this.chevronsDisplayed = ((this.elementsArray.length > this.nbOfVisibleElements) && needChevrons);
+        this.chevronsDisplayed = ((this.elementsArray.length > this.visibleElementsArray[0].length) && needChevrons);
         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
         this.adjustElementsDimensions();
         this.adjustElementsPositions();
         this.visibleElementsArray.forEach(rows =>{
             rows.forEach(elem => {
-                this.manipulator.ordonator.set(this.visibleElementsArray[0].indexOf(elem)+2, elem.manipulator.first); // +2 pour les chevrons
+                rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
+                this.manipulator.ordonator.set(rows.indexOf(elem)+3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                 elem.display(elem.x, elem.y, elem.width, elem.height);
             });
         });

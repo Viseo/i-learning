@@ -1226,7 +1226,7 @@ function Domain() {
         self.quizz.tabQuestions.push(new AddEmptyElement(self, 'question'));
         self.quizzManagerManipulator = new Manipulator(self);
         self.questionsPuzzleManipulator = new Manipulator(self);
-        self.questionsPuzzleManipulator.addOrdonator(1);
+        self.questionsPuzzleManipulator.addOrdonator(2);
         self.quizzInfoManipulator = new Manipulator(self);
         self.quizzInfoManipulator.addOrdonator(6);
         self.questionCreatorManipulator = self.questionCreator.manipulator;
