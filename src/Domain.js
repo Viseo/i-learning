@@ -674,6 +674,42 @@ class Formation {
             game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
         });
     }
+    
+    trackProgress (displayFunction) {
+        this.levelsTab.forEach(level => {
+            level.gamesTab.forEach(game => {
+                delete game.miniature;
+                delete game.status;
+            })
+        });
+        this.miniaturesManipulator.flush();
+        let callbackUser = data => {
+            let user = JSON.parse(data);
+            if (!user.formationsTab) return;
+
+            let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
+            formationUser && formationUser.gamesTab.forEach(game => {
+                let theGame = this.findGameById(game.game);
+                if (!theGame) return;
+
+                theGame.currentQuestionIndex = game.index;
+                game.tabWrongAnswers.forEach(wrongAnswer => {
+                    theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
+                });
+                theGame.score = game.index - theGame.questionsWithBadAnswers.length;
+                theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+            });
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    if (!this.isGameAvailable(game)) {
+                        game.status = "notAvailable";
+                    }
+                });
+            });
+            displayFunction.call(this)
+        };
+        Server.getUser(callbackUser);
+    }
 }
 
 class Library {
