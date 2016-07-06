@@ -862,6 +862,7 @@ class QuizzManager {
                 question.selected = undefined;
                 question.imageLoaded = undefined;
                 question.redCross = undefined;
+                question.questNum = undefined;
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
             });
             return {

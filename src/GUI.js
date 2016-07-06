@@ -1582,7 +1582,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
             answer.correct = false;
         });
 
-        //(questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
+        (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
         (questionType === "Réponses multiples") ? (self.linkedQuestion.multipleChoice = true) : (self.linkedQuestion.multipleChoice = false);
 
         self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
@@ -2225,6 +2225,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         h: self.questionsPuzzleHeight - self.globalMargin.height
     };
     if (self.questionPuzzle){
+        self.questionPuzzle.updateElementsArray(self.quizz.tabQuestions);
         //self.questionPuzzle.visibleElementsArray[0].length === 6 && self.questionPuzzle.updateStartPosition('right');
         self.questionPuzzle.fillVisibleElementsArray("leftToRight");
     }
