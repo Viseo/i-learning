@@ -1844,6 +1844,8 @@ function quizzDisplay(x, y, w, h) {
 
 function quizzDisplayResult (color){
     var self = this;
+    self.questionsWithBadAnswers.forEach(question=>{
+        question.manipulator.ordonator.unset(3)});
     self.displayScore(color);
     self.puzzle.display(0, self.questionHeight/2 + self.answerHeight/2 + MARGIN, drawing.width - MARGIN, self.answerHeight);
 }

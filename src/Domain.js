@@ -794,7 +794,7 @@ function Domain() {
         self.manipulator = new Manipulator(self);
         self.manipulator.addOrdonator(6);
         self.answersManipulator = new Manipulator(self);
-        self.manipulator.last.add(self.answersManipulator.first);
+        //self.manipulator.last.add(self.answersManipulator.first);
         self.resetManipulator = new Manipulator(self);
         self.resetManipulator.addOrdonator(2);
         self.answersManipulator.last.add(self.resetManipulator.first);
