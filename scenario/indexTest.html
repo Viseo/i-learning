@@ -6,12 +6,12 @@
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
+<script src="../node_modules/twin-bcrypt/twin-bcrypt.min.js"></script>
 <script src="../lib/module.js"></script>
 <script src="../lib/targetruntime.js"></script>
 <script src="../lib/runtimemock.js"></script>
 <script src="../lib/svghandler.js"></script>
 <script src="../lib/svggui.js"></script>
-<script src="../lib/scenario.js"></script>
 <script>
     let targetRuntime = require("../lib/targetruntime").targetRuntime;
     let SVG = require("../lib/svghandler").SVG;
@@ -27,16 +27,11 @@
     Domain();
     SVGUtil();
     Bdd();
-    AdminGUI();
+    LearningGUI();
     setGlobalVariable();
-</script>
-<script src="../src/admin.js"></script>
-<script>
     var dbListener = new DbListener(false, true);
     var param = {speed: 5, step: 100};
-    dbListener.loadData(function () {
-        admin();
-    });
+    main();
 </script>
 </body>
 

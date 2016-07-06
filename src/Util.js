@@ -99,7 +99,6 @@ function SVGGlobalHandler() {
                 if(self.drawing.mousedOverTarget && self.drawing.mousedOverTarget.target){
                     (bool= self.drawing.mousedOverTarget.target.inside(event.clientX,event.clientY));
                     if(self.drawing.mousedOverTarget.target.component.listeners && self.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool){
-                        //console.log('out!');
                         svg.event(self.drawing.mousedOverTarget.target, "mouseout", event);
                         self.drawing.mousedOverTarget=null;
                     }
@@ -107,11 +106,9 @@ function SVGGlobalHandler() {
 
                 svg.event(self.target, "mousemove", event);
                 if(self.target.component.listeners && self.target.component.listeners.mouseover){
-                    //console.log('over!');
                     self.drawing.mousedOverTarget={target:self.target};
                     svg.event(self.target, "mouseover", event);
                 }
-                //console.log(drawing.mousedOverTarget);
 
             }
         };
@@ -360,11 +357,13 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for rectangle
+     * @param rgbCadre : color for rectangle
      * @param bgColor : background color for rectangle
      * @param textHeight : number, taille de la police
      * @param font
      * @param manipulator
+     * @param layer1
+     * @param layer2
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
     displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1) {
@@ -383,7 +382,7 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for circle
+     * @param rgbCadre : color for circle
      * @param bgColor : background color for circle
      * @param textHeight : number, taille de la police
      * @param font
@@ -392,7 +391,6 @@ function SVGUtil() {
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-        content.position(0, Math.floor(svg.runtime.boundingRect(content.component).height)/4);
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -403,7 +401,7 @@ function SVGUtil() {
      * @param label : text to print
      * @param w : width
      * @param h : height
-     * @param rgbCadre : rgb color for rectangle
+     * @param rgbCadre : color for rectangle
      * @param bgColor : background color for rectangle
      * @param textHeight : number, taille de la police
      * @param font
@@ -420,8 +418,8 @@ function SVGUtil() {
     /**
      * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
      * @param content: text to print
-     * @param x : X position
-     * @param y : Y position
+     * @param x : position
+     * @param y : position
      * @param wi : width
      * @param h : height
      * @param fontSize
@@ -542,6 +540,7 @@ function SVGUtil() {
      * @param w
      * @param h
      * @param manipulator
+     * @param side
      */
     Chevron = function (x, y, w, h, manipulator, side = "right") {
         let baseWidth = 160;
@@ -627,8 +626,6 @@ function SVGUtil() {
 
     Arrow = function(parentGame, childGame) {
         var self = this;
-        self.origin = parentGame;
-        self.target = childGame;
         var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
         var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
         var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
@@ -638,13 +635,15 @@ function SVGUtil() {
         self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, self.redCrossManipulator);
         self.redCrossManipulator.last.add(self.redCross);
 
-        var removeLink = function(parentGame,childGame) {
-            parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(childGame),1);
-            childGame.parentGames.splice(childGame.parentGames.indexOf(parentGame),1);
+        let removeLink = () => {
+            for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+                if (link[i].childGame === childGame.id && link[i].parentGame === parentGame.id)
+                    link.splice(i, 1);
+            }
         };
 
-        self.redCrossClickHandler = function () {
-            removeLink(parentGame,childGame);
+        self.redCrossClickHandler = () => {
+            removeLink();
             parentGame.parentFormation.arrowsManipulator.last.remove(self.arrowPath);
             parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
             parentGame.parentFormation.selectedArrow = null;
@@ -654,7 +653,7 @@ function SVGUtil() {
 
         self.arrowPath = drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
         self.selected = false;
-        function arrowClickHandler(){
+        let arrowClickHandler = () => {
             parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
             if(!self.selected){
                 if(parentGame.parentFormation.selectedArrow){
@@ -671,26 +670,26 @@ function SVGUtil() {
                 parentGame.parentFormation.selectedArrow = null;
             }
             self.selected = !self.selected;
-        }
-        svg.addEvent(self.arrowPath,'click',arrowClickHandler);
-        self.arrowPath.color(myColors.black,1,myColors.black);
+        };
+        !playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
+        self.arrowPath.color(myColors.black, 1, myColors.black);
         return self;
     };
 
     Miniature = function(game, size, special) {
         var self = this;
         self.game = game;
-        self.icon = displayTextWithCircle(game.title, size, size, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+        var scoreSize = 13;
+        self.icon = displayTextWithCircle(game.title, size, size-scoreSize-MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
         self.redCrossManipulator = new Manipulator(self);
         self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
         (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
-        var removeAllLinks = function () {
-            game.childrenGames.forEach(function (childGame) {
-                childGame.parentGames.splice(childGame.parentGames.indexOf(game), 1);
-            });
-            game.parentGames.forEach(function (parentGame) {
-                parentGame.childrenGames.splice(parentGame.childrenGames.indexOf(game), 1);
-            });
+
+        let removeAllLinks = () => {
+            for (let link = game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+                if (link[i].childGame === game.id || link[i].parentGame === game.id)
+                    link.splice(i, 1);
+            }
         };
 
         self.redCrossClickHandler = function () {
@@ -747,7 +746,7 @@ function SVGUtil() {
             var iconsize = 20;
             self.infosManipulator = new Manipulator(self);
             self.infosManipulator.addOrdonator(4);
-            switch (special){
+            switch (self.game.status){
                 case "notAvailable":
                     self.icon.cadre.color(myColors.grey, 1, myColors.black);
                     break;
@@ -759,7 +758,10 @@ function SVGUtil() {
                     rect.position(size/2, -size/2);
                     self.infosManipulator.ordonator.set(0, rect);
                     self.infosManipulator.ordonator.set(1, iconInfos);
+                    var resultString = game.tabQuestions.length - game.questionsWithBadAnswers.length + " / " + game.tabQuestions.length;
                     game.miniatureManipulator.last.add(self.infosManipulator.first);
+                    result = autoAdjustText(resultString, 0, 0, size/2, size/2, scoreSize, "Arial", game.miniatureManipulator, 2);
+                    result.text.position(0,size/2-MARGIN/2);
                     break;
                 case "inProgress":
                     var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
@@ -791,7 +793,6 @@ class ReturnButton {
         this.manipulator.addOrdonator(1);
         this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
         this.manipulator.last.add(this.chevronManipulator.first);
-
     }
 
     setHandler(returnHandler) {
@@ -1037,16 +1038,19 @@ class Server {
         var data = {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
-            game: quiz.title,
-            gameId: quiz.id,
+            game: quiz.id,
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         dbListener.httpPostAsync("/sendProgress", data, callback);
     }
 
-    static getProgress(formation, game, callback) {
-        dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // static getProgress(formation, game, callback) {
+    //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
+    // }
+
+    static getUser(callback) {
+        dbListener.httpGetAsync("/getUser", callback);
     }
 
     static replaceFormation(id, newFormation, callback, ignoredData) {
@@ -1082,7 +1086,8 @@ function Bdd() {
         "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
         "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
         "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
-        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition", "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion"];
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
+        "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex"];
 
     ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1102,6 +1107,7 @@ function Bdd() {
         yellow:[255,255,0],
         pink:[255,20,147],
         brown:[128,0,0],
+        primaryGreen:[0, 255, 0],
         none:[]
     };
 
@@ -2048,7 +2054,7 @@ function Bdd() {
             //            colorBordure: myColors.green, bgColor: myColors.grey
             //        },
             //        {
-            //            label: "1998", imageSrc: null, correct: false,
+            //            label: "1998", imageSrc: null, crrect: false,
             //            colorBordure: myColors.green, bgColor: myColors.grey
             //        },
             //        {
@@ -2214,7 +2220,7 @@ function Bdd() {
         // Check 1 Correct Answer:
         quiz => ({
             isValid: quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && el.correct),
-            message: "Votre quiz doit avoir une bonne réponse."
+            message: "Votre question doit avoir une bonne réponse."
         }),
         // Check at least 1 valid answer:
         quiz => ({
