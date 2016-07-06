@@ -503,7 +503,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                 self.parent.puzzle.updateElementsArray(self.parent.linkedQuestion.tabAnswer);
                 self.parent.puzzle && self.parent.puzzle.fillVisibleElementsArray("leftToRight");
                 //self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, "leftToRight", self);
-                self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.manipulator.first);
+                self.parent.questionCreatorManipulator.last.children.indexOf(self.parent.puzzle.manipulator.first) === -1 && self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.manipulator.first);
                 self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
                     self.parent.coordinatesAnswers.y, self.parent.coordinatesAnswers.w,
                     self.parent.coordinatesAnswers.h, false);
@@ -1637,7 +1637,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     var self = this;
     // bloc Question
     self.questionCreatorManipulator.flush();
-    self.questionBlock = {rect: new svg.Rect(w, h).color(myColors.red, 3, myColors.black).position(w / 2, y + h / 2)};
+    self.questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
     self.questionBlock.rect.position(0, 0);
     self.questionBlock.rect.fillOpacity(0.001);
     //self.questionCreatorManipulator.ordonator.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.ordonator.set(5,self.questionBlock.rect);
@@ -1711,7 +1711,6 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             .font("Arial", 20);
         drawings.screen.add(textarea);
         textarea.focus();
-        self.manipulator.ordonator.unset(1);
 
         var onblur = function () {
             textarea.enter();
@@ -1747,7 +1746,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
         var oninput = function () {
             textarea.enter();
-            self.checkInputTextArea({
+            self.parent.checkInputTextArea({
                 textarea: textarea,
                 border: self.questionBlock.title.cadre,
                 onblur: onblur,
@@ -1848,7 +1847,7 @@ function quizzDisplay(x, y, w, h) {
         self.displayCurrentQuestion();
     }
     else {
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, self.resultArea, null, self);
+        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, "leftToRight", self);
         self.displayResult();
     }
 
@@ -1894,6 +1893,7 @@ function quizzDisplayResult (color){
     self.questionsWithBadAnswers.forEach(question=>{
         question.manipulator.ordonator.unset(3)});
     self.displayScore(color);
+    self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
     self.puzzle.display(0, self.questionHeight/2 + self.answerHeight/2 + MARGIN, drawing.width - MARGIN, self.answerHeight);
 }
 
@@ -2016,20 +2016,13 @@ function quizzManagerDisplay(){
             var target = drawings.background.getTarget(event.clientX,event.clientY);
             var question = target.parent.parentManip.parentObject;
         }
-        this.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
         this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator.flush();
         question.selected = true;
-
-        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.indexOfFirstVisibleElement);
-        //this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
-        this.questionCreator.loadQuestion(question);
-        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
         let quizzManager = question.parentQuizz.parentFormation.quizzManager;
         let quizz = quizzManager.quizz;
         let tabQuestions = quizz.tabQuestions;
         let questionCreator = quizzManager.questionCreator;
         tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
-        question.selected = true;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
