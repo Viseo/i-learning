@@ -1079,16 +1079,14 @@ function formationsManagerDisplay() {
         self.formationsManipulator.translator.move((self.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
     }
 
-    function onClickFormation(formation) {
-        var callbackFormation = function (data) {
+    let onClickFormation = formation => {
+        Server.getFormationById(formation._id).then(data => {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
-            self.formationDisplayed = formation;
-            self.formationDisplayed.displayFormation();
-        };
-        //!playerMode &&
-        Server.getFormationById(formation._id, callbackFormation);
-    }
+            this.formationDisplayed = formation;
+            this.formationDisplayed.displayFormation();
+        })
+    };
 
     function onClickNewFormation() {
         var formation = new Formation({}, self);

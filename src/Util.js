@@ -807,28 +807,24 @@ class ReturnButton {
 class Server {
     constructor() {}
 
-    static getAllFormationsNames(callback) {
-        dbListener.httpGetAsync('/getAllFormationsNames').then(callback);
+    static getAllFormationsNames() {
+        return dbListener.httpGetAsync('/getAllFormationsNames')
     }
 
     static getFormationByName(name) {
         return dbListener.httpGetAsync("/getFormationByName/" + name)
     }
     
-    static connect(mail, password, callback) {
-        dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password}).then(callback);
+    static connect(mail, password) {
+        return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
     }
     
-    static checkCookie(callback) {
-        dbListener.httpGetAsync('/auth/verify/').then(callback);
+    static checkCookie() {
+        return dbListener.httpGetAsync('/auth/verify/')
     }
-
-    static getUserByMail(mail, callback) {
-        dbListener.httpGetAsync("/getUserByMailAddress/" + mail).then(callback);
-    }
-
-    static getFormationById(id, callback) {
-        dbListener.httpGetAsync("/getFormationById/" + id).then(callback);
+    
+    static getFormationById(id) {
+        return dbListener.httpGetAsync("/getFormationById/" + id)
     }
 
     static sendProgressToServer(quiz) {
@@ -841,10 +837,6 @@ class Server {
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
         return dbListener.httpPostAsync("/sendProgress", data)
     }
-
-    // static getProgress(formation, game, callback) {
-    //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
-    // }
 
     static getUser() {
         return dbListener.httpGetAsync("/getUser")

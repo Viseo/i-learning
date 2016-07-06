@@ -1316,7 +1316,7 @@ ConnexionManager = function () {
     self.tabForm =[];
 
     let listFormations = function() {
-        Server.getAllFormationsNames(data => {
+        Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
@@ -1336,7 +1336,7 @@ ConnexionManager = function () {
                 emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black)});
             },5000);
         } else {
-            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
+            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret).then(data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
                     drawing.username = `${data.user.firstName} ${data.user.lastName}`;
