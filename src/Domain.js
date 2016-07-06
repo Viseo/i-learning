@@ -968,19 +968,18 @@ class QuizzManager {
             };
         };
 
-        let callback = () => {
-            this.quizz.title = this.quizzName;
-            this.quizz.tabQuestions = this.tabQuestions;
-            let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-            (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
-            this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
-            this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
-            this.display();
-            console.log("Votre travail a été bien enregistré");
-        };
-
         let quiz = getObjectToSave();
-        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
+        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
+            .then(() => {
+                this.quizz.title = this.quizzName;
+                this.quizz.tabQuestions = this.tabQuestions;
+                let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
+                (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
+                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
+                this.display();
+                console.log("Votre travail a été bien enregistré");
+            });
     };
 
     selectNextQuestion () {
@@ -1117,23 +1116,21 @@ class Quizz {
             this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
         }
 
-        let callback = () => {
-            if (++this.currentQuestionIndex < this.tabQuestions.length) {
-                this.displayCurrentQuestion();
-            } else {
-                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
-                this.displayResult();
-            }
-        };
-
         if (this.previewMode) {
             if (this.currentQuestionIndex === -1) {
                 this.currentQuestionIndex++;
             }
             this.displayCurrentQuestion();
         } else {
-            Server.sendProgressToServer(this);
-            callback();
+            Server.sendProgressToServer(this)
+                .then(() => {
+                    if (++this.currentQuestionIndex < this.tabQuestions.length) {
+                        this.displayCurrentQuestion();
+                    } else {
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
+                        this.displayResult();
+                    }
+                });
         }
     }
 

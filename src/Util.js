@@ -831,7 +831,7 @@ class Server {
         dbListener.httpGetAsync("/getFormationById/" + id).then(callback);
     }
 
-    static sendProgressToServer(quiz, callback) {
+    static sendProgressToServer(quiz) {
         var data = {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
@@ -839,7 +839,7 @@ class Server {
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
-        dbListener.httpPostAsync("/sendProgress", data).then(callback);
+        return dbListener.httpPostAsync("/sendProgress", data)
     }
 
     // static getProgress(formation, game, callback) {
@@ -858,8 +858,8 @@ class Server {
         return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
     }
 
-    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, callback, ignoredData) {
-        dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData).then(callback);
+    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
+        return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
 }
 
