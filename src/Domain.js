@@ -256,7 +256,8 @@ function Domain() {
                             let answer = target.parent.parentManip.parentObject;
                             answer.image = newQuest.image;
                             answer.imageSrc = newQuest.image.src;
-                            answer.display(-answer.w/2,-answer.h/2);
+                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                            //answer.display(0,0, answer.width, answer.height);
                             break;
                     }
                     target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
@@ -910,6 +911,8 @@ function Domain() {
 
         self.labelDefault = "Cliquer deux fois pour ajouter la question";
         self.quizzType = myQuizzType.tab;
+        self.toggleButtonHeight = 40;
+
 
         self.loadQuestion = function (quest) {
             self.linkedQuestion = quest;

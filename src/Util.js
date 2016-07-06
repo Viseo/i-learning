@@ -992,9 +992,12 @@ class Puzzle {
         this.adjustElementsDimensions();
         this.adjustElementsPositions();
         let rowNumber = 0;
+        for (var i = 3; i<this.nbOfVisibleElements+3; i++){
+            this.manipulator.ordonator.unset(i);
+        }
         this.visibleElementsArray.forEach(rows =>{
             rows.forEach(elem => {
-                rowNumber*this.columns + rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rowNumber*this.columns +rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
+                //rowNumber*this.columns + rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rowNumber*this.columns +rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
                 this.manipulator.ordonator.set(rowNumber*this.columns + rows.indexOf(elem)+3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                 elem.display(elem.x, elem.y, elem.width, elem.height);
             });
