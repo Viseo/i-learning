@@ -950,7 +950,7 @@ class QuizzManager {
         this.libraryHeightRatio = this.questCreaHeightRatio;
         this.previewButtonHeightRatio = 0.1;
         this.saveButtonHeightRatio = 0.1;
-        this.marginRatio = 0.03;
+        this.marginRatio = 0.02;
     }
 
     saveQuizz () {

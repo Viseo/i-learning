@@ -69,7 +69,7 @@ function SVGGlobalHandler() {
         //self.mousedOverTarget;
 
         self.screen = new svg.Screen(w, h).show(anchor);
-        self.drawing = new svg.Drawing(w, h).position(0, 0);
+        self.drawing = new svg.Drawing(w, h);
         self.screen.add(self.drawing);
         self.drawing.manipulator = new Manipulator(self);
         self.drawing.manipulator.addOrdonator(3);
@@ -79,7 +79,7 @@ function SVGGlobalHandler() {
         self.background = self.drawing.manipulator.translator;
         self.drawing.manipulator.ordonator.set(2, self.piste.first);
         self.drawing.add(self.glass);
-
+        //self.drawing.manipulator.translator.move(MARGIN/2,0);
         var onmousedownHandler = function (event) {
             !runtime && document.activeElement.blur();
             self.target = self.background.getTarget(event.clientX, event.clientY);

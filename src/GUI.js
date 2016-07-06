@@ -2137,7 +2137,7 @@ function quizzManagerDisplay(){
     self.previewButtonHeight = self.height * self.previewButtonHeightRatio;
     self.ButtonWidth = 150;
     self.globalMargin = {
-        height: self.marginRatio * self.height,
+        height: self.marginRatio * self.height*2,
         width: self.marginRatio * drawing.width
     };
     self.questionPuzzleCoordinates = {
@@ -2229,9 +2229,9 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         (self.quizzNameValidInput && self.quizzName) ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
+        self.quizzLabel.cadre.position(width/2,h/2 +self.quizzLabel.cadre.height/2);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-        self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
+        self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
         self.quizzInfoManipulator.first.move(x, y);
         svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEditionQuizz);
@@ -2249,7 +2249,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
         let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-        textarea.color(myColors.lightgrey, 0, myColors.black)
+        textarea.color([], 0, myColors.black)
             .message(self.quizzName)
             .font("Arial", 15)
             .anchor("start");
