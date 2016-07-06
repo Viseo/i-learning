@@ -693,20 +693,20 @@ class Formation {
         this.miniaturesManipulator.flush();
         Server.getUser().then(data => {
             let user = JSON.parse(data);
-            if (!user.formationsTab) return;
+            if (user.formationsTab) {
+                let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
+                formationUser && formationUser.gamesTab.forEach(game => {
+                    let theGame = this.findGameById(game.game);
+                    if (!theGame) return;
 
-            let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
-            formationUser && formationUser.gamesTab.forEach(game => {
-                let theGame = this.findGameById(game.game);
-                if (!theGame) return;
-
-                theGame.currentQuestionIndex = game.index;
-                game.tabWrongAnswers.forEach(wrongAnswer => {
-                    theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
+                    theGame.currentQuestionIndex = game.index;
+                    game.tabWrongAnswers.forEach(wrongAnswer => {
+                        theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
+                    });
+                    theGame.score = game.index - theGame.questionsWithBadAnswers.length;
+                    theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
                 });
-                theGame.score = game.index - theGame.questionsWithBadAnswers.length;
-                theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
-            });
+            }
             this.levelsTab.forEach(level => {
                 level.gamesTab.forEach(game => {
                     if (!this.isGameAvailable(game)) {
@@ -714,6 +714,7 @@ class Formation {
                     }
                 });
             });
+
             displayFunction.call(this)
         });
     }

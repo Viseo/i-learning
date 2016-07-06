@@ -818,11 +818,19 @@ class Server {
     static connect(mail, password) {
         return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
     }
+
+    static inscription(user) {
+        return dbListener.httpPostAsync('/inscription', user)
+    }
     
     static checkCookie() {
         return dbListener.httpGetAsync('/auth/verify/')
     }
-    
+
+    static getUserByMail(mail) {
+        return dbListener.httpGetAsync("/getUserByMailAddress/" + mail)
+    }
+
     static getFormationById(id) {
         return dbListener.httpGetAsync("/getFormationById/" + id)
     }

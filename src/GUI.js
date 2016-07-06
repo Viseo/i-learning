@@ -2592,38 +2592,39 @@ function inscriptionManagerDisplay(labels={}) {
         return (emptyAreas.length>0);
     };
 
-    self.saveButtonHandler = function(){
+    this.saveButtonHandler = () => {
         if (!emptyAreasHandler(true) && AllOk()){
-            var callback = function(data){
-                var myUser=JSON.parse(data).user;
-                if (myUser){
-                    var messageText = "Un utilisateur possède déjà cet adresse mail !";
-                    var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
-                    setTimeout(function(){
-                        self.saveButtonManipulator.ordonator.unset(3);
+            Server.getUserByMail(self.mailAddressField.label)
+                .then(data => {
+                    let myUser = JSON.parse(data).user;
+                    if (myUser) {
+                        throw "Un utilisateur possède déjà cet adresse mail !"
+                    } else {
+                        this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
+                        let tempObject = {
+                            lastName: this.lastNameField.label,
+                            firstName: this.firstNameField.label,
+                            mailAddress: this.mailAddressField.label,
+                            password: this.passwordField.hash
+                        };
+                        return Server.inscription(tempObject)
+                    }
+                })
+                .then(() => {
+                    var messageText = "Votre compte a bien été créé !";
+                    var message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
+                    setTimeout(() => {
+                        this.saveButtonManipulator.ordonator.unset(3);
                     }, 10000);
-                }
-                else {
-                    self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
-                    var tempObject = {
-                        lastName: self.lastNameField.label,
-                        firstName: self.firstNameField.label,
-                        mailAddress: self.mailAddressField.label,
-                        password: self.passwordField.hash
-                    };
-                    var callback = function (data) {
-                        var messageText = "Votre compte a bien été créé !";
-                        var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);
-                        setTimeout(function(){
-                            self.saveButtonManipulator.ordonator.unset(3);
-                        }, 10000);
-                    };
-                    dbListener.httpPostAsync("/inscription", tempObject, callback);
-                }
-            };
-            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+                })
+                .catch((messageText) => {
+                    let message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
+                    setTimeout(() => {
+                        this.saveButtonManipulator.ordonator.unset(3);
+                    }, 10000);
+                });
         }
         else if (!AllOk()){
             var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";
