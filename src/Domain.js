@@ -859,6 +859,9 @@ class QuizzManager {
             this.tabQuestions = this.quizz.tabQuestions;
             (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
+                question.selected = undefined;
+                question.imageLoaded = undefined;
+                question.redCross = undefined;
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
             });
             return {

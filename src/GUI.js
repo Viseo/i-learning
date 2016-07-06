@@ -1852,11 +1852,12 @@ function quizzDisplay(x, y, w, h) {
     }
 
     if(this.previewMode) {
-        this.leftChevron = drawChevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
-        this.rightChevron = drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
-        this.leftChevron.parentObj = this;
-        this.rightChevron.parentObj = this;
-
+        //this.leftChevron = drawChevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
+        //this.rightChevron = drawChevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+        //this.leftChevron.parentObj = this;
+        //this.rightChevron.parentObj = this;
+        this.leftChevron = new Chevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
         let updateColorChevrons = (quiz) => {
             quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length-1 ? myColors.grey : myColors.black);
             quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
@@ -2016,7 +2017,7 @@ function quizzManagerDisplay(){
             var target = drawings.background.getTarget(event.clientX,event.clientY);
             var question = target.parent.parentManip.parentObject;
         }
-        this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator.flush();
+        this.quizz.tabQuestions[self.indexOfEditedQuestion] && this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator.flush();
         question.selected = true;
         let quizzManager = question.parentQuizz.parentFormation.quizzManager;
         let quizz = quizzManager.quizz;
