@@ -846,8 +846,8 @@ class Server {
     //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
     // }
 
-    static getUser(callback) {
-        dbListener.httpGetAsync("/getUser").then(callback);
+    static getUser() {
+        return dbListener.httpGetAsync("/getUser")
     }
 
     static replaceFormation(id, newFormation, ignoredData) {

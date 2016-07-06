@@ -691,7 +691,7 @@ class Formation {
             })
         });
         this.miniaturesManipulator.flush();
-        let callbackUser = data => {
+        Server.getUser().then(data => {
             let user = JSON.parse(data);
             if (!user.formationsTab) return;
 
@@ -715,8 +715,7 @@ class Formation {
                 });
             });
             displayFunction.call(this)
-        };
-        Server.getUser(callbackUser);
+        });
     }
 }
 
