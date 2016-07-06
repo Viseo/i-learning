@@ -96,10 +96,10 @@ class Answer {
 
 class Question {
     constructor (question, quizz) {
-        this.questionManipulator = new Manipulator(this);
-        this.questionManipulator.addOrdonator(6);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(6);
         this.answersManipulator = new Manipulator(this);
-        this.questionManipulator.last.add(this.answersManipulator.first);
+        this.manipulator.last.add(this.answersManipulator.first);
         this.resetManipulator = new Manipulator(this);
         this.resetManipulator.addOrdonator(2);
         this.answersManipulator.last.add(this.resetManipulator.first);
@@ -790,7 +790,7 @@ class QuizzManager {
         this.quizzName = "";
         this.quizzNameDefault = "Ecrire ici le nom du quiz";
         this.tabQuestions = [defaultQuestion];
-        this.questionPuzzle = {};
+        //this.questionPuzzle = {};
         this.quizzNameValidInput = true;
         this.loadQuizz = function (quizz, indexOfEditedQuestion) {
             this.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;
@@ -1004,11 +1004,11 @@ class Quizz {
             this.questionHeight = this.questionHeightWithoutImage;
             this.answerHeight = this.answerHeightWithoutImage;
         }
-        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
-        this.tabQuestions[this.currentQuestionIndex].questionManipulator.flush();
+        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+        this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
         this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight/ 2 + MARGIN,
             this.questionArea.w, this.questionHeight);
-        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
         this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
             this.questionArea.w, this.answerHeight);
     };
@@ -1016,7 +1016,7 @@ class Quizz {
     // !_! bof, y'a encore des display appelés ici
     nextQuestion () {
         if (this.currentQuestionIndex !== -1) {
-            this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
+            this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
         }
 
         let callback = () => {

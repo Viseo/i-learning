@@ -1638,6 +1638,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     // bloc Question
     self.questionCreatorManipulator.flush();
     self.questionBlock = {rect: new svg.Rect(w, h).color(myColors.red, 3, myColors.black).position(w / 2, y + h / 2)};
+    self.questionBlock.rect.position(0, 0);
     self.questionBlock.rect.fillOpacity(0.001);
     //self.questionCreatorManipulator.ordonator.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.ordonator.set(5,self.questionBlock.rect);
     self.questionCreatorManipulator.last.children.indexOf(self.questionBlock.rect)===-1 && self.questionCreatorManipulator.last.add(self.questionBlock.rect);
@@ -1865,7 +1866,7 @@ function quizzDisplay(x, y, w, h) {
         let leftChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
             if(target.parentObj.currentQuestionIndex > 0) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].questionManipulator.first);
+                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
                 target.parentObj.currentQuestionIndex--;
                 updateColorChevrons(target.parentObj);
                 target.parentObj.displayCurrentQuestion();
@@ -1874,7 +1875,7 @@ function quizzDisplay(x, y, w, h) {
         let rightChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
             if(target.parentObj.currentQuestionIndex < target.parentObj.tabQuestions.length-1) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].questionManipulator.first);
+                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
                 target.parentObj.currentQuestionIndex++;
                 updateColorChevrons(target.parentObj);
                 target.parentObj.displayCurrentQuestion();
@@ -2016,7 +2017,7 @@ function quizzManagerDisplay(){
             var question = target.parent.parentManip.parentObject;
         }
         this.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
-        this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator.flush();
+        this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[self.indexOfEditedQuestion].redCrossManipulator.flush();
         question.selected = true;
 
         this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.indexOfFirstVisibleElement);
