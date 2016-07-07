@@ -1676,12 +1676,14 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var img = self.linkedQuestion.image;
             self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
             let redCrossClickHandler = ()=>{
+                var indexPuzzle = self.parent.questionPuzzle.elementsArray.indexOf(self.linkedQuestion);
+                self.parent.questionPuzzle.elementsArray[indexPuzzle].manipulator.ordonator.unset(2);
                 self.questionBlock.redCrossManipulator.flush();
                 self.questionManipulator.ordonator.unset(2);//image
                 self.linkedQuestion.image = null;
                 self.linkedQuestion.imageSrc = null;
                 self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.indexOfFirstVisibleElement);
-                self.display();
+                self.display(x, y, w, h);
             };
 
             let mouseleaveHandler = ()=>{
