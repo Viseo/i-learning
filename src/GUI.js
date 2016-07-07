@@ -948,8 +948,8 @@ function formationDisplayFormation() {
         };
 
         let showTitle = () => {
-            let text = (self.label) ? self.label : (self.label=self.labelDefault);
-            let color = (self.label) ? myColors.black : myColors.lightgrey;
+            let text = self.label ? self.label : self.labelDefault;
+            let color = self.label ? myColors.black : myColors.grey;
             let bgcolor = myColors.lightgrey;
             self.formationLabelWidth = 400 ;
             self.formationLabel = {};
@@ -1832,7 +1832,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         self.questionManipulator.ordonator.set(4, self.questNum);
         self.questionBlock.title.content.color(color);
         self.questionBlock.title.content._acceptDrop = true;
-        self.questionNameValidInput ? self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure) :
+        self.linkedQuestion.questionNameValidInput ? self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 1, self.linkedQuestion.colorBordure) :
             self.questionBlock.title.cadre.color(self.linkedQuestion.bgColor, 2, myColors.red);
         self.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(self.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
@@ -1871,7 +1871,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         };
 
         var removeErrorMessage = function () {
-            self.questionNameValidInput = true;
+            self.linkedQuestion.questionNameValidInput = true;
             self.errorMessage && self.questionCreatorManipulator.ordonator.unset(0);
             self.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
@@ -1887,7 +1887,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
             textarea.focus();
-            self.questionNameValidInput = false;
+            self.linkedQuestion.questionNameValidInput = false;
         };
 
         var oninput = function () {
@@ -2204,18 +2204,17 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var showTitle = function () {
         var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
-        var color = (self.quizzName) ? myColors.black : myColors.lightgrey;
+        var color = (self.quizzName) ? myColors.black : myColors.grey;
         var bgcolor = myColors.lightgrey;
 
         self.quizzLabel = {};
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
-
         self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
-        (self.quizzNameValidInput && self.quizzName) ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,h/2 +self.quizzLabel.cadre.height/2);
+        self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
+        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 

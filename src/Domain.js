@@ -110,6 +110,8 @@ class Question {
         this.simpleChoiceMessageManipulator.addOrdonator(2);
         this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
 
+        this.questionNameValidInput = true;
+
         this.selected = false;
         this.parentQuizz = quizz;
         this.tabAnswer = [];
@@ -204,7 +206,6 @@ class QuestionCreator {
         this.saveQuizButtonManipulator = new Manipulator(this);
         this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
-        this.questionNameValidInput = true;
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
         this.quizzType = myQuizzType.tab;
@@ -216,6 +217,19 @@ class QuestionCreator {
             this.loadQuestion(question);
         }
         this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
+    }
+
+    checkInputTextArea (myObj) {
+        if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
+            this.labelValidInput = true;
+            myObj.remove();
+            myObj.textarea.onblur = myObj.onblur;
+            myObj.textarea.border = "none";
+            myObj.textarea.outline = "none";
+        } else {
+            myObj.display();
+            this.labelValidInput = false;
+        }
     }
 
     loadQuestion (quest) {
@@ -250,6 +264,7 @@ class AddEmptyElement {
         switch (type) {
             case 'question':
                 this.label = "Double-cliquez pour ajouter une question";
+                this.questionNameValidInput = true;
                 break;
             case 'answer':
                 this.answerNameValidInput = true;
@@ -631,7 +646,7 @@ class Formation {
     }
 
     checkInputTextArea (myObj) {
-        if (myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) {
+        if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
             this.labelValidInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
@@ -986,7 +1001,7 @@ class QuizzManager {
     };
 
     checkInputTextArea (myObj) {
-        if (typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) {
+        if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             !runtime && (myObj.textarea.border = "none");
