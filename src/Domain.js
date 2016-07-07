@@ -1074,7 +1074,7 @@ class Quizz {
                     if (++this.currentQuestionIndex < this.tabQuestions.length) {
                         this.displayCurrentQuestion();
                     } else {
-                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, "leftToRight", this);
                         this.displayResult();
                     }
                 });
