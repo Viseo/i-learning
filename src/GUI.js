@@ -1550,6 +1550,7 @@ function questionSelectedQuestion() {
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
             if(index !== -1) {
                 quizzManager.indexOfEditedQuestion = index;
+                quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
                 this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
                 questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
@@ -2051,7 +2052,6 @@ function quizzManagerDisplay(){
             tabQuestions = quizz.tabQuestions,
             questionCreator = quizzManager.questionCreator;
         self.indexOfEditedQuestion !== this.quizz.tabQuestions.indexOf(question) && (tabQuestions[quizzManager.indexOfEditedQuestion].selected = false);
-        tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
