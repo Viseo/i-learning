@@ -1519,19 +1519,15 @@ function questionSelectedQuestion() {
             this.remove();
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
             if(index !== -1) {
-                //let nextQuestionX = questionsArray[index].bordure.globalPoint(0, 0).x;
-                //let nextQuestionY = questionsArray[index].bordure.globalPoint(0, 0).y;
                 quizzManager.indexOfEditedQuestion = index;
+                this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
+                questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
                 questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
                 questionPuzzle.display();
-                svg.event(questionsArray[quizzManager.indexOfEditedQuestion].bordure, "click", {question:questionsArray[quizzManager.indexOfEditedQuestion]});
             }
             else{
-                //let addEmptyElementX = questionsArray[0].bordure.globalPoint(0, 0).x;
-                //let addEmptyElementY = questionsArray[0].bordure.globalPoint(0, 0).y;
                 this.parentQuizz.tabQuestions.splice(0,0, new Question(defaultQuestion, this.parentQuizz));
-                //this.parentQuizz.tabQuestions[0].display();
                 resetQuestionsIndex(this.parentQuizz);
                 if (questionPuzzle){
                     questionPuzzle.visibleElementsArray[0].length === 6 && questionPuzzle.updateStartPosition('right');
@@ -2023,7 +2019,7 @@ function quizzManagerDisplay(){
         let quizz = quizzManager.quizz;
         let tabQuestions = quizz.tabQuestions;
         let questionCreator = quizzManager.questionCreator;
-        tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
+        self.indexOfEditedQuestion !== this.quizz.tabQuestions.indexOf(question) && (tabQuestions[quizzManager.indexOfEditedQuestion].selected = false);
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
