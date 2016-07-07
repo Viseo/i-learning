@@ -1730,7 +1730,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             leftpx: (globalPointCenter.x+1/12*self.w),
             width: (self.w*5/6)
         };
-
+        self.questionBlock.title.content.message("");
         var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
             .color(myColors.white, 0, myColors.black)
             .message(self.linkedQuestion.label)
