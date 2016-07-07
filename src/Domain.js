@@ -206,7 +206,6 @@ class QuestionCreator {
 
         this.questionNameValidInput = true;
 
-
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
         this.quizzType = myQuizzType.tab;
 
@@ -216,7 +215,6 @@ class QuestionCreator {
         } else {
             this.loadQuestion(question);
         }
-
         this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
     }
 

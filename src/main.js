@@ -25,8 +25,8 @@ function setGlobalVariable() {
 function main() {
     let resizePaper = function() {
         !runtime && document.activeElement.blur();
-        if ((document.body.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
-            drawing.dimension(document.body.clientWidth,document.documentElement.clientHeight);
+        if ((document.documentElement.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
+            drawing.dimension(document.documentElement.clientWidth,document.documentElement.clientHeight);
             drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
             let formation, quizzManager, quizz;
             if (typeof formationsManager !== 'undefined') formation = formationsManager.formationDisplayed;

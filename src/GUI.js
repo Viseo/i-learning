@@ -811,7 +811,7 @@ function formationDisplayFormation() {
         if (typeof w !== "undefined") self.graphW = w;
         if (typeof h !== "undefined") self.graphH = h;
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-        var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
+        //var height = (self.levelHeight*(self.levelsTab.length+1) > self.graphH) ? (self.levelHeight*(self.levelsTab.length+1)) : self.graphH;
         if(self.levelWidth<self.graphCreaWidth){
             self.levelWidth=self.graphCreaWidth;
         }
@@ -1071,7 +1071,7 @@ function formationsManagerDisplay() {
         else {
             self.panel.resize(drawing.width - 2 * MARGIN, self.heightAllocatedToPanel);
         }
-        self.panel.component.move((drawing.width-2*MARGIN)/2, self.heightAllocatedToPanel /2);
+        self.panel.component.move(((drawing.width-2*MARGIN)+MARGIN)/2, self.heightAllocatedToPanel /2);
         (self.clippingManipulator.last.children.indexOf(self.panel.component) === -1) && self.clippingManipulator.last.add(self.panel.component);
         self.panel.content.children.indexOf(self.formationsManipulator.first)===-1 && self.panel.content.add(self.formationsManipulator.first);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -1713,7 +1713,7 @@ function questionCreatorDisplay (x, y, w, h) {
     self.questionCreatorHeight = Math.floor(self.previousH * (1 - self.headerHeight) - 80);
     self.questionCreatorManipulator.translator.move(self.previousX, 0);
     self.toggleButtonHeight = 40;
-    self.displayQuestionCreator(MARGIN + self.previousX, self.previousY, self.previousW, self.previousH);
+    self.displayQuestionCreator(self.previousX, self.previousY, self.previousW, self.previousH);
     var clickedButton = self.multipleChoice ? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
     self.displayToggleButton(MARGIN + self.previousX, MARGIN/2+self.previousY, self.previousW, self.toggleButtonHeight-MARGIN, clickedButton);
 }
@@ -1721,7 +1721,8 @@ function questionCreatorDisplay (x, y, w, h) {
 function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var self = this;
     var size = self.puzzle.tileHeight*0.2;
-    self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
+    self.toggleButtonWidth = drawing.width/5;
+
     var toggleHandler = function(event){
         self.target = drawings.background.getTarget(event.clientX, event.clientY);
         var questionType = self.target.parent.children[1].messageText;
@@ -1748,7 +1749,8 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         self.displayToggleButton(x, y, w, h, questionType);
     };
 
-    self.toggleButtonWidth = drawing.width/5;
+    self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
+
     var length = self.quizzType.length;
     var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
     self.margin = (w-lengthToUse)/2;
@@ -1756,13 +1758,11 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var i = 0;
     (!self.completeBanner) && (self.completeBanner = []);
     self.quizzType.forEach(function(type){
-
         if(self.completeBanner[i] && self.completeBanner[i].manipulator){
             self.toggleButtonManipulator.last.remove(self.completeBanner[i].manipulator.first);
         }
 
         self.completeBanner[i] = {};
-
         self.completeBanner[i].manipulator = new Manipulator(self);
         self.completeBanner[i].manipulator.addOrdonator(2);
         self.toggleButtonManipulator.last.add(self.completeBanner[i].manipulator.first);
@@ -2225,13 +2225,13 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
     };
 
     var dblclickEditionQuizz = function () {
+        let bounds = svg.runtime.boundingRect(self.quizzLabel.content.component);
+        let globalPointCenter = self.quizzLabel.content.globalPoint(0, -bounds.height +3);
         self.quizzInfoManipulator.ordonator.unset(1);
-        let bounds = svg.runtime.boundingRect(self.quizzLabel.cadre.component);
-        let globalPointCenter = self.quizzLabel.cadre.globalPoint(- bounds.width/2, - bounds.height/2);
         let contentareaStyle = {
-            toppx: globalPointCenter.y + 1,
             leftpx: globalPointCenter.x,
-            width: 700 - MARGIN,
+            toppx: globalPointCenter.y,
+            width: 700,
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
         let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
