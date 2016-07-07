@@ -72,7 +72,7 @@ function answerDisplay (x, y, w, h) {
             self.manipulator.ordonator.unset(2);//image
             self.image = null;
             self.imageSrc = null;
-            self.display();
+            self.display(x, y, w, h);
         };
         let mouseleaveHandler= ()=>{
             self.redCrossManipulator.flush();
