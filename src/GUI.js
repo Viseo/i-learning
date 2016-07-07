@@ -253,138 +253,18 @@ function libraryDisplay(x, y, w, h) {
     self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w / 2, (1 / 20) * h);
 
-    let maxImagesPerLine = Math.floor((w-MARGIN)/(self.imageWidth+MARGIN)) || 1; //||1 pour le cas de resize très petit
-    self.libMargin = (w - (maxImagesPerLine * self.imageWidth)) / (maxImagesPerLine + 1);
-    let maxGamesPerLine = 1;
-    self.libMargin2 = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN;
-    let tempY = (2 / 10 * h);
-
-    self.itemsTab.forEach((item, i) => {
-        if (i % maxImagesPerLine === 0 && i !== 0) {
-            tempY += self.imageHeight + self.libMargin;
-        }
-
-        if(self.libraryManipulator.last.children.indexOf(self.libraryManipulators[i].first ) !== -1){
-            self.libraryManipulator.last.remove(self.libraryManipulators[i].first);
-        }
-        self.libraryManipulator.last.children.indexOf(self.libraryManipulators[i].first)===-1 && self.libraryManipulator.last.add(self.libraryManipulators[i].first);
-
-        if (drawing.currentPageDisplayed === "QuizManager") {
-            let image = displayImage(myLibraryImage.tab[i].imgSrc, item, self.imageWidth, self.imageHeight, self.libraryManipulators[i]).image;
-            image.srcDimension = {width: item.width, height: item.height};
-            self.libraryManipulators[i].ordonator.set(0, image);
-
-            let X = x + self.libMargin + ((i % maxImagesPerLine) * (self.libMargin + self.imageWidth));
-            self.libraryManipulators[i].first.move(X, tempY);
-        } else { // Formation
-            if (i % maxGamesPerLine === 0 && i !== 0) {
-                tempY += self.h / 4 + self.libMargin2;
-            }
-
-            let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label));
-            let obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, self.fontSize, self.libraryManipulators[i]);
-            obj.cadre.clicked = false;
-            self.itemsTab[i] = obj;
-
-            let X = x + self.libMargin2 - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (self.libMargin2 + w / 2 - 2 * MARGIN));
-            self.libraryManipulators[i].first.move(X, tempY);
-        }
-    });
-
     self.libraryManipulator.translator.move(self.x, self.y);
+}
 
-    self.libraryManipulators.forEach(function (e) {
-        var mouseDownAction = function (event) {
-            self.arrowMode && self.toggleArrowMode();
+function gamesLibraryDisplay(x, y, w, h) {
+    libraryDisplay.call(this, x, y, w, h);
 
-            e.parentObject.formation && e.parentObject.formation.removeErrorMessage(e.parentObject.formation.errorMessageDisplayed);
-            var manip = new Manipulator(self);
-            manip.addOrdonator(2);
-            drawings.piste.last.add(manip.first);
-            self.formation && self.formation.removeErrorMessage(self.formation.errorMessageDisplayed);
-            var elementCopy = e.ordonator.children[0];
-
-            var point = e.ordonator.children[0].globalPoint(e.ordonator.children[0].x, e.ordonator.children[0].y);
-            var point2 = manip.first.globalPoint(0, 0);
-            manip.first.move(point.x - point2.x, point.y - point2.y);
-
-            if (self.itemsTab && self.itemsTab.length !== 0) {
-                if (self.itemsTab[0].content && (self.itemsTab[0].content.messageText !== "")) {
-                    self.gameMiniature = displayTextWithCircle(e.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, self.fontSize, manip);
-                    self.draggedObjectLabel = self.gameMiniature.content.messageText;
-                    manip.ordonator.set(0, self.gameMiniature.cadre);
-                    manageDnD(self.gameMiniature.cadre, manip);
-                    manageDnD(self.gameMiniature.content, manip);
-                } else {
-                    var img;
-                    img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
-                    img.srcDimension = elementCopy.srcDimension;
-                    manip.ordonator.set(0, img);
-                    manageDnD(img, manip);
-                    img.component.listeners && svg.removeEvent(img, 'mouseup', img.component.listeners.mouseup);
-                    img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup', img.image.component.target.listeners.mouseup);
-                }
-                var mouseClick = function (event) {
-                    var target = drawings.background.getTarget(event.clientX, event.clientY);
-                    self.itemsTab.forEach(function (e) {
-                        if(e.content) {
-                            if (e.content.messageText === target.parent.children[1].messageText) {
-                                if (e !== self.gameSelected) {
-                                    self.gameSelected && self.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-                                    e.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                    self.gameSelected = e;
-                                }
-                                else {
-                                    e.cadre.color(myColors.white, 1, myColors.black);
-                                    self.gameSelected = null;
-                                }
-                            }
-                        }
-                });
-                    self.formation && !self.gameSelected && svg.removeEvent(self.formation.graphBlock.rect, "mouseup", self.formation.mouseUpGraphBlock);
-                    self.formation && self.formation.clickToAdd();
-
-                };
-
-                var mouseupHandler = function (event) {
-                    var svgObj = manip.ordonator.children.shift();
-                    manip.first.parent.remove(manip.first);
-                    var target = drawings.background.getTarget(event.clientX, event.clientY);
-                    if (target && target.parent && target.parent.parentManip) {
-                        if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                            self.dropAction(svgObj, event);
-                        }
-                        else {
-                            mouseClick(event);
-                        }
-                    }
-                    self.draggedObjectLabel = "";
-                };
-
-                self.gameMiniature && self.gameMiniature.cadre.component.listeners && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.listeners.mouseup);
-                self.gameMiniature && self.gameMiniature.cadre.component.target && self.gameMiniature.cadre.component.target.listeners && self.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(self.gameMiniature.cadre, 'mouseup', self.gameMiniature.cadre.component.target.listeners.mouseup);
-
-                svg.event(drawings.glass, "mousedown", event);
-                self.gameMiniature && self.gameMiniature.cadre && svg.addEvent(self.gameMiniature.cadre, 'mouseup', mouseupHandler);
-                img && svg.addEvent(img, 'mouseup', mouseupHandler);
-
-                if (self.gameMiniature && self.gameMiniature.content) {
-                    self.gameMiniature.content.component.listeners && svg.removeEvent(self.gameMiniature.content, 'mouseup', self.gameMiniature.content.component.listeners.mouseup);
-                    self.gameMiniature.content.component.target && self.gameMiniature.content.component.target.listeners && self.gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(self.gameMiniature.content, 'mouseup', self.gameMiniature.content.component.target.listeners.mouseup);
-                    svg.addEvent(self.gameMiniature.content, 'mouseup', mouseupHandler);
-                }
-            }
-        };
-        svg.addEvent(e.ordonator.children[0], 'mousedown', mouseDownAction);
-        svg.addEvent(e.ordonator.children[1], 'mousedown', mouseDownAction);
-    });
-
-    if (drawing.currentPageDisplayed === "Formation") {
-        if (self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)!==-1) {
-            self.libraryManipulator.last.remove(self.arrowModeManipulator.first);
+    let displayArrowModeButton = () => {
+        if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
+            this.libraryManipulator.last.remove(this.arrowModeManipulator.first);
         }
-        self.libraryManipulator.last.children.indexOf(self.arrowModeManipulator.first)===-1 && self.libraryManipulator.last.add(self.arrowModeManipulator.first);
-        self.arrowModeManipulator.first.move(w / 2, tempY + (2 / 10) * h);
+        this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)===-1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
+        this.arrowModeManipulator.first.move(w / 2, h - (2 / 10) * h);
 
         let isChildOf = function (parentGame,childGame){
             parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
@@ -397,70 +277,262 @@ function libraryDisplay(x, y, w, h) {
             parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         };
 
-        let arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, self.font, self.arrowModeManipulator);
+        let arrowModeButton = displayText('', w*0.9, (6 / 100) * h, myColors.black, myColors.white, null, this.font, this.arrowModeManipulator);
         arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
         arrowModeButton.arrow.color(myColors.black,1,myColors.black);
-        self.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
+        this.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
 
-        self.toggleArrowMode = function() {
-            let arrowMode = false;
+        this.toggleArrowMode = () => {
+            this.arrowMode = !this.arrowMode;
 
-            return function () {
-                arrowMode = !arrowMode;
-                self.arrowMode = arrowMode;
+            let panel = this.formation.panel,
+                graph = this.formation.graphManipulator.last,
+                clip = this.formation.clippingManipulator.last,
+                glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-                let panel = self.formation.panel,
-                    graph = self.formation.graphManipulator.last,
-                    clip = self.formation.clippingManipulator.last,
-                    glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
+            if (this.arrowMode) {
+                this.gameSelected = null;
+                this.itemsTab.forEach(e => {e.cadre.color(myColors.white, 1, myColors.black)});
 
-                if (arrowMode) {
-                    self.gameSelected = null;
-                    self.itemsTab.forEach(e => {e.cadre.color(myColors.white, 1, myColors.black)});
+                this.formation.selectedGame && this.formation.selectedGame.icon.cadre.component.listeners.click();
 
-                    self.formation.selectedGame && self.formation.selectedGame.icon.cadre.component.listeners.click();
+                arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
 
-                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                    arrowModeButton.arrow.color(myColors.blue,2,myColors.black);
+                clip.add(glass);
+                glass.position(glass.width/2, glass.height/2);
 
-                    clip.add(glass);
-                    glass.position(glass.width/2, glass.height/2);
+                let mouseDownAction = function (event) {
+                    event.preventDefault();
+                    let targetParent = graph.getTarget(event.clientX, event.clientY);
 
-                    let mouseDownAction = function (event) {
-                        event.preventDefault();
-                        let targetParent = graph.getTarget(event.clientX, event.clientY);
-
-                        let mouseUpAction = function(event) {
-                            let targetChild = graph.getTarget(event.clientX, event.clientY);
-                            let booleanInstanceOfCorrect = function(e) {
-                                return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                    (e.parent.parentManip.parentObject instanceof Quizz ||
-                                    e.parent.parentManip.parentObject instanceof Bd);
-                            };
-                            if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
-                                createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
-                            }
+                    let mouseUpAction = function(event) {
+                        let targetChild = graph.getTarget(event.clientX, event.clientY);
+                        let booleanInstanceOfCorrect = function(e) {
+                            return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
+                                (e.parent.parentManip.parentObject instanceof Quizz ||
+                                e.parent.parentManip.parentObject instanceof Bd);
                         };
-                        svg.addEvent(glass, 'mouseup', mouseUpAction);
+                        if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
+                            createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                        }
                     };
+                    svg.addEvent(glass, 'mouseup', mouseUpAction);
+                };
 
-                    let clickAction = function(event) {
-                        let target = graph.getTarget(event.clientX, event.clientY);
-                        (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
-                    };
+                let clickAction = function(event) {
+                    let target = graph.getTarget(event.clientX, event.clientY);
+                    (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
+                };
 
-                    svg.addEvent(glass, 'mousedown', mouseDownAction);
-                    svg.addEvent(glass, 'click', clickAction);
-                } else {
-                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
-                    arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
-                    clip.remove(clip.children[clip.children.length - 1]);
-                }
+                svg.addEvent(glass, 'mousedown', mouseDownAction);
+                svg.addEvent(glass, 'click', clickAction);
+            } else {
+                arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
+                clip.remove(clip.children[clip.children.length - 1]);
             }
-        }();
-        svg.addEvent(arrowModeButton.cadre, 'click', self.toggleArrowMode);
-        svg.addEvent(arrowModeButton.arrow, 'click', self.toggleArrowMode)
+        };
+        svg.addEvent(arrowModeButton.cadre, 'click', this.toggleArrowMode);
+        svg.addEvent(arrowModeButton.arrow, 'click', this.toggleArrowMode);
+    };
+
+    let displayItems = () => {
+        let maxGamesPerLine = 1,
+            libMargin = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN,
+            tempY = (2 / 10 * h);
+
+        this.itemsTab.forEach((item, i) => {
+            if(this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first ) !== -1){
+                this.libraryManipulator.last.remove(this.libraryManipulators[i].first);
+            }
+            this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first)===-1 && this.libraryManipulator.last.add(this.libraryManipulators[i].first);
+
+            if (i % maxGamesPerLine === 0 && i !== 0) {
+                tempY += this.h / 4 + libMargin;
+            }
+
+            let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label)),
+                obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
+            obj.cadre.clicked = false;
+            this.itemsTab[i] = obj;
+
+            let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
+            this.libraryManipulators[i].first.move(X, tempY);
+        });
+    };
+
+    let assignEvents = () => {
+        this.libraryManipulators.forEach(libraryManipulator => {
+            let mouseDownAction = event => {
+                this.arrowMode && this.toggleArrowMode();
+
+                libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
+                let manip = new Manipulator(this);
+                manip.addOrdonator(2);
+                drawings.piste.last.add(manip.first);
+                this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
+
+                let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
+                    point2 = manip.first.globalPoint(0, 0);
+                manip.first.move(point.x - point2.x, point.y - point2.y);
+
+                if (this.itemsTab && this.itemsTab.length !== 0) {
+                    if (this.itemsTab[0].content && (this.itemsTab[0].content.messageText !== "")) {
+                        this.gameMiniature = displayTextWithCircle(libraryManipulator.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
+                        this.draggedObjectLabel = this.gameMiniature.content.messageText;
+                        manip.ordonator.set(0, this.gameMiniature.cadre);
+                        manageDnD(this.gameMiniature.cadre, manip);
+                        manageDnD(this.gameMiniature.content, manip);
+                    }
+
+                    let mouseClick = event => {
+                        let target = drawings.background.getTarget(event.clientX, event.clientY);
+                        this.itemsTab.forEach(libraryManipulator => {
+                                if (libraryManipulator.content.messageText === target.parent.children[1].messageText) {
+                                    if (libraryManipulator !== this.gameSelected) {
+                                        this.gameSelected && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                                        libraryManipulator.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                        this.gameSelected = libraryManipulator;
+                                    } else {
+                                        libraryManipulator.cadre.color(myColors.white, 1, myColors.black);
+                                        this.gameSelected = null;
+                                    }
+                                }
+                        });
+                        this.formation && !this.gameSelected && svg.removeEvent(this.formation.graphBlock.rect, "mouseup", this.formation.mouseUpGraphBlock);
+                        this.formation && this.formation.clickToAdd();
+                    };
+
+                    let mouseupHandler = event => {
+                        var svgObj = manip.ordonator.children.shift();
+                        manip.first.parent.remove(manip.first);
+                        var target = drawings.background.getTarget(event.clientX, event.clientY);
+                        if (target && target.parent && target.parent.parentManip) {
+                            if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                this.dropAction(svgObj, event);
+                            }
+                            else {
+                                mouseClick(event);
+                            }
+                        }
+                        this.draggedObjectLabel = "";
+                    };
+
+                    this.gameMiniature.cadre.component.listeners && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.listeners.mouseup);
+                    this.gameMiniature.cadre.component.target && this.gameMiniature.cadre.component.target.listeners && this.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.target.listeners.mouseup);
+
+                    svg.event(drawings.glass, "mousedown", event);
+                    svg.addEvent(this.gameMiniature.cadre, 'mouseup', mouseupHandler);
+                    this.gameMiniature.content.component.listeners && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.listeners.mouseup);
+                    this.gameMiniature.content.component.target && this.gameMiniature.content.component.target.listeners && this.gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.target.listeners.mouseup);
+                    svg.addEvent(this.gameMiniature.content, 'mouseup', mouseupHandler);
+                }
+            };
+            svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
+            svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+        });
+    };
+
+    displayItems();
+    displayArrowModeButton();
+    assignEvents();
+}
+
+function imagesLibraryDisplay(x, y, w, h, callback) {
+    let display = (x, y, w, h) => {
+        libraryDisplay.call(this, x, y, w, h);
+
+        let displayItems = () => {
+            let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
+                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
+                tempY = (2 / 10 * h);
+
+            this.itemsTab.forEach((item, i) => {
+                if (i % maxImagesPerLine === 0 && i !== 0) {
+                    tempY += this.imageHeight + libMargin;
+                }
+
+                if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
+                    this.libraryManipulator.last.remove(this.libraryManipulators[i].first);
+                }
+                this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) === -1 && this.libraryManipulator.last.add(this.libraryManipulators[i].first);
+
+                let image = displayImage(myLibraryImage.tab[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                image.srcDimension = {width: item.width, height: item.height};
+                this.libraryManipulators[i].ordonator.set(0, image);
+
+                let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
+                this.libraryManipulators[i].first.move(X, tempY);
+
+            });
+        };
+
+        let assignEvents = () => {
+            this.libraryManipulators.forEach(libraryManipulator => {
+                let mouseDownAction = event => {
+                    this.arrowMode && this.toggleArrowMode();
+
+                    libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
+                    let manip = new Manipulator(this);
+                    manip.addOrdonator(2);
+                    drawings.piste.last.add(manip.first);
+                    this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
+
+                    let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
+                        point2 = manip.first.globalPoint(0, 0);
+                    manip.first.move(point.x - point2.x, point.y - point2.y);
+
+                    if (this.itemsTab && this.itemsTab.length !== 0) {
+
+                        let elementCopy = libraryManipulator.ordonator.children[0],
+                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
+                        img.srcDimension = elementCopy.srcDimension;
+                        manip.ordonator.set(0, img);
+                        manageDnD(img, manip);
+                        img.component.listeners && svg.removeEvent(img, 'mouseup');
+                        img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
+
+                        let mouseupHandler = event => {
+                            let svgObj = manip.ordonator.children.shift();
+                            manip.first.parent.remove(manip.first);
+                            let target = drawings.background.getTarget(event.clientX, event.clientY);
+                            if (target && target.parent && target.parent.parentManip) {
+                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                    this.dropAction(svgObj, event);
+                                }
+                            }
+                            this.draggedObjectLabel = "";
+                        };
+
+                        svg.event(drawings.glass, "mousedown", event);
+                        svg.addEvent(img, 'mouseup', mouseupHandler);
+                    }
+                };
+                svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
+                svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+            });
+        };
+
+        displayItems();
+        assignEvents();
+    };
+
+    this.intervalToken = asyncTimerController.interval(() => {
+        if (this.itemsTab.every(e => e.imageLoaded)) {
+            asyncTimerController.clearInterval(this.intervalToken);
+            display(x, y, w, h);
+            callback();
+        }
+    }, 100);
+    runtime && this.itemsTab.forEach(e => {
+        imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
+    });
+    if (runtime) {
+        display(x, y, w, h);
+        callback();
     }
+
 }
 
 function addEmptyElementDisplay(x, y, w, h) {
@@ -920,46 +992,7 @@ function formationDisplayFormation() {
 }
 
 function playerModeDisplayFormation () {
-    var self = this;
-    self.levelsTab.forEach(function(level){
-        level.gamesTab.forEach(function(game){
-            delete game.miniature;
-            delete game.status;
-        })
-    })
-    self.miniaturesManipulator.flush();
-    var callbackUser = function (data) {
-        var user = JSON.parse(data);
-        if (user.formationsTab) {
-            var formationUser = user.formationsTab.find(formation => formation.formation === self._id);
-            formationUser && formationUser.gamesTab.forEach(function (game) {
-                let theGame = self.findGameById(game.game);
-                if (theGame) {
-                    theGame.currentQuestionIndex = game.index;
-                    game.tabWrongAnswers.forEach(function(wrongAnswer){
-                        theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer-1]);
-                    })
-                    theGame.score = game.index - theGame.questionsWithBadAnswers.length;
-                    if (game.index === theGame.tabQuestions.length) {
-                        theGame.status = "done";
-                    }
-                    else if(game.index !== theGame.tabQuestions.length){
-                        theGame.status = "inProgress";
-                    }
-                }
-            })
-        }
-        self.levelsTab.forEach(function (level) {
-            level.gamesTab.forEach(function (game) {
-                if (!self.isGameAvailable(game)) {
-                    game.status = "notAvailable";
-                }
-            });
-        });
-        self.displayFormation();
-    };
-
-    playerMode && Server.getUser(callbackUser);
+    this.trackProgress(formationDisplayFormation)
 }
 
 function formationRemoveErrorMessage(message) {
@@ -1059,17 +1092,14 @@ function formationsManagerDisplay() {
         self.formationsManipulator.translator.move((self.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
     }
 
-    function onClickFormation(formation) {
-        var callbackFormation = function (data) {
+    let onClickFormation = formation => {
+        Server.getFormationById(formation._id).then(data => {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
-            self.formationDisplayed = formation;
-            playerMode && self.formationDisplayed.displayFormationPlayerMode();
-            !playerMode && self.formationDisplayed.displayFormation();
-        };
-        //!playerMode &&
-        Server.getFormationById(formation._id, callbackFormation);
-    }
+            this.formationDisplayed = formation;
+            this.formationDisplayed.displayFormation();
+        })
+    };
 
     function onClickNewFormation() {
         var formation = new Formation({}, self);
@@ -1832,8 +1862,7 @@ function quizzDisplay(x, y, w, h) {
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
-        !playerMode && target.parentObj.parent.parentFormation.displayFormation();
-        playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
+        target.parentObj.parent.parentFormation.displayFormation();
     });
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
@@ -1913,8 +1942,7 @@ function bdDisplay(bd){
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.manipulator.flush();
-        !playerMode && target.parentObj.parent.parentFormation.displayFormation();
-        playerMode && target.parentObj.parent.parentFormation.displayFormationPlayerMode();
+        target.parentObj.parent.parentFormation.displayFormation();
     });
 }
 
@@ -1992,7 +2020,7 @@ function quizzManagerDisplay(){
     self.previewButtonHeight = self.height * self.previewButtonHeightRatio;
     self.ButtonWidth = 150;
     self.globalMargin = {
-        height: self.marginRatio * self.height,
+        height: self.marginRatio * self.height*2,
         width: self.marginRatio * drawing.width
     };
     self.questionPuzzleCoordinates = {
@@ -2045,7 +2073,7 @@ function quizzManagerDisplay(){
         displayFunctions();
     }
 
-    !self.resizing && self.library.run(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
+    !self.resizing && self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
         self.libraryWidth-self.globalMargin.width/2, self.libraryHeight, function(){
         displayFunctions();
         });
@@ -2078,9 +2106,9 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         (self.quizzNameValidInput && self.quizzName) ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
+        self.quizzLabel.cadre.position(width/2,h/2 +self.quizzLabel.cadre.height/2);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-        self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height/4).color(color).anchor("start");
+        self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
         self.quizzInfoManipulator.first.move(x, y);
         svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEditionQuizz);
@@ -2098,7 +2126,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
         let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-        textarea.color(myColors.lightgrey, 0, myColors.black)
+        textarea.color([], 0, myColors.black)
             .message(self.quizzName)
             .font("Arial", 15)
             .anchor("start");
@@ -2445,38 +2473,39 @@ function inscriptionManagerDisplay(labels={}) {
         return (emptyAreas.length>0);
     };
 
-    self.saveButtonHandler = function(){
+    this.saveButtonHandler = () => {
         if (!emptyAreasHandler(true) && AllOk()){
-            var callback = function(data){
-                var myUser=JSON.parse(data).user;
-                if (myUser){
-                    var messageText = "Un utilisateur possède déjà cet adresse mail !";
-                    var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
-                    setTimeout(function(){
-                        self.saveButtonManipulator.ordonator.unset(3);
+            Server.getUserByMail(self.mailAddressField.label)
+                .then(data => {
+                    let myUser = JSON.parse(data).user;
+                    if (myUser) {
+                        throw "Un utilisateur possède déjà cet adresse mail !"
+                    } else {
+                        this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
+                        let tempObject = {
+                            lastName: this.lastNameField.label,
+                            firstName: this.firstNameField.label,
+                            mailAddress: this.mailAddressField.label,
+                            password: this.passwordField.hash
+                        };
+                        return Server.inscription(tempObject)
+                    }
+                })
+                .then(() => {
+                    var messageText = "Votre compte a bien été créé !";
+                    var message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
+                    setTimeout(() => {
+                        this.saveButtonManipulator.ordonator.unset(3);
                     }, 10000);
-                }
-                else {
-                    self.passwordField.hash = TwinBcrypt.hashSync(self.passwordField.labelSecret);
-                    var tempObject = {
-                        lastName: self.lastNameField.label,
-                        firstName: self.firstNameField.label,
-                        mailAddress: self.mailAddressField.label,
-                        password: self.passwordField.hash
-                    };
-                    var callback = function (data) {
-                        var messageText = "Votre compte a bien été créé !";
-                        var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
-                        message.text.color(myColors.green).position(0, - self.saveButton.cadre.height+MARGIN);
-                        setTimeout(function(){
-                            self.saveButtonManipulator.ordonator.unset(3);
-                        }, 10000);
-                    };
-                    dbListener.httpPostAsync("/inscription", tempObject, callback);
-                }
-            };
-            dbListener.httpGetAsync("/getUserByMailAddress/" + self.mailAddressField.label, callback);
+                })
+                .catch((messageText) => {
+                    let message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
+                    setTimeout(() => {
+                        this.saveButtonManipulator.ordonator.unset(3);
+                    }, 10000);
+                });
         }
         else if (!AllOk()){
             var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";
@@ -2641,6 +2670,8 @@ var AdminGUI = function (){
     playerMode = false;
     Answer.prototype.display = answerDisplay;
     Library.prototype.display = libraryDisplay;
+    GamesLibrary.prototype.display = gamesLibraryDisplay;
+    ImagesLibrary.prototype.display = imagesLibraryDisplay;
     Header.prototype.display = headerDisplay;
     AddEmptyElement.prototype.display = addEmptyElementDisplay;
     Formation.prototype.displayMiniature = formationDisplayMiniature;
@@ -2676,8 +2707,7 @@ var LearningGUI = function (){
     Answer.prototype.display = answerDisplay;
     Library.prototype.display = libraryDisplay;
     Header.prototype.display = headerDisplay;
-    Formation.prototype.displayFormation = formationDisplayFormation;
-    Formation.prototype.displayFormationPlayerMode = playerModeDisplayFormation;
+    Formation.prototype.displayFormation = playerModeDisplayFormation;
     Formation.prototype.displayMiniature = formationDisplayMiniature;
     FormationsManager.prototype.display = formationsManagerDisplay;
     Question.prototype.display = questionDisplay;

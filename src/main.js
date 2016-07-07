@@ -80,7 +80,7 @@ function main() {
     };
 
     let listFormations = function() {
-        Server.getAllFormationsNames(data => {
+        Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
@@ -89,8 +89,8 @@ function main() {
 
     inscriptionManager = new InscriptionManager();
     connexionManager = new ConnexionManager();
-
-    Server.checkCookie(data => {
+    
+    Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;

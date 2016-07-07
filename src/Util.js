@@ -69,7 +69,7 @@ function SVGGlobalHandler() {
         //self.mousedOverTarget;
 
         self.screen = new svg.Screen(w, h).show(anchor);
-        self.drawing = new svg.Drawing(w, h).position(0, 0);
+        self.drawing = new svg.Drawing(w, h);
         self.screen.add(self.drawing);
         self.drawing.manipulator = new Manipulator(self);
         self.drawing.manipulator.addOrdonator(3);
@@ -79,7 +79,7 @@ function SVGGlobalHandler() {
         self.background = self.drawing.manipulator.translator;
         self.drawing.manipulator.ordonator.set(2, self.piste.first);
         self.drawing.add(self.glass);
-
+        //self.drawing.manipulator.translator.move(MARGIN/2,0);
         var onmousedownHandler = function (event) {
             !runtime && document.activeElement.blur();
             self.target = self.background.getTarget(event.clientX, event.clientY);
@@ -1010,31 +1010,35 @@ class Puzzle {
 class Server {
     constructor() {}
 
-    static getAllFormationsNames(callback) {
-        dbListener.httpGetAsync('/getAllFormationsNames', callback);
+    static getAllFormationsNames() {
+        return dbListener.httpGetAsync('/getAllFormationsNames')
     }
 
-    static getFormationByName(name, callback) {
-        dbListener.httpGetAsync("/getFormationByName/" + name, callback);
+    static getFormationByName(name) {
+        return dbListener.httpGetAsync("/getFormationByName/" + name)
     }
     
-    static connect(mail, password, callback) {
-        dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password}, callback);
+    static connect(mail, password) {
+        return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
+    }
+
+    static inscription(user) {
+        return dbListener.httpPostAsync('/inscription', user)
     }
     
-    static checkCookie(callback) {
-        dbListener.httpGetAsync('/auth/verify/', callback);
+    static checkCookie() {
+        return dbListener.httpGetAsync('/auth/verify/')
     }
 
-    static getUserByMail(mail, callback) {
-        dbListener.httpGetAsync("/getUserByMailAddress/" + mail, callback);
+    static getUserByMail(mail) {
+        return dbListener.httpGetAsync("/getUserByMailAddress/" + mail)
     }
 
-    static getFormationById(id, callback) {
-        dbListener.httpGetAsync("/getFormationById/" + id, callback);
+    static getFormationById(id) {
+        return dbListener.httpGetAsync("/getFormationById/" + id)
     }
 
-    static sendProgressToServer(quiz, callback) {
+    static sendProgressToServer(quiz) {
         var data = {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
@@ -1042,27 +1046,23 @@ class Server {
             formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
-        dbListener.httpPostAsync("/sendProgress", data, callback);
+        return dbListener.httpPostAsync("/sendProgress", data)
     }
 
-    // static getProgress(formation, game, callback) {
-    //     dbListener.httpGetAsync("/getProgress/" + formation + "/" + game, callback);
-    // }
-
-    static getUser(callback) {
-        dbListener.httpGetAsync("/getUser", callback);
+    static getUser() {
+        return dbListener.httpGetAsync("/getUser")
     }
 
-    static replaceFormation(id, newFormation, callback, ignoredData) {
-        dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, callback, ignoredData);
+    static replaceFormation(id, newFormation, ignoredData) {
+        return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData)
     }
     
-    static insertFormation(newFormation, callback, ignoredData) {
-        dbListener.httpPostAsync("/insert", newFormation, callback, ignoredData);
+    static insertFormation(newFormation, ignoredData) {
+        return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
     }
 
-    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, callback, ignoredData) {
-        dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, callback, ignoredData);
+    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
+        return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
 }
 

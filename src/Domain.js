@@ -363,7 +363,7 @@ class Formation {
         this.clippingManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator.addOrdonator(2);
-        this.library = new Library(myLibraryGames);
+        this.library = new GamesLibrary(myLibraryGames);
         this.library.formation = this;
         this.quizzManager = new QuizzManager();
         this.quizzManager.parentFormation = this;
@@ -437,15 +437,14 @@ class Formation {
     }
 
     saveFormation (displayQuizzManager) {
-        let validation = this.label !== "" && this.label !== this.labelDefault && (typeof this.label !== 'undefined');
-        let messageSave = "Votre travail a bien été enregistré.";
-        let messageError = "Vous devez remplir le nom de la formation.";
-        let messageReplace =  "Les modifications ont bien été enregistrées";
-        let messageUsedName = "Le nom de cette formation est déjà utilisé !";
-        let messageNoModification = "Les modifications ont déjà été enregistrées";
+        let messageSave = "Votre travail a bien été enregistré.",
+            messageError = "Vous devez remplir le nom de la formation.",
+            messageReplace =  "Les modifications ont bien été enregistrées",
+            messageUsedName = "Le nom de cette formation est déjà utilisé !",
+            messageNoModification = "Les modifications ont déjà été enregistrées";
 
         let displayErrorMessage = (message) => {
-            this.errorMessageSave && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+            (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
             this.errorMessage = new svg.Text(message)
                 .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
                 .font("Arial", 15)
@@ -456,9 +455,9 @@ class Formation {
         };
 
         let displaySaveMessage = (message, displayQuizzManager) => {
-            if (displayQuizzManager) displayQuizzManager();
-
-            else {
+            if (displayQuizzManager) {
+                displayQuizzManager();
+            } else {
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessageSave = new svg.Text(message)
                     .position(0, -this.saveButtonHeight / 2 - MARGIN)
@@ -471,78 +470,87 @@ class Formation {
             }
         };
 
-        if (validation) {
-            let addNewFormation = () => {
-                let callbackInsertion = (data) => {
-                    this._id = JSON.parse(data);
-                    displaySaveMessage(messageSave, displayQuizzManager);
+        let displayMessage = message => {
+            switch (message) {
+                case messageError:
+                case messageUsedName:
+                    displayErrorMessage(message);
+                    break;
+                default:
+                    displaySaveMessage(message, displayQuizzManager);
+            }
+        };
 
-                };
-                let callbackCheckName = (data) => {
-                    let formationWithSameName = JSON.parse(data).formation;
-                    if (!formationWithSameName) {
-                        Server.insertFormation(getObjectToSave(), callbackInsertion, ignoredData);
-                    }
-                    else {
-                        displayErrorMessage(messageUsedName);
-                    }
-                };
-                Server.getFormationByName(this.label, callbackCheckName);
-            };
-
+        if (this.label && this.label !== this.labelDefault) {
             let getObjectToSave = () => {
                 var levelsTab = [];
                 var gamesCounter = {quizz: 0 , bd : 0};
                 this.levelsTab.forEach((level, i) => {
                     var gamesTab = [];
                     levelsTab.push({gamesTab: gamesTab});
-                    level.gamesTab.forEach((game) => {
-                        //game.id = game.tabQuestions ? "quizz" + gamesCounter.quizz : "bd" + gamesCounter.bd;
+                    level.gamesTab.forEach(game => {
                         if (game.tabQuestions) {
                             game.id || (game.id = "quizz"  + gamesCounter.quizz);
                             gamesCounter.quizz ++;
-                        }
-                        else {
+                        } else {
                             game.id || (game.id = "bd" + gamesCounter.bd);
                             gamesCounter.bd ++;
                         }
-                        levelsTab[i].gamesTab.push(game) ;
+                        levelsTab[i].gamesTab.push(game);
                     });
                 });
                 return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
             };
 
-            let replaceFormation = () => {
-                let callbackCheckName = data => {
-                    let callbackReplace = () => {
-                        displaySaveMessage(messageReplace, displayQuizzManager);
-                    };
+            let addNewFormation = () => {
+                Server.getFormationByName(this.label).then(data => {
                     let formationWithSameName = JSON.parse(data).formation;
-                    if(formationWithSameName) {
-                        var id = formationWithSameName._id;
-                        delete formationWithSameName._id;
-                        formationWithSameName = JSON.stringify(formationWithSameName);
-                        let newFormation = getObjectToSave();
-                        newFormation = JSON.stringify(newFormation, ignoredData);
-                        if (formationWithSameName && id === this._id) {
-                            if (formationWithSameName == newFormation) {
-                                displaySaveMessage(messageNoModification, displayQuizzManager);
-                            } else {
-                                Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
-                            }
-                        } else if (formationWithSameName && formationWithSameName._id !== this._id) {
-                            displayErrorMessage(messageUsedName);
-                        }
+                    if (!formationWithSameName) {
+                        Server.insertFormation(getObjectToSave(), ignoredData)
+                            .then(data => {
+                                this._id = JSON.parse(data);
+                                displayMessage(messageSave);
+                            })
                     } else {
-                        Server.replaceFormation(this._id, getObjectToSave(), callbackReplace, ignoredData);
+                        displayMessage(messageUsedName);
                     }
-                };
-                Server.getFormationByName(this.label, callbackCheckName);
+                })
+            };
+
+            let replaceFormation = () => {
+                Server.getFormationByName(this.label)
+                    .then(data => {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if(formationWithSameName) {
+                            let id = formationWithSameName._id;
+                            delete formationWithSameName._id;
+                            formationWithSameName = JSON.stringify(formationWithSameName);
+                            let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                            if (id === this._id) {
+                                if (formationWithSameName === newFormation) {
+                                    throw messageNoModification
+                                } else {
+                                    return getObjectToSave()
+                                }
+                            } else {
+                                throw messageUsedName
+                            }
+                        } else {
+                            return getObjectToSave()
+                        }
+                    })
+                    .then((formation) => {
+                        Server.replaceFormation(this._id, formation, ignoredData)
+                            .then(() => {
+                                displayMessage(messageReplace);
+                            });
+                    })
+                    .catch(displayMessage)
             };
 
             this._id ? replaceFormation() : addNewFormation();
         } else {
-            displayErrorMessage(messageError);
+            displayMessage(messageError);
         }
     }
 
@@ -675,14 +683,48 @@ class Formation {
             game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
         });
     }
+
+    trackProgress (displayFunction) {
+        this.levelsTab.forEach(level => {
+            level.gamesTab.forEach(game => {
+                delete game.miniature;
+                delete game.status;
+            })
+        });
+        this.miniaturesManipulator.flush();
+        Server.getUser().then(data => {
+            let user = JSON.parse(data);
+            if (user.formationsTab) {
+                let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
+                formationUser && formationUser.gamesTab.forEach(game => {
+                    let theGame = this.findGameById(game.game);
+                    if (!theGame) return;
+
+                    theGame.currentQuestionIndex = game.index;
+                    game.tabWrongAnswers.forEach(wrongAnswer => {
+                        theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
+                    });
+                    theGame.score = game.index - theGame.questionsWithBadAnswers.length;
+                    theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                });
+            }
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    if (!this.isGameAvailable(game)) {
+                        game.status = "notAvailable";
+                    }
+                });
+            });
+
+            displayFunction.call(this)
+        });
+    }
 }
 
 class Library {
     constructor (lib) {
         this.libraryManipulator = new Manipulator(this);
         this.libraryManipulator.addOrdonator(2);
-        this.arrowModeManipulator = new Manipulator(this);
-        this.arrowModeManipulator.addOrdonator(3);
 
         this.title = lib.title;
 
@@ -693,84 +735,83 @@ class Library {
         this.imageWidth = 50;
         this.imageHeight = 50;
         this.libMargin = 5;
-        this.libraryGamesTab = [];
 
         for (var i = 0; i < this.itemsTab.length; i++) {
             this.libraryManipulators[i] = new Manipulator(this);
             this.libraryManipulators[i].addOrdonator(2);
-            if (this.itemsTab[i].imgSrc) {
-                let self = this;
-                this.itemsTab[i] = imageController.getImage(self.itemsTab[i].imgSrc, function () {
-                    this.imageLoaded = true;
-                });
-            }
         }
 
-        this.font = lib.font ? lib.font : "Arial";
-        this.fontSize = lib.fontSize ? lib.fontSize : this.fontSize = 20;
+        this.font = lib.font || "Arial";
+        this.fontSize = lib.fontSize || 20;
     }
+}
 
+class GamesLibrary extends Library {
 
-    run (x, y, w, h, callback) {
-        this.intervalToken = asyncTimerController.interval(() => {
-            if (this.itemsTab.every(e => e.imageLoaded)) {
-                asyncTimerController.clearInterval(this.intervalToken);
-                this.display(x, y, w, h);
-                callback();
-            }
-        }, 100);
-        runtime && this.itemsTab.forEach(e => {
-            imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
-        });
-        if (runtime){
-            this.display(x, y, w, h);
-            callback();
-        }
-    };
+    constructor (lib) {
+        super(lib);
+        this.arrowModeManipulator = new Manipulator(this);
+        this.arrowModeManipulator.addOrdonator(3);
+
+    }
 
     dropAction (element, event) {
         var target = drawings.background.getTarget(event.clientX, event.clientY);
         if (target && target._acceptDrop) {
-            if (element instanceof svg.Image) {
-                var oldQuest = {
-                    cadre: target.parent.parentManip.ordonator.get(0),
-                    content: target.parent.parentManip.ordonator.get(1)
-                };
-                target.parent.parentManip.ordonator.unset(0);
-                target.parent.parentManip.ordonator.unset(1);
-                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
-                    element.srcDimension,
-                    oldQuest.cadre.width, oldQuest.cadre.height,
-                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
-                );
-                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-                newQuest.image._acceptDrop = true;
-
-                switch (true) {
-                    case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                        let questionCreator = target.parent.parentManip.parentObject;
-                        questionCreator.linkedQuestion.image = newQuest.image;
-                        questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
-                        questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                        questionCreator.display();
-                        break;
-                    case target.parent.parentManip.parentObject.editable:
-                        let answer = target.parent.parentManip.parentObject;
-                        answer.image = newQuest.image;
-                        answer.imageSrc = newQuest.image.src;
-                        answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                        //answer.display(-answer.w/2,-answer.h/2);
-                        break;
-                }
-                target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-                //target.parent.parentManip.ordonator.set(1, oldQuest.content);
-            } else {
-                var formation = target.parent.parentManip.parentObject;
-                formation.addNewGame(event, this);
-            }
+            var formation = target.parent.parentManip.parentObject;
+            formation.addNewGame(event, this);
         }
         this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+    }
+}
+
+class ImagesLibrary extends Library {
+    constructor (lib) {
+        super(lib);
+        for (var i = 0; i < this.itemsTab.length; i++) {
+            this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
+                this.imageLoaded = true; //this != library
+            });
+        }
+    }
+
+    dropAction (element, event) {
+        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        if (target && target._acceptDrop) {
+            var oldQuest = {
+                cadre: target.parent.parentManip.ordonator.get(0),
+                content: target.parent.parentManip.ordonator.get(1)
+            };
+            target.parent.parentManip.ordonator.unset(0);
+            target.parent.parentManip.ordonator.unset(1);
+            var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                element.srcDimension,
+                oldQuest.cadre.width, oldQuest.cadre.height,
+                oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+            );
+            oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+            oldQuest.content.position(newQuest.content.x, newQuest.content.y);
+            newQuest.image._acceptDrop = true;
+
+            switch (true) {
+                case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                    let questionCreator = target.parent.parentManip.parentObject;
+                    questionCreator.linkedQuestion.image = newQuest.image;
+                    questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                    questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                    questionCreator.display();
+                    break;
+                case target.parent.parentManip.parentObject.editable:
+                    let answer = target.parent.parentManip.parentObject;
+                    answer.image = newQuest.image;
+                    answer.imageSrc = newQuest.image.src;
+                    answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                    //answer.display(-answer.w / 2, -answer.h / 2);
+                    break;
+            }
+            target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+            //target.parent.parentManip.ordonator.set(1, oldQuest.content);
+        }
     }
 }
 
@@ -819,7 +860,7 @@ class QuizzManager {
         }
         this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.header = new Header();
-        this.library = new Library(myLibraryImage);
+        this.library = new ImagesLibrary(myLibraryImage);
         this.quizz.tabQuestions[0].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
@@ -851,7 +892,7 @@ class QuizzManager {
         this.libraryHeightRatio = this.questCreaHeightRatio;
         this.previewButtonHeightRatio = 0.1;
         this.saveButtonHeightRatio = 0.1;
-        this.marginRatio = 0.03;
+        this.marginRatio = 0.02;
     }
 
     saveQuizz () {
@@ -874,19 +915,18 @@ class QuizzManager {
             };
         };
 
-        let callback = () => {
-            this.quizz.title = this.quizzName;
-            this.quizz.tabQuestions = this.tabQuestions;
-            let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-            (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
-            this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
-            this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
-            this.display();
-            console.log("Votre travail a été bien enregistré");
-        };
-
         let quiz = getObjectToSave();
-        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, callback, ignoredData)
+        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
+            .then(() => {
+                this.quizz.title = this.quizzName;
+                this.quizz.tabQuestions = this.tabQuestions;
+                let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
+                (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
+                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
+                this.display();
+                console.log("Votre travail a été bien enregistré");
+            });
     };
 
     selectNextQuestion () {
@@ -1023,24 +1063,21 @@ class Quizz {
             this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
         }
 
-        let callback = () => {
-            if (++this.currentQuestionIndex < this.tabQuestions.length) {
-                this.displayCurrentQuestion();
-            } else {
-                console.log("Final score: " + this.score);
-                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, "leftToRight", this);
-                this.displayResult();
-            }
-        };
-
         if (this.previewMode) {
             if (this.currentQuestionIndex === -1) {
                 this.currentQuestionIndex++;
             }
             this.displayCurrentQuestion();
         } else {
-            Server.sendProgressToServer(this);
-            callback();
+            Server.sendProgressToServer(this)
+                .then(() => {
+                    if (++this.currentQuestionIndex < this.tabQuestions.length) {
+                        this.displayCurrentQuestion();
+                    } else {
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
+                        this.displayResult();
+                    }
+                });
         }
     }
 
@@ -1226,7 +1263,7 @@ ConnexionManager = function () {
     self.tabForm =[];
 
     let listFormations = function() {
-        Server.getAllFormationsNames(data => {
+        Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
@@ -1246,7 +1283,7 @@ ConnexionManager = function () {
                 emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black)});
             },5000);
         } else {
-            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret, data => {
+            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret).then(data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
                     drawing.username = `${data.user.firstName} ${data.user.lastName}`;
