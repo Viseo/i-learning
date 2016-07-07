@@ -834,7 +834,7 @@ class QuizzManager {
         //this.questionPuzzle = {};
         this.quizzNameValidInput = true;
         this.loadQuizz = function (quizz, indexOfEditedQuestion) {
-            this.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;
+            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
             this.quizz = new Quizz(quizz, true);
             this.quizzName = this.quizz.title;
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
@@ -923,7 +923,7 @@ class QuizzManager {
                 let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
                 (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
-                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
+                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
                 this.display();
                 console.log("Votre travail a été bien enregistré");
             });
