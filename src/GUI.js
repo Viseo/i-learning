@@ -521,9 +521,9 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
         assignEvents();
     };
 
-    this.intervalToken = asyncTimerController.interval(() => {
+    let intervalToken = asyncTimerController.interval(() => {
         if (this.itemsTab.every(e => e.imageLoaded)) {
-            asyncTimerController.clearInterval(this.intervalToken);
+            asyncTimerController.clearInterval(intervalToken);
             display(x, y, w, h);
             callback();
         }
@@ -2148,55 +2148,43 @@ function quizzManagerDisplay(){
     drawing.currentPageDisplayed = 'QuizManager';
     mainManipulator.ordonator.set(1, self.quizzManagerManipulator.first);
 
-    self.questionClickHandler = event =>{
+    self.questionClickHandler = event => {
+        let question;
         if(typeof event.clientX == "undefined" || typeof event.clientY == "undefined"){
             question = event.question;
         }
         else{
             var target = drawings.background.getTarget(event.clientX,event.clientY);
-            var question = target.parent.parentManip.parentObject;
+            question = target.parent.parentManip.parentObject;
         }
-        this.quizz.tabQuestions[self.indexOfEditedQuestion].selected = false;
-        question.selected = true;
-
-        this.displayQuestionsPuzzle(null, null, null, null, this.questionPuzzle.startPosition);
-        //this.indexOfEditedQuestion = this.quizz.tabQuestions.indexOf(question);
-        this.questionCreator.loadQuestion(question);
-        this.questionCreator.display(this.questionCreator.previousX,this.questionCreator.previousY,this.questionCreator.previousW,this.questionCreator.previousH);
-        let quizzManager = question.parentQuizz.parentFormation.quizzManager;
-        let quizz = quizzManager.quizz;
-        let tabQuestions = quizz.tabQuestions;
-        let questionCreator = quizzManager.questionCreator;
+        let quizzManager = question.parentQuizz.parentFormation.quizzManager,
+            quizz = quizzManager.quizz,
+            tabQuestions = quizz.tabQuestions,
+            questionCreator = quizzManager.questionCreator;
         tabQuestions[quizzManager.indexOfEditedQuestion].selected = false;
         question.selected = true;
         quizzManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.startPosition);
         questionCreator.loadQuestion(question);
-        questionCreator.display(questionCreator.previousX,questionCreator.previousY,questionCreator.previousW,questionCreator.previousH);
+        questionCreator.display(questionCreator.previousX, questionCreator.previousY, questionCreator.previousW, questionCreator.previousH);
     };
 
-    var displayFunctions = () => {
-        self.displayQuizzInfo(self.globalMargin.width/2, self.quizzInfoHeight/2, drawing.width,self.quizzInfoHeight);
-        self.displayQuestionsPuzzle(self.questionPuzzleCoordinates.x, self.questionPuzzleCoordinates.y, self.questionPuzzleCoordinates.w, self.questionPuzzleCoordinates.h);
-        self.questionCreator.display(self.library.x + self.libraryWidth, self.library.y,
-            self.questCreaWidth-self.globalMargin.width, self.questCreaHeight);
-        self.displayPreviewButton(drawing.width/2-self.ButtonWidth, self.height - self.previewButtonHeight/2-MARGIN/2,
-            self.ButtonWidth, self.previewButtonHeight-self.globalMargin.height);
-        self.displayQuizSaveButton(drawing.width/2+self.ButtonWidth, self.height - self.saveButtonHeight/2-MARGIN/2,
-            self.ButtonWidth, self.saveButtonHeight-self.globalMargin.height);
+    let displayFunctions = () => {
+        this.displayQuizzInfo(this.globalMargin.width/2, this.quizzInfoHeight/2, drawing.width,this.quizzInfoHeight);
+        this.displayQuestionsPuzzle(this.questionPuzzleCoordinates.x, this.questionPuzzleCoordinates.y, this.questionPuzzleCoordinates.w, this.questionPuzzleCoordinates.h);
+        this.questionCreator.display(this.library.x + this.libraryWidth, this.library.y,
+            this.questCreaWidth-this.globalMargin.width, this.questCreaHeight);
+        this.displayPreviewButton(drawing.width/2-this.ButtonWidth, this.height - this.previewButtonHeight/2-MARGIN/2,
+            this.ButtonWidth, this.previewButtonHeight-this.globalMargin.height);
+        this.displayQuizSaveButton(drawing.width/2+this.ButtonWidth, this.height - this.saveButtonHeight/2-MARGIN/2,
+            this.ButtonWidth, this.saveButtonHeight-this.globalMargin.height);
         mainManipulator.ordonator.unset(0);
-        header.display("Formation : " + self.parentFormation.label);
+        header.display("Formation : " + this.parentFormation.label);
     };
 
-    if (self.resizing){
-        self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
-            self.libraryWidth-self.globalMargin.width/2, self.libraryHeight);
-        displayFunctions();
-    }
-
-    !self.resizing && self.library.display(self.globalMargin.width/2, self.quizzInfoHeight+self.questionsPuzzleHeight+self.globalMargin.height/2,
-        self.libraryWidth-self.globalMargin.width/2, self.libraryHeight, function(){
-        displayFunctions();
+    this.library.display(this.globalMargin.width/2, this.quizzInfoHeight + this.questionsPuzzleHeight + this.globalMargin.height/2,
+        this.libraryWidth-this.globalMargin.width/2, this.libraryHeight, () => {
+            displayFunctions();
         });
 }
 
