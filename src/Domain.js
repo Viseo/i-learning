@@ -96,10 +96,10 @@ class Answer {
 
 class Question {
     constructor (question, quizz) {
-        this.questionManipulator = new Manipulator(this);
-        this.questionManipulator.addOrdonator(6);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(6);
         this.answersManipulator = new Manipulator(this);
-        this.questionManipulator.last.add(this.answersManipulator.first);
+        this.manipulator.last.add(this.answersManipulator.first);
         this.resetManipulator = new Manipulator(this);
         this.resetManipulator.addOrdonator(2);
         this.answersManipulator.last.add(this.resetManipulator.first);
@@ -206,16 +206,20 @@ class QuestionCreator {
         this.saveQuizButtonManipulator = new Manipulator(this);
         this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
+        this.questionNameValidInput = true;
+
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
         this.quizzType = myQuizzType.tab;
-
+        this.toggleButtonHeight = 40;
         if (!question) {
             // init default : 2 empty answers
             this.linkedQuestion = new Question(defaultQuestion,this.parent.quizz);
         } else {
             this.loadQuestion(question);
         }
+        this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
+        this.manipulator.last.add(this.puzzle.manipulator.first);
         this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
     }
 
@@ -513,7 +517,7 @@ class Formation {
                 });
                 return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
             };
-            
+
             let addNewFormation = () => {
                 Server.getFormationByName(this.label).then(data => {
                     let formationWithSameName = JSON.parse(data).formation;
@@ -695,7 +699,7 @@ class Formation {
             game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
         });
     }
-    
+
     trackProgress (displayFunction) {
         this.levelsTab.forEach(level => {
             level.gamesTab.forEach(game => {
@@ -817,7 +821,8 @@ class ImagesLibrary extends Library {
                     let answer = target.parent.parentManip.parentObject;
                     answer.image = newQuest.image;
                     answer.imageSrc = newQuest.image.src;
-                    answer.display(-answer.w / 2, -answer.h / 2);
+                    answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                    //answer.display(-answer.w / 2, -answer.h / 2);
                     break;
             }
             target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
@@ -837,75 +842,15 @@ class Header {
     }
 }
 
-class Puzzle {
-    constructor (lines, rows, questionsTab, resultArea, reverseMode, parent) {
-        this.lines = lines;
-        this.rows = rows;
-        this.tilesTab = [];
-        this.questionsTab = questionsTab;
-        this.startPosition = 0;
-        this.reverseMode = reverseMode;
-        this.parent = parent;
-        this.totalRows = 0;
-        if (this.questionsTab.length % this.lines === 0) {
-            this.totalRows = this.questionsTab.length / this.lines;
-        }
-        else {
-            this.totalRows = Math.floor(this.questionsTab.length / this.lines) + 1;
-        }
-
-        var count = 0;
-        this.completeBanner = [];
-        this.puzzleManipulator = new Manipulator(this);
-        this.leftChevronManipulator = new Manipulator(this);
-        this.leftChevronManipulator.addOrdonator(1);
-        this.rightChevronManipulator = new Manipulator(this);
-        this.rightChevronManipulator.addOrdonator(1);
-        this.questionWithBadAnswersManipulator = new Manipulator(this);
-        this.puzzleManipulator.last.add(this.questionWithBadAnswersManipulator.first);
-        this.puzzleManipulator.last.add(this.leftChevronManipulator.first);
-        this.puzzleManipulator.last.add(this.rightChevronManipulator.first);
-
-        if (this.reverseMode) {
-            for (var i = 0; i < this.lines; i++) {
-                this.completeBanner[i] = [];
-                for (var j = 0; j < this.rows; j++) {
-                    if (count < this.questionsTab.length) {
-                        this.completeBanner[i][j] = this.questionsTab[count];
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        } else {
-            for (i = 0; i < this.totalRows; i++) {
-                this.completeBanner[i] = [];
-                for (j = 0; j < this.lines; j++) {
-                    if (count < this.questionsTab.length) {
-                        this.completeBanner[i][j] = this.questionsTab[count];
-                        if ((this.completeBanner[i][j] instanceof Question) && this.completeBanner[i][j].answersManipulator.first) {
-                            this.completeBanner[i][j].questionManipulator.flush();
-                        }
-                        count++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-    }
-}
-
 class QuizzManager {
     constructor (quizz) {
         this.quizzName = "";
         this.quizzNameDefault = "Ecrire ici le nom du quiz";
         this.tabQuestions = [defaultQuestion];
-        this.questionPuzzle = {};
+        //this.questionPuzzle = {};
         this.quizzNameValidInput = true;
         this.loadQuizz = function (quizz, indexOfEditedQuestion) {
-            this.indexOfEditedQuestion = (indexOfEditedQuestion ? indexOfEditedQuestion: 0) ;
+            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
             this.quizz = new Quizz(quizz, true);
             this.quizzName = this.quizz.title;
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
@@ -971,6 +916,10 @@ class QuizzManager {
             this.tabQuestions = this.quizz.tabQuestions;
             (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
+                question.selected = undefined;
+                question.imageLoaded = undefined;
+                question.redCross = undefined;
+                question.questNum = undefined;
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
             });
             return {
@@ -990,7 +939,7 @@ class QuizzManager {
                 let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
                 (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                 this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
-                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.tabQuestions.indexOf(this.questionCreator.linkedQuestion));
+                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
                 this.display();
                 console.log("Votre travail a été bien enregistré");
             });
@@ -1115,11 +1064,11 @@ class Quizz {
             this.questionHeight = this.questionHeightWithoutImage;
             this.answerHeight = this.answerHeightWithoutImage;
         }
-        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
-        this.tabQuestions[this.currentQuestionIndex].questionManipulator.flush();
+        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+        this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
         this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight/ 2 + MARGIN,
             this.questionArea.w, this.questionHeight);
-        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].questionManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
         this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
             this.questionArea.w, this.answerHeight);
     };
@@ -1127,7 +1076,7 @@ class Quizz {
     // !_! bof, y'a encore des display appelés ici
     nextQuestion () {
         if (this.currentQuestionIndex !== -1) {
-            this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].questionManipulator.first);
+            this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
         }
 
         if (this.previewMode) {
@@ -1141,7 +1090,7 @@ class Quizz {
                     if (++this.currentQuestionIndex < this.tabQuestions.length) {
                         this.displayCurrentQuestion();
                     } else {
-                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, this.resultArea, null, this);
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, "leftToRight", this);
                         this.displayResult();
                     }
                 });

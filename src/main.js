@@ -86,7 +86,7 @@ function main() {
             formationsManager.display();
         });
     };
-    
+
     inscriptionManager = new InscriptionManager();
     connexionManager = new ConnexionManager();
     
