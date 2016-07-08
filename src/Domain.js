@@ -271,6 +271,7 @@ class PopIn {
         this.blackCrossManipulator = new Manipulator(this);
         this.blackCrossManipulator.addOrdonator(1);
         this.manipulator.ordonator.set(2,this.blackCrossManipulator.first);
+        this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
     }
 }
 class AddEmptyElement {
@@ -810,38 +811,43 @@ class ImagesLibrary extends Library {
     dropAction (element, event) {
         let target = drawings.background.getTarget(event.clientX, event.clientY);
         if (target && target._acceptDrop) {
-            var oldQuest = {
-                cadre: target.parent.parentManip.ordonator.get(0),
-                content: target.parent.parentManip.ordonator.get(1)
-            };
-            target.parent.parentManip.ordonator.unset(0);
-            target.parent.parentManip.ordonator.unset(1);
-            var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
-                element.srcDimension,
-                oldQuest.cadre.width, oldQuest.cadre.height,
-                oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
-            );
-            oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-            oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-            newQuest.image._acceptDrop = true;
-
-            switch (true) {
-                case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                    let questionCreator = target.parent.parentManip.parentObject;
-                    questionCreator.linkedQuestion.image = newQuest.image;
-                    questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
-                    questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                    questionCreator.display();
-                    break;
-                case target.parent.parentManip.parentObject.editable:
-                    let answer = target.parent.parentManip.parentObject;
-                    answer.image = newQuest.image;
-                    answer.imageSrc = newQuest.image.src;
-                    answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                    //answer.display(-answer.w / 2, -answer.h / 2);
-                    break;
+            if (target.parent.parentManip.parentObject.answer){
+                target.parent.parentManip.parentObject.image = element.src;
+                target.parent.parentManip.parentObject.diplayPopIn();
             }
-            target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+            else {
+                var oldQuest = {
+                    cadre: target.parent.parentManip.ordonator.get(0),
+                    content: target.parent.parentManip.ordonator.get(1)
+                };
+                target.parent.parentManip.ordonator.unset(0);
+                target.parent.parentManip.ordonator.unset(1);
+                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                    element.srcDimension,
+                    oldQuest.cadre.width, oldQuest.cadre.height,
+                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+                );
+                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+                oldQuest.content.position(newQuest.content.x, newQuest.content.y);
+                newQuest.image._acceptDrop = true;
+                switch (true) {
+                    case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                        let questionCreator = target.parent.parentManip.parentObject;
+                        questionCreator.linkedQuestion.image = newQuest.image;
+                        questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                        questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                        questionCreator.display();
+                        break;
+                    case target.parent.parentManip.parentObject.editable:
+                        let answer = target.parent.parentManip.parentObject;
+                        answer.image = newQuest.image;
+                        answer.imageSrc = newQuest.image.src;
+                        answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                        //answer.display(-answer.w / 2, -answer.h / 2);
+                        break;
+                }
+                target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+            }
             //target.parent.parentManip.ordonator.set(1, oldQuest.content);
         }
     }

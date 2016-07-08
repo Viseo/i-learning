@@ -225,9 +225,9 @@ function answerDisplay (x, y, w, h) {
         self.manipulator.translator.move(x,y);
         showTitle();
         self.penHandler = function(){
-            let popIn = new PopIn(self);
-            popIn.diplayPopIn();
-            self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = popIn;
+            self.popIn = self.popIn || new PopIn(self);
+            self.popIn.diplayPopIn();
+            self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = self.popIn;
         };
         displayPen(self.width/2-self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self);
 
@@ -1819,30 +1819,41 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     }
 }
 
-function popInDisplay(){
+function popInDisplay() {
     let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
     let rect = new svg.Rect(questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-    rect.color(myColors.white , 3 , myColors.black);
-    this.manipulator.ordonator.set(0,rect);
-    this.manipulator.translator.move(questionCreator.previousX ,questionCreator.coordinatesAnswers.y);
+    rect._acceptDrop = true;
+    rect.color(myColors.white, 3, myColors.black);
+    this.manipulator.ordonator.set(0, rect);
+    this.manipulator.translator.move(questionCreator.previousX, questionCreator.coordinatesAnswers.y);
 
-    questionCreator.manipulator.last.children.indexOf(this.manipulator.first)===-1 && questionCreator.manipulator.last.add(this.manipulator.first);
+    questionCreator.manipulator.last.children.indexOf(this.manipulator.first) === -1 && questionCreator.manipulator.last.add(this.manipulator.first);
     let answerTextRatio = 0.2;
-    let answerText = "Réponse : "+ this.answer.label;
-    let answerTextSVG = autoAdjustText(answerText, 0,0,questionCreator.coordinatesAnswers.w,questionCreator.coordinatesAnswers.h * answerTextRatio , 20, null, this.manipulator, 1).text;
-    answerTextSVG.position (0,- questionCreator.coordinatesAnswers.h/2 + svg.runtime.boundingRect(answerTextSVG.component).width/4);
+    let answerText = "Réponse : " + this.answer.label;
+    let answerTextSVG = autoAdjustText(answerText, 0, 0, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h * answerTextRatio, 20, null, this.manipulator, 1).text;
+    answerTextSVG.position(0, -questionCreator.coordinatesAnswers.h / 2 + svg.runtime.boundingRect(answerTextSVG.component).width / 4);
     let blackCrossSize = 30, blackCross;
-    blackCross= blackCross || drawRedCross(questionCreator.coordinatesAnswers.w/2 - blackCrossSize, - questionCreator.coordinatesAnswers.h/2 + blackCrossSize, blackCrossSize,this.blackCrossManipulator);
-    blackCross.color(myColors.black, 1 , myColors.black);
-    this.blackCrossManipulator.ordonator.set(0,blackCross);
-    let blackCrossHandler = function(event){
+    blackCross = blackCross || drawRedCross(questionCreator.coordinatesAnswers.w / 2 - blackCrossSize, -questionCreator.coordinatesAnswers.h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
+    blackCross.color(myColors.black, 1, myColors.black);
+    this.blackCrossManipulator.ordonator.set(0, blackCross);
+    let blackCrossHandler = function (event) {
         questionCreator.explanation = false;
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        let target = drawings.background.getTarget(event.clientX, event.clientY);
         questionCreator.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
     };
-    svg.addEvent(blackCross,"click",blackCrossHandler);
+    svg.addEvent(blackCross, "click", blackCrossHandler);
+    if (this.image){
+        let imageSVG = new svg.Image(this.image).dimension(questionCreator.coordinatesAnswers.h/2,questionCreator.coordinatesAnswers.h/2);
+        imageSVG._acceptDrop = true;
+        imageSVG.position(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN , 0);
+        this.manipulator.ordonator.set(3,imageSVG);
+    }
+    else {
+        let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, questionCreator.coordinatesAnswers.w/6, questionCreator.coordinatesAnswers.h / 3, 20, null, this.manipulator, 3).text;
+        draganddropTextSVG.position(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN, 0).color(myColors.grey);
+        draganddropTextSVG._acceptDrop = true;
+    }
 }
-
 function quizzDisplay(x, y, w, h) {
     var self = this;
     drawing.currentPageDisplayed = "Quizz";
