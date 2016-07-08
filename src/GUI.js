@@ -1840,6 +1840,7 @@ function popInDisplay() {
         questionCreator.explanation = false;
         let target = drawings.background.getTarget(event.clientX, event.clientY);
         questionCreator.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
+        questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y,questionCreator.coordinatesAnswers.w,questionCreator.coordinatesAnswers.h);
     };
     svg.addEvent(blackCross, "click", blackCrossHandler);
     if (this.image){
@@ -1847,6 +1848,7 @@ function popInDisplay() {
         imageSVG._acceptDrop = true;
         imageSVG.position(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN , 0);
         this.manipulator.ordonator.set(3,imageSVG);
+        this.answer.filled = true;
     }
     else {
         let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, questionCreator.coordinatesAnswers.w/6, questionCreator.coordinatesAnswers.h / 3, 20, null, this.manipulator, 3).text;
@@ -2101,6 +2103,7 @@ function quizzManagerDisplay(){
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
         questionCreator.display(questionCreator.previousX, questionCreator.previousY, questionCreator.previousW, questionCreator.previousH);
+        questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
     };
 
     let displayFunctions = () => {
