@@ -1824,9 +1824,7 @@ function popInDisplay(){
     let rect = new svg.Rect(questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
     rect.color(myColors.white , 3 , myColors.black);
     this.manipulator.ordonator.set(0,rect);
-
-    //this.manipulator.translator.move(drawing.width - questionCreator.coordinatesAnswers.w - 4 * MARGIN ,questionCreator.coordinatesAnswers.y);
-    this.manipulator.translator.move(this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.libraryWidth  + 3/2 * MARGIN ,questionCreator.coordinatesAnswers.y);
+    this.manipulator.translator.move(questionCreator.previousX ,questionCreator.coordinatesAnswers.y);
 
     questionCreator.manipulator.last.add(this.manipulator.first);
     let answerTextRatio = 0.2;
