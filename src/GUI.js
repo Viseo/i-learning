@@ -588,6 +588,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                     question.redCrossManipulator && question.redCrossManipulator.flush();
                     question.selected=false});
                 let newQuestion = new Question(null, self.parent.quizz);
+                
                 newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
 
@@ -1547,7 +1548,7 @@ function questionCreatorDisplay (x, y, w, h) {
     self.questionCreatorManipulator.translator.move(self.previousX, 0);
     self.toggleButtonHeight = 40;
     self.displayQuestionCreator(self.previousX, self.previousY, self.previousW, self.previousH);
-    var clickedButton = self.multipleChoice ? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    var clickedButton = self.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
     self.displayToggleButton(MARGIN + self.previousX, MARGIN/2+self.previousY, self.previousW, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
@@ -1567,7 +1568,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
         (questionType === "Réponses multiples") ? (self.linkedQuestion.multipleChoice = true) : (self.linkedQuestion.multipleChoice = false);
 
-        self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
+        self.linkedQuestion.questionType = (!self.multipleChoice) ? self.questionType[0] : self.questionType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
 
         self.linkedQuestion.tabAnswer.forEach(function(answer){
@@ -1585,13 +1586,13 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
     self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
 
-    var length = self.quizzType.length;
+    var length = self.questionType.length;
     var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
     self.margin = (w-lengthToUse)/2;
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
     (!self.completeBanner) && (self.completeBanner = []);
-    self.quizzType.forEach(function(type){
+    self.questionType.forEach(function(type){
         if(self.completeBanner[i] && self.completeBanner[i].manipulator){
             self.toggleButtonManipulator.last.remove(self.completeBanner[i].manipulator.first);
         }
@@ -1610,7 +1611,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
         i++;
     });
-    self.activeQuizzType = (self.multipleChoice) ? self.quizzType[1] : self.quizzType[0];
+    self.linkedQuestion.questionType = (self.multipleChoice) ? self.questionType[1] : self.questionType[0];
     self.toggleButtonManipulator.translator.move(0,0);
 }
 
@@ -2057,7 +2058,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height/2+self.quizzNameHeight);
+        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
@@ -2135,12 +2136,10 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 function quizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
-
-    self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     self.previewFunction = function () {
         drawing.currentPageDisplayed = "QuizPreview";
         var validation = true;
-        self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
+        self.questionCreator.linkedQuestion.questionType.validationTab.forEach(function (funcEl) {
             var result = funcEl(self);
             if(!result.isValid) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
@@ -2148,7 +2147,9 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
                     .position(self.ButtonWidth,-h/2-2)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
-                self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
+                setTimeout(() => {
+                    self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
+                }, 1);
             }
             validation = validation && result.isValid;
         });

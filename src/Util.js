@@ -684,7 +684,7 @@ function SVGUtil() {
 }
 
 class MiniatureGame {
-    
+
     constructor (game, size) {
         this.game = game;
         this.scoreSize = 13;
@@ -798,7 +798,7 @@ class MiniatureGame {
 }
 
 class MiniatureFormation {
-    
+
     constructor (formation) {
         this.miniatureManipulator = new Manipulator();
         this.miniatureManipulator.addOrdonator(2);
@@ -806,7 +806,7 @@ class MiniatureFormation {
         this.iconManipulator.addOrdonator(4);
         this.formation = formation;
     }
-    
+
     display (x, y, w, h) {
         this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first)===-1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
 
@@ -854,7 +854,7 @@ class MiniatureFormation {
                 break;
         }
     }
-    
+
     setHandler (handler) {
         if (this.miniature.cadre) {
             svg.addEvent(this.miniature.cadre, "click", () => {
@@ -1042,7 +1042,7 @@ class Puzzle {
             }
         }
     }
-    
+
     adjustElementsDimensions(){
         this.elementWidth = (this.visibleArea.width - MARGIN*(this.columns-1))/this.columns;
         this.elementHeight = (this.visibleArea.height - MARGIN*(this.rows+1))/this.rows;
@@ -2295,48 +2295,48 @@ function Bdd() {
     };
 
     singleAnswerValidationTab = [
-        // Check Quiz Name:
-        quiz => ({
-            isValid: quiz.quizzName !== "",
-            message: "Vous devez remplir le nom du quiz."
-        }),
-        // Check Question Name:
-        quiz => ({
-            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.manipulator.ordonator.children[2] instanceof svg.Image),
-            message: "Vous devez remplir le nom de la question."
-        }),
         // Check 1 Correct Answer:
-        quiz => ({
-            isValid: quiz.questionCreator.linkedQuestion.tabAnswer && quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && el.correct),
+        question => ({
+            isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
             message: "Votre question doit avoir une bonne réponse."
         }),
-        // Check at least 1 valid answer:
-        quiz => ({
-            isValid: quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
+        // Check answer's name:
+        question => ({
+            isValid: question.tabAnswer.every(el => (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
             message: "Vous devez remplir au moins une réponse."
+        }),
+        // Check Question Name:
+        question => ({
+            isValid: (question.label) || (question.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            message: "Vous devez remplir le nom de la question."
+        }),
+        // Check Quiz Name:
+        question => ({
+            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
+            message: "Vous devez remplir le nom du quiz."
         })
     ];
 
     multipleAnswerValidationTab = [
-        // Check Quiz Name:
-        quiz => ({
-            isValid: quiz.quizzName !== "",
-            message: "Vous devez remplir le nom du quiz."
+        // Check answer's name:
+        question => ({
+            isValid: question.tabAnswer.every(el => (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
+            message: "Vous devez remplir au moins une réponse."
         }),
         // Check Question Name:
-        quiz => ({
-            isValid: (quiz.questionCreator.label) || (quiz.questionCreator.manipulator.ordonator.children[2] instanceof svg.Image),
+        question => ({
+            isValid: (question.label) || (question.questionManipulator.ordonator.children[2] instanceof svg.Image),
             message: "Vous devez remplir le nom de la question."
         }),
-        // Check at least 1 valid answer:
-        quiz => ({
-            isValid: quiz.questionCreator.linkedQuestion.tabAnswer.some(el => el.editable && (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
-            message: "Vous devez remplir au moins une réponse."
+            // Check Quiz Name:
+        question => ({
+            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
+            message: "Vous devez remplir le nom du quiz."
         })
     ];
     
 
-    myQuizzType = {
+    myQuestionType = {
         tab: [
             {
                 label: "Réponse unique",
