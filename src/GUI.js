@@ -227,7 +227,8 @@ function answerDisplay (x, y, w, h) {
         self.penHandler = function(){
             let popIn = new PopIn(self);
             popIn.diplayPopIn();
-        }
+            self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = popIn;
+        };
         displayPen(self.width/2-self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self);
 
         if(typeof self.obj.checkbox === 'undefined') {
@@ -1813,6 +1814,9 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.questionCreatorManipulator.last.children.indexOf(self.puzzle.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
     self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
+    if (self.explanation){
+        self.explanation.diplayPopIn();
+    }
 }
 
 function popInDisplay(){
@@ -1820,7 +1824,10 @@ function popInDisplay(){
     let rect = new svg.Rect(questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
     rect.color(myColors.white , 3 , myColors.black);
     this.manipulator.ordonator.set(0,rect);
-    this.manipulator.translator.move(this.answer.parentQuestion.parentQuizz.parentFormation.libraryWidth  + 2 * MARGIN ,questionCreator.coordinatesAnswers.y);
+
+    //this.manipulator.translator.move(drawing.width - questionCreator.coordinatesAnswers.w - 4 * MARGIN ,questionCreator.coordinatesAnswers.y);
+    this.manipulator.translator.move(this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.libraryWidth  + 3/2 * MARGIN ,questionCreator.coordinatesAnswers.y);
+
     questionCreator.manipulator.last.add(this.manipulator.first);
     let answerTextRatio = 0.2;
     let answerText = "Réponse : "+ this.answer.label;
@@ -1830,6 +1837,12 @@ function popInDisplay(){
     let blackCross = drawRedCross(questionCreator.coordinatesAnswers.w/2 - blackCrossSize, - questionCreator.coordinatesAnswers.h/2 + blackCrossSize, blackCrossSize,this.blackCrossManipulator);
     blackCross.color(myColors.black, 1 , myColors.black);
     this.blackCrossManipulator.ordonator.set(0,blackCross);
+    let blackCrossHandler = function(event){
+        questionCreator.explanation = false;
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        questionCreator.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
+    };
+    svg.addEvent(blackCross,"click",blackCrossHandler);
 }
 
 function quizzDisplay(x, y, w, h) {
