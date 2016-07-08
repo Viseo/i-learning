@@ -676,114 +676,202 @@ function SVGUtil() {
         return self;
     };
 
-    Miniature = function(game, size, special) {
-        var self = this;
-        self.game = game;
-        var scoreSize = 13;
-        self.icon = displayTextWithCircle(game.title, size, size-scoreSize-MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-        self.redCrossManipulator = new Manipulator(self);
-        self.redCross = drawRedCross(size / 2, -size / 2, 20, self.redCrossManipulator);
-        (self.redCrossManipulator.last.children.indexOf(self.redCross) === -1) && self.redCrossManipulator.last.add(self.redCross);
-
-        let removeAllLinks = () => {
-            for (let link = game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                if (link[i].childGame === game.id || link[i].parentGame === game.id)
-                    link.splice(i, 1);
-            }
-        };
-
-        self.redCrossClickHandler = function () {
-            removeAllLinks();
-            game.parentFormation.miniaturesManipulator.last.remove(game.miniatureManipulator.first);
-            game.miniatureManipulator.ordonator.unset(0);
-            game.miniatureManipulator.ordonator.unset(1);
-            game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
-            var indexes = game.getPositionInFormation();
-            var longestLevelCandidates = game.parentFormation.findLongestLevel();
-
-            if(longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && (game.parentFormation.levelWidth > game.parentFormation.graphCreaWidth)){
-                game.parentFormation.levelWidth -= (game.parentFormation.graphElementSize + game.parentFormation.minimalMarginBetweenGraphElements);
-                game.parentFormation.movePanelContent();
-            }
-            game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-            var levelsTab = game.parentFormation.levelsTab;
-            while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
-                levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
-                game.parentFormation.levelsTab.pop();
-            }
-
-            game.parentFormation.selectedGame.selected = false;
-            game.parentFormation.selectedGame = null;
-            game.parentFormation.displayGraph();
-        };
-        svg.addEvent(self.redCross, 'click', self.redCrossClickHandler);
-        self.selected = false;
-        function miniatureClickHandler() {
-            self.game.parentFormation.selectedArrow && self.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
-            if (!self.selected) {
-                if (game.parentFormation.selectedGame) {
-                    game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
-                    game.parentFormation.selectedGame.selected = false;
-                    !playerMode && (game.parentFormation.selectedGame.game.miniatureManipulator.last.children.indexOf(game.parentFormation.selectedGame.redCrossManipulator.first)!== -1) && game.parentFormation.selectedGame.game.miniatureManipulator.last.remove(game.parentFormation.selectedGame.redCrossManipulator.first);
-                }
-                game.parentFormation.selectedGame = self;
-                !playerMode && game.miniatureManipulator.last.add(self.redCrossManipulator.first);
-                self.icon.cadre.color(myColors.white, 2, SELECTION_COLOR);
-            } else {
-                self.icon.cadre.color(myColors.white, 1, myColors.black);
-                !playerMode && game.miniatureManipulator.last.remove(self.redCrossManipulator.first);
-                game.parentFormation.selectedGame = null;
-            }
-            self.selected = !self.selected;
-        }
-
-        !playerMode && svg.addEvent(self.icon.cadre, 'click', miniatureClickHandler);
-        !playerMode && svg.addEvent(self.icon.content, 'click', miniatureClickHandler);
-        self.icon.cadre.color(myColors.white, 1, myColors.black);
-
-        if (playerMode){
-            var iconsize = 20;
-            self.infosManipulator = new Manipulator(self);
-            self.infosManipulator.addOrdonator(4);
-            switch (self.game.status){
-                case "notAvailable":
-                    self.icon.cadre.color(myColors.grey, 1, myColors.black);
-                    break;
-                case "done":
-                    var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
-                    iconInfos.color(myColors.none, 5, myColors.green);
-                    var rect = new svg.Rect(iconsize, iconsize);
-                    rect.color(myColors.white, 1, myColors.green);
-                    rect.position(size/2, -size/2);
-                    self.infosManipulator.ordonator.set(0, rect);
-                    self.infosManipulator.ordonator.set(1, iconInfos);
-                    var resultString = game.tabQuestions.length - game.questionsWithBadAnswers.length + " / " + game.tabQuestions.length;
-                    game.miniatureManipulator.last.add(self.infosManipulator.first);
-                    result = autoAdjustText(resultString, 0, 0, size/2, size/2, scoreSize, "Arial", game.miniatureManipulator, 2);
-                    result.text.position(0,size/2-MARGIN/2);
-                    break;
-                case "inProgress":
-                    var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
-                    var iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
-                    var iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
-                    var iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
-                    self.infosManipulator.ordonator.set(0, iconInfos);
-                    self.infosManipulator.ordonator.set(1, iconInfosdot1);
-                    self.infosManipulator.ordonator.set(2, iconInfosdot2);
-                    self.infosManipulator.ordonator.set(3, iconInfosdot3);
-                    game.miniatureManipulator.last.add(self.infosManipulator.first);
-                    break;
-            }
-        }
-        return self;
-    };
-
     resetQuestionsIndex = function(quizz){
         for(let i = 0; i<quizz.tabQuestions.length-1; i++) {
             quizz.tabQuestions[i].questionNum = i + 1;
         }
     };
+}
+
+class MiniatureGame {
+    
+    constructor (game, size) {
+        this.game = game;
+        this.scoreSize = 13;
+        this.icon = displayTextWithCircle(game.title, size, size - this.scoreSize-MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+        this.redCrossManipulator = new Manipulator(this);
+        this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
+        (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
+
+        svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
+        this.selected = false;
+
+        !playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
+        !playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
+        this.icon.cadre.color(myColors.white, 1, myColors.black);
+
+        if (playerMode) {
+            this.drawProgressIcon(this, game, size);
+        }
+    }
+
+    redCrossClickHandler () {
+        this.removeAllLinks();
+        this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
+        this.game.miniatureManipulator.ordonator.unset(0);
+        this.game.miniatureManipulator.ordonator.unset(1);
+        this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+        var indexes = this.game.getPositionInFormation();
+        var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
+
+        if(longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
+            this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
+            this.game.parentFormation.movePanelContent();
+        }
+        this.game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
+        var levelsTab = this.game.parentFormation.levelsTab;
+        while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+            levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
+            levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
+            this.game.parentFormation.levelsTab.pop();
+        }
+
+        this.game.parentFormation.selectedGame.selected = false;
+        this.game.parentFormation.selectedGame = null;
+        this.game.parentFormation.displayGraph();
+    }
+
+    removeAllLinks () {
+        for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+            if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
+                link.splice(i, 1);
+        }
+    }
+
+    miniatureClickHandler () {
+        this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
+        if (!this.selected) {
+            if (this.game.parentFormation.selectedGame) {
+                this.game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
+                this.game.parentFormation.selectedGame.selected = false;
+                !playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
+                        .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first)!== -1)
+                    && this.game.parentFormation.selectedGame.game.miniatureManipulator.last
+                        .remove(this.game.parentFormation.selectedGame.redCrossManipulator.first);
+            }
+            this.game.parentFormation.selectedGame = this;
+            !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
+            this.icon.cadre.color(myColors.white, 2, SELECTION_COLOR);
+        } else {
+            this.icon.cadre.color(myColors.white, 1, myColors.black);
+            !playerMode && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            this.game.parentFormation.selectedGame = null;
+        }
+        this.selected = !this.selected;
+    }
+
+    drawProgressIcon (miniatureObject, object, size) {
+        let iconsize = 20;
+        miniatureObject.infosManipulator = new Manipulator(miniatureObject);
+        miniatureObject.infosManipulator.addOrdonator(4);
+        switch (object.status) {
+            case "notAvailable":
+                miniatureObject.icon.cadre.color(myColors.grey, 1, myColors.black);
+                break;
+            case "done":
+                var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
+                iconInfos.color(myColors.none, 5, myColors.green);
+                let rect = new svg.Rect(iconsize, iconsize);
+                rect.color(myColors.white, 1, myColors.green);
+                rect.position(size/2, -size/2);
+                miniatureObject.infosManipulator.ordonator.set(0, rect);
+                miniatureObject.infosManipulator.ordonator.set(1, iconInfos);
+                let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
+                object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
+                let result = autoAdjustText(resultString, 0, 0, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
+                result.text.position(0,size/2-MARGIN/2);
+                break;
+            case "inProgress":
+                var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
+                let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
+                let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
+                let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
+                miniatureObject.infosManipulator.ordonator.set(0, iconInfos);
+                miniatureObject.infosManipulator.ordonator.set(1, iconInfosdot1);
+                miniatureObject.infosManipulator.ordonator.set(2, iconInfosdot2);
+                miniatureObject.infosManipulator.ordonator.set(3, iconInfosdot3);
+                object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
+                break;
+        }
+    };
+
+}
+
+class MiniatureFormation {
+    
+    constructor (formation) {
+        this.miniatureManipulator = new Manipulator();
+        this.miniatureManipulator.addOrdonator(2);
+        this.iconManipulator = new Manipulator();
+        this.iconManipulator.addOrdonator(4);
+        this.formation = formation;
+    }
+    
+    display (x, y, w, h) {
+        this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first)===-1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
+
+        this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
+        this.miniature.cadre.corners(50, 50);
+
+        let iconSize = this.formation.parent.iconeSize,
+            icon = this.formation.status.icon(iconSize);
+
+        for (let i = 0; i < icon.elements.length; i++) {
+            this.iconManipulator.ordonator.set(i, icon.elements[i]);
+        }
+        this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
+
+        this.miniatureManipulator.translator.move(x, y);
+        this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
+        this.drawIcon();
+    }
+
+    drawIcon () {
+        let iconsize = 20,
+            size = 25,
+            iconInfos;
+        switch (this.formation.progress) {
+            case "done":
+                iconInfos = drawCheck(size / 2, -size / 2, iconsize);
+                iconInfos.color(myColors.none, 5, myColors.green);
+                let rect = new svg.Rect(iconsize, iconsize);
+                rect.color(myColors.white, 1, myColors.green);
+                rect.position(size / 2, -size / 2);
+                this.iconManipulator.ordonator.set(0, rect);
+                this.iconManipulator.ordonator.set(1, iconInfos);
+                this.miniatureManipulator.last.add(this.iconManipulator.first);
+                break;
+            case "inProgress":
+                iconInfos = new svg.Circle(iconsize / 2).color(myColors.white, 1, myColors.orange).position(size / 2, -size / 2);
+                let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 - iconsize / 4, -size / 2);
+                let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2, -size / 2);
+                let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 + iconsize / 4, -size / 2);
+                this.iconManipulator.ordonator.set(0, iconInfos);
+                this.iconManipulator.ordonator.set(1, iconInfosdot1);
+                this.iconManipulator.ordonator.set(2, iconInfosdot2);
+                this.iconManipulator.ordonator.set(3, iconInfosdot3);
+                this.miniatureManipulator.last.add(this.iconManipulator.first);
+                break;
+        }
+    }
+    
+    setHandler (handler) {
+        if (this.miniature.cadre) {
+            svg.addEvent(this.miniature.cadre, "click", () => {
+                handler(this.formation);
+            });
+        }
+        if (this.miniature.content) {
+            svg.addEvent(this.miniature.content, "click", () => {
+                handler(this.formation);
+            });
+        }
+        if (this.miniature.image) {
+            svg.addEvent(this.miniature.image, "click", () => {
+                handler(this.formation);
+            });
+        }
+    }
 }
 
 class ReturnButton {
@@ -1017,7 +1105,7 @@ class Server {
     static getFormationByName(name) {
         return dbListener.httpGetAsync("/getFormationByName/" + name)
     }
-    
+
     static connect(mail, password) {
         return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
     }
@@ -1025,7 +1113,7 @@ class Server {
     static inscription(user) {
         return dbListener.httpPostAsync('/inscription', user)
     }
-    
+
     static checkCookie() {
         return dbListener.httpGetAsync('/auth/verify/')
     }
