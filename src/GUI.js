@@ -224,7 +224,10 @@ function answerDisplay (x, y, w, h) {
         self.manipulator.flush();
         self.manipulator.translator.move(x,y);
         showTitle();
-
+        self.penHandler = function(){
+            let popIn = new PopIn(self);
+            popIn.diplayPopIn();
+        }
         displayPen(self.width/2-self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self);
 
         if(typeof self.obj.checkbox === 'undefined') {
@@ -1812,6 +1815,23 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
 }
 
+function popInDisplay(){
+    let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+    let rect = new svg.Rect(questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+    rect.color(myColors.white , 3 , myColors.black);
+    this.manipulator.ordonator.set(0,rect);
+    this.manipulator.translator.move(this.answer.parentQuestion.parentQuizz.parentFormation.libraryWidth  + 2 * MARGIN ,questionCreator.coordinatesAnswers.y);
+    questionCreator.manipulator.last.add(this.manipulator.first);
+    let answerTextRatio = 0.2;
+    let answerText = "Réponse : "+ this.answer.label;
+    let answerTextSVG = autoAdjustText(answerText, 0,0,questionCreator.coordinatesAnswers.w,questionCreator.coordinatesAnswers.h * answerTextRatio , 20, null, this.manipulator, 1).text;
+    answerTextSVG.position (0,- questionCreator.coordinatesAnswers.h/2 + svg.runtime.boundingRect(answerTextSVG.component).width/4);
+    let blackCrossSize = 30;
+    let blackCross = drawRedCross(questionCreator.coordinatesAnswers.w/2 - blackCrossSize, - questionCreator.coordinatesAnswers.h/2 + blackCrossSize, blackCrossSize,this.blackCrossManipulator);
+    blackCross.color(myColors.black, 1 , myColors.black);
+    this.blackCrossManipulator.ordonator.set(0,blackCross);
+}
+
 function quizzDisplay(x, y, w, h) {
     var self = this;
     drawing.currentPageDisplayed = "Quizz";
@@ -2686,6 +2706,7 @@ var AdminGUI = function (){
     QuestionCreator.prototype.display = questionCreatorDisplay;
     QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
     QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
+    PopIn.prototype.diplayPopIn = popInDisplay;
     Quizz.prototype.display = quizzDisplay;
     Quizz.prototype.displayResult = quizzDisplayResult;
     Quizz.prototype.displayMiniature = gameDisplayMiniature;

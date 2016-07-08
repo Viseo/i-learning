@@ -292,12 +292,8 @@ function SVGUtil() {
         object.penManipulator.ordonator.set(3, body);
         object.penManipulator.translator.move(x+size /8, y-size/8);
         object.penManipulator.rotator.rotate(40);
-        object.penHandler = function(){
-            console.log("oui !!!");
-        }
         elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
-    }
-
+    };
 
     /**
      *

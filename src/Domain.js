@@ -263,6 +263,16 @@ class QuestionCreator {
     }
 }
 
+class PopIn {
+    constructor (answer){
+        this.answer = answer;
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(5);
+        this.blackCrossManipulator = new Manipulator(this);
+        this.blackCrossManipulator.addOrdonator(1);
+        this.manipulator.ordonator.set(2,this.blackCrossManipulator.first);
+    }
+}
 class AddEmptyElement {
     constructor (parent, type) {
         this.manipulator = new Manipulator(this);
@@ -1331,6 +1341,7 @@ if(typeof exports !== "undefined") {
     exports.Answer = Answer;
     exports.Question = Question;
     exports.QuestionCreator = QuestionCreator;
+    exports.PopIn = PopIn;
     exports.AddEmptyElement = AddEmptyElement;
     exports.Level = Level;
     exports.FormationsManager = FormationsManager;
