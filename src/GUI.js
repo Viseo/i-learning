@@ -781,7 +781,7 @@ function formationDisplayFormation() {
         self.panel.contentV.add(self.messageDragDropManipulator.first);
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
-        self.panel.border.color(myColors.none, 3, myColors.black);
+        //self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.contentH.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -870,12 +870,12 @@ function formationDisplayFormation() {
 
 
     if (playerMode) {
-        self.graphCreaHeightRatio = 1;
-        self.graphCreaHeight = (drawing.height - 40 - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaHeightRatio = 0.97;
+        self.graphCreaHeight = (drawing.height - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
         self.graphCreaWidth = drawing.width  - 2 *  MARGIN;
         displayFrame(self.graphCreaWidth, self.graphCreaHeight);
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-        self.clippingManipulator.translator.move((drawing.width - self.graphCreaWidth)/2, (drawing.height - header.height - self.returnButton.height - self.graphCreaHeight)/2);
+        self.clippingManipulator.translator.move((drawing.width - self.graphCreaWidth)/2, self.formationsManager.y/2 -self.borderSize);
     } else {
         self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
 
