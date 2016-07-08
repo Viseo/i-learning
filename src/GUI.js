@@ -1826,13 +1826,13 @@ function popInDisplay(){
     this.manipulator.ordonator.set(0,rect);
     this.manipulator.translator.move(questionCreator.previousX ,questionCreator.coordinatesAnswers.y);
 
-    questionCreator.manipulator.last.add(this.manipulator.first);
+    questionCreator.manipulator.last.children.indexOf(this.manipulator.first)===-1 && questionCreator.manipulator.last.add(this.manipulator.first);
     let answerTextRatio = 0.2;
     let answerText = "Réponse : "+ this.answer.label;
     let answerTextSVG = autoAdjustText(answerText, 0,0,questionCreator.coordinatesAnswers.w,questionCreator.coordinatesAnswers.h * answerTextRatio , 20, null, this.manipulator, 1).text;
     answerTextSVG.position (0,- questionCreator.coordinatesAnswers.h/2 + svg.runtime.boundingRect(answerTextSVG.component).width/4);
-    let blackCrossSize = 30;
-    let blackCross = drawRedCross(questionCreator.coordinatesAnswers.w/2 - blackCrossSize, - questionCreator.coordinatesAnswers.h/2 + blackCrossSize, blackCrossSize,this.blackCrossManipulator);
+    let blackCrossSize = 30, blackCross;
+    blackCross= blackCross || drawRedCross(questionCreator.coordinatesAnswers.w/2 - blackCrossSize, - questionCreator.coordinatesAnswers.h/2 + blackCrossSize, blackCrossSize,this.blackCrossManipulator);
     blackCross.color(myColors.black, 1 , myColors.black);
     this.blackCrossManipulator.ordonator.set(0,blackCross);
     let blackCrossHandler = function(event){
