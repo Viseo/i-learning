@@ -225,6 +225,8 @@ function answerDisplay (x, y, w, h) {
         self.manipulator.translator.move(x,y);
         showTitle();
 
+        displayPen(self.width/2-self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self);
+
         if(typeof self.obj.checkbox === 'undefined') {
             self.obj.checkbox = displayCheckbox(-self.width/2+self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self).checkbox;
             self.obj.checkbox.answerParent = self;

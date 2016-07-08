@@ -32,7 +32,7 @@ class Answer {
         };
         answerParameters && (answer = answerParameters);
         this.manipulator = new Manipulator(this);
-        this.manipulator.addOrdonator(6);
+        this.manipulator.addOrdonator(7);
         this.label = answer.label;
         this.imageSrc = answer.imageSrc;
         this.correct = answer.correct;
@@ -72,6 +72,12 @@ class Answer {
     };
 
     isEditable (editor, editable) {
+        this.linesManipulator = new Manipulator(this);
+        this.linesManipulator.addOrdonator(4);
+        this.manipulator.last.add(this.linesManipulator.first);
+        this.penManipulator = new Manipulator(this);
+        this.penManipulator.addOrdonator(4);
+        this.manipulator.last.add(this.penManipulator.first);
         this.editable = editable;
         this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
         this._acceptDrop = editable;

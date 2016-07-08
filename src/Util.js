@@ -269,6 +269,35 @@ function SVGUtil() {
         return sender.obj;
     };
 
+    displayPen = function (x, y, size, object){
+        let fontColor;
+        fontColor = object.filled ? myColors.darkerGreen : myColors.black;
+        let square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
+            tipEnd = new svg.Triangle(size/5, size/5, "S").color(myColors.white, 1, fontColor).position(0, size/2),
+            end = new svg.Rect(size/5, size/10).color(myColors.fontColor, 1, fontColor).position(0, size/5 - size/4 -size/10),
+            body = new svg.Rect(size/5, size/2).color(fontColor).position(0, size/5),
+            line1 = new svg.Line(-size/2+size/8, -size/2+size/5, size/2-size/8, -size/2+size/5).color(myColors.grey, 1, myColors.grey),
+            line2 = new svg.Line(-size/2+size/8, -size/2+2*size/5, size/2-size/8, -size/2+2*size/5).color(myColors.grey, 1, myColors.grey),
+            line3 = new svg.Line(-size/2+size/8, -size/2+3*size/5, size/2-size/8, -size/2+3*size/5).color(myColors.grey, 1, myColors.grey),
+            line4 = new svg.Line(-size/2+size/8, -size/2+4*size/5, -size/2+size/5, -size/2+4*size/5).color(myColors.grey, 1, myColors.grey);
+        let elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+        object.manipulator.ordonator.set(6, square);
+        object.linesManipulator.translator.move(x,y);
+        object.linesManipulator.ordonator.set(0, line1);
+        object.linesManipulator.ordonator.set(1, line2);
+        object.linesManipulator.ordonator.set(2, line3);
+        object.linesManipulator.ordonator.set(3, line4);
+        object.penManipulator.ordonator.set(1, tipEnd);
+        object.penManipulator.ordonator.set(2, end);
+        object.penManipulator.ordonator.set(3, body);
+        object.penManipulator.translator.move(x+size /8, y-size/8);
+        object.penManipulator.rotator.rotate(40);
+        object.penHandler = function(){
+            console.log("oui !!!");
+        }
+        elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
+    }
+
 
     /**
      *
@@ -1108,6 +1137,7 @@ function Bdd() {
         pink:[255,20,147],
         brown:[128,0,0],
         primaryGreen:[0, 255, 0],
+        darkerGreen:[34, 179, 78],
         none:[]
     };
 
