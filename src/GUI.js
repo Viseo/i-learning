@@ -2058,7 +2058,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
+        self.quizzLabel.cadre.position(width/2, h/2 + self.quizzLabel.cadre.height/2);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
@@ -2107,6 +2107,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         var onblur = function () {
             textarea.enter();
             self.quizzName = textarea.messageText;
+            self.quizz.title = textarea.messageText;
             drawings.screen.remove(textarea);
             showTitle();
         };
@@ -2137,26 +2138,24 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
     self.previewFunction = function () {
-        drawing.currentPageDisplayed = "QuizPreview";
-        var validation = true;
-        self.questionCreator.linkedQuestion.questionType.validationTab.forEach(function (funcEl) {
-            var result = funcEl(self);
-            if(!result.isValid) {
-                self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
-                self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                    .position(self.ButtonWidth,-h/2-2)
-                    .font("Arial", 20)
-                    .anchor('middle').color(myColors.red);
-                setTimeout(() => {
-                    self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
-                }, 1);
+        self.toggleButtonHeight = 40;
+        let validation = true;
+        let message ;
+        self.quizz.tabQuestions.forEach(question => {
+            if(!(question instanceof AddEmptyElement)){
+                question.questionType.validationTab.forEach((funcEl) => {
+                    var result = funcEl(question);
+                    if (!result.isValid) {
+                        message = result.message;
+                    }
+                    validation = validation && result.isValid;
+                });
             }
-            validation = validation && result.isValid;
         });
-
+        !validation && self.displayMessage(message, myColors.red);
         self.displayEditedQuestion = function () {
+            drawing.currentPageDisplayed = "QuizPreview";
             self.quizzManagerManipulator.flush();
-
             self.quizz.tabQuestions.pop();
             self.quizz.tabQuestions.forEach((it) => {
                 it.tabAnswer.pop();

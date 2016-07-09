@@ -2307,7 +2307,7 @@ function Bdd() {
         }),
         // Check Question Name:
         question => ({
-            isValid: (question.label) || (question.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            isValid: (question.label) || (question.manipulator.ordonator.children[2] instanceof svg.Image),
             message: "Vous devez remplir le nom de la question."
         }),
         // Check Quiz Name:

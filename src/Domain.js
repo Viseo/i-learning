@@ -911,59 +911,49 @@ class QuizzManager {
         this.marginRatio = 0.02;
     }
 
+
+    getObjectToSave  () {
+        this.tabQuestions = this.quizz.tabQuestions;
+        (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
+        this.tabQuestions.forEach(question => {
+            (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
+        });
+        return {
+            id: this.quizz.id,
+            title: this.quizz.title,
+            tabQuestions: this.quizz.tabQuestions,
+            levelIndex: this.quizz.levelIndex,
+            gameIndex: this.quizz.gameIndex
+        };
+    };
+
+    displayMessage (message, color) {
+        this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+        this.questionCreator.errorMessagePreview = new svg.Text(message)
+            .position(this.ButtonWidth, -this.questionCreator.toggleButtonHeight + MARGIN)
+            .font("Arial", 20)
+            .anchor('middle').color(color);
+        setTimeout(() => {
+            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
+        }, 1);
+    }
+
     saveQuizz () {
 
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
 
-        let getObjectToSave = () => {
-            this.tabQuestions = this.quizz.tabQuestions;
-            this.quizz.title = this.quizzName;
-            (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
-            this.tabQuestions.forEach(question => {
-                question.selected = undefined;
-                question.imageLoaded = undefined;
-                question.redCross = undefined;
-                question.questNum = undefined;
-                (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
-            });
-            return {
-                id: this.quizz.id,
-                title: this.quizz.title,
-                tabQuestions: this.quizz.tabQuestions,
-                levelIndex: this.quizz.levelIndex,
-                gameIndex: this.quizz.gameIndex
-            };
-        };
-        let displayMessage =  (validation) => {
-            let message = validation ? completeQuizzMessage: imcompleteQuizzMessage;
-            let color = validation ? myColors.green : myColors.orange;
-            this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
-            this.questionCreator.errorMessagePreview = new svg.Text(message)
-                .position(this.ButtonWidth, -this.questionCreator.toggleButtonHeight)
-                .font("Arial", 20)
-                .anchor('middle').color(color);
-            setTimeout(() => {
-                this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
-            }, 1);
-
-        }
-
-        let quiz = getObjectToSave();
+        let quiz = this.getObjectToSave();
 
         var validation = true;
-        quiz.tabQuestions.forEach((question, index) => {
-            console.log(index);
-
+        quiz.tabQuestions.forEach(question => {
             question.questionType.validationTab.forEach( (funcEl) => {
                 var result = funcEl(question);
-                if(!result.isValid) {
-                }
                 validation = validation && result.isValid;
             });
         })
 
-        displayMessage(validation);
+        validation ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
         Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
             .then(() => {
@@ -1062,6 +1052,7 @@ class Quizz {
             this.tabQuestions = [];
             quizz.tabQuestions.forEach(it => {
                 var tmp = new Question(it, this);
+                it.questionType && (tmp.questionType = it.questionType);
                 tmp.parentQuizz = this;
                 this.tabQuestions.push(tmp);
             });
