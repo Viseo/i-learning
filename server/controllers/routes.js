@@ -1,6 +1,6 @@
 module.exports = function (app, fs) {
 
-    var db = require('../db'),
+    const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies');
 
@@ -17,7 +17,7 @@ module.exports = function (app, fs) {
     app.post('/inscription', function(req, res) {
         var collection = db.get().collection('users');
         var obj = req.body;
-        collection.insert(obj, function(err, docs) {
+        collection.insert(obj, () => {
             res.send(JSON.stringify(obj));
         });
     });
@@ -31,10 +31,10 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.post('/auth/connect', function(req, res) {
-        var collection = db.get().collection('users');
+    app.post('/auth/connect', (req, res) => {
+        const collection = db.get().collection('users');
         collection.find().toArray((err, docs) => {
-            var user = docs.find(user => user.mailAddress === req.body.mailAddress);
+            const user = docs.find(user => user.mailAddress === req.body.mailAddress);
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
                 if (err) {
                     return console.error(err.name, err.message);
@@ -48,11 +48,11 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', (req, res) => {
-        let hasCookie = cookies.verify(req, (err, decode) => {
+        const hasCookie = cookies.verify(req, (err, decode) => {
             if (!err) {
-                let collection = db.get().collection('users');
+                const collection = db.get().collection('users');
                 collection.find().toArray((err, docs) => {
-                    let user = docs.find(user => user.mailAddress === decode.user.mailAddress);
+                    const user = docs.find(user => user.mailAddress === decode.user.mailAddress);
                     if (user) {
                         cookies.send(res, user);
                     } else {
@@ -103,25 +103,24 @@ module.exports = function (app, fs) {
                 } else {
                     formationsTab = [newFormation];
                 }
-                collection.updateOne({"_id": new ObjectID(user)}, {$set: {formationsTab: formationsTab}}, function (err, docs) {
+                collection.updateOne({"_id": new ObjectID(user)}, {$set: {formationsTab: formationsTab}}, () => {
                     res.send({ack:'ok'});
                 });
             });
-        })
+        });
     });
 
     app.get('/getUser', function(req, res) {
-        var collection = db.get().collection('users');
+        const collection = db.get().collection('users');
+
         collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
-                var user = '';
-                if (!err) {
-                    user = decode.user._id;
-                }
-                var result = docs.find(x=> x._id.toString() === user);
-            res.send(result);
+                const user = !err && decode.user._id,
+                    result = docs.find(x=> x._id.toString() === user);
+
+                res.send(result);
             });
-        })
+        });
     });
 
     app.get('/getProgress/:formation/:game', (req, res) => {
@@ -165,7 +164,7 @@ module.exports = function (app, fs) {
                     }
                 });
             });
-        })
+        });
     });
 
 
@@ -193,48 +192,38 @@ module.exports = function (app, fs) {
             });
     });
 
-    /*    app.get('/getQuizzByLevelIndex/:levelIndex', function(req, res) {
-     var collection = db.get().collection('formations');
-     var result;
-     var obj=collection.find().
-     toArray(function(err, docs) {
-     result = docs.find(formation => formation.levelsTab[0].gamesTab[0].levelIndex===req.params.levelIndex);
-     res.send({formation: result});
-     });
-     });
-     });*/
-
-    app.get('/getAllFormationsNames', function(req, res) {
-        let collection = db.get().collection('formations'),
+    app.get('/getAllFormationsNames', (req, res) => {
+        const collection = db.get().collection('formations'),
             result = [];
+
         collection.find().toArray((err, docs) => {
             cookies.verify(req, (err, decode) => {
-                let formationsTab = decode.user && decode.user.formationsTab;
+                const formationsTab = decode.user && decode.user.formationsTab;
+
                 docs.forEach(formation => {
-                    let progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString()),
-                        progress = '';
+                    const progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
+                    let progress = '';
+
                     if (progressTab) {
                         progress = function () {
                             let i = 0;
                             // not a forEach, because return.
                             for (let x = 0; x < formation.levelsTab.length; x++) {
-                                let gamesTab = formation.levelsTab[x].gamesTab;
+                                const gamesTab = formation.levelsTab[x].gamesTab;
                                 for (let y = 0; y < gamesTab.length; y++) {
-                                    let game = gamesTab[y];
-                                    if (!progressTab.gamesTab[i]
-                                        || !game.tabQuestions
-                                        || progressTab.gamesTab[i].index < game.tabQuestions.length)
+                                    const game = gamesTab[y];
+                                    if (!progressTab.gamesTab[i] || !game.tabQuestions || progressTab.gamesTab[i].index < game.tabQuestions.length) {
                                         return 'inProgress';
-                                    i+= 1;
+                                    }
+                                    i++;
                                 }
                             }
                             return 'done';
                         }();
-
                     }
-
                     result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
                 });
+
                 res.send({myCollection: result});
             });
         });
@@ -254,21 +243,10 @@ module.exports = function (app, fs) {
         }
     });
 
-    //update par ID
-/*     app.put('/update', function(req, res) {
-         var collection = db.get().collection('formations');
-         if (id = ObjectID("575ecd9034b0a1242c2cb381")){
-             var obj = collection.update({'_id': id},req.body, function(err, docs) {
-                 res.send(JSON.stringify(obj));
-
-             });
-         }
-     });*/
-
     app.post('/replaceFormation/:id', function (req, res) {
         var collection = db.get().collection('formations');
         collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
-            collection.replaceOne(docs[0], req.body, function (err, docs) {
+            collection.replaceOne(docs[0], req.body, () => {
                res.send({ack:'ok'});
             });
         });

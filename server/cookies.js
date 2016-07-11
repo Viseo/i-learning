@@ -2,11 +2,9 @@
  * Easily manage your cookies.
  */
 
-'use strict';
+const jwt = require('json-web-token');
 
-var jwt = require('json-web-token');
-
-var sendCookie = (res, user) => {
+const sendCookie = (res, user) => {
     jwt.encode('VISEO', {user: user}, (err, token) => {
         res.set('Set-cookie', `token=${token}; path=/; max-age=${30*24*60*60}`);
         res.send({
@@ -17,12 +15,12 @@ var sendCookie = (res, user) => {
                 admin: user.admin
             }
         });
-        console.log(`${new Date().toLocaleTimeString('fr-FR')} : User "${user.firstName} ${user.lastName}" connected.`)
+        console.log(`${new Date().toLocaleTimeString('fr-FR')} : User "${user.firstName} ${user.lastName}" connected.`);
     });
 };
 
-var verify = (req, callback) => {
-    let token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+const verify = (req, callback) => {
+    const token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
     if(token) {
         jwt.decode('VISEO', token, callback);
