@@ -2212,7 +2212,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.qPuzzleW, self.qPuzzleH, true);
 }
 
-function inscriptionManagerDisplay(labels={}) {
+function inscriptionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
     header.display("Inscription");
@@ -2251,22 +2251,21 @@ function inscriptionManagerDisplay(labels={}) {
             };
             var oninput = function(){
                 contentarea.enter();
-                    if (self[field].secret && trueValue &&  contentarea.messageText && trueValue.length < contentarea.messageText.length) {
-                        trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
-                    }
-                    else if (self[field].secret) {
-                        trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
-                    }
-                    self[field].label = contentarea.messageText;
-                    self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
-                    if ((field === "lastNameField" || field === 'firstNameField' ) && !self[field].checkInput()) {
-                        displayErrorMessage();
-                        self[field].cadre.color(myColors.white, 3, myColors.red);
-                    }
-                    else {
-                        field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
-                        self[field].cadre.color(myColors.white, 1, myColors.black);
-                    }
+                if (self[field].secret && trueValue && contentarea.messageText && trueValue.length < contentarea.messageText.length) {
+                    trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
+                } else if (self[field].secret) {
+                    trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
+                }
+                self[field].label = contentarea.messageText;
+                self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
+                if ((field === "lastNameField" || field === 'firstNameField' ) && !self[field].checkInput()) {
+                    displayErrorMessage();
+                    self[field].cadre.color(myColors.white, 3, myColors.red);
+                }
+                else {
+                    field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                }
             };
             svg.addEvent(contentarea, "input", oninput);
             var alreadyDeleted = false;
@@ -2302,10 +2301,9 @@ function inscriptionManagerDisplay(labels={}) {
         };
     };
     var displayField = function(field, manipulator){
-        var fieldTitle = new svg.Text(self[field].title).position(0,0);
-        fieldTitle.font("Arial", 20).anchor("end");
+        manipulator.translator.move(-drawing.width/10, self[field].line*drawing.height/10);
+        var fieldTitle = new svg.Text(self[field].title).position(0,0).font("Arial", 20).anchor("end");
         manipulator.ordonator.set(2, fieldTitle);
-        manipulator.first.move(-drawing.width/10, self[field].line*drawing.height/10);
         self.h = 1.5*svg.runtime.boundingRect(fieldTitle.component).height;
         var displayText = displayTextWithoutCorners(self[field].label, w, self.h, myColors.black, myColors.white, 20, null, manipulator);
         self[field].content = displayText.content;
@@ -2331,17 +2329,17 @@ function inscriptionManagerDisplay(labels={}) {
     };
 
     var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
-    self.lastNameField={label:labels.lastNameField || "", title:self.lastNameLabel, line:-3};
-    self.lastNameField.checkInput = function(){return nameCheckInput("lastNameField")};
+    self.lastNameField={label: self.formLabels.lastNameField || "", title:self.lastNameLabel, line:-3};
+    self.lastNameField.checkInput = () => nameCheckInput("lastNameField");
     self.lastNameField.errorMessage = nameErrorMessage;
     displayField("lastNameField", self.lastNameManipulator);
 
-    self.firstNameField={label:labels.firstNameField || "", title:self.firstNameLabel, line:-2};
+    self.firstNameField={label: self.formLabels.firstNameField || "", title:self.firstNameLabel, line:-2};
     self.firstNameField.errorMessage = nameErrorMessage;
-    self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
+    self.firstNameField.checkInput = () => nameCheckInput("firstNameField");
     displayField("firstNameField", self.firstNameManipulator);
 
-    self.mailAddressField={label:labels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
+    self.mailAddressField={label: self.formLabels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
     self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
     self.mailAddressField.checkInput = function(){
         if (self.mailAddressField.label){
@@ -2388,16 +2386,15 @@ function inscriptionManagerDisplay(labels={}) {
             cleanIfEgality();
             self.passwordManipulator.ordonator.unset(3);
         }
-        var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret);
-        return result;
+        return !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret !== self.passwordField.labelSecret);
     };
 
-    self.passwordField={label:labels.passwordField || "", labelSecret:labels.passwordSecret || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField={label: self.formLabels.passwordField || "", labelSecret: (self.tabForm[3] && self.tabForm[3].labelSecret) || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
     self.passwordField.checkInput = passwordCheckInput;
     displayField("passwordField", self.passwordManipulator);
 
-    self.passwordConfirmationField={label:labels.passwordConfirmationField || "", labelSecret:labels.passwordSecret || "", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordConfirmationField={label: self.formLabels.passwordConfirmationField || "", labelSecret: (self.tabForm[4] && self.tabForm[4].labelSecret) || "", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordConfirmationField.checkInput = passwordCheckInput;
     displayField("passwordConfirmationField", self.passwordConfirmationManipulator);
 
@@ -2430,7 +2427,7 @@ function inscriptionManagerDisplay(labels={}) {
                 .then(data => {
                     let myUser = JSON.parse(data).user;
                     if (myUser) {
-                        throw "Un utilisateur possède déjà cet adresse mail !"
+                        throw "Un utilisateur possède déjà cette adresse mail !"
                     } else {
                         this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
                         let tempObject = {
@@ -2480,7 +2477,6 @@ function inscriptionManagerDisplay(labels={}) {
             clickEditionField(self.tabForm[index].field, self.tabForm[index].cadre.parent.parentManip)();
         }
     };
-
     svg.runtime.addGlobalEvent("keydown", function (event) {
         if (event.keyCode === 9) { // TAB
             event.preventDefault();
@@ -2491,6 +2487,7 @@ function inscriptionManagerDisplay(labels={}) {
             self.saveButtonHandler();
         }
     });
+    AllOk();
 }
 
 function connexionManagerDisplay() {

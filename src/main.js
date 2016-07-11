@@ -36,7 +36,7 @@ function main() {
                     connexionManager.display();
                     break;
                 case "InscriptionManager":
-                    inscriptionManager.display(inscriptionManager.formLabels);
+                    inscriptionManager.display();
                     break;
                 case "FormationsManager":
                     (formationsManager.clippingManipulator.last.children.indexOf(formationsManager.panel.component) !== -1) && formationsManager.clippingManipulator.last.remove(formationsManager.panel.component);
