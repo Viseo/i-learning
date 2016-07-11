@@ -452,13 +452,13 @@ function SVGUtil() {
      * @param manipulator
      * @param layer
      */
-    autoAdjustText = function (content, x, y, wi, h, fontSize=20, font, manipulator, layer=1) {
+    autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
         let words = content.split(' '),
             text = '',
             w = wi * 5 / 6,
             t = new svg.Text('text');
         manipulator.ordonator.set(layer, t);
-        t.font(font ? font : 'Arial', fontSize);
+        t.font(font ? font : 'Arial', fontSize ? fontSize : 20);
 
         while (words.length > 0) {
             let word = words.shift();
