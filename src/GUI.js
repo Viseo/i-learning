@@ -257,7 +257,7 @@ function libraryDisplay(x, y, w, h) {
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
-    libraryDisplay.call(this, x, y, w, h);
+    libraryDisplay.call(this, x+MARGIN, y, w, h);
 
     let displayArrowModeButton = () => {
         if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
@@ -955,7 +955,7 @@ function formationDisplayFormation() {
             // self.formationCreator = formationValidation;
         };
         showTitle();
-        self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
+        self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth-MARGIN, self.graphCreaHeight);
         self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight);
         displayFrame(self.graphCreaWidth, self.graphCreaHeight);
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
@@ -2145,7 +2145,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
             if(!result.isValid) {
                 self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
                 self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                    .position(self.ButtonWidth,-self.toggleButtonHeight)
+                    .position(self.ButtonWidth,-h/2-2)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red);
                 self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
