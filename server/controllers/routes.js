@@ -48,11 +48,11 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', (req, res) => {
-        var hasCookie = cookies.verify(req, (err, decode) => {
+        let hasCookie = cookies.verify(req, (err, decode) => {
             if (!err) {
-                var collection = db.get().collection('users');
+                let collection = db.get().collection('users');
                 collection.find().toArray((err, docs) => {
-                    var user = docs.find(user => user.mailAddress === decode.user.mailAddress);
+                    let user = docs.find(user => user.mailAddress === decode.user.mailAddress);
                     if (user) {
                         cookies.send(res, user);
                     } else {
@@ -205,30 +205,30 @@ module.exports = function (app, fs) {
      });*/
 
     app.get('/getAllFormationsNames', function(req, res) {
-        var collection = db.get().collection('formations');
-        var result = [];
+        let collection = db.get().collection('formations'),
+            result = [];
         collection.find().toArray((err, docs) => {
             cookies.verify(req, (err, decode) => {
-                var formationsTab = decode.user && decode.user.formationsTab;
+                let formationsTab = decode.user && decode.user.formationsTab;
                 docs.forEach(formation => {
-                    var progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
-
-                    var progress = "";
+                    let progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString()),
+                        progress = '';
                     if (progressTab) {
                         progress = function () {
-                            var i = 0;
-                            for (var x = 0; x < formation.levelsTab.length; x++) {
-                                var gamesTab = formation.levelsTab[x].gamesTab;
-                                for (var y = 0; y < gamesTab.length; y++) {
-                                    var game = gamesTab[y];
+                            let i = 0;
+                            // not a forEach, because return.
+                            for (let x = 0; x < formation.levelsTab.length; x++) {
+                                let gamesTab = formation.levelsTab[x].gamesTab;
+                                for (let y = 0; y < gamesTab.length; y++) {
+                                    let game = gamesTab[y];
                                     if (!progressTab.gamesTab[i]
                                         || !game.tabQuestions
                                         || progressTab.gamesTab[i].index < game.tabQuestions.length)
-                                        return "inProgress";
+                                        return 'inProgress';
                                     i+= 1;
                                 }
                             }
-                            return "done";
+                            return 'done';
                         }();
 
                     }

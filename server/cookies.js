@@ -2,6 +2,8 @@
  * Easily manage your cookies.
  */
 
+'use strict';
+
 var jwt = require('json-web-token');
 
 var sendCookie = (res, user) => {
@@ -20,7 +22,7 @@ var sendCookie = (res, user) => {
 };
 
 var verify = (req, callback) => {
-    var token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    let token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
     if(token) {
         jwt.decode('VISEO', token, callback);
