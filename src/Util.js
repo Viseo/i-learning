@@ -452,13 +452,13 @@ function SVGUtil() {
      * @param manipulator
      * @param layer
      */
-    autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
+    autoAdjustText = function (content, x, y, wi, h, fontSize=20, font, manipulator, layer=1) {
         let words = content.split(' '),
             text = '',
             w = wi * 5 / 6,
             t = new svg.Text('text');
         manipulator.ordonator.set(layer, t);
-        t.font(font ? font : 'Arial', fontSize ? fontSize : 20);
+        t.font(font ? font : 'Arial', fontSize);
 
         while (words.length > 0) {
             let word = words.shift();
@@ -706,6 +706,77 @@ function SVGUtil() {
             quizz.tabQuestions[i].questionNum = i + 1;
         }
     };
+}
+
+class Picture {
+    constructor(src, editable, parent, textToDisplay){
+        this.editable = editable;
+        this.src = src;
+        this.editable && (this._acceptDrop = true);
+        this.parent = parent;
+        this.textToDisplay = textToDisplay;
+    }
+    draw(x, y, w, h, manipulator = this.parent.manipulator){
+        this.width = w;
+        this.height = h;
+        if (this.editable){
+            this.drawImageRedCross(x, y, w, h, this.parent, manipulator);
+        }
+        if (this.textToDisplay){
+            this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator);
+            svg.addEvent(this.imageSVG.image,'mouseover', this.imageMouseoverHandler);
+            svg.addEvent(this.imageSVG.image,'mouseout', this.mouseleaveHandler);
+            this.imageSVG.image._acceptDrop = true;
+        }
+        else {
+            this.imageSVG = new svg.Image(this.src).dimension(w, h);
+            this.imageSVG.position(x, y);
+            svg.addEvent(this.imageSVG,'mouseover', this.imageMouseoverHandler);
+            svg.addEvent(this.imageSVG,'mouseout', this.mouseleaveHandler);
+            this.imageSVG._acceptDrop = true;
+            manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
+        }
+
+    }
+    drawImageRedCross(x, y, w, h, parent, manipulator){
+        this.imageRedCrossClickHandler=()=>{
+            this.redCrossManipulator.flush();
+            parent.imageLayer && manipulator.ordonator.unset(parent.imageLayer);//image
+            if (parent.linkedQuestion) {
+                parent.linkedQuestion.image = null;
+                parent.linkedQuestion.imageSrc = null;
+            }
+            else {
+                parent.image = null;
+                parent.imageSrc = null;
+            }
+            if (this.parent.parentQuestion){
+                let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
+                let y = -(puzzle.visibleArea.height - this.parent.height)/ 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+            }
+            else {
+                this.parent.display();
+            }
+        };
+        this.mouseleaveHandler= ()=>{
+            this.redCrossManipulator.flush();
+        };
+        this.imageMouseoverHandler = ()=>{
+            if(typeof this.redCrossManipulator === 'undefined'){
+                this.redCrossManipulator = new Manipulator(self);
+                this.redCrossManipulator.addOrdonator(2);
+                manipulator.last.add(this.redCrossManipulator.first);
+            }
+            let redCrossSize = 15;
+            let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x +this.imageSVG.image.width/2 - redCrossSize/2 , this.imageSVG.image.y - this.imageSVG.image.height/2 + redCrossSize/2, redCrossSize, this.redCrossManipulator)
+                :drawRedCross(this.imageSVG.x +this.imageSVG.width/2 - redCrossSize/2 , this.imageSVG.y - this.imageSVG.height/2 + redCrossSize/2, redCrossSize, this.redCrossManipulator);
+
+            svg.addEvent(redCross,'click', this.imageRedCrossClickHandler);
+            this.redCrossManipulator.ordonator.set(1, redCross);
+        };
+    }
 }
 
 class MiniatureGame {

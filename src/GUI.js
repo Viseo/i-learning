@@ -67,43 +67,6 @@ function answerDisplay (x, y, w, h) {
     function answerEditableDisplay(x, y, w, h) {
         self.checkboxSize = h * 0.2;
         self.obj = {};
-        let imageRedCrossClickHandler=()=>{
-            self.redCrossManipulator.flush();
-            self.manipulator.ordonator.unset(2);//image
-            self.image = null;
-            self.imageSrc = null;
-            self.display(x, y, w, h);
-        };
-        let mouseleaveHandler= ()=>{
-            self.redCrossManipulator.flush();
-        };
-        let ImageMouseoverHandler = ()=>{
-            if(typeof self.redCrossManipulator === 'undefined'){
-                self.redCrossManipulator = new Manipulator(self);
-                self.redCrossManipulator.addOrdonator(2);
-                self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
-            }
-            let redCrossSize = 15;
-            let redCross = drawRedCross(self.obj.image.x + self.obj.image.width/2 - redCrossSize/2 , self.obj.image.y -self.obj.image.height/2 + redCrossSize/2, redCrossSize, self.redCrossManipulator);
-
-            svg.addEvent(redCross,'click',imageRedCrossClickHandler);
-            self.redCrossManipulator.ordonator.set(1,redCross);
-        };
-        let redCrossClickHandler=()=>{
-            self.redCrossManipulator.flush();
-            let index = self.parentQuestion.tabAnswer.indexOf(self);
-            drawing.mousedOverTarget=null;
-            self.parentQuestion.tabAnswer.splice(index,1);
-            let questionCreator=self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-
-            if(self.parentQuestion.tabAnswer.length<3){
-                svg.event(self.parentQuestion.tabAnswer[self.parentQuestion.tabAnswer.length-1].plus,'dblclick',{});
-                if(index===0){
-                    [self.parentQuestion.tabAnswer[0],self.parentQuestion.tabAnswer[1]]=[self.parentQuestion.tabAnswer[1],self.parentQuestion.tabAnswer[0]];
-                }
-            }
-            questionCreator.display();
-        };
         let mouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
                 self.redCrossManipulator = new Manipulator(self);
@@ -112,8 +75,6 @@ function answerDisplay (x, y, w, h) {
             }
             let redCrossSize = 15;
             let redCross = drawRedCross(self.width/2 , -self.height/2, redCrossSize, self.redCrossManipulator);
-
-            svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
         };
         let showTitle = function () {
@@ -121,12 +82,12 @@ function answerDisplay (x, y, w, h) {
                 color = (self.label) ? myColors.black : myColors.grey;
 
             if(self.image){
-                var tempObj = displayImageWithTitle(text, self.image.src, self.image, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
-                self.obj.cadre = tempObj.cadre;
-                self.obj.image = tempObj.image;
-                self.obj.content = tempObj.content;
-                svg.addEvent(self.obj.image,'mouseover',ImageMouseoverHandler);
-                svg.addEvent(self.obj.image,'mouseout',mouseleaveHandler);
+                self.imageLayer = 2;
+                let picture = new Picture(self.image.src, true, self, text);
+                picture.draw(0, 0, w, h);
+                self.obj.cadre = picture.imageSVG.cadre;
+                self.obj.image = picture.imageSVG.image;
+                self.obj.content = picture.imageSVG.content;
             } else {
                 var tempObj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
                 self.obj.cadre = tempObj.cadre;
@@ -146,7 +107,7 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
 
             svg.addEvent(self.obj.cadre,'mouseover',mouseoverHandler);
-            svg.addEvent(self.obj.cadre,'mouseout',mouseleaveHandler);
+            //svg.addEvent(self.obj.cadre,'mouseout',mouseleaveHandler);
         };
 
         let dblclickEditionAnswer = function () {
@@ -226,7 +187,7 @@ function answerDisplay (x, y, w, h) {
         showTitle();
         self.penHandler = function(){
             self.popIn = self.popIn || new PopIn(self);
-            self.popIn.diplayPopIn();
+            self.popIn.display();
             self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = self.popIn;
         };
         displayPen(self.width/2-self.checkboxSize, self.height/2 - self.checkboxSize, self.checkboxSize, self);
@@ -1634,8 +1595,12 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         var color = (self.linkedQuestion.label) ? myColors.black : myColors.grey;
         var text = (self.linkedQuestion.label) ? self.linkedQuestion.label : self.labelDefault;
         if(self.linkedQuestion.image){
-            var img = self.linkedQuestion.image;
-            self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
+            self.image = self.linkedQuestion.image;
+            self.imageLayer = 2;
+            var picture = new Picture(self.image.src, true, self, text);
+            picture.draw(0, 0, self.w-2*MARGIN, self.h*0.25, self.questionManipulator);
+            self.questionBlock.title = picture.imageSVG;
+            //self.questionBlock.title = displayImageWithTitle(text, img.src, img, self.w-2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
             let redCrossClickHandler = ()=>{
                 var indexPuzzle = self.parent.questionPuzzle.elementsArray.indexOf(self.linkedQuestion);
                 self.parent.questionPuzzle.elementsArray[indexPuzzle].manipulator.ordonator.unset(2);
@@ -1664,10 +1629,10 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                 self.questionBlock.redCrossManipulator.ordonator.set(1,redCross);
             };
 
-            svg.addEvent(self.questionBlock.title.image, 'mouseover', mouseoverHandler);
-            svg.addEvent(self.questionBlock.title.image, 'mouseout', mouseleaveHandler);
+            //svg.addEvent(self.questionBlock.title.image, 'mouseover', mouseoverHandler);
+            //svg.addEvent(self.questionBlock.title.image, 'mouseout', mouseleaveHandler);
 
-            self.questionBlock.title.image._acceptDrop = true;
+            //self.questionBlock.title.image._acceptDrop = true;
         } else {
             self.questionBlock.title = displayText(text, self.w - 2*MARGIN, self.h*0.25, myColors.black, myColors.none, self.linkedQuestion.fontSize, self.linkedQuestion.font, self.questionManipulator);
         }
@@ -1768,7 +1733,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
     if (self.explanation){
-        self.explanation.diplayPopIn();
+        self.explanation.display();
     }
 }
 
@@ -1782,7 +1747,9 @@ function popInDisplay() {
 
     questionCreator.manipulator.last.children.indexOf(this.manipulator.first) === -1 && questionCreator.manipulator.last.add(this.manipulator.first);
     let answerTextRatio = 0.2;
-    let answerText = "Réponse : " + this.answer.label;
+    let answerText = "Réponse : ";
+    this.answer.label && (answerText+= this.answer.label);
+    !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
     let answerTextSVG = autoAdjustText(answerText, 0, 0, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h * answerTextRatio, 20, null, this.manipulator, 1).text;
     answerTextSVG.position(0, -questionCreator.coordinatesAnswers.h / 2 + svg.runtime.boundingRect(answerTextSVG.component).width / 4);
     let blackCrossSize = 30, blackCross;
@@ -1797,10 +1764,9 @@ function popInDisplay() {
     };
     svg.addEvent(blackCross, "click", blackCrossHandler);
     if (this.image){
-        let imageSVG = new svg.Image(this.image).dimension(questionCreator.coordinatesAnswers.h/2,questionCreator.coordinatesAnswers.h/2);
-        imageSVG._acceptDrop = true;
-        imageSVG.position(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN , 0);
-        this.manipulator.ordonator.set(3,imageSVG);
+        this.imageLayer = 3;
+        let picture = new Picture(this.image, true, this);
+        picture.draw(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN , 0, questionCreator.coordinatesAnswers.h/2,questionCreator.coordinatesAnswers.h/2);
         this.answer.filled = true;
     }
     else {
@@ -2683,7 +2649,7 @@ var AdminGUI = function (){
     QuestionCreator.prototype.display = questionCreatorDisplay;
     QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
     QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
-    PopIn.prototype.diplayPopIn = popInDisplay;
+    PopIn.prototype.display = popInDisplay;
     Quizz.prototype.display = quizzDisplay;
     Quizz.prototype.displayResult = quizzDisplayResult;
     Quizz.prototype.displayMiniature = gameDisplayMiniature;

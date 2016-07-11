@@ -810,7 +810,7 @@ class ImagesLibrary extends Library {
         if (target && target._acceptDrop) {
             if (target.parent.parentManip.parentObject.answer){
                 target.parent.parentManip.parentObject.image = element.src;
-                target.parent.parentManip.parentObject.diplayPopIn();
+                target.parent.parentManip.parentObject.display();
             }
             else {
                 var oldQuest = {
