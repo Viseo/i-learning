@@ -39,6 +39,8 @@ class Answer {
         this.selected = false;
         this.answerNameValidInput = true;
         this.fontSize = answer.fontSize ? answer.fontSize : 20;
+        this.explanation = answer.explanation;
+        answer.explanation && (this.filled = true);
         answer.font && (this.font = answer.font);
 
         this.imageLoaded = false;
@@ -254,6 +256,9 @@ class QuestionCreator {
             if(answer instanceof Answer){
                 answer.isEditable(this, true);
             }
+            if(answer.explanation){
+                answer.popIn = new PopIn(answer);
+            }
         });
         quest.tabAnswer.forEach(el => {
             if (el.correct) {
@@ -272,6 +277,12 @@ class PopIn {
         this.blackCrossManipulator.addOrdonator(1);
         this.manipulator.ordonator.set(2,this.blackCrossManipulator.first);
         this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
+        if (answer.explanation && answer.explanation.label){
+            this.label = answer.explanation.label;
+        }
+        if (answer.explanation && answer.explanation.image){
+            this.image = answer.explanation.image;
+        }
     }
 }
 class AddEmptyElement {
@@ -940,6 +951,14 @@ class QuizzManager {
                 question.redCross = undefined;
                 question.questNum = undefined;
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
+                question.tabAnswer.forEach(answer => {
+                    if(answer.popIn) {
+                        answer.explanation = {};
+                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
+                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
+                        answer.popIn = null;
+                    }
+                    })
             });
             return {
                 id: this.quizz.id,
