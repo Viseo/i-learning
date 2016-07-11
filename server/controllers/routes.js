@@ -206,12 +206,37 @@ module.exports = function (app, fs) {
 
     app.get('/getAllFormationsNames', function(req, res) {
         var collection = db.get().collection('formations');
-        var result= [];
-        collection.find().toArray(function(err, docs) {
-            docs.forEach(function(formation){
-                result.push({_id: formation._id, label: formation.label, status: formation.status});
+        var result = [];
+        collection.find().toArray((err, docs) => {
+            cookies.verify(req, (err, decode) => {
+                var formationsTab = decode.user && decode.user.formationsTab;
+                docs.forEach(formation => {
+                    var progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
+
+                    var progress = "";
+                    if (progressTab) {
+                        progress = function () {
+                            var i = 0;
+                            for (var x = 0; x < formation.levelsTab.length; x++) {
+                                var gamesTab = formation.levelsTab[x].gamesTab;
+                                for (var y = 0; y < gamesTab.length; y++) {
+                                    var game = gamesTab[y];
+                                    if (!progressTab.gamesTab[i]
+                                        || !game.tabQuestions
+                                        || progressTab.gamesTab[i].index < game.tabQuestions.length)
+                                        return "inProgress";
+                                    i+= 1;
+                                }
+                            }
+                            return "done";
+                        }();
+
+                    }
+
+                    result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
+                });
+                res.send({myCollection: result});
             });
-            res.send({myCollection: result});
         });
     });
 

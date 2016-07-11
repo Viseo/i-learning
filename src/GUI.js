@@ -629,33 +629,6 @@ function addEmptyElementDisplay(x, y, w, h) {
     svg.addEvent(self.obj.cadre, "dblclick", dblclickAdd);
 }
 
-function formationDisplayMiniature (w, h) {
-    var self = this;
-    self.miniature = displayText(self.label, w, h, myColors.black, myColors.white, null, null, self.manipulatorMiniature);
-    self.miniature.cadre.corners(50, 50);
-    if (playerMode) return;
-
-    if(self.status==="statusEnum.Published") {
-        self.status=statusEnum.Published;
-    }
-    else if(self.status==="statusEnum.Edited"){
-        self.status=statusEnum.Edited;
-
-    }
-    else if(self.status==="statusEnum.NotPublished"){
-        self.status=statusEnum.Edited;
-    }
-
-    var icon = self.status.icon(self.parent.iconeSize);
-
-    for(var i=0; i<icon.elements.length; i++)
-    {
-        self.iconManipulator.ordonator.set(i,icon.elements[i]);
-    }
-    self.iconManipulator.translator.move(w / 2 - self.parent.iconeSize + MARGIN + 2, -h / 2 + self.parent.iconeSize - MARGIN - 2);//2Pxl pour la largeur de cadre
-
-}
-
 function formationDisplayFormation() {
     var self = this;
     drawing.currentPageDisplayed = "Formation";
@@ -787,7 +760,7 @@ function formationDisplayFormation() {
         self.panel.contentV.add(self.messageDragDropManipulator.first);
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
-        self.panel.border.color(myColors.none, 3, myColors.black);
+        //self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.contentH.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -876,12 +849,12 @@ function formationDisplayFormation() {
 
 
     if (playerMode) {
-        self.graphCreaHeightRatio = 1;
-        self.graphCreaHeight = (drawing.height - 40 - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
+        self.graphCreaHeightRatio = 0.97;
+        self.graphCreaHeight = (drawing.height - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
         self.graphCreaWidth = drawing.width  - 2 *  MARGIN;
         displayFrame(self.graphCreaWidth, self.graphCreaHeight);
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
-        self.clippingManipulator.translator.move((drawing.width - self.graphCreaWidth)/2, (drawing.height - header.height - self.returnButton.height - self.graphCreaHeight)/2);
+        self.clippingManipulator.translator.move((drawing.width - self.graphCreaWidth)/2, self.formationsManager.y/2 -self.borderSize);
     } else {
         self.saveButtonHeight = drawing.height * self.saveButtonHeightRatio;
 
@@ -1030,21 +1003,19 @@ function formationsManagerDisplay() {
         self.toggleFormationsManipulator.translator.move(drawing.width - (svg.runtime.boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
             svg.runtime.boundingRect(self.toggleFormationsCheck.component).width ), 0);
 
-        let toggleFormations = function () {
-            let all = false;
-
-            return function () {
-                all = !all;
-                let check = drawCheck(0, 0, 20),
-                    manip = self.toggleFormationsManipulator.last;
-                svg.addEvent(manip, "click", toggleFormations);
-                if (all) {
-                    manip.add(check);
-                } else {
-                    manip.remove(manip.children[manip.children.length - 1]);
-                }
+        let toggleFormations = () => {
+            this.progressOnly = !this.progressOnly;
+            let check = drawCheck(0, 0, 20),
+                manip = self.toggleFormationsManipulator.last;
+            svg.addEvent(manip, "click", toggleFormations);
+            if (this.progressOnly) {
+                manip.add(check);
+            } else {
+                manip.remove(manip.children[manip.children.length - 1]);
             }
-        }();
+            this.formationsManipulator.flush();
+            this.displayFormations();
+        };
 
         svg.addEvent(self.toggleFormationsCheck, "click", toggleFormations);
         svg.addEvent(toggleFormationsText, "click", toggleFormations);
@@ -1173,7 +1144,8 @@ function formationsManagerDisplay() {
             totalLines = 1;
         self.formations.forEach(formation => {
             // we can't publish a formation yet
-            //if(playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
+            //if (playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
+            if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
 
             if (count > (self.rows - 1)) {
                 count = 0;
@@ -1182,30 +1154,11 @@ function formationsManagerDisplay() {
                 posx = self.initialFormationsPosX;
             }
             formation.parent = self;
-            self.formationsManipulator.last.children.indexOf(formation.manipulatorMiniature.first)===-1 && self.formationsManipulator.last.add(formation.manipulatorMiniature.first);
-            if(typeof formation.miniature === "undefined"){
-                formation.displayMiniature(self.tileWidth, self.tileHeight);
-            }
-            formation.manipulatorMiniature.translator.move(posx, posy);
-            formation.manipulatorMiniature.last.children.indexOf(formation.iconManipulator.first)===-1 && formation.manipulatorMiniature.last.add(formation.iconManipulator.first);
+            self.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first)===-1 && self.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
+            
+            formation.miniature.display(posx, posy, self.tileWidth, self.tileHeight);
 
-            (function (element) {
-                if (element.miniature.cadre) {
-                    svg.addEvent(element.miniature.cadre, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-                if (element.miniature.content) {
-                    svg.addEvent(element.miniature.content, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-                if (element.miniature.image) {
-                    svg.addEvent(element.miniature.image, "click", function () {
-                        onClickFormation(element);
-                    });
-                }
-            })(formation);
+            formation.miniature.setHandler(onClickFormation);
             count++;
             posx += (self.tileWidth+ self.spaceBetweenElements.width);
         });
@@ -1973,9 +1926,9 @@ function quizzDisplayResult (color){
     self.puzzle.display(0, self.questionHeight/2 + self.answerHeight/2 + MARGIN, drawing.width - MARGIN, self.answerHeight);
 }
 
-function gameDisplayMiniature(size, special){
+function gameDisplayMiniature(size){
     var self = this;
-    return new Miniature(self, size, special);
+    return new MiniatureGame(self, size);
 }
 
 function bdDisplay(bd){
@@ -2719,7 +2672,6 @@ var AdminGUI = function (){
     ImagesLibrary.prototype.display = imagesLibraryDisplay;
     Header.prototype.display = headerDisplay;
     AddEmptyElement.prototype.display = addEmptyElementDisplay;
-    Formation.prototype.displayMiniature = formationDisplayMiniature;
     Formation.prototype.displayFormation = formationDisplayFormation;
     Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
     Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
@@ -2754,7 +2706,6 @@ var LearningGUI = function (){
     Library.prototype.display = libraryDisplay;
     Header.prototype.display = headerDisplay;
     Formation.prototype.displayFormation = playerModeDisplayFormation;
-    Formation.prototype.displayMiniature = formationDisplayMiniature;
     FormationsManager.prototype.display = formationsManagerDisplay;
     Question.prototype.display = questionDisplay;
     Question.prototype.displayAnswers = questionDisplayAnswers;

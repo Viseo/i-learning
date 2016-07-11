@@ -376,11 +376,8 @@ class Formation {
         };
         this.link = [];
         this._id = (formation._id || null);
+        this.progress = formation.progress;
         this.formationsManager = formationsManager;
-        this.manipulatorMiniature = new Manipulator();
-        this.manipulatorMiniature.addOrdonator(2);
-        this.iconManipulator = new Manipulator();
-        this.iconManipulator.addOrdonator(3);
         this.manipulator = new Manipulator(this);
         this.manipulator.addOrdonator(5);
         this.formationInfoManipulator = new Manipulator();
@@ -408,7 +405,6 @@ class Formation {
         // WIDTH
         this.libraryWidthRatio = 0.15;
         this.graphWidthRatio = 1 - this.libraryWidthRatio;
-
         // HEIGHT
         this.graphCreaHeightRatio = 0.85;
         this.graphPlayHeightRatio = 0.90;
@@ -430,6 +426,7 @@ class Formation {
 
         this.levelHeight = 150;
         this.graphElementSize = this.levelHeight*0.65;
+        this.miniature = new MiniatureFormation(this);
 
         this.redim();
         this.manipulator.last.add(this.saveFormationButtonManipulator.first);
