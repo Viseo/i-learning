@@ -1773,8 +1773,10 @@ function popInDisplay() {
     this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
     this.textToDisplay = this.label ? this.label : this.defaultLabel;
-    this.text = autoAdjustText(this.textToDisplay, 0, 0, questionCreator.coordinatesAnswers.w/2, questionCreator.coordinatesAnswers.h/2, null, null, this.textManipulator,0).text;
-    this.text.position(questionCreator.coordinatesAnswers.w/4,questionCreator.coordinatesAnswers.h/4);
+    this.text = autoAdjustText(this.textToDisplay, 0, 0, questionCreator.coordinatesAnswers.w/2, drawing.height, null, null, this.textManipulator,0).text;
+    this.text.position(questionCreator.coordinatesAnswers.w/4,svg.runtime.boundingRect(this.text.component).height);
+    this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
+
     if (this.image){
         this.imageLayer = 3;
         let picture = new Picture(this.image, true, this);
