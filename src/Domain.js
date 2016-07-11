@@ -348,7 +348,7 @@ class FormationsManager {
 
         /* for Player */
         this.toggleFormationsManipulator = new Manipulator(this);
-        this.toggleFormationsManipulator.addOrdonator(2);
+        this.toggleFormationsManipulator.addOrdonator(3);
     }
 }
 

@@ -983,24 +983,29 @@ function formationDisplaySaveButton(x, y, w, h) {
 
 function formationsManagerDisplay() {
     let self = this;
-    drawing.currentPageDisplayed = "FormationsManager";
+    drawing.currentPageDisplayed = 'FormationsManager';
     self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
 
     if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
-        self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-        self.toggleFormationsManipulator.ordonator.set(0, self.toggleFormationsCheck);
-        let toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
-        self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
-        toggleFormationsText.position(svg.runtime.boundingRect(toggleFormationsText.component).width / 2 + 2 * MARGIN, 6);
-        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.runtime.boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
-            svg.runtime.boundingRect(self.toggleFormationsCheck.component).width ), 0);
+        let manip = this.toggleFormationsManipulator,
+            pos = -MARGIN,
+            toggleFormationsText = displayText('Formations en cours', drawing.width*0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
+            textWidth = svg.runtime.boundingRect(toggleFormationsText.content.component).width;
+        this.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+        pos-= textWidth/2;
+        toggleFormationsText.content.position(pos, 6);
+        toggleFormationsText.cadre.position(pos, 0);
+        pos-= textWidth/2 + 2*MARGIN;
+        this.toggleFormationsCheck.position(pos, 0);
+        manip.ordonator.set(2, this.toggleFormationsCheck);
+        manip.translator.move(drawing.width, 10 + MARGIN);
 
         let toggleFormations = () => {
             this.progressOnly = !this.progressOnly;
-            let check = drawCheck(0, 0, 20),
+            let check = drawCheck(pos, 0, 20),
                 manip = self.toggleFormationsManipulator.last;
             svg.addEvent(manip, "click", toggleFormations);
             if (this.progressOnly) {
@@ -1012,8 +1017,9 @@ function formationsManagerDisplay() {
             this.displayFormations();
         };
 
-        svg.addEvent(self.toggleFormationsCheck, "click", toggleFormations);
-        svg.addEvent(toggleFormationsText, "click", toggleFormations);
+        svg.addEvent(self.toggleFormationsCheck, 'click', toggleFormations);
+        svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
+        svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
     } else {
         self.headerManipulator.last.children.indexOf(self.addButtonManipulator)===-1 && self.headerManipulator.last.add(self.addButtonManipulator.first);
         self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
