@@ -686,7 +686,7 @@ function formationDisplayFormation() {
         let longestLevel = self.findLongestLevel()[0];
         let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         let widthMAX = Math.max(self.panel.width, trueWidth);
-        self.panel.resizeContent(widthMAX-1, height);
+        self.panel.resizeContent(widthMAX-1, height-MARGIN);
     };
 
     this.movePanelContent = () => {
@@ -1029,7 +1029,7 @@ function formationsManagerDisplay() {
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
             height: self.panel?0.030*self.panel.height:0.030*drawing.height
         };
-        self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
+        self.y = (!playerMode) ? self.addButtonHeight*1.5 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
         self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
         if(self.rows === 0) self.rows = 1;
@@ -1082,7 +1082,7 @@ function formationsManagerDisplay() {
     self.displayHeaderFormations = function () {
         // self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
         // self.headerManipulator.ordonator.set(0, self.title);
-        self.headerManipulator.translator.move(0,2*MARGIN);
+        self.headerManipulator.translator.move(0,0);
         self.addFormationButton = displayText("Ajouter une formation", drawing.width/7, self.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         var addFormationButtonTextBr = svg.runtime.boundingRect(self.addFormationButton.content.component);
         self.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
@@ -2057,7 +2057,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
+        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height/2+self.quizzNameHeight);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
