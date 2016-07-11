@@ -1776,7 +1776,20 @@ function popInDisplay() {
     this.text = autoAdjustText(this.textToDisplay, 0, 0, questionCreator.coordinatesAnswers.w/2, drawing.height, null, null, this.textManipulator,0).text;
     this.text.position(questionCreator.coordinatesAnswers.w/4,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
-
+    let clickEdition = event => {
+        //let target = drawing.background.getTarget(event.clientX, event.clientY);
+        let contentArea = {};
+        contentArea.height = svg.runtime.boundingRect(this.text.component).height;
+        contentArea.globalPointCenter = this.text.globalPoint(0,-contentArea.height/2);
+        contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y,questionCreator.w/2,drawing.height);
+        contentArea.color(null, 0, myColors.black).font("Arial",20);
+        (this.label === "" || this.label === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
+        contentArea.message(this.label || "");
+        drawings.screen.add(contentArea);
+        contentArea.focus();
+    };
+    svg.addEvent(this.text, "click", clickEdition);
+    svg.addEvent(this.panel.border, "click", clickEdition);
     if (this.image){
         this.imageLayer = 3;
         let picture = new Picture(this.image, true, this);

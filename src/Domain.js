@@ -281,8 +281,7 @@ class PopIn {
         this.textManipulator = new Manipulator(this);
         this.textManipulator.addOrdonator(1);
         this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
-       // this.defaultLabel = "Cliquer ici pour ajouter du texte";
-        this.defaultLabel = "Debut Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texteCliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pour ajouter du texteCliquer ici pour ajouter du texte Cliquer ici pour ajouter du texte Cliquer ici pourur ajouter du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquerr du texteCliquer ici pour ajouter du texte FIN ";
+        this.defaultLabel = "Cliquer ici pour ajouter du texte";
         if (answer.explanation && answer.explanation.label){
             this.label = answer.explanation.label;
         }
