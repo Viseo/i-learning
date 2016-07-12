@@ -1066,11 +1066,11 @@ class Puzzle {
         else if(leftOrRight ===  'left'){
             orientation = -1;
         }
-        if(this.rows === 1){
+        if(this.columns === 1){
             this.indexOfFirstVisibleElement +=orientation;
         }
         else{
-            let shift = (this.columns - 1)*this.rows*orientation;
+            let shift = (this.columns)*this.rows*orientation;
             let temporaryIndex = this.indexOfFirstVisibleElement + shift;
             if(temporaryIndex>0){
                 let overflow = (temporaryIndex+shift)-(this.elementsArray.length);
