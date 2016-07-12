@@ -2411,6 +2411,8 @@ if (typeof exports !== "undefined") {
     exports.Bdd = Bdd;
     exports.setGui = setGui;
     exports.setRuntime = setRuntime;
+    exports.Manipulator = Manipulator;
+    exports.Drawings = Drawings;
     exports.Server = Server;
     exports.ReturnButton = ReturnButton;
 }
