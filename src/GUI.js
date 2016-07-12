@@ -81,7 +81,9 @@ function answerDisplay (x, y, w, h) {
                 }
             questionCreator.display();
         };
-
+        let mouseleaveHandler= ()=>{
+            self.redCrossManipulator.flush();
+        };
         let mouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
                 self.redCrossManipulator = new Manipulator(self);
@@ -123,7 +125,7 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
 
             svg.addEvent(self.obj.cadre,'mouseover',mouseoverHandler);
-            //svg.addEvent(self.obj.cadre,'mouseout',mouseleaveHandler);
+            svg.addEvent(self.obj.cadre,'mouseout',mouseleaveHandler);
         };
 
         let dblclickEditionAnswer = function () {
@@ -1803,7 +1805,7 @@ function popInDisplay() {
     this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
     this.textToDisplay = this.label ? this.label : this.defaultLabel;
     this.text = autoAdjustText(this.textToDisplay, 0, 0, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
-    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height+svg.runtime.boundingRect(this.answerTextSVG.component).height);
+    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);//+svg.runtime.boundingRect(this.answerTextSVG.component).height);
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
         let contentArea = {};
@@ -1840,7 +1842,7 @@ function popInDisplay() {
         svg.addEvent(contentArea,'blur',onblur);
     };
     svg.addEvent(this.text, "click", clickEdition);
-    svg.addEvent(this.panel.border, "click", clickEdition);
+    svg.addEvent(this.panel.back, "click", clickEdition);
     if (this.image){
         this.imageLayer = 3;
         let picture = new Picture(this.image, true, this);
@@ -1851,7 +1853,7 @@ function popInDisplay() {
         let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, questionCreator.coordinatesAnswers.w/6, questionCreator.coordinatesAnswers.h / 3, 20, null, this.manipulator, 3).text;
         draganddropTextSVG.position(-questionCreator.coordinatesAnswers.w/2 + questionCreator.coordinatesAnswers.w/12 + MARGIN, 0).color(myColors.grey);
         draganddropTextSVG._acceptDrop = true;
-        this.answer.filled = false;
+       this.label ? this.answer.filled = true : this.answer.filled = false;
     }
 }
 function quizzDisplay(x, y, w, h) {
