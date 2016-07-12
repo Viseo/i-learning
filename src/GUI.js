@@ -1750,8 +1750,8 @@ function popInDisplay() {
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
     !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
-    let answerTextSVG = autoAdjustText(answerText, 0, 0, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h * answerTextRatio, 20, null, this.manipulator, 1).text;
-    answerTextSVG.position(0, -questionCreator.coordinatesAnswers.h / 2 + svg.runtime.boundingRect(answerTextSVG.component).width / 4);
+    this.answerTextSVG = autoAdjustText(answerText, 0, 0, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h * answerTextRatio, 20, null, this.manipulator, 1).text;
+    this.answerTextSVG.position(0, -questionCreator.coordinatesAnswers.h / 2 + questionCreator.coordinatesAnswers.h * answerTextRatio/2);
     let blackCrossSize = 30, blackCross;
     blackCross = blackCross || drawRedCross(questionCreator.coordinatesAnswers.w / 2 - blackCrossSize, -questionCreator.coordinatesAnswers.h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
     blackCross.color(myColors.black, 1, myColors.black);
@@ -1763,30 +1763,52 @@ function popInDisplay() {
         questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y,questionCreator.coordinatesAnswers.w,questionCreator.coordinatesAnswers.h,false);
     };
     svg.addEvent(blackCross, "click", blackCrossHandler);
+    let panelWidth = 2*questionCreator.coordinatesAnswers.w/3,
+        panelHeight = 2*questionCreator.coordinatesAnswers.h/3;
+    this.panelManipulator.translator.move(questionCreator.coordinatesAnswers.w/12, 0);
     if(typeof this.panel === "undefined"){
-        this.panel = new gui.Panel(questionCreator.coordinatesAnswers.w/2,questionCreator.coordinatesAnswers.h/2,myColors.none);
+        this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
     }
     else {
-        this.panel.resize(questionCreator.coordinatesAnswers.w/2,questionCreator.coordinatesAnswers.h/2);
+        this.panel.resize(panelWidth, panelHeight);
     }
     this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
     this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
     this.textToDisplay = this.label ? this.label : this.defaultLabel;
-    this.text = autoAdjustText(this.textToDisplay, 0, 0, questionCreator.coordinatesAnswers.w/2, drawing.height, null, null, this.textManipulator,0).text;
-    this.text.position(questionCreator.coordinatesAnswers.w/4,svg.runtime.boundingRect(this.text.component).height);
+    this.text = autoAdjustText(this.textToDisplay, 0, 0, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
+    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height+svg.runtime.boundingRect(this.answerTextSVG.component).height);
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
-        //let target = drawing.background.getTarget(event.clientX, event.clientY);
         let contentArea = {};
-        contentArea.height = svg.runtime.boundingRect(this.text.component).height;
-        contentArea.globalPointCenter = this.text.globalPoint(0,-contentArea.height/2);
-        contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y,questionCreator.w/2,drawing.height);
+        contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
+        contentArea.x = panelWidth/2;//-questionCreator.coordinatesAnswers.w/12;
+        contentArea.globalPointCenter = this.panel.border.globalPoint(-contentArea.x,-contentArea.y/2-MARGIN);
+        contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y,panelWidth-MARGIN,panelHeight-MARGIN);
         contentArea.color(null, 0, myColors.black).font("Arial",20);
-        (this.label === "" || this.label === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
+        (this.textToDisplay === "" || this.textToDisplay === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
         contentArea.message(this.label || "");
+        this.textManipulator.ordonator.unset(0);
+        contentArea.scroll(svg.TextArea.SCROLL);
         drawings.screen.add(contentArea);
         contentArea.focus();
+        let onblur = ()=> {
+            contentArea.enter();
+            this.label = contentArea.messageText;
+            drawings.screen.remove(contentArea);
+            this.display();
+        };
+        svg.addEvent(contentArea,'input',()=> {
+            contentArea.enter();
+            //self.checkInputContentArea({
+            //    contentarea: contentArea,
+            //    border: self.obj.cadre,
+            //    onblur: onblur,
+            //    remove: removeErrorMessage,
+            //    display: displayErrorMessage
+            //});
+        });
+        svg.addEvent(contentArea,'blur',onblur);
     };
     svg.addEvent(this.text, "click", clickEdition);
     svg.addEvent(this.panel.border, "click", clickEdition);

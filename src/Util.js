@@ -455,7 +455,7 @@ function SVGUtil() {
     autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
         let words = content.split(' '),
             text = '',
-            w = wi * 5 / 6,
+            w = wi * 99/100,
             t = new svg.Text('text');
         manipulator.ordonator.set(layer, t);
         t.font(font ? font : 'Arial', fontSize ? fontSize : 20);
