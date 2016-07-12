@@ -67,6 +67,21 @@ function answerDisplay (x, y, w, h) {
     function answerEditableDisplay(x, y, w, h) {
         self.checkboxSize = h * 0.2;
         self.obj = {};
+        let redCrossClickHandler=()=>{
+            self.redCrossManipulator.flush();
+            let index = self.parentQuestion.tabAnswer.indexOf(self);
+            drawing.mousedOverTarget=null;
+            self.parentQuestion.tabAnswer.splice(index,1);
+            let questionCreator=self.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+            if (self.parentQuestion.tabAnswer.length<3){
+                svg.event(self.parentQuestion.tabAnswer[self.parentQuestion.tabAnswer.length-1].plus,'dblclick',{});
+                if(index===0){
+                    [self.parentQuestion.tabAnswer[0],self.parentQuestion.tabAnswer[1]]=[self.parentQuestion.tabAnswer[1],self.parentQuestion.tabAnswer[0]];
+                    }
+                }
+            questionCreator.display();
+        };
+
         let mouseoverHandler=()=>{
             if(typeof self.redCrossManipulator === 'undefined'){
                 self.redCrossManipulator = new Manipulator(self);
@@ -75,6 +90,7 @@ function answerDisplay (x, y, w, h) {
             }
             let redCrossSize = 15;
             let redCross = drawRedCross(self.width/2 , -self.height/2, redCrossSize, self.redCrossManipulator);
+            svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
         };
         let showTitle = function () {
