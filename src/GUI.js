@@ -1502,6 +1502,7 @@ function questionSelectedQuestion() {
                 quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
                 this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
+                questionPuzzle && questionPuzzle.indexOfFirstVisibleElement!=0 && questionPuzzle.indexOfFirstVisibleElement--;
                 questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
                 questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
                 questionPuzzle.display();
@@ -2116,7 +2117,7 @@ function quizzManagerDisplay(){
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
         questionCreator.display(questionCreator.previousX, questionCreator.previousY, questionCreator.previousW, questionCreator.previousH);
-        questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
+        questionCreator.explanation && questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
     };
 
     let displayFunctions = () => {
