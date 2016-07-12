@@ -1766,8 +1766,9 @@ function popInDisplay() {
     let panelWidth = 2*questionCreator.coordinatesAnswers.w/3,
         panelHeight = 2*questionCreator.coordinatesAnswers.h/3;
     this.panelManipulator.translator.move(questionCreator.coordinatesAnswers.w/12, 0);
+    let notInTextArea;
     svg.runtime.addGlobalEvent("keydown", (event) => {
-        if(hasKeyDownEvent(event)) {
+        if(notInTextArea && hasKeyDownEvent(event)) {
             event.preventDefault();
         }
     });
@@ -1790,6 +1791,7 @@ function popInDisplay() {
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
         let contentArea = {};
+        notInTextArea = false;
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
         contentArea.x = panelWidth/2;//-questionCreator.coordinatesAnswers.w/12;
         contentArea.globalPointCenter = this.panel.border.globalPoint(-contentArea.x,-contentArea.y/2-MARGIN);
@@ -1799,12 +1801,14 @@ function popInDisplay() {
         contentArea.message(this.label || "");
         this.textManipulator.ordonator.unset(0);
         contentArea.scroll(svg.TextArea.SCROLL);
+        this.panel.vHandle.handle.color(myColors.none,3,myColors.none);
         drawings.screen.add(contentArea);
         contentArea.focus();
         let onblur = ()=> {
             contentArea.enter();
             this.label = contentArea.messageText;
             drawings.screen.remove(contentArea);
+            notInTextArea = true;
             this.display();
         };
         svg.addEvent(contentArea,'input',()=> {
