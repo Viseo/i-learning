@@ -2117,7 +2117,7 @@ function quizzManagerDisplay(){
         quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
         questionCreator.loadQuestion(question);
         questionCreator.display(questionCreator.previousX, questionCreator.previousY, questionCreator.previousW, questionCreator.previousH);
-        questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
+        questionCreator.explanation && questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
     };
 
     let displayFunctions = () => {
