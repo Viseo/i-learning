@@ -218,8 +218,9 @@ class QuestionCreator {
 
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
-        this.quizzType = myQuizzType.tab;
+        this.questionType = myQuestionType.tab;
         this.toggleButtonHeight = 40;
+
         if (!question) {
             // init default : 2 empty answers
             this.linkedQuestion = new Question(defaultQuestion,this.parent.quizz);
@@ -380,7 +381,7 @@ class FormationsManager {
 
         /* for Player */
         this.toggleFormationsManipulator = new Manipulator(this);
-        this.toggleFormationsManipulator.addOrdonator(2);
+        this.toggleFormationsManipulator.addOrdonator(3);
     }
 }
 
@@ -890,10 +891,12 @@ class QuizzManager {
             this.quizzName = this.quizz.title;
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
-            this.quizz.tabQuestions.forEach(question => {
-                (question instanceof AddEmptyElement) || (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+            this.quizz.tabQuestions.forEach( (question, index )  => {
+                quizz.tabQuestions[index].questionType && (question.questionType = quizz.tabQuestions[index].questionType);
+                (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
             })
+            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+
         };
         if (!quizz) {
             var initialQuizzObject = {
@@ -946,35 +949,58 @@ class QuizzManager {
         this.marginRatio = 0.02;
     }
 
-    saveQuizz () {
-        let getObjectToSave = () => {
-            this.tabQuestions = this.quizz.tabQuestions;
-            (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
-            this.tabQuestions.forEach(question => {
-                question.selected = undefined;
-                question.imageLoaded = undefined;
-                question.redCross = undefined;
-                question.questNum = undefined;
-                (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
-                question.tabAnswer.forEach(answer => {
-                    if(answer.popIn) {
-                        answer.explanation = {};
-                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
-                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
-                        answer.popIn = null;
-                    }
-                    })
-            });
-            return {
-                id: this.quizz.id,
-                title: this.quizzName,
-                tabQuestions: this.quizz.tabQuestions,
-                levelIndex: this.quizz.levelIndex,
-                gameIndex: this.quizz.gameIndex
-            };
-        };
 
-        let quiz = getObjectToSave();
+    getObjectToSave  () {
+        this.tabQuestions = this.quizz.tabQuestions;
+        (this.tabQuestions[this.quizz.tabQuestions.length-1] instanceof  AddEmptyElement) && this.tabQuestions.pop();
+        this.tabQuestions.forEach(question => {
+            (question.tabAnswer[question.tabAnswer.length-1] instanceof  AddEmptyElement)&& question.tabAnswer.pop();
+            question.tabAnswer.forEach(answer => {
+                if(answer.popIn) {
+                    answer.explanation = {};
+                    answer.popIn.image && (answer.explanation.image = answer.popIn.image);
+                    answer.popIn.label && (answer.explanation.label = answer.popIn.label);
+                    answer.popIn = null;
+                }
+            })
+        });
+        return {
+            id: this.quizz.id,
+            title: this.quizz.title,
+            tabQuestions: this.quizz.tabQuestions,
+            levelIndex: this.quizz.levelIndex,
+            gameIndex: this.quizz.gameIndex
+        };
+    };
+
+    displayMessage (message, color) {
+        this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+        this.questionCreator.errorMessagePreview = new svg.Text(message)
+            .position(this.ButtonWidth, -this.questionCreator.toggleButtonHeight + MARGIN)
+            .font("Arial", 20)
+            .anchor('middle').color(color);
+        setTimeout(() => {
+            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
+        }, 1);
+    }
+
+    saveQuizz () {
+
+        let completeQuizzMessage = "Les modifications ont bien été enregistrées";
+        let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+
+        let quiz = this.getObjectToSave();
+
+        var validation = true;
+        quiz.tabQuestions.forEach(question => {
+            question.questionType.validationTab.forEach( (funcEl) => {
+                var result = funcEl(question);
+                validation = validation && result.isValid;
+            });
+        })
+
+        validation ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
+
         Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
             .then(() => {
                 this.quizz.title = this.quizzName;
@@ -1072,6 +1098,7 @@ class Quizz {
             this.tabQuestions = [];
             quizz.tabQuestions.forEach(it => {
                 var tmp = new Question(it, this);
+                it.questionType && (tmp.questionType = it.questionType);
                 tmp.parentQuizz = this;
                 this.tabQuestions.push(tmp);
             });

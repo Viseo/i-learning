@@ -91,7 +91,8 @@ function answerDisplay (x, y, w, h) {
                 self.manipulator && self.manipulator.last.add(self.redCrossManipulator.first);
             }
             let redCrossSize = 15;
-            let redCross = drawRedCross(self.width/2 , -self.height/2, redCrossSize, self.redCrossManipulator);
+            let redCross = drawRedCross(self.width/2 - redCrossSize, -self.height/2 + redCrossSize, redCrossSize, self.redCrossManipulator);
+
             svg.addEvent(redCross,'click',redCrossClickHandler);
             self.redCrossManipulator.ordonator.set(1,redCross);
         };
@@ -242,7 +243,7 @@ function libraryDisplay(x, y, w, h) {
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
-    libraryDisplay.call(this, x, y, w, h);
+    libraryDisplay.call(this, x+MARGIN, y, w, h);
 
     let displayArrowModeButton = () => {
         if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
@@ -573,6 +574,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                     question.redCrossManipulator && question.redCrossManipulator.flush();
                     question.selected=false});
                 let newQuestion = new Question(null, self.parent.quizz);
+
                 newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
 
@@ -671,7 +673,7 @@ function formationDisplayFormation() {
         let longestLevel = self.findLongestLevel()[0];
         let trueWidth = longestLevel && longestLevel.gamesTab.length*spaceOccupiedByAGame+spaceOccupiedByAGame;
         let widthMAX = Math.max(self.panel.width, trueWidth);
-        self.panel.resizeContent(widthMAX-1, height);
+        self.panel.resizeContent(widthMAX-1, height-MARGIN);
     };
 
     this.movePanelContent = () => {
@@ -940,7 +942,7 @@ function formationDisplayFormation() {
             // self.formationCreator = formationValidation;
         };
         showTitle();
-        self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth, self.graphCreaHeight);
+        self.library.display(0,drawing.height*HEADER_SIZE,self.libraryWidth-MARGIN, self.graphCreaHeight);
         self.displayFormationSaveButton(drawing.width/2, drawing.height*0.87 ,self.ButtonWidth, self.saveButtonHeight);
         displayFrame(self.graphCreaWidth, self.graphCreaHeight);
         self.displayGraph(self.graphCreaWidth, self.graphCreaHeight);
@@ -967,24 +969,29 @@ function formationDisplaySaveButton(x, y, w, h) {
 
 function formationsManagerDisplay() {
     let self = this;
-    drawing.currentPageDisplayed = "FormationsManager";
+    drawing.currentPageDisplayed = 'FormationsManager';
     self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
     mainManipulator.ordonator.set(1, self.manipulator.first);
     self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
 
     if (playerMode) {
         self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
-        self.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-        self.toggleFormationsManipulator.ordonator.set(0, self.toggleFormationsCheck);
-        let toggleFormationsText = new svg.Text("Formations en cours").font("Arial", 20);
-        self.toggleFormationsManipulator.ordonator.set(1, toggleFormationsText);
-        toggleFormationsText.position(svg.runtime.boundingRect(toggleFormationsText.component).width / 2 + 2 * MARGIN, 6);
-        self.toggleFormationsManipulator.translator.move(drawing.width - (svg.runtime.boundingRect(toggleFormationsText.component).width + 2 * MARGIN +
-            svg.runtime.boundingRect(self.toggleFormationsCheck.component).width ), 0);
+        let manip = this.toggleFormationsManipulator,
+            pos = -MARGIN,
+            toggleFormationsText = displayText('Formations en cours', drawing.width*0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
+            textWidth = svg.runtime.boundingRect(toggleFormationsText.content.component).width;
+        this.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+        pos-= textWidth/2;
+        toggleFormationsText.content.position(pos, 6);
+        toggleFormationsText.cadre.position(pos, 0);
+        pos-= textWidth/2 + 2*MARGIN;
+        this.toggleFormationsCheck.position(pos, 0);
+        manip.ordonator.set(2, this.toggleFormationsCheck);
+        manip.translator.move(drawing.width, 10 + MARGIN);
 
         let toggleFormations = () => {
             this.progressOnly = !this.progressOnly;
-            let check = drawCheck(0, 0, 20),
+            let check = drawCheck(pos, 0, 20),
                 manip = self.toggleFormationsManipulator.last;
             svg.addEvent(manip, "click", toggleFormations);
             if (this.progressOnly) {
@@ -996,8 +1003,9 @@ function formationsManagerDisplay() {
             this.displayFormations();
         };
 
-        svg.addEvent(self.toggleFormationsCheck, "click", toggleFormations);
-        svg.addEvent(toggleFormationsText, "click", toggleFormations);
+        svg.addEvent(self.toggleFormationsCheck, 'click', toggleFormations);
+        svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
+        svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
     } else {
         self.headerManipulator.last.children.indexOf(self.addButtonManipulator)===-1 && self.headerManipulator.last.add(self.addButtonManipulator.first);
         self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
@@ -1014,7 +1022,7 @@ function formationsManagerDisplay() {
             width:self.panel?0.015*self.panel.width:0.015*drawing.width,
             height: self.panel?0.030*self.panel.height:0.030*drawing.height
         };
-        self.y = (!playerMode) ? self.addButtonHeight*2 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
+        self.y = (!playerMode) ? self.addButtonHeight*1.5 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
         self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
         if(self.rows === 0) self.rows = 1;
@@ -1067,7 +1075,7 @@ function formationsManagerDisplay() {
     self.displayHeaderFormations = function () {
         // self.title = new svg.Text("Formations").position(MARGIN, 0).font("Arial", 20).anchor("start");
         // self.headerManipulator.ordonator.set(0, self.title);
-        self.headerManipulator.translator.move(0,2*MARGIN);
+        self.headerManipulator.translator.move(0,0);
         self.addFormationButton = displayText("Ajouter une formation", drawing.width/7, self.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
         var addFormationButtonTextBr = svg.runtime.boundingRect(self.addFormationButton.content.component);
         self.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
@@ -1532,7 +1540,7 @@ function questionCreatorDisplay (x, y, w, h) {
     self.questionCreatorManipulator.translator.move(self.previousX, 0);
     self.toggleButtonHeight = 40;
     self.displayQuestionCreator(self.previousX, self.previousY, self.previousW, self.previousH);
-    var clickedButton = self.multipleChoice ? myQuizzType.tab[1].label : myQuizzType.tab[0].label;
+    var clickedButton = self.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
     self.displayToggleButton(MARGIN + self.previousX, MARGIN/2+self.previousY, self.previousW, self.toggleButtonHeight-MARGIN, clickedButton);
 }
 
@@ -1552,7 +1560,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         (questionType === "Réponses multiples") ? (self.multipleChoice = true) : (self.multipleChoice = false);
         (questionType === "Réponses multiples") ? (self.linkedQuestion.multipleChoice = true) : (self.linkedQuestion.multipleChoice = false);
 
-        self.activeQuizzType = (!self.multipleChoice) ? self.quizzType[0] : self.quizzType[1];
+        self.linkedQuestion.questionType = (!self.multipleChoice) ? self.questionType[0] : self.questionType[1];
         self.errorMessagePreview && self.errorMessagePreview.parent && self.parent.previewButtonManipulator.last.remove(self.errorMessagePreview);
 
         self.linkedQuestion.tabAnswer.forEach(function(answer){
@@ -1570,13 +1578,13 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
     self.questionCreatorManipulator.last.children.indexOf(self.toggleButtonManipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.toggleButtonManipulator.first);
 
-    var length = self.quizzType.length;
+    var length = self.questionType.length;
     var lengthToUse = (length+1)*MARGIN+length*self.toggleButtonWidth;
     self.margin = (w-lengthToUse)/2;
     self.x = self.margin+self.toggleButtonWidth/2+MARGIN;
     var i = 0;
     (!self.completeBanner) && (self.completeBanner = []);
-    self.quizzType.forEach(function(type){
+    self.questionType.forEach(function(type){
         if(self.completeBanner[i] && self.completeBanner[i].manipulator){
             self.toggleButtonManipulator.last.remove(self.completeBanner[i].manipulator.first);
         }
@@ -1595,7 +1603,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
         i++;
     });
-    self.activeQuizzType = (self.multipleChoice) ? self.quizzType[1] : self.quizzType[0];
+    self.linkedQuestion.questionType = (self.multipleChoice) ? self.questionType[1] : self.questionType[0];
     self.toggleButtonManipulator.translator.move(0,0);
 }
 
@@ -2151,7 +2159,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
         self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2,self.quizzLabel.cadre.height);
+        self.quizzLabel.cadre.position(width/2, h/2 + self.quizzLabel.cadre.height/2);
         self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
         self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
 
@@ -2200,6 +2208,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         var onblur = function () {
             textarea.enter();
             self.quizzName = textarea.messageText;
+            self.quizz.title = textarea.messageText;
             drawings.screen.remove(textarea);
             showTitle();
         };
@@ -2229,27 +2238,25 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 function quizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
-
-    self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
     self.previewFunction = function () {
-        drawing.currentPageDisplayed = "QuizPreview";
-        var validation = true;
-        self.questionCreator.activeQuizzType.validationTab.forEach(function (funcEl) {
-            var result = funcEl(self);
-            if(!result.isValid) {
-                self.questionCreator.errorMessagePreview && self.questionCreator.errorMessagePreview.parent && self.previewButtonManipulator.last.remove(self.questionCreator.errorMessagePreview);
-                self.questionCreator.errorMessagePreview = new svg.Text(result.message)
-                    .position(self.ButtonWidth,-self.toggleButtonHeight)
-                    .font("Arial", 20)
-                    .anchor('middle').color(myColors.red);
-                self.previewButtonManipulator.last.add(self.questionCreator.errorMessagePreview);
+        self.toggleButtonHeight = 40;
+        let validation = true;
+        let message ;
+        self.quizz.tabQuestions.forEach(question => {
+            if(!(question instanceof AddEmptyElement)){
+                question.questionType.validationTab.forEach((funcEl) => {
+                    var result = funcEl(question);
+                    if (!result.isValid) {
+                        message = result.message;
+                    }
+                    validation = validation && result.isValid;
+                });
             }
-            validation = validation && result.isValid;
         });
-
+        !validation && self.displayMessage(message, myColors.red);
         self.displayEditedQuestion = function () {
+            drawing.currentPageDisplayed = "QuizPreview";
             self.quizzManagerManipulator.flush();
-
             self.quizz.tabQuestions.pop();
             self.quizz.tabQuestions.forEach((it) => {
                 it.tabAnswer.pop();
@@ -2306,7 +2313,7 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.qPuzzleW, self.qPuzzleH, true);
 }
 
-function inscriptionManagerDisplay(labels={}) {
+function inscriptionManagerDisplay() {
     let self = this;
     drawing.currentPageDisplayed = "InscriptionManager";
     header.display("Inscription");
@@ -2345,22 +2352,21 @@ function inscriptionManagerDisplay(labels={}) {
             };
             var oninput = function(){
                 contentarea.enter();
-                    if (self[field].secret && trueValue &&  contentarea.messageText && trueValue.length < contentarea.messageText.length) {
-                        trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
-                    }
-                    else if (self[field].secret) {
-                        trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
-                    }
-                    self[field].label = contentarea.messageText;
-                    self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
-                    if ((field === "lastNameField" || field === 'firstNameField' ) && !self[field].checkInput()) {
-                        displayErrorMessage();
-                        self[field].cadre.color(myColors.white, 3, myColors.red);
-                    }
-                    else {
-                        field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
-                        self[field].cadre.color(myColors.white, 1, myColors.black);
-                    }
+                if (self[field].secret && trueValue && contentarea.messageText && trueValue.length < contentarea.messageText.length) {
+                    trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
+                } else if (self[field].secret) {
+                    trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
+                }
+                self[field].label = contentarea.messageText;
+                self[field].labelSecret !== "undefined" && (self[field].labelSecret = trueValue);
+                if ((field === "lastNameField" || field === 'firstNameField' ) && !self[field].checkInput()) {
+                    displayErrorMessage();
+                    self[field].cadre.color(myColors.white, 3, myColors.red);
+                }
+                else {
+                    field !== "passwordConfirmationField" && manipulator.ordonator.unset(3);
+                    self[field].cadre.color(myColors.white, 1, myColors.black);
+                }
             };
             svg.addEvent(contentarea, "input", oninput);
             var alreadyDeleted = false;
@@ -2396,10 +2402,9 @@ function inscriptionManagerDisplay(labels={}) {
         };
     };
     var displayField = function(field, manipulator){
-        var fieldTitle = new svg.Text(self[field].title).position(0,0);
-        fieldTitle.font("Arial", 20).anchor("end");
+        manipulator.translator.move(-drawing.width/10, self[field].line*drawing.height/10);
+        var fieldTitle = new svg.Text(self[field].title).position(0,0).font("Arial", 20).anchor("end");
         manipulator.ordonator.set(2, fieldTitle);
-        manipulator.first.move(-drawing.width/10, self[field].line*drawing.height/10);
         self.h = 1.5*svg.runtime.boundingRect(fieldTitle.component).height;
         var displayText = displayTextWithoutCorners(self[field].label, w, self.h, myColors.black, myColors.white, 20, null, manipulator);
         self[field].content = displayText.content;
@@ -2425,17 +2430,17 @@ function inscriptionManagerDisplay(labels={}) {
     };
 
     var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
-    self.lastNameField={label:labels.lastNameField || "", title:self.lastNameLabel, line:-3};
-    self.lastNameField.checkInput = function(){return nameCheckInput("lastNameField")};
+    self.lastNameField={label: self.formLabels.lastNameField || "", title:self.lastNameLabel, line:-3};
+    self.lastNameField.checkInput = () => nameCheckInput("lastNameField");
     self.lastNameField.errorMessage = nameErrorMessage;
     displayField("lastNameField", self.lastNameManipulator);
 
-    self.firstNameField={label:labels.firstNameField || "", title:self.firstNameLabel, line:-2};
+    self.firstNameField={label: self.formLabels.firstNameField || "", title:self.firstNameLabel, line:-2};
     self.firstNameField.errorMessage = nameErrorMessage;
-    self.firstNameField.checkInput = function (){return nameCheckInput("firstNameField")};
+    self.firstNameField.checkInput = () => nameCheckInput("firstNameField");
     displayField("firstNameField", self.firstNameManipulator);
 
-    self.mailAddressField={label:labels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
+    self.mailAddressField={label: self.formLabels.mailAddressField || "", title:self.mailAddressLabel, line:-1};
     self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
     self.mailAddressField.checkInput = function(){
         if (self.mailAddressField.label){
@@ -2482,16 +2487,15 @@ function inscriptionManagerDisplay(labels={}) {
             cleanIfEgality();
             self.passwordManipulator.ordonator.unset(3);
         }
-        var result = !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret!== self.passwordField.labelSecret);
-        return result;
+        return !(passTooShort || confTooShort || self.passwordConfirmationField.labelSecret !== self.passwordField.labelSecret);
     };
 
-    self.passwordField={label:labels.passwordField || "", labelSecret:labels.passwordSecret || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordField={label: self.formLabels.passwordField || "", labelSecret: (self.tabForm[3] && self.tabForm[3].labelSecret) || "", title:self.passwordLabel, line:0, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
     self.passwordField.checkInput = passwordCheckInput;
     displayField("passwordField", self.passwordManipulator);
 
-    self.passwordConfirmationField={label:labels.passwordConfirmationField || "", labelSecret:labels.passwordSecret || "", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
+    self.passwordConfirmationField={label: self.formLabels.passwordConfirmationField || "", labelSecret: (self.tabForm[4] && self.tabForm[4].labelSecret) || "", title:self.passwordConfirmationLabel, line:1, secret:true, errorMessage: "La confirmation du mot de passe n'est pas valide"};
     self.passwordConfirmationField.checkInput = passwordCheckInput;
     displayField("passwordConfirmationField", self.passwordConfirmationManipulator);
 
@@ -2524,7 +2528,7 @@ function inscriptionManagerDisplay(labels={}) {
                 .then(data => {
                     let myUser = JSON.parse(data).user;
                     if (myUser) {
-                        throw "Un utilisateur possède déjà cet adresse mail !"
+                        throw "Un utilisateur possède déjà cette adresse mail !"
                     } else {
                         this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
                         let tempObject = {
@@ -2574,7 +2578,6 @@ function inscriptionManagerDisplay(labels={}) {
             clickEditionField(self.tabForm[index].field, self.tabForm[index].cadre.parent.parentManip)();
         }
     };
-
     svg.runtime.addGlobalEvent("keydown", function (event) {
         if (event.keyCode === 9) { // TAB
             event.preventDefault();
@@ -2585,6 +2588,7 @@ function inscriptionManagerDisplay(labels={}) {
             self.saveButtonHandler();
         }
     });
+    AllOk();
 }
 
 function connexionManagerDisplay() {
