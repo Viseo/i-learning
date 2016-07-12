@@ -45,88 +45,6 @@ if(typeof exports !== "undefined") {
 
 function SVGGlobalHandler() {
 
-    Drawings = function (w, h, anchor = "content") {
-        var self = this;
-        //self.mousedOverTarget;
-
-        self.screen = new svg.Screen(w, h).show(anchor);
-        self.drawing = new svg.Drawing(w, h);
-        self.screen.add(self.drawing);
-        self.drawing.manipulator = new Manipulator(self);
-        self.drawing.manipulator.addOrdonator(3);
-        self.piste = new Manipulator(self);
-        self.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
-        self.drawing.add(self.drawing.manipulator.translator);
-        self.background = self.drawing.manipulator.translator;
-        self.drawing.manipulator.ordonator.set(2, self.piste.first);
-        self.drawing.add(self.glass);
-        //self.drawing.manipulator.translator.move(MARGIN/2,0);
-        var onmousedownHandler = function (event) {
-            !runtime && document.activeElement.blur();
-            self.target = self.background.getTarget(event.clientX, event.clientY);
-            self.drag = self.target;
-            // Rajouter des lignes pour target.bordure et target.image si existe ?
-            if (self.target) {
-                svg.event(self.target, "mousedown", event);
-            }
-        };
-
-        svg.addEvent(self.glass, "mousedown", onmousedownHandler);
-
-        var onmousemoveHandler = function (event) {
-            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
-            if (self.target) {
-                let bool;
-                if(self.drawing.mousedOverTarget && self.drawing.mousedOverTarget.target){
-                    (bool= self.drawing.mousedOverTarget.target.inside(event.clientX,event.clientY));
-                    if(self.drawing.mousedOverTarget.target.component.listeners && self.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool){
-                        svg.event(self.drawing.mousedOverTarget.target, "mouseout", event);
-                        self.drawing.mousedOverTarget=null;
-                    }
-                }
-
-                svg.event(self.target, "mousemove", event);
-                if(self.target.component.listeners && self.target.component.listeners.mouseover){
-                    self.drawing.mousedOverTarget={target:self.target};
-                    svg.event(self.target, "mouseover", event);
-                }
-
-            }
-        };
-
-        svg.addEvent(self.glass, "mousemove", onmousemoveHandler);
-
-        var ondblclickHandler = function (event) {
-            self.target = self.background.getTarget(event.clientX, event.clientY);
-            if (self.target) {
-                svg.event(self.target, "dblclick", event);
-            }
-        };
-        svg.addEvent(self.glass, "dblclick", ondblclickHandler);
-
-        var onmouseupHandler = function (event) {
-            self.target = self.drag || self.background.getTarget(event.clientX, event.clientY);
-            if (self.target) {
-                svg.event(self.target, "mouseup", event);
-                svg.event(self.target, "click", event);
-            }
-            self.drag = null;
-        };
-        svg.addEvent(self.glass, "mouseup", onmouseupHandler);
-
-
-        var onmouseoutHandler = function (event) {
-            if (self.drag) {
-                svg.event(self.target, "mouseup", event);
-            }
-            //if (self.drag && self.drag.component.listeners && self.drag.component.listeners.mouseup) {
-            //    self.target.component.listeners.mouseup(event);
-            //}
-            self.drag = null;
-        };
-        svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
-    };
-
     ImageController = function (imageRuntime) {
         return imageRuntime || {
                 getImage: function (imgUrl, onloadHandler) {
@@ -176,7 +94,7 @@ class Manipulator {
     }
 
     flush () {
-        let clean = (handler) => {
+        const clean = (handler) => {
             for (let i = 0; i < handler.children.length; i++) {
                 if((handler instanceof svg.Ordered)){
                     for (let j = 0; j < handler.children.length; j++) {
@@ -197,6 +115,79 @@ class Manipulator {
         clean(this.translator);
     }
 
+}
+
+class Drawings {
+    constructor (w, h, anchor = "content") {
+        this.screen = new svg.Screen(w, h).show(anchor);
+        this.drawing = new svg.Drawing(w, h);
+        this.screen.add(this.drawing);
+        this.drawing.manipulator = new Manipulator(this);
+        this.drawing.manipulator.addOrdonator(3);
+        this.piste = new Manipulator(this);
+        this.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
+        this.drawing.add(this.drawing.manipulator.translator);
+        this.background = this.drawing.manipulator.translator;
+        this.drawing.manipulator.ordonator.set(2, this.piste.first);
+        this.drawing.add(this.glass);
+
+        const onmousedownHandler = event => {
+            !runtime && document.activeElement.blur();
+            this.target = this.background.getTarget(event.clientX, event.clientY);
+            this.drag = this.target;
+            // Rajouter des lignes pour target.bordure et target.image si existe ?
+            if (this.target) {
+                svg.event(this.target, "mousedown", event);
+            }
+        };
+        svg.addEvent(this.glass, "mousedown", onmousedownHandler);
+
+        const onmousemoveHandler = event => {
+            this.target = this.drag || this.background.getTarget(event.clientX, event.clientY);
+            if (this.target) {
+                if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
+                    const bool = this.drawing.mousedOverTarget.target.inside(event.clientX,event.clientY);
+                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
+                        svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
+                        this.drawing.mousedOverTarget = null;
+                    }
+                }
+
+                svg.event(this.target, "mousemove", event);
+                if (this.target.component.listeners && this.target.component.listeners.mouseover) {
+                    this.drawing.mousedOverTarget = {target: this.target};
+                    svg.event(this.target, "mouseover", event);
+                }
+            }
+        };
+        svg.addEvent(this.glass, "mousemove", onmousemoveHandler);
+
+        const ondblclickHandler = event => {
+            this.target = this.background.getTarget(event.clientX, event.clientY);
+            if (this.target) {
+                svg.event(this.target, "dblclick", event);
+            }
+        };
+        svg.addEvent(this.glass, "dblclick", ondblclickHandler);
+
+        const onmouseupHandler = event => {
+            self.target = this.drag || this.background.getTarget(event.clientX, event.clientY);
+            if (this.target) {
+                svg.event(this.target, "mouseup", event);
+                svg.event(this.target, "click", event);
+            }
+            this.drag = null;
+        };
+        svg.addEvent(this.glass, "mouseup", onmouseupHandler);
+
+        const onmouseoutHandler = function (event) {
+            if (this.drag) {
+                svg.event(this.target, "mouseup", event);
+            }
+            this.drag = null;
+        };
+        svg.addEvent(this.glass, "mouseout", onmouseoutHandler);
+    }
 }
 
 ///////////// end of SVG-global-handler.js ////////////////////
