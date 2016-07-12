@@ -1766,6 +1766,15 @@ function popInDisplay() {
     let panelWidth = 2*questionCreator.coordinatesAnswers.w/3,
         panelHeight = 2*questionCreator.coordinatesAnswers.h/3;
     this.panelManipulator.translator.move(questionCreator.coordinatesAnswers.w/12, 0);
+    svg.runtime.addGlobalEvent("keydown", (event) => {
+        if(hasKeyDownEvent(event)) {
+            event.preventDefault();
+        }
+    });
+    var hasKeyDownEvent = (event)=> {
+        this.target = this.panel;
+        return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
+    };
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
     }
