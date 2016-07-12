@@ -843,19 +843,6 @@ class QuizzManager {
         this.tabQuestions = [defaultQuestion];
         //this.questionPuzzle = {};
         this.quizzNameValidInput = true;
-        this.loadQuizz = function (quizz, indexOfEditedQuestion) {
-            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
-            this.quizz = new Quizz(quizz, true);
-            this.quizzName = this.quizz.title;
-            this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
-            this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.forEach( (question, index)  => {
-                quizz.tabQuestions[index].questionType && (question.questionType = quizz.tabQuestions[index].questionType);
-                (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
-            });
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
-
-        };
         if (!quizz) {
             var initialQuizzObject = {
                 title: defaultQuizz.title,
@@ -907,6 +894,20 @@ class QuizzManager {
         this.marginRatio = 0.02;
     }
 
+    loadQuizz (quizz, indexOfEditedQuestion) {
+        this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
+        this.quizz = new Quizz(quizz, true);
+        this.quizzName = this.quizz.title;
+        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
+        this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
+        this.quizz.tabQuestions.forEach( (question, index )  => {
+            //quizz.tabQuestions[index].questionType && (question.questionType = quizz.tabQuestions[index].questionType);
+            question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label);
+            (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+        });
+        this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+
+    };
 
     getObjectToSave  () {
         this.tabQuestions = this.quizz.tabQuestions;

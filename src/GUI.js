@@ -2145,13 +2145,15 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
     self.previewFunction = function () {
         self.toggleButtonHeight = 40;
         let validation = true;
-        let message ;
+        let message;
+        let arrayOfUncorrectQuestions = [];
         self.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
                 question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
                     if (!result.isValid) {
                         message = result.message;
+                        arrayOfUncorrectQuestions.push(question.questionNum-1);
                     }
                     validation = validation && result.isValid;
                 });

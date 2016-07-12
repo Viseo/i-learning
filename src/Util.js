@@ -2293,12 +2293,12 @@ function Bdd() {
         }),
         // Check answer's name:
         question => ({
-            isValid: question.tabAnswer.every(el => (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
-            message: "Vous devez remplir au moins une réponse."
+            isValid: question.tabAnswer.every(el => (el.label || el.imgSrc)),
+            message: "Vous devez remplir toutes les réponses."
         }),
         // Check Question Name:
         question => ({
-            isValid: (question.label) || (question.manipulator.ordonator.children[2] instanceof svg.Image),
+            isValid: !!(question.label) || (question.imgSrc),
             message: "Vous devez remplir le nom de la question."
         }),
         // Check Quiz Name:
@@ -2311,12 +2311,12 @@ function Bdd() {
     multipleAnswerValidationTab = [
         // Check answer's name:
         question => ({
-            isValid: question.tabAnswer.every(el => (el.label || el.manipulator.ordonator.children[2] instanceof svg.Image)),
-            message: "Vous devez remplir au moins une réponse."
+            isValid: question.tabAnswer.every(el => (el.label || el.imgSrc)),
+            message: "Vous devez remplir toutes les réponses."
         }),
         // Check Question Name:
         question => ({
-            isValid: (question.label) || (question.questionManipulator.ordonator.children[2] instanceof svg.Image),
+            isValid: !!(question.label) || (question.imgSrc),
             message: "Vous devez remplir le nom de la question."
         }),
             // Check Quiz Name:
