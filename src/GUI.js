@@ -1517,7 +1517,8 @@ function questionSelectedQuestion() {
                 quizzManager.indexOfEditedQuestion = ++index;
                 this.parentQuizz.tabQuestions[0].selected = true;
                 questionPuzzle.display();
-                svg.event(questionsArray[0].bordure, "dblclick", {}); // dernier élément du tableau (AddEmptyElement)
+
+                svg.event(questionsArray[0].bordure, "click", {question:questionsArray[0]}); // dernier élément du tableau (AddEmptyElement)
             }
         };
         this.redCrossManipulator = new Manipulator(this);
