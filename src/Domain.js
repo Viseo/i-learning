@@ -559,6 +559,7 @@ class Formation {
                         Server.insertFormation(getObjectToSave(), ignoredData)
                             .then(data => {
                                 this._id = JSON.parse(data);
+                                this.formationsManager.formations.push(this);
                                 displayMessage(messageSave);
                             });
                     } else {
