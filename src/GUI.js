@@ -2159,7 +2159,10 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
                 });
             }
         });
-        !validation && self.displayMessage(message, myColors.red);
+        if(!validation) {
+            self.displayMessage(message, myColors.red);
+            //self.selectFirstInvalidQuestion(arrayOfUncorrectQuestions[0]);
+        }
         self.displayEditedQuestion = function () {
             drawing.currentPageDisplayed = "QuizPreview";
             self.quizzManagerManipulator.flush();
