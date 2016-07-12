@@ -1158,7 +1158,7 @@ function headerDisplay (message) {
     this.width = drawing.width;
     this.height = this.size * drawing.height;
 
-    let manip = this.manipulator,
+    const manip = this.manipulator,
         userManip = this.userManipulator,
         text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
         line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
@@ -1166,32 +1166,33 @@ function headerDisplay (message) {
     manip.ordonator.set(0, line);
     mainManipulator.ordonator.set(0, manip.first);
 
-    let displayUser = () => {
-        let svgwidth = x => svg.runtime.boundingRect(x.component).width;
-        let pos = 0,
-            deconnexion = displayText("Déconnexion", this.width*0.15, 50, myColors.none, myColors.none, 20, null, userManip, 4, 5),
+    const displayUser = () => {
+        const svgwidth = x => svg.runtime.boundingRect(x.component).width;
+
+        let pos = -MARGIN;
+        const deconnexion = displayText("Déconnexion", this.width * 0.15, 50, myColors.none, myColors.none, 20, null, userManip, 4, 5),
             deconnexionWidth = svgwidth(deconnexion.content),
             ratio = 0.65,
-            body = new svg.CurvedShield(35*ratio, 30*ratio, 0.5).color(myColors.black),
-            head = new svg.Circle(12*ratio).color(myColors.black, 2, myColors.white),
+            body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.black),
+            head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
             userText = autoAdjustText(drawing.username, 0, 0, this.width * 0.23, 50, 20, null, userManip, 3);
 
-        pos-= deconnexionWidth / 2;
+        pos -= deconnexionWidth / 2;
         deconnexion.content.position(pos, 0);
-        deconnexion.cadre.position(pos, -30/2);
-        pos-= deconnexionWidth / 2 + 40;
+        deconnexion.cadre.position(pos, -30 / 2);
+        pos -= deconnexionWidth / 2 + 40;
         userText.text.anchor('end');
         userText.text.position(pos, 0);
-        pos-= userText.finalWidth;
+        pos -= userText.finalWidth;
         userManip.ordonator.set(0, body);
         userManip.ordonator.set(1, head);
 
-        pos-= svgwidth(body)/2 + MARGIN;
-        body.position(pos, -5*ratio);
-        head.position(pos, -20*ratio);
+        pos -= svgwidth(body) / 2 + MARGIN;
+        body.position(pos, -5 * ratio);
+        head.position(pos, -20 * ratio);
         userManip.translator.move(this.width, this.height * 0.75);
 
-        let deconnexionHandler = function() {
+        const deconnexionHandler = () => {
             document.cookie = "token=; path=/; max-age=0;";
             drawing.username = null;
             userManip.flush();
@@ -1202,24 +1203,22 @@ function headerDisplay (message) {
     };
 
     if (message) {
-        let messageText = autoAdjustText(message, 0, 0, this.width * 0.3, 50, 32, 'Arial', manip, 2);
-        messageText.text.position(this.width/2, this.height/2 + MARGIN);
-        //manip.ordonator.set(2, messageText);
+        const messageText = autoAdjustText(message, 0, 0, this.width * 0.3, 50, 32, 'Arial', manip, 2);
+        messageText.text.position(this.width / 2, this.height / 2 + MARGIN);
     } else {
         manip.ordonator.unset(2);
     }
 
-    manip.last.children.indexOf(userManip.first)===-1 && manip.last.add(userManip.first);
+    manip.last.children.indexOf(userManip.first) === -1 && manip.last.add(userManip.first);
     drawing.username && displayUser();
-    if (message === "Inscription" || message === "Connexion"){
-        var link;
-        message === "Inscription" ? (link = "Connexion") : (link = "Inscription");
-        var clickHandler = function(){
+    if (message === "Inscription" || message === "Connexion") {
+        const link = message === "Inscription" ? "Connexion" : "Inscription";
+        const clickHandler = () => {
             (link === "Inscription") ? inscriptionManager.display() : connexionManager.display();
         };
-        let special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
+        const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
         special.content.anchor("end");
-        userManip.translator.move(this.width, this.height * 0.5);
+        userManip.translator.move(this.width - MARGIN, this.height * 0.5);
         userManip.scalor.scale(1);
         svg.addEvent(special.content, "click", clickHandler);
         svg.addEvent(special.cadre, "click", clickHandler);

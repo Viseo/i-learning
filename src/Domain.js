@@ -3,19 +3,20 @@
  */
 var util, drawing, mainManipulator, iRuntime, runtime, imageController, asyncTimerController, svg;
 
-setUtil = function(_util){
+function setUtil(_util){
     util = _util;
-};
-setGlobalVariables = function(gv) {
+}
+
+function setGlobalVariables(gv) {
     drawing = gv.drawing;
     mainManipulator = gv.mainManipulator;
     clientWidth = gv.clientWidth;
     clientHeight = gv.clientHeight;
-};
+}
 
-setRuntime = function(_runtime){
+function setRuntime(_runtime){
     runtime = _runtime;
-};
+}
 
 function setSvg(_svg) {
     svg = _svg;
@@ -25,7 +26,7 @@ function setSvg(_svg) {
 class Answer {
     constructor (answerParameters, parent) {
         this.parentQuestion = parent;
-        var answer = {
+        let answer = {
             label: '',
             imageSrc: null,
             correct: false
@@ -71,7 +72,7 @@ class Answer {
         } else {
             return false;
         }
-    };
+    }
 
     isEditable (editor, editable) {
         this.linesManipulator = new Manipulator(this);
@@ -86,7 +87,7 @@ class Answer {
         this.editor = editor;
         let self = this;
         this.checkInputContentArea = editable ? function (objCont) {
-            if(typeof objCont.contentarea.messageText !== "undefined"){
+            if (typeof objCont.contentarea.messageText !== "undefined") {
                 if (objCont.contentarea.messageText.match(REGEX)) {
                     self.label = objCont.contentarea.messageText;
                     objCont.remove();
@@ -95,7 +96,7 @@ class Answer {
                     self.label = objCont.contentarea.messageText;
                     objCont.display();
                 }
-            }else{
+            } else {
                 self.label = "";
             }
         } : null;
@@ -315,7 +316,7 @@ class AddEmptyElement {
 
     remove () {
         console.log("Tentative de suppression d'AddEmptyElement");
-    };
+    }
 }
 
 class Level {
@@ -324,7 +325,7 @@ class Level {
         this.manipulator = new Manipulator(this);
         this.manipulator.addOrdonator(3);
         this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length-1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length-1].index+1) : 1;
-        gamesTab ? (this.gamesTab = gamesTab) : (this.gamesTab = []);
+        this.gamesTab = gamesTab ? gamesTab : [];
         this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
         this.y = (this.index-1) * this.parentFormation.levelHeight;
         this.obj = null;
@@ -364,7 +365,7 @@ class FormationsManager {
         this.formations = [];
         this.count = 0;
         for (let formation of formations) {
-            this.formations.push(new Formation(formation, this))
+            this.formations.push(new Formation(formation, this));
         }
         this.manipulator = new Manipulator();
         this.header = new Header();
@@ -512,7 +513,9 @@ class Formation {
                     .anchor('middle').color(myColors.green);
                 this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
                 svg.timeout(() => {
-                    (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave)
+                    if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
+                        this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+                    }
                 }, 5000);
             }
         };
@@ -530,10 +533,10 @@ class Formation {
 
         if (this.label && this.label !== this.labelDefault) {
             let getObjectToSave = () => {
-                var levelsTab = [];
-                var gamesCounter = {quizz: 0 , bd : 0};
+                const levelsTab = [];
+                const gamesCounter = {quizz: 0 , bd : 0};
                 this.levelsTab.forEach((level, i) => {
-                    var gamesTab = [];
+                    const gamesTab = [];
                     levelsTab.push({gamesTab: gamesTab});
                     level.gamesTab.forEach(game => {
                         if (game.tabQuestions) {
@@ -546,7 +549,7 @@ class Formation {
                         levelsTab[i].gamesTab.push(game);
                     });
                 });
-                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab}
+                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
             };
 
             let addNewFormation = () => {
@@ -557,11 +560,11 @@ class Formation {
                             .then(data => {
                                 this._id = JSON.parse(data);
                                 displayMessage(messageSave);
-                            })
+                            });
                     } else {
                         displayMessage(messageUsedName);
                     }
-                })
+                });
             };
 
             let replaceFormation = () => {
@@ -575,15 +578,15 @@ class Formation {
                             let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
                             if (id === this._id) {
                                 if (formationWithSameName === newFormation) {
-                                    throw messageNoModification
+                                    throw messageNoModification;
                                 } else {
-                                    return getObjectToSave()
+                                    return getObjectToSave();
                                 }
                             } else {
-                                throw messageUsedName
+                                throw messageUsedName;
                             }
                         } else {
-                            return getObjectToSave()
+                            return getObjectToSave();
                         }
                     })
                     .then((formation) => {
@@ -592,7 +595,7 @@ class Formation {
                                 displayMessage(messageReplace);
                             });
                     })
-                    .catch(displayMessage)
+                    .catch(displayMessage);
             };
 
             this._id ? replaceFormation() : addNewFormation();
@@ -633,28 +636,18 @@ class Formation {
         return longestLevelCandidates;
     }
 
-    findGameById (id){
-        let theGame;
-        this.levelsTab.forEach(function(level){
-            level.gamesTab.forEach(function(game){
-                if(game.id === id)
-                {
-                    theGame = game;
-                }
-            });
-        });
-        return theGame;
-    };
+    findGameById (id) {
+        return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
+    }
 
     isGameAvailable (game) {
         let available = true;
         this.link.forEach(linkElement => {
-            if(linkElement.childGame === game.id)
-            {
-                let parentGame = this.findGameById(linkElement.parentGame);
+            if(linkElement.childGame === game.id) {
+                const parentGame = this.findGameById(linkElement.parentGame);
                 if(parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
                     available = false;
-                    return available
+                    return available;
                 }
             }
         });
@@ -700,7 +693,7 @@ class Formation {
         } else {
             this.levelsTab.splice(index, 0, level);
         }
-    };
+    }
 
     removeLevel (index) {
         this.levelsTab.splice(index - 1, 1);
@@ -718,7 +711,7 @@ class Formation {
             svg.addEvent(this.messageDragDrop, "mouseup", this.mouseUpGraphBlock);
             runtime && runtime.addEvent(this.panel.back.component, "mouseup", this.mouseUpGraphBlock);
         }
-    };
+    }
 
     adjustGamesPositions (level) {
         var nbOfGames = level.gamesTab.length;
@@ -736,7 +729,7 @@ class Formation {
             level.gamesTab.forEach(game => {
                 delete game.miniature;
                 delete game.status;
-            })
+            });
         });
         this.miniaturesManipulator.flush();
         Server.getUser().then(data => {
@@ -745,7 +738,9 @@ class Formation {
                 let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
                 formationUser && formationUser.gamesTab.forEach(game => {
                     let theGame = this.findGameById(game.game);
-                    if (!theGame) return;
+                    if (!theGame) {
+                        return;
+                    }
 
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(wrongAnswer => {
@@ -763,7 +758,7 @@ class Formation {
                 });
             });
 
-            displayFunction.call(this)
+            displayFunction.call(this);
         });
     }
 }
@@ -781,9 +776,8 @@ class Library {
 
         this.imageWidth = 50;
         this.imageHeight = 50;
-        this.libMargin = 5;
 
-        for (var i = 0; i < this.itemsTab.length; i++) {
+        for (let i = 0; i < this.itemsTab.length; i++) {
             this.libraryManipulators[i] = new Manipulator(this);
             this.libraryManipulators[i].addOrdonator(2);
         }
@@ -803,9 +797,11 @@ class GamesLibrary extends Library {
     }
 
     dropAction (element, event) {
-        var target = drawings.background.getTarget(event.clientX, event.clientY);
+        const target = drawings.background.getTarget(event.clientX, event.clientY);
+        let formation;
+
         if (target && target._acceptDrop) {
-            var formation = target.parent.parentManip.parentObject;
+            formation = target.parent.parentManip.parentObject;
             formation.addNewGame(event, this);
         }
         this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
@@ -891,10 +887,10 @@ class QuizzManager {
             this.quizzName = this.quizz.title;
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.forEach( (question, index )  => {
+            this.quizz.tabQuestions.forEach( (question, index)  => {
                 quizz.tabQuestions[index].questionType && (question.questionType = quizz.tabQuestions[index].questionType);
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
-            })
+            });
             this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
         };
@@ -971,7 +967,7 @@ class QuizzManager {
             levelIndex: this.quizz.levelIndex,
             gameIndex: this.quizz.gameIndex
         };
-    };
+    }
 
     displayMessage (message, color) {
         this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
@@ -993,11 +989,11 @@ class QuizzManager {
 
         var validation = true;
         quiz.tabQuestions.forEach(question => {
-            question.questionType.validationTab.forEach( (funcEl) => {
+            question.questionType.validationTab.forEach((funcEl) => {
                 var result = funcEl(question);
                 validation = validation && result.isValid;
             });
-        })
+        });
 
         validation ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
@@ -1012,11 +1008,11 @@ class QuizzManager {
                 this.display();
                 console.log("Votre travail a été bien enregistré");
             });
-    };
+    }
 
     selectNextQuestion () {
         this.indexOfEditedQuestion++;
-    };
+    }
 
     checkInputTextArea (myObj) {
         if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
@@ -1029,13 +1025,13 @@ class QuizzManager {
             myObj.display();
             this.quizzNameValidInput = false;
         }
-    };
+    }
 
 }
 
 class Quizz {
     constructor (quizz, previewMode, parentFormation) {
-        this.id=quizz.id;
+        this.id = quizz.id;
         this.miniatureManipulator = new Manipulator(this);
         this.parentFormation = parentFormation || quizz.parentFormation;
         this.quizzManipulator = new Manipulator(this);
@@ -1141,7 +1137,7 @@ class Quizz {
         !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator)=== -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
         this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
             this.questionArea.w, this.answerHeight);
-    };
+    }
 
     // !_! bof, y'a encore des display appelés ici
     nextQuestion () {
@@ -1215,12 +1211,13 @@ function Domain() {
 
     util && util.SVGUtil();
     util && util.SVGGlobalHandler();
-    var ImageRuntime = {
+    const ImageRuntime = {
         images: {},
         count: 0,
+
         getImage: function (imgUrl, onloadHandler) {
             this.count++;
-            var image = {
+            const image = {
                 src: imgUrl,
                 onload: onloadHandler,
                 id: "i"+ this.count
@@ -1235,11 +1232,12 @@ function Domain() {
             this.images[id].onload();
         }
     };
-    var AsyncTimerRuntime = {
+    const AsyncTimerRuntime = {
         timers: {},
         count: 0,
+
         interval: function (handler, timer) {
-            var interval = {
+            const interval = {
                 id:"interval" + this.count,
                 next: handler,
                 timer: timer
@@ -1248,17 +1246,19 @@ function Domain() {
             this.timers[interval.id] = interval;
             return interval;
         },
+
         clearInterval: function (id) {
             delete this.timers[id];
         },
+
         timeout: function (handler, timer) {
-            var timeout = {
-                id:"timeout" + this.count,
+            const timeout = {
+                id: "timeout" + this.count,
                 next: function () {
                     handler();
                     delete this;
                 },
-                timer:timer
+                timer: timer
             };
             this.count++;
             this.timers[timeout.id] = timeout;
@@ -1359,14 +1359,14 @@ ConnexionManager = function () {
     self.connexionButtonHandler = function() {
 
         let emptyAreas = self.tabForm.filter(field => field.label === '');
-        emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red)});
+        emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red);});
 
         if (emptyAreas.length > 0) {
             let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
             svg.timeout(function() {
                 self.connexionButtonManipulator.ordonator.unset(3);
-                emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black)});
+                emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black);});
             },5000);
         } else {
             Server.connect(self.mailAddressField.label, self.passwordField.labelSecret).then(data => {
@@ -1378,7 +1378,7 @@ ConnexionManager = function () {
                 } else {
                     let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
-                    svg.timeout(() => {self.connexionButtonManipulator.ordonator.unset(3)}, 5000);
+                    svg.timeout(() => {self.connexionButtonManipulator.ordonator.unset(3);}, 5000);
                 }
             });
         }
