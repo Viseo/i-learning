@@ -1502,6 +1502,7 @@ function questionSelectedQuestion() {
                 quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
                 this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
+                questionPuzzle && questionPuzzle.indexOfFirstVisibleElement!=0 && questionPuzzle.indexOfFirstVisibleElement--;
                 questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
                 questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
                 questionPuzzle.display();

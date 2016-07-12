@@ -1070,13 +1070,13 @@ class Puzzle {
             this.indexOfFirstVisibleElement +=orientation;
         }
         else{
-            let shift = (this.columns)*this.rows*orientation;
+            let shift = (this.columns-1)*this.rows*orientation;
             let temporaryIndex = this.indexOfFirstVisibleElement + shift;
             if(temporaryIndex>0){
                 let overflow = (temporaryIndex+shift)-(this.elementsArray.length);
                 let result = ((overflow/this.rows)%1 === 0) ? overflow/this.rows : Math.floor(overflow/this.rows)+1;
                 if(result>0){
-                    temporaryIndex -= result * this.rows;
+                    temporaryIndex -= result * this.rows+1;
                 }
             }
             else{
