@@ -15,13 +15,13 @@ if(!param) {
 }
 
 /* istanbul ignore next */
-if(typeof SVG != "undefined") {
+if(typeof SVG !== "undefined") {
     if(!svg) {
         svg = new SVG();
     }
 }
 /* istanbul ignore next */
-if(typeof exports.Gui != "undefined") {
+if(typeof exports.Gui !== "undefined") {
     if(!gui) {
         gui = new exports.Gui(svg, {speed: 5, step: 100});
     }
@@ -39,30 +39,11 @@ function  setRuntime(_runtime){
     runtime = _runtime;
 }
 
-if(typeof exports != "undefined") {
+if(typeof exports !== "undefined") {
     exports.setSvg = setSvg;
 }
 
 function SVGGlobalHandler() {
-    Manipulator = function (sourceObject) {
-        var self = this;
-        self.parentObject = sourceObject;
-        self.translator = new svg.Translation(0, 0);
-        self.translator.parentManip = self;
-        self.rotator = new svg.Rotation(0);
-        self.rotator.parentManip = self;
-        self.scalor = new svg.Scaling(1);
-        self.scalor.parentManip = self;
-        self.translator.add(self.rotator.add(self.scalor));
-        self.last = self.scalor;
-        self.first = self.translator;
-        self.addOrdonator = function(layerNumber){
-            self.ordonator = new svg.Ordered(layerNumber);
-            self.ordonator.parentManip = self;
-            self.scalor.add(self.ordonator);
-            return self;    
-        }
-    };
 
     Drawings = function (w, h, anchor = "content") {
         var self = this;
@@ -146,32 +127,6 @@ function SVGGlobalHandler() {
         svg.addEvent(self.glass, "mouseout", onmouseoutHandler);
     };
 
-    Manipulator.prototype.flush = function () {
-        var self = this;
-        function clean(handler){
-            for(var i=0;i<handler.children.length;i++){
-                if((handler instanceof svg.Ordered)){
-                    for(var j =0; j<handler.children.length;j++){
-                        if(!(handler.children[j] instanceof svg.Handler)){
-                            handler.unset(j);
-                        }
-                        else {
-                            clean(handler.children[j]);
-                        }
-                    }
-                }
-                else if (handler.children[i] instanceof svg.Handler){
-                    clean(handler.children[i]);
-                }
-                else {
-                    handler.remove(handler.children[i]);
-                    i--;
-                }
-            }
-        }
-        clean(self.translator);
-    };
-
     ImageController = function (imageRuntime) {
         return imageRuntime || {
                 getImage: function (imgUrl, onloadHandler) {
@@ -196,6 +151,51 @@ function SVGGlobalHandler() {
                 }
             };
     };
+
+}
+
+class Manipulator {
+    constructor (sourceObject) {
+        this.parentObject = sourceObject;
+        this.translator = new svg.Translation(0, 0);
+        this.translator.parentManip = this;
+        this.rotator = new svg.Rotation(0);
+        this.rotator.parentManip = this;
+        this.scalor = new svg.Scaling(1);
+        this.scalor.parentManip = this;
+        this.translator.add(this.rotator.add(this.scalor));
+        this.last = this.scalor;
+        this.first = this.translator;
+    }
+
+    addOrdonator (layerNumber) {
+        this.ordonator = new svg.Ordered(layerNumber);
+        this.ordonator.parentManip = this;
+        this.scalor.add(this.ordonator);
+        return this;
+    }
+
+    flush () {
+        let clean = (handler) => {
+            for (let i = 0; i < handler.children.length; i++) {
+                if((handler instanceof svg.Ordered)){
+                    for (let j = 0; j < handler.children.length; j++) {
+                        if (!(handler.children[j] instanceof svg.Handler)) {
+                            handler.unset(j);
+                        } else {
+                            clean(handler.children[j]);
+                        }
+                    }
+                } else if (handler.children[i] instanceof svg.Handler) {
+                    clean(handler.children[i]);
+                } else {
+                    handler.remove(handler.children[i]);
+                    i--;
+                }
+            }
+        };
+        clean(this.translator);
+    }
 
 }
 
