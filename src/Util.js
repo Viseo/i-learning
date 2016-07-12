@@ -449,7 +449,8 @@ function SVGUtil() {
             w = wi * 99/100,
             t = new svg.Text('text');
         manipulator.ordonator.set(layer, t);
-        t.font(font ? font : 'Arial', fontSize ? fontSize : 20);
+        (fontSize) || (fontSize = 20);
+        t.font(font ? font : 'Arial', fontSize);
 
         while (words.length > 0) {
             let word = words.shift();
