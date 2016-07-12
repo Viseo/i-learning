@@ -1167,7 +1167,7 @@ class Puzzle {
         this.manipulator.translator.move(this.x, this.y);
         this.chevronSize = Math.max(Math.min(this.height*0.15, this.width*0.1, this.chevronMaxSize), this.chevronMinSize);
         this.visibleArea = {
-            width: this.width - 2*this.chevronSize,
+            width: needChevrons ? (this.width - 2*this.chevronSize) : (this.width),
             height: this.height
         };
         //this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
