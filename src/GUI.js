@@ -139,6 +139,7 @@ function answerDisplay (x, y, w, h) {
                 height: self.image ? contentarea.height : h * 0.5,
                 width: self.obj.cadre.width * 5/6
             };
+            drawing.notInTextArea = false;
             contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
             color(null, 0, myColors.black).
             font("Arial", 20);
@@ -180,6 +181,7 @@ function answerDisplay (x, y, w, h) {
                 contentarea.enter();
                 self.label = contentarea.messageText;
                 drawings.screen.remove(contentarea);
+                drawing.notInTextArea = true;
                 showTitle();
             };
             svg.addEvent(contentarea,'input',function () {
@@ -722,13 +724,12 @@ function formationDisplayFormation() {
             }
             return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
         };
-
+        drawing.notInTextArea = true;
         svg.runtime.addGlobalEvent("keydown", (event) => {
-            if(hasKeyDownEvent(event)) {
+            if(drawing.notInTextArea && hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
         });
-
         self.manipulator.ordonator.set(1, self.clippingManipulator.first);
         !playerMode && self.clippingManipulator.translator.move(self.libraryWidth, drawing.height*HEADER_SIZE);
         playerMode && self.clippingManipulator.translator.move(MARGIN, drawing.height*HEADER_SIZE);
@@ -864,6 +865,7 @@ function formationDisplayFormation() {
                 width: self.formationLabel.cadre.width-MARGIN,
                 height:(self.labelHeight)
             };
+            drawing.notInTextArea = false;
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
             contentarea.color(myColors.lightgrey, 0, myColors.black)
                 .font("Arial", 15)
@@ -895,6 +897,7 @@ function formationDisplayFormation() {
                 self.label = contentarea.messageText;
                 //self.formationNameValidInput && (
                 drawings.screen.remove(contentarea);
+                drawing.notInTextArea = true;
                 showTitle();
                 header.display(self.label);
             };
@@ -1027,8 +1030,9 @@ function formationsManagerDisplay() {
         self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
         if(self.rows === 0) self.rows = 1;
 
-        svg.runtime.addGlobalEvent('keydown', function (event) {
-            if(hasKeyDownEvent(event)) {
+        drawing.notInTextArea = true;
+        svg.runtime.addGlobalEvent("keydown", (event) => {
+            if(drawing.notInTextArea && hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
         });
@@ -1684,6 +1688,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             width: (self.w*5/6)
         };
         self.questionBlock.title.content.message("");
+        drawing.notInTextArea = false;
         var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
             .color(myColors.white, 0, myColors.black)
             .message(self.linkedQuestion.label)
@@ -1699,6 +1704,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                 self.linkedQuestion.label=textarea.messageText;
             }
             drawings.screen.remove(textarea);
+            drawing.notInTextArea = true;
             showTitle();
             self.parent.displayQuestionsPuzzle(null, null, null, null, self.parent.questionPuzzle.indexOfFirstVisibleElement);
         };
@@ -1791,9 +1797,9 @@ function popInDisplay() {
     let panelWidth = 2*questionCreator.coordinatesAnswers.w/3,
         panelHeight = 2*questionCreator.coordinatesAnswers.h/3;
     this.panelManipulator.translator.move(questionCreator.coordinatesAnswers.w/12, 0);
-    let notInTextArea;
+    drawing.notInTextArea = true;
     svg.runtime.addGlobalEvent("keydown", (event) => {
-        if(notInTextArea && hasKeyDownEvent(event)) {
+        if(drawing.notInTextArea && hasKeyDownEvent(event)) {
             event.preventDefault();
         }
     });
@@ -1816,10 +1822,10 @@ function popInDisplay() {
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
         let contentArea = {};
-        notInTextArea = false;
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
         contentArea.x = panelWidth/2;//-questionCreator.coordinatesAnswers.w/12;
         contentArea.globalPointCenter = this.panel.border.globalPoint(-contentArea.x,-contentArea.y/2-MARGIN);
+        drawing.notInTextArea = false;
         contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y,panelWidth-MARGIN,panelHeight-MARGIN);
         contentArea.color(null, 0, myColors.black).font("Arial",20);
         (this.textToDisplay === "" || this.textToDisplay === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
@@ -1833,7 +1839,7 @@ function popInDisplay() {
             contentArea.enter();
             this.label = contentArea.messageText;
             drawings.screen.remove(contentArea);
-            notInTextArea = true;
+            drawing.notInTextArea = true;
             this.display();
         };
         svg.addEvent(contentArea,'input',()=> {
@@ -2177,6 +2183,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             width: 700,
             height:(self.quizzNameHeight+3)-MARGIN/2
         };
+        drawing.notInTextArea = false;
         let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         textarea.color([], 0, myColors.black)
             .message(self.quizzName)
@@ -2209,6 +2216,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             self.quizzName = textarea.messageText;
             self.quizz.title = textarea.messageText;
             drawings.screen.remove(textarea);
+            drawing.notInTextArea = true;
             showTitle();
         };
         var oninput = function () {
@@ -2339,6 +2347,7 @@ function inscriptionManagerDisplay() {
                 height: height,
                 width: width
             };
+            drawing.notInTextArea = false;
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
             contentarea.message(self[field].labelSecret || self[field].label);
             contentarea.color(null, 0, myColors.black).
@@ -2398,6 +2407,7 @@ function inscriptionManagerDisplay() {
                         self[field].secret || self[field].cadre.color(myColors.white, 3, myColors.red);
                     }
                     drawings.screen.remove(contentarea);
+                    drawing.notInTextArea = true;
                     alreadyDeleted = true;
                 }
             };
@@ -2618,6 +2628,7 @@ function connexionManagerDisplay() {
                 height: height,
                 width: self[field].cadre.width
             };
+            drawing.notInTextArea = false;
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
             contentarea.message(self[field].labelSecret||self[field].label);
@@ -2645,6 +2656,7 @@ function connexionManagerDisplay() {
                     }
                     contentarea.messageText && displayField(field, manipulator);
                     manipulator.ordonator.unset(3);
+                    drawing.notInTextArea = true;
                     alreadyDeleted || drawings.screen.remove(contentarea);
                     alreadyDeleted = true;
                 }
