@@ -100,15 +100,15 @@ function answerDisplay (x, y, w, h) {
             if(self.image){
                 self.imageLayer = 2;
                 let picture = new Picture(self.image.src, true, self, text);
-                picture.draw(0, 0, w, h);
+                picture.draw(0, 0, w, h, self.manipulator, w-2*self.checkboxSize);
                 self.obj.cadre = picture.imageSVG.cadre;
                 self.obj.image = picture.imageSVG.image;
                 self.obj.content = picture.imageSVG.content;
             } else {
-                var tempObj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator);
+                var tempObj = displayText(text, w, h, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, 0, 1, w-2*self.checkboxSize);
                 self.obj.cadre = tempObj.cadre;
                 self.obj.content = tempObj.content;
-                self.obj.content.position((self.checkboxSize/2),self.obj.content.y);
+                self.obj.content.position(0,self.obj.content.y);
             }
 
             (self.answerNameValidInput && text !== "") ? (self.obj.cadre.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(self.obj.cadre.color(myColors.white,2,myColors.red).fillOpacity(0.001));

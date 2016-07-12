@@ -310,12 +310,12 @@ function SVGUtil() {
      * @param previousImage
      * @returns {{cadre: *, image, text}}
      */
-    displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage) {
+    displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage, textWidth=w) {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;
         }
-        var text = autoAdjustText(label, 0, 0, w, null, fontSize, font, manipulator).text;
+        var text = autoAdjustText(label, 0, 0, textWidth, null, fontSize, font, manipulator).text;
 
         var textHeight = (label !== "")? h*0.25:0;
         text.position(0, (h - textHeight) / 2);//w*1/6
@@ -391,12 +391,12 @@ function SVGUtil() {
      * @param layer2
      * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
      */
-    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1) {
+    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;
         }
-        var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator, layer2).text;
+        var content = autoAdjustText(label, 0, 0, textWidth, h, textHeight, font, manipulator, layer2).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
         manipulator.ordonator.set(layer1, cadre);
         return {content: content, cadre: cadre};
@@ -716,14 +716,14 @@ class Picture {
         this.parent = parent;
         this.textToDisplay = textToDisplay;
     }
-    draw(x, y, w, h, manipulator = this.parent.manipulator){
+    draw(x, y, w, h, manipulator = this.parent.manipulator, textWidth){
         this.width = w;
         this.height = h;
         if (this.editable){
             this.drawImageRedCross(x, y, w, h, this.parent, manipulator);
         }
         if (this.textToDisplay){
-            this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator);
+            this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
             svg.addEvent(this.imageSVG.image,'mouseover', this.imageMouseoverHandler);
             svg.addEvent(this.imageSVG.image,'mouseout', this.mouseleaveHandler);
             this.imageSVG.image._acceptDrop = true;
