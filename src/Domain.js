@@ -970,7 +970,7 @@ class QuizzManager {
     displayMessage (message, color) {
         this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
         this.questionCreator.errorMessagePreview = new svg.Text(message)
-            .position(this.ButtonWidth, -this.questionCreator.toggleButtonHeight + MARGIN)
+            .position(this.ButtonWidth, -this.saveButton.cadre.height/2)
             .font("Arial", 20)
             .anchor('middle').color(color);
         setTimeout(() => {
