@@ -485,7 +485,7 @@ class Formation {
 
     saveFormation (displayQuizzManager) {
         const messageSave = "Votre travail a bien été enregistré.",
-            messageError = "Vous devez remplir le nom de la formation.",
+            messageError = "Vous devez remplir correctement le nom de la formation.",
             messageReplace =  "Les modifications ont bien été enregistrées",
             messageUsedName = "Le nom de cette formation est déjà utilisé !",
             messageNoModification = "Les modifications ont déjà été enregistrées";
@@ -530,7 +530,7 @@ class Formation {
             }
         };
 
-        if (this.label && this.label !== this.labelDefault) {
+        if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
             const getObjectToSave = () => {
                 const levelsTab = [];
                 const gamesCounter = {quizz: 0 , bd : 0};
