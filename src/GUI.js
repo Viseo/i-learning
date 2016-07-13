@@ -172,7 +172,7 @@ function answerDisplay (x, y, w, h) {
                     anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEX_ERROR);
                 quizzManager.questionCreator.questionCreatorManipulator.ordonator.set(1,self.errorMessage);
-                self.errorMessage.position(0, quizzManager.questionCreator.coordinatesAnswers.h - drawing.height*previewButtonHeightRatio/2+svg.runtime.boundingRect(self.errorMessage.component).height/4)//drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
+                self.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2+svg.runtime.boundingRect(self.errorMessage.component).height)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
                 contentarea.focus();
                 self.answerNameValidInput = false;
@@ -1147,7 +1147,7 @@ function formationsManagerDisplay() {
             }
             formation.parent = self;
             self.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first)===-1 && self.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
-            
+
             formation.miniature.display(posx, posy, self.tileWidth, self.tileHeight);
 
             formation.miniature.setHandler(onClickFormation);
@@ -2051,7 +2051,7 @@ function quizzDisplayScore(color){
     } else {
         usedColor = color;
     }
-    
+
     self.resultManipulator && (self.quizzManipulator.last.children.indexOf(self.resultManipulator.first) !== -1) && self.quizzManipulator.last.remove(self.resultManipulator.first);
 
     self.resultManipulator = new Manipulator(self);

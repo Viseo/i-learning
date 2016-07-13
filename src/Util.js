@@ -1237,7 +1237,7 @@ class Server {
     static replaceFormation(id, newFormation, ignoredData) {
         return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData)
     }
-    
+
     static insertFormation(newFormation, ignoredData) {
         return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
     }
