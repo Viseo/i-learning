@@ -1724,11 +1724,10 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var anchor = 'middle';
             var quizzInfoHeightRatio = 0.05;
             var questionsPuzzleHeightRatio = 0.25;
-            self.errorMessage = new svg.Text(REGEX_ERROR)
-                .position(0,-self.questionBlock.title.cadre.height/2)
-                //.position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
-                .font("Arial", 15).color(myColors.red).anchor(anchor);
+            self.errorMessage = new svg.Text(REGEX_ERROR);
             self.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
+            self.errorMessage.position(0,-self.h/2 + self.toggleButtonHeight+ self.questionBlock.title.cadre.height+svg.runtime.boundingRect(self.errorMessage.component).height+MARGIN)
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea.focus();
             self.linkedQuestion.questionNameValidInput = false;
         };
