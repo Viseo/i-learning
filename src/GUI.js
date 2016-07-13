@@ -1362,7 +1362,7 @@ function questionDisplayAnswers(x, y, w, h) {
             if (count > (self.rows - 1)) {
                 count = 0;
                 posy += (self.tileHeight + MARGIN);
-                posx = self.initialAnswersPosX;
+                posx = 0;
             }
 
             self.answersManipulator.last.children.indexOf(self.tabAnswer[i].manipulator.first) === -1 && self.answersManipulator.last.add(self.tabAnswer[i].manipulator.first);
