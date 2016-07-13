@@ -979,7 +979,6 @@ class QuizzManager {
     }
 
     saveQuizz () {
-
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
 
@@ -987,7 +986,7 @@ class QuizzManager {
 
         var validation = true;
         quiz.tabQuestions.forEach(question => {
-            question.questionType.validationTab.forEach((funcEl) => {
+            question.questionType && question.questionType.validationTab.forEach((funcEl) => {
                 var result = funcEl(question);
                 validation = validation && result.isValid;
             });

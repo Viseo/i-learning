@@ -1949,6 +1949,8 @@ function quizzDisplay(x, y, w, h) {
         //this.rightChevron.parentObj = this;
         this.leftChevron = new Chevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+        this.leftChevron.parentObj = this;
+        this.rightChevron.parentObj = this;
         let updateColorChevrons = (quiz) => {
             quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length-1 ? myColors.grey : myColors.black);
             quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
