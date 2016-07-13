@@ -1156,7 +1156,10 @@ class Puzzle {
     }
 
     display(x, y, w, h, needChevrons = true){
-        this.manipulator.flush();
+        if(this.parentObject.indexOfEditedQuestion ){
+            this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush() ;// questionPuzzle
+        } 
+
         (typeof x !== "undefined") && (this.x = x);
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
