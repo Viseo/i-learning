@@ -981,7 +981,8 @@ class QuizzManager {
     saveQuizz () {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
-
+        svg.addEvent(this.saveButton.cadre, "click", ()=>{});
+        svg.addEvent(this.saveButton.content, "click", ()=>{});
         let quiz = this.getObjectToSave();
 
         var validation = true;
