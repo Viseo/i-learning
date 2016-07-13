@@ -742,6 +742,9 @@ class Picture {
                 parent.image = null;
                 parent.imageSrc = null;
             }
+            if(parent.parent && parent.parent.questionPuzzle){
+                parent.parent.questionPuzzle.display();
+            }
             if (this.parent.parentQuestion){
                 let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
                 let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
@@ -751,6 +754,7 @@ class Picture {
             else {
                 this.parent.display();
             }
+
         };
         this.mouseleaveHandler= ()=>{
             this.redCrossManipulator.flush();
@@ -1152,6 +1156,7 @@ class Puzzle {
     }
 
     display(x, y, w, h, needChevrons = true){
+        this.manipulator.flush();
         (typeof x !== "undefined") && (this.x = x);
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
