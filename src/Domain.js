@@ -484,13 +484,13 @@ class Formation {
     }
 
     saveFormation (displayQuizzManager) {
-        let messageSave = "Votre travail a bien été enregistré.",
+        const messageSave = "Votre travail a bien été enregistré.",
             messageError = "Vous devez remplir le nom de la formation.",
             messageReplace =  "Les modifications ont bien été enregistrées",
             messageUsedName = "Le nom de cette formation est déjà utilisé !",
             messageNoModification = "Les modifications ont déjà été enregistrées";
 
-        let displayErrorMessage = (message) => {
+        const displayErrorMessage = (message) => {
             (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
             this.errorMessage = new svg.Text(message)
                 .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
@@ -501,7 +501,7 @@ class Formation {
             }, 1);
         };
 
-        let displaySaveMessage = (message, displayQuizzManager) => {
+        const displaySaveMessage = (message, displayQuizzManager) => {
             if (displayQuizzManager) {
                 displayQuizzManager();
             } else {
@@ -519,7 +519,7 @@ class Formation {
             }
         };
 
-        let displayMessage = message => {
+        const displayMessage = message => {
             switch (message) {
                 case messageError:
                 case messageUsedName:
@@ -531,7 +531,7 @@ class Formation {
         };
 
         if (this.label && this.label !== this.labelDefault) {
-            let getObjectToSave = () => {
+            const getObjectToSave = () => {
                 const levelsTab = [];
                 const gamesCounter = {quizz: 0 , bd : 0};
                 this.levelsTab.forEach((level, i) => {
@@ -554,7 +554,7 @@ class Formation {
             let addNewFormation = () => {
                 Server.getFormationByName(this.label)
                     .then(data => {
-                        let formationWithSameName = JSON.parse(data).formation;
+                        const formationWithSameName = JSON.parse(data).formation;
                         if (!formationWithSameName) {
                             return getObjectToSave();
                         } else {
@@ -574,10 +574,10 @@ class Formation {
                     .then(data => {
                         let formationWithSameName = JSON.parse(data).formation;
                         if(formationWithSameName) {
-                            let id = formationWithSameName._id;
+                            const id = formationWithSameName._id;
                             delete formationWithSameName._id;
                             formationWithSameName = JSON.stringify(formationWithSameName);
-                            let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                            const newFormation = JSON.stringify(getObjectToSave(), ignoredData);
                             if (id === this._id) {
                                 if (formationWithSameName === newFormation) {
                                     throw messageNoModification;
