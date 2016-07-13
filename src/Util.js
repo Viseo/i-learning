@@ -2398,7 +2398,7 @@ function Bdd() {
         }),
         // Check Question Name:
         question => ({
-            isValid: !!(question.label) || (question.imageSrc),
+            isValid: !!(question.label || question.imageSrc),
             message: "Vous devez remplir le nom de la question."
         }),
         // Check Quiz Name:
@@ -2416,7 +2416,7 @@ function Bdd() {
         }),
         // Check Question Name:
         question => ({
-            isValid: !!(question.label) || (question.imageSrc),
+            isValid: !!(question.label || question.imageSrc),
             message: "Vous devez remplir le nom de la question."
         }),
             // Check Quiz Name:
