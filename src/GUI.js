@@ -156,7 +156,7 @@ function answerDisplay (x, y, w, h) {
 
             let removeErrorMessage = function () {
                 self.answerNameValidInput = true;
-                self.errorMessage && self.editor.parent.questionCreatorManipulator.ordonator.unset(0);
+                self.errorMessage && self.editor.parent.questionCreatorManipulator.ordonator.unset(1);
                 self.obj.cadre.color(myColors.white, 1, myColors.black);
             };
 
@@ -167,12 +167,13 @@ function answerDisplay (x, y, w, h) {
                     previewButtonHeightRatio = 0.1,
                     marginErrorMessagePreviewButton = 0.03,
                     //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
-                    position = 0.5*libraryRatio * drawing.width + (self.editor.parent.questCreaWidth/2),//-self.editor.parent.globalMargin.width)/2,
+                    quizzManager = self.parentQuestion.parentQuizz.parentFormation.quizzManager,
+                    position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-self.editor.parent.globalMargin.width)/2,
                     anchor = 'middle';
-                self.errorMessage = new svg.Text(REGEX_ERROR)
-                    .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
+                self.errorMessage = new svg.Text(REGEX_ERROR);
+                quizzManager.questionCreator.questionCreatorManipulator.ordonator.set(1,self.errorMessage);
+                self.errorMessage.position(0, quizzManager.questionCreator.coordinatesAnswers.h - drawing.height*previewButtonHeightRatio/2+svg.runtime.boundingRect(self.errorMessage.component).height/4)//drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
-                self.editor.parent.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
@@ -1724,7 +1725,8 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var quizzInfoHeightRatio = 0.05;
             var questionsPuzzleHeightRatio = 0.25;
             self.errorMessage = new svg.Text(REGEX_ERROR)
-                .position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
+                .position(0,-self.questionBlock.title.cadre.height/2)
+                //.position(w/2, drawing.height * (quizzInfoHeightRatio + questionsPuzzleHeightRatio) + self.toggleButtonHeight+ 5 * MARGIN + self.questionBlock.title.cadre.height)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             self.questionCreatorManipulator.ordonator.set(0, self.errorMessage);
             textarea.focus();
@@ -2206,10 +2208,10 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
             removeErrorMessage();
             self.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEX_ERROR)
-                .position(self.quizzLabel.cadre.width + MARGIN, h/2 +self.quizzLabel.cadre.height/4)
-                .font("Arial", 15).color(myColors.red).anchor(anchor);
+            self.errorMessage = new svg.Text(REGEX_ERROR);
             self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
+            self.errorMessage.position(self.quizzLabel.cadre.width + MARGIN, bounds.height+3+self.quizzLabel.cadre.height/2+svg.runtime.boundingRect(self.errorMessage.component).height/2)
+                .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea.focus();
             //self.quizzNameValidInput = false;
         };

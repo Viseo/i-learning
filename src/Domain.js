@@ -205,7 +205,7 @@ class QuestionCreator {
         this.manipulator = new Manipulator(this);
         this.manipulatorQuizzInfo = new Manipulator(this);
         this.questionCreatorManipulator = new Manipulator(this);
-        this.questionCreatorManipulator.addOrdonator(6);
+        this.questionCreatorManipulator.addOrdonator(2);
         this.questionManipulator = new Manipulator(this);
         this.questionManipulator.addOrdonator(6);
         this.toggleButtonManipulator = new Manipulator(this);
