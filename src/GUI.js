@@ -167,12 +167,13 @@ function answerDisplay (x, y, w, h) {
                     previewButtonHeightRatio = 0.1,
                     marginErrorMessagePreviewButton = 0.03,
                     //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
-                    position = 0.5*libraryRatio * drawing.width + (self.editor.parent.questCreaWidth/2),//-self.editor.parent.globalMargin.width)/2,
+                    quizzManager = self.parentQuestion.parentQuizz.parentFormation.quizzManager,
+                    position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-self.editor.parent.globalMargin.width)/2,
                     anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEX_ERROR)
                     .position(position,drawing.height * (1 - previewButtonHeightRatio - marginErrorMessagePreviewButton) - 2 * MARGIN)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
-                self.editor.parent.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
+                quizzManager.questionCreatorManipulator.ordonator.set(0,self.errorMessage);
                 contentarea.focus();
                 self.answerNameValidInput = false;
             };
@@ -1923,6 +1924,7 @@ function quizzDisplay(x, y, w, h) {
         target.parentObj.parent.quizzManipulator.flush();
         target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
         target.parentObj.parent.parentFormation.quizzManager.display();
+        self.previewMode = false;
     } : (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzManipulator.flush();
