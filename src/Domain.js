@@ -552,18 +552,21 @@ class Formation {
             };
 
             let addNewFormation = () => {
-                Server.getFormationByName(this.label).then(data => {
-                    let formationWithSameName = JSON.parse(data).formation;
-                    if (!formationWithSameName) {
-                        Server.insertFormation(getObjectToSave(), ignoredData)
-                            .then(data => {
-                                this._id = JSON.parse(data);
-                                displayMessage(messageSave);
-                            });
-                    } else {
-                        displayMessage(messageUsedName);
-                    }
-                });
+                Server.getFormationByName(this.label)
+                    .then(data => {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if (!formationWithSameName) {
+                            return getObjectToSave();
+                        } else {
+                            throw messageUsedName;
+                        }
+                    })
+                    .then(formation => Server.insertFormation(formation, ignoredData))
+                    .then(data => {
+                        this._id = JSON.parse(data);
+                        displayMessage(messageSave);
+                    })
+                    .catch(displayMessage);
             };
 
             let replaceFormation = () => {
@@ -588,12 +591,8 @@ class Formation {
                             return getObjectToSave();
                         }
                     })
-                    .then((formation) => {
-                        Server.replaceFormation(this._id, formation, ignoredData)
-                            .then(() => {
-                                displayMessage(messageReplace);
-                            });
-                    })
+                    .then(formation => Server.replaceFormation(this._id, formation, ignoredData))
+                    .then(() => displayMessage(messageReplace))
                     .catch(displayMessage);
             };
 
