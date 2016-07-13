@@ -258,9 +258,7 @@ class QuestionCreator {
             if(answer instanceof Answer){
                 answer.isEditable(this, true);
             }
-            if(answer.explanation){
-                answer.popIn = new PopIn(answer);
-            }
+            answer.popIn = new PopIn(answer);
         });
         quest.tabAnswer.forEach(el => {
             if (el.correct) {
@@ -290,6 +288,7 @@ class PopIn {
         if (answer.explanation && answer.explanation.image){
             this.image = answer.explanation.image;
         }
+        answer.filled = (!this.image && !this.label) ? false : true;
     }
 }
 class AddEmptyElement {
