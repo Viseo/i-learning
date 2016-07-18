@@ -258,7 +258,7 @@ class QuestionCreator {
             if(answer instanceof Answer){
                 answer.isEditable(this, true);
             }
-            answer.popIn = new PopIn(answer);
+            answer.popIn = new PopIn(answer, false);
         });
         quest.tabAnswer.forEach(el => {
             if (el.correct) {
@@ -269,7 +269,7 @@ class QuestionCreator {
 }
 
 class PopIn {
-    constructor (answer){
+    constructor (answer, editable){
         this.answer = answer;
         this.manipulator = new Manipulator(this);
         this.manipulator.addOrdonator(5);
@@ -280,8 +280,11 @@ class PopIn {
         this.manipulator.last.add(this.panelManipulator.first);
         this.textManipulator = new Manipulator(this);
         this.textManipulator.addOrdonator(1);
-        this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
-        this.defaultLabel = "Cliquer ici pour ajouter du texte";
+        this.editable = editable;
+        if (this.editable){
+            this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
+            this.defaultLabel = "Cliquer ici pour ajouter du texte";
+        }
         if (answer.explanation && answer.explanation.label){
             this.label = answer.explanation.label;
         }
@@ -821,7 +824,8 @@ class ImagesLibrary extends Library {
         if (target && target._acceptDrop) {
             if (target.parent.parentManip.parentObject.answer){
                 target.parent.parentManip.parentObject.image = element.src;
-                target.parent.parentManip.parentObject.display();
+                let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                target.parent.parentManip.parentObject.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
             }
             else {
                 var oldQuest = {

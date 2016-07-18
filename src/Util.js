@@ -718,14 +718,14 @@ class Picture {
             this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
             svg.addEvent(this.imageSVG.image,'mouseover', this.imageMouseoverHandler);
             svg.addEvent(this.imageSVG.image,'mouseout', this.mouseleaveHandler);
-            this.imageSVG.image._acceptDrop = true;
+            this.imageSVG.image._acceptDrop = this.editable;
         }
         else {
             this.imageSVG = new svg.Image(this.src).dimension(w, h);
             this.imageSVG.position(x, y);
             svg.addEvent(this.imageSVG,'mouseover', this.imageMouseoverHandler);
             svg.addEvent(this.imageSVG,'mouseout', this.mouseleaveHandler);
-            this.imageSVG._acceptDrop = true;
+            this.imageSVG._acceptDrop = this.editable;
             manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
         }
 
@@ -750,6 +750,10 @@ class Picture {
                 let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
                 let y = -(puzzle.visibleArea.height - this.parent.height)/ 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                 this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+            }
+            else if (this.parent.answer) {
+                let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
             }
             else {
                 this.parent.display();
