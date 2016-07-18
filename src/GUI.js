@@ -1802,9 +1802,6 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         parent.puzzle.display(x, y, w, h,false);
     };
     svg.addEvent(blackCross, "click", blackCrossHandler);
-    let panelWidth = 2*w/3,
-        panelHeight = 2*h/3;
-    this.panelManipulator.translator.move(w/12, 0);
     drawing.notInTextArea = true;
     svg.runtime.addGlobalEvent("keydown", (event) => {
         if(drawing.notInTextArea && hasKeyDownEvent(event)) {
@@ -1815,6 +1812,26 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         this.target = this.panel;
         return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
     };
+    let panelWidth = 2*w/3,
+    panelHeight = 2*h/3;
+    this.panelManipulator.translator.move(w/12, 0);
+    if (this.image){
+        this.imageLayer = 3;
+        let picture = new Picture(this.image, this.editable, this);
+        picture.draw(-w/2 + w/12 + MARGIN , 0, h/2, h/2);
+        this.answer.filled = true;
+    }
+    else if (this.editable){
+        let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, w/6, h / 3, 20, null, this.manipulator, 3).text;
+        draganddropTextSVG.position(-w/2 + w/12 + MARGIN, 0).color(myColors.grey);
+        draganddropTextSVG._acceptDrop = this.editable;
+       this.label ? this.answer.filled = true : this.answer.filled = false;
+    }
+    else {
+        panelWidth = w - 2*MARGIN;
+        panelHeight = h - blackCrossSize - 3*MARGIN;
+        this.panelManipulator.translator.move(0, blackCrossSize/2+MARGIN/2);
+    }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
     }
@@ -1858,18 +1875,6 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     if (this.editable){
         svg.addEvent(this.text, "click", clickEdition);
         svg.addEvent(this.panel.back, "click", clickEdition);
-    }
-    if (this.image){
-        this.imageLayer = 3;
-        let picture = new Picture(this.image, this.editable, this);
-        picture.draw(-w/2 + w/12 + MARGIN , 0, h/2, h/2);
-        this.answer.filled = true;
-    }
-    else if (this.editable){
-        let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, w/6, h / 3, 20, null, this.manipulator, 3).text;
-        draganddropTextSVG.position(-w/2 + w/12 + MARGIN, 0).color(myColors.grey);
-        draganddropTextSVG._acceptDrop = this.editable;
-       this.label ? this.answer.filled = true : this.answer.filled = false;
     }
 }
 function quizzDisplay(x, y, w, h) {

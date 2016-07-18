@@ -277,7 +277,7 @@ class QuestionCreator {
             if(answer instanceof Answer){
                 answer.isEditable(this, true);
             }
-            answer.popIn = new PopIn(answer, false);
+            answer.popIn = new PopIn(answer, true);
         });
         quest.tabAnswer.forEach(el => {
             if (el.correct) {
