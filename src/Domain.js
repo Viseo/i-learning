@@ -118,6 +118,10 @@ class Question {
         this.simpleChoiceMessageManipulator = new Manipulator(this);
         this.simpleChoiceMessageManipulator.addOrdonator(2);
         this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
+        this.invalidQuestionPictogramManipulator = new Manipulator(this);
+        this.invalidQuestionPictogramManipulator.addOrdonator(5);
+        this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
+
 
         this.questionNameValidInput = true;
 
@@ -193,6 +197,21 @@ class Question {
         }
         else{
             return false;
+        }
+    }
+    
+    toggleInvalidQuestionPictogram(active){
+        let pictoSize=20;
+        if(active) {
+            this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
+            this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
+            this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
+            this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
+            this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
+        }else{
+            this.invalidQuestionPictogramManipulator.ordonator.unset(0);
+            this.invalidQuestionPictogramManipulator.ordonator.unset(2);
+            this.invalidQuestionPictogramManipulator.ordonator.unset(3);
         }
     }
 }

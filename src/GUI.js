@@ -1275,7 +1275,12 @@ function questionDisplay(x, y, w, h) {
     self.questNum = new svg.Text(self.questionNum).position(-self.width/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
     self.manipulator.ordonator.set(4, self.questNum);
     self.manipulator.translator.move(self.x,self.y);
-    self.selected && self.selectedQuestion();
+    if(self.selected){
+        self.selectedQuestion();
+        this.toggleInvalidQuestionPictogram(true);// !_! bon, mais à changer d'emplacement
+    }else{
+        this.toggleInvalidQuestionPictogram(false);
+    }
 }
 
 function questionElementClicked(sourceElement) {
