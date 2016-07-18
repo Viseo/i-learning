@@ -661,7 +661,7 @@ function formationDisplayFormation() {
         mainManipulator.ordonator.unset(1, self.manipulator.first);
         drawing.currentPageDisplayed = "QuizPreview";
         self.quizzDisplayed = new Quizz(targetQuizz);
-        self.quizzDisplayed.puzzleLines = 1;
+        self.quizzDisplayed.puzzleLines = 3;
         self.quizzDisplayed.puzzleRows = 3;
         self.quizzDisplayed.run(0,0, drawing.width, drawing.height);
         if (!runtime && window.getSelection) {
@@ -1943,7 +1943,7 @@ function quizzDisplay(x, y, w, h) {
         self.displayCurrentQuestion();
     }
     else {
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, "leftToRight", self);
+        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, "upToDown", self);
         self.displayResult();
     }
 
@@ -1992,7 +1992,7 @@ function quizzDisplayResult (color){
     self.questionsWithBadAnswers.forEach(question=>{
         question.manipulator.ordonator.unset(3)});
     self.displayScore(color);
-    self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
+    self.puzzle && self.puzzle.fillVisibleElementsArray("upToDown");
     self.puzzle.display(0, self.questionHeight/2 + self.answerHeight/2 + MARGIN, drawing.width - MARGIN, self.answerHeight);
 }
 

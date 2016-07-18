@@ -1105,8 +1105,6 @@ class Puzzle {
             for(var row = 0; row < this.rows; row++){
                 var rowArray = [];
                 for(var column = 0; column < this.columns ; column++){
-                    //console.log(rowArray);
-                    //let index = this.indexOfFirstVisibleElement+(this.rows-1)*row+column;
                     let index = count;
                     if(typeof this.elementsArray[index] !== "undefined") {
                         (this.elementsArray[index].puzzleRowIndex = row);
@@ -1126,14 +1124,17 @@ class Puzzle {
             for(var column = 0; column < this.columns; column++){
                 var columnsArray = [];
                 for(var row = 0; row < this.rows ; row++){
-                    //console.log(columnsArray);
-                    //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleRowIndex = row;
-                    //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleColumnIndex = column;
-                    columnsArray.push(this.elementsArray[this.indexOfFirstVisibleElement+(this.rows)*column+row]);
+                    let index = count;
+                    if(this.elementsArray[index]) {
+                        this.elementsArray[index].puzzleRowIndex = row;
+                        this.elementsArray[index].puzzleColumnIndex = column;
+                        count++;
+                        columnsArray.push(this.elementsArray[index]);
+                    }
                 }
-                if(count<stop){
-                    this.visibleElementsArray.push(columnsArray);
-                    count++;
+                this.visibleElementsArray.push(columnsArray);
+                if(count>=stop){
+                    return true;
                 }
             }
         }
@@ -1174,9 +1175,7 @@ class Puzzle {
             width: needChevrons ? (this.width - 2*this.chevronSize) : (this.width),
             height: this.height
         };
-        //this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
-        //this.manipulator.ordonator.set(0, this.puzzleCadre);
-        this.chevronsDisplayed = ((this.elementsArray.length > this.visibleElementsArray[0].length) && needChevrons);
+        this.chevronsDisplayed = ((this.elementsArray.length > this.rows*this.columns) && needChevrons);
         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
         this.adjustElementsDimensions();
         this.adjustElementsPositions();
@@ -1186,8 +1185,8 @@ class Puzzle {
         }
         this.visibleElementsArray.forEach(rows =>{
             rows.forEach(elem => {
-                //rowNumber*this.columns + rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rowNumber*this.columns +rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
-                this.manipulator.ordonator.set(rowNumber*this.columns + rows.indexOf(elem)+3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                let layer = this.orientation === "leftToRight" ? rowNumber*this.columns + rows.indexOf(elem)+3 : rowNumber*this.rows + rows.indexOf(elem)+3;
+                this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                 elem.display(elem.x, elem.y, elem.width, elem.height);
             });
             rowNumber++;
