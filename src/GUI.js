@@ -56,7 +56,16 @@ function answerDisplay (x, y, w, h) {
     } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         self.bordure = new svg.Rect(self.width, self.height).color(self.bgColor, 1, myColors.black).corners(25, 25);
         self.manipulator.last.children.indexOf(self.bordure)===-1 && self.manipulator.last.add(self.bordure);
+    }
 
+    if(this.parentQuestion.parentQuizz.previewMode) {
+        let event = () => {
+            this.explanationPopIn = new PopIn(this, false);
+            this.explanationPopIn.display(this.parentQuestion, null, this.parentQuestion.parentQuizz.x, this.parentQuestion.parentQuizz.headerHeight, this.parentQuestion.parentQuizz.w, this.parentQuestion.parentQuizz.answerHeightWithImage);
+        };
+        this.image && svg.addEvent(this.image, "click", event);
+        this.bordure && svg.addEvent(this.bordure, "click", event);
+        this.content && svg.addEvent(this.content, "click", event);
     }
 
     if(self.selected){ // image pré-selectionnée
@@ -1275,9 +1284,10 @@ function questionDisplay(x, y, w, h) {
 
     if(playerMode) {
         if(this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
-            let event = (event) => {
-                this.wrongQuestionsQuiz = new Quizz(Object.assign({}, this.parentQuizz), true);
-                this.wrongQuestionsQuiz.tabQuestions = this.parentQuizz.questionsWithBadAnswers;
+            let event = () => {
+                let wrongQuiz = Object.assign({}, this.parentQuizz);
+                wrongQuiz.tabQuestions = this.parentQuizz.questionsWithBadAnswers;
+                this.wrongQuestionsQuiz = new Quizz(wrongQuiz, true);
                 this.wrongQuestionsQuiz.currentQuestionIndex = this.parentQuizz.questionsWithBadAnswers.indexOf(this);
                 this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
             };
@@ -1809,7 +1819,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
     !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
-    this.answerTextSVG = autoAdjustText(answerText, 0, 0, parent.coordinatesAnswers.w, h * answerTextRatio, 20, null, this.manipulator, 1).text;
+    this.answerTextSVG = autoAdjustText(answerText, 0, 0, w, h * answerTextRatio, 20, null, this.manipulator, 1).text;
     this.answerTextSVG.position(0, -h / 2 + h * answerTextRatio/2);
     let blackCrossSize = 30, blackCross;
     blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
@@ -2821,6 +2831,7 @@ var LearningGUI = function (){
     Question.prototype.displayAnswers = questionDisplayAnswers;
     Question.prototype.elementClicked = questionElementClicked;
     Question.prototype.selectedQuestion = questionSelectedQuestion;
+    PopIn.prototype.display = popInDisplay;
     Quizz.prototype.display = quizzDisplay;
     Quizz.prototype.displayResult = quizzDisplayResult;
     Quizz.prototype.displayMiniature = gameDisplayMiniature;
