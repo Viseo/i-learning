@@ -1248,10 +1248,10 @@ function questionDisplay(x, y, w, h) {
 
     // Question avec Texte ET image
     if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
-        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.raphImage);
+        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.image);
         self.bordure = obj.cadre;
         self.content = obj.content;
-        self.raphImage = obj.image;
+        self.image = obj.image;
     }
     // Question avec Texte uniquement
     else if (typeof self.label !== "undefined" && !self.imageSrc) {
@@ -1261,8 +1261,8 @@ function questionDisplay(x, y, w, h) {
     }
     // Question avec Image uniquement
     else if (self.imageSrc && !self.label) {
-        self.raphImage = displayImage(self.imageSrc, {width:self.image.width,height:self.image.height}, self.width, self.height).image;
-        self.manipulator.ordonator.set(2, self.raphImage);
+        self.image = displayImage(self.imageSrc, this.dimImage, self.width, self.height).image;
+        self.manipulator.ordonator.set(2, self.image);
     }
     else {
         self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
@@ -1270,7 +1270,7 @@ function questionDisplay(x, y, w, h) {
     }
     self.bordure && svg.addEvent(self.bordure, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
     self.content && svg.addEvent(self.content, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
-    self.raphImage && svg.addEvent(self.raphImage, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+    self.image && svg.addEvent(self.image, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
     var fontSize = Math.min(20, self.height*0.1);
     self.questNum = new svg.Text(self.questionNum).position(-self.width/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
     self.manipulator.ordonator.set(4, self.questNum);
