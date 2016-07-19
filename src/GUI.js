@@ -1810,7 +1810,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 function popInDisplay(parent, previousX, x, y, w, h) {
     let rect = new svg.Rect(w, h);
     rect._acceptDrop = this.editable;
-    rect.color(myColors.white, 3, myColors.black);
+    rect.color(myColors.white, 2 , myColors.black);
     this.manipulator.ordonator.set(0, rect);
     this.manipulator.translator.move(previousX, y);
 
@@ -1864,6 +1864,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
+        this.panel.border.color([], 1, [0, 0, 0]);
     }
     else {
         this.panel.resize(panelWidth, panelHeight);
@@ -1907,6 +1908,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         svg.addEvent(this.panel.back, "click", clickEdition);
     }
 }
+
 function quizzDisplay(x, y, w, h) {
     var self = this;
     drawing.currentPageDisplayed = "Quizz";
