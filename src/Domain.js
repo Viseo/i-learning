@@ -122,7 +122,6 @@ class Question {
         this.invalidQuestionPictogramManipulator.addOrdonator(5);
         this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-
         this.questionNameValidInput = true;
 
         this.selected = false;
@@ -201,7 +200,7 @@ class Question {
     }
     
     toggleInvalidQuestionPictogram(active){
-        let pictoSize=20;
+        let pictoSize = 20;
         if(active) {
             this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
             this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
@@ -1007,16 +1006,15 @@ class QuizzManager {
         svg.addEvent(this.saveButton.cadre, "click", ()=>{});
         svg.addEvent(this.saveButton.content, "click", ()=>{});
         let quiz = this.getObjectToSave();
-
-        var validation = true;
+        this.quizz.isValid = true;
         quiz.tabQuestions.forEach(question => {
             question.questionType && question.questionType.validationTab.forEach((funcEl) => {
                 var result = funcEl(question);
-                validation = validation && result.isValid;
+                this.quizz.isValid = this.quizz.isValid && result.isValid;
             });
         });
 
-        validation ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
+        this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
         Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
             .then(() => {

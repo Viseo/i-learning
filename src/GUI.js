@@ -1281,9 +1281,9 @@ function questionDisplay(x, y, w, h) {
     self.manipulator.translator.move(self.x,self.y);
     if(self.selected){
         self.selectedQuestion();
-        this.toggleInvalidQuestionPictogram(true);// !_! bon, mais à changer d'emplacement
+        //this.toggleInvalidQuestionPictogram(true);// !_! bon, mais à changer d'emplacement
     }else{
-        this.toggleInvalidQuestionPictogram(false);
+        //this.toggleInvalidQuestionPictogram(false);
     }
 }
 
@@ -2259,9 +2259,9 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 function quizzManagerDisplayPreviewButton (x, y, w, h) {
     var self = this;
     self.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, self.previewButtonManipulator);
-    self.previewFunction = function () {
+    self.previewFunction = () => {
         self.toggleButtonHeight = 40;
-        let validation = true;
+        self.quizz.isValid = true;
         let message;
         let arrayOfUncorrectQuestions = [];
         self.quizz.tabQuestions.forEach(question => {
@@ -2272,11 +2272,11 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
                         message = result.message;
                         arrayOfUncorrectQuestions.push(question.questionNum-1);
                     }
-                    validation = validation && result.isValid;
+                    self.quizz.isValid = self.quizz.isValid && result.isValid;
                 });
             }
         });
-        if(!validation) {
+        if(!self.quizz.isValid) {
             self.displayMessage(message, myColors.red);
             //self.selectFirstInvalidQuestion(arrayOfUncorrectQuestions[0]);
         }
@@ -2292,7 +2292,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
             this.previewQuiz.currentQuestionIndex = self.indexOfEditedQuestion;
             this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
         };
-        if(validation) {
+        if(self.quizz.isValid) {
             self.displayEditedQuestion();
         }
     };
@@ -2331,12 +2331,25 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         //self.questionPuzzle.visibleElementsArray[0].length === 6 && self.questionPuzzle.updateStartPosition('right');
         self.questionPuzzle.fillVisibleElementsArray("leftToRight");
     }
-
     else {
         self.questionPuzzle = new Puzzle(1, 6, self.quizz.tabQuestions, "leftToRight", self);
     }
     self.questionsPuzzleManipulator.last.children.indexOf(self.questionPuzzle.manipulator.first)===-1 && self.questionsPuzzleManipulator.last.add(self.questionPuzzle.manipulator.first);
     self.questionPuzzle.display(self.coordinatesQuestion.x, self.coordinatesQuestion.y, self.qPuzzleW, self.qPuzzleH, true);
+    checkPuzzleElementsArrayValidity(self.questionPuzzle.elementsArray);
+}
+
+function checkPuzzleElementsArrayValidity(array){
+    array.forEach(question => {
+        if(!(question instanceof AddEmptyElement)){
+            var validation = true;
+            question.questionType.validationTab.forEach((funcEl) => {
+                var result = funcEl(question);
+                validation = validation && result.isValid;
+            });
+            validation ? question.toggleInvalidQuestionPictogram(false) : question.toggleInvalidQuestionPictogram(true);
+        }
+    });
 }
 
 function inscriptionManagerDisplay() {
