@@ -1160,7 +1160,7 @@ class Puzzle {
     }
 
     display(x, y, w, h, needChevrons = true){
-        if(this.parentObject.indexOfEditedQuestion ){
+        if(this.parentObject.indexOfEditedQuestion){
             this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush() ;// questionPuzzle
         } 
 

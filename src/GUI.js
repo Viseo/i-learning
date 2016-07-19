@@ -1272,9 +1272,25 @@ function questionDisplay(x, y, w, h) {
         self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
         self.manipulator.ordonator.set(0, self.bordure);
     }
-    self.bordure && svg.addEvent(self.bordure, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
-    self.content && svg.addEvent(self.content, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
-    self.image && svg.addEvent(self.image, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+
+    if(playerMode) {
+        if(this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
+            let event = (event) => {
+                this.wrongQuestionsQuiz = new Quizz(Object.assign({}, this.parentQuizz), true);
+                this.wrongQuestionsQuiz.tabQuestions = this.parentQuizz.questionsWithBadAnswers;
+                this.wrongQuestionsQuiz.currentQuestionIndex = this.parentQuizz.questionsWithBadAnswers.indexOf(this);
+                this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
+            };
+            self.bordure && svg.addEvent(self.bordure, "click", event);
+            self.content && svg.addEvent(self.content, "click", event);
+            self.image && svg.addEvent(self.image, "click", event);
+        }
+    } else {
+        self.bordure && svg.addEvent(self.bordure, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+        self.content && svg.addEvent(self.content, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+        self.image && svg.addEvent(self.image, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+    }
+
     var fontSize = Math.min(20, self.height*0.1);
     self.questNum = new svg.Text(self.questionNum).position(-self.width/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
     self.manipulator.ordonator.set(4, self.questNum);
@@ -1294,7 +1310,7 @@ function questionElementClicked(sourceElement) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
         } else {
-            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.parentFormation.levelsTab[self.parentQuizz.levelIndex].gamesTab[self.parentQuizz.gameIndex].tabQuestions[self.parentQuizz.currentQuestionIndex]);
+            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
             var reponseD = "";
             self.rightAnswers.forEach(function(e){
                 if(e.label)
@@ -1441,7 +1457,7 @@ function questionDisplayAnswers(x, y, w, h) {
                     self.parentQuizz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
-                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.parentFormation.levelsTab[self.parentQuizz.levelIndex].gamesTab[self.parentQuizz.gameIndex].tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
                     var reponseD = "";
                     self.rightAnswers.forEach(function(e){
                         if(e.label) {
