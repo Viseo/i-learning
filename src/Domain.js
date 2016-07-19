@@ -935,7 +935,7 @@ class QuizzManager {
         this.saveQuizButtonManipulator.addOrdonator(2);
         this.returnButtonManipulator = new Manipulator(this);
         this.returnButtonManipulator.addOrdonator(1);
-        this.returnButton = new ReturnButton(this);
+        this.returnButton = new ReturnButton(this, "Retour à la formation");
         this.libraryIManipulator = this.library.libraryManipulator;
 
         // WIDTH
@@ -1058,7 +1058,7 @@ class Quizz {
         this.quizzManipulator = new Manipulator(this);
         this.quizzManipulator.addOrdonator(2);
         this.returnButtonManipulator = new Manipulator(this);
-        this.returnButton = new ReturnButton(this);
+        this.returnButton = playerMode ?  new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
         this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
         if(previewMode) {
@@ -1207,7 +1207,7 @@ class Bd {
         this.title = bd.title || "BD";
         this.miniaturePosition = {x:0, y:0};
         this.returnButtonManipulator = new Manipulator(this);
-        this.returnButton = new ReturnButton(this);
+        this.returnButton = new ReturnButton(this, "Retour à la formation");
         this.manipulator = new Manipulator(this);
         this.manipulator.last.add(this.returnButtonManipulator.first);
     }
