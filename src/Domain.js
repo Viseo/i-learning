@@ -517,9 +517,10 @@ class Formation {
                 .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
                 .font("Arial", 15)
                 .anchor('start').color(myColors.red);
+            this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
             setTimeout(() => {
-                this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
-            }, 1);
+                this.formationInfoManipulator.ordonator.unset(2);
+            }, 5000);
         };
 
         const displaySaveMessage = (message, displayQuizzManager) => {
@@ -995,9 +996,10 @@ class QuizzManager {
             .position(this.ButtonWidth, -this.saveButton.cadre.height/2)
             .font("Arial", 20)
             .anchor('middle').color(color);
+        this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
         setTimeout(() => {
-            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
-        }, 1);
+            this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview)!==-1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+        }, 5000);
     }
 
     saveQuizz () {
