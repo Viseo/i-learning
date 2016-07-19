@@ -1006,32 +1006,43 @@ class QuizzManager {
     saveQuizz () {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+        let errorMessage = "Entrer un nom valide pour enregistrer";
         svg.addEvent(this.saveButton.cadre, "click", ()=>{});
         svg.addEvent(this.saveButton.content, "click", ()=>{});
-        let quiz = this.getObjectToSave();
-        this.quizz.isValid = true;
-        quiz.tabQuestions.forEach(question => {
-            question.questionType && question.questionType.validationTab.forEach((funcEl) => {
-                var result = funcEl(question);
-                this.quizz.isValid = this.quizz.isValid && result.isValid;
+        if(self.quizzName) {
+            let quiz = this.getObjectToSave();
+            this.quizz.isValid = true;
+            quiz.tabQuestions.forEach(question => {
+                question.questionType && question.questionType.validationTab.forEach((funcEl) => {
+                    var result = funcEl(question);
+                    this.quizz.isValid = this.quizz.isValid && result.isValid;
+                });
             });
-        });
 
-        this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
+            this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
-        Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
-            .then(() => {
-                this.quizz.title = this.quizzName;
-                this.quizz.tabQuestions = this.tabQuestions;
-                let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-                (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
-                this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex]=this.quizz;
-                this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
-                this.display();
-                console.log("Votre travail a été bien enregistré");
-            });
+            Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
+                .then(() => {
+                    this.quizz.title = this.quizzName;
+                    this.quizz.tabQuestions = this.tabQuestions;
+                    let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
+                    (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                    this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex] = this.quizz;
+                    this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
+                    this.display();
+                    console.log("Votre travail a été bien enregistré");
+                });
+        }
+        else{
+            this.errorMessage = new svg.Text(errorMessage);
+            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height+20+3)
+                .font("Arial", 15).color(myColors.red).anchor('start');
+            this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
+            setTimeout(() => {
+                this.quizzInfoManipulator.ordonator.unset(5);
+            }, 5000);
+        }
     }
-
     selectNextQuestion () {
         this.indexOfEditedQuestion++;
     }

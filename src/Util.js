@@ -990,10 +990,10 @@ class ReturnButton {
         this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);
-        let textSize = svg.runtime.boundingRect(this.returnText.component);
-        let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
+        this.textSize = svg.runtime.boundingRect(this.returnText.component);
+        this.size = svg.runtime.boundingRect(this.returnButton.component);
         this.manipulator.ordonator.set(0, this.returnText);
-        this.returnText.position(w+returnButtonSize.width, textSize.height/2+returnButtonSize.height/4);
+        this.returnText.position(w+this.size.width, this.textSize.height/2+this.size.height/4);
         this.manipulator.translator.move(x+w, y);
 
         this.returnText.parentObj = this;

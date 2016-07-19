@@ -909,12 +909,12 @@ function formationDisplayFormation() {
             };
             var onblur = function () {
                 contentarea.enter();
-                self.label = contentarea.messageText;
+                self.label = contentarea.messageText.trim();
                 //self.formationNameValidInput && (
                 drawings.screen.remove(contentarea);
                 drawing.notInTextArea = true;
                 showTitle();
-                header.display(self.label);
+                self.labelValidInput && header.display(self.label);
             };
             svg.addEvent(contentarea, "blur", onblur);
             var oninput = function () {
@@ -2256,8 +2256,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         };
         var onblur = function () {
             textarea.enter();
-            self.quizzName = textarea.messageText;
-            self.quizz.title = textarea.messageText;
+            self.quizzName = textarea.messageText.trim();
             drawings.screen.remove(textarea);
             drawing.notInTextArea = true;
             showTitle();
