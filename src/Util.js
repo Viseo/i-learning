@@ -1179,17 +1179,17 @@ class Puzzle {
         this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
         this.adjustElementsDimensions();
         this.adjustElementsPositions();
-        let rowNumber = 0;
+        let itNumber = 0;
         for (var i = 3; i<this.nbOfVisibleElements+3; i++){
             this.manipulator.ordonator.unset(i);
         }
-        this.visibleElementsArray.forEach(rows =>{
-            rows.forEach(elem => {
-                let layer = this.orientation === "leftToRight" ? rowNumber*this.columns + rows.indexOf(elem)+3 : rowNumber*this.rows + rows.indexOf(elem)+3;
+        this.visibleElementsArray.forEach(it =>{
+            it.forEach(elem => {
+                let layer = this.orientation === "leftToRight" ? itNumber*this.columns + it.indexOf(elem)+3 : itNumber*this.rows + it.indexOf(elem)+3;
                 this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                 elem.display(elem.x, elem.y, elem.width, elem.height);
             });
-            rowNumber++;
+            itNumber++;
         });
     }
 }
