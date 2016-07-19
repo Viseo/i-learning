@@ -988,7 +988,7 @@ function formationDisplaySaveButton(x, y, w, h) {
 }
 
 function formationDisplayPublicationButton(x, y, w, h) {
-    this.publicationFormationButton = displayText("publication", w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
+    this.publicationFormationButton = displayText("Publier", w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
     this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
     svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
