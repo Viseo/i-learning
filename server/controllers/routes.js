@@ -119,51 +119,7 @@ module.exports = function (app, fs) {
                     result = docs.find(x=> x._id.toString() === user);
 
                 res.send(result);
-            });
-        });
-    });
-
-    app.get('/getProgress/:formation/:game', (req, res) => {
-        var collection = db.get().collection('users');
-        collection.find().toArray(function (err, docs) {
-            cookies.verify(req, (err, decode) => {
-                var user = '';
-                if (!err) {
-                    user = decode.user._id;
-                }
-                var userDoc = docs.find(x => x._id.toString() === user);
-                var available = true;
-                var special;
-                var collectionFormation = db.get().collection('formations');
-                collectionFormation.find().toArray(function (err, docsFormation) {
-                    var formation = docsFormation.find(formation => formation._id.toString() === req.params.formation);
-                    var gameForAvailability;
-                    formation.levelsTab.find(function(gamesTab){
-                        gameForAvailability = gamesTab.gamesTab.find(game=>game.id === req.params.game);
-                    });
-                    //var gameForAvailability = forAvailability.tabGame.find(x => x.game === req.params.game);
-                    if (gameForAvailability && formation.link.every(function(linkElement){
-                            if (linkElement[0].childGame === gameForAvailability.id) {
-                                var formationUser = userDoc.formationsTab.find(x => x.formation === req.params.formation);
-                                if(formationUser) {
-                                    var games = formationUser.gamesTab.find(x => x.game === linkElement[0].parentGame);
-                                    available = gameForAvailability.tabQuestions.length && (gameForAvailability.tabQuestions.length = games.index);
-                                }
-                            }
-                            return !available;
-                        })){
-                        special = "notAvailable";
-                    }
-                    var result = docs.find(x => x._id.toString() === user);
-                    var formationUser = result.formationsTab.find(x => x.formation === req.params.formation);
-                    if(formationUser) {
-                        var games = formationUser.gamesTab.find(x => x.game === req.params.game);
-                        games ? res.send({games, special}): res.send({special}) ;
-                    } else {
-                        res.send({special});
-                    }
-                });
-            });
+            ;})
         });
     });
 
@@ -193,12 +149,19 @@ module.exports = function (app, fs) {
     });
 
     app.get('/getAllFormationsNames', (req, res) => {
+        const usersCollection = db.get().collection('users');
+        usersCollection.find().toArray(function (err, docs) {
+            cookies.verify(req, (err, decode) => {
+                var user = '';
+                if (!err) {
+                    user = decode.user._id;
+                }
+                user = docs.find(x=> x._id.toString() === user);
         const collection = db.get().collection('formations'),
             result = [];
 
         collection.find().toArray((err, docs) => {
-            cookies.verify(req, (err, decode) => {
-                const formationsTab = decode.user && decode.user.formationsTab;
+                const formationsTab = user && user.formationsTab;
 
                 docs.forEach(formation => {
                     const progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
@@ -225,6 +188,7 @@ module.exports = function (app, fs) {
                 });
 
                 res.send({myCollection: result});
+                });
             });
         });
     });

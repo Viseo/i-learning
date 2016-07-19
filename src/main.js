@@ -1,4 +1,3 @@
-
 const Domain = require('./Domain').Domain,
     Util = require('Util').Util,
     GUI = require('GUI').GUI,
@@ -39,11 +38,11 @@ exports.main = function (svg, runtime) {
     domain.setGlobalVariables();
     Gui.setGlobalVariables();
 
-    let resizePaper = function() {
+    let resizePaper = function () {
         !runtime && document.activeElement.blur();
         if ((document.documentElement.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
-            drawing.dimension(document.documentElement.clientWidth,document.documentElement.clientHeight);
-            drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
+            drawing.dimension(document.documentElement.clientWidth, document.documentElement.clientHeight);
+            drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
             const formation = formationsManager.formationDisplayed,
                 quizzManager = formation && formation.quizzManager;
             let quizz;
@@ -86,7 +85,7 @@ exports.main = function (svg, runtime) {
                     if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                         quizz.displayCurrentQuestion();
                     } else {
-                        quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
+                        quizz.resultManipulator.last.remove(quizz.puzzle.manipulator.first);
                         quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
                         quizz.displayResult();
                     }
@@ -95,14 +94,14 @@ exports.main = function (svg, runtime) {
         }
     };
 
-    let listFormations = function() {
+    let listFormations = function () {
         util.Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new domain.FormationsManager(myFormations);
             formationsManager.display();
         });
     };
-    
+
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
@@ -115,7 +114,7 @@ exports.main = function (svg, runtime) {
         }
     });
 
-    setTimeout(function(){
+    setTimeout(function () {
         window.onresize = resizePaper;
-    },200);
+    }, 200);
 };

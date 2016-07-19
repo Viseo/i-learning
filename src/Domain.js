@@ -1,4 +1,3 @@
-
 exports.Domain = function (globalVariables) {
 
     let iRuntime, imageController, asyncTimerController;
@@ -10,13 +9,12 @@ exports.Domain = function (globalVariables) {
         svg = globalVariables.svg,
         mainManipulator = globalVariables.mainManipulator,
         clientWidth = globalVariables.clientWidth;
-        clientHeight = globalVariables.clientHeight;
-        Manipulator = globalVariables.util.Manipulator,
+    clientHeight = globalVariables.clientHeight;
+    Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server;
-
 
     const ImageRuntime = {
         images: {},
@@ -189,6 +187,9 @@ exports.Domain = function (globalVariables) {
             this.simpleChoiceMessageManipulator = new Manipulator(this);
             this.simpleChoiceMessageManipulator.addOrdonator(2);
             this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
+            this.invalidQuestionPictogramManipulator = new Manipulator(this);
+            this.invalidQuestionPictogramManipulator.addOrdonator(5);
+            this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
             this.questionNameValidInput = true;
 
@@ -266,6 +267,21 @@ exports.Domain = function (globalVariables) {
                 return false;
             }
         }
+
+        toggleInvalidQuestionPictogram(active) {
+            let pictoSize = 20;
+            if (active) {
+                this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
+                this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
+                this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
+                this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
+                this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
+            } else {
+                this.invalidQuestionPictogramManipulator.ordonator.unset(0);
+                this.invalidQuestionPictogramManipulator.ordonator.unset(2);
+                this.invalidQuestionPictogramManipulator.ordonator.unset(3);
+            }
+        }
     }
 
     class QuestionCreator {
@@ -328,9 +344,7 @@ exports.Domain = function (globalVariables) {
                 if (answer instanceof Answer) {
                     answer.isEditable(this, true);
                 }
-                if (answer.explanation) {
-                    answer.popIn = new PopIn(answer);
-                }
+                answer.popIn = new PopIn(answer, true);
             });
             quest.tabAnswer.forEach(el => {
                 if (el.correct) {
@@ -341,7 +355,7 @@ exports.Domain = function (globalVariables) {
     }
 
     class PopIn {
-        constructor(answer) {
+        constructor(answer, editable) {
             this.answer = answer;
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(5);
@@ -352,14 +366,18 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.panelManipulator.first);
             this.textManipulator = new Manipulator(this);
             this.textManipulator.addOrdonator(1);
-            this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
-            this.defaultLabel = "Cliquer ici pour ajouter du texte";
+            this.editable = editable;
+            if (this.editable) {
+                this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
+                this.defaultLabel = "Cliquer ici pour ajouter du texte";
+            }
             if (answer.explanation && answer.explanation.label) {
                 this.label = answer.explanation.label;
             }
             if (answer.explanation && answer.explanation.image) {
                 this.image = answer.explanation.image;
             }
+            answer.filled = (!this.image && !this.label) ? false : true;
         }
     }
 
@@ -488,7 +506,7 @@ exports.Domain = function (globalVariables) {
             this.quizzManager.parentFormation = this;
             this.returnButtonManipulator = new Manipulator(this);
             this.returnButtonManipulator.addOrdonator(1);
-            this.returnButton = new ReturnButton(this);
+            this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
             this.needUpdate = true;
             // WIDTH
@@ -555,24 +573,25 @@ exports.Domain = function (globalVariables) {
         }
 
         saveFormation(displayQuizzManager) {
-            let messageSave = "Votre travail a bien été enregistré.",
-                messageError = "Vous devez remplir le nom de la formation.",
+            const messageSave = "Votre travail a bien été enregistré.",
+                messageError = "Vous devez remplir correctement le nom de la formation.",
                 messageReplace = "Les modifications ont bien été enregistrées",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées";
 
-            let displayErrorMessage = (message) => {
+            const displayErrorMessage = (message) => {
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessage = new svg.Text(message)
                     .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
                     .font("Arial", 15)
                     .anchor('start').color(myColors.red);
+                this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
                 setTimeout(() => {
-                    this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
-                }, 1);
+                    this.formationInfoManipulator.ordonator.unset(2);
+                }, 5000);
             };
 
-            let displaySaveMessage = (message, displayQuizzManager) => {
+            const displaySaveMessage = (message, displayQuizzManager) => {
                 if (displayQuizzManager) {
                     displayQuizzManager();
                 } else {
@@ -590,7 +609,7 @@ exports.Domain = function (globalVariables) {
                 }
             };
 
-            let displayMessage = message => {
+            const displayMessage = message => {
                 switch (message) {
                     case messageError:
                     case messageUsedName:
@@ -601,8 +620,8 @@ exports.Domain = function (globalVariables) {
                 }
             };
 
-            if (this.label && this.label !== this.labelDefault) {
-                let getObjectToSave = () => {
+            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+                const getObjectToSave = () => {
                     const levelsTab = [];
                     const gamesCounter = {quizz: 0, bd: 0};
                     this.levelsTab.forEach((level, i) => {
@@ -623,18 +642,21 @@ exports.Domain = function (globalVariables) {
                 };
 
                 let addNewFormation = () => {
-                    Server.getFormationByName(this.label).then(data => {
-                        let formationWithSameName = JSON.parse(data).formation;
-                        if (!formationWithSameName) {
-                            Server.insertFormation(getObjectToSave(), ignoredData)
-                                .then(data => {
-                                    this._id = JSON.parse(data);
-                                    displayMessage(messageSave);
-                                });
-                        } else {
-                            displayMessage(messageUsedName);
-                        }
-                    });
+                    Server.getFormationByName(this.label)
+                        .then(data => {
+                            const formationWithSameName = JSON.parse(data).formation;
+                            if (!formationWithSameName) {
+                                return getObjectToSave();
+                            } else {
+                                throw messageUsedName;
+                            }
+                        })
+                        .then(formation => Server.insertFormation(formation, ignoredData))
+                        .then(data => {
+                            this._id = JSON.parse(data);
+                            displayMessage(messageSave);
+                        })
+                        .catch(displayMessage);
                 };
 
                 let replaceFormation = () => {
@@ -642,10 +664,10 @@ exports.Domain = function (globalVariables) {
                         .then(data => {
                             let formationWithSameName = JSON.parse(data).formation;
                             if (formationWithSameName) {
-                                let id = formationWithSameName._id;
+                                const id = formationWithSameName._id;
                                 delete formationWithSameName._id;
                                 formationWithSameName = JSON.stringify(formationWithSameName);
-                                let newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                                const newFormation = JSON.stringify(getObjectToSave(), ignoredData);
                                 if (id === this._id) {
                                     if (formationWithSameName === newFormation) {
                                         throw messageNoModification;
@@ -659,12 +681,8 @@ exports.Domain = function (globalVariables) {
                                 return getObjectToSave();
                             }
                         })
-                        .then((formation) => {
-                            Server.replaceFormation(this._id, formation, ignoredData)
-                                .then(() => {
-                                    displayMessage(messageReplace);
-                                });
-                        })
+                        .then(formation => Server.replaceFormation(this._id, formation, ignoredData))
+                        .then(() => displayMessage(messageReplace))
                         .catch(displayMessage);
                 };
 
@@ -893,7 +911,8 @@ exports.Domain = function (globalVariables) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject.answer) {
                     target.parent.parentManip.parentObject.image = element.src;
-                    target.parent.parentManip.parentObject.display();
+                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    target.parent.parentManip.parentObject.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
                     var oldQuest = {
@@ -984,7 +1003,7 @@ exports.Domain = function (globalVariables) {
             this.saveQuizButtonManipulator.addOrdonator(2);
             this.returnButtonManipulator = new Manipulator(this);
             this.returnButtonManipulator.addOrdonator(1);
-            this.returnButton = new ReturnButton(this);
+            this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.libraryIManipulator = this.library.libraryManipulator;
 
             // WIDTH
@@ -1041,30 +1060,32 @@ exports.Domain = function (globalVariables) {
         displayMessage(message, color) {
             this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
             this.questionCreator.errorMessagePreview = new svg.Text(message)
-                .position(this.ButtonWidth, -this.questionCreator.toggleButtonHeight + MARGIN)
+                .position(this.ButtonWidth, -this.saveButton.cadre.height / 2 - MARGIN / 2)
                 .font("Arial", 20)
                 .anchor('middle').color(color);
+            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
             setTimeout(() => {
-                this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
-            }, 1);
+                this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview) !== -1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+            }, 5000);
         }
 
         saveQuizz() {
-
             let completeQuizzMessage = "Les modifications ont bien été enregistrées";
             let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
-
+            svg.addEvent(this.saveButton.cadre, "click", ()=> {
+            });
+            svg.addEvent(this.saveButton.content, "click", ()=> {
+            });
             let quiz = this.getObjectToSave();
-
-            var validation = true;
+            this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
-                question.questionType.validationTab.forEach((funcEl) => {
+                question.questionType && question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
-                    validation = validation && result.isValid;
+                    this.quizz.isValid = this.quizz.isValid && result.isValid;
                 });
             });
 
-            validation ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
+            this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
             Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                 .then(() => {
@@ -1106,7 +1127,7 @@ exports.Domain = function (globalVariables) {
             this.quizzManipulator = new Manipulator(this);
             this.quizzManipulator.addOrdonator(2);
             this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = new ReturnButton(this);
+            this.returnButton = playerMode ? new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
             this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
             if (previewMode) {
@@ -1259,7 +1280,7 @@ exports.Domain = function (globalVariables) {
             this.title = bd.title || "BD";
             this.miniaturePosition = {x: 0, y: 0};
             this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = new ReturnButton(this);
+            this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.manipulator = new Manipulator(this);
             this.manipulator.last.add(this.returnButtonManipulator.first);
         }
@@ -1323,7 +1344,7 @@ exports.Domain = function (globalVariables) {
     }
 
     class ConnexionManager {
-        constructor () {
+        constructor() {
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(6);
             this.header = new Header("Connexion");

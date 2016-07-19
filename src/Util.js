@@ -1,4 +1,3 @@
-
 exports.Util = function (globalVariables) {
 
     let
@@ -593,7 +592,6 @@ exports.Util = function (globalVariables) {
             };
             var mouseupHandler = function () {
                 svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
-                svg.removeEvent(svgItem, 'mouseup', mouseupHandler);
             };
             svg.addEvent(svgItem, "mousedown", mousedownHandler);
         };
@@ -686,14 +684,14 @@ exports.Util = function (globalVariables) {
                 this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
                 svg.addEvent(this.imageSVG.image, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG.image, 'mouseout', this.mouseleaveHandler);
-                this.imageSVG.image._acceptDrop = true;
+                this.imageSVG.image._acceptDrop = this.editable;
             }
             else {
                 this.imageSVG = new svg.Image(this.src).dimension(w, h);
                 this.imageSVG.position(x, y);
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
-                this.imageSVG._acceptDrop = true;
+                this.imageSVG._acceptDrop = this.editable;
                 manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
             }
 
@@ -711,15 +709,23 @@ exports.Util = function (globalVariables) {
                     parent.image = null;
                     parent.imageSrc = null;
                 }
+                if (parent.parent && parent.parent.questionPuzzle) {
+                    parent.parent.questionPuzzle.display();
+                }
                 if (this.parent.parentQuestion) {
                     let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
                     let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
                     let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                     this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
                 }
+                else if (this.parent.answer) {
+                    let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                }
                 else {
                     this.parent.display();
                 }
+
             };
             this.mouseleaveHandler = ()=> {
                 this.redCrossManipulator.flush();
@@ -932,8 +938,10 @@ exports.Util = function (globalVariables) {
     }
 
     class ReturnButton {
-        constructor(parent) {
+        constructor(parent, label) {
             this.parent = parent;
+            this.labelDefault = "Retour"
+            this.label = label ? label : this.labelDefault;
             this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
             this.manipulator.addOrdonator(1);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
@@ -946,7 +954,7 @@ exports.Util = function (globalVariables) {
         }
 
         display(x, y, w, h) {
-            this.returnText = new svg.Text("Retour");
+            this.returnText = new svg.Text(this.label);
             this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
             this.returnButton.color(myColors.black, 0, []);
             this.returnText.font("Arial", 20).anchor("start").position(0, 0);
@@ -1066,8 +1074,6 @@ exports.Util = function (globalVariables) {
                 for (var row = 0; row < this.rows; row++) {
                     var rowArray = [];
                     for (var column = 0; column < this.columns; column++) {
-                        //console.log(rowArray);
-                        //let index = this.indexOfFirstVisibleElement+(this.rows-1)*row+column;
                         let index = count;
                         if (typeof this.elementsArray[index] !== "undefined") {
                             (this.elementsArray[index].puzzleRowIndex = row);
@@ -1087,14 +1093,17 @@ exports.Util = function (globalVariables) {
                 for (var column = 0; column < this.columns; column++) {
                     var columnsArray = [];
                     for (var row = 0; row < this.rows; row++) {
-                        //console.log(columnsArray);
-                        //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleRowIndex = row;
-                        //this.elementsArray[this.indexOfFirstVisibleElement+(this.rows-1)*row+column].puzzleColumnIndex = column;
-                        columnsArray.push(this.elementsArray[this.indexOfFirstVisibleElement + (this.rows) * column + row]);
+                        let index = count;
+                        if (this.elementsArray[index]) {
+                            this.elementsArray[index].puzzleRowIndex = row;
+                            this.elementsArray[index].puzzleColumnIndex = column;
+                            count++;
+                            columnsArray.push(this.elementsArray[index]);
+                        }
                     }
-                    if (count < stop) {
-                        this.visibleElementsArray.push(columnsArray);
-                        count++;
+                    this.visibleElementsArray.push(columnsArray);
+                    if (count >= stop) {
+                        return true;
                     }
                 }
             }
@@ -1121,6 +1130,10 @@ exports.Util = function (globalVariables) {
         }
 
         display(x, y, w, h, needChevrons = true) {
+            if (this.parentObject.indexOfEditedQuestion) {
+                this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush();// questionPuzzle
+            }
+
             (typeof x !== "undefined") && (this.x = x);
             (typeof y !== "undefined") && (this.y = y);
             (typeof w !== "undefined") && (this.width = w);
@@ -1131,23 +1144,21 @@ exports.Util = function (globalVariables) {
                 width: needChevrons ? (this.width - 2 * this.chevronSize) : (this.width),
                 height: this.height
             };
-            //this.puzzleCadre = new svg.Rect(this.width, this.height).color(myColors.white, 3, myColors.black);
-            //this.manipulator.ordonator.set(0, this.puzzleCadre);
-            this.chevronsDisplayed = ((this.elementsArray.length > this.visibleElementsArray[0].length) && needChevrons);
+            this.chevronsDisplayed = ((this.elementsArray.length > this.rows * this.columns) && needChevrons);
             this.chevronsDisplayed ? this.drawChevrons() : this.hideChevrons(); // Ajouter les Events et gérer les couleurs
             this.adjustElementsDimensions();
             this.adjustElementsPositions();
-            let rowNumber = 0;
+            let itNumber = 0;
             for (var i = 3; i < this.nbOfVisibleElements + 3; i++) {
                 this.manipulator.ordonator.unset(i);
             }
-            this.visibleElementsArray.forEach(rows => {
-                rows.forEach(elem => {
-                    //rowNumber*this.columns + rows.indexOf(elem)+3+1 < this.manipulator.ordonator.children.length && this.manipulator.ordonator.unset(rowNumber*this.columns +rows.indexOf(elem)+3+1); // +2 pour les chevrons + 1 cadre
-                    this.manipulator.ordonator.set(rowNumber * this.columns + rows.indexOf(elem) + 3, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+            this.visibleElementsArray.forEach(it => {
+                it.forEach(elem => {
+                    let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
+                    this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                     elem.display(elem.x, elem.y, elem.width, elem.height);
                 });
-                rowNumber++;
+                itNumber++;
             });
         }
     }
@@ -2364,7 +2375,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check Question Name:
             question => ({
-                isValid: !!(question.label) || (question.imageSrc),
+                isValid: !!(question.label || question.imageSrc),
                 message: "Vous devez remplir le nom de la question."
             }),
             // Check Quiz Name:
@@ -2382,7 +2393,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check Question Name:
             question => ({
-                isValid: !!(question.label) || (question.imageSrc),
+                isValid: !!(question.label || question.imageSrc),
                 message: "Vous devez remplir le nom de la question."
             }),
             // Check Quiz Name:
@@ -2468,7 +2479,7 @@ exports.Util = function (globalVariables) {
             }]]
         };
     }
-    
+
     return {
         SVGGlobalHandler,
         setGlobalVariables,
