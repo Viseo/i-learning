@@ -626,7 +626,6 @@ function SVGUtil() {
         };
         var mouseupHandler = function () {
             svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
-            svg.removeEvent(svgItem, 'mouseup', mouseupHandler);
         };
         svg.addEvent(svgItem, "mousedown", mousedownHandler);
     };

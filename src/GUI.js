@@ -632,7 +632,11 @@ function formationDisplayFormation() {
     let returnHandler = (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.manipulator.flush();
-        target.parentObj.parent.formationsManager.display();
+        Server.getAllFormationsNames().then(data => {
+            let myFormations = JSON.parse(data).myCollection;
+            target.parentObj.parent.formationsManager = new FormationsManager(myFormations);
+            target.parentObj.parent.formationsManager.display();
+        });
     };
     self.manipulator.last.children.indexOf(self.returnButtonManipulator.first) === -1 && self.manipulator.last.add(self.returnButtonManipulator.first);
     self.returnButton.display(0, -5, 20, 20);
@@ -1149,7 +1153,7 @@ function formationsManagerDisplay() {
             formation.parent = self;
             self.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first)===-1 && self.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
 
-            formation.miniature.display(posx, posy, self.tileWidth, self.tileHeight);
+             formation.miniature.display(posx, posy, self.tileWidth, self.tileHeight);
 
             formation.miniature.setHandler(onClickFormation);
             count++;
