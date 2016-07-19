@@ -970,8 +970,10 @@ class MiniatureFormation {
 }
 
 class ReturnButton {
-    constructor(parent) {
+    constructor(parent, label) {
         this.parent = parent;
+        this.labelDefault = "Retour"
+        this.label = label ? label : this.labelDefault;
         this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
         this.manipulator.addOrdonator(1);
         this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
@@ -984,7 +986,7 @@ class ReturnButton {
     }
 
     display(x, y, w, h) {
-        this.returnText = new svg.Text("Retour");
+        this.returnText = new svg.Text(this.label);
         this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);

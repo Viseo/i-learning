@@ -437,7 +437,7 @@ class Formation {
         this.quizzManager.parentFormation = this;
         this.returnButtonManipulator = new Manipulator(this);
         this.returnButtonManipulator.addOrdonator(1);
-        this.returnButton = new ReturnButton(this);
+        this.returnButton = new ReturnButton(this, "Retour aux formations");
         this.labelDefault = "Entrer le nom de la formation";
         this.needUpdate = true;
         // WIDTH
