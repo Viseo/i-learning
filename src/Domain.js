@@ -432,6 +432,8 @@ class Formation {
         this.clippingManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator = new Manipulator(this);
         this.saveFormationButtonManipulator.addOrdonator(2);
+        this.publicationFormationButtonManipulator = new Manipulator(this);
+        this.publicationFormationButtonManipulator.addOrdonator(2);
         this.library = new GamesLibrary(myLibraryGames);
         this.library.formation = this;
         this.quizzManager = new QuizzManager();
@@ -456,6 +458,7 @@ class Formation {
         this.levelsTab = [];
         this.gamesTab = [];
         this.saveButtonHeightRatio = 0.07;
+        this.publicationButtonHeightRatio = 0.07;
         this.marginRatio = 0.03;
         this.label = formation.label ? formation.label : "";
         this.status = formation.status ? formation.status : statusEnum.NotPublished;
@@ -469,6 +472,7 @@ class Formation {
 
         this.redim();
         this.manipulator.last.add(this.saveFormationButtonManipulator.first);
+        this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
     }
 
     addNewGame (event, lib) {
@@ -625,6 +629,34 @@ class Formation {
         }
     }
 
+    publicationFormation () {
+        const messagePublication = "Les bases du CSS' n'est pas complète.";
+
+        const displayPublicationMessage = (messagePublication) => {
+            (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            this.errorMessagePublication = new svg.Text(messagePublication)
+                .position(0, -this.publicationButtonHeight / 2 - MARGIN)
+                .font("Arial", 20)
+                .anchor('middle').color(myColors.red);
+            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+            svg.timeout(() => {
+                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                }
+            }, 5000);
+        };
+        displayPublicationMessage(messagePublication);
+        };
+
+/*    publicationFormation () {
+        const messageErrorGame = "Veuillez ajouter au moins un jeu à votre formation.",
+            messageErrorNameGame = "Veuillez donner un nom à votre jeu.",
+            messageErrorQuestionGame =  "Veuillez ajouter au moins une question à votre jeu 'Les bases du CSS'",
+            messageErrorIncomplet = "La question 5 du jeu 'Les bases du CSS' n'est pas complète.",
+            messageErrorNoGoodAnswer = "Vous n'avez pas indiqué de bonne réponse pour la question 5 du jeu 'Les bases du CSS'.",
+            messageErrorIncomplet = "La question 5 du jeu 'Les bases du CSS' n'est pas complète.";
+    }*/
+
     loadFormation (formation) {
         this.levelsTab = [];
         this.gamesCounter = formation.gamesCounter;
@@ -685,6 +717,7 @@ class Formation {
         this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
 
         this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+        this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
         this.ButtonWidth = 150;
         this.globalMargin = {
             height: this.marginRatio * drawing.height,
