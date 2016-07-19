@@ -2184,6 +2184,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
     var returnHandler = function(event){
         var target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
         target.parentObj.parent.parentFormation.displayFormation()
