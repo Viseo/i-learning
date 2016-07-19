@@ -181,7 +181,7 @@ function answerDisplay (x, y, w, h) {
                     anchor = 'middle';
                 self.errorMessage = new svg.Text(REGEX_ERROR);
                 quizzManager.questionCreator.questionCreatorManipulator.ordonator.set(1,self.errorMessage);
-                self.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2+svg.runtime.boundingRect(self.errorMessage.component).height)
+                self.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
                 contentarea.focus();
                 self.answerNameValidInput = false;
@@ -2166,9 +2166,9 @@ function quizzManagerDisplay(){
         this.displayQuestionsPuzzle(this.questionPuzzleCoordinates.x, this.questionPuzzleCoordinates.y, this.questionPuzzleCoordinates.w, this.questionPuzzleCoordinates.h);
         this.questionCreator.display(this.library.x + this.libraryWidth, this.library.y,
             this.questCreaWidth-this.globalMargin.width, this.questCreaHeight);
-        this.displayPreviewButton(drawing.width/2-this.ButtonWidth, this.height - this.previewButtonHeight/2-MARGIN/2,
+        this.displayPreviewButton(drawing.width/2-this.ButtonWidth, this.height - this.previewButtonHeight/2,
             this.ButtonWidth, this.previewButtonHeight-this.globalMargin.height);
-        this.displayQuizSaveButton(drawing.width/2+this.ButtonWidth, this.height - this.saveButtonHeight/2-MARGIN/2,
+        this.displayQuizSaveButton(drawing.width/2+this.ButtonWidth, this.height - this.saveButtonHeight/2,
             this.ButtonWidth, this.saveButtonHeight-this.globalMargin.height);
         mainManipulator.ordonator.unset(0);
         header.display("Formation : " + this.parentFormation.label);

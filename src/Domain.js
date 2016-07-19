@@ -312,6 +312,7 @@ class PopIn {
         answer.filled = (!this.image && !this.label) ? false : true;
     }
 }
+
 class AddEmptyElement {
     constructor (parent, type) {
         this.manipulator = new Manipulator(this);
@@ -993,7 +994,7 @@ class QuizzManager {
     displayMessage (message, color) {
         this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
         this.questionCreator.errorMessagePreview = new svg.Text(message)
-            .position(this.ButtonWidth, -this.saveButton.cadre.height/2)
+            .position(this.ButtonWidth, -this.saveButton.cadre.height/2-MARGIN/2)
             .font("Arial", 20)
             .anchor('middle').color(color);
         this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
