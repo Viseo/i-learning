@@ -1,36 +1,52 @@
-var svg, util, connexionManager, inscriptionManager, formationsManager;
 
-if(typeof SVG !== "undefined") {
-    if(!svg) {
-        svg = new SVG();
-    }
-}
+const Domain = require('./Domain').Domain,
+    Util = require('Util').Util,
+    GUI = require('GUI').GUI,
+    gui = require('../lib/svggui').Gui;
 
-function setSvg(_svg) {
-    svg = _svg;
-    // call setSvg on modules
-}
-function setUtil(_util){
-    util = _util;
-}
+exports.main = function (svg, runtime) {
 
-function setGlobalVariable() {
-    util && util.SVGGlobalHandler();
-    drawings = new Drawings(svg.screenSize().width, svg.screenSize().height);
+    let domain, util, Gui, drawing, drawings, formationsManager;
+
+    let globalVariables = {svg, runtime};
+
+    util = Util(globalVariables);
+    globalVariables.util = util;
+    util.SVGGlobalHandler();
+    util.Bdd();
+    util.SVGUtil();
+
+    globalVariables.gui = new exports.Gui(svg, {speed: 5, step: 100});
+
+    drawings = drawings || new util.Drawings(svg.screenSize().width, svg.screenSize().height);
+    globalVariables.drawings = drawings;
     drawing = drawings.drawing;
-    mainManipulator = drawing.manipulator;
-    return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:svg.screenSize().height, clientWidth:svg.screenSize().width};
-}
+    globalVariables.drawing = drawing;
+    domain = Domain(globalVariables);
+    globalVariables.domain = domain;
 
-function main() {
+    const inscriptionManager = new domain.InscriptionManager();
+    globalVariables.inscriptionManager = inscriptionManager;
+    const connexionManager = new domain.ConnexionManager();
+    globalVariables.connexionManager = connexionManager;
+
+    Gui = GUI(globalVariables);
+    globalVariables.GUI = Gui;
+
+    mainManipulator = drawing.manipulator;
+
+    util.setGlobalVariables();
+    domain.setGlobalVariables();
+    Gui.setGlobalVariables();
+
     let resizePaper = function() {
         !runtime && document.activeElement.blur();
         if ((document.documentElement.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.documentElement.clientWidth,document.documentElement.clientHeight);
             drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
-            let formation, quizzManager, quizz;
-            if (typeof formationsManager !== 'undefined') formation = formationsManager.formationDisplayed;
-            if (typeof formation !== 'undefined') quizzManager = formation.quizzManager;
+            const formation = formationsManager.formationDisplayed,
+                quizzManager = formation && formation.quizzManager;
+            let quizz;
             switch (drawing.currentPageDisplayed) {
                 case "ConnexionManager":
                     connexionManager.display();
@@ -80,23 +96,21 @@ function main() {
     };
 
     let listFormations = function() {
-        Server.getAllFormationsNames().then(data => {
+        util.Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
-            formationsManager = new FormationsManager(myFormations);
+            formationsManager = new domain.FormationsManager(myFormations);
             formationsManager.display();
         });
     };
-
-    inscriptionManager = new InscriptionManager();
-    connexionManager = new ConnexionManager();
     
-    Server.checkCookie().then(data => {
+    util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-            data.user.admin ? AdminGUI() : LearningGUI();
+            data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
             listFormations();
         } else {
+            Gui.LearningGUI();
             connexionManager.display();
         }
     });
@@ -104,11 +118,4 @@ function main() {
     setTimeout(function(){
         window.onresize = resizePaper;
     },200);
-}
-
-if (typeof exports !== "undefined") {
-    exports.main = main;
-    exports.setSvg = setSvg;
-    exports.setUtil = setUtil;
-    exports.setGlobalVariable = setGlobalVariable;
-}
+};
