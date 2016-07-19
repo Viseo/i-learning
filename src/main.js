@@ -70,7 +70,7 @@ function main() {
                     if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                         quizz.displayCurrentQuestion();
                     } else {
-                        quizz.resultManipulator.last.remove(quizz.puzzle.puzzleManipulator.first);
+                        quizz.resultManipulator.last.remove(quizz.puzzle.manipulator.first);
                         quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
                         quizz.displayResult();
                     }
