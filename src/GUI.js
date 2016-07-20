@@ -1464,13 +1464,20 @@ function questionDisplayAnswers(x, y, w, h) {
                 (self.parentQuizz.questionsWithBadAnswers[j].index+1 === self.questionNum) && (index = j);
             }
             self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
-                self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 3, myColors.red);
+                self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.red);
             });
         }
 
     }
-
-    if(self.multipleChoice){
+    if (playerMode && self.parentQuizz.previewMode) {
+        w = 0.5 * drawing.width;
+        h = Math.min(self.tileHeight, 50);
+        var buttonX = - w/2;
+        var buttonY = self.tileHeight*(self.lines-1/2)+(self.lines+1)*MARGIN;
+        self.simpleChoiceMessageManipulator.translator.move(buttonX+w/2, buttonY+h/2);
+        self.simpleChoiceMessage = displayText("Cliquer sur une réponse pour afficher son explication", w, h, myColors.none, myColors.none, 20, "Arial", self.simpleChoiceMessageManipulator);
+    }
+    else if(self.multipleChoice){
         //affichage d'un bouton "valider"
         w = 0.1 * drawing.width;
         h = Math.min(self.tileHeight, 50);
