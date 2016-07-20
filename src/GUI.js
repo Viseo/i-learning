@@ -448,20 +448,26 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
     let display = (x, y, w, h) => {
         libraryDisplay.call(this, x, y, w, h);
 
+        let displayPanel = () => {
+            this.panel = new gui.Panel(w-3,0.75*h, myColors.white, 3).position(w/2,0.45*h);
+            this.libraryManipulator.last.add(this.panel.component);
+            this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
+        };
+
         let displayItems = () => {
             let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
                 libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
-                tempY = (2 / 10 * h);
+                tempY = (0.075 * h);
 
             this.itemsTab.forEach((item, i) => {
                 if (i % maxImagesPerLine === 0 && i !== 0) {
                     tempY += this.imageHeight + libMargin;
                 }
 
-                if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                    this.libraryManipulator.last.remove(this.libraryManipulators[i].first);
-                }
-                this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) === -1 && this.libraryManipulator.last.add(this.libraryManipulators[i].first);
+                // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
+                //     this.panel.content.remove(this.libraryManipulators[i].first);
+                // }
+                this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
 
                 let image = displayImage(myLibraryImage.tab[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
                 image.srcDimension = {width: item.width, height: item.height};
@@ -471,6 +477,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                 this.libraryManipulators[i].first.move(X, tempY);
 
             });
+            this.panel.resizeContent(tempY += this.imageHeight);
         };
 
         let assignEvents = () => {
@@ -536,17 +543,27 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                 drawings.screen.add(this.dora);
 
             }
-            var doraHandler = () => {
+            let doraHandler = () => {
                 svg.runtime.anchor("dora").click();
             };
-            let addButton = new svg.Rect(this.w / 7, this.w / 7).color(myColors.black);
-            this.addButtonManipulator.ordonator.set(0, addButton);
-            this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 &&
-            this.libraryManipulator.last.add(this.addButtonManipulator.first);
-            this.addButtonManipulator.translator.move(this.w / 2, this.h / 2);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
-        }
+            let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
+                addButtonLabel = "Ajouter une image",
+                addButtonText =  autoAdjustText(addButtonLabel, 0, 0 , 0, this.h/15, 20, "Arial", this.addButtonManipulator),
+                plus = drawPlus(0,0, this.w / 7, this.w / 7);
+            addButtonText.text.position(0,this.h/12 - (this.h/15)/2 + 3/2*MARGIN);
+            addButton.corners(10 , 10);
 
+            this.addButtonManipulator.ordonator.set(0, addButton);
+            this.addButtonManipulator.ordonator.set(2, plus);
+            this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
+            this.addButtonManipulator.translator.move(this.w/2, 9 *this.h / 10);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
+
+        };
+
+        displayPanel();
         displayItems();
         displaySaveButton();
         assignEvents();
