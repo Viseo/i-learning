@@ -790,7 +790,6 @@ function formationDisplayFormation() {
         self.panel.contentV.add(self.messageDragDropManipulator.first);
         self.panel.component.move(w/2, h/2);
         self.clippingManipulator.last.add(self.panel.component);
-        //self.panel.border.color(myColors.none, 3, myColors.black);
         self.panel.contentH.add(self.graphManipulator.first);
         self.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -1452,7 +1451,7 @@ function questionDisplayAnswers(x, y, w, h) {
 
             if(self.parentQuizz.previewMode) {
                 if(self.tabAnswer[i].correct) {
-                    self.tabAnswer[i].bordure.color(self.tabAnswer[i].bordure.component.fillColor, 5, myColors.primaryGreen);
+                    self.tabAnswer[i].bordure.color(self.tabAnswer[i].bordure.component.fillColor || myColors.white, 5, myColors.primaryGreen);
                 }
             } else {
                 (function(element) {
@@ -1875,9 +1874,9 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 }
 
 function popInDisplay(parent, previousX, x, y, w, h) {
-    let rect = new svg.Rect(w, h);
+    let rect = new svg.Rect(w+2, h); //+2 border
     rect._acceptDrop = this.editable;
-    rect.color(myColors.white, 2 , myColors.black);
+    rect.color(myColors.white, 1, myColors.black);
     this.manipulator.ordonator.set(0, rect);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
     this.manipulator.translator.move(previousX, y);
