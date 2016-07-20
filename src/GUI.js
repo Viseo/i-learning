@@ -1469,7 +1469,7 @@ function questionDisplayAnswers(x, y, w, h) {
             for (let j = 0; j<self.parentQuizz.questionsWithBadAnswers.length ; j++){
                 (self.parentQuizz.questionsWithBadAnswers[j].index+1 === self.questionNum) && (index = j);
             }
-            self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
+            playerMode && self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
                 self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.red);
                 //self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.red);
                 //self.tabAnswer[selectedAnswer].content.color(getComplementary(myColors.darkBlue));
@@ -2119,10 +2119,9 @@ function bdDisplay(bd){
 }
 
 function quizzDisplayScore(color){
-    let self = this;
     let autoColor;
     switch(this.score) {
-        case self.tabQuestions.length:
+        case this.tabQuestions.length:
             str1 = 'Impressionant !';
             str2 = 'et toutes sont justes !';
             autoColor = [100, 255, 100];
@@ -2132,7 +2131,7 @@ function quizzDisplayScore(color){
             str2 = "dont aucune n'est juste !";
             autoColor = [255, 17, 0];
             break;
-        case (self.tabQuestions.length - 1):
+        case (this.tabQuestions.length - 1):
             str1 = 'Pas mal du tout !';
             str2 = 'et toutes (sauf une...) sont justes !';
             autoColor = [200, 255, 0];
@@ -2144,29 +2143,29 @@ function quizzDisplayScore(color){
             break;
         default:
             str1 = 'Correct, mais ne relachez pas vos efforts !';
-            str2 = `dont ${self.score} sont justes !`;
+            str2 = `dont ${this.score} sont justes !`;
             autoColor = [220, 255, 0];
             break;
     }
     var str1,str2;
 
-    self.finalMessage = `${str1} Vous avez répondu à ${self.tabQuestions.length} questions, ${str2}`;
+    this.finalMessage = `${str1} Vous avez répondu à ${this.tabQuestions.length} questions, ${str2}`;
     if(!color) {
         var usedColor = autoColor;
     } else {
         usedColor = color;
     }
 
-    self.resultManipulator && (self.quizzManipulator.last.children.indexOf(self.resultManipulator.first) !== -1) && self.quizzManipulator.last.remove(self.resultManipulator.first);
+    this.resultManipulator && (this.quizzManipulator.last.children.indexOf(this.resultManipulator.first) !== -1) && this.quizzManipulator.last.remove(this.resultManipulator.first);
 
-    self.resultManipulator = new Manipulator(self);
-    self.scoreManipulator = new Manipulator(self);
-    self.scoreManipulator.addOrdonator(2);
-    self.resultManipulator.translator.move(0, self.questionHeight/2 + self.headerHeight/2 + 2*MARGIN);
-    self.resultManipulator.last.add(self.scoreManipulator.first);
-    self.resultManipulator.last.add(self.puzzle.manipulator.first);
-    self.quizzManipulator.last.add(self.resultManipulator.first);
-    displayText(self.finalMessage,self.titleArea.w-2*MARGIN,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
+    this.resultManipulator = new Manipulator(this);
+    this.scoreManipulator = new Manipulator(this);
+    this.scoreManipulator.addOrdonator(2);
+    this.resultManipulator.translator.move(0, this.questionHeight/2 + this.headerHeight/2 + 2*MARGIN);
+    this.resultManipulator.last.add(this.scoreManipulator.first);
+    this.resultManipulator.last.add(this.puzzle.manipulator.first);
+    this.quizzManipulator.last.add(this.resultManipulator.first);
+    displayText(this.finalMessage, this.titleArea.w-2*MARGIN, this.questionHeight, myColors.black, usedColor, this.fontSize, this.font, this.scoreManipulator);
 }
 
 function quizzManagerDisplay(){

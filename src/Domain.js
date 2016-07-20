@@ -1056,7 +1056,7 @@ class QuizzManager {
         let errorMessage = "Entrer un nom valide pour enregistrer";
         svg.addEvent(this.saveButton.cadre, "click", ()=>{});
         svg.addEvent(this.saveButton.content, "click", ()=>{});
-        if(self.quizzName) {
+        if(this.quizzName) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
