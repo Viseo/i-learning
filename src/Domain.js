@@ -1433,7 +1433,7 @@ ConnexionManager = function () {
         emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red);});
 
         if (emptyAreas.length > 0) {
-            let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
+            let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
             svg.timeout(function() {
                 self.connexionButtonManipulator.ordonator.unset(3);
@@ -1447,7 +1447,7 @@ ConnexionManager = function () {
                     data.user.admin ? AdminGUI() : LearningGUI();
                     listFormations();
                 } else {
-                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
+                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
                     svg.timeout(() => {self.connexionButtonManipulator.ordonator.unset(3);}, 5000);
                 }

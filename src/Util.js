@@ -306,7 +306,7 @@ function SVGUtil() {
             w = 1;
             h = 1;
         }
-        var text = autoAdjustText(label, 0, 0, textWidth, null, fontSize, font, manipulator).text;
+        var text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
 
         var textHeight = (label !== "")? h*0.25:0;
         text.position(0, (h - textHeight) / 2);//w*1/6
@@ -387,7 +387,7 @@ function SVGUtil() {
             w = 1;
             h = 1;
         }
-        var content = autoAdjustText(label, 0, 0, textWidth, h, textHeight, font, manipulator, layer2).text;
+        var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
         manipulator.ordonator.set(layer1, cadre);
         return {content: content, cadre: cadre};
@@ -406,7 +406,7 @@ function SVGUtil() {
      * @returns {{content, cadre}} : SVG items for text & cadre
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-        var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+        var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
         var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -425,7 +425,7 @@ function SVGUtil() {
      * @returns {{content, cadre}} : SVG items for text & cadre
      */
     displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-        var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
+        var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
         var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
         manipulator.ordonator.set(0, cadre);
         return {content: content, cadre: cadre};
@@ -443,7 +443,7 @@ function SVGUtil() {
      * @param manipulator
      * @param layer
      */
-    autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer=1) {
+    autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer=1) {
         let words = content.split(' '),
             text = '',
             w = wi * 99/100,
@@ -873,7 +873,7 @@ class MiniatureGame {
                 miniatureObject.infosManipulator.ordonator.set(1, iconInfos);
                 let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
                 object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
-                let result = autoAdjustText(resultString, 0, 0, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
+                let result = autoAdjustText(resultString, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                 result.text.position(0,size/2-MARGIN/2);
                 break;
             case "inProgress":

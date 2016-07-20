@@ -256,7 +256,7 @@ function libraryDisplay(x, y, w, h) {
     self.bordure.position(w / 2, h / 2 );
     self.libraryManipulator.ordonator.set(0, self.bordure);
 
-    self.titleSvg = autoAdjustText(self.title, 0, 0, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
+    self.titleSvg = autoAdjustText(self.title, w, (1 / 10) * h, null, self.font, self.libraryManipulator).text;
     self.titleSvg.position(w / 2, (1 / 20) * h);
 
     self.libraryManipulator.translator.move(self.x, self.y);
@@ -741,7 +741,7 @@ function formationDisplayFormation() {
         self.panel.contentV.add(level.manipulator.first);
         var lineColor = playerMode ? myColors.grey : myColors.black;
         var levelText =  playerMode ? "" : "Niveau " + level.index;
-        level.obj = autoAdjustText(levelText, 0, 0, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
+        level.obj = autoAdjustText(levelText, w-3*self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
         level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(lineColor , 3, lineColor);
         level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
         level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
@@ -815,7 +815,7 @@ function formationDisplayFormation() {
 
     let displayMessageDragAndDrop = () => {
         self.messageDragDropMargin = self.graphCreaHeight/8-self.borderSize;
-        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", 0, 0, self.graphW, self.graphH, 20, null, self.messageDragDropManipulator).text;
+        self.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", self.graphW, self.graphH, 20, null, self.messageDragDropManipulator).text;
         self.messageDragDrop._acceptDrop = true;
         self.messageDragDrop.x = self.panel.width/2;
         self.messageDragDrop.y = self.messageDragDropMargin + (self.levelsTab.length) * self.levelHeight;
@@ -970,7 +970,7 @@ function formationDisplayFormation() {
             let bgcolor = myColors.lightgrey;
             self.formationLabelWidth = 400 ;
             self.formationLabel = {};
-            self.formationLabel.content = autoAdjustText(text, 0, 0, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
+            self.formationLabel.content = autoAdjustText(text, self.formationLabelWidth, 20, 15, "Arial", self.formationInfoManipulator).text;
             self.labelHeight = svg.runtime.boundingRect(self.formationLabel.content.component).height;
 
             self.formationTitleWidth = svg.runtime.boundingRect(self.title.component).width;
@@ -1144,14 +1144,14 @@ function formationsManagerDisplay() {
         self.checkLegend = statusEnum.Published.icon(self.iconeSize);
         self.checkManipulator.ordonator.set(2, self.checkLegend.square);
         self.checkManipulator.ordonator.set(3, self.checkLegend.check);
-        self.published = autoAdjustText("Publié", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
+        self.published = autoAdjustText("Publié", self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
         self.published.position(25, self.published.y);
 
         self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
         self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
         self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
         self.exclamationManipulator.ordonator.set(3, self.exclamationLegend.exclamation);
-        self.toPublish = autoAdjustText("Nouvelle version à publier", 0, 0, self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
+        self.toPublish = autoAdjustText("Nouvelle version à publier", self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
         self.toPublish.position(25, self.toPublish.y);
         self.legendWidth = drawing.width * 0.3;
         self.legendItemLength = svg.runtime.boundingRect(self.toPublish.component).width+svg.runtime.boundingRect(self.exclamationLegend.circle.component).width+MARGIN;
@@ -1223,7 +1223,7 @@ function headerDisplay (message) {
             ratio = 0.65,
             body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.black),
             head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
-            userText = autoAdjustText(drawing.username, 0, 0, this.width * 0.23, 50, 20, null, userManip, 3);
+            userText = autoAdjustText(drawing.username, this.width * 0.23, 50, 20, null, userManip, 3);
 
         pos -= deconnexionWidth / 2;
         deconnexion.content.position(pos, 0);
@@ -1251,7 +1251,7 @@ function headerDisplay (message) {
     };
 
     if (message) {
-        const messageText = autoAdjustText(message, 0, 0, this.width * 0.3, 50, 32, 'Arial', manip, 2);
+        const messageText = autoAdjustText(message, this.width * 0.3, 50, 32, 'Arial', manip, 2);
         messageText.text.position(this.width / 2, this.height / 2 + MARGIN);
     } else {
         manip.ordonator.unset(2);
@@ -1860,7 +1860,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
     !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
-    this.answerTextSVG = autoAdjustText(answerText, 0, 0, w, blackCrossSize, 20, null, this.manipulator, 1).text;
+    this.answerTextSVG = autoAdjustText(answerText, w, blackCrossSize, 20, null, this.manipulator, 1).text;
     this.answerTextSVG.position(0, -h / 2 + blackCrossSize);
     blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
     blackCross.color(myColors.black, 1, myColors.black);
@@ -1901,7 +1901,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         this.answer.filled = true;
     }
     else if (this.editable){
-        let draganddropTextSVG = autoAdjustText(this.draganddropText, 0, 0, w/6, h / 3, 20, null, this.manipulator, 3).text;
+        let draganddropTextSVG = autoAdjustText(this.draganddropText, w/6, h / 3, 20, null, this.manipulator, 3).text;
         draganddropTextSVG.position(-w/2 + w/12 + MARGIN, 0).color(myColors.grey);
         draganddropTextSVG._acceptDrop = this.editable;
        this.label ? this.answer.filled = true : this.answer.filled = false;
@@ -1922,7 +1922,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
-    this.text = autoAdjustText(this.textToDisplay, 0, 0, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
+    this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
     this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
@@ -2264,7 +2264,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
 
         self.quizzLabel = {};
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
-        self.quizzLabel.content = autoAdjustText(text, 0, 0, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
+        self.quizzLabel.content = autoAdjustText(text, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
         self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
 
         self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
@@ -2473,7 +2473,7 @@ function inscriptionManagerDisplay() {
             var displayErrorMessage = function(trueManipulator=manipulator){
                 emptyAreasHandler();
                 if (!(field==="passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)){
-                    var message = autoAdjustText(self[field].errorMessage, 0, 0, drawing.width, self.h, 20, null, trueManipulator, 3);
+                    var message = autoAdjustText(self[field].errorMessage, drawing.width, self.h, 20, null, trueManipulator, 3);
                     message.text.color(myColors.red).position(self[field].cadre.width/2 + MARGIN, self[field].cadre.height+MARGIN);
                 }
             };
@@ -2590,12 +2590,12 @@ function inscriptionManagerDisplay() {
         if (passTooShort || confTooShort){
             if (passTooShort){
                 self.passwordField.cadre.color(myColors.white, 3, myColors.red);
-                var message = autoAdjustText(self.passwordField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+                var message = autoAdjustText(self.passwordField.errorMessage, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
                 message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
             }
             if (confTooShort){
                 self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
-                var message = autoAdjustText(self.passwordField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+                var message = autoAdjustText(self.passwordField.errorMessage, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
                 message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
             }
         }
@@ -2603,7 +2603,7 @@ function inscriptionManagerDisplay() {
             self.passwordField.cadre.color(myColors.white, 3, myColors.red);
             self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
             self.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
-            var message = autoAdjustText(self.passwordConfirmationField.errorMessage, 0, 0, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
+            var message = autoAdjustText(self.passwordConfirmationField.errorMessage, drawing.width, self.h, 20, null, self.passwordManipulator, 3);
             message.text.color(myColors.red).position(self.passwordField.cadre.width/2 + MARGIN, self.passwordField.cadre.height+MARGIN);
         }
         else if (self.passwordField.labelSecret && self.passwordField.labelSecret.length>=6){
@@ -2641,7 +2641,7 @@ function inscriptionManagerDisplay() {
             save && emptyArea.cadre.color(myColors.white, 3, myColors.red);
         });
         if (emptyAreas.length>0 && save){
-            var message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+            var message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
         else {
@@ -2670,14 +2670,14 @@ function inscriptionManagerDisplay() {
                 })
                 .then(() => {
                     var messageText = "Votre compte a bien été créé !";
-                    var message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    var message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
                     message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
                     setTimeout(() => {
                         this.saveButtonManipulator.ordonator.unset(3);
                     }, 10000);
                 })
                 .catch((messageText) => {
-                    let message = autoAdjustText(messageText, 0, 0, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    let message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
                     setTimeout(() => {
                         this.saveButtonManipulator.ordonator.unset(3);
@@ -2686,7 +2686,7 @@ function inscriptionManagerDisplay() {
         }
         else if (!AllOk()){
             var messageText = "Corrigez les erreurs des champs avant d'enregistrer !";
-            var message = autoAdjustText(messageText, 0, 0, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
+            var message = autoAdjustText(messageText, drawing.width, self.h, 20, null, self.saveButtonManipulator, 3);
             message.text.color(myColors.red).position(0, - self.saveButton.cadre.height+MARGIN);
         }
     };
