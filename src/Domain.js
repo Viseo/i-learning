@@ -128,7 +128,7 @@ class Question {
         this.parentQuizz = quizz;
         this.tabAnswer = [];
         this.fontSize = 20;
-        this.questionNum = this.parentQuizz.tabQuestions.length+1;
+        this.questionNum = question && question.questionNum || this.parentQuizz.tabQuestions.length+1;
 
         if (!question) {
             this.label = "";
@@ -798,7 +798,7 @@ class Formation {
 
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(wrongAnswer => {
-                        theGame.questionsWithBadAnswers.add({index: wrongAnswer.index, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:theGame.tabQuestions[wrongAnswer.index -1].tabAnswer.indexOf(wrongAnswer.selectedAnswers)});
+                        theGame.questionsWithBadAnswers.add({index: wrongAnswer.index - 1, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:wrongAnswer.selectedAnswers});
                     });
                     theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
@@ -1164,9 +1164,6 @@ class Quizz {
                 tmp.parentQuizz = this;
                 this.tabQuestions.push(tmp);
             });
-            quizz.questionsWithBadAnswers && quizz.questionsWithBadAnswers.forEach(x=>{
-
-            })
         } else {
             this.tabQuestions = [];
             this.tabQuestions.push(new Question(defaultQuestion, this));

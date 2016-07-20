@@ -1345,7 +1345,8 @@ function questionElementClicked(sourceElement) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
         } else {
-            self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: sourceElement});
+            let selectedAnswerIndexTab = [self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(sourceElement)];
+            self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: selectedAnswerIndexTab});
             var reponseD = "";
             self.rightAnswers.forEach(function(e){
                 if(e.label)
@@ -1457,11 +1458,16 @@ function questionDisplayAnswers(x, y, w, h) {
             }
             count++;
         }
-        let index;
-        self.parentQuizz.questionsWithBadAnswers.forEach(x=>{
-            (x.question.questionNum === self.questionNum) && (index = self.questionNum);
-        })
-        self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.bordure.color(myColors.darkBlue);
+        if (self.parentQuizz.previewMode){
+            let index;
+            for (let j = 0; j<self.parentQuizz.questionsWithBadAnswers.length ; j++){
+                (self.parentQuizz.questionsWithBadAnswers[j].index+1 === self.questionNum) && (index = j);
+            }
+            self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
+                self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 3, myColors.red);
+            });
+        }
+
     }
 
     if(self.multipleChoice){
@@ -1497,7 +1503,11 @@ function questionDisplayAnswers(x, y, w, h) {
                     self.parentQuizz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
-                    self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: self.selectedAnswers});
+                    let indexOfSelectedAnswers = [];
+                    self.selectedAnswers.forEach(aSelectedAnswer =>{
+                        indexOfSelectedAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+                    })
+                    self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: indexOfSelectedAnswers});
                     var reponseD = "";
                     self.rightAnswers.forEach(function(e){
                         if(e.label) {

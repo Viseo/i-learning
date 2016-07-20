@@ -1233,7 +1233,7 @@ class Server {
             game: quiz.id,
             formation: quiz.parentFormation._id,
         };
-        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.question.tabAnswer.indexOf(x.selectedAnswers)}));
+        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
         return dbListener.httpPostAsync("/sendProgress", data)
     }
 
