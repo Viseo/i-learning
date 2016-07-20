@@ -2019,6 +2019,7 @@ function quizzDisplay(x, y, w, h) {
                 target.parentObj.parent.quizzManipulator.flush();
                 target.parentObj.parent.puzzleLines = 3;
                 target.parentObj.parent.puzzleRows = 3;
+                target.parentObj.parent.returnButton.label = "Retour à la formation";
                 target.parentObj.parent.display(0, 0, drawing.width, drawing.height);
             });
         }
