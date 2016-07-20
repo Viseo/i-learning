@@ -61,7 +61,6 @@ function answerDisplay (x, y, w, h) {
     if(this.parentQuestion.parentQuizz.previewMode) {
         let event = () => {
             this.explanationPopIn = new PopIn(this, false);
-            //this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.resultArea.x, this.parentQuestion.parentQuizz.resultArea.y + this.parentQuestion.parentQuizz.questionHeight, this.parentQuestion.parentQuizz.resultArea.w, this.parentQuestion.parentQuizz.answerHeightWithImage);
             if (this.parentQuestion.image && this.image){
                 this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeight/2 + this.parentQuestion.parentQuizz.questionHeightWithImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeight);
             }
@@ -74,7 +73,6 @@ function answerDisplay (x, y, w, h) {
             else {
                 this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeightMax/2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax);
             }
-            //this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, 0, this.parentQuestion.parentQuizz.resultArea.w, this.parentQuestion.parentQuizz.answerHeightWithImage);
         };
         this.image && svg.addEvent(this.image, "click", event);
         this.bordure && svg.addEvent(this.bordure, "click", event);
@@ -142,11 +140,9 @@ function answerDisplay (x, y, w, h) {
             self.obj.content._acceptDrop = true;
 
             let editor = (self.editor.puzzle ? self.editor : self.editor.parent);
-            //editor.puzzle.manipulator.translator.move(0, editor.toggleButtonHeight-MARGIN);
 
             svg.addEvent(self.obj.content, 'dblclick', dblclickEditionAnswer);
             svg.addEvent(self.obj.cadre, 'dblclick', dblclickEditionAnswer);
-
             svg.addEvent(self.obj.cadre,'mouseover',mouseoverHandler);
             svg.addEvent(self.obj.cadre,'mouseout',mouseleaveHandler);
         };
@@ -172,8 +168,6 @@ function answerDisplay (x, y, w, h) {
             drawings.screen.add(contentarea);
             contentarea.height = svg.runtime.boundingRect(self.obj.content.component).height;
             self.manipulator.ordonator.unset(1);
-            //contentarea.position(contentarea.globalPointCenter.x, contentarea.globalPointCenter.y);
-            //contentarea.dimension(contentarea.width, contentarea.height);
             contentarea.focus();
 
             let removeErrorMessage = function () {
@@ -552,13 +546,13 @@ function addEmptyElementDisplay(x, y, w, h) {
     if(typeof x !== 'undefined'){
         self.x = x;
     }
-    if(typeof y !== 'undefined' ){
+    if(typeof y !== 'undefined'){
         self.y = y;
     }
-    if(typeof w !== 'undefined' ) {
+    if(typeof w !== 'undefined') {
         w && (self.width = w);
     }
-    if(typeof h !== 'undefined' ) {
+    if(typeof h !== 'undefined') {
         h && (self.height = h);
     }
 
@@ -567,7 +561,6 @@ function addEmptyElementDisplay(x, y, w, h) {
     self.manipulator.translator.move(x, y);
     self.manipulator.ordonator.set(2, self.plus);
     self.obj.content.position(0, self.height * 0.35);
-
     self.obj.cadre.color(myColors.white, 3, myColors.black);
     self.obj.cadre.component.setAttribute && self.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
     self.obj.cadre.component.target && self.obj.cadre.component.target.setAttribute('stroke-dasharray', '10, 5');
@@ -586,7 +579,6 @@ function addEmptyElementDisplay(x, y, w, h) {
                 }
                 self.parent.puzzle.updateElementsArray(self.parent.linkedQuestion.tabAnswer);
                 self.parent.puzzle && self.parent.puzzle.fillVisibleElementsArray("leftToRight");
-                //self.parent.puzzle = new Puzzle(2, 4, self.parent.linkedQuestion.tabAnswer, "leftToRight", self);
                 self.parent.questionCreatorManipulator.last.children.indexOf(self.parent.puzzle.manipulator.first) === -1 && self.parent.questionCreatorManipulator.last.add(self.parent.puzzle.manipulator.first);
                 self.parent.puzzle.display(self.parent.coordinatesAnswers.x,
                     self.parent.coordinatesAnswers.y, self.parent.coordinatesAnswers.w,
@@ -603,7 +595,6 @@ function addEmptyElementDisplay(x, y, w, h) {
 
                 newQuestion.selected = true;
                 self.parent.quizz.tabQuestions.push(newQuestion);
-
                 let AddNewEmptyQuestion = new AddEmptyElement(self.parent, 'question');
                 self.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
                 self.parent.questionPuzzle.visibleElementsArray[0].length === 6 && self.parent.questionPuzzle.updateStartPosition('right');
@@ -623,14 +614,12 @@ function addEmptyElementDisplay(x, y, w, h) {
                 }
 
                 self.parent.questionCreator.loadQuestion(newQuestion);
-
                 self.parent.questionCreator.display(self.parent.questionCreator.previousX,
                     self.parent.questionCreator.previousY,
                     self.parent.questionCreator.previousW,
                     self.parent.questionCreator.previousH);
         }
     };
-
     svg.addEvent(self.plus, "dblclick", dblclickAdd);
     svg.addEvent(self.obj.content, "dblclick", dblclickAdd);
     svg.addEvent(self.obj.cadre, "dblclick", dblclickAdd);
@@ -690,7 +679,7 @@ function formationDisplayFormation() {
         self.quizzDisplayed = new Quizz(targetQuizz);
         self.quizzDisplayed.puzzleLines = 3;
         self.quizzDisplayed.puzzleRows = 3;
-        self.quizzDisplayed.run(0,0, drawing.width, drawing.height);
+        self.quizzDisplayed.run(0, 0, drawing.width, drawing.height);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -1848,6 +1837,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     self.puzzle.updateElementsArray(self.linkedQuestion.tabAnswer);
     self.questionCreatorManipulator.last.children.indexOf(self.puzzle.manipulator.first)===-1 && self.questionCreatorManipulator.last.add(self.puzzle.manipulator.first);
     self.puzzle && self.puzzle.fillVisibleElementsArray("leftToRight");
+
     self.puzzle.display(self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h , false);
     if (self.explanation){
         self.explanation.display(self, self.previousX, self.coordinatesAnswers.x, self.coordinatesAnswers.y, self.coordinatesAnswers.w, self.coordinatesAnswers.h);
@@ -1870,7 +1860,8 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
     blackCross.color(myColors.black, 1, myColors.black);
     this.blackCrossManipulator.ordonator.set(0, blackCross);
-    let blackCrossHandler = function (event) {
+    let blackCrossHandler = event=> {
+        blackCross = null ;
         this.editable && (parent.explanation = false);
         let target = drawings.background.getTarget(event.clientX, event.clientY);
         parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
@@ -1885,6 +1876,13 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     });
     var hasKeyDownEvent = (event)=> {
         this.target = this.panel;
+        if (blackCross && event.keyCode===27) { // suppr
+            this.editable && (parent.explanation = false);
+            blackCross = null ;
+            parent.manipulator.last.remove(this.manipulator.first);
+            this.editable && parent.puzzle.display(x, y, w, h, false);
+            drawing.mousedOverTarget = false;
+        }
         return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
     };
     let panelWidth = 2*w/3,
