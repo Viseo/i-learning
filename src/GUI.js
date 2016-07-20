@@ -1896,7 +1896,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     if (this.image){
         this.imageLayer = 3;
         let picture = new Picture(this.image, this.editable, this);
-        let imageSize = w/4;
+        let imageSize = Math.min(w/4, panelHeight);
         picture.draw(-w/2 + imageSize/4 + w/12, 0, imageSize, imageSize);
         this.answer.filled = true;
     }
