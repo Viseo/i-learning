@@ -453,26 +453,6 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
                 libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
                 tempY = (2 / 10 * h);
-            let globalPointCenter = this.bordure.globalPoint(0, 0);
-            var doraStyle = {
-                leftpx: globalPointCenter.x,
-                toppx: globalPointCenter.y,
-                width: this.w/5,
-                height:this.w/5
-            };
-            let dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
-            dora.type("file")
-            dora.anchor("start");
-            svg.runtime.attr(dora.component, "accept", "image/*");
-            svg.runtime.attr(dora.component, "hidden", "true");
-            drawings.screen.add(dora);
-
-            let addButton = new svg.Rect(this.w/7, this.w/7).color(myColors.black);
-            this.addButtonManipulator.ordonator.set(0, addButton);
-            //this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 &&
-            this.libraryManipulator.last.add(this.addButtonManipulator.first);
-            this.addButtonManipulator.translator.move(this.w/2, this.h/2);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', dora.click);
 
             this.itemsTab.forEach((item, i) => {
                 if (i % maxImagesPerLine === 0 && i !== 0) {
@@ -540,8 +520,38 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             });
         };
 
+        let displaySaveButton = () => {
+            if (!this.dora) {
+                let globalPointCenter = this.bordure.globalPoint(0, 0);
+                var doraStyle = {
+                    leftpx: globalPointCenter.x,
+                    toppx: globalPointCenter.y,
+                    width: this.w / 5,
+                    height: this.w / 5
+                };
+                this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
+                this.dora.type("file");
+                svg.runtime.attr(this.dora.component, "accept", "image/*");
+                svg.runtime.attr(this.dora.component, "id", "dora");
+                svg.runtime.attr(this.dora.component, "hidden", "true");
+                drawings.screen.add(this.dora);
+
+            }
+            var doraHandler = () => {
+                svg.runtime.anchor("dora").click();
+            };
+            let addButton = new svg.Rect(this.w / 7, this.w / 7).color(myColors.black);
+            this.addButtonManipulator.ordonator.set(0, addButton);
+            this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 &&
+            this.libraryManipulator.last.add(this.addButtonManipulator.first);
+            this.addButtonManipulator.translator.move(this.w / 2, this.h / 2);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
+        }
+
         displayItems();
+        displaySaveButton();
         assignEvents();
+
     };
 
     let intervalToken = asyncTimerController.interval(() => {

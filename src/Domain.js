@@ -866,6 +866,8 @@ class GamesLibrary extends Library {
 class ImagesLibrary extends Library {
     constructor (lib) {
         super(lib);
+        this.addButtonManipulator = new Manipulator(this);
+        this.addButtonManipulator.addOrdonator(2);
         for (var i = 0; i < this.itemsTab.length; i++) {
             this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
                 this.imageLoaded = true; //this != library
