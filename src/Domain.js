@@ -630,26 +630,37 @@ class Formation {
     }
 
     publicationFormation () {
-        const messagePublication = "Les bases du CSS' n'est pas complète.";
+          const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
 
-        const displayPublicationMessage = (messagePublication) => {
-            (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-            this.errorMessagePublication = new svg.Text(messagePublication)
-                .position(0, -this.publicationButtonHeight / 2 - MARGIN)
-                .font("Arial", 20)
-                .anchor('middle').color(myColors.red);
-            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
-            svg.timeout(() => {
-                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
-                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                }
-            }, 5000);
-        };
-        displayPublicationMessage(messagePublication);
-        };
+              messagePublication = "Publier :) !!";
+
+          const displayPublicationMessage = (messagePublication) => {
+                (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                this.errorMessagePublication = new svg.Text(messagePublication)
+                    .position(0, -this.publicationButtonHeight / 2 - MARGIN)
+                    .font("Arial", 20)
+                    .anchor('middle').color(myColors.red);
+                this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+                svg.timeout(() => {
+                    if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                        this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                    }
+                }, 5000);
+            };
+          displayPublicationMessage(messagePublication);
+
+          if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
+                displayPublicationMessage(messageErrorNoNameFormation);
+              }
+
+          if (this.levelsTab.length === 0){
+              displayPublicationMessage(messageErrorNoGame);
+             }
+
+    };
 
 /*    publicationFormation () {
-        const messageErrorGame = "Veuillez ajouter au moins un jeu à votre formation.",
             messageErrorNameGame = "Veuillez donner un nom à votre jeu.",
             messageErrorQuestionGame =  "Veuillez ajouter au moins une question à votre jeu 'Les bases du CSS'",
             messageErrorIncomplet = "La question 5 du jeu 'Les bases du CSS' n'est pas complète.",
