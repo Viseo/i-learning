@@ -22,9 +22,9 @@
         targetRuntime = exports.targetRuntime(),
         SVG = exports.SVG,
         main = exports.main;
-    var dbListener = new DbListener(true, false);
-    var param = {speed: 5, step: 100};
-    main(SVG(targetRuntime), targetRuntime);
+        dbListener = new DbListener(true, false);
+        param = {speed: 5, step: 100};
+    main(SVG(targetRuntime), targetRuntime, dbListener);
 </script>
 </body>
 

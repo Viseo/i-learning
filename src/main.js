@@ -1,13 +1,13 @@
 const Domain = require('./Domain').Domain,
-    Util = require('Util').Util,
-    GUI = require('GUI').GUI,
+    Util = require('./Util').Util,
+    GUI = require('./GUI').GUI,
     gui = require('../lib/svggui').Gui;
 
-exports.main = function (svg, runtime) {
+exports.main = function (svg, runtime, dbListener) {
 
     let domain, util, Gui, drawing, drawings, formationsManager;
 
-    let globalVariables = {svg, runtime};
+    let globalVariables = {svg, runtime, dbListener};
 
     util = Util(globalVariables);
     globalVariables.util = util;
@@ -15,7 +15,7 @@ exports.main = function (svg, runtime) {
     util.Bdd();
     util.SVGUtil();
 
-    globalVariables.gui = new exports.Gui(svg, {speed: 5, step: 100});
+    globalVariables.gui = gui(svg, {speed: 5, step: 100});
 
     drawings = drawings || new util.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;

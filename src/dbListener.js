@@ -26,7 +26,7 @@ function DbListener(isWriting, isMock) {
 
 function HttpRequests(isWriting, isMock, listener) {
     this.parent = listener;
-    
+
     function register(data) {
         var request = new XMLHttpRequest();
         request.open("POST", "/data", true); // true for asynchronous
@@ -103,3 +103,5 @@ function HttpRequests(isWriting, isMock, listener) {
 if (typeof exports !== "undefined") {
     exports.DbListener = DbListener;
 }
+
+exports.dbListener = DbListener;

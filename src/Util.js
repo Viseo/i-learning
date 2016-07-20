@@ -4,12 +4,14 @@ exports.Util = function (globalVariables) {
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
+        dbListener = globalVariables.dbListener,
         svg = globalVariables.svg;
 
     setGlobalVariables = () => {
         runtime = globalVariables.runtime;
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
+        dbListener = globalVariables.dbListener;
         svg = globalVariables.svg;
     };
 

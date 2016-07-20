@@ -1251,7 +1251,7 @@ exports.GUI = function (globalVariables) {
         if (message === "Inscription" || message === "Connexion") {
             const link = message === "Inscription" ? "Connexion" : "Inscription";
             const clickHandler = () => {
-                (link === "Inscription") ? inscriptionManager.display() : connexionManager.display();
+                (link === "Inscription") ? globalVariables.inscriptionManager.display() : globalVariables.connexionManager.display();
             };
             const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
             special.content.anchor("end");
@@ -2821,36 +2821,37 @@ exports.GUI = function (globalVariables) {
 
     var AdminGUI = function () {
         playerMode = false;
-        Answer.prototype.display = answerDisplay;
-        Library.prototype.display = libraryDisplay;
-        GamesLibrary.prototype.display = gamesLibraryDisplay;
-        ImagesLibrary.prototype.display = imagesLibraryDisplay;
-        Header.prototype.display = headerDisplay;
         AddEmptyElement.prototype.display = addEmptyElementDisplay;
+        Answer.prototype.display = answerDisplay;
+        Bd.prototype.display = bdDisplay;
+        Bd.prototype.displayMiniature = gameDisplayMiniature;
+        ConnexionManager.prototype.display = connexionManagerDisplay;
         Formation.prototype.displayFormation = formationDisplayFormation;
-        Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
         Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
+        Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
         FormationsManager.prototype.display = formationsManagerDisplay;
+        GamesLibrary.prototype.display = gamesLibraryDisplay;
+        Header.prototype.display = headerDisplay;
+        ImagesLibrary.prototype.display = imagesLibraryDisplay;
+        Library.prototype.display = libraryDisplay;
+        PopIn.prototype.display = popInDisplay;
         Question.prototype.display = questionDisplay;
         Question.prototype.displayAnswers = questionDisplayAnswers;
-        Question.prototype.selectedQuestion = questionSelectedQuestion;
         Question.prototype.elementClicked = questionElementClicked;
+        Question.prototype.selectedQuestion = questionSelectedQuestion;
         QuestionCreator.prototype.display = questionCreatorDisplay;
         QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
         QuestionCreator.prototype.displayQuestionCreator = questionCreatorDisplayQuestionCreator;
-        PopIn.prototype.display = popInDisplay;
         Quizz.prototype.display = quizzDisplay;
-        Quizz.prototype.displayResult = quizzDisplayResult;
         Quizz.prototype.displayMiniature = gameDisplayMiniature;
-        Bd.prototype.displayMiniature = gameDisplayMiniature;
-        Bd.prototype.display = bdDisplay;
+        Quizz.prototype.displayResult = quizzDisplayResult;
         Quizz.prototype.displayScore = quizzDisplayScore;
         QuizzManager.prototype.display = quizzManagerDisplay;
-        QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
         QuizzManager.prototype.displayPreviewButton = quizzManagerDisplayPreviewButton;
-        QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
         QuizzManager.prototype.displayQuestionsPuzzle = quizzManagerDisplayQuestionPuzzle;
-        ConnexionManager.prototype.display = connexionManagerDisplay;
+        QuizzManager.prototype.displayQuizzInfo = quizzManagerDisplayQuizzInfo;
+        QuizzManager.prototype.displayQuizSaveButton = quizzManagerDisplaySaveButton;
+
         header = new Header();
         globalVariables.header = header;
     };
@@ -2858,21 +2859,23 @@ exports.GUI = function (globalVariables) {
     var LearningGUI = function () {
         playerMode = true;
         Answer.prototype.display = answerDisplay;
-        Library.prototype.display = libraryDisplay;
-        Header.prototype.display = headerDisplay;
+        Bd.prototype.displayMiniature = gameDisplayMiniature;
+        ConnexionManager.prototype.display = connexionManagerDisplay;
         Formation.prototype.displayFormation = playerModeDisplayFormation;
         FormationsManager.prototype.display = formationsManagerDisplay;
+        Header.prototype.display = headerDisplay;
+        InscriptionManager.prototype.display = inscriptionManagerDisplay;
+        Library.prototype.display = libraryDisplay;
+        PopIn.prototype.display = popInDisplay;
         Question.prototype.display = questionDisplay;
         Question.prototype.displayAnswers = questionDisplayAnswers;
         Question.prototype.elementClicked = questionElementClicked;
         Question.prototype.selectedQuestion = questionSelectedQuestion;
         Quizz.prototype.display = quizzDisplay;
-        Quizz.prototype.displayResult = quizzDisplayResult;
         Quizz.prototype.displayMiniature = gameDisplayMiniature;
+        Quizz.prototype.displayResult = quizzDisplayResult;
         Quizz.prototype.displayScore = quizzDisplayScore;
-        InscriptionManager.prototype.display = inscriptionManagerDisplay;
-        ConnexionManager.prototype.display = connexionManagerDisplay;
-        Bd.prototype.displayMiniature = gameDisplayMiniature;
+
         header = new Header();
         globalVariables.header = header;
     };
@@ -2883,12 +2886,3 @@ exports.GUI = function (globalVariables) {
         LearningGUI
     }
 };
-
-// if (typeof exports !== "undefined") {
-//     exports.AdminGUI = AdminGUI;
-//     exports.LearningGUI = LearningGUI;
-//     exports.setDomain = setDomain;
-//     exports.setSVG = setSVG;
-//     exports.setGui = setGui;
-//     exports.setRuntime = setRuntime;
-// }
