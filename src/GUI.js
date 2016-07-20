@@ -1958,7 +1958,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
 function quizzDisplay(x, y, w, h) {
     var self = this;
     drawing.currentPageDisplayed = "Quizz";
-    header.display(this.title);
+    header.display(this.parentFormation.label + " - " + this.title);
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
