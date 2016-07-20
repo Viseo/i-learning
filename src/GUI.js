@@ -2165,7 +2165,7 @@ function quizzDisplayScore(color){
     self.resultManipulator.last.add(self.scoreManipulator.first);
     self.resultManipulator.last.add(self.puzzle.manipulator.first);
     self.quizzManipulator.last.add(self.resultManipulator.first);
-    displayText(self.finalMessage,self.titleArea.w,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
+    displayText(self.finalMessage,self.titleArea.w-2*MARGIN,self.questionHeight, myColors.black, usedColor, self.fontSize, self.font, self.scoreManipulator);
 }
 
 function quizzManagerDisplay(){
