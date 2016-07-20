@@ -797,6 +797,7 @@ class Formation {
                     }
 
                     theGame.currentQuestionIndex = game.index;
+                    theGame.questionsWithBadAnswers = [];
                     game.tabWrongAnswers.forEach(wrongAnswer => {
                         theGame.questionsWithBadAnswers.add({index: wrongAnswer.index - 1, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:wrongAnswer.selectedAnswers});
                     });
@@ -1103,7 +1104,7 @@ class Quizz {
         this.quizzManipulator = new Manipulator(this);
         this.quizzManipulator.addOrdonator(2);
         this.returnButtonManipulator = new Manipulator(this);
-        this.returnButton = playerMode ?  new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
+        this.returnButton = playerMode ?  (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
         this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
         if(previewMode) {

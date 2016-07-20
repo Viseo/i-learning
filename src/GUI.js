@@ -1962,7 +1962,7 @@ function quizzDisplay(x, y, w, h) {
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
-        self.x = x || self.x || 0;
+        self.x = (x===0 || x) || self.x || 0;
         self.y = y || self.y || 0;
         w && (self.questionArea.w = w);
         (w && x) && (self.resultArea.w = w );
@@ -2003,16 +2003,44 @@ function quizzDisplay(x, y, w, h) {
     self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
 
     self.returnButton.display(MARGIN-w*0.5+self.x, self.headerHeight/2, 20, 20);
-    self.returnButton.setHandler(self.previewMode ? (event) => {
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
-        target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
-        target.parentObj.parent.parentFormation.quizzManager.display();
-    } : (event) => {
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
-        target.parentObj.parent.quizzManipulator.flush();
-        target.parentObj.parent.parentFormation.displayFormation();
-    });
+    if (self.previewMode) {
+        if (playerMode){
+            self.returnButton.setHandler((event) => {
+                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                target.parentObj.parent.previewMode = false;
+                target.parentObj.parent.currentQuestionIndex = self.tabQuestions.length;
+                target.parentObj.parent.quizzManipulator.flush();
+                target.parentObj.parent.puzzleLines = 3;
+                target.parentObj.parent.puzzleRows = 3;
+                target.parentObj.parent.display(0, 0, drawing.width, drawing.height);
+            });
+        }
+        else {
+            self.returnButton.setHandler((event) => {
+                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                target.parentObj.parent.quizzManipulator.flush();
+                target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
+                target.parentObj.parent.parentFormation.quizzManager.display();
+            });
+        }
+    }
+    else {
+        self.returnButton.setHandler((event) => {
+                let target = drawings.background.getTarget(event.clientX,event.clientY);
+                target.parentObj.parent.quizzManipulator.flush();
+                target.parentObj.parent.parentFormation.displayFormation();
+            });
+    }
+    //self.returnButton.setHandler(self.previewMode ? (event) => {
+    //    let target = drawings.background.getTarget(event.clientX,event.clientY);
+    //    target.parentObj.parent.quizzManipulator.flush();
+    //    target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
+    //    target.parentObj.parent.parentFormation.quizzManager.display();
+    //} : (event) => {
+    //    let target = drawings.background.getTarget(event.clientX,event.clientY);
+    //    target.parentObj.parent.quizzManipulator.flush();
+    //    target.parentObj.parent.parentFormation.displayFormation();
+    //});
 
     if(self.currentQuestionIndex===-1){// on passe à la première question
         self.nextQuestion();
