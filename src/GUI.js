@@ -841,13 +841,14 @@ function formationDisplayFormation() {
                 tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                 tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
             } else if(tabElement instanceof Bd) {
+                let eventToUse = playerMode ? ["click", clickBdHandler] : ["dblclick", dblclickQuizzHandler];
                 let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                 var clickBdHandler = function(event){
                     let targetBd = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
                     bdDisplay(targetBd);
                 };
-                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, "click", clickBdHandler);
-                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, "click", clickBdHandler);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
+                tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
                 // Ouvrir le Bd creator du futur jeu Bd
             }
         };
@@ -1470,6 +1471,8 @@ function questionDisplayAnswers(x, y, w, h) {
             }
             self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
                 self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.red);
+                //self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.red);
+                //self.tabAnswer[selectedAnswer].content.color(getComplementary(myColors.darkBlue));
             });
         }
 
