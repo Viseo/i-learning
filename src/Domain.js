@@ -136,19 +136,19 @@ class Question {
             this.rows = 4;
             this.rightAnswers = [];
             this.tabAnswer = [new Answer(null, this), new Answer(null, this)];
-            this.selectedAnswers = [];
             this.multipleChoice = false;
             this.font = "Arial";
             this.bgColor = myColors.white;
             this.colorBordure = myColors.black;
+            this.selectedAnswers = [];
 
         } else {
             this.label = question.label;
             this.imageSrc = question.imageSrc;
             this.rows = question.rows;
             this.rightAnswers = [];
-            this.selectedAnswers = [];
             this.multipleChoice = question.multipleChoice;
+            this.selectedAnswers = question.selectedAnswers || [];
 
             question.colorBordure && (this.colorBordure = question.colorBordure);
             question.bgColor && (this.bgColor = question.bgColor);
@@ -798,7 +798,7 @@ class Formation {
 
                     theGame.currentQuestionIndex = game.index;
                     game.tabWrongAnswers.forEach(wrongAnswer => {
-                        theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
+                        theGame.questionsWithBadAnswers.add({index: wrongAnswer.index, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:theGame.tabQuestions[wrongAnswer.index -1].tabAnswer.indexOf(wrongAnswer.selectedAnswers)});
                     });
                     theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
@@ -1164,6 +1164,9 @@ class Quizz {
                 tmp.parentQuizz = this;
                 this.tabQuestions.push(tmp);
             });
+            quizz.questionsWithBadAnswers && quizz.questionsWithBadAnswers.forEach(x=>{
+
+            })
         } else {
             this.tabQuestions = [];
             this.tabQuestions.push(new Question(defaultQuestion, this));
@@ -1222,7 +1225,9 @@ class Quizz {
                     if (++this.currentQuestionIndex < this.tabQuestions.length) {
                         this.displayCurrentQuestion();
                     } else {
-                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, "leftToRight", this);
+                        let questionsWithBadAnswersTab = [];
+                        this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "leftToRight", this);
                         this.displayResult();
                     }
                 });

@@ -1231,9 +1231,9 @@ class Server {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
             game: quiz.id,
-            formation: quiz.parentFormation._id
+            formation: quiz.parentFormation._id,
         };
-        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
+        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.question.tabAnswer.indexOf(x.selectedAnswers)}));
         return dbListener.httpPostAsync("/sendProgress", data)
     }
 

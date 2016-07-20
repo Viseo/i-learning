@@ -1309,9 +1309,11 @@ function questionDisplay(x, y, w, h) {
         if(this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
             let event = () => {
                 let wrongQuiz = Object.assign({}, this.parentQuizz);
-                wrongQuiz.tabQuestions = this.parentQuizz.questionsWithBadAnswers;
+                let questionsWithBadAnswersTab = [];
+                this.parentQuizz.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+                wrongQuiz.tabQuestions = questionsWithBadAnswersTab;
                 this.wrongQuestionsQuiz = new Quizz(wrongQuiz, true);
-                this.wrongQuestionsQuiz.currentQuestionIndex = this.parentQuizz.questionsWithBadAnswers.indexOf(this);
+                this.wrongQuestionsQuiz.currentQuestionIndex = questionsWithBadAnswersTab.indexOf(this);
                 this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
             };
             self.bordure && svg.addEvent(self.bordure, "click", event);
@@ -1343,7 +1345,7 @@ function questionElementClicked(sourceElement) {
             self.parentQuizz.score++;
             console.log("Bonne réponse!\n");
         } else {
-            self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+            self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: sourceElement});
             var reponseD = "";
             self.rightAnswers.forEach(function(e){
                 if(e.label)
@@ -1455,6 +1457,11 @@ function questionDisplayAnswers(x, y, w, h) {
             }
             count++;
         }
+        let index;
+        self.parentQuizz.questionsWithBadAnswers.forEach(x=>{
+            (x.question.questionNum === self.questionNum) && (index = self.questionNum);
+        })
+        self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.bordure.color(myColors.darkBlue);
     }
 
     if(self.multipleChoice){
@@ -1490,7 +1497,7 @@ function questionDisplayAnswers(x, y, w, h) {
                     self.parentQuizz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
-                    self.parentQuizz.questionsWithBadAnswers.push(self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex]);
+                    self.parentQuizz.questionsWithBadAnswers.push({index: self.parentQuizz.currentQuestionIndex, question: self.parentQuizz.tabQuestions[self.parentQuizz.currentQuestionIndex], selectedAnswers: self.selectedAnswers});
                     var reponseD = "";
                     self.rightAnswers.forEach(function(e){
                         if(e.label) {
@@ -1997,7 +2004,9 @@ function quizzDisplay(x, y, w, h) {
         self.displayCurrentQuestion();
     }
     else {
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, self.questionsWithBadAnswers, "upToDown", self);
+        let questionsWithBadAnswersTab = [];
+        self.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, questionsWithBadAnswersTab, "upToDown", self);
         self.displayResult();
     }
 
@@ -2039,8 +2048,8 @@ function quizzDisplay(x, y, w, h) {
 
 function quizzDisplayResult (color){
     var self = this;
-    self.questionsWithBadAnswers.forEach(question=>{
-        question.manipulator.ordonator.unset(3)});
+    self.questionsWithBadAnswers.forEach(x=>{
+        x.question.manipulator.ordonator.unset(3)});
     self.displayScore(color);
     self.puzzle && self.puzzle.fillVisibleElementsArray("upToDown");
     self.puzzle.display(0, self.questionHeight/2 + self.answerHeight/2 + MARGIN, drawing.width - MARGIN, self.answerHeight);
@@ -2386,16 +2395,16 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 }
 
 function checkPuzzleElementsArrayValidity(array){
-    array.forEach(question => {
-        if(!(question instanceof AddEmptyElement)){
-            var validation = true;
-            question.questionType.validationTab.forEach((funcEl) => {
-                var result = funcEl(question);
-                validation = validation && result.isValid;
-            });
-            validation ? question.toggleInvalidQuestionPictogram(false) : question.toggleInvalidQuestionPictogram(true);
-        }
-    });
+    //array.forEach(question => {
+    //    if(!(question instanceof AddEmptyElement)){
+    //        var validation = true;
+    //        question.questionType.validationTab.forEach((funcEl) => {
+    //            var result = funcEl(question);
+    //            validation = validation && result.isValid;
+    //        });
+    //        validation ? question.toggleInvalidQuestionPictogram(false) : question.toggleInvalidQuestionPictogram(true);
+    //    }
+    //});
 }
 
 function inscriptionManagerDisplay() {

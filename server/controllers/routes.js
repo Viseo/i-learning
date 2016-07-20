@@ -78,7 +78,7 @@ module.exports = function (app, fs) {
                 var newGame = {
                     game: req.body.game,
                     tabWrongAnswers: req.body.tabWrongAnswers,
-                    index: req.body.indexQuestion
+                    index: req.body.indexQuestion,
                 };
                 var newFormation = {
                     formation: req.body.formation,
