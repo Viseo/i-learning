@@ -380,7 +380,7 @@ function SVGUtil() {
      * @param manipulator
      * @param layer1
      * @param layer2
-     * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
+     * @returns {{content, cadre}} : SVG items for text & cadre
      */
     displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
         if((w <= 0) || (h <= 0)){
@@ -403,7 +403,7 @@ function SVGUtil() {
      * @param textHeight : number, taille de la police
      * @param font
      * @param manipulator
-     * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
+     * @returns {{content, cadre}} : SVG items for text & cadre
      */
     displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
@@ -422,7 +422,7 @@ function SVGUtil() {
      * @param textHeight : number, taille de la police
      * @param font
      * @param manipulator
-     * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
+     * @returns {{content, cadre}} : SVG items for text & cadre
      */
     displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
         var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;

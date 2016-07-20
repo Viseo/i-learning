@@ -1962,7 +1962,8 @@ function quizzDisplay(x, y, w, h) {
     mainManipulator.ordonator.set(1, self.quizzManipulator.first);
 
     function setSizes() {
-        self.x = (x===0 || x) || self.x || 0;
+        self.x = x || self.x || 0;
+        if (x===0)self.x = 0;
         self.y = y || self.y || 0;
         w && (self.questionArea.w = w);
         (w && x) && (self.resultArea.w = w );
