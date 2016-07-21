@@ -688,8 +688,8 @@ function formationDisplayFormation() {
         target.parentObj.parent.manipulator.flush();
         Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
-            target.parentObj.parent.formationsManager = new FormationsManager(myFormations);
-            target.parentObj.parent.formationsManager.display();
+            formationsManager = new FormationsManager(myFormations);
+            formationsManager.display();
         });
     };
     self.manipulator.last.children.indexOf(self.returnButtonManipulator.first) === -1 && self.manipulator.last.add(self.returnButtonManipulator.first);
