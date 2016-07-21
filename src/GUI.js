@@ -1341,7 +1341,7 @@ function questionDisplay(x, y, w, h) {
             self.content && svg.addEvent(self.content, "click", event);
             self.image && svg.addEvent(self.image, "click", event);
         }
-    } else {
+    } else if (!self.parentQuizz.previewMode){
         self.bordure && svg.addEvent(self.bordure, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
         self.content && svg.addEvent(self.content, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
         self.image && svg.addEvent(self.image, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
