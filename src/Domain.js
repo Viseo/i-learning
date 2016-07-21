@@ -675,7 +675,7 @@ class Formation {
         formation.levelsTab.forEach(level => {
             var gamesTab = [];
             level.gamesTab.forEach(game => {
-                game.tabQuestions && gamesTab.push(new Quizz(game, true, this));
+                game.tabQuestions && gamesTab.push(new Quizz(game, false, this));
                 game.tabQuestions || gamesTab.push(new Bd(game, this));
                 gamesTab[gamesTab.length-1].id = game.id;
             });
@@ -1003,7 +1003,7 @@ class QuizzManager {
 
     loadQuizz (quizz, indexOfEditedQuestion) {
         this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
-        this.quizz = new Quizz(quizz, true);
+        this.quizz = new Quizz(quizz, false);
         this.quizzName = this.quizz.title;
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
