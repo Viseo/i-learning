@@ -548,7 +548,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             };
             let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                 addButtonLabel = "Ajouter une image",
-                addButtonText =  autoAdjustText(addButtonLabel, 0, 0 , 0, this.h/15, 20, "Arial", this.addButtonManipulator),
+                addButtonText =  autoAdjustText(addButtonLabel, 0, this.h/15, 20, "Arial", this.addButtonManipulator),
                 plus = drawPlus(0,0, this.w / 7, this.w / 7);
             addButtonText.text.position(0,this.h/12 - (this.h/15)/2 + 3/2*MARGIN);
             addButton.corners(10 , 10);
@@ -1037,14 +1037,13 @@ function formationDisplayPublicationButton(x, y, w, h) {
 }
 
 function formationsManagerDisplay() {
-    let self = this;
     drawing.currentPageDisplayed = 'FormationsManager';
-    self.manipulator.first.move(0, drawing.height * HEADER_SIZE);
-    mainManipulator.ordonator.set(1, self.manipulator.first);
-    self.manipulator.last.children.indexOf(self.headerManipulator.first)===-1 && self.manipulator.last.add(self.headerManipulator.first);
+    this.manipulator.first.move(0, drawing.height * HEADER_SIZE);
+    mainManipulator.ordonator.set(1, this.manipulator.first);
+    this.manipulator.last.children.indexOf(this.headerManipulator.first)===-1 && this.manipulator.last.add(this.headerManipulator.first);
 
     if (playerMode) {
-        self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
+        this.headerManipulator.last.add(this.toggleFormationsManipulator.first);
         let manip = this.toggleFormationsManipulator,
             pos = -MARGIN,
             toggleFormationsText = displayText('Formations en cours', drawing.width*0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
@@ -1061,7 +1060,7 @@ function formationsManagerDisplay() {
         let toggleFormations = () => {
             this.progressOnly = !this.progressOnly;
             let check = drawCheck(pos, 0, 20),
-                manip = self.toggleFormationsManipulator.last;
+                manip = this.toggleFormationsManipulator.last;
             svg.addEvent(manip, "click", toggleFormations);
             if (this.progressOnly) {
                 manip.add(check);
@@ -1071,29 +1070,29 @@ function formationsManagerDisplay() {
             this.formationsManipulator.flush();
             this.displayFormations();
         };
-        svg.addEvent(self.toggleFormationsCheck, 'click', toggleFormations);
+        svg.addEvent(this.toggleFormationsCheck, 'click', toggleFormations);
         svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
         svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
     } else {
-        self.headerManipulator.last.children.indexOf(self.addButtonManipulator)===-1 && self.headerManipulator.last.add(self.addButtonManipulator.first);
-        self.addButtonManipulator.translator.move(self.plusDim / 2, self.addButtonHeight);
-        self.headerManipulator.last.add(self.checkManipulator.first);
-        self.headerManipulator.last.add(self.exclamationManipulator.first);
+        this.headerManipulator.last.children.indexOf(this.addButtonManipulator)===-1 && this.headerManipulator.last.add(this.addButtonManipulator.first);
+        this.addButtonManipulator.translator.move(this.plusDim / 2, this.addButtonHeight);
+        this.headerManipulator.last.add(this.checkManipulator.first);
+        this.headerManipulator.last.add(this.exclamationManipulator.first);
     }
 
-    function displayPanel() {
-        self.heightAllocatedToPanel = drawing.height - (playerMode ?
-            self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
-            self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
-        self.headerHeightFormation = drawing.height * header.size ;
-        self.spaceBetweenElements = {
-            width:self.panel?0.015*self.panel.width:0.015*drawing.width,
-            height: self.panel?0.030*self.panel.height:0.030*drawing.height
+    let displayPanel = ()=> {
+        this.heightAllocatedToPanel = drawing.height - (playerMode ?
+            this.toggleFormationsCheck.globalPoint(0, 0).y + this.toggleFormationsCheck.height + MARGIN :
+            this.addFormationButton.cadre.globalPoint(0, 0).y + this.addFormationButton.cadre.height);
+        this.headerHeightFormation = drawing.height * header.size ;
+        this.spaceBetweenElements = {
+            width: this.panel?0.015*this.panel.width:0.015*drawing.width,
+            height: this.panel?0.030*this.panel.height:0.030*drawing.height
         };
-        self.y = (!playerMode) ? self.addButtonHeight*1.5 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
+        this.y = (!playerMode) ? this.addButtonHeight*1.5 : this.toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
 
-        self.rows = Math.floor((drawing.width - 2*MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
-        if(self.rows === 0) self.rows = 1;
+        this.rows = Math.floor((drawing.width - 2*MARGIN) / (this.tileWidth + this.spaceBetweenElements.width));
+        if(this.rows === 0) this.rows = 1;
 
         drawing.notInTextArea = true;
         svg.runtime.addGlobalEvent("keydown", (event) => {
@@ -1102,26 +1101,26 @@ function formationsManagerDisplay() {
             }
         });
 
-        var hasKeyDownEvent = function (event) {
-            self.target = self.panel;
-            return self.target && self.target.processKeys && self.target.processKeys(event.keyCode);
+        var hasKeyDownEvent = (event)=> {
+            this.target = this.panel;
+            return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
         };
 
-        self.manipulator.last.children.indexOf(self.clippingManipulator.first)===-1 && self.manipulator.last.add(self.clippingManipulator.first);
-        self.clippingManipulator.translator.move(MARGIN/2, self.y);
-        var formationPerLine = Math.floor((drawing.width - 2*MARGIN)/((self.tileWidth + self.spaceBetweenElements.width)));
-        var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2*MARGIN)-(formationPerLine*(self.tileWidth + self.spaceBetweenElements.width)));
-        if(typeof self.panel === "undefined") {
-            self.panel = new gui.Panel(drawing.width - 2 * MARGIN, self.heightAllocatedToPanel, myColors.none);
+        this.manipulator.last.children.indexOf(this.clippingManipulator.first)===-1 && this.manipulator.last.add(this.clippingManipulator.first);
+        this.clippingManipulator.translator.move(MARGIN/2, this.y);
+        var formationPerLine = Math.floor((drawing.width - 2*MARGIN)/((this.tileWidth + this.spaceBetweenElements.width)));
+        var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2*MARGIN)-(formationPerLine*(this.tileWidth + this.spaceBetweenElements.width)));
+        if(typeof this.panel === "undefined") {
+            this.panel = new gui.Panel(drawing.width - 2 * MARGIN, this.heightAllocatedToPanel, myColors.none);
         }
         else {
-            self.panel.resize(drawing.width - 2 * MARGIN, self.heightAllocatedToPanel);
+            this.panel.resize(drawing.width - 2 * MARGIN, this.heightAllocatedToPanel);
         }
-        self.panel.component.move(((drawing.width-2*MARGIN)+MARGIN)/2, self.heightAllocatedToPanel /2);
-        (self.clippingManipulator.last.children.indexOf(self.panel.component) === -1) && self.clippingManipulator.last.add(self.panel.component);
-        self.panel.content.children.indexOf(self.formationsManipulator.first)===-1 && self.panel.content.add(self.formationsManipulator.first);
-        self.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-        self.formationsManipulator.translator.move((self.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, self.tileHeight/2+self.spaceBetweenElements.height/2);
+        this.panel.component.move(((drawing.width-2*MARGIN)+MARGIN)/2, this.heightAllocatedToPanel /2);
+        (this.clippingManipulator.last.children.indexOf(this.panel.component) === -1) && this.clippingManipulator.last.add(this.panel.component);
+        this.panel.content.children.indexOf(this.formationsManipulator.first)===-1 && this.panel.content.add(this.formationsManipulator.first);
+        this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+        this.formationsManipulator.translator.move((this.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, this.tileHeight/2+this.spaceBetweenElements.height/2);
     }
 
     let onClickFormation = formation => {
@@ -1133,49 +1132,49 @@ function formationsManagerDisplay() {
         })
     };
 
-    function onClickNewFormation() {
-        var formation = new Formation({}, self);
-        self.formationDisplayed=formation;
-        formation.parent = self;
+    var onClickNewFormation = ()=> {
+        var formation = new Formation({}, this);
+        this.formationDisplayed=formation;
+        formation.parent = this;
         formation.displayFormation();
     }
 
-    self.displayHeaderFormations = function () {
-        self.headerManipulator.translator.move(0,0);
-        self.addFormationButton = displayText("Ajouter une formation", drawing.width/7, self.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, self.addButtonManipulator);
-        var addFormationButtonTextBr = svg.runtime.boundingRect(self.addFormationButton.content.component);
-        self.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
-        self.addFormationButton.content.position(self.plusDim + svg.runtime.boundingRect(self.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
-        self.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, self.addButtonHeight, self.addButtonHeight);
-        self.addButtonManipulator.ordonator.set(2, self.addFormationObject.circle);
-        self.addButtonManipulator.ordonator.set(3, self.addFormationObject.plus);
-        self.addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height/2);
+    this.displayHeaderFormations = ()=> {
+        this.headerManipulator.translator.move(0,0);
+        this.addFormationButton = displayText("Ajouter une formation", drawing.width/7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
+        var addFormationButtonTextBr = svg.runtime.boundingRect(this.addFormationButton.content.component);
+        this.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width/2, -addFormationButtonTextBr.height/2).corners(0,0);
+        this.addFormationButton.content.position(this.plusDim + svg.runtime.boundingRect(this.addFormationButton.content.component).width/2, -addFormationButtonTextBr.height/8);
+        this.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height/2, this.addButtonHeight, this.addButtonHeight);
+        this.addButtonManipulator.ordonator.set(2, this.addFormationObject.circle);
+        this.addButtonManipulator.ordonator.set(3, this.addFormationObject.plus);
+        this.addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height/2);
 
-        svg.addEvent(self.addFormationObject.circle, "click", onClickNewFormation);
-        svg.addEvent(self.addFormationObject.plus, "click", onClickNewFormation);
-        svg.addEvent(self.addFormationButton.content, "click", onClickNewFormation);
-        svg.addEvent(self.addFormationButton.cadre, "click", onClickNewFormation);
+        svg.addEvent(this.addFormationObject.circle, "click", onClickNewFormation);
+        svg.addEvent(this.addFormationObject.plus, "click", onClickNewFormation);
+        svg.addEvent(this.addFormationButton.content, "click", onClickNewFormation);
+        svg.addEvent(this.addFormationButton.cadre, "click", onClickNewFormation);
 
-        self.legendDim = self.plusDim / 2;
+        this.legendDim = this.plusDim / 2;
 
-        self.checkLegend = statusEnum.Published.icon(self.iconeSize);
-        self.checkManipulator.ordonator.set(2, self.checkLegend.square);
-        self.checkManipulator.ordonator.set(3, self.checkLegend.check);
-        self.published = autoAdjustText("Publié", self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.checkManipulator).text.anchor("start");
-        self.published.position(25, self.published.y);
+        this.checkLegend = statusEnum.Published.icon(this.iconeSize);
+        this.checkManipulator.ordonator.set(2, this.checkLegend.square);
+        this.checkManipulator.ordonator.set(3, this.checkLegend.check);
+        this.published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
+        this.published.position(25, this.published.y);
 
-        self.exclamationLegend = statusEnum.Edited.icon(self.iconeSize);
-        self.exclamationManipulator.ordonator.set(0, self.exclamationLegend.circle);
-        self.exclamationManipulator.ordonator.set(2, self.exclamationLegend.dot);
-        self.exclamationManipulator.ordonator.set(3, self.exclamationLegend.exclamation);
-        self.toPublish = autoAdjustText("Nouvelle version à publier", self.addButtonWidth, self.addButtonHeight, self.fontSize * 3 / 4, null, self.exclamationManipulator).text.anchor("start");
-        self.toPublish.position(25, self.toPublish.y);
-        self.legendWidth = drawing.width * 0.3;
-        self.legendItemLength = svg.runtime.boundingRect(self.toPublish.component).width+svg.runtime.boundingRect(self.exclamationLegend.circle.component).width+MARGIN;
-        self.checkManipulator.first.move(drawing.width - self.legendItemLength - svg.runtime.boundingRect(self.published.component).width-svg.runtime.boundingRect(self.checkLegend.square.component).width-2*MARGIN, 30);
-        self.exclamationManipulator.first.move(drawing.width - self.legendItemLength, 30);
+        this.exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
+        this.exclamationManipulator.ordonator.set(0, this.exclamationLegend.circle);
+        this.exclamationManipulator.ordonator.set(2, this.exclamationLegend.dot);
+        this.exclamationManipulator.ordonator.set(3, this.exclamationLegend.exclamation);
+        this.toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
+        this.toPublish.position(25, this.toPublish.y);
+        this.legendWidth = drawing.width * 0.3;
+        this.legendItemLength = svg.runtime.boundingRect(this.toPublish.component).width+svg.runtime.boundingRect(this.exclamationLegend.circle.component).width+MARGIN;
+        this.checkManipulator.first.move(drawing.width - this.legendItemLength - svg.runtime.boundingRect(this.published.component).width-svg.runtime.boundingRect(this.checkLegend.square.component).width-2*MARGIN, 30);
+        this.exclamationManipulator.first.move(drawing.width - this.legendItemLength, 30);
 
-        self.formations.sort(function (a, b) {
+        this.formations.sort((a, b)=> {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
             if (nameA < nameB)
                 return -1;
@@ -1185,38 +1184,38 @@ function formationsManagerDisplay() {
         });
     };
     header.display("Liste des formations");
-    self.displayHeaderFormations();
-    (self.tileHeight < 0) && (self.tileHeight = undefined);
-    (!self.tileHeight || self.tileHeight > 0) && displayPanel();
+    this.displayHeaderFormations();
+    (this.tileHeight < 0) && (this.tileHeight = undefined);
+    (!this.tileHeight || this.tileHeight > 0) && displayPanel();
 
-    self.displayFormations = function () {
-        let posx = self.initialFormationsPosX,
+    this.displayFormations = ()=> {
+        let posx = this.initialFormationsPosX,
             posy = MARGIN,
             count = 0,
             totalLines = 1;
-        self.formations.forEach(formation => {
+        this.formations.forEach(formation => {
             // we can't publish a formation yet
             //if (playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
             if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
 
-            if (count > (self.rows - 1)) {
+            if (count > (this.rows - 1)) {
                 count = 0;
                 totalLines ++;
-                posy += (self.tileHeight + self.spaceBetweenElements.height);
-                posx = self.initialFormationsPosX;
+                posy += (this.tileHeight + this.spaceBetweenElements.height);
+                posx = this.initialFormationsPosX;
             }
-            formation.parent = self;
-            self.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first)===-1 && self.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
+            formation.parent = this;
+            this.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first)===-1 && this.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
 
-             formation.miniature.display(posx, posy, self.tileWidth, self.tileHeight);
+             formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
 
             formation.miniature.setHandler(onClickFormation);
             count++;
-            posx += (self.tileWidth+ self.spaceBetweenElements.width);
+            posx += (this.tileWidth+ this.spaceBetweenElements.width);
         });
-        self.panel.resizeContent(totalLines*(self.spaceBetweenElements.height+self.tileHeight)+self.spaceBetweenElements.height-MARGIN);
+        this.panel.resizeContent(totalLines*(this.spaceBetweenElements.height+this.tileHeight)+this.spaceBetweenElements.height-MARGIN);
     };
-    (self.tileHeight > 0) && self.displayFormations();
+    (this.tileHeight > 0) && this.displayFormations();
 }
 
 function headerDisplay (message) {
