@@ -89,7 +89,7 @@ function main() {
 
     inscriptionManager = new InscriptionManager();
     connexionManager = new ConnexionManager();
-    
+
     Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {

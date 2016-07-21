@@ -1333,6 +1333,7 @@ function questionDisplay(x, y, w, h) {
                 wrongQuiz.tabQuestions = questionsWithBadAnswersTab;
                 this.wrongQuestionsQuiz = new Quizz(wrongQuiz, true);
                 this.wrongQuestionsQuiz.currentQuestionIndex = questionsWithBadAnswersTab.indexOf(this);
+                this.wrongQuestionsQuiz.parentFormation.quizzDisplayed = this.wrongQuestionsQuiz;
                 this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
             };
             self.bordure && svg.addEvent(self.bordure, "click", event);
@@ -1481,7 +1482,7 @@ function questionDisplayAnswers(x, y, w, h) {
                 (self.parentQuizz.questionsWithBadAnswers[j].index+1 === self.questionNum) && (index = j);
             }
             playerMode && self.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=>{
-                self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.blue, 5, myColors.red);
+                self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
                 //self.tabAnswer[selectedAnswer].correct ? self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.primaryGreen) : self.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.red);
                 //self.tabAnswer[selectedAnswer].content.color(getComplementary(myColors.darkBlue));
             });
@@ -2026,6 +2027,7 @@ function quizzDisplay(x, y, w, h) {
                 target.parentObj.parent.previewMode = false;
                 target.parentObj.parent.currentQuestionIndex = self.tabQuestions.length;
                 target.parentObj.parent.quizzManipulator.flush();
+                drawing.currentPageDisplayed = "QuizPreview";
                 target.parentObj.parent.puzzleLines = 3;
                 target.parentObj.parent.puzzleRows = 3;
                 target.parentObj.parent.returnButton.label = "Retour à la formation";
