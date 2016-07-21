@@ -64,17 +64,24 @@ function main() {
                     }
                     break;
                 case "Quizz":
-                    quizz = formation.quizzDisplayed;
-                    quizz.display(0, 0, drawing.width, drawing.height);
-
-                    if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                        quizz.displayCurrentQuestion();
-                    } else {
-                        quizz.resultManipulator.last.remove(quizz.puzzle.manipulator.first);
-                        quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
-                        quizz.displayResult();
+                    quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
+                    if (formation.quizzManager.previewQuiz){
+                        if (quizz.currentQuestionIndex !== -1) {
+                            quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator.first);
+                        }
+                        quizz.display(0, 0, drawing.width, drawing.height);
                     }
-                    break;
+                    else {
+                        quizz.display(0, 0, drawing.width, drawing.height);
+                        if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                            quizz.displayCurrentQuestion();
+                        } else {
+                            quizz.resultManipulator.last.remove(quizz.puzzle.manipulator.first);
+                            quizz.resultManipulator.last.remove(quizz.scoreManipulator.first);
+                            quizz.displayResult();
+                        }
+                        break;
+                    }
             }
         }
     };
