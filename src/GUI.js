@@ -439,11 +439,12 @@ function gamesLibraryDisplay(x, y, w, h) {
 }
 
 function imagesLibraryDisplay(x, y, w, h, callback) {
+
     let display = (x, y, w, h) => {
         libraryDisplay.call(this, x, y, w, h);
 
         let displayPanel = () => {
-            this.panel = new gui.Panel(w-3,0.75*h, myColors.white, 3).position(w/2,0.45*h);
+            this.panel = new gui.Panel(w - 3, 0.75 * h, myColors.white, 3).position(w / 2, 0.45 * h);
             this.libraryManipulator.last.add(this.panel.component);
             this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
         };
@@ -452,134 +453,136 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
                 libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
                 tempY = (0.075 * h);
-
-            this.itemsTab.forEach((item, i) => {
-                if (i % maxImagesPerLine === 0 && i !== 0) {
-                    tempY += this.imageHeight + libMargin;
-                }
-
-                // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                //     this.panel.content.remove(this.libraryManipulators[i].first);
-                // }
-                this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
-
-                let image = displayImage(myLibraryImage.tab[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
-                image.srcDimension = {width: item.width, height: item.height};
-                this.libraryManipulators[i].ordonator.set(0, image);
-
-                let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
-                this.libraryManipulators[i].first.move(X, tempY);
-
-            });
-            this.panel.resizeContent(w, tempY + this.imageHeight);
-        };
-
-        let assignEvents = () => {
-            this.libraryManipulators.forEach(libraryManipulator => {
-                let mouseDownAction = event => {
-                    this.arrowMode && this.toggleArrowMode();
-
-                    libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
-                    let manip = new Manipulator(this);
-                    manip.addOrdonator(2);
-                    drawings.piste.last.add(manip.first);
-                    this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
-
-                    let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
-                        point2 = manip.first.globalPoint(0, 0);
-                    manip.first.move(point.x - point2.x, point.y - point2.y);
-
-                    if (this.itemsTab && this.itemsTab.length !== 0) {
-
-                        let elementCopy = libraryManipulator.ordonator.children[0],
-                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
-                        img.srcDimension = elementCopy.srcDimension;
-                        manip.ordonator.set(0, img);
-                        manageDnD(img, manip);
-                        img.component.listeners && svg.removeEvent(img, 'mouseup');
-                        img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
-
-                        let mouseupHandler = event => {
-                            let svgObj = manip.ordonator.children.shift();
-                            manip.first.parent.remove(manip.first);
-                            let target = drawings.background.getTarget(event.clientX, event.clientY);
-                            if (target && target.parent && target.parent.parentManip) {
-                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                    this.dropAction(svgObj, event);
-                                }
-                            }
-                            this.draggedObjectLabel = "";
-                        };
-
-                        svg.event(drawings.glass, "mousedown", event);
-                        svg.addEvent(img, 'mouseup', mouseupHandler);
+            let myLibraryImage;
+            dbListener.httpGetAsync('/getAllImages').then(data => {
+                myLibraryImage = JSON.parse(data).images;
+                console.log(myLibraryImage);
+                this.itemsTab.forEach((item, i) => {
+                    if (i % maxImagesPerLine === 0 && i !== 0) {
+                        tempY += this.imageHeight + libMargin;
                     }
-                };
-                svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
-                svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+
+                    // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
+                    //     this.panel.content.remove(this.libraryManipulators[i].first);
+                    // }
+                    this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
+                    let image = displayImage(myLibraryImage[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                    image.srcDimension = {width: item.width, height: item.height};
+                    this.libraryManipulators[i].ordonator.set(0, image);
+
+                    let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
+                    this.libraryManipulators[i].first.move(X, tempY);
+
+                });
+                this.panel.resizeContent(tempY += this.imageHeight);
             });
-        };
+        }
+            let assignEvents = () => {
+                this.libraryManipulators.forEach(libraryManipulator => {
+                    let mouseDownAction = event => {
+                        this.arrowMode && this.toggleArrowMode();
 
-        let displaySaveButton = () => {
+                        libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
+                        let manip = new Manipulator(this);
+                        manip.addOrdonator(2);
+                        drawings.piste.last.add(manip.first);
+                        this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
 
-            let doraHandler = () => {
-                if (!this.dora) {
-                    let globalPointCenter = this.bordure.globalPoint(0, 0);
-                    var doraStyle = {
-                        leftpx: globalPointCenter.x,
-                        toppx: globalPointCenter.y,
-                        width: this.w / 5,
-                        height: this.w / 5
+                        let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
+                            point2 = manip.first.globalPoint(0, 0);
+                        manip.first.move(point.x - point2.x, point.y - point2.y);
+
+                        if (this.itemsTab && this.itemsTab.length !== 0) {
+
+                            let elementCopy = libraryManipulator.ordonator.children[0],
+                                img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
+                            img.srcDimension = elementCopy.srcDimension;
+                            manip.ordonator.set(0, img);
+                            manageDnD(img, manip);
+                            img.component.listeners && svg.removeEvent(img, 'mouseup');
+                            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
+
+                            let mouseupHandler = event => {
+                                let svgObj = manip.ordonator.children.shift();
+                                manip.first.parent.remove(manip.first);
+                                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                                if (target && target.parent && target.parent.parentManip) {
+                                    if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                        this.dropAction(svgObj, event);
+                                    }
+                                }
+                                this.draggedObjectLabel = "";
+                            };
+
+                            svg.event(drawings.glass, "mousedown", event);
+                            svg.addEvent(img, 'mouseup', mouseupHandler);
+                        }
                     };
-                    this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
-                    this.dora.type("file");
-                    svg.runtime.attr(this.dora.component, "accept", "image/*");
-                    svg.runtime.attr(this.dora.component, "id", "dora");
-                    svg.runtime.attr(this.dora.component, "hidden", "true");
-                    drawings.screen.add(this.dora);
-                }
-                svg.runtime.anchor("dora").click();
+                    svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
+                    svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+                });
             };
-            let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
-                addButtonLabel = "Ajouter une image",
-                addButtonText =  autoAdjustText(addButtonLabel, 2*this.w/3, this.h/15, 20, "Arial", this.addButtonManipulator),
-                plus = drawPlus(0,0, this.w / 7, this.w / 7);
-            addButtonText.text.position(0,this.h/12 - (this.h/15)/2 + 3/2*MARGIN);
-            addButton.corners(10 , 10);
 
-            this.addButtonManipulator.ordonator.set(0, addButton);
-            this.addButtonManipulator.ordonator.set(2, plus);
-            this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
-            this.addButtonManipulator.translator.move(this.w/2, 9 *this.h / 10);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
+            let displaySaveButton = () => {
+
+                let doraHandler = () => {
+                    if (!this.dora) {
+                        let globalPointCenter = this.bordure.globalPoint(0, 0);
+                        var doraStyle = {
+                            leftpx: globalPointCenter.x,
+                            toppx: globalPointCenter.y,
+                            width: this.w / 5,
+                            height: this.w / 5
+                        };
+                        this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
+                        this.dora.type("file");
+                        svg.runtime.attr(this.dora.component, "accept", "image/*");
+                        svg.runtime.attr(this.dora.component, "id", "dora");
+                        svg.runtime.attr(this.dora.component, "hidden", "true");
+                        drawings.screen.add(this.dora);
+                    }
+                    svg.runtime.anchor("dora").click();
+                };
+                let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
+                    addButtonLabel = "Ajouter une image",
+                    addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
+                    plus = drawPlus(0, 0, this.w / 7, this.w / 7);
+                addButtonText.text.position(0, this.h / 12 - (this.h / 15) / 2 + 3 / 2 * MARGIN);
+                addButton.corners(10, 10);
+
+                this.addButtonManipulator.ordonator.set(0, addButton);
+                this.addButtonManipulator.ordonator.set(2, plus);
+                this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
+                this.addButtonManipulator.translator.move(this.w / 2, 9 * this.h / 10);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
+
+            };
+
+            displayPanel();
+            displayItems();
+            displaySaveButton();
+            assignEvents();
 
         };
 
-        displayPanel();
-        displayItems();
-        displaySaveButton();
-        assignEvents();
-
-    };
-
-    let intervalToken = asyncTimerController.interval(() => {
-        if (this.itemsTab.every(e => e.imageLoaded)) {
-            asyncTimerController.clearInterval(intervalToken);
+        let intervalToken = asyncTimerController.interval(() => {
+            if (this.itemsTab.every(e => e.imageLoaded)) {
+                asyncTimerController.clearInterval(intervalToken);
+                display(x, y, w, h);
+                callback();
+            }
+        }, 100);
+        runtime && this.itemsTab.forEach(e => {
+            imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
+        });
+        if (runtime) {
             display(x, y, w, h);
             callback();
         }
-    }, 100);
-    runtime && this.itemsTab.forEach(e => {
-        imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
-    });
-    if (runtime) {
-        display(x, y, w, h);
-        callback();
-    }
 
-}
+    }
 
 function addEmptyElementDisplay(x, y, w, h) {
     if(typeof x !== 'undefined'){
