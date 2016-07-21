@@ -845,24 +845,30 @@ class MiniatureGame {
                     && this.game.parentFormation.selectedGame.game.miniatureManipulator.last
                         .remove(this.game.parentFormation.selectedGame.redCrossManipulator.first);
             }
-            this.game.parentFormation.selectedGame = this;
-            !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
-            this.icon.cadre.color(myColors.white, 2, SELECTION_COLOR);
-        } else {
-            this.icon.cadre.color(myColors.white, 1, myColors.black);
-            !playerMode && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
-            this.game.parentFormation.selectedGame = null;
         }
         this.selected = !this.selected;
+        this.updateSelectionDesign();
     }
 
-    drawProgressIcon (miniatureObject, object, size) {
+    updateSelectionDesign() {
+        if(this.selected) {
+            this.game.parentFormation.selectedGame = this;
+            !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
+            this.icon.cadre.color(myColors.white, 3, SELECTION_COLOR);
+        } else {
+            this.icon.cadre.color(myColors.white, 1, myColors.black);
+            !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            this.game.parentFormation.selectedGame = null;
+        }
+    }
+
+    drawProgressIcon (object, size) {
         let iconsize = 20;
-        miniatureObject.infosManipulator = new Manipulator(miniatureObject);
-        miniatureObject.infosManipulator.addOrdonator(4);
+        this.infosManipulator = new Manipulator(this);
+        this.infosManipulator.addOrdonator(4);
         switch (object.status) {
             case "notAvailable":
-                miniatureObject.icon.cadre.color(myColors.grey, 1, myColors.black);
+                this.icon.cadre.color(myColors.grey, 1, myColors.black);
                 break;
             case "done":
                 var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
@@ -870,10 +876,10 @@ class MiniatureGame {
                 let rect = new svg.Rect(iconsize, iconsize);
                 rect.color(myColors.white, 1, myColors.green);
                 rect.position(size/2, -size/2);
-                miniatureObject.infosManipulator.ordonator.set(0, rect);
-                miniatureObject.infosManipulator.ordonator.set(1, iconInfos);
+                this.infosManipulator.ordonator.set(0, rect);
+                this.infosManipulator.ordonator.set(1, iconInfos);
                 let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
-                object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
+                object.miniatureManipulator.last.add(this.infosManipulator.first);
                 let result = autoAdjustText(resultString, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                 result.text.position(0,size/2-MARGIN/2);
                 break;
@@ -882,11 +888,11 @@ class MiniatureGame {
                 let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
                 let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
                 let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
-                miniatureObject.infosManipulator.ordonator.set(0, iconInfos);
-                miniatureObject.infosManipulator.ordonator.set(1, iconInfosdot1);
-                miniatureObject.infosManipulator.ordonator.set(2, iconInfosdot2);
-                miniatureObject.infosManipulator.ordonator.set(3, iconInfosdot3);
-                object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
+                this.infosManipulator.ordonator.set(0, iconInfos);
+                this.infosManipulator.ordonator.set(1, iconInfosdot1);
+                this.infosManipulator.ordonator.set(2, iconInfosdot2);
+                this.infosManipulator.ordonator.set(3, iconInfosdot3);
+                object.miniatureManipulator.last.add(this.infosManipulator.first);
                 break;
         }
     };

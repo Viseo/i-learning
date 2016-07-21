@@ -870,7 +870,7 @@ function formationDisplayFormation() {
             displayLevel(self.graphCreaWidth, self.graphCreaHeight, self.levelsTab[i]);
             self.adjustGamesPositions(self.levelsTab[i]);
             self.levelsTab[i].gamesTab.forEach(function(tabElement){
-                tabElement.miniatureManipulator.addOrdonator(3);
+                tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 if (typeof tabElement.miniature === "undefined") {
                     (tabElement.miniature = tabElement.displayMiniature(self.graphElementSize));
@@ -2262,7 +2262,14 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
-        target.parentObj.parent.parentFormation.displayFormation()
+        target.parentObj.parent.parentFormation.displayFormation();
+        [].concat(...target.parentObj.parent.parentFormation.levelsTab
+            .map(level => level.gamesTab))
+            .filter(elem => elem.miniature.selected === true)
+            .forEach(game => {
+                game.miniature.selected = false;
+                game.miniature.updateSelectionDesign();
+        });
     };
 
     self.returnButton.display(-2*MARGIN, 0, 20, 20);
