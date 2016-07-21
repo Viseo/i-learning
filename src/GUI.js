@@ -1304,7 +1304,7 @@ function questionDisplay(x, y, w, h) {
 
     // Question avec Texte ET image
     if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
-        let obj = displayImageWithTitle(self.label, self.imageSrc, {width:self.image.width, height:self.image.height}, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.image);
+        let obj = displayImageWithTitle(self.label, self.imageSrc, this.dimImage, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.image);
         self.bordure = obj.cadre;
         self.content = obj.content;
         self.image = obj.image;
