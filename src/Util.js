@@ -1255,6 +1255,156 @@ class Server {
     }
 }
 
+gui.ScrollablePanel = class ScrollablePanel {
+    constructor(width, height, color, borderThickness = 3) {
+        let vHandleCallback = position => {
+            var x = this.content.x;
+            var y = -position*this.content.height/this.view.height + this.view.height/2;
+            this.contentV.move(x, y);
+        };
+        let hHandleCallback = position => {
+            var x = -position*this.content.width/this.view.width + this.view.width/2;
+            var y = this.content.y;
+            this.contentH.move(x, y);
+        };
+
+        this.width = width;
+        this.height = height;
+        this.component = new svg.Translation();
+        this.component.focus = this;
+        this.border = new svg.Rect(this.width, this.height).color([], borderThickness, [0, 0, 0]);
+        this.view = new svg.Drawing(width, height).position(-width/2, -height/2);
+        this.translate = new svg.Translation();
+        this.component.add(this.view.add(this.translate)).add(this.border);
+        this.vHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], vHandleCallback).vertical(width/2, -height/2, height/2);
+        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-width/2, width/2, height/2);
+        this.component.add(this.vHandle.component).add(this.hHandle.component);
+        this.back = new svg.Rect(width, height).color(color, 0, []);
+        this.content = new svg.Translation();
+        this.contentH = new svg.Translation();
+        this.contentV = new svg.Translation();
+        this.content.width = width;
+        this.content.height = height;
+        this.translate.add(this.back.position(width/2, height/2)).add(this.content.add(this.contentV.add(this.contentH)));
+    }
+
+    position(x, y) {
+        this.component.move(x, y);
+        return this;
+    }
+
+    resize(width, height) {
+        this.width = width;
+        this.height = height;
+        this.border.dimension(width, height);
+        this.view.dimension(width, height).position(-width / 2, -height / 2);
+        this.vHandle.vertical(width / 2, -height / 2, height / 2);
+        this.hHandle.horizontal(-width / 2, width / 2, height / 2);
+        this.back.dimension(width, height).position(width / 2, height / 2);
+        return this;
+    }
+
+    updateHandle() {
+        this.vHandle.dimension(this.view.height, this.content.height)
+            .position((this.view.height / 2 - this.contentV.y) / (this.content.height) * this.view.height);
+        this.hHandle.dimension(this.view.width, this.content.width)
+            .position((this.view.width / 2 - this.contentH.x) / (this.content.width) * this.view.width);
+        return this;
+    }
+
+    add(component) {
+        this.content.add(component);
+        return this;
+    }
+
+    remove(component) {
+        this.content.remove(component);
+        return this;
+    }
+
+    resizeContent(width, height) {
+        if (height > this.height) {
+            this.content.height = height;
+        }
+        if (width > this.width) {
+            this.content.width = width;
+        }
+        if (height > this.height || width > this.width) {
+            this.back.position(this.content.width / 2, this.content.height / 2);
+            this.back.dimension(this.content.width, this.content.height);
+            this.updateHandle();
+        }
+        return this;
+    }
+
+    controlPosition(x, y) {
+        if (x > 0) {
+            x = 0;
+        }
+        if (y > 0) {
+            y = 0;
+        }
+        if (x < -this.content.width + this.view.width) {
+            x = -this.content.width + this.view.width;
+        }
+        if (y < -this.content.height + this.view.height) {
+            y = -this.content.height + this.view.height;
+        }
+        return {x, y};
+    }
+
+    moveContent(x, y, content) {
+        let completeMovement = progress=> {
+            this.updateHandle();
+            if (progress === 1) {
+                delete this.animation;
+            }
+        };
+        if (!this.animation) {
+            this.animation = true;
+            let point = this.controlPosition(x, y);
+            this[content].onChannel().smoothy(param.speed, param.step)
+                .execute(completeMovement).moveTo(point.x, point.y);
+        }
+        return this;
+    }
+
+    processKeys(keycode) {
+        if (isLeftArrow(keycode)) {
+            this.moveContent(this.contentH.x+100, this.contentH.y, 'contentH');
+        }
+        else if (isUpArrow(keycode)) {
+            this.moveContent(this.contentV.x, this.contentV.y+100, 'contentV');
+        }
+        else if (isRightArrow(keycode)) {
+            this.moveContent(this.contentH.x-100, this.contentH.y, 'contentH');
+        }
+        else if (isDownArrow(keycode)) {
+            this.moveContent(this.contentV.x, this.contentV.y-100, 'contentV');
+        }
+        else {
+            return false;
+        }
+        return true;
+
+        function isLeftArrow(keycode) {
+            return keycode === 37;
+        }
+
+        function isUpArrow(keycode) {
+            return keycode === 38;
+        }
+
+        function isRightArrow(keycode) {
+            return keycode === 39;
+        }
+
+        function isDownArrow(keycode) {
+            return keycode === 40;
+        }
+    }
+};
+
 /////////////// Bdd.js //////////////////
 /**
  * Created by ABL3483 on 10/03/2016.
