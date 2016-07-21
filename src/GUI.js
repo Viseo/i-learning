@@ -456,15 +456,22 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             let myLibraryImage;
             dbListener.httpGetAsync('/getAllImages').then(data => {
                 myLibraryImage = JSON.parse(data).images;
-                console.log(myLibraryImage);
+                this.itemsTab = JSON.parse(JSON.stringify(myLibraryImage));
+                for (let i = 0; i < this.itemsTab.length; i++) {
+                    this.libraryManipulators[i] = new Manipulator(this);
+                    this.libraryManipulators[i].addOrdonator(2);
+                    this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
+                        this.imageLoaded = true; //this != library
+                    });
+                }
                 this.itemsTab.forEach((item, i) => {
                     if (i % maxImagesPerLine === 0 && i !== 0) {
                         tempY += this.imageHeight + libMargin;
                     }
 
-                    // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                    //     this.panel.content.remove(this.libraryManipulators[i].first);
-                    // }
+                    if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
+                         this.panel.content.remove(this.libraryManipulators[i].first);
+                    }
                     this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                     let image = displayImage(myLibraryImage[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
                     image.srcDimension = {width: item.width, height: item.height};

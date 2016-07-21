@@ -856,10 +856,10 @@ class Library {
         this.libraryManipulator = new Manipulator(this);
         this.libraryManipulator.addOrdonator(2);
 
-        this.title = lib.title;
+        lib && (this.title = lib.title);
 
         this.itemsTab = [];
-        lib.tab && (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
+        lib && lib.tab &&  (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
         this.libraryManipulators = [];
 
         this.imageWidth = 50;
@@ -870,8 +870,8 @@ class Library {
             this.libraryManipulators[i].addOrdonator(2);
         }
 
-        this.font = lib.font || "Arial";
-        this.fontSize = lib.fontSize || 20;
+        lib ? this.font = lib.font : "Arial";
+        lib ? this.fontSize = lib.fontSize : 20;
     }
 }
 
@@ -897,15 +897,12 @@ class GamesLibrary extends Library {
 }
 
 class ImagesLibrary extends Library {
-    constructor (lib) {
-        super(lib);
+    constructor () {
+        super();
+        this.title = "Bibliothèque";
+        this.font = "Courier New";
         this.addButtonManipulator = new Manipulator(this);
         this.addButtonManipulator.addOrdonator(3);
-        for (var i = 0; i < this.itemsTab.length; i++) {
-            this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
-                this.imageLoaded = true; //this != library
-            });
-        }
     }
 
     dropAction (element, event) {
@@ -981,7 +978,7 @@ class QuizzManager {
         }
         this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.header = new Header();
-        this.library = new ImagesLibrary(myLibraryImage);
+        this.library = new ImagesLibrary();
         this.quizz.tabQuestions[0].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
