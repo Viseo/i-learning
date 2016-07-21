@@ -524,28 +524,28 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
         };
 
         let displaySaveButton = () => {
-            if (!this.dora) {
-                let globalPointCenter = this.bordure.globalPoint(0, 0);
-                var doraStyle = {
-                    leftpx: globalPointCenter.x,
-                    toppx: globalPointCenter.y,
-                    width: this.w / 5,
-                    height: this.w / 5
-                };
-                this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
-                this.dora.type("file");
-                svg.runtime.attr(this.dora.component, "accept", "image/*");
-                svg.runtime.attr(this.dora.component, "id", "dora");
-                svg.runtime.attr(this.dora.component, "hidden", "true");
-                drawings.screen.add(this.dora);
 
-            }
             let doraHandler = () => {
+                if (!this.dora) {
+                    let globalPointCenter = this.bordure.globalPoint(0, 0);
+                    var doraStyle = {
+                        leftpx: globalPointCenter.x,
+                        toppx: globalPointCenter.y,
+                        width: this.w / 5,
+                        height: this.w / 5
+                    };
+                    this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
+                    this.dora.type("file");
+                    svg.runtime.attr(this.dora.component, "accept", "image/*");
+                    svg.runtime.attr(this.dora.component, "id", "dora");
+                    svg.runtime.attr(this.dora.component, "hidden", "true");
+                    drawings.screen.add(this.dora);
+                }
                 svg.runtime.anchor("dora").click();
             };
             let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                 addButtonLabel = "Ajouter une image",
-                addButtonText =  autoAdjustText(addButtonLabel, 0, this.h/15, 20, "Arial", this.addButtonManipulator),
+                addButtonText =  autoAdjustText(addButtonLabel, 2*this.w/3, this.h/15, 20, "Arial", this.addButtonManipulator),
                 plus = drawPlus(0,0, this.w / 7, this.w / 7);
             addButtonText.text.position(0,this.h/12 - (this.h/15)/2 + 3/2*MARGIN);
             addButton.corners(10 , 10);
