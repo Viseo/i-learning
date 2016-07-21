@@ -2729,53 +2729,52 @@ function inscriptionManagerDisplay() {
 }
 
 function connexionManagerDisplay() {
-    let self = this;
     drawing.currentPageDisplayed = "ConnexionManager";
     header.display("Connexion");
 
-    mainManipulator.ordonator.set(1, self.manipulator.first);
-    self.manipulator.first.move(drawing.width/2, drawing.height/2);
+    mainManipulator.ordonator.set(1, this.manipulator.first);
+    this.manipulator.first.move(drawing.width/2, drawing.height/2);
     let w = drawing.width/6;
     let x = drawing.width/10;
 
     let focusedField;
 
-    var clickEditionField = function (field, manipulator) {
-        return function () {
+    var clickEditionField = (field, manipulator)=> {
+        return ()=> {
             var width = w;
-            var height = self.h;
-            var globalPointCenter = self[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
+            var height = this.h;
+            var globalPointCenter = this[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
             var contentareaStyle = {
                 toppx: globalPointCenter.y,
                 leftpx: globalPointCenter.x,
                 height: height,
-                width: self[field].cadre.width
+                width: this[field].cadre.width
             };
             drawing.notInTextArea = false;
             let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
 
-            contentarea.message(self[field].labelSecret||self[field].label);
+            contentarea.message(this[field].labelSecret||this[field].label);
             contentarea.color(null, 0, myColors.black).
             font("Arial",20);
-            self[field].secret && contentarea.type('password');
-            manipulator.ordonator.unset(1, self[field].content.text);
+            this[field].secret && contentarea.type('password');
+            manipulator.ordonator.unset(1, this[field].content.text);
             drawings.screen.add(contentarea);
             contentarea.focus();
 
             var alreadyDeleted = false;
-            var onblur = function() {
+            var onblur = ()=> {
                 if (!alreadyDeleted) {
                     contentarea.enter();
-                    if (self[field].secret) {
-                        self[field].label = '';
-                        self[field].labelSecret = contentarea.messageText;
+                    if (this[field].secret) {
+                        this[field].label = '';
+                        this[field].labelSecret = contentarea.messageText;
                         if (contentarea.messageText) {
                             for (let i = 0; i < contentarea.messageText.length; i++) {
-                                self[field].label += '●';
+                                this[field].label += '●';
                             }
                         }
                     } else {
-                        self[field].label = contentarea.messageText;
+                        this[field].label = contentarea.messageText;
                     }
                     contentarea.messageText && displayField(field, manipulator);
                     manipulator.ordonator.unset(3);
@@ -2785,70 +2784,70 @@ function connexionManagerDisplay() {
                 }
             };
             svg.addEvent(contentarea, "blur", onblur);
-            focusedField = self[field];
+            focusedField = this[field];
         };
     };
-    var displayField = function(field, manipulator){
-        var fieldTitle = new svg.Text(self[field].title).position(0,0);
+    var displayField = (field, manipulator)=>{
+        var fieldTitle = new svg.Text(this[field].title).position(0,0);
         fieldTitle.font("Arial", 20).anchor("end");
         manipulator.ordonator.set(2, fieldTitle);
-        manipulator.first.move(-drawing.width/10, self[field].line*drawing.height / 10);
-        self.h = 1.5 * svg.runtime.boundingRect(fieldTitle.component).height;
-        var displayText = displayTextWithoutCorners(self[field].label, w, self.h, myColors.black, myColors.white, 20, null, manipulator);
-        self[field].content = displayText.content;
-        self[field].cadre = displayText.cadre;
+        manipulator.first.move(-drawing.width/10, this[field].line*drawing.height / 10);
+        this.h = 1.5 * svg.runtime.boundingRect(fieldTitle.component).height;
+        var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
+        this[field].content = displayText.content;
+        this[field].cadre = displayText.cadre;
         var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
-        self[field].content.position(x,0);
-        self[field].cadre.position(x,y);
+        this[field].content.position(x,0);
+        this[field].cadre.position(x,y);
         var clickEdition = clickEditionField(field, manipulator);
-        svg.addEvent(self[field].content, "click", clickEdition);
-        svg.addEvent(self[field].cadre, "click", clickEdition);
-        var alreadyExist = self.tabForm.find(formElement => formElement.field === field);
-        self[field].field = field;
-        alreadyExist ? self.tabForm.splice(self.tabForm.indexOf(alreadyExist),1, self[field]) : self.tabForm.push(self[field]);
+        svg.addEvent(this[field].content, "click", clickEdition);
+        svg.addEvent(this[field].cadre, "click", clickEdition);
+        var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+        this[field].field = field;
+        alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
     };
 
-    self.mailAddressField = {label: "", title: self.mailAddressLabel, line: -1};
-    self.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-    self.mailAddressField.checkInput = function() {
+    this.mailAddressField = {label: "", title: this.mailAddressLabel, line: -1};
+    this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
+    this.mailAddressField.checkInput = ()=> {
         let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-        return self.mailAddressField.label=== "" || self.mailAddressField.label.match(regex);
+        return this.mailAddressField.label=== "" || this.mailAddressField.label.match(regex);
     };
-    displayField("mailAddressField", self.mailAddressManipulator);
-    self.passwordField = {
+    displayField("mailAddressField", this.mailAddressManipulator);
+    this.passwordField = {
         label: '',
         labelSecret: '',
-        title: self.passwordLabel,
+        title: this.passwordLabel,
         line: 0,
         secret: true,
         errorMessage: "La confirmation du mot de passe n'est pas valide"
     };
 
-    displayField('passwordField', self.passwordManipulator);
-    self.connexionButton = displayText(self.connexionButtonLabel, self.connexionButtonWidth, self.connexionButtonHeight, myColors.black, myColors.white, 20, null, self.connexionButtonManipulator);
-    self.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
-    svg.addEvent(self.connexionButton.content, "click", self.connexionButtonHandler);
-    svg.addEvent(self.connexionButton.cadre, "click", self.connexionButtonHandler);
+    displayField('passwordField', this.passwordManipulator);
+    this.connexionButton = displayText(this.connexionButtonLabel, this.connexionButtonWidth, this.connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
+    this.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
+    svg.addEvent(this.connexionButton.content, "click", this.connexionButtonHandler);
+    svg.addEvent(this.connexionButton.cadre, "click", this.connexionButtonHandler);
 
-    let nextField = function(backwards = false) {
-        let index = self.tabForm.indexOf(focusedField);
+    let nextField = (backwards = false)=> {
+        let index = this.tabForm.indexOf(focusedField);
         if (index !== -1) {
             backwards ? index-- : index++;
-            if(index === self.tabForm.length) index = 0;
-            if(index === -1) index = self.tabForm.length - 1;
-            clickEditionField(self.tabForm[index].field, self.tabForm[index].cadre.parentManip);
-            svg.event(self.tabForm[index].cadre, "click", self.connexionButtonHandler);
+            if(index === this.tabForm.length) index = 0;
+            if(index === -1) index = this.tabForm.length - 1;
+            clickEditionField(this.tabForm[index].field, this.tabForm[index].cadre.parentManip);
+            svg.event(this.tabForm[index].cadre, "click", this.connexionButtonHandler);
         }
     };
 
-    svg.runtime.addGlobalEvent("keydown", function (event) {
+    svg.runtime.addGlobalEvent("keydown", (event)=> {
         if (event.keyCode === 9) { // TAB
             event.preventDefault();
             nextField(event.shiftKey);
         } else if (event.keyCode === 13) { // Entrée
             event.preventDefault();
             document.activeElement && document.activeElement.blur();
-            self.connexionButtonHandler();
+            this.connexionButtonHandler();
         }
     });
 }
