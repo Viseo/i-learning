@@ -218,16 +218,16 @@ function answerDisplay (x, y, w, h) {
         let event = () => {
             this.explanationPopIn = new PopIn(this, false);
             if (this.parentQuestion.image && this.image){
-                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeight/2 + this.parentQuestion.parentQuizz.questionHeightWithImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeight);
+                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN)/2 + this.parentQuestion.parentQuizz.questionHeightWithImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN);
             }
             else if (this.parentQuestion.image && !this.image){
-                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeightMax/2 + this.parentQuestion.parentQuizz.questionHeightWithImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax);
+                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN)/2 + this.parentQuestion.parentQuizz.questionHeightWithImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN);
             }
             else if (!this.parentQuestion.image && this.image){
-                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeight/2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeight);
+                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN)/2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN);
             }
             else {
-                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, this.parentQuestion.tileHeightMax/2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax);
+                this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN)/2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage/2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax*this.parentQuestion.lines + (this.parentQuestion.lines-1)*MARGIN);
             }
         };
         this.image && svg.addEvent(this.image, "click", event);
