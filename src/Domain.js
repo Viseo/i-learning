@@ -632,10 +632,8 @@ class Formation {
     publicationFormation () {
           const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
-
-              messagePublication = "Publier :) !!";
-
-          const displayPublicationMessage = (messagePublication) => {
+                messagePublication = "ok";
+          this.displayPublicationMessage = (messagePublication) => {
                 (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 this.errorMessagePublication = new svg.Text(messagePublication)
                     .position(0, -this.publicationButtonHeight / 2 - MARGIN)
@@ -648,25 +646,18 @@ class Formation {
                     }
                 }, 5000);
             };
-          displayPublicationMessage(messagePublication);
 
-          if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
-                displayPublicationMessage(messageErrorNoNameFormation);
+        this.displayPublicationMessage(messagePublication);
+        this.publicationFormationQuizzManager();
+
+        if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
+                this.displayPublicationMessage(messageErrorNoNameFormation);
               }
 
-          if (this.levelsTab.length === 0){
-              displayPublicationMessage(messageErrorNoGame);
+        if (this.levelsTab.length === 0){
+              this.displayPublicationMessage(messageErrorNoGame);
              }
-
     };
-
-/*    publicationFormation () {
-            messageErrorNameGame = "Veuillez donner un nom à votre jeu.",
-            messageErrorQuestionGame =  "Veuillez ajouter au moins une question à votre jeu 'Les bases du CSS'",
-            messageErrorIncomplet = "La question 5 du jeu 'Les bases du CSS' n'est pas complète.",
-            messageErrorNoGoodAnswer = "Vous n'avez pas indiqué de bonne réponse pour la question 5 du jeu 'Les bases du CSS'.",
-            messageErrorIncomplet = "La question 5 du jeu 'Les bases du CSS' n'est pas complète.";
-    }*/
 
     loadFormation (formation) {
         this.levelsTab = [];
@@ -1173,6 +1164,7 @@ class Quizz {
         if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             this.tabQuestions = [];
             quizz.tabQuestions.forEach(it => {
+                it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
                 var tmp = new Question(it, this);
                 it.questionType && (tmp.questionType = it.questionType);
                 tmp.parentQuizz = this;

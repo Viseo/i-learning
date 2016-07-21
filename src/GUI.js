@@ -1028,6 +1028,38 @@ function formationDisplaySaveButton(x, y, w, h) {
 function formationDisplayPublicationButton(x, y, w, h) {
     this.publicationFormationButton = displayText("Publier", w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
     this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+    this.publicationFormationQuizzManager = () => {
+        let message = [];
+        let arrayOfUncorrectQuestions = [];
+        let allQuizzValid = true;
+        this.levelsTab.forEach(level => {
+            level.gamesTab.forEach(game => {
+                let checkQuizz = new Quizz(game, false, this);
+                checkQuizz.isValid = true;
+                checkQuizz.tabQuestions.forEach(question => {
+                    if (!(question instanceof AddEmptyElement)) {
+                        question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                            var result = funcEl && funcEl(question);
+                            if (result && (!result.isValid)) {
+                                message.push ("La question " + question.questionNum + " du jeu " +  game.title + " n'est pas complet");
+                                arrayOfUncorrectQuestions.push(question.questionNum - 1);
+                            }
+                            result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
+                        });
+                        if (!question.questionType){
+                            checkQuizz.isValid = false;
+                            message.push("La question 1 du jeu " +  game.title + " n'est pas complet");
+                        }
+                    }
+                    allQuizzValid = allQuizzValid && checkQuizz.isValid;
+                });
+                checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white,3,myColors.red);
+            });
+        });
+        if(!allQuizzValid) {
+            this.displayPublicationMessage(message[0]);
+        }
+    };
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
     svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
     this.publicationFormationButtonManipulator.translator.move(x, y);
