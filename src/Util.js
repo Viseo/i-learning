@@ -746,6 +746,7 @@ class Picture {
             }
             if (this.parent.parentQuestion){
                 let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+
                 let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
                 let y = -(puzzle.visibleArea.height - this.parent.height)/ 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                 this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);

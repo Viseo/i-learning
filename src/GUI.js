@@ -1300,6 +1300,7 @@ function questionDisplay(x, y, w, h) {
     if(typeof h !== 'undefined' ) {
         h && (self.height = h);
     }
+    this.manipulator.flush();
 
     // Question avec Texte ET image
     if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
