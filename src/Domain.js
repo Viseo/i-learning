@@ -1,16 +1,15 @@
 exports.Domain = function (globalVariables) {
 
-    let iRuntime, imageController, asyncTimerController;
+    let iRuntime, aRuntime, imageController, asyncTimerController;
 
     let
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
-        mainManipulator = globalVariables.mainManipulator,
-        clientWidth = globalVariables.clientWidth;
-    clientHeight = globalVariables.clientHeight;
-    Manipulator = globalVariables.util.Manipulator,
+        clientWidth = globalVariables.clientWidth,
+        clientHeight = globalVariables.clientHeight,
+        Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
@@ -37,6 +36,7 @@ exports.Domain = function (globalVariables) {
             this.images[id].onload();
         }
     };
+
     const AsyncTimerRuntime = {
         timers: {},
         count: 0,
@@ -70,6 +70,7 @@ exports.Domain = function (globalVariables) {
             return timeout;
         }
     };
+
     runtime && (iRuntime = ImageRuntime);
     runtime && (aRuntime = AsyncTimerRuntime);
     imageController = ImageController(iRuntime);
@@ -82,7 +83,6 @@ exports.Domain = function (globalVariables) {
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
         svg = globalVariables.svg;
-        mainManipulator = globalVariables.mainManipulator;
         clientWidth = globalVariables.clientWidth;
         clientHeight = globalVariables.clientHeight;
         Manipulator = globalVariables.util.Manipulator;
@@ -1127,7 +1127,7 @@ exports.Domain = function (globalVariables) {
             this.quizzManipulator = new Manipulator(this);
             this.quizzManipulator.addOrdonator(2);
             this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = playerMode ? new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
+            this.returnButton = globalVariables.playerMode ? new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
             this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
             if (previewMode) {

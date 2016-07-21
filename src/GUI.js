@@ -3,7 +3,7 @@ exports.GUI = function (globalVariables) {
     let svg, gui, util, domain, runtime, drawings, drawing, asyncTimerController, imageController,
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quizz, QuizzManager,
-        InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server;
+        InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server, mainManipulator;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -17,6 +17,7 @@ exports.GUI = function (globalVariables) {
         imageController = globalVariables.imageController;
 
         header = globalVariables.header;
+        mainManipulator = globalVariables.mainManipulator;
 
         AddEmptyElement = domain.AddEmptyElement;
         Answer = domain.Answer;
@@ -725,8 +726,8 @@ exports.GUI = function (globalVariables) {
                 self.graphManipulator.ordonator.order(self.graphManipulator.ordonator.children.length + 1);
             }
             self.panel.contentV.add(level.manipulator.first);
-            var lineColor = playerMode ? myColors.grey : myColors.black;
-            var levelText = playerMode ? "" : "Niveau " + level.index;
+            var lineColor = globalVariables.playerMode ? myColors.grey : myColors.black;
+            var levelText = globalVariables.playerMode ? "" : "Niveau " + level.index;
             level.obj = autoAdjustText(levelText, 0, 0, w - 3 * self.borderSize, self.levelHeight, 20, "Arial", level.manipulator);
             level.obj.line = new svg.Line(MARGIN, self.levelHeight, level.parentFormation.levelWidth, self.levelHeight).color(lineColor, 3, lineColor);
             level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
@@ -765,8 +766,8 @@ exports.GUI = function (globalVariables) {
                 }
             });
             self.manipulator.ordonator.set(1, self.clippingManipulator.first);
-            !playerMode && self.clippingManipulator.translator.move(self.libraryWidth, drawing.height * HEADER_SIZE);
-            playerMode && self.clippingManipulator.translator.move(MARGIN, drawing.height * HEADER_SIZE);
+            !globalVariables.playerMode && self.clippingManipulator.translator.move(self.libraryWidth, drawing.height * HEADER_SIZE);
+            globalVariables.playerMode && self.clippingManipulator.translator.move(MARGIN, drawing.height * HEADER_SIZE);
             self.graphCreaHeight = drawing.height * self.graphCreaHeightRatio - drawing.height * 0.1;//-15-self.saveButtonHeight;//15: Height Message Error
 
             if (typeof self.panel !== "undefined") {
@@ -828,7 +829,7 @@ exports.GUI = function (globalVariables) {
                 (self.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && self.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
-                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
+                    let eventToUse = globalVariables.playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
                 } else if (tabElement instanceof Bd) {
@@ -856,14 +857,14 @@ exports.GUI = function (globalVariables) {
 
                 });
             }
-            !playerMode && displayMessageDragAndDrop();
+            !globalVariables.playerMode && displayMessageDragAndDrop();
             self.graphManipulator.translator.move(self.graphW / 2, self.graphH / 2);
             resizePanel();
             self.panel.back.parent.parentManip = self.graphManipulator;
             updateAllLinks();
         };
 
-        if (playerMode) {
+        if (globalVariables.playerMode) {
             self.graphCreaHeightRatio = 0.97;
             self.graphCreaHeight = (drawing.height - header.height - self.returnButton.height) * self.graphCreaHeightRatio;//-15-self.saveButtonHeight;//15: Height Message Error
             self.graphCreaWidth = drawing.width - 2 * MARGIN;
@@ -1010,7 +1011,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.set(1, self.manipulator.first);
         self.manipulator.last.children.indexOf(self.headerManipulator.first) === -1 && self.manipulator.last.add(self.headerManipulator.first);
 
-        if (playerMode) {
+        if (globalVariables.playerMode) {
             self.headerManipulator.last.add(self.toggleFormationsManipulator.first);
             let manip = this.toggleFormationsManipulator,
                 pos = -MARGIN,
@@ -1050,7 +1051,7 @@ exports.GUI = function (globalVariables) {
         }
 
         function displayPanel() {
-            self.heightAllocatedToPanel = drawing.height - (playerMode ?
+            self.heightAllocatedToPanel = drawing.height - (globalVariables.playerMode ?
                 self.toggleFormationsCheck.globalPoint(0, 0).y + self.toggleFormationsCheck.height + MARGIN :
                 self.addFormationButton.cadre.globalPoint(0, 0).y + self.addFormationButton.cadre.height);
             self.headerHeightFormation = drawing.height * header.size;
@@ -1058,7 +1059,7 @@ exports.GUI = function (globalVariables) {
                 width: self.panel ? 0.015 * self.panel.width : 0.015 * drawing.width,
                 height: self.panel ? 0.030 * self.panel.height : 0.030 * drawing.height
             };
-            self.y = (!playerMode) ? self.addButtonHeight * 1.5 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
+            self.y = (!globalVariables.playerMode) ? self.addButtonHeight * 1.5 : self.toggleFormationsCheck.height * 2;//drawing.height * self.header.size;
 
             self.rows = Math.floor((drawing.width - 2 * MARGIN) / (self.tileWidth + self.spaceBetweenElements.width));
             if (self.rows === 0) self.rows = 1;
@@ -1168,8 +1169,8 @@ exports.GUI = function (globalVariables) {
                 totalLines = 1;
             self.formations.forEach(formation => {
                 // we can't publish a formation yet
-                //if (playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
-                if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
+                //if (globalVariables.playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
+                if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
 
                 if (count > (self.rows - 1)) {
                     count = 0;
@@ -1233,7 +1234,7 @@ exports.GUI = function (globalVariables) {
                 document.cookie = "token=; path=/; max-age=0;";
                 drawing.username = null;
                 mainManipulator.flush();
-                main(svg, runtime);
+                main(svg, runtime, dbListener);
             };
             svg.addEvent(deconnexion.content, "click", deconnexionHandler);
             svg.addEvent(deconnexion.cadre, "click", deconnexionHandler);
@@ -1303,7 +1304,7 @@ exports.GUI = function (globalVariables) {
             self.manipulator.ordonator.set(0, self.bordure);
         }
 
-        if (playerMode) {
+        if (globalVariables.playerMode) {
             if (this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
                 let event = () => {
                     let wrongQuiz = Object.assign({}, this.parentQuizz);
@@ -2820,7 +2821,7 @@ exports.GUI = function (globalVariables) {
     }
 
     var AdminGUI = function () {
-        playerMode = false;
+        globalVariables.playerMode = false;
         AddEmptyElement.prototype.display = addEmptyElementDisplay;
         Answer.prototype.display = answerDisplay;
         Bd.prototype.display = bdDisplay;
@@ -2857,7 +2858,7 @@ exports.GUI = function (globalVariables) {
     };
 
     var LearningGUI = function () {
-        playerMode = true;
+        globalVariables.playerMode = true;
         Answer.prototype.display = answerDisplay;
         Bd.prototype.displayMiniature = gameDisplayMiniature;
         ConnexionManager.prototype.display = connexionManagerDisplay;

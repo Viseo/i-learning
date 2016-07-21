@@ -2,20 +2,23 @@
  * Created by ACA3502 on 12/04/2016.
  */
 
-var assert = require('assert');
-var testutils = require('../lib/testutils');
-var targetRuntime = require('../lib/targetruntime').targetRuntime;
-var mockRuntime = require('../lib/runtimemock').mockRuntime;
-var SVG = require('../lib/svghandler').SVG;
+const
+    assert = require('assert'),
+    testutils = require('../lib/testutils'),
+    targetRuntime = require('../lib/targetruntime').targetRuntime,
+    mockRuntime = require('../lib/runtimemock').mockRuntime,
+    SVG = require('../lib/svghandler').SVG,
+    inspect = testutils.inspect,
+    checkScenario = testutils.checkScenario;
 
-var runTest = function (file, exec) {
-    var lineReader = require('readline').createInterface({
+const runTest = function (file, exec) {
+    const lineReader = require('readline').createInterface({
         input: require('fs').createReadStream(file)
     });
 
-    var first = false;
+    let first = false;
     lineReader.on('line', function (line) {
-        var data = JSON.parse(line);
+        const data = JSON.parse(line);
         if(data.screenSize && !first) {
             svg.screenSize(data.screenSize.width, data.screenSize.height);
             first = true;
@@ -33,8 +36,6 @@ describe('Mocha marche bien', function() {
     });
 });
 
-var inspect = testutils.inspect;
-var checkScenario = testutils.checkScenario;
 
 let runtime,
     svg,
@@ -57,9 +58,7 @@ describe('Quizz game', function () {
         this.timeout(100000);
         const jsonFile = "./log/testQuizzTwoRightAnswers.json";
         const execute = () => {
-            checkScenario(() => {
-                    main(svg, runtime, dbListener);
-                }, jsonFile, 'content', runtime, done);
+            checkScenario(() => {main(svg, runtime, dbListener)}, jsonFile, 'content', runtime, done);
         };
         runTest(jsonFile, execute);
     });
@@ -108,63 +107,16 @@ describe('Quizz game', function () {
         runTest(jsonFile, execute);
     });
 });
-describe('Inscritpion/Connexion', function () {
+
+describe('Inscription/Connexion', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
-        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
-        util = require("../src/Util");
-        gui = require("../src/GUI");
-        domain = require("../src/Domain");
-        mainModule = require("../src/main");
-        adminModule = require("../src/admin");
-        testModule = require("../test/testTest");
-        inscriptionModule = require("../src/inscription");
-        connexionModule = require("../src/main");
-        dbListenerModule = require("../src/dbListener");
-        TwinBcrypt = require("../node_modules/twin-bcrypt/twin-bcrypt.min.js");
         runtime.declareAnchor('content');
-        util.SVGUtil();
-        util.Bdd();
-        util.setSvg(svg);
-        util.setGui(guiSvgModule);
-        util.setRuntime(runtime);
-        mainModule.setSvg(svg);
-        mainModule.setUtil(util);
-        adminModule.setSvg(svg);
-        adminModule.setUtil(util);
-        testModule.setUtil(util);
-        testModule.setSvg(svg);
-        inscriptionModule.setSvg(svg);
-        connexionModule.setSvg(svg);
-        //quizzManagerModule.setSvg(svg);
-        //quizzManagerModule.setUtil(util);
-        domain.setUtil(util);
-        domain.Domain();
-        domain.setRuntime(runtime);
-        domain.setSvg(svg);
-        gui.setDomain(domain);
-        gui.LearningGUI();
-        gui.setSVG(svg);
-        gui.setGui(guiSvgModule);
-        gui.setRuntime(runtime);
-        dbListener = new dbListenerModule.DbListener(false, true);
-        Server = util.Server;
-        ReturnButton = util.ReturnButton;
-        Answer = domain.Answer;
-        Question = domain.Question;
-        QuestionCreator = domain.QuestionCreator;
-        AddEmptyElement = domain.AddEmptyElement;
-        Level = domain.Level;
-        FormationsManager = domain.FormationsManager;
-        Formation = domain.Formation;
-        Library = domain.Library;
-        Header = domain.Header;
-        Puzzle = domain.Puzzle;
-        QuizzManager = domain.QuizzManager;
-        Quizz = domain.Quizz;
-        Bd = domain.Bd;
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(true, false);
     });
     it("Inscription page", function (done) {
         this.timeout(100000);

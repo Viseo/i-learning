@@ -655,7 +655,7 @@ exports.Util = function (globalVariables) {
                 }
                 self.selected = !self.selected;
             };
-            !playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
+            !globalVariables.playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
             self.arrowPath.color(myColors.black, 1, myColors.black);
             return self;
         };
@@ -761,11 +761,11 @@ exports.Util = function (globalVariables) {
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
 
-            !playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
-            !playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
+            !globalVariables.playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
+            !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
             this.icon.cadre.color(myColors.white, 1, myColors.black);
 
-            if (playerMode) {
+            if (globalVariables.playerMode) {
                 this.drawProgressIcon(this, game, size);
             }
         }
@@ -809,17 +809,17 @@ exports.Util = function (globalVariables) {
                 if (this.game.parentFormation.selectedGame) {
                     this.game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
                     this.game.parentFormation.selectedGame.selected = false;
-                    !playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
+                    !globalVariables.playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
                         .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first) !== -1)
                     && this.game.parentFormation.selectedGame.game.miniatureManipulator.last
                         .remove(this.game.parentFormation.selectedGame.redCrossManipulator.first);
                 }
                 this.game.parentFormation.selectedGame = this;
-                !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
+                !globalVariables.playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
                 this.icon.cadre.color(myColors.white, 2, SELECTION_COLOR);
             } else {
                 this.icon.cadre.color(myColors.white, 1, myColors.black);
-                !playerMode && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+                !globalVariables.playerMode && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
                 this.game.parentFormation.selectedGame = null;
             }
             this.selected = !this.selected;

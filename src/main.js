@@ -17,7 +17,7 @@ exports.main = function (svg, runtime, dbListener) {
 
     globalVariables.gui = gui(svg, {speed: 5, step: 100});
 
-    drawings = drawings || new util.Drawings(svg.screenSize().width, svg.screenSize().height);
+    drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
     drawing = drawings.drawing;
     globalVariables.drawing = drawing;
@@ -32,7 +32,7 @@ exports.main = function (svg, runtime, dbListener) {
     Gui = GUI(globalVariables);
     globalVariables.GUI = Gui;
 
-    mainManipulator = drawing.manipulator;
+    globalVariables.mainManipulator = drawing.manipulator;
 
     util.setGlobalVariables();
     domain.setGlobalVariables();
