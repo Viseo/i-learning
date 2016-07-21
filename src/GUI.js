@@ -474,7 +474,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                 this.libraryManipulators[i].first.move(X, tempY);
 
             });
-            this.panel.resizeContent(tempY += this.imageHeight);
+            this.panel.resizeContent(w, tempY + this.imageHeight);
         };
 
         let assignEvents = () => {
@@ -1077,7 +1077,7 @@ function formationsManagerDisplay() {
         this.headerManipulator.last.add(this.exclamationManipulator.first);
     }
 
-    let displayPanel = ()=> {
+    let displayPanel = () => {
         this.heightAllocatedToPanel = drawing.height - (playerMode ?
             this.toggleFormationsCheck.globalPoint(0, 0).y + this.toggleFormationsCheck.height + MARGIN :
             this.addFormationButton.cadre.globalPoint(0, 0).y + this.addFormationButton.cadre.height);
@@ -1098,7 +1098,7 @@ function formationsManagerDisplay() {
             }
         });
 
-        var hasKeyDownEvent = (event)=> {
+        var hasKeyDownEvent = (event) => {
             this.target = this.panel;
             return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
         };
@@ -1118,7 +1118,7 @@ function formationsManagerDisplay() {
         this.panel.content.children.indexOf(this.formationsManipulator.first)===-1 && this.panel.content.add(this.formationsManipulator.first);
         this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         this.formationsManipulator.translator.move((this.tileWidth+widthAllocatedToDisplayedElementInPanel)/2, this.tileHeight/2+this.spaceBetweenElements.height/2);
-    }
+    };
 
     let onClickFormation = formation => {
         Server.getFormationById(formation._id).then(data => {
@@ -1129,14 +1129,14 @@ function formationsManagerDisplay() {
         })
     };
 
-    var onClickNewFormation = ()=> {
+    var onClickNewFormation = () => {
         var formation = new Formation({}, this);
         this.formationDisplayed=formation;
         formation.parent = this;
         formation.displayFormation();
-    }
+    };
 
-    this.displayHeaderFormations = ()=> {
+    this.displayHeaderFormations = () => {
         this.headerManipulator.translator.move(0,0);
         this.addFormationButton = displayText("Ajouter une formation", drawing.width/7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
         var addFormationButtonTextBr = svg.runtime.boundingRect(this.addFormationButton.content.component);
@@ -1171,7 +1171,7 @@ function formationsManagerDisplay() {
         this.checkManipulator.first.move(drawing.width - this.legendItemLength - svg.runtime.boundingRect(this.published.component).width-svg.runtime.boundingRect(this.checkLegend.square.component).width-2*MARGIN, 30);
         this.exclamationManipulator.first.move(drawing.width - this.legendItemLength, 30);
 
-        this.formations.sort((a, b)=> {
+        this.formations.sort((a, b) => {
             var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
             if (nameA < nameB)
                 return -1;
@@ -1210,7 +1210,7 @@ function formationsManagerDisplay() {
             count++;
             posx += (this.tileWidth+ this.spaceBetweenElements.width);
         });
-        this.panel.resizeContent(totalLines*(this.spaceBetweenElements.height+this.tileHeight)+this.spaceBetweenElements.height-MARGIN);
+        this.panel.resizeContent(this.panel.width, totalLines*(this.spaceBetweenElements.height+this.tileHeight)+this.spaceBetweenElements.height-MARGIN);
     };
     (this.tileHeight > 0) && this.displayFormations();
 }
@@ -1938,7 +1938,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
     this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
-    this.panel.resizeContent(svg.runtime.boundingRect(this.text.component).height + MARGIN);
+    this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
     let clickEdition = event => {
         let contentArea = {};
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
