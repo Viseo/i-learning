@@ -838,7 +838,7 @@ class MiniatureGame {
         this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
         if (!this.selected) {
             if (this.game.parentFormation.selectedGame) {
-                this.game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
+                this.checkAndDrawValidity(this.game.parentFormation.selectedGame);
                 this.game.parentFormation.selectedGame.selected = false;
                 !playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
                         .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first)!== -1)
@@ -856,10 +856,23 @@ class MiniatureGame {
             !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
             this.icon.cadre.color(myColors.white, 3, SELECTION_COLOR);
         } else {
-            this.icon.cadre.color(myColors.white, 1, myColors.black);
+            this.checkAndDrawValidity(this);
             !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
             this.game.parentFormation.selectedGame = null;
         }
+    }
+
+    checkAndDrawValidity(gameMiniature) {
+        let result = true;
+        gameMiniature.game.tabQuestions.forEach(question => {
+            if (!(question instanceof AddEmptyElement)) {
+                question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                    result = result && funcEl(question).isValid;
+                })
+            }
+        });
+        console.log(result);
+        result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
     }
 
     drawProgressIcon (object, size) {
