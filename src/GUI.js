@@ -2245,7 +2245,15 @@ function quizzManagerDisplay(){
             var target = drawings.background.getTarget(event.clientX,event.clientY);
             question = target.parent.parentManip.parentObject;
         }
-        this.quizz.tabQuestions[this.indexOfEditedQuestion] && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+        question.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = null;
+        if (this.quizz.tabQuestions[this.indexOfEditedQuestion]){
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=>{
+                if (answer.popIn) {
+                    this.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                }
+            })
+        }
         question.selected = true;
         let quizzManager = question.parentQuizz.parentFormation.quizzManager,
             quizz = quizzManager.quizz,
