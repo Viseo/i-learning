@@ -1347,82 +1347,76 @@ function Domain() {
 
 ////////////////// InscriptionManager.js //////////////////////////
 InscriptionManager = function () {
+    this.manipulator = new Manipulator(this);
+    this.header = new Header("Inscription");
+    this.firstNameManipulator = new Manipulator(this);
+    this.firstNameManipulator.addOrdonator(4);
+    this.lastNameManipulator = new Manipulator(this);
+    this.lastNameManipulator.addOrdonator(4);
+    this.mailAddressManipulator = new Manipulator(this);
+    this.mailAddressManipulator.addOrdonator(4);
+    this.passwordManipulator = new Manipulator(this);
+    this.passwordManipulator.addOrdonator(4);
+    this.passwordConfirmationManipulator = new Manipulator(this);
+    this.passwordConfirmationManipulator.addOrdonator(3);
+    this.saveButtonManipulator = new Manipulator(this);
+    this.saveButtonManipulator.addOrdonator(4);
+    //this.errorMessageManipulator = new Manipulator(this);
 
-    let self = this;
-
-    self.manipulator = new Manipulator(self);
-    self.header = new Header("Inscription");
-    self.firstNameManipulator = new Manipulator(self);
-    self.firstNameManipulator.addOrdonator(4);
-    self.lastNameManipulator = new Manipulator(self);
-    self.lastNameManipulator.addOrdonator(4);
-    self.mailAddressManipulator = new Manipulator(self);
-    self.mailAddressManipulator.addOrdonator(4);
-    self.passwordManipulator = new Manipulator(self);
-    self.passwordManipulator.addOrdonator(4);
-    self.passwordConfirmationManipulator = new Manipulator(self);
-    self.passwordConfirmationManipulator.addOrdonator(3);
-    self.saveButtonManipulator = new Manipulator(self);
-    self.saveButtonManipulator.addOrdonator(4);
-    //self.errorMessageManipulator = new Manipulator(self);
-
-    self.manipulator.last.add(self.firstNameManipulator.first);
-    self.manipulator.last.add(self.lastNameManipulator.first);
-    self.manipulator.last.add(self.mailAddressManipulator.first);
-    self.manipulator.last.add(self.passwordManipulator.first);
-    self.manipulator.last.add(self.passwordConfirmationManipulator.first);
-    self.manipulator.last.add(self.saveButtonManipulator.first);
-    //self.saveButtonManipulator.last.add(self.errorMessageManipulator.first);
-    //self.errorMessageManipulator.addOrdonator(2);
+    this.manipulator.last.add(this.firstNameManipulator.first);
+    this.manipulator.last.add(this.lastNameManipulator.first);
+    this.manipulator.last.add(this.mailAddressManipulator.first);
+    this.manipulator.last.add(this.passwordManipulator.first);
+    this.manipulator.last.add(this.passwordConfirmationManipulator.first);
+    this.manipulator.last.add(this.saveButtonManipulator.first);
+    //this.saveButtonManipulator.last.add(this.errorMessageManipulator.first);
+    //this.errorMessageManipulator.addOrdonator(2);
 
     // HEIGHT
-    self.saveButtonHeightRatio = 0.075;
-    self.saveButtonWidthRatio = 0.25;
+    this.saveButtonHeightRatio = 0.075;
+    this.saveButtonWidthRatio = 0.25;
 
-    self.lastNameLabel = "Nom :";
-    self.firstNameLabel = "Prénom :";
-    self.mailAddressLabel = "Adresse mail :";
-    self.passwordLabel = "Mot de passe :";
-    self.passwordConfirmationLabel = "Confirmer votre mot de passe :";
-    self.lastNameLabel = "Nom :";
-    self.saveButtonLabel = "S'enregistrer";
-    self.tabForm =[];
-    self.formLabels = {};
+    this.lastNameLabel = "Nom :";
+    this.firstNameLabel = "Prénom :";
+    this.mailAddressLabel = "Adresse mail :";
+    this.passwordLabel = "Mot de passe :";
+    this.passwordConfirmationLabel = "Confirmer votre mot de passe :";
+    this.lastNameLabel = "Nom :";
+    this.saveButtonLabel = "S'enregistrer";
+    this.tabForm =[];
+    this.formLabels = {};
 };
 ////////////////// end of InscriptionManager.js //////////////////////////
 
 ////////////////// ConnexionManager.js //////////////////////////
 ConnexionManager = function () {
+    this.manipulator = new Manipulator(this);
+    this.manipulator.addOrdonator(6);
+    this.header = new Header("Connexion");
+    this.mailAddressManipulator = new Manipulator(this);
+    this.mailAddressManipulator.addOrdonator(4);
+    this.passwordManipulator = new Manipulator(this);
+    this.passwordManipulator.addOrdonator(4);
+    this.connexionButtonManipulator=new Manipulator(this);
+    this.connexionButtonManipulator.addOrdonator(4);
 
-    let self = this;
-
-    self.manipulator = new Manipulator(self);
-    self.manipulator.addOrdonator(6);
-    self.header = new Header("Connexion");
-    self.mailAddressManipulator = new Manipulator(self);
-    self.mailAddressManipulator.addOrdonator(4);
-    self.passwordManipulator = new Manipulator(self);
-    self.passwordManipulator.addOrdonator(4);
-    self.connexionButtonManipulator=new Manipulator(self);
-    self.connexionButtonManipulator.addOrdonator(4);
-
-    self.manipulator.last.add(self.mailAddressManipulator.first);
-    self.manipulator.last.add(self.passwordManipulator.first);
-    self.manipulator.last.add(self.connexionButtonManipulator.first);
+    this.manipulator.last.add(this.mailAddressManipulator.first);
+    this.manipulator.last.add(this.passwordManipulator.first);
+    this.manipulator.last.add(this.connexionButtonManipulator.first);
 
     // HEIGHT
-    self.connexionButtonHeightRatio = 0.075;
+    this.connexionButtonHeightRatio = 0.075;
 
-    self.connexionButtonHeight = drawing.height * self.connexionButtonHeightRatio;
-    self.connexionButtonWidth = 200;
+    this.connexionButtonHeight = drawing.height * this.connexionButtonHeightRatio;
+    this.connexionButtonWidth = 200;
 
-    self.mailAddressLabel = "Adresse mail :";
-    self.passwordLabel = "Mot de passe :";
+    this.mailAddressLabel = "Adresse mail :";
+    this.passwordLabel = "Mot de passe :";
 
-    self.connexionButtonLabel = "Connexion";
-    self.tabForm =[];
+    this.connexionButtonLabel = "Connexion";
+    this.tabForm =[];
 
-    let listFormations = function() {
+    let listFormations = ()=> {
         Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
@@ -1430,29 +1424,27 @@ ConnexionManager = function () {
         });
     };
 
-    self.connexionButtonHandler = function() {
-
-        let emptyAreas = self.tabForm.filter(field => field.label === '');
+    this.connexionButtonHandler = ()=> {
+        let emptyAreas = this.tabForm.filter(field => field.label === '');
         emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 3, myColors.red);});
-
         if (emptyAreas.length > 0) {
-            let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
-            message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
-            svg.timeout(function() {
-                self.connexionButtonManipulator.ordonator.unset(3);
+            let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, - this.connexionButton.cadre.height + MARGIN);
+            svg.timeout(()=> {
+                this.connexionButtonManipulator.ordonator.unset(3);
                 emptyAreas.forEach(emptyArea => {emptyArea.cadre.color(myColors.white, 1, myColors.black);});
             },5000);
         } else {
-            Server.connect(self.mailAddressField.label, self.passwordField.labelSecret).then(data => {
+            Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
                 data = data && JSON.parse(data);
                 if (data.ack === 'OK') {
                     drawing.username = `${data.user.firstName} ${data.user.lastName}`;
                     data.user.admin ? AdminGUI() : LearningGUI();
                     listFormations();
                 } else {
-                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, self.h, 20, null, self.connexionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, - self.connexionButton.cadre.height + MARGIN);
-                    svg.timeout(() => {self.connexionButtonManipulator.ordonator.unset(3);}, 5000);
+                    let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, - this.connexionButton.cadre.height + MARGIN);
+                    svg.timeout(() => {this.connexionButtonManipulator.ordonator.unset(3);}, 5000);
                 }
             });
         }
