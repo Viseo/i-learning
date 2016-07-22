@@ -641,15 +641,14 @@ function SVGUtil() {
     };
 
     Arrow = function(parentGame, childGame) {
-        var self = this;
         var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
         var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
         var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
         var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
-        self.redCrossManipulator = new Manipulator(self);
-        self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, self.redCrossManipulator);
-        self.redCrossManipulator.last.add(self.redCross);
+        this.redCrossManipulator = new Manipulator(this);
+        this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, this.redCrossManipulator);
+        this.redCrossManipulator.last.add(this.redCross);
 
         let removeLink = () => {
             for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
@@ -658,38 +657,38 @@ function SVGUtil() {
             }
         };
 
-        self.redCrossClickHandler = () => {
+        this.redCrossClickHandler = () => {
             removeLink();
-            parentGame.parentFormation.arrowsManipulator.last.remove(self.arrowPath);
-            parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
+            parentGame.parentFormation.arrowsManipulator.last.remove(this.arrowPath);
+            parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
             parentGame.parentFormation.selectedArrow = null;
         };
 
-        svg.addEvent(self.redCross,'click', self.redCrossClickHandler);
+        svg.addEvent(this.redCross,'click', this.redCrossClickHandler);
 
-        self.arrowPath = drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
-        self.selected = false;
+        this.arrowPath = drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+        this.selected = false;
         let arrowClickHandler = () => {
             parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
-            if(!self.selected){
+            if(!this.selected){
                 if(parentGame.parentFormation.selectedArrow){
                     parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
                     parentGame.parentFormation.selectedArrow.selected = false;
                     parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
                 }
-                parentGame.parentFormation.selectedArrow = self;
-                parentGame.parentFormation.arrowsManipulator.last.add(self.redCrossManipulator.first);
-                self.arrowPath.color(myColors.blue, 2, myColors.black);
+                parentGame.parentFormation.selectedArrow = this;
+                parentGame.parentFormation.arrowsManipulator.last.add(this.redCrossManipulator.first);
+                this.arrowPath.color(myColors.blue, 2, myColors.black);
             } else {
-                self.arrowPath.color(myColors.black,1,myColors.black);
-                parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
+                this.arrowPath.color(myColors.black,1,myColors.black);
+                parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
                 parentGame.parentFormation.selectedArrow = null;
             }
-            self.selected = !self.selected;
+            this.selected = !this.selected;
         };
-        !playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
-        self.arrowPath.color(myColors.black, 1, myColors.black);
-        return self;
+        !playerMode && svg.addEvent(this.arrowPath, 'click', arrowClickHandler);
+        this.arrowPath.color(myColors.black, 1, myColors.black);
+        return this;
     };
 
     resetQuestionsIndex = function(quizz){
