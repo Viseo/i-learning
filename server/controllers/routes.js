@@ -2,7 +2,8 @@ module.exports = function (app, fs) {
 
     const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
-        cookies = require('../cookies');
+        cookies = require('../cookies'),
+        formations = require('../formations');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -117,9 +118,8 @@ module.exports = function (app, fs) {
             cookies.verify(req, (err, decode) => {
                 const user = !err && decode.user._id,
                     result = docs.find(x=> x._id.toString() === user);
-
                 res.send(result);
-            ;})
+            })
         });
     });
 
@@ -133,19 +133,15 @@ module.exports = function (app, fs) {
     });
 
     app.get('/getFormationByName/:name', function(req, res) {
-        var collection = db.get().collection('formations');
-        var result;
-        collection.find().toArray(function(err, docs) {
-            result = docs.find(formation => formation.label===req.params.name);
-            res.send({formation: result});
-        });
+        formations.getFormationsByName(db, req.params.name)
+            .then((data) => res.send(data))
+            .catch((err) => console.log(err));
     });
 
     app.get('/getFormationById/:id', function(req, res) {
-        var collection = db.get().collection('formations');
-        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function(err, docs) {
-            res.send({formation: docs[0]});
-            });
+        formations.getFormationById(db, req.params.id)
+            .then((data) => res.send(data))
+            .catch((err) => console.log(err));
     });
 
     app.get('/getAllFormationsNames', (req, res) => {
@@ -157,37 +153,37 @@ module.exports = function (app, fs) {
                     user = decode.user._id;
                 }
                 user = docs.find(x=> x._id.toString() === user);
-        const collection = db.get().collection('formations'),
-            result = [];
+                const collection = db.get().collection('formations'),
+                    result = [];
 
-        collection.find().toArray((err, docs) => {
-                const formationsTab = user && user.formationsTab;
+                collection.find().toArray((err, docs) => {
+                    const formationsTab = user && user.formationsTab;
 
-                docs.forEach(formation => {
-                    const progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
-                    let progress = '';
+                    docs.forEach(formation => {
+                        const progressTab = formationsTab && formationsTab.find(f => f.formation === formation._id.toString());
+                        let progress = '';
 
-                    if (progressTab) {
-                        progress = function () {
-                            let i = 0;
-                            // not a forEach, because return.
-                            for (let x = 0; x < formation.levelsTab.length; x++) {
-                                const gamesTab = formation.levelsTab[x].gamesTab;
-                                for (let y = 0; y < gamesTab.length; y++) {
-                                    const game = gamesTab[y];
-                                    if (!progressTab.gamesTab[i] || !game.tabQuestions || progressTab.gamesTab[i].index < game.tabQuestions.length) {
-                                        return 'inProgress';
+                        if (progressTab) {
+                            progress = function () {
+                                let i = 0;
+                                // not a forEach, because return.
+                                for (let x = 0; x < formation.levelsTab.length; x++) {
+                                    const gamesTab = formation.levelsTab[x].gamesTab;
+                                    for (let y = 0; y < gamesTab.length; y++) {
+                                        const game = gamesTab[y];
+                                        if (!progressTab.gamesTab[i] || !game.tabQuestions || progressTab.gamesTab[i].index < game.tabQuestions.length) {
+                                            return 'inProgress';
+                                        }
+                                        i++;
                                     }
-                                    i++;
                                 }
-                            }
-                            return 'done';
-                        }();
-                    }
-                    result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
-                });
+                                return 'done';
+                            }();
+                        }
+                        result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
+                    });
 
-                res.send({myCollection: result});
+                    res.send({myCollection: result});
                 });
             });
         });
@@ -211,7 +207,7 @@ module.exports = function (app, fs) {
         var collection = db.get().collection('formations');
         collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
             collection.replaceOne(docs[0], req.body, () => {
-               res.send({ack:'ok'});
+                res.send({ack:'ok'});
             });
         });
     });
@@ -222,10 +218,10 @@ module.exports = function (app, fs) {
         placeholder["levelsTab." + req.params.levelIndex + ".gamesTab."+req.params.gameIndex] = req.body;
         console.log(placeholder);
         collection.update({"_id": new ObjectID(req.params.id)}, {$set:placeholder},function (err, docs) {
-                console.log(docs);
-                res.send({ack:'ok'});
-            });
+            console.log(docs);
+            res.send({ack:'ok'});
         });
+    });
 
 
 };
