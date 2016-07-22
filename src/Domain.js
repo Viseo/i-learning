@@ -630,33 +630,42 @@ class Formation {
     }
 
     publicationFormation () {
-          const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
-                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
-                messagePublication = "ok";
-          this.displayPublicationMessage = (messagePublication) => {
-                (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                this.errorMessagePublication = new svg.Text(messagePublication)
-                    .position(0, -this.publicationButtonHeight / 2 - MARGIN)
-                    .font("Arial", 20)
-                    .anchor('middle').color(myColors.red);
-                this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
-                svg.timeout(() => {
-                    if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
-                        this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                    }
-                }, 5000);
-            };
+        this.publishedButtonActivated = true;
+
+        [].concat(...this.levelsTab.map(level => level.gamesTab))
+            .filter(elem => elem.miniature.selected === true)
+            .forEach(game => {
+                game.miniature.selected = false;
+                game.miniature.updateSelectionDesign();
+            });
+
+        const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+            messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
+            messagePublication = "ok";
+        this.displayPublicationMessage = (messagePublication) => {
+            (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            this.errorMessagePublication = new svg.Text(messagePublication)
+                .position(0, -this.publicationButtonHeight / 2 - MARGIN)
+                .font("Arial", 20)
+                .anchor('middle').color(myColors.red);
+            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+            svg.timeout(() => {
+                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                }
+            }, 5000);
+        };
 
         this.displayPublicationMessage(messagePublication);
         this.publicationFormationQuizzManager();
 
         if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
-                this.displayPublicationMessage(messageErrorNoNameFormation);
-              }
+            this.displayPublicationMessage(messageErrorNoNameFormation);
+        }
 
         if (this.levelsTab.length === 0){
-              this.displayPublicationMessage(messageErrorNoGame);
-             }
+            this.displayPublicationMessage(messageErrorNoGame);
+        }
     };
 
     loadFormation (formation) {

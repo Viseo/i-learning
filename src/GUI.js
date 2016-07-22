@@ -705,7 +705,6 @@ function formationDisplayFormation() {
             this.selectedGame = null;
         };
         this.saveFormation(displayQuizzManager);
-        this.publicationFormation(displayQuizzManager);
         if (!runtime && window.getSelection) {
             window.getSelection().removeAllRanges();
         } else if (!runtime && document.selection) {
@@ -1045,10 +1044,6 @@ function formationDisplayPublicationButton(x, y, w, h) {
                             }
                             result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
                         });
-                        if (!question.questionType){
-                            checkQuizz.isValid = false;
-                            message.push("La question 1 du jeu " +  game.title + " n'est pas complet");
-                        }
                     }
                     allQuizzValid = allQuizzValid && checkQuizz.isValid;
                 });
@@ -2286,10 +2281,9 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
+        target.parentObj.parent.parentFormation.publishedButtonActivated = false;
         target.parentObj.parent.parentFormation.displayFormation();
-        [].concat(...target.parentObj.parent.parentFormation.levelsTab
-            .map(level => level.gamesTab))
-            .filter(elem => elem.miniature.selected === true)
+        [].concat(...target.parentObj.parent.parentFormation.levelsTab.map(level => level.gamesTab))
             .forEach(game => {
                 game.miniature.selected = false;
                 game.miniature.updateSelectionDesign();

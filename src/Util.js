@@ -863,16 +863,22 @@ class MiniatureGame {
     }
 
     checkAndDrawValidity(gameMiniature) {
-        let result = true;
-        gameMiniature.game.tabQuestions.forEach(question => {
-            if (!(question instanceof AddEmptyElement)) {
-                question.questionType && question.questionType.validationTab.forEach(funcEl => {
-                    result = result && funcEl(question).isValid;
-                })
-            }
-        });
-        console.log(result);
-        result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
+        let displayWhenPublished = () => {
+            let result = true;
+            gameMiniature.game.tabQuestions.forEach(question => {
+                if (!(question instanceof AddEmptyElement)) {
+                    question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                        result = result && funcEl(question).isValid;
+                    })
+                }
+            });
+            result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
+        };
+        let displayWhenNotPublished = () => {
+            gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black);
+        };
+
+        (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
     }
 
     drawProgressIcon (object, size) {
