@@ -1999,60 +1999,59 @@ function popInDisplay(parent, previousX, x, y, w, h) {
 }
 
 function quizzDisplay(x, y, w, h) {
-    var self = this;
     drawing.currentPageDisplayed = "Quizz";
     header.display(this.parentFormation.label + " - " + this.title);
-    mainManipulator.ordonator.set(1, self.quizzManipulator.first);
+    mainManipulator.ordonator.set(1, this.quizzManipulator.first);
 
-    function setSizes() {
-        self.x = x || self.x || 0;
-        if (x===0)self.x = 0;
-        self.y = y || self.y || 0;
-        w && (self.questionArea.w = w);
-        (w && x) && (self.resultArea.w = w );
-        x && (self.resultArea.x = x);
-        w && (self.titleArea.w = w);
-        x && (self.quizzMarginX = x);
-        self.headerPercentage = HEADER_SIZE;
-        self.questionPercentageWithImage = 0.3;
-        self.questionPercentage = 0.2;
-        self.answerPercentageWithImage = 0.6;
-        self.answerPercentage = 0.7;
+    let setSizes = ()=> {
+        this.x = x || this.x || 0;
+        if (x===0)this.x = 0;
+        this.y = y || this.y || 0;
+        w && (this.questionArea.w = w);
+        (w && x) && (this.resultArea.w = w );
+        x && (this.resultArea.x = x);
+        w && (this.titleArea.w = w);
+        x && (this.quizzMarginX = x);
+        this.headerPercentage = HEADER_SIZE;
+        this.questionPercentageWithImage = 0.3;
+        this.questionPercentage = 0.2;
+        this.answerPercentageWithImage = 0.6;
+        this.answerPercentage = 0.7;
     }
-    function setPreviewSizes() {
-        self.x = x+w*0.15 || self.x || 0;
-        self.y = y || self.y || 0;
-        w && (self.questionArea.w = w*0.7);
-        (w && x) && (self.resultArea.w = w*0.85);
-        x && (self.resultArea.x = x+w*0.15);
-        w && (self.titleArea.w = w*0.85);
-        x && (self.quizzMarginX = x+w*0.15);
-        self.headerPercentage = HEADER_SIZE;
-        self.questionPercentageWithImage = 0.3;
-        self.questionPercentage = 0.2;
-        self.answerPercentageWithImage = 0.6;
-        self.answerPercentage = 0.7;
+    let setPreviewSizes = ()=> {
+        this.x = x+w*0.15 || this.x || 0;
+        this.y = y || this.y || 0;
+        w && (this.questionArea.w = w*0.7);
+        (w && x) && (this.resultArea.w = w*0.85);
+        x && (this.resultArea.x = x+w*0.15);
+        w && (this.titleArea.w = w*0.85);
+        x && (this.quizzMarginX = x+w*0.15);
+        this.headerPercentage = HEADER_SIZE;
+        this.questionPercentageWithImage = 0.3;
+        this.questionPercentage = 0.2;
+        this.answerPercentageWithImage = 0.6;
+        this.answerPercentage = 0.7;
     }
     this.previewMode ? setPreviewSizes() : setSizes();
 
     let heightPage = drawing.height;
-    self.headerHeight = heightPage * self.headerPercentage;
-    self.questionHeight = heightPage * self.questionPercentage - MARGIN;
-    self.answerHeight = heightPage * self.answerPercentage - MARGIN;
-    self.questionHeightWithoutImage = heightPage * self.questionPercentage - MARGIN;
-    self.answerHeightWithoutImage = heightPage * self.answerPercentage - MARGIN;
-    self.questionHeightWithImage = heightPage * self.questionPercentageWithImage - MARGIN;
-    self.answerHeightWithImage = heightPage * self.answerPercentageWithImage - MARGIN;
+    this.headerHeight = heightPage * this.headerPercentage;
+    this.questionHeight = heightPage * this.questionPercentage - MARGIN;
+    this.answerHeight = heightPage * this.answerPercentage - MARGIN;
+    this.questionHeightWithoutImage = heightPage * this.questionPercentage - MARGIN;
+    this.answerHeightWithoutImage = heightPage * this.answerPercentage - MARGIN;
+    this.questionHeightWithImage = heightPage * this.questionPercentageWithImage - MARGIN;
+    this.answerHeightWithImage = heightPage * this.answerPercentageWithImage - MARGIN;
 
-    self.quizzManipulator.translator.move(self.questionArea.w/2, self.headerHeight);
+    this.quizzManipulator.translator.move(this.questionArea.w/2, this.headerHeight);
 
-    self.returnButton.display(MARGIN-w*0.5+self.x, self.headerHeight/2, 20, 20);
-    if (self.previewMode) {
+    this.returnButton.display(MARGIN-w*0.5+this.x, this.headerHeight/2, 20, 20);
+    if (this.previewMode) {
         if (playerMode){
-            self.returnButton.setHandler((event) => {
+            this.returnButton.setHandler((event) => {
                 let target = drawings.background.getTarget(event.clientX, event.clientY);
                 target.parentObj.parent.previewMode = false;
-                target.parentObj.parent.currentQuestionIndex = self.tabQuestions.length;
+                target.parentObj.parent.currentQuestionIndex = this.tabQuestions.length;
                 target.parentObj.parent.quizzManipulator.flush();
                 drawing.currentPageDisplayed = "QuizPreview";
                 target.parentObj.parent.puzzleLines = 3;
@@ -2062,7 +2061,7 @@ function quizzDisplay(x, y, w, h) {
             });
         }
         else {
-            self.returnButton.setHandler((event) => {
+            this.returnButton.setHandler((event) => {
                 let target = drawings.background.getTarget(event.clientX, event.clientY);
                 target.parentObj.parent.quizzManipulator.flush();
                 target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
@@ -2071,23 +2070,23 @@ function quizzDisplay(x, y, w, h) {
         }
     }
     else {
-        self.returnButton.setHandler((event) => {
+        this.returnButton.setHandler((event) => {
                 let target = drawings.background.getTarget(event.clientX,event.clientY);
                 target.parentObj.parent.quizzManipulator.flush();
                 target.parentObj.parent.parentFormation.displayFormation();
             });
     }
-    if(self.currentQuestionIndex===-1){// on passe à la première question
-        self.nextQuestion();
+    if(this.currentQuestionIndex===-1){// on passe à la première question
+        this.nextQuestion();
     }
-    else if (self.currentQuestionIndex < self.tabQuestions.length){
-        self.displayCurrentQuestion();
+    else if (this.currentQuestionIndex < this.tabQuestions.length){
+        this.displayCurrentQuestion();
     }
     else {
         let questionsWithBadAnswersTab = [];
-        self.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
-        self.puzzle = new Puzzle(self.puzzleLines, self.puzzleRows, questionsWithBadAnswersTab, "upToDown", self);
-        self.displayResult();
+        this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "upToDown", this);
+        this.displayResult();
     }
 
     if(this.previewMode) {
