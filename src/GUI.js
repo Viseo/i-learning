@@ -2279,10 +2279,9 @@ function quizzManagerDisplay(){
 }
 
 function quizzManagerDisplayQuizzInfo (x, y, w, h) {
-    var self = this;
-    self.quizzInfoManipulator.last.children.indexOf(self.returnButtonManipulator.first)===-1 && self.quizzInfoManipulator.last.add(self.returnButtonManipulator.first);
+    this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first)===-1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
 
-    var returnHandler = function(event){
+    var returnHandler = (event)=>{
         var target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
@@ -2297,79 +2296,79 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         });
     };
 
-    self.returnButton.display(-2*MARGIN, 0, 20, 20);
-    self.returnButton.setHandler(returnHandler);
+    this.returnButton.display(-2*MARGIN, 0, 20, 20);
+    this.returnButton.setHandler(returnHandler);
 
-    var showTitle = function () {
-        var text = (self.quizzName) ? self.quizzName : self.quizzNameDefault;
-        var color = (self.quizzName) ? myColors.black : myColors.grey;
+    var showTitle = ()=> {
+        var text = (this.quizzName) ? this.quizzName : this.quizzNameDefault;
+        var color = (this.quizzName) ? myColors.black : myColors.grey;
         var bgcolor = myColors.lightgrey;
 
-        self.quizzLabel = {};
+        this.quizzLabel = {};
         var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
-        self.quizzLabel.content = autoAdjustText(text, w, h/2, 15, "Arial", self.quizzInfoManipulator).text;
-        self.quizzNameHeight = svg.runtime.boundingRect(self.quizzLabel.content.component).height;
+        this.quizzLabel.content = autoAdjustText(text, w, h/2, 15, "Arial", this.quizzInfoManipulator).text;
+        this.quizzNameHeight = svg.runtime.boundingRect(this.quizzLabel.content.component).height;
 
-        self.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
-        self.quizzNameValidInput ? self.quizzLabel.cadre.color(bgcolor) : self.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-        self.quizzLabel.cadre.position(width/2, h/2 + self.quizzLabel.cadre.height/2);
-        self.quizzInfoManipulator.ordonator.set(0, self.quizzLabel.cadre);
-        self.quizzLabel.content.position(0, h/2 +self.quizzLabel.cadre.height*9/12).color(color).anchor("start");
-        self.quizzInfoManipulator.first.move(x, y);
-        svg.addEvent(self.quizzLabel.content, "dblclick", dblclickEditionQuizz);
-        svg.addEvent(self.quizzLabel.cadre, "dblclick", dblclickEditionQuizz);
+        this.quizzLabel.cadre = new svg.Rect(width, 0.5*h);
+        this.quizzNameValidInput ? this.quizzLabel.cadre.color(bgcolor) : this.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
+        this.quizzLabel.cadre.position(width/2, h/2 + this.quizzLabel.cadre.height/2);
+        this.quizzInfoManipulator.ordonator.set(0, this.quizzLabel.cadre);
+        this.quizzLabel.content.position(0, h/2 +this.quizzLabel.cadre.height*9/12).color(color).anchor("start");
+        this.quizzInfoManipulator.first.move(x, y);
+        svg.addEvent(this.quizzLabel.content, "dblclick", dblclickEditionQuizz);
+        svg.addEvent(this.quizzLabel.cadre, "dblclick", dblclickEditionQuizz);
     };
 
-    var dblclickEditionQuizz = function () {
-        let bounds = svg.runtime.boundingRect(self.quizzLabel.content.component);
-        let globalPointCenter = self.quizzLabel.content.globalPoint(0, -bounds.height +3);
-        self.quizzInfoManipulator.ordonator.unset(1);
+    var dblclickEditionQuizz = ()=> {
+        let bounds = svg.runtime.boundingRect(this.quizzLabel.content.component);
+        let globalPointCenter = this.quizzLabel.content.globalPoint(0, -bounds.height +3);
+        this.quizzInfoManipulator.ordonator.unset(1);
         let contentareaStyle = {
             leftpx: globalPointCenter.x,
             toppx: globalPointCenter.y,
             width: 700,
-            height:(self.quizzNameHeight+3)-MARGIN/2
+            height:(this.quizzNameHeight+3)-MARGIN/2
         };
         drawing.notInTextArea = false;
         let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
         textarea.color([], 0, myColors.black)
-            .message(self.quizzName)
+            .message(this.quizzName)
             .font("Arial", 15)
             .anchor("start");
-        (self.quizzNameDefault || self.quizzName==="") && textarea.placeHolder(self.quizzNameDefault);
+        (this.quizzNameDefault || this.quizzName==="") && textarea.placeHolder(this.quizzNameDefault);
         drawings.screen.add(textarea);
         textarea.focus();
-        textarea.value = self.quizzName;
+        textarea.value = this.quizzName;
 
-        var removeErrorMessage = function () {
-            self.questionCreator.quizzNameValidInput = true;
-            self.errorMessage && self.quizzInfoManipulator.ordonator.unset(5);
-            self.quizzLabel.cadre.color(myColors.lightgrey);
+        var removeErrorMessage = ()=> {
+            this.questionCreator.quizzNameValidInput = true;
+            this.errorMessage && this.quizzInfoManipulator.ordonator.unset(5);
+            this.quizzLabel.cadre.color(myColors.lightgrey);
         };
 
-        var displayErrorMessage = function () {
+        var displayErrorMessage = ()=> {
             removeErrorMessage();
-            self.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
+            this.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
             var anchor = 'start';
-            self.errorMessage = new svg.Text(REGEX_ERROR);
-            self.quizzInfoManipulator.ordonator.set(5, self.errorMessage);
-            self.errorMessage.position(self.quizzLabel.cadre.width + MARGIN, bounds.height+3+self.quizzLabel.cadre.height/2+svg.runtime.boundingRect(self.errorMessage.component).height/2)
+            this.errorMessage = new svg.Text(REGEX_ERROR);
+            this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
+            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, bounds.height+3+this.quizzLabel.cadre.height/2+svg.runtime.boundingRect(this.errorMessage.component).height/2)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea.focus();
-            //self.quizzNameValidInput = false;
+            //this.quizzNameValidInput = false;
         };
-        var onblur = function () {
+        var onblur = ()=> {
             textarea.enter();
-            self.quizzName = textarea.messageText.trim();
+            this.quizzName = textarea.messageText.trim();
             drawings.screen.remove(textarea);
             drawing.notInTextArea = true;
             showTitle();
         };
-        var oninput = function () {
+        var oninput = ()=> {
             textarea.enter();
-            self.checkInputTextArea({
+            this.checkInputTextArea({
                 textarea: textarea,
-                border: self.quizzLabel.cadre,
+                border: this.quizzLabel.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
@@ -2377,9 +2376,9 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         };
         svg.addEvent(textarea, "input", oninput);
         svg.addEvent(textarea, "blur", onblur);
-        self.checkInputTextArea({
+        this.checkInputTextArea({
             textarea: textarea,
-            border: self.quizzLabel.cadre,
+            border: this.quizzLabel.cadre,
             onblur: onblur,
             remove: removeErrorMessage,
             display: displayErrorMessage
