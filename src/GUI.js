@@ -48,6 +48,7 @@ function answerDisplay (x, y, w, h) {
                     }
                 }
             questionCreator.display();
+            self.parentQuestion.checkValidity();
         };
         let mouseleaveHandler= ()=>{
             this.redCrossManipulator.flush();
@@ -118,8 +119,8 @@ function answerDisplay (x, y, w, h) {
             this.manipulator.ordonator.unset(1);
             contentarea.focus();
 
-            let removeErrorMessage = ()=> {
-                this.answerNameValidInput = true;
+            let removeErrorMessage = function () {
+                this.validLabelInput = true;
                 this.errorMessage && this.editor.parent.questionCreatorManipulator.ordonator.unset(1);
                 this.obj.cadre.color(myColors.white, 1, myColors.black);
             };
@@ -139,7 +140,7 @@ function answerDisplay (x, y, w, h) {
                 this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
                 contentarea.focus();
-                this.answerNameValidInput = false;
+                this.validLabelInput = false;
             };
 
             let onblur = ()=> {
@@ -148,6 +149,8 @@ function answerDisplay (x, y, w, h) {
                 drawings.screen.remove(contentarea);
                 drawing.notInTextArea = true;
                 showTitle();
+                let quizzManager = self.parentQuestion.parentQuizz.parentFormation.quizzManager;
+                quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
             };
             svg.addEvent(contentarea,'input',()=> {
                 contentarea.enter();
@@ -944,7 +947,7 @@ function formationDisplayFormation() {
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
                 this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
                 contentarea.focus();
-                this.labelValidInput = false;
+                this.validLabelInput = false;
             };
             var onblur = ()=> {
                 contentarea.enter();
@@ -987,7 +990,7 @@ function formationDisplayFormation() {
 
             this.formationTitleWidth = svg.runtime.boundingRect(this.title.component).width;
             this.formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-            this.labelValidInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
+            this.validLabelInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
             this.formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth/2 +3/2*MARGIN, -MARGIN/2);
 
             this.formationInfoManipulator.ordonator.set(0, this.formationLabel.cadre);
@@ -1702,6 +1705,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
             }
         });
         this.displayToggleButton(x, y, w, h, questionType);
+        this.linkedQuestion.checkValidity();
     };
 
     this.questionCreatorManipulator.last.children.indexOf(this.toggleButtonManipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.toggleButtonManipulator.first);
@@ -1741,7 +1745,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     this.questionBlock.rect.fillOpacity(0.001);
     this.questionCreatorManipulator.last.children.indexOf(this.questionBlock.rect)===-1 && this.questionCreatorManipulator.last.add(this.questionBlock.rect);
     this.questionCreatorManipulator.last.children.indexOf(this.questionManipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.questionManipulator.first);
-    var showTitle = ()=> {
+    var showTitle = () => {
         var color = (this.linkedQuestion.label) ? myColors.black : myColors.grey;
         var text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
         if(this.linkedQuestion.image){
@@ -1750,7 +1754,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var picture = new Picture(this.image.src, true, this, text);
             picture.draw(0, 0, this.w-2*MARGIN, this.h*0.25, this.questionManipulator);
             this.questionBlock.title = picture.imageSVG;
-            let redCrossClickHandler = ()=>{
+            let redCrossClickHandler = () => {
                 var indexPuzzle = this.parent.questionPuzzle.elementsArray.indexOf(this.linkedQuestion);
                 this.parent.questionPuzzle.elementsArray[indexPuzzle].manipulator.ordonator.unset(2);
                 this.questionBlock.redCrossManipulator.flush();
@@ -1759,6 +1763,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
                 this.linkedQuestion.imageSrc = null;
                 this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
                 this.display(x, y, w, h);
+                this.linkedQuestion.checkValidity();
             };
 
             let mouseleaveHandler = ()=>{
@@ -1785,7 +1790,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         this.questionManipulator.ordonator.set(4, this.questNum);
         this.questionBlock.title.content.color(color);
         this.questionBlock.title.content._acceptDrop = true;
-        this.linkedQuestion.questionNameValidInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
+        this.linkedQuestion.validLabelInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
             this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
         this.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(this.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
@@ -1824,8 +1829,8 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
         };
 
-        var removeErrorMessage = ()=> {
-            this.linkedQuestion.questionNameValidInput = true;
+        var removeErrorMessage = () => {
+            this.linkedQuestion.validLabelInput = true;
             this.errorMessage && this.questionCreatorManipulator.ordonator.unset(0);
             this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
@@ -1841,7 +1846,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea.focus();
-            this.linkedQuestion.questionNameValidInput = false;
+            this.linkedQuestion.validLabelInput = false;
         };
 
         var oninput = ()=> {
@@ -2461,16 +2466,11 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
 }
 
 function checkPuzzleElementsArrayValidity(array){
-    // array.forEach(question => {
-    //     if(!(question instanceof AddEmptyElement)){
-    //         var validation = true;
-    //         question.questionType.validationTab.forEach((funcEl) => {
-    //             var result = funcEl(question);
-    //             validation = validation && result.isValid;
-    //         });
-    //         validation ? question.toggleInvalidQuestionPictogram(false) : question.toggleInvalidQuestionPictogram(true);
-    //     }
-    // });
+    array.forEach(question => {
+        if(!(question instanceof AddEmptyElement)){
+            question.checkValidity();
+        }
+    });
 }
 
 function inscriptionManagerDisplay() {

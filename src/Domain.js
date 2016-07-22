@@ -38,7 +38,7 @@ class Answer {
         this.imageSrc = answer.imageSrc;
         this.correct = answer.correct;
         this.selected = false;
-        this.answerNameValidInput = true;
+        this.validLabelInput = true;
         this.fontSize = answer.fontSize ? answer.fontSize : 20;
         this.explanation = answer.explanation;
         answer.explanation && (this.filled = true);
@@ -89,10 +89,12 @@ class Answer {
         this.checkInputContentArea = editable ? function (objCont) {
             if (typeof objCont.contentarea.messageText !== "undefined") {
                 if (objCont.contentarea.messageText.match(REGEX)) {
+                    self.validLabelInput = true;
                     self.label = objCont.contentarea.messageText;
                     objCont.remove();
                     objCont.contentarea.onblur = objCont.onblur;
                 } else {
+                    self.validLabelInput = false;
                     self.label = objCont.contentarea.messageText;
                     objCont.display();
                 }
@@ -122,7 +124,7 @@ class Question {
         this.invalidQuestionPictogramManipulator.addOrdonator(5);
         this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-        this.questionNameValidInput = true;
+        this.validLabelInput = true;
 
         this.selected = false;
         this.parentQuizz = quizz;
@@ -165,6 +167,7 @@ class Question {
                 this.imageLoaded = true;
             }
         }
+        this.questionType = (this.multipleChoice) ? myQuestionType.tab[1]: myQuestionType.tab[0];
         if (question !== null && question.tabAnswer !== null) {
 
             question.tabAnswer.forEach(it => {
@@ -198,7 +201,16 @@ class Question {
             return false;
         }
     }
-    
+
+    checkValidity () {
+        var validation = true;
+        this.questionType.validationTab.forEach((funcEl) => {
+            var result = funcEl(this);
+            validation = validation && result.isValid;
+        });
+        validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
+    }
+
     toggleInvalidQuestionPictogram(active){
         let pictoSize = 20;
         if(active) {
@@ -233,7 +245,7 @@ class QuestionCreator {
         this.saveQuizButtonManipulator = new Manipulator(this);
         this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
-        this.questionNameValidInput = true;
+        this.validLabelInput = true;
 
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
@@ -253,14 +265,14 @@ class QuestionCreator {
 
     checkInputTextArea (myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-            this.labelValidInput = true;
+            this.validLabelInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.border = "none";
             myObj.textarea.outline = "none";
         } else {
             myObj.display();
-            this.labelValidInput = false;
+            this.validLabelInput = false;
         }
     }
 
@@ -324,10 +336,10 @@ class AddEmptyElement {
         switch (type) {
             case 'question':
                 this.label = "Double-cliquez pour ajouter une question";
-                this.questionNameValidInput = true;
+                this.validLabelInput = true;
                 break;
             case 'answer':
-                this.answerNameValidInput = true;
+                this.validLabelInput = true;
                 this.label = "Nouvelle réponse";
                 break;
         }
@@ -462,7 +474,7 @@ class Formation {
         this.marginRatio = 0.03;
         this.label = formation.label ? formation.label : "";
         this.status = formation.status ? formation.status : statusEnum.NotPublished;
-        this.labelValidInput = true ;
+        this.validLabelInput = true ;
 
         this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
@@ -740,14 +752,14 @@ class Formation {
 
     checkInputTextArea (myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
-            this.labelValidInput = true;
+            this.validLabelInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.border = "none";
             myObj.textarea.outline = "none";
         } else {
             myObj.display();
-            this.labelValidInput = false;
+            this.validLabelInput = false;
         }
     }
 
@@ -889,45 +901,38 @@ class ImagesLibrary extends Library {
     dropAction (element, event) {
         let target = drawings.background.getTarget(event.clientX, event.clientY);
         if (target && target._acceptDrop) {
-            if (target.parent.parentManip.parentObject.answer){
-                target.parent.parentManip.parentObject.image = element.src;
-                let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                target.parent.parentManip.parentObject.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+            var oldQuest = {
+                cadre: target.parent.parentManip.ordonator.get(0),
+                content: target.parent.parentManip.ordonator.get(1)
+            };
+            target.parent.parentManip.ordonator.unset(0);
+            target.parent.parentManip.ordonator.unset(1);
+            var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                element.srcDimension,
+                oldQuest.cadre.width, oldQuest.cadre.height,
+                oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+            );
+            oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+            oldQuest.content.position(newQuest.content.x, newQuest.content.y);
+            newQuest.image._acceptDrop = true;
+            switch (true) {
+                case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                    let questionCreator = target.parent.parentManip.parentObject;
+                    questionCreator.linkedQuestion.image = newQuest.image;
+                    questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                    questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                    questionCreator.display();
+                    questionCreator.linkedQuestion.checkValidity();
+                    break;
+                case target.parent.parentManip.parentObject instanceof Answer:
+                    let answer = target.parent.parentManip.parentObject;
+                    answer.image = newQuest.image;
+                    answer.imageSrc = newQuest.image.src;
+                    answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                    answer.parentQuestion.checkValidity();
+                    break;
             }
-            else {
-                var oldQuest = {
-                    cadre: target.parent.parentManip.ordonator.get(0),
-                    content: target.parent.parentManip.ordonator.get(1)
-                };
-                target.parent.parentManip.ordonator.unset(0);
-                target.parent.parentManip.ordonator.unset(1);
-                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
-                    element.srcDimension,
-                    oldQuest.cadre.width, oldQuest.cadre.height,
-                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
-                );
-                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-                newQuest.image._acceptDrop = true;
-                switch (true) {
-                    case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                        let questionCreator = target.parent.parentManip.parentObject;
-                        questionCreator.linkedQuestion.image = newQuest.image;
-                        questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
-                        questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                        questionCreator.display();
-                        break;
-                    case target.parent.parentManip.parentObject.editable:
-                        let answer = target.parent.parentManip.parentObject;
-                        answer.image = newQuest.image;
-                        answer.imageSrc = newQuest.image.src;
-                        answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                        //answer.display(-answer.w / 2, -answer.h / 2);
-                        break;
-                }
-                target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-            }
-            //target.parent.parentManip.ordonator.set(1, oldQuest.content);
+            target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
         }
     }
 }
@@ -1008,7 +1013,7 @@ class QuizzManager {
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.quizz.tabQuestions.forEach( (question, index )  => {
-            (quizz.tabQuestions[index].questionType) && (question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
             (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
         });
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
@@ -1175,7 +1180,7 @@ class Quizz {
             quizz.tabQuestions.forEach(it => {
                 it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
                 var tmp = new Question(it, this);
-                it.questionType && (tmp.questionType = it.questionType);
+                //it.questionType && (tmp.questionType = it.questionType);
                 tmp.parentQuizz = this;
                 this.tabQuestions.push(tmp);
             });
