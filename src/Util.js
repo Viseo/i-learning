@@ -213,7 +213,9 @@ function SVGUtil() {
         });
         sender.correct = !sender.correct;
         sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-        updateAllCheckBoxes(sender)
+        updateAllCheckBoxes(sender);
+        let quizzManager = sender.parentQuestion.parentQuizz.parentFormation.quizzManager;
+        quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
     };
 
     drawCheck = function (x, y, size) {
@@ -749,15 +751,17 @@ class Picture {
                 let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
                 let y = -(puzzle.visibleArea.height - this.parent.height)/ 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                 this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+                this.parent.parentQuestion.checkValidity();
             }
             else if (this.parent.answer) {
                 let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                 this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                this.parent.answer.parentQuestion.checkValidity();
             }
             else {
                 this.parent.display();
+                this.parent.linkedQuestion.checkValidity();
             }
-
         };
         this.mouseleaveHandler= ()=>{
             this.redCrossManipulator.flush();
@@ -1580,31 +1584,45 @@ function Bdd() {
             message: "Votre question doit avoir une bonne réponse."
         }),
         // Check answer's name:
-        question => ({
-            isValid: question.tabAnswer.every(el => (el.label || el.imageSrc)),
-            message: "Vous devez remplir toutes les réponses."
-        }),
+        question => {
+            let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc));
+            let message = "Vous devez remplir toutes les réponses.";
+
+            return {
+                isValid:isValid,
+                message:message
+            }
+        },
         // Check Question Name:
-        question => ({
-            isValid: !!(question.label || question.imageSrc),
-            message: "Vous devez remplir le nom de la question."
-        }),
+        question => {
+            let isValid = !!((question.label && question.validLabelInput) || question.imageSrc);
+            let message = "Vous devez remplir le nom de la question.";
+
+            return {
+                isValid:isValid,
+                message:message
+            }
+        },
         // Check Quiz Name:
-        question => ({
-            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
-            message: "Vous devez remplir le nom du quiz."
-        })
+        question => {
+            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined);
+            let message = "Vous devez remplir le nom du quiz.";
+            return {
+                isValid: isValid,
+                message: message
+            }
+        }
     ];
 
     multipleAnswerValidationTab = [
         // Check answer's name:
         question => ({
-            isValid: question.tabAnswer.every(el => (el.label || el.imageSrc)),
+            isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc)),
             message: "Vous devez remplir toutes les réponses."
         }),
         // Check Question Name:
         question => ({
-            isValid: !!(question.label || question.imageSrc),
+            isValid: !!((question.label && question.validLabelInput) || question.imageSrc), // Checker si le champ saisi de la question est valide
             message: "Vous devez remplir le nom de la question."
         }),
             // Check Quiz Name:
