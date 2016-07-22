@@ -1318,42 +1318,41 @@ function headerDisplay (message) {
 }
 
 function questionDisplay(x, y, w, h) {
-    var self = this;
     if(typeof x !== 'undefined'){
-        self.x = x;
+        this.x = x;
     }
     if(typeof y !== 'undefined' ){
-        self.y = y;
+        this.y = y;
     }
     if(typeof w !== 'undefined' ) {
-        w && (self.width = w);
+        w && (this.width = w);
     }
     if(typeof h !== 'undefined' ) {
-        h && (self.height = h);
+        h && (this.height = h);
     }
     this.manipulator.flush();
 
     // Question avec Texte ET image
-    if (typeof self.label !== "undefined" && self.imageSrc ) {//&& self.label !== ""
-        let obj = displayImageWithTitle(self.label, self.imageSrc, this.dimImage, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font, self.manipulator, self.image);
-        self.bordure = obj.cadre;
-        self.content = obj.content;
-        self.image = obj.image;
+    if (typeof this.label !== "undefined" && this.imageSrc ) {//&& this.label !== ""
+        let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+        this.bordure = obj.cadre;
+        this.content = obj.content;
+        this.image = obj.image;
     }
     // Question avec Texte uniquement
-    else if (typeof self.label !== "undefined" && !self.imageSrc) {
-        var object = displayText(self.label, self.width, self.height, self.colorBordure, self.bgColor, self.fontSize, self.font,self.manipulator);
-        self.bordure = object.cadre;
-        self.content = object.content;
+    else if (typeof this.label !== "undefined" && !this.imageSrc) {
+        var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
+        this.bordure = object.cadre;
+        this.content = object.content;
     }
     // Question avec Image uniquement
-    else if (self.imageSrc && !self.label) {
-        self.image = displayImage(self.imageSrc, this.dimImage, self.width, self.height).image;
-        self.manipulator.ordonator.set(2, self.image);
+    else if (this.imageSrc && !this.label) {
+        this.image = displayImage(this.imageSrc, this.dimImage, this.width, this.height).image;
+        this.manipulator.ordonator.set(2, this.image);
     }
     else {
-        self.bordure = new svg.Rect( self.width, self.height).color(self.bgColor,1,self.colorBordure);
-        self.manipulator.ordonator.set(0, self.bordure);
+        this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, this.colorBordure);
+        this.manipulator.ordonator.set(0, this.bordure);
     }
 
     if(playerMode) {
@@ -1368,22 +1367,22 @@ function questionDisplay(x, y, w, h) {
                 this.wrongQuestionsQuiz.parentFormation.quizzDisplayed = this.wrongQuestionsQuiz;
                 this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
             };
-            self.bordure && svg.addEvent(self.bordure, "click", event);
-            self.content && svg.addEvent(self.content, "click", event);
-            self.image && svg.addEvent(self.image, "click", event);
+            this.bordure && svg.addEvent(this.bordure, "click", event);
+            this.content && svg.addEvent(this.content, "click", event);
+            this.image && svg.addEvent(this.image, "click", event);
         }
-    } else if (!self.parentQuizz.previewMode){
-        self.bordure && svg.addEvent(self.bordure, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
-        self.content && svg.addEvent(self.content, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
-        self.image && svg.addEvent(self.image, "click", self.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+    } else if (!this.parentQuizz.previewMode){
+        this.bordure && svg.addEvent(this.bordure, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+        this.content && svg.addEvent(this.content, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+        this.image && svg.addEvent(this.image, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
     }
 
-    var fontSize = Math.min(20, self.height*0.1);
-    self.questNum = new svg.Text(self.questionNum).position(-self.width/2+MARGIN+(fontSize*(self.questionNum.toString.length)/2), -self.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
-    self.manipulator.ordonator.set(4, self.questNum);
-    self.manipulator.translator.move(self.x,self.y);
-    if(self.selected){
-        self.selectedQuestion();
+    var fontSize = Math.min(20, this.height*0.1);
+    this.questNum = new svg.Text(this.questionNum).position(-this.width/2+MARGIN+(fontSize*(this.questionNum.toString.length)/2), -this.height/2+(fontSize)/2+2*MARGIN).font("Arial", fontSize);
+    this.manipulator.ordonator.set(4, this.questNum);
+    this.manipulator.translator.move(this.x, this.y);
+    if(this.selected){
+        this.selectedQuestion();
         //this.toggleInvalidQuestionPictogram(true);// !_! bon, mais à changer d'emplacement
     }else{
         //this.toggleInvalidQuestionPictogram(false);
