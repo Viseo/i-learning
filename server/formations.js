@@ -46,7 +46,7 @@ const getAllFormations = (db) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
             if(err) fail(err);
-            resolve({formations:docs});
+            resolve({myCollection:docs});
         })
     })
 };

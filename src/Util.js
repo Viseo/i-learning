@@ -1236,7 +1236,7 @@ class Server {
     constructor() {}
 
     static getAllFormationsNames() {
-        return dbListener.httpGetAsync('/formations/getAllFormationsNames')
+        return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
     }
 
     static getFormationByName(name) {

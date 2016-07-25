@@ -71,7 +71,37 @@ const saveProgress = (db, body, user) => {
     })
 };
 
+const getFormationsWithProgress = (userFormationsArray, formations) => {
+    return new Promise((resolve, reject) => {
+        let result = [];
+        formations.forEach(formation => {
+            const progressArray = userFormationsArray && userFormationsArray
+                    .find(f => f.formation === formation._id.toString());
+            let progress = '';
+            if(progressArray) {
+                progress = function() {
+                    let i = 0;
+                    for (let x = 0; x < formation.levelsTab.length; x++) {
+                        const gamesTab = formation.levelsTab[x].gamesTab;
+                        for (let y = 0; y < gamesTab.length; y++) {
+                            const game = gamesTab[y];
+                            if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].index < game.tabQuestions.length) {
+                                return 'inProgress';
+                            }
+                            i++;
+                        }
+                    }
+                    return 'done';
+                }();
+            }
+            result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
+        });
+        resolve({myCollection: result});
+    })
+};
+
 exports.getUserByEmailAddress = getUserByEmailAddress;
 exports.inscription = inscription;
 exports.getUserById = getUserById;
 exports.saveProgress = saveProgress;
+exports.getFormationsWithProgress = getFormationsWithProgress;
