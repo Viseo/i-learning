@@ -144,9 +144,27 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/replaceFormation/:id', function (req, res) {
-        formations.replaceFormation(db, req.params.id, req.body)
-            .then(data => res.send(data))
-            .catch(err => console.log(err));
+        formations.getFormationsByName(db, req.body.label)
+            .then(data => {
+                if(data.formation) {
+                    if(req.params.id === data.formation._id.toString()) {
+                        if(formations.compareFormations(data.formation, req.body)) {
+                            res.send({saved: false, reason: "NoModif"})
+                        } else {
+                            data.formation._id = req.params.id;
+                            formations.replaceFormation(db, req.params.id, req.body)
+                                .then(data => res.send({saved: true, reason: ""}))
+                                .catch(err => console.log(err));
+                        }
+                    } else {
+                        res.send({saved: false, reason: "NameAlreadyUsed"});
+                    }
+                } else {
+                    formations.replaceFormation(db, req.params.id, req.body)
+                        .then(data => res.send({saved: true, reason: ""}))
+                        .catch(err => console.log(err));
+                }
+            })
     });
 
     app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {

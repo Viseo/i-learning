@@ -615,29 +615,20 @@ class Formation {
             };
 
             let replaceFormation = () => {
-                Server.getFormationByName(this.label)
-                    .then(data => {
-                        let formationWithSameName = JSON.parse(data).formation;
-                        if(formationWithSameName) {
-                            const id = formationWithSameName._id;
-                            delete formationWithSameName._id;
-                            formationWithSameName = JSON.stringify(formationWithSameName);
-                            const newFormation = JSON.stringify(getObjectToSave(), ignoredData);
-                            if (id === this._id) {
-                                if (formationWithSameName === newFormation) {
-                                    throw messageNoModification;
-                                } else {
-                                    return getObjectToSave();
-                                }
-                            } else {
+                Server.replaceFormation(this._id, getObjectToSave(), ignoredData)
+                    .then((data) => {
+                        let answer = JSON.parse(data);
+                        if(answer.saved) {
+                            displayMessage(messageReplace)
+                        } else {
+                            if(answer.reason === "NoModif") {
+                                throw messageNoModification;
+                            } else if(answer.reason === "NameAlreadyUsed") {
                                 throw messageUsedName;
                             }
-                        } else {
-                            return getObjectToSave();
                         }
+
                     })
-                    .then(formation => Server.replaceFormation(this._id, formation, ignoredData))
-                    .then(() => displayMessage(messageReplace))
                     .catch(displayMessage);
             };
 

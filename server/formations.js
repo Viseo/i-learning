@@ -8,6 +8,12 @@
 
 let ObjectID = require('mongodb').ObjectID;
 
+const compareFormations = (form1, form2) => {
+    if(form1._id) delete form1._id;
+    if(form2._id) delete form2._id;
+    return JSON.stringify(form1) === JSON.stringify(form2);
+};
+
 const getFormationsByName = (db, name) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
@@ -73,6 +79,7 @@ const replaceQuiz = (db, indexes, object) => {
     })
 };
 
+exports.compareFormations = compareFormations;
 exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
 exports.insertFormation = insertFormation;
