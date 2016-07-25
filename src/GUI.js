@@ -2668,29 +2668,26 @@ function inscriptionManagerDisplay() {
 
     this.saveButtonHandler = () => {
         if (!emptyAreasHandler(true) && AllOk()){
-            Server.getUserByMail(this.mailAddressField.label)
+            this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
+            let tempObject = {
+                lastName: this.lastNameField.label,
+                firstName: this.firstNameField.label,
+                mailAddress: this.mailAddressField.label,
+                password: this.passwordField.hash
+            };
+            Server.inscription(tempObject)
                 .then(data => {
-                    let myUser = JSON.parse(data).user;
-                    if (myUser) {
-                        throw "Un utilisateur possède déjà cette adresse mail !"
+                    let created = JSON.parse(data);
+                    if (created) {
+                        var messageText = "Votre compte a bien été créé !";
+                        var message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                        message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
+                        setTimeout(() => {
+                            this.saveButtonManipulator.ordonator.unset(3);
+                        }, 10000);
                     } else {
-                        this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
-                        let tempObject = {
-                            lastName: this.lastNameField.label,
-                            firstName: this.firstNameField.label,
-                            mailAddress: this.mailAddressField.label,
-                            password: this.passwordField.hash
-                        };
-                        return Server.inscription(tempObject)
+                        throw "Un utilisateur possède déjà cette adresse mail !"
                     }
-                })
-                .then(() => {
-                    var messageText = "Votre compte a bien été créé !";
-                    var message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                    message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
-                    setTimeout(() => {
-                        this.saveButtonManipulator.ordonator.unset(3);
-                    }, 10000);
                 })
                 .catch((messageText) => {
                     let message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);

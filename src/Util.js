@@ -1236,11 +1236,11 @@ class Server {
     constructor() {}
 
     static getAllFormationsNames() {
-        return dbListener.httpGetAsync('/getAllFormationsNames')
+        return dbListener.httpGetAsync('/formations/getAllFormationsNames')
     }
 
     static getFormationByName(name) {
-        return dbListener.httpGetAsync("/getFormationByName/" + name)
+        return dbListener.httpGetAsync("/formations/getFormationByName/" + name)
     }
 
     static connect(mail, password) {
@@ -1248,19 +1248,15 @@ class Server {
     }
 
     static inscription(user) {
-        return dbListener.httpPostAsync('/inscription', user)
+        return dbListener.httpPostAsync('/user/inscription/', user)
     }
 
     static checkCookie() {
         return dbListener.httpGetAsync('/auth/verify/')
     }
 
-    static getUserByMail(mail) {
-        return dbListener.httpGetAsync("/getUserByMailAddress/" + mail)
-    }
-
     static getFormationById(id) {
-        return dbListener.httpGetAsync("/getFormationById/" + id)
+        return dbListener.httpGetAsync("/formations/getFormationById/" + id)
     }
 
     static sendProgressToServer(quiz) {
@@ -1275,15 +1271,15 @@ class Server {
     }
 
     static getUser() {
-        return dbListener.httpGetAsync("/getUser")
+        return dbListener.httpGetAsync("/user/getUser")
     }
 
     static replaceFormation(id, newFormation, ignoredData) {
-        return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData)
+        return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
     }
 
     static insertFormation(newFormation, ignoredData) {
-        return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
+        return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
     }
 
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
