@@ -7,12 +7,7 @@
 /**
  * Created by ACA3502 on 23/03/2016.
  */
-var svg, gui, runtime, param;
-
-/* istanbul ignore next */
-if(!param) {
-    param = {speed: 5, step: 100};
-}
+var svg, gui, runtime;
 
 /* istanbul ignore next */
 if(typeof SVG !== "undefined") {
@@ -1399,7 +1394,7 @@ gui.ScrollablePanel = class ScrollablePanel {
         if (!this.animation) {
             this.animation = true;
             let point = this.controlPosition(x, y);
-            this[content].onChannel().smoothy(param.speed, param.step)
+            this[content].onChannel().smoothy(5, 100)
                 .execute(completeMovement).moveTo(point.x, point.y);
         }
         return this;
