@@ -238,7 +238,7 @@ function answerDisplay (x, y, w, h) {
     this.manipulator.translator.move(this.x,this.y);
 }
 
-function libraryDisplay(x, y, w, h) {
+function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     if (typeof x !== "undefined")(this.x = x);
     if (typeof y !== "undefined")(this.y = y);
     if (typeof w !== "undefined")(this.w = w);
@@ -248,15 +248,18 @@ function libraryDisplay(x, y, w, h) {
     this.bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator).color(myColors.white, this.borderSize, myColors.black);
     this.bordure.position(w / 2, h / 2 );
     this.libraryManipulator.ordonator.set(0, this.bordure);
-
     this.titleSvg = autoAdjustText(this.title, w, (1 / 10) * h, null, this.font, this.libraryManipulator).text;
     this.titleSvg.position(w / 2, (1 / 20) * h);
-
     this.libraryManipulator.translator.move(this.x, this.y);
+
+
+    this.panel = new gui.Panel(w - 3, ratioPanelHeight * h, myColors.white, 3).position(w / 2, yPanel);
+    this.libraryManipulator.ordonator.set(2, this.panel.component);
+    this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
-    libraryDisplay.call(this, x+MARGIN, y, w, h);
+    libraryDisplay.call(this, x+MARGIN, y, w, h, 5/8, 5*h/12);
 
     let displayArrowModeButton = () => {
         if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
@@ -339,13 +342,10 @@ function gamesLibraryDisplay(x, y, w, h) {
     let displayItems = () => {
         let maxGamesPerLine = 1,
             libMargin = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN,
-            tempY = (2 / 10 * h);
+            tempY = (0.15 * h);
 
         this.itemsTab.forEach((item, i) => {
-            if(this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first ) !== -1){
-                this.libraryManipulator.last.remove(this.libraryManipulators[i].first);
-            }
-            this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first)===-1 && this.libraryManipulator.last.add(this.libraryManipulators[i].first);
+            this.panel.content.children.indexOf(this.libraryManipulators[i].first)===-1 && this.panel.content.add(this.libraryManipulators[i].first);
 
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += this.h / 4 + libMargin;
@@ -359,6 +359,7 @@ function gamesLibraryDisplay(x, y, w, h) {
             let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
             this.libraryManipulators[i].first.move(X, tempY);
         });
+        this.panel.resizeContent(w, tempY += Math.min(w/2, h/4) );
     };
 
     let assignEvents = () => {
@@ -441,13 +442,7 @@ function gamesLibraryDisplay(x, y, w, h) {
 function imagesLibraryDisplay(x, y, w, h, callback) {
 
     let display = (x, y, w, h) => {
-        libraryDisplay.call(this, x, y, w, h);
-
-        let displayPanel = () => {
-            this.panel = new gui.Panel(w - 3, 0.75 * h, myColors.white, 3).position(w / 2, 0.45 * h);
-            this.libraryManipulator.ordonator.set(2, this.panel.component);
-            this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
-        };
+        libraryDisplay.call(this, x, y, w, h, 3/4, 0.45 * h);
 
         let assignEvents = () => {
             this.libraryManipulators.forEach(libraryManipulator => {
@@ -505,9 +500,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                     if (i % maxImagesPerLine === 0 && i !== 0) {
                         tempY += this.imageHeight + libMargin;
                     }
-                    // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                    //      this.panel.content.remove(this.libraryManipulators[i].first);
-                    // }
+
                     this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                     let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
                     image.srcDimension = {width: item.width, height: item.height};
@@ -517,7 +510,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                     this.libraryManipulators[i].first.move(X, tempY);
 
                 });
-                this.panel.resizeContent(tempY += this.imageHeight);
+                this.panel.resizeContent(w,tempY += this.imageHeight);
                 assignEvents();
             };
 
@@ -576,7 +569,6 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
 
         };
 
-        displayPanel();
         displayItems();
         displaySaveButton();
 
