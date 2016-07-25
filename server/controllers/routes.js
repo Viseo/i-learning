@@ -97,13 +97,10 @@ module.exports = function (app, fs) {
     });
 
     app.get('/user/getUser', function(req, res) {
-        const collection = db.get().collection('users');
-        collection.find().toArray(function (err, docs) {
-            cookies.verify(req, (err, decode) => {
-                const user = !err && decode.user._id,
-                    result = docs.find(x=> x._id.toString() === user);
-                res.send(result);
-            })
+        cookies.verify(req, (err, decode) => {
+            users.getUserById(db, decode.user._id)
+                .then(data => res.send(data))
+                .catch(err => console.log(err));
         });
     });
 

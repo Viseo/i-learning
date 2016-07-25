@@ -64,7 +64,7 @@ const saveProgress = (db, body, user) => {
             formationsTab = [newFormation];
         }
         let usersCollection = db.get().collection('users');
-        usersCollection.updateOne({"_id": new ObjectID(user)}, {$set: {formationsTab: formationsTab}}, (err) => {
+        usersCollection.updateOne({"_id": user._id}, {$set: {formationsTab: formationsTab}}, (err, docs) => {
             if (err) reject(err);
             resolve({ack: 'ok'});
         });
