@@ -48,12 +48,12 @@ function answerDisplay (x, y, w, h) {
                     }
                 }
             questionCreator.display();
-            self.parentQuestion.checkValidity();
+            this.parentQuestion.checkValidity();
         };
-        let mouseleaveHandler= ()=>{
+        let mouseleaveHandler = ()=>{
             this.redCrossManipulator.flush();
         };
-        let mouseoverHandler=()=>{
+        let mouseoverHandler =()=>{
             if(typeof this.redCrossManipulator === 'undefined'){
                 this.redCrossManipulator = new Manipulator(this);
                 this.redCrossManipulator.addOrdonator(2);
@@ -73,27 +73,27 @@ function answerDisplay (x, y, w, h) {
                 this.imageLayer = 2;
                 let picture = new Picture(this.image.src, true, this, text);
                 picture.draw(0, 0, w, h, this.manipulator, w-2*this.checkboxSize);
-                this.obj.cadre = picture.imageSVG.cadre;
+                this.border = picture.imageSVG.cadre;
                 this.obj.image = picture.imageSVG.image;
                 this.obj.content = picture.imageSVG.content;
             } else {
                 var tempObj = displayText(text, w, h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, w-2*this.checkboxSize);
-                this.obj.cadre = tempObj.cadre;
+                this.border = tempObj.cadre;
                 this.obj.content = tempObj.content;
                 this.obj.content.position(0,this.obj.content.y);
             }
 
-            (this.answerNameValidInput && text !== "") ? (this.obj.cadre.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(this.obj.cadre.color(myColors.white,2,myColors.red).fillOpacity(0.001));
+            (this.validLabelInput && text !== "") ? (this.border.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(this.border.color(myColors.white,2,myColors.red).fillOpacity(0.001));
             this.obj.content.color(color);
-            this.obj.cadre._acceptDrop = true;
+            this.border._acceptDrop = true;
             this.obj.content._acceptDrop = true;
 
             let editor = (this.editor.puzzle ? this.editor : this.editor.parent);
 
             svg.addEvent(this.obj.content, 'dblclick', dblclickEditionAnswer);
-            svg.addEvent(this.obj.cadre, 'dblclick', dblclickEditionAnswer);
-            svg.addEvent(this.obj.cadre,'mouseover',mouseoverHandler);
-            svg.addEvent(this.obj.cadre,'mouseout',mouseleaveHandler);
+            svg.addEvent(this.border, 'dblclick', dblclickEditionAnswer);
+            svg.addEvent(this.border,'mouseover',mouseoverHandler);
+            svg.addEvent(this.border,'mouseout',mouseleaveHandler);
         };
 
         let dblclickEditionAnswer = ()=> {
@@ -102,9 +102,9 @@ function answerDisplay (x, y, w, h) {
             contentarea.globalPointCenter = this.obj.content.globalPoint(-(w)/2,-(contentarea.height)/2);
             let contentareaStyle = {
                 toppx: contentarea.globalPointCenter.y - (contentarea.height/2) * 2/3 ,
-                leftpx: contentarea.globalPointCenter.x + (1/12) * this.obj.cadre.width,
+                leftpx: contentarea.globalPointCenter.x + (1/12) * this.border.width,
                 height: this.image ? contentarea.height : h * 0.5,
-                width: this.obj.cadre.width * 5/6
+                width: this.border.width * 5/6
             };
             drawing.notInTextArea = false;
             contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).
@@ -119,15 +119,15 @@ function answerDisplay (x, y, w, h) {
             this.manipulator.ordonator.unset(1);
             contentarea.focus();
 
-            let removeErrorMessage = function () {
+            let removeErrorMessage = () => {
                 this.validLabelInput = true;
-                this.errorMessage && this.editor.parent.questionCreatorManipulator.ordonator.unset(1);
-                this.obj.cadre.color(myColors.white, 1, myColors.black);
+                this.errorMessage && this.editor.parent.questionCreator.manipulator.ordonator.unset(1);
+                this.border.color(myColors.white, 1, myColors.black);
             };
 
-            let displayErrorMessage = ()=> {
+            let displayErrorMessage = () => {
                 removeErrorMessage();
-                this.obj.cadre.color(myColors.white, 2, myColors.red);
+                this.border.color(myColors.white, 2, myColors.red);
                 let libraryRatio = 0.2,
                     previewButtonHeightRatio = 0.1,
                     marginErrorMessagePreviewButton = 0.03,
@@ -136,7 +136,7 @@ function answerDisplay (x, y, w, h) {
                     position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
                     anchor = 'middle';
                 this.errorMessage = new svg.Text(REGEX_ERROR);
-                quizzManager.questionCreator.questionCreatorManipulator.ordonator.set(1,this.errorMessage);
+                quizzManager.questionCreator.manipulator.ordonator.set(1,this.errorMessage);
                 this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
                     .font('Arial', 15).color(myColors.red).anchor(anchor);
                 contentarea.focus();
@@ -149,14 +149,14 @@ function answerDisplay (x, y, w, h) {
                 drawings.screen.remove(contentarea);
                 drawing.notInTextArea = true;
                 showTitle();
-                let quizzManager = self.parentQuestion.parentQuizz.parentFormation.quizzManager;
+                let quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager;
                 quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
             };
             svg.addEvent(contentarea,'input',()=> {
                 contentarea.enter();
                 this.checkInputContentArea({
                     contentarea: contentarea,
-                    border: this.obj.cadre,
+                    border: this.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
@@ -165,7 +165,7 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(contentarea,'blur',onblur);
             this.checkInputContentArea({
                 contentarea: contentarea,
-                border: this.obj.cadre,
+                border: this.border,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
@@ -200,18 +200,18 @@ function answerDisplay (x, y, w, h) {
 
     if (this.label && this.imageSrc) { // Reponse avec Texte ET image
         let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
-        this.bordure = obj.cadre;
+        this.bordure = border;
         this.content = obj.text;
         this.image = obj.image;
     } else if (this.label && !this.imageSrc) { // Reponse avec Texte uniquement
         let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
-        this.bordure = obj.cadre;
+        this.bordure = border;
         this.content = obj.content;
 
     } else if (this.imageSrc && !this.label) { // Reponse avec Image uniquement
         let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.width, this.height, this.manipulator);
         this.image = obj.image;
-        this.bordure = obj.cadre;
+        this.bordure = border;
     } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
         this.manipulator.last.children.indexOf(this.bordure)===-1 && this.manipulator.last.add(this.bordure);
@@ -616,53 +616,57 @@ function addEmptyElementDisplay(x, y, w, h) {
             case 'answer':
                 let newAnswer = new Answer(null, this.parent.linkedQuestion);
                 newAnswer.isEditable(this, true);
-                this.parent.linkedQuestion.tabAnswer.pop();
-                this.parent.linkedQuestion.tabAnswer.push(newAnswer);
+                let questionCreator = this.parent;
+                questionCreator.linkedQuestion.tabAnswer.pop();
+                questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
 
-                if(this.parent.linkedQuestion.tabAnswer.length < this.parent.MAX_ANSWERS) {
-                    this.parent.linkedQuestion.tabAnswer.push(new AddEmptyElement(this.parent, this.type));
+                if(questionCreator.linkedQuestion.tabAnswer.length < questionCreator.MAX_ANSWERS) {
+                    questionCreator.linkedQuestion.tabAnswer.push(new AddEmptyElement(questionCreator, this.type));
                 }
-                this.parent.puzzle.updateElementsArray(this.parent.linkedQuestion.tabAnswer);
-                this.parent.puzzle && this.parent.puzzle.fillVisibleElementsArray("leftToRight");
-                this.parent.questionCreatorManipulator.last.children.indexOf(this.parent.puzzle.manipulator.first) === -1 && this.parent.questionCreatorManipulator.last.add(this.parent.puzzle.manipulator.first);
-                this.parent.puzzle.display(this.parent.coordinatesAnswers.x,
-                    this.parent.coordinatesAnswers.y, this.parent.coordinatesAnswers.w,
-                    this.parent.coordinatesAnswers.h, false);
+                questionCreator.puzzle.updateElementsArray(questionCreator.linkedQuestion.tabAnswer);
+                questionCreator.puzzle && questionCreator.puzzle.fillVisibleElementsArray("leftToRight");
+                questionCreator.manipulator.last.children.indexOf(questionCreator.puzzle.manipulator.first) === -1 && questionCreator.manipulator.last.add(questionCreator.puzzle.manipulator.first);
+                questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x,
+                    questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
+                    questionCreator.coordinatesAnswers.h, false);
+                questionCreator.linkedQuestion.checkValidity();
+                
                 break;
             case 'question':
-                this.parent.quizz.tabQuestions.pop();
-                (this.parent.quizz.tabQuestions.length>0) && (this.parent.quizz.tabQuestions[this.parent.indexOfEditedQuestion].selected = false);
-                this.parent.indexOfEditedQuestion = this.parent.quizz.tabQuestions.length;
-                this.parent.quizz.tabQuestions.forEach(question=>{
+                let quizzManager = this.parent;
+                quizzManager.quizz.tabQuestions.pop();
+                (quizzManager.quizz.tabQuestions.length>0) && (quizzManager.quizz.tabQuestions[quizzManager.indexOfEditedQuestion].selected = false);
+                quizzManager.indexOfEditedQuestion = quizzManager.quizz.tabQuestions.length;
+                quizzManager.quizz.tabQuestions.forEach(question=>{
                     question.redCrossManipulator && question.redCrossManipulator.flush();
                     question.selected=false});
-                let newQuestion = new Question(null, this.parent.quizz);
+                let newQuestion = new Question(null, quizzManager.quizz);
 
                 newQuestion.selected = true;
-                this.parent.quizz.tabQuestions.push(newQuestion);
-                let AddNewEmptyQuestion = new AddEmptyElement(this.parent, 'question');
-                this.parent.quizz.tabQuestions.push(AddNewEmptyQuestion);
-                this.parent.questionPuzzle.visibleElementsArray[0].length === 6 && this.parent.questionPuzzle.updateStartPosition('right');
+                quizzManager.quizz.tabQuestions.push(newQuestion);
+                let AddNewEmptyQuestion = new AddEmptyElement(quizzManager, 'question');
+                quizzManager.quizz.tabQuestions.push(AddNewEmptyQuestion);
+                quizzManager.questionPuzzle.visibleElementsArray[0].length === 6 && quizzManager.questionPuzzle.updateStartPosition('right');
 
-                if (this.parent.questionPuzzle.elementsArray.length > this.parent.questionPuzzle.columns) {
-                    this.parent.displayQuestionsPuzzle(this.parent.questionPuzzleCoordinates.x,
-                        this.parent.questionPuzzleCoordinates.y,
-                        this.parent.questionPuzzleCoordinates.w,
-                        this.parent.questionPuzzleCoordinates.h,
-                        this.parent.questionPuzzle.indexOfFirstVisibleElement + 1);
+                if (quizzManager.questionPuzzle.elementsArray.length > quizzManager.questionPuzzle.columns) {
+                    quizzManager.displayQuestionsPuzzle(quizzManager.questionPuzzleCoordinates.x,
+                        quizzManager.questionPuzzleCoordinates.y,
+                        quizzManager.questionPuzzleCoordinates.w,
+                        quizzManager.questionPuzzleCoordinates.h,
+                        quizzManager.questionPuzzle.indexOfFirstVisibleElement + 1);
                 } else {
-                    this.parent.displayQuestionsPuzzle(this.parent.questionPuzzleCoordinates.x,
-                        this.parent.questionPuzzleCoordinates.y,
-                        this.parent.questionPuzzleCoordinates.w,
-                        this.parent.questionPuzzleCoordinates.h,
-                        this.parent.questionPuzzle.indexOfFirstVisibleElement);
+                    quizzManager.displayQuestionsPuzzle(quizzManager.questionPuzzleCoordinates.x,
+                        quizzManager.questionPuzzleCoordinates.y,
+                        quizzManager.questionPuzzleCoordinates.w,
+                        quizzManager.questionPuzzleCoordinates.h,
+                        quizzManager.questionPuzzle.indexOfFirstVisibleElement);
                 }
 
-                this.parent.questionCreator.loadQuestion(newQuestion);
-                this.parent.questionCreator.display(this.parent.questionCreator.previousX,
-                    this.parent.questionCreator.previousY,
-                    this.parent.questionCreator.previousW,
-                    this.parent.questionCreator.previousH);
+                quizzManager.questionCreator.loadQuestion(newQuestion);
+                quizzManager.questionCreator.display(quizzManager.questionCreator.previousX,
+                    quizzManager.questionCreator.previousY,
+                    quizzManager.questionCreator.previousW,
+                    quizzManager.questionCreator.previousH);
         }
     };
     svg.addEvent(this.plus, "dblclick", dblclickAdd);
@@ -955,7 +959,7 @@ function formationDisplayFormation() {
                 drawings.screen.remove(contentarea);
                 drawing.notInTextArea = true;
                 showTitle();
-                this.labelValidInput && header.display(this.label);
+                this.validLabelInput && header.display(this.label);
             };
             svg.addEvent(contentarea, "blur", onblur);
             var oninput = ()=> {
@@ -1668,9 +1672,9 @@ function questionCreatorDisplay (x, y, w, h) {
     y && (this.previousY = y);
     w && (this.previousW = w);
     h && (this.previousH = h);
-    this.manipulator.last.children.indexOf(this.questionCreatorManipulator.first)===-1 && this.manipulator.last.add(this.questionCreatorManipulator.first);
+    //this.manipulator.last.children.indexOf(this.questionCreatorManipulator.first)===-1 && this.manipulator.last.add(this.questionCreatorManipulator.first);
     this.questionCreatorHeight = Math.floor(this.previousH * (1 - this.headerHeight) - 80);
-    this.questionCreatorManipulator.translator.move(this.previousX, 0);
+    this.manipulator.translator.move(this.previousX, 0);
     this.toggleButtonHeight = 40;
     this.displayQuestionCreator(this.previousX, this.previousY, this.previousW, this.previousH);
     var clickedButton = this.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
@@ -1679,7 +1683,7 @@ function questionCreatorDisplay (x, y, w, h) {
 
 function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
     var size = this.questionBlock.rect.height*0.05;
-    this.questionCreatorManipulator.last.children.indexOf(this.toggleButtonManipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.toggleButtonManipulator.first);
+    this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first)===-1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
     this.toggleButtonWidth = drawing.width/5;
     var toggleHandler = (event)=>{
         this.target = drawings.background.getTarget(event.clientX, event.clientY);
@@ -1708,7 +1712,7 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
         this.linkedQuestion.checkValidity();
     };
 
-    this.questionCreatorManipulator.last.children.indexOf(this.toggleButtonManipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.toggleButtonManipulator.first);
+    this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first)===-1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
 
     var length = this.questionType.length;
     var lengthToUse = (length+1)*MARGIN+length*this.toggleButtonWidth;
@@ -1739,12 +1743,12 @@ function questionCreatorDisplayToggleButton (x, y, w, h, clicked){
 
 function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     // bloc Question
-    this.questionCreatorManipulator.flush();
+    this.manipulator.flush();
     this.questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
     this.questionBlock.rect.position(0, 0);
     this.questionBlock.rect.fillOpacity(0.001);
-    this.questionCreatorManipulator.last.children.indexOf(this.questionBlock.rect)===-1 && this.questionCreatorManipulator.last.add(this.questionBlock.rect);
-    this.questionCreatorManipulator.last.children.indexOf(this.questionManipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.questionManipulator.first);
+    this.manipulator.last.children.indexOf(this.questionBlock.rect)===-1 && this.manipulator.last.add(this.questionBlock.rect);
+    this.manipulator.last.children.indexOf(this.questionManipulator.first)===-1 && this.manipulator.last.add(this.questionManipulator.first);
     var showTitle = () => {
         var color = (this.linkedQuestion.label) ? myColors.black : myColors.grey;
         var text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
@@ -1796,7 +1800,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         svg.addEvent(this.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(this.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
         this.questionManipulator.translator.move(0, -this.h/2+this.questionBlock.title.cadre.height/2 + this.toggleButtonHeight + MARGIN);
-        this.manipulator.translator.move(w/2, y + h/2);
+        this.manipulator.translator.move(x + w/2, y + h/2);
     };
 
     var dblclickEditionQuestionBlock = ()=> {
@@ -1831,7 +1835,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
         var removeErrorMessage = () => {
             this.linkedQuestion.validLabelInput = true;
-            this.errorMessage && this.questionCreatorManipulator.ordonator.unset(0);
+            this.errorMessage && this.manipulator.ordonator.unset(0);
             this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
 
@@ -1842,7 +1846,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var quizzInfoHeightRatio = 0.05;
             var questionsPuzzleHeightRatio = 0.25;
             this.errorMessage = new svg.Text(REGEX_ERROR);
-            this.questionCreatorManipulator.ordonator.set(0, this.errorMessage);
+            this.manipulator.ordonator.set(0, this.errorMessage);
             this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea.focus();
@@ -1880,7 +1884,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         this.linkedQuestion.tabAnswer.push(new AddEmptyElement(this, 'answer'));
     }
     this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
-    this.questionCreatorManipulator.last.children.indexOf(this.puzzle.manipulator.first)===-1 && this.questionCreatorManipulator.last.add(this.puzzle.manipulator.first);
+    this.manipulator.last.children.indexOf(this.puzzle.manipulator.first)===-1 && this.manipulator.last.add(this.puzzle.manipulator.first);
     this.puzzle && this.puzzle.fillVisibleElementsArray("leftToRight");
 
     this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h , false);
@@ -1895,7 +1899,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     rect.color(myColors.white, 1, myColors.black);
     this.manipulator.ordonator.set(0, rect);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
-    this.manipulator.translator.move(previousX, y);
+    this.manipulator.translator.move(x, y);
     let blackCrossSize = 30, blackCross;
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
@@ -1987,10 +1991,10 @@ function popInDisplay(parent, previousX, x, y, w, h) {
             drawing.notInTextArea = true;
             this.display(parent, previousX, x, y, w, h);
         };
+        svg.addEvent(contentArea,'blur',onblur);
         svg.addEvent(contentArea,'input',()=> {
             contentArea.enter();
         });
-        svg.addEvent(contentArea,'blur',onblur);
     };
     if (this.editable){
         svg.addEvent(this.text, "click", clickEdition);
@@ -2210,7 +2214,7 @@ function quizzManagerDisplay(){
     this.quizzManagerManipulator.last.children.indexOf(this.libraryIManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.libraryIManipulator.first);
     this.quizzManagerManipulator.last.children.indexOf(this.quizzInfoManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.quizzInfoManipulator.first);
     this.quizzManagerManipulator.last.children.indexOf(this.questionsPuzzleManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.questionsPuzzleManipulator.first);
-    this.quizzManagerManipulator.last.children.indexOf(this.questionCreatorManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.questionCreatorManipulator.first);
+    this.quizzManagerManipulator.last.children.indexOf(this.questionCreator.manipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.questionCreator.manipulator.first);
     this.quizzManagerManipulator.last.children.indexOf(this.previewButtonManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.previewButtonManipulator.first);
     this.quizzManagerManipulator.last.children.indexOf(this.saveQuizButtonManipulator.first)===-1 && this.quizzManagerManipulator.last.add(this.saveQuizButtonManipulator.first);
     this.libraryWidth = drawing.width * this.libraryWidthRatio;
