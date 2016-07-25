@@ -1259,7 +1259,7 @@ class Server {
             formation: quiz.parentFormation._id,
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
-        return dbListener.httpPostAsync("/sendProgress", data)
+        return dbListener.httpPostAsync("/user/saveProgress", data)
     }
 
     static getUser() {
@@ -1275,7 +1275,7 @@ class Server {
     }
 
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
-        return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+        return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
 }
 

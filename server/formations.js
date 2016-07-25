@@ -61,8 +61,21 @@ const replaceFormation = (db, id, object) => {
     })
 };
 
+const replaceQuiz = (db, indexes, object) => {
+    return new Promise((resolve, reject) => {
+        let collectionFormations = db.get().collection('formations');
+        let placeholder = {};
+        placeholder["levelsTab." + indexes.level + ".gamesTab." + indexes.game] = object;
+        collectionFormations.updateOne({"_id": new ObjectID(indexes.id)}, {$set: placeholder}, (err, docs) => {
+            if (err) reject(err);
+            resolve(docs.upsertedId);
+        })
+    })
+};
+
 exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
 exports.insertFormation = insertFormation;
 exports.getAllFormations = getAllFormations;
 exports.replaceFormation = replaceFormation;
+exports.replaceQuiz = replaceQuiz;
