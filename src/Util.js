@@ -1433,6 +1433,11 @@ gui.ScrollablePanel = class ScrollablePanel {
     }
 };
 
+svg.TextItem.prototype.enter = function() {
+    this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
+    if(this.component.value === "")this.messageText = "";
+};
+
 /////////////// Bdd.js //////////////////
 /**
  * Created by ABL3483 on 10/03/2016.
