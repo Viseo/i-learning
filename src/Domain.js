@@ -85,23 +85,22 @@ class Answer {
         this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
         this._acceptDrop = editable;
         this.editor = editor;
-        let self = this;
-        this.checkInputContentArea = editable ? function (objCont) {
+        this.checkInputContentArea = editable ? ((objCont) => {
             if (typeof objCont.contentarea.messageText !== "undefined") {
                 if (objCont.contentarea.messageText.match(REGEX)) {
-                    self.validLabelInput = true;
-                    self.label = objCont.contentarea.messageText;
+                    this.validLabelInput = true;
+                    this.label = objCont.contentarea.messageText;
                     objCont.remove();
-                    objCont.contentarea.onblur = objCont.onblur;
+                    //objCont.contentarea.onblur = objCont.onblur;
                 } else {
-                    self.validLabelInput = false;
-                    self.label = objCont.contentarea.messageText;
+                    this.validLabelInput = false;
+                    this.label = objCont.contentarea.messageText;
                     objCont.display();
                 }
             } else {
-                self.label = "";
+                this.label = "";
             }
-        } : null;
+        }) : null;
     }
 }
 
@@ -233,9 +232,10 @@ class QuestionCreator {
         this.parent = parent;
 
         this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(2);
         this.manipulatorQuizzInfo = new Manipulator(this);
-        this.questionCreatorManipulator = new Manipulator(this);
-        this.questionCreatorManipulator.addOrdonator(2);
+        //this.questionCreatorManipulator = new Manipulator(this);
+        //this.questionCreatorManipulator.addOrdonator(2);
         this.questionManipulator = new Manipulator(this);
         this.questionManipulator.addOrdonator(6);
         this.toggleButtonManipulator = new Manipulator(this);
@@ -980,8 +980,8 @@ class QuizzManager {
         this.questionsPuzzleManipulator.addOrdonator(1);
         this.quizzInfoManipulator = new Manipulator(this);
         this.quizzInfoManipulator.addOrdonator(6);
-        this.questionCreatorManipulator = this.questionCreator.manipulator;
-        this.questionCreatorManipulator.addOrdonator(1);
+        //this.questionCreatorManipulator = this.questionCreator.manipulator;
+        //this.questionCreatorManipulator.addOrdonator(2);
         this.previewButtonManipulator = new Manipulator(this);
         this.previewButtonManipulator.addOrdonator(2);
         this.saveQuizButtonManipulator = new Manipulator(this);
