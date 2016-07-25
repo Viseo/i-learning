@@ -800,7 +800,7 @@ class MiniatureGame {
         this.icon.cadre.color(myColors.white, 1, myColors.black);
 
         if (playerMode) {
-            this.drawProgressIcon(this, game, size);
+            this.drawProgressIcon(game, size);
         }
     }
 
@@ -893,24 +893,32 @@ class MiniatureGame {
                 this.icon.cadre.color(myColors.grey, 1, myColors.black);
                 break;
             case "done":
-                var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
-                iconInfos.color(myColors.none, 5, myColors.green);
-                let rect = new svg.Rect(iconsize, iconsize);
-                rect.color(myColors.white, 1, myColors.green);
-                rect.position(size/2, -size/2);
+                let check = drawCheck(size / 2, -size / 2, iconsize)
+                    .color(myColors.none, 5, myColors.green);
+                let rect = new svg.Rect(iconsize, iconsize)
+                    .color(myColors.white, 1, myColors.green)
+                    .position(size/2, -size/2);
                 this.infosManipulator.ordonator.set(0, rect);
-                this.infosManipulator.ordonator.set(1, iconInfos);
+                this.infosManipulator.ordonator.set(1, check);
                 let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
                 object.miniatureManipulator.last.add(this.infosManipulator.first);
                 let result = autoAdjustText(resultString, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                 result.text.position(0,size/2-MARGIN/2);
                 break;
             case "inProgress":
-                var iconInfos = new svg.Circle(iconsize/2).color(myColors.white, 1, myColors.orange).position(size/2, -size/2);
-                let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2-iconsize / 4, -size/2);
-                let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2, -size/2);
-                let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size/2+iconsize / 4, -size/2);
-                this.infosManipulator.ordonator.set(0, iconInfos);
+                let circle = new svg.Circle(iconsize/2)
+                    .color(myColors.white, 1, myColors.orange)
+                    .position(size/2, -size/2);
+                let iconInfosdot1 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2-iconsize / 4, -size/2);
+                let iconInfosdot2 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2, -size/2);
+                let iconInfosdot3 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2+iconsize / 4, -size/2);
+                this.infosManipulator.ordonator.set(0, circle);
                 this.infosManipulator.ordonator.set(1, iconInfosdot1);
                 this.infosManipulator.ordonator.set(2, iconInfosdot2);
                 this.infosManipulator.ordonator.set(3, iconInfosdot3);
