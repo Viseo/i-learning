@@ -1616,7 +1616,7 @@ function questionDisplayAnswers(x, y, w, h) {
 function questionSelectedQuestion() {
     this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
     if(!this.redCrossManipulator){
-        let redCrossClickHandler = () =>{
+        let redCrossClickHandler = () => {
             let quizzManager = this.parentQuizz.parentFormation.quizzManager;
             let questionCreator = quizzManager.questionCreator;
             let questionPuzzle = quizzManager.questionPuzzle;
@@ -1626,13 +1626,12 @@ function questionSelectedQuestion() {
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
             if(index !== -1) {
                 quizzManager.indexOfEditedQuestion = index;
-                quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
                 this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
                 questionPuzzle && questionPuzzle.indexOfFirstVisibleElement!=0 && questionPuzzle.indexOfFirstVisibleElement--;
                 questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
                 questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
-                questionPuzzle.display();
+                quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
             }
             else{
                 this.parentQuizz.tabQuestions.splice(0,0, new Question(defaultQuestion, this.parentQuizz));
@@ -2072,20 +2071,22 @@ function quizzDisplay(x, y, w, h) {
 
         let leftChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
-            if(target.parentObj.currentQuestionIndex > 0) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
-                target.parentObj.currentQuestionIndex--;
-                updateColorChevrons(target.parentObj);
-                target.parentObj.displayCurrentQuestion();
+            let puzzle = target.parentObj;
+            if(puzzle.currentQuestionIndex > 0) {
+                puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex--;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
             }
         };
         let rightChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
-            if(target.parentObj.currentQuestionIndex < target.parentObj.tabQuestions.length-1) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
-                target.parentObj.currentQuestionIndex++;
-                updateColorChevrons(target.parentObj);
-                target.parentObj.displayCurrentQuestion();
+            let puzzle = target.parentObj;
+            if(puzzle.currentQuestionIndex < puzzle.tabQuestions.length-1) {
+                puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex++;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
             }
         };
         updateColorChevrons(this);
@@ -2432,24 +2433,16 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         w: border.width - this.globalMargin.width / 2,
         h: this.questionsPuzzleHeight - this.globalMargin.height
     };
-    if (this.questionPuzzle){
-        this.questionPuzzle.updateElementsArray(this.quizz.tabQuestions);
-        this.questionPuzzle.fillVisibleElementsArray("leftToRight");
-    }
-    else {
-        this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
+    this.questionPuzzle.updateElementsArray(this.quizz.tabQuestions);
+    this.questionPuzzle.fillVisibleElementsArray("leftToRight");
+    if(!this.questionPuzzle.handlersSet){
+        this.questionPuzzle.leftChevron.handler = this.questionPuzzle.leftChevronHandler;
+        this.questionPuzzle.rightChevron.handler = this.questionPuzzle.rightChevronHandler;
+        this.questionPuzzle.handlersSet = true;
     }
     this.questionsPuzzleManipulator.last.children.indexOf(this.questionPuzzle.manipulator.first)===-1 && this.questionsPuzzleManipulator.last.add(this.questionPuzzle.manipulator.first);
     this.questionPuzzle.display(this.coordinatesQuestion.x, this.coordinatesQuestion.y, this.qPuzzleW, this.qPuzzleH, true);
-    checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
-}
-
-function checkPuzzleElementsArrayValidity(array){
-    array.forEach(question => {
-        if(!(question instanceof AddEmptyElement)){
-            question.checkValidity();
-        }
-    });
+    this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
 }
 
 function inscriptionManagerDisplay() {

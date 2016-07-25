@@ -1005,7 +1005,6 @@ class QuizzManager {
         this.libraryWidthRatio = 0.15;
         this.questCreaWidthRatio = 1 - this.libraryWidthRatio;
 
-
         // HEIGHT
         this.quizzInfoHeightRatio = 0.05;
         this.questionsPuzzleHeightRatio = 0.25;
@@ -1014,6 +1013,20 @@ class QuizzManager {
         this.previewButtonHeightRatio = 0.1;
         this.saveButtonHeightRatio = 0.1;
         this.marginRatio = 0.02;
+
+        this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
+        this.questionPuzzle.leftChevronHandler = () => {
+            this.questionPuzzle.updateStartPosition("left");
+            this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+            this.questionPuzzle.display();
+            this.questionPuzzle.checkPuzzleElementsArrayValidity();
+        };
+        this.questionPuzzle.rightChevronHandler = () => {
+            this.questionPuzzle.updateStartPosition("right");
+            this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+            this.questionPuzzle.display();
+            this.questionPuzzle.checkPuzzleElementsArrayValidity();
+        };
     }
 
     loadQuizz (quizz, indexOfEditedQuestion) {

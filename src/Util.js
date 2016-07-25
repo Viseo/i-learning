@@ -578,19 +578,25 @@ function SVGUtil() {
                 .cubic(85, 190, 145, 140, 100, 100)
                 .line(0, 0);
         }
-        this.chevron.tempWidth = baseWidth;
-        this.chevron.tempHeight = baseHeight;
-        chevronManipulator.translator.move(x, y);
-        chevronManipulator.ordonator.set(0, this.chevron);
-        if (this.chevron.tempWidth > w) {
-            this.chevron.tempHeight *= w / this.chevron.tempWidth;
-            this.chevron.tempWidth = w;
-        }
-        if (this.chevron.tempHeight > h) {
-            this.chevron.tempWidth *= h / this.chevron.tempHeight;
-            this.chevron.tempHeight = h;
-        }
-        chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
+        this.chevron.resize = (w, h) => {
+            this.chevron.tempWidth = baseWidth;
+            this.chevron.tempHeight = baseHeight;
+            chevronManipulator.ordonator.set(0, this.chevron);
+            if (this.chevron.tempWidth > w) {
+                this.chevron.tempHeight *= w / this.chevron.tempWidth;
+                this.chevron.tempWidth = w;
+            }
+            if (this.chevron.tempHeight > h) {
+                this.chevron.tempWidth *= h / this.chevron.tempHeight;
+                this.chevron.tempHeight = h;
+            }
+            chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
+        };
+
+        this.chevron.move = (x, y) => {
+            chevronManipulator.translator.move(x, y);
+        };
+
         this.chevron.activate = function(handler, eventType){
             this._activated = true;
             this.color(myColors.black, 1, myColors.black);
@@ -1052,6 +1058,29 @@ class Puzzle {
         this.chevronMinSize = 15;
         this.orientation = orientation;
         this.parentObject = parentObject;
+        this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron((this.width - this.chevronSize)/2, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
+        this.leftChevron.handler = () => {
+            self.updateStartPosition("left");
+            self.fillVisibleElementsArray(self.orientation);
+            self.display();
+        };
+        this.rightChevron.handler = () => {
+            self.updateStartPosition("right");
+            self.fillVisibleElementsArray(self.orientation);
+            self.display();
+        };
+    }
+
+    checkPuzzleElementsArrayValidity() {
+        this.visibleElementsArray.forEach(array => {
+            array.forEach(
+                element => {
+                    if(!(element instanceof AddEmptyElement)) {
+                        element.checkValidity();
+                    }
+                });
+        });
     }
 
     updateElementsArray(newElementsArray){
@@ -1060,18 +1089,10 @@ class Puzzle {
 
     drawChevrons(){
         var self = this;
-        this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
-        this.rightChevron = new Chevron((this.width - this.chevronSize)/2, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
-        this.leftChevron.handler = function(){
-            self.updateStartPosition("left");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
-        };
-        this.rightChevron.handler = function(){
-            self.updateStartPosition("right");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
-        };
+        this.leftChevron.resize(this.chevronSize, this.chevronSize);
+        this.rightChevron.resize(this.chevronSize, this.chevronSize);
+        this.leftChevron.move((this.chevronSize - this.width)/2, 0);
+        this.rightChevron.move((this.width - this.chevronSize)/2, 0);
         this.updateChevrons();
         let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
         let updateRightChevron = this.rightChevron && this.rightChevron._activated;
@@ -1196,8 +1217,7 @@ class Puzzle {
     display(x, y, w, h, needChevrons = true){
         if(this.parentObject.indexOfEditedQuestion){
             this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush() ;// questionPuzzle
-        } 
-
+        }
         (typeof x !== "undefined") && (this.x = x);
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
