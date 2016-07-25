@@ -177,7 +177,7 @@ function answerDisplay (x, y, w, h) {
         this.penHandler = () => {
             this.popIn = this.popIn || new PopIn(this, true);
             let questionCreator = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-            this.popIn.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+            this.popIn.display(questionCreator,0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
             questionCreator.explanation = this.popIn;
         };
         displayPen(this.width/2-this.checkboxSize, this.height/2 - this.checkboxSize, this.checkboxSize, this);
@@ -1870,7 +1870,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     rect.color(myColors.white, 1, myColors.black);
     this.manipulator.ordonator.set(0, rect);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
-    this.manipulator.translator.move(x, y);
+    this.manipulator.translator.move(previousX, y);
     let blackCrossSize = 30, blackCross;
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
