@@ -6,6 +6,7 @@ module.exports = function (app, fs) {
         formations = require('../formations'),
         users = require('../users');
 
+
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
         fs.writeFileSync("./log/db.json", "");
@@ -32,13 +33,22 @@ module.exports = function (app, fs) {
     app.post('/auth/connect', (req, res) => {
         const collection = db.get().collection('users');
         collection.find().toArray((err, docs) => {
+            if (err) return console.error(err.name, err.message);
             const user = docs.find(user => user.mailAddress === req.body.mailAddress);
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
-                if (err) {
-                    return console.error(err.name, err.message);
-                } else {
-                    cookies.send(res, user);
-                }
+                cookies.send(user)
+                    .then(data => {
+                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
+                        res.send({
+                            ack: 'OK',
+                            user: {
+                                lastName: user.lastName,
+                                firstName: user.firstName,
+                                admin: user.admin
+                            }
+                        });
+                    })
+                    .catch(err => console.log(err));
             } else {
                 res.send({status: 'error'});
             }
@@ -52,7 +62,19 @@ module.exports = function (app, fs) {
                 collection.find().toArray((err, docs) => {
                     const user = docs.find(user => user.mailAddress === decode.user.mailAddress);
                     if (user) {
-                        cookies.send(res, user);
+                        cookies.send(user)
+                            .then(data => {
+                                res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
+                                res.send({
+                                    ack: 'OK',
+                                    user: {
+                                        lastName: user.lastName,
+                                        firstName: user.firstName,
+                                        admin: user.admin
+                                    }
+                                });
+                            })
+                            .catch(err => console.log(err));
                     } else {
                         res.send({status: 'error'});
                     }
@@ -64,47 +86,13 @@ module.exports = function (app, fs) {
         }
     });
 
-    app.post('/sendProgress', (req, res) => {
-        var collection = db.get().collection('users');
-        collection.find().toArray(function (err, docs) {
-            cookies.verify(req, (err, decode) => {
-                var user = '';
-                if (!err) {
-                    user = decode.user._id;
-                }
-                var result = docs.find(x=> x._id.toString() === user);
-                var newGame = {
-                    game: req.body.game,
-                    tabWrongAnswers: req.body.tabWrongAnswers,
-                    index: req.body.indexQuestion,
-                };
-                var newFormation = {
-                    formation: req.body.formation,
-                    gamesTab : [newGame]
-                };
-                var formationsTab;
-                if (result.formationsTab) {
-                    var formation = result.formationsTab.findIndex(x => x.formation === req.body.formation);
-                    if(formation !== -1 ){
-                        var game = result.formationsTab[formation].gamesTab.findIndex(x => x.game === req.body.game);
-                        if(game !== -1 ){
-                            newGame.index > result.formationsTab[formation].gamesTab[game].index && (result.formationsTab[formation].gamesTab[game] = newGame);
-                        }
-                        else{
-                            result.formationsTab[formation].gamesTab[result.formationsTab[formation].gamesTab.length] = newGame;
-                        }
-                    }
-                    else {
-                        result.formationsTab[result.formationsTab.length]=newFormation;
-                    }
-                    formationsTab = result.formationsTab;
-                } else {
-                    formationsTab = [newFormation];
-                }
-                collection.updateOne({"_id": new ObjectID(user)}, {$set: {formationsTab: formationsTab}}, () => {
-                    res.send({ack:'ok'});
-                });
-            });
+    app.post('/user/saveProgress', (req, res) => {
+        cookies.verify(req, (err, decode) => {
+            users.getUserById(db, decode.user._id)
+                .then(user => {
+                    return users.saveProgress(db, req.body, user);
+                })
+                .then(data => res.send(data));
         });
     });
 
@@ -186,7 +174,6 @@ module.exports = function (app, fs) {
         try {
             fs.accessSync("./log/db.json", fs.F_OK);
             // Do something
-            //console.log(req.body);
             fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
             res.send({ack:'ok'});
         } catch (e) {
@@ -202,17 +189,10 @@ module.exports = function (app, fs) {
             .catch(err => console.log(err));
     });
 
-    app.post('/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
-        var collection = db.get().collection('formations');
-        var placeholder = {};
-        placeholder["levelsTab." + req.params.levelIndex + ".gamesTab."+req.params.gameIndex] = req.body;
-        console.log(placeholder);
-        collection.update({"_id": new ObjectID(req.params.id)}, {$set:placeholder},function (err, docs) {
-            console.log(docs);
-            res.send({ack:'ok'});
-        });
+    app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
+        formations.replaceQuiz(db, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body)
+            .then(data => res.send({ack:'ok'}))
+            .catch(err => console.log(err));
     });
-
-
 };
 
