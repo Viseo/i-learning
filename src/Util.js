@@ -1304,6 +1304,9 @@ class Server {
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
         return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
+    static getImages() {
+        return dbListener.httpGetAsync('/getAllImages')
+    }
 }
 
 gui.ScrollablePanel = class ScrollablePanel {
