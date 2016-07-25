@@ -529,24 +529,30 @@ class Formation {
             messageNoModification = "Les modifications ont déjà été enregistrées";
 
         const displayErrorMessage = (message) => {
+            if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            }
             (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-            this.errorMessage = new svg.Text(message)
-                .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
+            this.errorMessage = new svg.Text(message);
+            this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
+            this.errorMessage.position(this.buttonWidth, 0)
                 .font("Arial", 15)
                 .anchor('start').color(myColors.red);
-            this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
             setTimeout(() => {
                 this.formationInfoManipulator.ordonator.unset(2);
             }, 5000);
         };
 
         const displaySaveMessage = (message, displayQuizzManager) => {
+            if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            }
             if (displayQuizzManager) {
                 displayQuizzManager();
             } else {
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessageSave = new svg.Text(message)
-                    .position(0, -this.saveButtonHeight / 2 - MARGIN)
+                    .position(this.buttonWidth, -this.saveButtonHeight / 2 - MARGIN)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.green);
                 this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
@@ -655,12 +661,16 @@ class Formation {
             messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
             messagePublication = "ok";
         this.displayPublicationMessage = (messagePublication) => {
+            if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
+                this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+            }
+            this.formationInfoManipulator.ordonator.unset(2);
             (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-            this.errorMessagePublication = new svg.Text(messagePublication)
-                .position(0, -this.publicationButtonHeight / 2 - MARGIN)
+            this.errorMessagePublication = new svg.Text(messagePublication);
+            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+            this.errorMessagePublication.position(-this.buttonWidth, -this.publicationButtonHeight / 2 - MARGIN)
                 .font("Arial", 20)
                 .anchor('middle').color(myColors.red);
-            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
             svg.timeout(() => {
                 if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                     this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
@@ -741,7 +751,7 @@ class Formation {
 
         this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
         this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
-        this.ButtonWidth = 150;
+        this.buttonWidth = 150;
         this.globalMargin = {
             height: this.marginRatio * drawing.height,
             width: this.marginRatio * drawing.width
@@ -1046,7 +1056,7 @@ class QuizzManager {
     displayMessage (message, color) {
         this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
         this.questionCreator.errorMessagePreview = new svg.Text(message)
-            .position(this.ButtonWidth, -this.saveButton.cadre.height/2-MARGIN/2)
+            .position(this.buttonWidth, -this.saveButton.cadre.height/2-MARGIN/2)
             .font("Arial", 20)
             .anchor('middle').color(color);
         this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
