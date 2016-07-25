@@ -1,99 +1,100 @@
 exports.Domain = function (globalVariables) {
 
-    let iRuntime, aRuntime, imageController, asyncTimerController;
+let iRuntime, aRuntime, imageController, asyncTimerController;
 
-    let
-        runtime = globalVariables.runtime,
-        drawing = globalVariables.drawing,
-        drawings = globalVariables.drawings,
-        svg = globalVariables.svg,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
-        Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server;
+let
+    runtime = globalVariables.runtime,
+    drawing = globalVariables.drawing,
+    drawings = globalVariables.drawings,
+    svg = globalVariables.svg,
+    clientWidth = globalVariables.clientWidth,
+    clientHeight = globalVariables.clientHeight,
+    Manipulator = globalVariables.util.Manipulator,
+    MiniatureFormation = globalVariables.util.MiniatureFormation,
+    Puzzle = globalVariables.util.Puzzle,
+    ReturnButton = globalVariables.util.ReturnButton,
+    Server = globalVariables.util.Server,
+    playerMode = globalVariables.playerMode;
 
-    const ImageRuntime = {
-        images: {},
-        count: 0,
+const ImageRuntime = {
+    images: {},
+    count: 0,
 
-        getImage: function (imgUrl, onloadHandler) {
-            this.count++;
-            const image = {
-                src: imgUrl,
-                onload: onloadHandler,
-                id: "i" + this.count
-            };
-            this.images[image.id] = image;
-            return image;
-        },
+    getImage: function (imgUrl, onloadHandler) {
+        this.count++;
+        const image = {
+            src: imgUrl,
+            onload: onloadHandler,
+            id: "i" + this.count
+        };
+        this.images[image.id] = image;
+        return image;
+    },
 
-        imageLoaded: function (id, w, h) {
-            this.images[id].width = w;
-            this.images[id].height = h;
-            this.images[id].onload();
-        }
-    };
+    imageLoaded: function (id, w, h) {
+        this.images[id].width = w;
+        this.images[id].height = h;
+        this.images[id].onload();
+    }
+};
 
-    const AsyncTimerRuntime = {
-        timers: {},
-        count: 0,
+const AsyncTimerRuntime = {
+    timers: {},
+    count: 0,
 
-        interval: function (handler, timer) {
-            const interval = {
-                id: "interval" + this.count,
-                next: handler,
-                timer: timer
-            };
-            this.count++;
-            this.timers[interval.id] = interval;
-            return interval;
-        },
+    interval: function (handler, timer) {
+        const interval = {
+            id: "interval" + this.count,
+            next: handler,
+            timer: timer
+        };
+        this.count++;
+        this.timers[interval.id] = interval;
+        return interval;
+    },
 
-        clearInterval: function (id) {
-            delete this.timers[id];
-        },
+    clearInterval: function (id) {
+        delete this.timers[id];
+    },
 
-        timeout: function (handler, timer) {
-            const timeout = {
-                id: "timeout" + this.count,
-                next: function () {
-                    handler();
-                    delete this;
-                },
-                timer: timer
-            };
-            this.count++;
-            this.timers[timeout.id] = timeout;
-            return timeout;
-        }
-    };
+    timeout: function (handler, timer) {
+        const timeout = {
+            id: "timeout" + this.count,
+            next: function () {
+                handler();
+                delete this;
+            },
+            timer: timer
+        };
+        this.count++;
+        this.timers[timeout.id] = timeout;
+        return timeout;
+    }
+};
 
-    runtime && (iRuntime = ImageRuntime);
-    runtime && (aRuntime = AsyncTimerRuntime);
-    imageController = ImageController(iRuntime);
-    globalVariables.imageController = imageController;
-    asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
-    globalVariables.asyncTimerController = asyncTimerController;
+runtime && (iRuntime = ImageRuntime);
+runtime && (aRuntime = AsyncTimerRuntime);
+imageController = ImageController(iRuntime);
+globalVariables.imageController = imageController;
+asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
+globalVariables.asyncTimerController = asyncTimerController;
 
-    setGlobalVariables = () => {
-        runtime = globalVariables.runtime;
-        drawing = globalVariables.drawing;
-        drawings = globalVariables.drawings;
-        svg = globalVariables.svg;
-        clientWidth = globalVariables.clientWidth;
-        clientHeight = globalVariables.clientHeight;
-        Manipulator = globalVariables.util.Manipulator;
-        MiniatureFormation = globalVariables.util.MiniatureFormation;
-        Puzzle = globalVariables.util.Puzzle;
-        ReturnButton = globalVariables.util.ReturnButton;
-        Server = globalVariables.util.Server;
-    };
+setGlobalVariables = () => {
+    runtime = globalVariables.runtime;
+    drawing = globalVariables.drawing;
+    drawings = globalVariables.drawings;
+    svg = globalVariables.svg;
+    clientWidth = globalVariables.clientWidth;
+    clientHeight = globalVariables.clientHeight;
+    Manipulator = globalVariables.util.Manipulator;
+    MiniatureFormation = globalVariables.util.MiniatureFormation;
+    Puzzle = globalVariables.util.Puzzle;
+    ReturnButton = globalVariables.util.ReturnButton;
+    Server = globalVariables.util.Server;
+};
 
 class Answer {
-    constructor (answerParameters, parent) {
+    constructor(answerParameters, parent) {
         this.parentQuestion = parent;
         let answer = {
             label: '',
@@ -113,37 +114,37 @@ class Answer {
         answer.explanation && (this.filled = true);
         answer.font && (this.font = answer.font);
 
+        this.imageLoaded = false;
+
+        if (answer.imageSrc) {
+            let self = this;
+            this.image = imageController.getImage(this.imageSrc, function () {
+                self.imageLoaded = true;
+                self.dimImage = {width: this.width, height: this.height};
+            });
             this.imageLoaded = false;
-
-            if (answer.imageSrc) {
-                let self = this;
-                this.image = imageController.getImage(this.imageSrc, function () {
-                    self.imageLoaded = true;
-                    self.dimImage = {width: this.width, height: this.height};
-                });
-                this.imageLoaded = false;
-            } else {
-                this.imageLoaded = true;
-            }
-
-            this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
-            this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
-
-            this.bordure = null;
-            this.content = null;
+        } else {
+            this.imageLoaded = true;
         }
 
-        remove() {
-            let index = this.parentQuestion.tabAnswer.indexOf(this);
-            if (index !== -1) {
-                this.parentQuestion.tabAnswer.splice(index, 1);
-                return true;
-            } else {
-                return false;
-            }
-        }
+        this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
+        this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
 
-    isEditable (editor, editable) {
+        this.bordure = null;
+        this.content = null;
+    }
+
+    remove() {
+        let index = this.parentQuestion.tabAnswer.indexOf(this);
+        if (index !== -1) {
+            this.parentQuestion.tabAnswer.splice(index, 1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    isEditable(editor, editable) {
         this.linesManipulator = new Manipulator(this);
         this.linesManipulator.addOrdonator(4);
         this.manipulator.last.add(this.linesManipulator.first);
@@ -173,24 +174,24 @@ class Answer {
     }
 }
 
-    class Question {
-        constructor(question, quizz) {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(6);
-            this.answersManipulator = new Manipulator(this);
-            this.manipulator.last.add(this.answersManipulator.first);
-            this.resetManipulator = new Manipulator(this);
-            this.resetManipulator.addOrdonator(2);
-            this.answersManipulator.last.add(this.resetManipulator.first);
-            this.validateManipulator = new Manipulator(this);
-            this.validateManipulator.addOrdonator(2);
-            this.answersManipulator.last.add(this.validateManipulator.first);
-            this.simpleChoiceMessageManipulator = new Manipulator(this);
-            this.simpleChoiceMessageManipulator.addOrdonator(2);
-            this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
-            this.invalidQuestionPictogramManipulator = new Manipulator(this);
-            this.invalidQuestionPictogramManipulator.addOrdonator(5);
-            this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
+class Question {
+    constructor(question, quizz) {
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(6);
+        this.answersManipulator = new Manipulator(this);
+        this.manipulator.last.add(this.answersManipulator.first);
+        this.resetManipulator = new Manipulator(this);
+        this.resetManipulator.addOrdonator(2);
+        this.answersManipulator.last.add(this.resetManipulator.first);
+        this.validateManipulator = new Manipulator(this);
+        this.validateManipulator.addOrdonator(2);
+        this.answersManipulator.last.add(this.validateManipulator.first);
+        this.simpleChoiceMessageManipulator = new Manipulator(this);
+        this.simpleChoiceMessageManipulator.addOrdonator(2);
+        this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
+        this.invalidQuestionPictogramManipulator = new Manipulator(this);
+        this.invalidQuestionPictogramManipulator.addOrdonator(5);
+        this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
         this.validLabelInput = true;
 
@@ -198,7 +199,7 @@ class Answer {
         this.parentQuizz = quizz;
         this.tabAnswer = [];
         this.fontSize = 20;
-        this.questionNum = question && question.questionNum || this.parentQuizz.tabQuestions.length+1;
+        this.questionNum = question && question.questionNum || this.parentQuizz.tabQuestions.length + 1;
 
         if (!question) {
             this.label = "";
@@ -220,10 +221,10 @@ class Answer {
             this.multipleChoice = question.multipleChoice;
             this.selectedAnswers = question.selectedAnswers || [];
 
-                question.colorBordure && (this.colorBordure = question.colorBordure);
-                question.bgColor && (this.bgColor = question.bgColor);
-                question.font && (this.font = question.font);
-                question.fontSize && (this.fontSize = question.fontSize);
+            question.colorBordure && (this.colorBordure = question.colorBordure);
+            question.bgColor && (this.bgColor = question.bgColor);
+            question.font && (this.font = question.font);
+            question.fontSize && (this.fontSize = question.fontSize);
 
             if (question.imageSrc) {
                 this.image = imageController.getImage(this.imageSrc, () => {
@@ -235,42 +236,42 @@ class Answer {
                 this.imageLoaded = true;
             }
         }
-        this.questionType = (this.multipleChoice) ? myQuestionType.tab[1]: myQuestionType.tab[0];
+        this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
         if (question !== null && question.tabAnswer !== null) {
 
-                question.tabAnswer.forEach(it => {
-                    var tmp = new Answer(it, this);
-                    this.tabAnswer.push(tmp);
-                    if (tmp.correct) {
-                        this.rightAnswers.push(tmp);
-                    }
+            question.tabAnswer.forEach(it => {
+                var tmp = new Answer(it, this);
+                this.tabAnswer.push(tmp);
+                if (tmp.correct) {
+                    this.rightAnswers.push(tmp);
+                }
 
-                });
-            }
-
-            this.lines = Math.floor(this.tabAnswer.length / this.rows); //+ 1;
-            if (this.tabAnswer.length % this.rows !== 0) {
-                this.lines += 1;
-            }// else {
-            //    this.lines = Math.floor(this.tabAnswer.length / this.rows) + 1;
-            //}
-
-            this.bordure = null;
-            this.content = null;
+            });
         }
 
-    remove () {
+        this.lines = Math.floor(this.tabAnswer.length / this.rows); //+ 1;
+        if (this.tabAnswer.length % this.rows !== 0) {
+            this.lines += 1;
+        }// else {
+        //    this.lines = Math.floor(this.tabAnswer.length / this.rows) + 1;
+        //}
+
+        this.bordure = null;
+        this.content = null;
+    }
+
+    remove() {
         let index = this.parentQuizz.tabQuestions.indexOf(this);
-        if(index!== -1){
+        if (index !== -1) {
             this.parentQuizz.tabQuestions.splice(index, 1);
             return true;
         }
-        else{
+        else {
             return false;
         }
     }
 
-    checkValidity () {
+    checkValidity() {
         var validation = true;
         this.questionType.validationTab.forEach((funcEl) => {
             var result = funcEl(this);
@@ -279,15 +280,15 @@ class Answer {
         validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
     }
 
-    toggleInvalidQuestionPictogram(active){
+    toggleInvalidQuestionPictogram(active) {
         let pictoSize = 20;
-        if(active) {
+        if (active) {
             this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
             this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
             this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
             this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
             this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
-        }else{
+        } else {
             this.invalidQuestionPictogramManipulator.ordonator.unset(0);
             this.invalidQuestionPictogramManipulator.ordonator.unset(2);
             this.invalidQuestionPictogramManipulator.ordonator.unset(3);
@@ -295,10 +296,10 @@ class Answer {
     }
 }
 
-    class QuestionCreator {
-        constructor(parent, question) {
-            this.MAX_ANSWERS = 8;
-            this.parent = parent;
+class QuestionCreator {
+    constructor(parent, question) {
+        this.MAX_ANSWERS = 8;
+        this.parent = parent;
 
         this.manipulator = new Manipulator(this);
         this.manipulator.addOrdonator(2);
@@ -316,22 +317,22 @@ class Answer {
 
         this.validLabelInput = true;
 
-            this.labelDefault = "Cliquer deux fois pour ajouter la question";
-            this.questionType = myQuestionType.tab;
-            this.toggleButtonHeight = 40;
+        this.labelDefault = "Cliquer deux fois pour ajouter la question";
+        this.questionType = myQuestionType.tab;
+        this.toggleButtonHeight = 40;
 
-            if (!question) {
-                // init default : 2 empty answers
-                this.linkedQuestion = new Question(defaultQuestion, this.parent.quizz);
-            } else {
-                this.loadQuestion(question);
-            }
-            this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
-            this.manipulator.last.add(this.puzzle.manipulator.first);
-            this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
+        if (!question) {
+            // init default : 2 empty answers
+            this.linkedQuestion = new Question(defaultQuestion, this.parent.quizz);
+        } else {
+            this.loadQuestion(question);
         }
+        this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
+        this.manipulator.last.add(this.puzzle.manipulator.first);
+        this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
+    }
 
-    checkInputTextArea (myObj) {
+    checkInputTextArea(myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
             this.validLabelInput = true;
             myObj.remove();
@@ -344,62 +345,62 @@ class Answer {
         }
     }
 
-        loadQuestion(quest) {
-            this.linkedQuestion = quest;
-            quest.label && (this.label = quest.label);
-            if (typeof quest.multipleChoice !== 'undefined') {
-                this.multipleChoice = quest.multipleChoice;
-            } else {
-                this.multipleChoice = false;
-            }
-            quest.tabAnswer.forEach(answer => {
-                if (answer instanceof Answer) {
-                    answer.isEditable(this, true);
-                }
-                answer.popIn = new PopIn(answer, true);
-            });
-            quest.tabAnswer.forEach(el => {
-                if (el.correct) {
-                    quest.rightAnswers.push(el);
-                }
-            });
+    loadQuestion(quest) {
+        this.linkedQuestion = quest;
+        quest.label && (this.label = quest.label);
+        if (typeof quest.multipleChoice !== 'undefined') {
+            this.multipleChoice = quest.multipleChoice;
+        } else {
+            this.multipleChoice = false;
         }
+        quest.tabAnswer.forEach(answer => {
+            if (answer instanceof Answer) {
+                answer.isEditable(this, true);
+            }
+            answer.popIn = new PopIn(answer, true);
+        });
+        quest.tabAnswer.forEach(el => {
+            if (el.correct) {
+                quest.rightAnswers.push(el);
+            }
+        });
     }
+}
 
-    class PopIn {
-        constructor(answer, editable) {
-            this.answer = answer;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(5);
-            this.blackCrossManipulator = new Manipulator(this);
-            this.blackCrossManipulator.addOrdonator(1);
-            this.manipulator.ordonator.set(2, this.blackCrossManipulator.first);
-            this.panelManipulator = new Manipulator(this);
-            this.manipulator.last.add(this.panelManipulator.first);
-            this.textManipulator = new Manipulator(this);
-            this.textManipulator.addOrdonator(1);
-            this.editable = editable;
-            if (this.editable) {
-                this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
-                this.defaultLabel = "Cliquer ici pour ajouter du texte";
-            }
-            if (answer.explanation && answer.explanation.label) {
-                this.label = answer.explanation.label;
-            }
-            if (answer.explanation && answer.explanation.image) {
-                this.image = answer.explanation.image;
-            }
-            answer.filled = (!this.image && !this.label) ? false : true;
+class PopIn {
+    constructor(answer, editable) {
+        this.answer = answer;
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(5);
+        this.blackCrossManipulator = new Manipulator(this);
+        this.blackCrossManipulator.addOrdonator(1);
+        this.manipulator.ordonator.set(2, this.blackCrossManipulator.first);
+        this.panelManipulator = new Manipulator(this);
+        this.manipulator.last.add(this.panelManipulator.first);
+        this.textManipulator = new Manipulator(this);
+        this.textManipulator.addOrdonator(1);
+        this.editable = editable;
+        if (this.editable) {
+            this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
+            this.defaultLabel = "Cliquer ici pour ajouter du texte";
         }
+        if (answer.explanation && answer.explanation.label) {
+            this.label = answer.explanation.label;
+        }
+        if (answer.explanation && answer.explanation.image) {
+            this.image = answer.explanation.image;
+        }
+        answer.filled = (!this.image && !this.label) ? false : true;
     }
+}
 
-    class AddEmptyElement {
-        constructor(parent, type) {
-            this.manipulator = new Manipulator(this);
+class AddEmptyElement {
+    constructor(parent, type) {
+        this.manipulator = new Manipulator(this);
 
-            this.manipulator.addOrdonator(3);
+        this.manipulator.addOrdonator(3);
 
-            type && (this.type = type);
+        type && (this.type = type);
 
         switch (type) {
             case 'question':
@@ -415,81 +416,81 @@ class Answer {
         this.parent = parent;
     }
 
-        remove() {
-            console.log("Tentative de suppression d'AddEmptyElement");
+    remove() {
+        console.log("Tentative de suppression d'AddEmptyElement");
+    }
+}
+
+class Level {
+    constructor(formation, gamesTab) {
+        this.parentFormation = formation;
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(3);
+        this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
+        this.gamesTab = gamesTab ? gamesTab : [];
+        this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
+        this.y = (this.index - 1) * this.parentFormation.levelHeight;
+        this.obj = null;
+    }
+
+    removeGame(index) {
+        if (typeof index === 'undefined') {
+            this.gamesTab.pop();
+        } else {
+            this.gamesTab.splice(index, 1);
         }
     }
 
-    class Level {
-        constructor(formation, gamesTab) {
-            this.parentFormation = formation;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(3);
-            this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
-            this.gamesTab = gamesTab ? gamesTab : [];
-            this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
-            this.y = (this.index - 1) * this.parentFormation.levelHeight;
-            this.obj = null;
-        }
-
-        removeGame(index) {
-            if (typeof index === 'undefined') {
-                this.gamesTab.pop();
-            } else {
-                this.gamesTab.splice(index, 1);
-            }
-        }
-
-        addGame(game, index) {
-            if (!index) {
-                this.gamesTab.push(game);
-            } else {
-                this.gamesTab.splice(index, 0, game);
-            }
+    addGame(game, index) {
+        if (!index) {
+            this.gamesTab.push(game);
+        } else {
+            this.gamesTab.splice(index, 0, game);
         }
     }
+}
 
-    class FormationsManager {
-        constructor(formations) {
-            this.x = MARGIN;
-            this.tileHeight = 150;
-            this.tileWidth = this.tileHeight * (16 / 9);
-            this.addButtonWidth = 330;
-            this.addButtonHeight = 40;
-            this.fontSize = 20;
-            this.plusDim = this.fontSize * 2;
-            this.iconeSize = this.plusDim / 1.5;
-            this.puzzleRows = 6;
-            this.initialFormationsPosX = MARGIN;
-            this.rows = 6;
-            this.lines = 4;
-            this.formations = [];
-            this.count = 0;
-            for (let formation of formations) {
-                this.formations.push(new Formation(formation, this));
-            }
-            this.manipulator = new Manipulator();
-            this.header = new Header();
-            this.headerManipulator = new Manipulator();
-            this.headerManipulator.addOrdonator(1);
-            this.addButtonManipulator = new Manipulator();
-            this.addButtonManipulator.addOrdonator(4);
-            this.checkManipulator = new Manipulator();
-            this.checkManipulator.addOrdonator(4);
-            this.exclamationManipulator = new Manipulator();
-            this.exclamationManipulator.addOrdonator(4);
-            this.formationsManipulator = new Manipulator();
-            this.clippingManipulator = new Manipulator(this);
-
-            /* for Player */
-            this.toggleFormationsManipulator = new Manipulator(this);
-            this.toggleFormationsManipulator.addOrdonator(3);
+class FormationsManager {
+    constructor(formations) {
+        this.x = MARGIN;
+        this.tileHeight = 150;
+        this.tileWidth = this.tileHeight * (16 / 9);
+        this.addButtonWidth = 330;
+        this.addButtonHeight = 40;
+        this.fontSize = 20;
+        this.plusDim = this.fontSize * 2;
+        this.iconeSize = this.plusDim / 1.5;
+        this.puzzleRows = 6;
+        this.initialFormationsPosX = MARGIN;
+        this.rows = 6;
+        this.lines = 4;
+        this.formations = [];
+        this.count = 0;
+        for (let formation of formations) {
+            this.formations.push(new Formation(formation, this));
         }
+        this.manipulator = new Manipulator();
+        this.header = new Header();
+        this.headerManipulator = new Manipulator();
+        this.headerManipulator.addOrdonator(1);
+        this.addButtonManipulator = new Manipulator();
+        this.addButtonManipulator.addOrdonator(4);
+        this.checkManipulator = new Manipulator();
+        this.checkManipulator.addOrdonator(4);
+        this.exclamationManipulator = new Manipulator();
+        this.exclamationManipulator.addOrdonator(4);
+        this.formationsManipulator = new Manipulator();
+        this.clippingManipulator = new Manipulator(this);
+
+        /* for Player */
+        this.toggleFormationsManipulator = new Manipulator(this);
+        this.toggleFormationsManipulator.addOrdonator(3);
     }
+}
 
 class Formation {
-    constructor (formation, formationsManager) {
-        this.gamesCounter =  {
+    constructor(formation, formationsManager) {
+        this.gamesCounter = {
             quizz: 0,
             bd: 0
         };
@@ -503,7 +504,7 @@ class Formation {
         this.formationInfoManipulator.addOrdonator(3);
         this.graphManipulator = new Manipulator(this);
         this.graphManipulator.addOrdonator(10);
-        this.messageDragDropManipulator=new Manipulator(this);
+        this.messageDragDropManipulator = new Manipulator(this);
         this.messageDragDropManipulator.addOrdonator(2);
         this.arrowsManipulator = new Manipulator(this);
         this.miniaturesManipulator = new Manipulator(this);
@@ -530,7 +531,6 @@ class Formation {
         this.graphCreaHeightRatio = 0.85;
         this.graphPlayHeightRatio = 0.90;
 
-
         this.x = MARGIN;
         this.regex = FORMATION_TITLE_REGEX;
         this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
@@ -542,59 +542,59 @@ class Formation {
         this.marginRatio = 0.03;
         this.label = formation.label ? formation.label : "";
         this.status = formation.status ? formation.status : statusEnum.NotPublished;
-        this.validLabelInput = true ;
+        this.validLabelInput = true;
 
-            this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
+        this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
-            this.levelHeight = 150;
-            this.graphElementSize = this.levelHeight * 0.65;
-            this.miniature = new MiniatureFormation(this);
+        this.levelHeight = 150;
+        this.graphElementSize = this.levelHeight * 0.65;
+        this.miniature = new MiniatureFormation(this);
 
         this.redim();
         this.manipulator.last.add(this.saveFormationButtonManipulator.first);
         this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
     }
 
-        addNewGame(event, lib) {
-            var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
-            let level = -1;
-            while (dropLocation > -this.panel.content.height / 2) {
-                dropLocation -= this.levelHeight;
-                level++;
-            }
-            if (level >= this.levelsTab.length) {
-                level = this.levelsTab.length;
-                this.addNewLevel(level);
-            }
-            var objectToBeAddedLabel = lib.draggedObjectLabel ? lib.draggedObjectLabel : (lib.gameSelected.content.messageText ? lib.gameSelected.content.messageText : false);
-            switch (objectToBeAddedLabel) {
-                case ("Quiz"):
-                    var newQuizz = new Quizz(defaultQuizz, false, this);
-                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
-                    newQuizz.id = "quizz" + this.gamesCounter.quizz;
-                    this.gamesCounter.quizz++;
-                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
-                    this.levelsTab[level].gamesTab.push(newQuizz);
-                    break;
-                case ("Bd"):
-                    var newBd = new Bd({}, this);
-                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
-                    newBd.id = "bd" + this.gamesCounter.bd;
-                    this.gamesCounter.bd++;
-                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
-                    this.levelsTab[level].gamesTab.push(newBd);
-                    break;
-            }
-            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+    addNewGame(event, lib) {
+        var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
+        let level = -1;
+        while (dropLocation > -this.panel.content.height / 2) {
+            dropLocation -= this.levelHeight;
+            level++;
         }
+        if (level >= this.levelsTab.length) {
+            level = this.levelsTab.length;
+            this.addNewLevel(level);
+        }
+        var objectToBeAddedLabel = lib.draggedObjectLabel ? lib.draggedObjectLabel : (lib.gameSelected.content.messageText ? lib.gameSelected.content.messageText : false);
+        switch (objectToBeAddedLabel) {
+            case ("Quiz"):
+                var newQuizz = new Quizz(defaultQuizz, false, this);
+                newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
+                newQuizz.id = "quizz" + this.gamesCounter.quizz;
+                this.gamesCounter.quizz++;
+                newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
+                this.levelsTab[level].gamesTab.push(newQuizz);
+                break;
+            case ("Bd"):
+                var newBd = new Bd({}, this);
+                newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
+                newBd.id = "bd" + this.gamesCounter.bd;
+                this.gamesCounter.bd++;
+                newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
+                this.levelsTab[level].gamesTab.push(newBd);
+                break;
+        }
+        this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+    }
 
-        saveFormation(displayQuizzManager) {
-            const messageSave = "Votre travail a bien été enregistré.",
-                messageError = "Vous devez remplir correctement le nom de la formation.",
-                messageReplace = "Les modifications ont bien été enregistrées",
-                messageUsedName = "Le nom de cette formation est déjà utilisé !",
-                messageNoModification = "Les modifications ont déjà été enregistrées";
+    saveFormation(displayQuizzManager) {
+        const messageSave = "Votre travail a bien été enregistré.",
+            messageError = "Vous devez remplir correctement le nom de la formation.",
+            messageReplace = "Les modifications ont bien été enregistrées",
+            messageUsedName = "Le nom de cette formation est déjà utilisé !",
+            messageNoModification = "Les modifications ont déjà été enregistrées";
 
         const displayErrorMessage = (message) => {
             if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
@@ -632,90 +632,90 @@ class Formation {
             }
         };
 
-            const displayMessage = message => {
-                switch (message) {
-                    case messageError:
-                    case messageUsedName:
-                        displayErrorMessage(message);
-                        break;
-                    default:
-                        displaySaveMessage(message, displayQuizzManager);
-                }
+        const displayMessage = message => {
+            switch (message) {
+                case messageError:
+                case messageUsedName:
+                    displayErrorMessage(message);
+                    break;
+                default:
+                    displaySaveMessage(message, displayQuizzManager);
+            }
+        };
+
+        if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+            const getObjectToSave = () => {
+                const levelsTab = [];
+                const gamesCounter = {quizz: 0, bd: 0};
+                this.levelsTab.forEach((level, i) => {
+                    const gamesTab = [];
+                    levelsTab.push({gamesTab: gamesTab});
+                    level.gamesTab.forEach(game => {
+                        if (game.tabQuestions) {
+                            game.id || (game.id = "quizz" + gamesCounter.quizz);
+                            gamesCounter.quizz++;
+                        } else {
+                            game.id || (game.id = "bd" + gamesCounter.bd);
+                            gamesCounter.bd++;
+                        }
+                        levelsTab[i].gamesTab.push(game);
+                    });
+                });
+                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
             };
 
-            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
-                const getObjectToSave = () => {
-                    const levelsTab = [];
-                    const gamesCounter = {quizz: 0, bd: 0};
-                    this.levelsTab.forEach((level, i) => {
-                        const gamesTab = [];
-                        levelsTab.push({gamesTab: gamesTab});
-                        level.gamesTab.forEach(game => {
-                            if (game.tabQuestions) {
-                                game.id || (game.id = "quizz" + gamesCounter.quizz);
-                                gamesCounter.quizz++;
-                            } else {
-                                game.id || (game.id = "bd" + gamesCounter.bd);
-                                gamesCounter.bd++;
-                            }
-                            levelsTab[i].gamesTab.push(game);
-                        });
-                    });
-                    return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
-                };
+            let addNewFormation = () => {
+                Server.getFormationByName(this.label)
+                    .then(data => {
+                        const formationWithSameName = JSON.parse(data).formation;
+                        if (!formationWithSameName) {
+                            return getObjectToSave();
+                        } else {
+                            throw messageUsedName;
+                        }
+                    })
+                    .then(formation => Server.insertFormation(formation, ignoredData))
+                    .then(data => {
+                        this._id = JSON.parse(data);
+                        displayMessage(messageSave);
+                    })
+                    .catch(displayMessage);
+            };
 
-                let addNewFormation = () => {
-                    Server.getFormationByName(this.label)
-                        .then(data => {
-                            const formationWithSameName = JSON.parse(data).formation;
-                            if (!formationWithSameName) {
-                                return getObjectToSave();
+            let replaceFormation = () => {
+                Server.getFormationByName(this.label)
+                    .then(data => {
+                        let formationWithSameName = JSON.parse(data).formation;
+                        if (formationWithSameName) {
+                            const id = formationWithSameName._id;
+                            delete formationWithSameName._id;
+                            formationWithSameName = JSON.stringify(formationWithSameName);
+                            const newFormation = JSON.stringify(getObjectToSave(), ignoredData);
+                            if (id === this._id) {
+                                if (formationWithSameName === newFormation) {
+                                    throw messageNoModification;
+                                } else {
+                                    return getObjectToSave();
+                                }
                             } else {
                                 throw messageUsedName;
                             }
-                        })
-                        .then(formation => Server.insertFormation(formation, ignoredData))
-                        .then(data => {
-                            this._id = JSON.parse(data);
-                            displayMessage(messageSave);
-                        })
-                        .catch(displayMessage);
-                };
+                        } else {
+                            return getObjectToSave();
+                        }
+                    })
+                    .then(formation => Server.replaceFormation(this._id, formation, ignoredData))
+                    .then(() => displayMessage(messageReplace))
+                    .catch(displayMessage);
+            };
 
-                let replaceFormation = () => {
-                    Server.getFormationByName(this.label)
-                        .then(data => {
-                            let formationWithSameName = JSON.parse(data).formation;
-                            if (formationWithSameName) {
-                                const id = formationWithSameName._id;
-                                delete formationWithSameName._id;
-                                formationWithSameName = JSON.stringify(formationWithSameName);
-                                const newFormation = JSON.stringify(getObjectToSave(), ignoredData);
-                                if (id === this._id) {
-                                    if (formationWithSameName === newFormation) {
-                                        throw messageNoModification;
-                                    } else {
-                                        return getObjectToSave();
-                                    }
-                                } else {
-                                    throw messageUsedName;
-                                }
-                            } else {
-                                return getObjectToSave();
-                            }
-                        })
-                        .then(formation => Server.replaceFormation(this._id, formation, ignoredData))
-                        .then(() => displayMessage(messageReplace))
-                        .catch(displayMessage);
-                };
-
-                this._id ? replaceFormation() : addNewFormation();
-            } else {
-                displayMessage(messageError);
-            }
+            this._id ? replaceFormation() : addNewFormation();
+        } else {
+            displayMessage(messageError);
         }
+    }
 
-    publicationFormation () {
+    publicationFormation() {
         this.publishedButtonActivated = true;
 
         [].concat(...this.levelsTab.map(level => level.gamesTab))
@@ -753,12 +753,12 @@ class Formation {
             this.displayPublicationMessage(messageErrorNoNameFormation);
         }
 
-        if (this.levelsTab.length === 0){
+        if (this.levelsTab.length === 0) {
             this.displayPublicationMessage(messageErrorNoGame);
         }
     };
 
-    loadFormation (formation) {
+    loadFormation(formation) {
         this.levelsTab = [];
         this.gamesCounter = formation.gamesCounter;
         formation.link ? this.link = formation.link : this.link = [];
@@ -767,55 +767,55 @@ class Formation {
             level.gamesTab.forEach(game => {
                 game.tabQuestions && gamesTab.push(new Quizz(game, false, this));
                 game.tabQuestions || gamesTab.push(new Bd(game, this));
-                gamesTab[gamesTab.length-1].id = game.id;
+                gamesTab[gamesTab.length - 1].id = game.id;
             });
             this.levelsTab.push(new Level(this, gamesTab));
         });
     }
 
-        findLongestLevel() {
-            var longestLevelCandidates = [];
-            longestLevelCandidates.index = 0;
-            this.levelsTab.forEach(level => {
-                if (level.gamesTab.length >= this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                    if (level.gamesTab.length === this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                        longestLevelCandidates.push(level);
-                    } else {
-                        longestLevelCandidates = [];
-                        longestLevelCandidates.push(level);
-                    }
-                    longestLevelCandidates.index = level.index - 1;
+    findLongestLevel() {
+        var longestLevelCandidates = [];
+        longestLevelCandidates.index = 0;
+        this.levelsTab.forEach(level => {
+            if (level.gamesTab.length >= this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                if (level.gamesTab.length === this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    longestLevelCandidates.push(level);
+                } else {
+                    longestLevelCandidates = [];
+                    longestLevelCandidates.push(level);
                 }
-            });
-            return longestLevelCandidates;
-        }
+                longestLevelCandidates.index = level.index - 1;
+            }
+        });
+        return longestLevelCandidates;
+    }
 
-        findGameById(id) {
-            return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
-        }
+    findGameById(id) {
+        return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
+    }
 
-        isGameAvailable(game) {
-            let available = true;
-            this.link.forEach(linkElement => {
-                if (linkElement.childGame === game.id) {
-                    const parentGame = this.findGameById(linkElement.parentGame);
-                    if (parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
-                        available = false;
-                        return available;
-                    }
+    isGameAvailable(game) {
+        let available = true;
+        this.link.forEach(linkElement => {
+            if (linkElement.childGame === game.id) {
+                const parentGame = this.findGameById(linkElement.parentGame);
+                if (parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
+                    available = false;
+                    return available;
                 }
-            });
-            return available;
-        }
+            }
+        });
+        return available;
+    }
 
-        redim() {
-            this.gamesLibraryManipulator = this.library.libraryManipulator;
-            this.libraryWidth = drawing.width * this.libraryWidthRatio;
-            this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-            this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;
-            this.levelWidth = drawing.width - this.libraryWidth - MARGIN;
-            this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
-            this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+    redim() {
+        this.gamesLibraryManipulator = this.library.libraryManipulator;
+        this.libraryWidth = drawing.width * this.libraryWidthRatio;
+        this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
+        this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;
+        this.levelWidth = drawing.width - this.libraryWidth - MARGIN;
+        this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
+        this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
 
         this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
         this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
@@ -826,9 +826,9 @@ class Formation {
         };
         this.clippingManipulator.flush();
 
-        }
+    }
 
-    checkInputTextArea (myObj) {
+    checkInputTextArea(myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
             this.validLabelInput = true;
             myObj.remove();
@@ -841,66 +841,70 @@ class Formation {
         }
     }
 
-        addNewLevel(index) {
-            var level = new Level(this);
-            if (!index) {
-                this.levelsTab.push(level);
-            } else {
-                this.levelsTab.splice(index, 0, level);
-            }
+    addNewLevel(index) {
+        var level = new Level(this);
+        if (!index) {
+            this.levelsTab.push(level);
+        } else {
+            this.levelsTab.splice(index, 0, level);
         }
+    }
 
-        removeLevel(index) {
-            this.levelsTab.splice(index - 1, 1);
+    removeLevel(index) {
+        this.levelsTab.splice(index - 1, 1);
+    }
+
+    clickToAdd() {
+        this.mouseUpGraphBlock = event => {
+            this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
+            this.library.gameSelected && this.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+            this.library.gameSelected = null;
+            svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
+        };
+        if (this.library.gameSelected) {
+            svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
+            svg.addEvent(this.messageDragDrop, "mouseup", this.mouseUpGraphBlock);
+            runtime && runtime.addEvent(this.panel.back.component, "mouseup", this.mouseUpGraphBlock);
         }
+    }
 
-        clickToAdd() {
-            this.mouseUpGraphBlock = event => {
-                this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
-                this.library.gameSelected && this.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-                this.library.gameSelected = null;
-                svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-            };
-            if (this.library.gameSelected) {
-                svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-                svg.addEvent(this.messageDragDrop, "mouseup", this.mouseUpGraphBlock);
-                runtime && runtime.addEvent(this.panel.back.component, "mouseup", this.mouseUpGraphBlock);
-            }
-        }
+    adjustGamesPositions(level) {
+        var nbOfGames = level.gamesTab.length;
+        var spaceOccupied = (nbOfGames) * (this.minimalMarginBetweenGraphElements) + this.graphElementSize * nbOfGames;
 
-        adjustGamesPositions(level) {
-            var nbOfGames = level.gamesTab.length;
-            var spaceOccupied = (nbOfGames) * (this.minimalMarginBetweenGraphElements) + this.graphElementSize * nbOfGames;
+        level.gamesTab.forEach(game => {
+            var pos = game.getPositionInFormation();
+            game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+            game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
+        });
+    }
 
+    trackProgress(displayFunction) {
+        this.levelsTab.forEach(level => {
             level.gamesTab.forEach(game => {
-                var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
+                delete game.miniature;
+                delete game.status;
             });
-        }
-
-        trackProgress(displayFunction) {
-            this.levelsTab.forEach(level => {
-                level.gamesTab.forEach(game => {
-                    delete game.miniature;
-                    delete game.status;
-                });
-            });
-            this.miniaturesManipulator.flush();
-            Server.getUser().then(data => {
-                let user = JSON.parse(data);
-                if (user.formationsTab) {
-                    let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
-                    formationUser && formationUser.gamesTab.forEach(game => {
-                        let theGame = this.findGameById(game.game);
-                        if (!theGame) {
-                            return;
-                        }
+        });
+        this.miniaturesManipulator.flush();
+        Server.getUser().then(data => {
+            let user = JSON.parse(data);
+            if (user.formationsTab) {
+                let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
+                formationUser && formationUser.gamesTab.forEach(game => {
+                    let theGame = this.findGameById(game.game);
+                    if (!theGame) {
+                        return;
+                    }
 
                     theGame.currentQuestionIndex = game.index;
                     theGame.questionsWithBadAnswers = [];
                     game.tabWrongAnswers.forEach(wrongAnswer => {
-                        theGame.questionsWithBadAnswers.add({index: wrongAnswer.index - 1, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:wrongAnswer.selectedAnswers});
+                        theGame.questionsWithBadAnswers.add({
+                            index: wrongAnswer.index - 1,
+                            question: theGame.tabQuestions[wrongAnswer.index - 1],
+                            selectedAnswers: wrongAnswer.selectedAnswers
+                        });
                     });
                     theGame.score = game.index - theGame.questionsWithBadAnswers.length;
                     theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
@@ -914,58 +918,58 @@ class Formation {
                 });
             });
 
-                displayFunction.call(this);
-            });
+            displayFunction.call(this);
+        });
+    }
+}
+
+class Library {
+    constructor(lib) {
+        this.libraryManipulator = new Manipulator(this);
+        this.libraryManipulator.addOrdonator(2);
+
+        this.title = lib.title;
+
+        this.itemsTab = [];
+        lib.tab && (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
+        this.libraryManipulators = [];
+
+        this.imageWidth = 50;
+        this.imageHeight = 50;
+
+        for (let i = 0; i < this.itemsTab.length; i++) {
+            this.libraryManipulators[i] = new Manipulator(this);
+            this.libraryManipulators[i].addOrdonator(2);
         }
+
+        this.font = lib.font || "Arial";
+        this.fontSize = lib.fontSize || 20;
+    }
+}
+
+class GamesLibrary extends Library {
+
+    constructor(lib) {
+        super(lib);
+        this.arrowModeManipulator = new Manipulator(this);
+        this.arrowModeManipulator.addOrdonator(3);
+
     }
 
-    class Library {
-        constructor(lib) {
-            this.libraryManipulator = new Manipulator(this);
-            this.libraryManipulator.addOrdonator(2);
+    dropAction(element, event) {
+        const target = drawings.background.getTarget(event.clientX, event.clientY);
+        let formation;
 
-            this.title = lib.title;
-
-            this.itemsTab = [];
-            lib.tab && (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
-            this.libraryManipulators = [];
-
-            this.imageWidth = 50;
-            this.imageHeight = 50;
-
-            for (let i = 0; i < this.itemsTab.length; i++) {
-                this.libraryManipulators[i] = new Manipulator(this);
-                this.libraryManipulators[i].addOrdonator(2);
-            }
-
-            this.font = lib.font || "Arial";
-            this.fontSize = lib.fontSize || 20;
+        if (target && target._acceptDrop) {
+            formation = target.parent.parentManip.parentObject;
+            formation.addNewGame(event, this);
         }
+        this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
     }
-
-    class GamesLibrary extends Library {
-
-        constructor(lib) {
-            super(lib);
-            this.arrowModeManipulator = new Manipulator(this);
-            this.arrowModeManipulator.addOrdonator(3);
-
-        }
-
-        dropAction(element, event) {
-            const target = drawings.background.getTarget(event.clientX, event.clientY);
-            let formation;
-
-            if (target && target._acceptDrop) {
-                formation = target.parent.parentManip.parentObject;
-                formation.addNewGame(event, this);
-            }
-            this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-        }
-    }
+}
 
 class ImagesLibrary extends Library {
-    constructor (lib) {
+    constructor(lib) {
         super(lib);
         this.addButtonManipulator = new Manipulator(this);
         this.addButtonManipulator.addOrdonator(3);
@@ -976,7 +980,7 @@ class ImagesLibrary extends Library {
         }
     }
 
-    dropAction (element, event) {
+    dropAction(element, event) {
         let target = drawings.background.getTarget(event.clientX, event.clientY);
         if (target && target._acceptDrop) {
             var oldQuest = {
@@ -1015,19 +1019,19 @@ class ImagesLibrary extends Library {
     }
 }
 
-    class Header {
-        constructor() {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(3);
-            this.userManipulator = new Manipulator(this);
-            this.userManipulator.addOrdonator(6);
-            this.label = "I-learning";
-            this.size = HEADER_SIZE;
-        }
+class Header {
+    constructor() {
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(3);
+        this.userManipulator = new Manipulator(this);
+        this.userManipulator.addOrdonator(6);
+        this.label = "I-learning";
+        this.size = HEADER_SIZE;
     }
+}
 
 class QuizzManager {
-    constructor (quizz) {
+    constructor(quizz) {
         this.quizzName = "";
         this.quizzNameDefault = "Ecrire ici le nom du quiz";
         this.tabQuestions = [defaultQuestion];
@@ -1069,74 +1073,74 @@ class QuizzManager {
         this.returnButton = new ReturnButton(this, "Retour à la formation");
         this.libraryIManipulator = this.library.libraryManipulator;
 
-            // WIDTH
-            this.libraryWidthRatio = 0.15;
-            this.questCreaWidthRatio = 1 - this.libraryWidthRatio;
+        // WIDTH
+        this.libraryWidthRatio = 0.15;
+        this.questCreaWidthRatio = 1 - this.libraryWidthRatio;
 
-            // HEIGHT
-            this.quizzInfoHeightRatio = 0.05;
-            this.questionsPuzzleHeightRatio = 0.25;
-            this.questCreaHeightRatio = 0.57;
-            this.libraryHeightRatio = this.questCreaHeightRatio;
-            this.previewButtonHeightRatio = 0.1;
-            this.saveButtonHeightRatio = 0.1;
-            this.marginRatio = 0.02;
-        }
+        // HEIGHT
+        this.quizzInfoHeightRatio = 0.05;
+        this.questionsPuzzleHeightRatio = 0.25;
+        this.questCreaHeightRatio = 0.57;
+        this.libraryHeightRatio = this.questCreaHeightRatio;
+        this.previewButtonHeightRatio = 0.1;
+        this.saveButtonHeightRatio = 0.1;
+        this.marginRatio = 0.02;
+    }
 
-    loadQuizz (quizz, indexOfEditedQuestion) {
-        this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
+    loadQuizz(quizz, indexOfEditedQuestion) {
+        this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion !== -1 ? indexOfEditedQuestion : 0);
         this.quizz = new Quizz(quizz, false);
         this.quizzName = this.quizz.title;
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-        this.quizz.tabQuestions.forEach( (question, index )  => {
-                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
-            (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+        this.quizz.tabQuestions.forEach((question, index) => {
+            //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+            (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
         });
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
+    };
+
+    getObjectToSave() {
+        this.tabQuestions = this.quizz.tabQuestions;
+        (this.tabQuestions[this.quizz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
+        this.tabQuestions.forEach(question => {
+            (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) && question.tabAnswer.pop();
+            question.tabAnswer.forEach(answer => {
+                if (answer.popIn) {
+                    answer.explanation = {};
+                    answer.popIn.image && (answer.explanation.image = answer.popIn.image);
+                    answer.popIn.label && (answer.explanation.label = answer.popIn.label);
+                    answer.popIn = null;
+                }
+            })
+        });
+        return {
+            id: this.quizz.id,
+            title: this.quizz.title,
+            tabQuestions: this.quizz.tabQuestions,
+            levelIndex: this.quizz.levelIndex,
+            gameIndex: this.quizz.gameIndex
         };
+    }
 
-        getObjectToSave() {
-            this.tabQuestions = this.quizz.tabQuestions;
-            (this.tabQuestions[this.quizz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
-            this.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) && question.tabAnswer.pop();
-                question.tabAnswer.forEach(answer => {
-                    if (answer.popIn) {
-                        answer.explanation = {};
-                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
-                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
-                        answer.popIn = null;
-                    }
-                })
-            });
-            return {
-                id: this.quizz.id,
-                title: this.quizz.title,
-                tabQuestions: this.quizz.tabQuestions,
-                levelIndex: this.quizz.levelIndex,
-                gameIndex: this.quizz.gameIndex
-            };
-        }
-
-    displayMessage (message, color) {
+    displayMessage(message, color) {
         this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
         this.questionCreator.errorMessagePreview = new svg.Text(message)
-            .position(this.buttonWidth, -this.saveButton.cadre.height/2-MARGIN/2)
+            .position(this.buttonWidth, -this.saveButton.cadre.height / 2 - MARGIN / 2)
             .font("Arial", 20)
             .anchor('middle').color(color);
         this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
         setTimeout(() => {
-            this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview)!==-1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+            this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview) !== -1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
         }, 5000);
     }
 
-    saveQuizz () {
+    saveQuizz() {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
         let errorMessage = "Entrer un nom valide pour enregistrer";
-        if(this.quizzName.match(REGEX)) {
+        if (this.quizzName.match(REGEX)) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
@@ -1150,8 +1154,10 @@ class QuizzManager {
 
             Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                 .then(() => {
-                    svg.addEvent(this.saveButton.cadre, "click", ()=>{});
-                    svg.addEvent(this.saveButton.content, "click", ()=>{});
+                    svg.addEvent(this.saveButton.cadre, "click", ()=> {
+                    });
+                    svg.addEvent(this.saveButton.content, "click", ()=> {
+                    });
                     this.quizz.title = this.quizzName;
                     this.quizz.tabQuestions = this.tabQuestions;
                     let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
@@ -1162,100 +1168,101 @@ class QuizzManager {
                     console.log("Votre travail a été bien enregistré");
                 });
         }
-        else{
+        else {
             this.errorMessage = new svg.Text(errorMessage);
             this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
-            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height+3+this.quizzLabel.cadre.height/2+svg.runtime.boundingRect(this.errorMessage.component).height/2)
+            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height + 3 + this.quizzLabel.cadre.height / 2 + svg.runtime.boundingRect(this.errorMessage.component).height / 2)
                 .font("Arial", 15).color(myColors.red).anchor('start');
             setTimeout(() => {
                 this.quizzInfoManipulator.ordonator.unset(5);
             }, 5000);
         }
     }
-    selectNextQuestion () {
+
+    selectNextQuestion() {
         this.indexOfEditedQuestion++;
     }
 
-        checkInputTextArea(myObj) {
-            if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-                myObj.remove();
-                myObj.textarea.onblur = myObj.onblur;
-                !runtime && (myObj.textarea.border = "none");
-                !runtime && (myObj.textarea.outline = "none");
-                this.quizzNameValidInput = true;
-            } else {
-                myObj.display();
-                this.quizzNameValidInput = false;
-            }
+    checkInputTextArea(myObj) {
+        if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
+            myObj.remove();
+            myObj.textarea.onblur = myObj.onblur;
+            !runtime && (myObj.textarea.border = "none");
+            !runtime && (myObj.textarea.outline = "none");
+            this.quizzNameValidInput = true;
+        } else {
+            myObj.display();
+            this.quizzNameValidInput = false;
         }
-
     }
 
+}
+
 class Quizz {
-    constructor (quizz, previewMode, parentFormation) {
+    constructor(quizz, previewMode, parentFormation) {
         this.id = quizz.id;
         this.miniatureManipulator = new Manipulator(this);
         this.parentFormation = parentFormation || quizz.parentFormation;
         this.quizzManipulator = new Manipulator(this);
         this.quizzManipulator.addOrdonator(2);
         this.returnButtonManipulator = new Manipulator(this);
-        this.returnButton = playerMode ?  (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
+        this.returnButton = playerMode ? (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
         this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
-            if (previewMode) {
-                this.chevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator = new Manipulator(this);
-                this.rightChevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator.addOrdonator(1);
-                this.rightChevronManipulator.addOrdonator(1);
-                this.quizzManipulator.last.add(this.chevronManipulator.first);
-                this.chevronManipulator.last.add(this.leftChevronManipulator.first);
-                this.chevronManipulator.last.add(this.rightChevronManipulator.first);
-            }
-            this.loadQuestions(quizz);
-            if (this.levelIndex === undefined) {
-                this.levelIndex = quizz.levelIndex;
-            }
-            if (this.gameIndex === undefined) {
-                this.gameIndex = quizz.gameIndex;
-            }
-            (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
-            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
-            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
-            quizz.font && (this.font = quizz.font);
-            quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
-            quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
-            quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
-
-            this.resultArea = {
-                x: drawing.width / 2,
-                y: 220,
-                w: drawing.width,
-                h: 200
-            };
-            this.titleArea = {
-                x: 0,
-                y: 0,
-                w: drawing.width,
-                h: 200
-            };
-            this.questionArea = {
-                x: 0,
-                y: 210,
-                w: drawing.width,
-                h: 200
-            };
-            this.miniaturePosition = {x: 0, y: 0};
-            //this.questionsWithBadAnswers = [];
-            this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
-            this.score = (quizz.score ? quizz.score : 0);
-            this.drawing = drawing;
-            this.title = quizz.title ? quizz.title : '';
-            this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
-            this.finalMessage = "";
+        if (previewMode) {
+            this.chevronManipulator = new Manipulator(this);
+            this.leftChevronManipulator = new Manipulator(this);
+            this.rightChevronManipulator = new Manipulator(this);
+            this.leftChevronManipulator.addOrdonator(1);
+            this.rightChevronManipulator.addOrdonator(1);
+            this.quizzManipulator.last.add(this.chevronManipulator.first);
+            this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+            this.chevronManipulator.last.add(this.rightChevronManipulator.first);
         }
+        this.loadQuestions(quizz);
+        if (this.levelIndex === undefined) {
+            this.levelIndex = quizz.levelIndex;
+        }
+        if (this.gameIndex === undefined) {
+            this.gameIndex = quizz.gameIndex;
+        }
+        (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
+        quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
+        quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
+        quizz.font && (this.font = quizz.font);
+        quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
+        quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
+        quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
 
-    loadQuestions (quizz) {
+        this.resultArea = {
+            x: drawing.width / 2,
+            y: 220,
+            w: drawing.width,
+            h: 200
+        };
+        this.titleArea = {
+            x: 0,
+            y: 0,
+            w: drawing.width,
+            h: 200
+        };
+        this.questionArea = {
+            x: 0,
+            y: 210,
+            w: drawing.width,
+            h: 200
+        };
+        this.miniaturePosition = {x: 0, y: 0};
+        //this.questionsWithBadAnswers = [];
+        this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
+        this.score = (quizz.score ? quizz.score : 0);
+        this.drawing = drawing;
+        this.title = quizz.title ? quizz.title : '';
+        this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
+        this.finalMessage = "";
+    }
+
+    loadQuestions(quizz) {
         if (quizz && typeof quizz.tabQuestions !== 'undefined') {
             this.tabQuestions = [];
             quizz.tabQuestions.forEach(it => {
@@ -1272,45 +1279,45 @@ class Quizz {
         }
     }
 
-        run(x, y, w, h) {
-            var intervalToken = asyncTimerController.interval(() => {
-                if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
-                    asyncTimerController.clearInterval(intervalToken);
-                    this.display(x, y, w, h);
-                }
-            }, 100);
-            runtime && this.tabQuestions.forEach(e => {
-                e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
-                e.tabAnswer.forEach(el => {
-                    el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
-                });
-
+    run(x, y, w, h) {
+        var intervalToken = asyncTimerController.interval(() => {
+            if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
+                asyncTimerController.clearInterval(intervalToken);
+                this.display(x, y, w, h);
+            }
+        }, 100);
+        runtime && this.tabQuestions.forEach(e => {
+            e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
+            e.tabAnswer.forEach(el => {
+                el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
             });
-            runtime && this.display(x, y, w, h);
-        }
 
-        displayCurrentQuestion() {
-            if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
-                this.questionHeight = this.questionHeightWithImage;
-                this.answerHeight = this.answerHeightWithImage;
-            } else {
-                this.questionHeight = this.questionHeightWithoutImage;
-                this.answerHeight = this.answerHeightWithoutImage;
-            }
-            this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-            this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
-            this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
-                this.questionArea.w, this.questionHeight);
-            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
-            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
-                this.questionArea.w, this.answerHeight);
-        }
+        });
+        runtime && this.display(x, y, w, h);
+    }
 
-        // !_! bof, y'a encore des display appelés ici
-        nextQuestion() {
-            if (this.currentQuestionIndex !== -1) {
-                this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-            }
+    displayCurrentQuestion() {
+        if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
+            this.questionHeight = this.questionHeightWithImage;
+            this.answerHeight = this.answerHeightWithImage;
+        } else {
+            this.questionHeight = this.questionHeightWithoutImage;
+            this.answerHeight = this.answerHeightWithoutImage;
+        }
+        this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+        this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
+        this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
+            this.questionArea.w, this.questionHeight);
+        !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+        this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
+            this.questionArea.w, this.answerHeight);
+    }
+
+    // !_! bof, y'a encore des display appelés ici
+    nextQuestion() {
+        if (this.currentQuestionIndex !== -1) {
+            this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+        }
 
         if (this.previewMode) {
             if (this.currentQuestionIndex === -1) {
@@ -1332,96 +1339,96 @@ class Quizz {
         }
     }
 
-        getPositionInFormation() {
-            var gameIndex, levelIndex;
-            for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
-                gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
-                if (gameIndex !== -1) {
-                    break;
-                }
+    getPositionInFormation() {
+        var gameIndex, levelIndex;
+        for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
+            gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
+            if (gameIndex !== -1) {
+                break;
             }
-            levelIndex = i;
-            this.levelIndex = levelIndex;
-            this.gameIndex = gameIndex;
-            return {levelIndex, gameIndex};
         }
-
+        levelIndex = i;
+        this.levelIndex = levelIndex;
+        this.gameIndex = gameIndex;
+        return {levelIndex, gameIndex};
     }
 
-    class Bd {
-        constructor(bd, parentFormation) {
-            this.miniatureManipulator = new Manipulator(this);
-            this.parentFormation = parentFormation;
-            this.title = bd.title || "BD";
-            this.miniaturePosition = {x: 0, y: 0};
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.manipulator = new Manipulator(this);
-            this.manipulator.last.add(this.returnButtonManipulator.first);
-        }
+}
 
-        getPositionInFormation() {
-            var gameIndex, levelIndex;
-            for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
-                gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
-                if (gameIndex !== -1) {
-                    break;
-                }
+class Bd {
+    constructor(bd, parentFormation) {
+        this.miniatureManipulator = new Manipulator(this);
+        this.parentFormation = parentFormation;
+        this.title = bd.title || "BD";
+        this.miniaturePosition = {x: 0, y: 0};
+        this.returnButtonManipulator = new Manipulator(this);
+        this.returnButton = new ReturnButton(this, "Retour à la formation");
+        this.manipulator = new Manipulator(this);
+        this.manipulator.last.add(this.returnButtonManipulator.first);
+    }
+
+    getPositionInFormation() {
+        var gameIndex, levelIndex;
+        for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
+            gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
+            if (gameIndex !== -1) {
+                break;
             }
-            levelIndex = i;
-            this.levelIndex = levelIndex;
-            this.gameIndex = gameIndex;
-            return {levelIndex: levelIndex, gameIndex: gameIndex};
         }
+        levelIndex = i;
+        this.levelIndex = levelIndex;
+        this.gameIndex = gameIndex;
+        return {levelIndex: levelIndex, gameIndex: gameIndex};
     }
+}
 
-    class InscriptionManager {
-        constructor() {
-            this.manipulator = new Manipulator(this);
-            this.header = new Header("Inscription");
-            this.firstNameManipulator = new Manipulator(this);
-            this.firstNameManipulator.addOrdonator(4);
-            this.lastNameManipulator = new Manipulator(this);
-            this.lastNameManipulator.addOrdonator(4);
-            this.mailAddressManipulator = new Manipulator(this);
-            this.mailAddressManipulator.addOrdonator(4);
-            this.passwordManipulator = new Manipulator(this);
-            this.passwordManipulator.addOrdonator(4);
-            this.passwordConfirmationManipulator = new Manipulator(this);
-            this.passwordConfirmationManipulator.addOrdonator(3);
-            this.saveButtonManipulator = new Manipulator(this);
-            this.saveButtonManipulator.addOrdonator(4);
-            //this.errorMessageManipulator = new Manipulator(this);
+class InscriptionManager {
+    constructor() {
+        this.manipulator = new Manipulator(this);
+        this.header = new Header("Inscription");
+        this.firstNameManipulator = new Manipulator(this);
+        this.firstNameManipulator.addOrdonator(4);
+        this.lastNameManipulator = new Manipulator(this);
+        this.lastNameManipulator.addOrdonator(4);
+        this.mailAddressManipulator = new Manipulator(this);
+        this.mailAddressManipulator.addOrdonator(4);
+        this.passwordManipulator = new Manipulator(this);
+        this.passwordManipulator.addOrdonator(4);
+        this.passwordConfirmationManipulator = new Manipulator(this);
+        this.passwordConfirmationManipulator.addOrdonator(3);
+        this.saveButtonManipulator = new Manipulator(this);
+        this.saveButtonManipulator.addOrdonator(4);
+        //this.errorMessageManipulator = new Manipulator(this);
 
-            this.manipulator.last.add(this.firstNameManipulator.first);
-            this.manipulator.last.add(this.lastNameManipulator.first);
-            this.manipulator.last.add(this.mailAddressManipulator.first);
-            this.manipulator.last.add(this.passwordManipulator.first);
-            this.manipulator.last.add(this.passwordConfirmationManipulator.first);
-            this.manipulator.last.add(this.saveButtonManipulator.first);
-            //this.saveButtonManipulator.last.add(this.errorMessageManipulator.first);
-            //this.errorMessageManipulator.addOrdonator(2);
+        this.manipulator.last.add(this.firstNameManipulator.first);
+        this.manipulator.last.add(this.lastNameManipulator.first);
+        this.manipulator.last.add(this.mailAddressManipulator.first);
+        this.manipulator.last.add(this.passwordManipulator.first);
+        this.manipulator.last.add(this.passwordConfirmationManipulator.first);
+        this.manipulator.last.add(this.saveButtonManipulator.first);
+        //this.saveButtonManipulator.last.add(this.errorMessageManipulator.first);
+        //this.errorMessageManipulator.addOrdonator(2);
 
-            // HEIGHT
-            this.saveButtonHeightRatio = 0.075;
-            this.saveButtonWidthRatio = 0.25;
+        // HEIGHT
+        this.saveButtonHeightRatio = 0.075;
+        this.saveButtonWidthRatio = 0.25;
 
-            this.lastNameLabel = "Nom :";
-            this.firstNameLabel = "Prénom :";
-            this.mailAddressLabel = "Adresse mail :";
-            this.passwordLabel = "Mot de passe :";
-            this.passwordConfirmationLabel = "Confirmer votre mot de passe :";
-            this.lastNameLabel = "Nom :";
-            this.saveButtonLabel = "S'enregistrer";
-            this.tabForm = [];
-            this.formLabels = {};
-        }
+        this.lastNameLabel = "Nom :";
+        this.firstNameLabel = "Prénom :";
+        this.mailAddressLabel = "Adresse mail :";
+        this.passwordLabel = "Mot de passe :";
+        this.passwordConfirmationLabel = "Confirmer votre mot de passe :";
+        this.lastNameLabel = "Nom :";
+        this.saveButtonLabel = "S'enregistrer";
+        this.tabForm = [];
+        this.formLabels = {};
     }
+}
 ////////////////// end of InscriptionManager.js //////////////////////////
 
 ////////////////// ConnexionManager.js //////////////////////////
 class ConnexionManager {
-    constructor () {
+    constructor() {
         this.manipulator = new Manipulator(this);
         this.manipulator.addOrdonator(6);
         this.header = new Header("Connexion");

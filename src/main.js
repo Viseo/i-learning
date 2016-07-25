@@ -9,13 +9,13 @@ exports.main = function (svg, runtime, dbListener) {
 
     let globalVariables = {svg, runtime, dbListener};
 
+    globalVariables.gui = gui(svg, {speed: 5, step: 100});
+
     util = Util(globalVariables);
     globalVariables.util = util;
     util.SVGGlobalHandler();
     util.Bdd();
     util.SVGUtil();
-
-    globalVariables.gui = gui(svg, {speed: 5, step: 100});
 
     drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
