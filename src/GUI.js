@@ -88,7 +88,7 @@ function answerDisplay (x, y, w, h) {
             this.border._acceptDrop = true;
             this.obj.content._acceptDrop = true;
 
-            let editor = (this.editor.puzzle ? this.editor : this.editor.parent);
+            let editor = this.editor.puzzle ? this.editor : this.editor.parent;
 
             svg.addEvent(this.obj.content, 'dblclick', dblclickEditionAnswer);
             svg.addEvent(this.border, 'dblclick', dblclickEditionAnswer);
@@ -96,7 +96,7 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(this.border,'mouseout',mouseleaveHandler);
         };
 
-        let dblclickEditionAnswer = ()=> {
+        let dblclickEditionAnswer = () => {
             let contentarea={};
             contentarea.height = svg.runtime.boundingRect(this.obj.content.component).height;
             contentarea.globalPointCenter = this.obj.content.globalPoint(-(w)/2,-(contentarea.height)/2);
@@ -174,7 +174,7 @@ function answerDisplay (x, y, w, h) {
         this.manipulator.flush();
         this.manipulator.translator.move(x,y);
         showTitle();
-        this.penHandler = ()=>{
+        this.penHandler = () => {
             this.popIn = this.popIn || new PopIn(this, true);
             let questionCreator = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
             this.popIn.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
@@ -182,16 +182,14 @@ function answerDisplay (x, y, w, h) {
         };
         displayPen(this.width/2-this.checkboxSize, this.height/2 - this.checkboxSize, this.checkboxSize, this);
 
-        if(typeof this.obj.checkbox === 'undefined') {
+        if (typeof this.obj.checkbox === 'undefined') {
             this.obj.checkbox = displayCheckbox(-this.width/2+this.checkboxSize, this.height/2 - this.checkboxSize, this.checkboxSize, this).checkbox;
             this.obj.checkbox.answerParent = this;
-        }else{
-            console.log("quelque chose");
         }
-        this.manipulator.ordonator.children.forEach((e)=> {
+        this.manipulator.ordonator.children.forEach((e) => {
             e._acceptDrop = true;
         });
-    }
+    };
 
     if(this.editable) {
         answerEditableDisplay(this.x, this.y, this.width, this.height);
@@ -200,18 +198,18 @@ function answerDisplay (x, y, w, h) {
 
     if (this.label && this.imageSrc) { // Reponse avec Texte ET image
         let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
-        this.bordure = border;
+        this.bordure = obj.cadre;
         this.content = obj.text;
         this.image = obj.image;
     } else if (this.label && !this.imageSrc) { // Reponse avec Texte uniquement
         let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
-        this.bordure = border;
+        this.bordure = obj.cadre;
         this.content = obj.content;
 
     } else if (this.imageSrc && !this.label) { // Reponse avec Image uniquement
         let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.width, this.height, this.manipulator);
         this.image = obj.image;
-        this.bordure = border;
+        this.bordure = obj.cadre;
     } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
         this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
         this.manipulator.last.children.indexOf(this.bordure)===-1 && this.manipulator.last.add(this.bordure);
