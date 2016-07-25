@@ -449,61 +449,6 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
         };
 
-        let displayItems = () => {
-            let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
-                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
-                tempY = (0.075 * h);
-
-            const displayImages = () => {
-                this.itemsTab.forEach((item, i) => {
-                    if (i % maxImagesPerLine === 0 && i !== 0) {
-                        tempY += this.imageHeight + libMargin;
-                    }
-                    // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                    //      this.panel.content.remove(this.libraryManipulators[i].first);
-                    // }
-                    this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
-                    let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
-                    image.srcDimension = {width: item.width, height: item.height};
-                    this.libraryManipulators[i].ordonator.set(0, image);
-
-                    let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
-                    this.libraryManipulators[i].first.move(X, tempY);
-
-                });
-                this.panel.resizeContent(tempY += this.imageHeight);
-            };
-
-            if (this.itemsTab.length === 0) {
-                Server.getImages().then(data => {
-                        let myLibraryImage = JSON.parse(data).images;
-                        myLibraryImage.forEach((url, i) => {
-                            this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
-                            this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
-                            this.itemsTab[i] = imageController.getImage(url.imgSrc, function (){
-                                this.imageLoaded = true; //this != library
-                            });
-                            this.itemsTab[i].imgSrc = url.imgSrc;
-                        });
-                        return myLibraryImage;
-                    })
-                    .then((myLibraryImage) => {runtime && this.itemsTab.forEach((e,i) => {
-                            imageController.imageLoaded(e.id, myLibraryImage[i].width, myLibraryImage[i].height);
-                        });
-                    })
-                    .then(() => {
-                        let intervalToken = asyncTimerController.interval(() => {
-                            if (this.itemsTab.every(e => e.imageLoaded)) {
-                                asyncTimerController.clearInterval(intervalToken);
-                                displayImages();
-                            }
-                        }, 100);
-                    });
-            } else {
-                displayImages();
-            }
-        };
-
         let assignEvents = () => {
             this.libraryManipulators.forEach(libraryManipulator => {
                 let mouseDownAction = event => {
@@ -550,6 +495,50 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             });
         };
 
+        let displayItems = () => {
+            let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
+                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
+                tempY = (0.075 * h);
+
+            const displayImages = () => {
+                this.itemsTab.forEach((item, i) => {
+                    if (i % maxImagesPerLine === 0 && i !== 0) {
+                        tempY += this.imageHeight + libMargin;
+                    }
+                    // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
+                    //      this.panel.content.remove(this.libraryManipulators[i].first);
+                    // }
+                    this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
+                    let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                    image.srcDimension = {width: item.width, height: item.height};
+                    this.libraryManipulators[i].ordonator.set(0, image);
+
+                    let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
+                    this.libraryManipulators[i].first.move(X, tempY);
+
+                });
+                this.panel.resizeContent(tempY += this.imageHeight);
+                assignEvents();
+            };
+
+            if (this.itemsTab.length === 0) {
+                Server.getImages().then(data => {
+                        let myLibraryImage = JSON.parse(data).images;
+                        myLibraryImage.forEach((url, i) => {
+                            this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
+                            this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
+                            this.itemsTab[i] = imageController.getImage(url.imgSrc, function (){
+                                this.imageLoaded = true; //this != library
+                            });
+                            this.itemsTab[i].imgSrc = url.imgSrc;
+                        });
+                    })
+                    .then(displayImages);
+            } else {
+                displayImages();
+            }
+        };
+
         let displaySaveButton = () => {
 
             let doraHandler = () => {
@@ -590,13 +579,12 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
         displayPanel();
         displayItems();
         displaySaveButton();
-        let intervalToken = asyncTimerController.interval(() => {
-            if (this.itemsTab.every(e => e.imageLoaded)) {
-                assignEvents();
-            }
-        }, 100);
+
 
     };
+
+        display(x, y, w, h);
+        callback();
 
     // let intervalToken = asyncTimerController.interval(() => {
     //     if (this.itemsTab.every(e => e.imageLoaded)) {
@@ -609,9 +597,9 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
     //     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
     // });
     // if (runtime) {
-        display(x, y, w, h);
-        callback();
-    //}
+    //     display(x, y, w, h);
+    //     callback();
+    // }
 
 }
 
@@ -658,7 +646,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                     questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
                     questionCreator.coordinatesAnswers.h, false);
                 questionCreator.linkedQuestion.checkValidity();
-                
+
                 break;
             case 'question':
                 let quizzManager = this.parent;

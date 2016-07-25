@@ -1513,35 +1513,35 @@ function Bdd() {
         none:[]
     };
 
-    myImagesSourceDimensions = {
-        "../resource/littleCat.png" : {width: 80, height: 50},
-        "../resource/millions.png" : {width:1024, height: 1024},
-        "../resource/pomme.jpg" : {width: 925, height: 1000},
-        "../resource/hollandeContent.jpg" : {width: 166, height: 200},
-        "../resource/folder.png" : {width: 256, height: 256},
-        "../resource/flanders.png" : {width: 225, height: 225},
-        "../resource/flamantRose.jpg" : {width: 183, height: 262},
-        "../resource/ChatTim.jpg" : {width: 480, height: 640},
-        "../resource/cerise.jpg" : {width: 2835, height: 2582},
-        "../resource/cat.png" : {width: 1920, height: 1200},
-        "../resource/Alba.jpg" : {width: 675, height: 800},
-        "../resource/tetris.png": {width: 700, height: 456},
-        "../resource/shiva.jpg": {width: 1816, height: 2439},
-        "../resource/poop.jpg": {width: 570, height: 238},
-        "../resource/monkey.jpg": {width: 1085, height: 610},
-        "../resource/Kenny.png": {width: 640, height: 360},
-        "../resource/Geneviève.jpg": {width: 590, height: 380},
-        "../resource/eagle.jpg": {width: 1200, height: 900},
-        "../resource/berlin.jpg": {width: 640, height: 480},
-        "../resource/couscous.jpg": {width: 1688, height: 1125},
-        "../resource/dora.jpg": {width: 2136, height: 2896},
-        "../resource/kassos.jpg": {width: 300, height: 300},
-        "../resource/kawai.png": {width: 900, height: 800},
-        "../resource/manipulator.jpg": {width: 1181, height: 888},
-        "../resource/minions.jpg": {width: 630, height: 354},
-        "../resource/vache.jpeg": {width: 1280, height: 960},
-         "../resource/pokeball.png": {width: 894, height: 893}
-    };
+    // myImagesSourceDimensions = {
+    //     "../resource/littleCat.png" : {width: 80, height: 50},
+    //     "../resource/millions.png" : {width:1024, height: 1024},
+    //     "../resource/pomme.jpg" : {width: 925, height: 1000},
+    //     "../resource/hollandeContent.jpg" : {width: 166, height: 200},
+    //     "../resource/folder.png" : {width: 256, height: 256},
+    //     "../resource/flanders.png" : {width: 225, height: 225},
+    //     "../resource/flamantRose.jpg" : {width: 183, height: 262},
+    //     "../resource/ChatTim.jpg" : {width: 480, height: 640},
+    //     "../resource/cerise.jpg" : {width: 2835, height: 2582},
+    //     "../resource/cat.png" : {width: 1920, height: 1200},
+    //     "../resource/Alba.jpg" : {width: 675, height: 800},
+    //     "../resource/tetris.png": {width: 700, height: 456},
+    //     "../resource/shiva.jpg": {width: 1816, height: 2439},
+    //     "../resource/poop.jpg": {width: 570, height: 238},
+    //     "../resource/monkey.jpg": {width: 1085, height: 610},
+    //     "../resource/Kenny.png": {width: 640, height: 360},
+    //     "../resource/Geneviève.jpg": {width: 590, height: 380},
+    //     "../resource/eagle.jpg": {width: 1200, height: 900},
+    //     "../resource/berlin.jpg": {width: 640, height: 480},
+    //     "../resource/couscous.jpg": {width: 1688, height: 1125},
+    //     "../resource/dora.jpg": {width: 2136, height: 2896},
+    //     "../resource/kassos.jpg": {width: 300, height: 300},
+    //     "../resource/kawai.png": {width: 900, height: 800},
+    //     "../resource/manipulator.jpg": {width: 1181, height: 888},
+    //     "../resource/minions.jpg": {width: 630, height: 354},
+    //     "../resource/vache.jpeg": {width: 1280, height: 960},
+    //      "../resource/pokeball.png": {width: 894, height: 893}
+    // };
 
     SELECTION_COLOR = myColors.darkBlue;
 
