@@ -1758,34 +1758,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             var picture = new Picture(this.image.src, true, this, text);
             picture.draw(0, 0, this.w-2*MARGIN, this.h*0.25, this.questionManipulator);
             this.questionBlock.title = picture.imageSVG;
-            let redCrossClickHandler = () => {
-                var indexPuzzle = this.parent.questionPuzzle.elementsArray.indexOf(this.linkedQuestion);
-                this.parent.questionPuzzle.elementsArray[indexPuzzle].manipulator.ordonator.unset(2);
-                this.questionBlock.redCrossManipulator.flush();
-                this.questionManipulator.ordonator.unset(2);//image
-                this.linkedQuestion.image = null;
-                this.linkedQuestion.imageSrc = null;
-                this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
-                this.display(x, y, w, h);
-                this.linkedQuestion.checkValidity();
-            };
 
-            let mouseleaveHandler = ()=>{
-                this.questionBlock.redCrossManipulator && this.questionBlock.redCrossManipulator.flush();
-            };
-
-            let mouseoverHandler = ()=>{
-                if(typeof this.questionBlock.redCrossManipulator === 'undefined'){
-                    this.questionBlock.redCrossManipulator=new Manipulator(this);
-                    this.questionBlock.redCrossManipulator.addOrdonator(2);
-                    this.questionManipulator && this.questionManipulator.last.add(this.questionBlock.redCrossManipulator.first);
-                }
-                let redCrossSize = 15;
-                let redCross = drawRedCross(this.questionBlock.title.image.x + this.questionBlock.title.image.width/2 - redCrossSize/2, this.questionBlock.title.image.y -this.questionBlock.title.image.height/2 + redCrossSize/2, redCrossSize, this.questionBlock.redCrossManipulator);
-
-                svg.addEvent(redCross,'click',redCrossClickHandler);
-                this.questionBlock.redCrossManipulator.ordonator.set(1,redCross);
-            };
         } else {
             this.questionBlock.title = displayText(text, this.w - 2*MARGIN, this.h*0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
         }
