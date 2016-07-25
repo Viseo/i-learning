@@ -1005,8 +1005,8 @@ function formationDisplayFormation() {
         };
         showTitle();
         this.library.display(0, drawing.height*HEADER_SIZE, this.libraryWidth-MARGIN, this.graphCreaHeight);
-        this.displayFormationSaveButton(drawing.width/2 - this.ButtonWidth, drawing.height*0.87 ,this.ButtonWidth, this.saveButtonHeight);
-        this.displayFormationPublicationButton(drawing.width/2 + this.ButtonWidth , drawing.height* 0.87 ,this.ButtonWidth, this.publicationButtonHeight);
+        this.displayFormationSaveButton(drawing.width/2 - this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
+        this.displayFormationPublicationButton(drawing.width/2 + this.buttonWidth , drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
         displayFrame(this.graphCreaWidth, this.graphCreaHeight);
         this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
@@ -1046,7 +1046,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                         question.questionType && question.questionType.validationTab.forEach(funcEl => {
                             var result = funcEl && funcEl(question);
                             if (result && (!result.isValid)) {
-                                message.push ("La question " + question.questionNum + " du jeu " +  game.title + " n'est pas complet");
+                                message.push ("Un ou plusieurs jeu(x) ne sont pas complet(s)");
                                 arrayOfUncorrectQuestions.push(question.questionNum - 1);
                             }
                             result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
@@ -2198,7 +2198,7 @@ function quizzManagerDisplay(){
     this.questCreaHeight = this.height * this.questCreaHeightRatio;
     this.saveButtonHeight = this.height * this.saveButtonHeightRatio;
     this.previewButtonHeight = this.height * this.previewButtonHeightRatio;
-    this.ButtonWidth = 150;
+    this.buttonWidth = 150;
     this.globalMargin = {
         height: this.marginRatio * this.height*2,
         width: this.marginRatio * drawing.width
@@ -2249,10 +2249,10 @@ function quizzManagerDisplay(){
         this.displayQuestionsPuzzle(this.questionPuzzleCoordinates.x, this.questionPuzzleCoordinates.y, this.questionPuzzleCoordinates.w, this.questionPuzzleCoordinates.h);
         this.questionCreator.display(this.library.x + this.libraryWidth, this.library.y,
             this.questCreaWidth-this.globalMargin.width, this.questCreaHeight);
-        this.displayPreviewButton(drawing.width/2-this.ButtonWidth, this.height - this.previewButtonHeight/2,
-            this.ButtonWidth, this.previewButtonHeight-this.globalMargin.height);
-        this.displayQuizSaveButton(drawing.width/2+this.ButtonWidth, this.height - this.saveButtonHeight/2,
-            this.ButtonWidth, this.saveButtonHeight-this.globalMargin.height);
+        this.displayPreviewButton(drawing.width/2-this.buttonWidth, this.height - this.previewButtonHeight/2,
+            this.buttonWidth, this.previewButtonHeight-this.globalMargin.height);
+        this.displayQuizSaveButton(drawing.width/2+this.buttonWidth, this.height - this.saveButtonHeight/2,
+            this.buttonWidth, this.saveButtonHeight-this.globalMargin.height);
         mainManipulator.ordonator.unset(0);
         header.display("Formation : " + this.parentFormation.label);
     };
