@@ -526,7 +526,14 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                             this.itemsTab[i].imgSrc = url.imgSrc;
                         });
                     })
-                    .then(displayImages);
+                    .then(() => {
+                        let intervalToken = asyncTimerController.interval(() => {
+                            if (this.itemsTab.every(e => e.imageLoaded)) {
+                                asyncTimerController.clearInterval(intervalToken);
+                                displayImages();
+                            }
+                        }, 100);
+                    });
             } else {
                 displayImages();
             }
