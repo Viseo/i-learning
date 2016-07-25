@@ -171,18 +171,20 @@ exports.Util = function (globalVariables) {
             return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
         };
 
-        onclickFunction = function (event) {
-            var target = drawings.background.getTarget(event.clientX, event.clientY);
-            var sender = null;
-            target.answerParent && (sender = target.answerParent);
-            var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
-            !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
-                answer.correct = (answer !== sender) ? false : answer.correct;
-            });
-            sender.correct = !sender.correct;
-            sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-            updateAllCheckBoxes(sender)
-        };
+    onclickFunction = function (event) {
+        var target = drawings.background.getTarget(event.clientX, event.clientY);
+        var sender = null;
+        target.answerParent && (sender = target.answerParent);
+        var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+        !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
+            answer.correct = (answer !== sender) ? false : answer.correct;
+        });
+        sender.correct = !sender.correct;
+        sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
+        updateAllCheckBoxes(sender);
+        let quizzManager = sender.parentQuestion.parentQuizz.parentFormation.quizzManager;
+        quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
+    };
 
         drawCheck = function (x, y, size) {
             return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
@@ -254,27 +256,27 @@ exports.Util = function (globalVariables) {
             elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
         };
 
-        /**
-         *
-         * @param label
-         * @param imageSrc
-         * @param imageObj
-         * @param w
-         * @param h
-         * @param rgbCadre
-         * @param bgColor
-         * @param fontSize
-         * @param font
-         * @param manipulator
-         * @param previousImage
-         * @returns {{cadre: *, image, text}}
-         */
-        displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage, textWidth = w) {
-            if ((w <= 0) || (h <= 0)) {
-                w = 1;
-                h = 1;
-            }
-            var text = autoAdjustText(label, 0, 0, textWidth, null, fontSize, font, manipulator).text;
+    /**
+     *
+     * @param label
+     * @param imageSrc
+     * @param imageObj
+     * @param w
+     * @param h
+     * @param rgbCadre
+     * @param bgColor
+     * @param fontSize
+     * @param font
+     * @param manipulator
+     * @param previousImage
+     * @returns {{cadre: *, image, text}}
+     */
+    displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage, textWidth=w) {
+        if((w <= 0) || (h <= 0)){
+            w = 1;
+            h = 1;
+        }
+        var text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
 
             var textHeight = (label !== "") ? h * 0.25 : 0;
             text.position(0, (h - textHeight) / 2);//w*1/6
@@ -336,89 +338,89 @@ exports.Util = function (globalVariables) {
             };
         };
 
-        /**
-         *
-         * @param label : text to print
-         * @param w : width
-         * @param h : height
-         * @param rgbCadre : color for rectangle
-         * @param bgColor : background color for rectangle
-         * @param textHeight : number, taille de la police
-         * @param font
-         * @param manipulator
-         * @param layer1
-         * @param layer2
-         * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
-         */
-        displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
-            if ((w <= 0) || (h <= 0)) {
-                w = 1;
-                h = 1;
-            }
-            var content = autoAdjustText(label, 0, 0, textWidth, h, textHeight, font, manipulator, layer2).text;
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.ordonator.set(layer1, cadre);
-            return {content: content, cadre: cadre};
-        };
+    /**
+     *
+     * @param label : text to print
+     * @param w : width
+     * @param h : height
+     * @param rgbCadre : color for rectangle
+     * @param bgColor : background color for rectangle
+     * @param textHeight : number, taille de la police
+     * @param font
+     * @param manipulator
+     * @param layer1
+     * @param layer2
+     * @returns {{content, cadre}} : SVG items for text & cadre
+     */
+    displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
+        if((w <= 0) || (h <= 0)){
+            w = 1;
+            h = 1;
+        }
+        var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
+        var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+        manipulator.ordonator.set(layer1, cadre);
+        return {content: content, cadre: cadre};
+    };
 
-        /**
-         *
-         * @param label : text to print
-         * @param w : width
-         * @param h : height
-         * @param rgbCadre : color for circle
-         * @param bgColor : background color for circle
-         * @param textHeight : number, taille de la police
-         * @param font
-         * @param manipulator
-         * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
-         */
-        displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-            var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-            var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
-            manipulator.ordonator.set(0, cadre);
-            return {content: content, cadre: cadre};
-        };
+    /**
+     *
+     * @param label : text to print
+     * @param w : width
+     * @param h : height
+     * @param rgbCadre : color for circle
+     * @param bgColor : background color for circle
+     * @param textHeight : number, taille de la police
+     * @param font
+     * @param manipulator
+     * @returns {{content, cadre}} : SVG items for text & cadre
+     */
+    displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+        var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
+        var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
+        manipulator.ordonator.set(0, cadre);
+        return {content: content, cadre: cadre};
+    };
 
-        /**
-         *
-         * @param label : text to print
-         * @param w : width
-         * @param h : height
-         * @param rgbCadre : color for rectangle
-         * @param bgColor : background color for rectangle
-         * @param textHeight : number, taille de la police
-         * @param font
-         * @param manipulator
-         * @returns {{content, cadre}} : SVG/Raphael items for text & cadre
-         */
-        displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-            var content = autoAdjustText(label, 0, 0, w, h, textHeight, font, manipulator).text;
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-            manipulator.ordonator.set(0, cadre);
-            return {content: content, cadre: cadre};
-        };
+    /**
+     *
+     * @param label : text to print
+     * @param w : width
+     * @param h : height
+     * @param rgbCadre : color for rectangle
+     * @param bgColor : background color for rectangle
+     * @param textHeight : number, taille de la police
+     * @param font
+     * @param manipulator
+     * @returns {{content, cadre}} : SVG items for text & cadre
+     */
+    displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
+        var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
+        var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
+        manipulator.ordonator.set(0, cadre);
+        return {content: content, cadre: cadre};
+    };
 
-        /**
-         * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
-         * @param content: text to print
-         * @param x : position
-         * @param y : position
-         * @param wi : width
-         * @param h : height
-         * @param fontSize
-         * @param font
-         * @param manipulator
-         * @param layer
-         */
-        autoAdjustText = function (content, x, y, wi, h, fontSize, font, manipulator, layer = 1) {
-            let words = content.split(' '),
-                text = '',
-                w = wi * 99 / 100,
-                t = new svg.Text('text');
-            manipulator.ordonator.set(layer, t);
-            (fontSize) || (fontSize = 20);
-            t.font(font ? font : 'Arial', fontSize);
+    /**
+     * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
+     * @param content: text to print
+     * @param x : position
+     * @param y : position
+     * @param wi : width
+     * @param h : height
+     * @param fontSize
+     * @param font
+     * @param manipulator
+     * @param layer
+     */
+    autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer=1) {
+        let words = content.split(' '),
+            text = '',
+            w = wi * 99/100,
+            t = new svg.Text('text');
+        manipulator.ordonator.set(layer, t);
+        (fontSize) || (fontSize = 20);
+        t.font(font ? font : 'Arial', fontSize);
 
             while (words.length > 0) {
                 let word = words.shift();
@@ -608,16 +610,15 @@ exports.Util = function (globalVariables) {
             return arrowPath;
         };
 
-        Arrow = function (parentGame, childGame) {
-            var self = this;
-            var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize / 2);
-            var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-            var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize / 2);
-            var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+    Arrow = function(parentGame, childGame) {
+        var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize/2);
+        var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+        var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize/2);
+        var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
-            self.redCrossManipulator = new Manipulator(self);
-            self.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, self.redCrossManipulator);
-            self.redCrossManipulator.last.add(self.redCross);
+        this.redCrossManipulator = new Manipulator(this);
+        this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x)/2, (parentLocalPoint.y + childLocalPoint.y)/2, 20, this.redCrossManipulator);
+        this.redCrossManipulator.last.add(this.redCross);
 
             let removeLink = () => {
                 for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
@@ -626,39 +627,39 @@ exports.Util = function (globalVariables) {
                 }
             };
 
-            self.redCrossClickHandler = () => {
-                removeLink();
-                parentGame.parentFormation.arrowsManipulator.last.remove(self.arrowPath);
-                parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
-                parentGame.parentFormation.selectedArrow = null;
-            };
-
-            svg.addEvent(self.redCross, 'click', self.redCrossClickHandler);
-
-            self.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-            self.selected = false;
-            let arrowClickHandler = () => {
-                parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
-                if (!self.selected) {
-                    if (parentGame.parentFormation.selectedArrow) {
-                        parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
-                        parentGame.parentFormation.selectedArrow.selected = false;
-                        parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
-                    }
-                    parentGame.parentFormation.selectedArrow = self;
-                    parentGame.parentFormation.arrowsManipulator.last.add(self.redCrossManipulator.first);
-                    self.arrowPath.color(myColors.blue, 2, myColors.black);
-                } else {
-                    self.arrowPath.color(myColors.black, 1, myColors.black);
-                    parentGame.parentFormation.arrowsManipulator.last.remove(self.redCrossManipulator.first);
-                    parentGame.parentFormation.selectedArrow = null;
-                }
-                self.selected = !self.selected;
-            };
-            !globalVariables.playerMode && svg.addEvent(self.arrowPath, 'click', arrowClickHandler);
-            self.arrowPath.color(myColors.black, 1, myColors.black);
-            return self;
+        this.redCrossClickHandler = () => {
+            removeLink();
+            parentGame.parentFormation.arrowsManipulator.last.remove(this.arrowPath);
+            parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+            parentGame.parentFormation.selectedArrow = null;
         };
+
+        svg.addEvent(this.redCross,'click', this.redCrossClickHandler);
+
+        this.arrowPath = drawStraightArrow(parentLocalPoint.x,parentLocalPoint.y , childLocalPoint.x, childLocalPoint.y);
+        this.selected = false;
+        let arrowClickHandler = () => {
+            parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
+            if(!this.selected){
+                if(parentGame.parentFormation.selectedArrow){
+                    parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
+                    parentGame.parentFormation.selectedArrow.selected = false;
+                    parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
+                }
+                parentGame.parentFormation.selectedArrow = this;
+                parentGame.parentFormation.arrowsManipulator.last.add(this.redCrossManipulator.first);
+                this.arrowPath.color(myColors.blue, 2, myColors.black);
+            } else {
+                this.arrowPath.color(myColors.black,1,myColors.black);
+                parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                parentGame.parentFormation.selectedArrow = null;
+            }
+            this.selected = !this.selected;
+        };
+        !playerMode && svg.addEvent(this.arrowPath, 'click', arrowClickHandler);
+        this.arrowPath.color(myColors.black, 1, myColors.black);
+        return this;
+    };
 
         resetQuestionsIndex = function (quizz) {
             for (let i = 0; i < quizz.tabQuestions.length - 1; i++) {
@@ -697,50 +698,52 @@ exports.Util = function (globalVariables) {
                 manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
             }
 
-        }
+    }
+    drawImageRedCross(x, y, w, h, parent, manipulator){
+        this.imageRedCrossClickHandler=()=>{
+            this.redCrossManipulator.flush();
+            parent.imageLayer && manipulator.ordonator.unset(parent.imageLayer);//image
+            if (parent.linkedQuestion) {
+                parent.linkedQuestion.image = null;
+                parent.linkedQuestion.imageSrc = null;
+            }
+            else {
+                parent.image = null;
+                parent.imageSrc = null;
+            }
+            if(parent.parent && parent.parent.questionPuzzle){
+                parent.parent.questionPuzzle.display();
+            }
+            if (this.parent.parentQuestion){
+                let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
 
-        drawImageRedCross(x, y, w, h, parent, manipulator) {
-            this.imageRedCrossClickHandler = ()=> {
-                this.redCrossManipulator.flush();
-                parent.imageLayer && manipulator.ordonator.unset(parent.imageLayer);//image
-                if (parent.linkedQuestion) {
-                    parent.linkedQuestion.image = null;
-                    parent.linkedQuestion.imageSrc = null;
-                }
-                else {
-                    parent.image = null;
-                    parent.imageSrc = null;
-                }
-                if (parent.parent && parent.parent.questionPuzzle) {
-                    parent.parent.questionPuzzle.display();
-                }
-                if (this.parent.parentQuestion) {
-                    let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-                    let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                    let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                    this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
-                }
-                else if (this.parent.answer) {
-                    let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                    this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                }
-                else {
-                    this.parent.display();
-                }
-
-            };
-            this.mouseleaveHandler = ()=> {
-                this.redCrossManipulator.flush();
-            };
-            this.imageMouseoverHandler = ()=> {
-                if (typeof this.redCrossManipulator === 'undefined') {
-                    this.redCrossManipulator = new Manipulator(self);
-                    this.redCrossManipulator.addOrdonator(2);
-                    manipulator.last.add(this.redCrossManipulator.first);
-                }
-                let redCrossSize = 15;
-                let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
-                    : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
+                let x = -(puzzle.visibleArea.width - this.parent.width)/2 + this.parent.puzzleColumnIndex*(puzzle.elementWidth + MARGIN);
+                let y = -(puzzle.visibleArea.height - this.parent.height)/ 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+                this.parent.parentQuestion.checkValidity();
+            }
+            else if (this.parent.answer) {
+                let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                this.parent.answer.parentQuestion.checkValidity();
+            }
+            else {
+                this.parent.display();
+                this.parent.linkedQuestion.checkValidity();
+            }
+        };
+        this.mouseleaveHandler= ()=>{
+            this.redCrossManipulator.flush();
+        };
+        this.imageMouseoverHandler = ()=>{
+            if(typeof this.redCrossManipulator === 'undefined'){
+                this.redCrossManipulator = new Manipulator(self);
+                this.redCrossManipulator.addOrdonator(2);
+                manipulator.last.add(this.redCrossManipulator.first);
+            }
+            let redCrossSize = 15;
+            let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x +this.imageSVG.image.width/2 - redCrossSize/2 , this.imageSVG.image.y - this.imageSVG.image.height/2 + redCrossSize/2, redCrossSize, this.redCrossManipulator)
+                :drawRedCross(this.imageSVG.x +this.imageSVG.width/2 - redCrossSize/2 , this.imageSVG.y - this.imageSVG.height/2 + redCrossSize/2, redCrossSize, this.redCrossManipulator);
 
                 svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
                 this.redCrossManipulator.ordonator.set(1, redCross);
@@ -765,10 +768,10 @@ exports.Util = function (globalVariables) {
             !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
             this.icon.cadre.color(myColors.white, 1, myColors.black);
 
-            if (globalVariables.playerMode) {
-                this.drawProgressIcon(this, game, size);
-            }
+        if (playerMode) {
+            this.drawProgressIcon(game, size);
         }
+    }
 
         redCrossClickHandler() {
             this.removeAllLinks();
@@ -803,62 +806,95 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        miniatureClickHandler() {
-            this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
-            if (!this.selected) {
-                if (this.game.parentFormation.selectedGame) {
-                    this.game.parentFormation.selectedGame.icon.cadre.color(myColors.white, 1, myColors.black);
-                    this.game.parentFormation.selectedGame.selected = false;
-                    !globalVariables.playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
-                        .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first) !== -1)
+    miniatureClickHandler () {
+        this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
+        if (!this.selected) {
+            if (this.game.parentFormation.selectedGame) {
+                this.checkAndDrawValidity(this.game.parentFormation.selectedGame);
+                this.game.parentFormation.selectedGame.selected = false;
+                !playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
+                        .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first)!== -1)
                     && this.game.parentFormation.selectedGame.game.miniatureManipulator.last
                         .remove(this.game.parentFormation.selectedGame.redCrossManipulator.first);
-                }
-                this.game.parentFormation.selectedGame = this;
-                !globalVariables.playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
-                this.icon.cadre.color(myColors.white, 2, SELECTION_COLOR);
-            } else {
-                this.icon.cadre.color(myColors.white, 1, myColors.black);
-                !globalVariables.playerMode && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
-                this.game.parentFormation.selectedGame = null;
             }
-            this.selected = !this.selected;
         }
+        this.selected = !this.selected;
+        this.updateSelectionDesign();
+    }
 
-        drawProgressIcon(miniatureObject, object, size) {
-            let iconsize = 20;
-            miniatureObject.infosManipulator = new Manipulator(miniatureObject);
-            miniatureObject.infosManipulator.addOrdonator(4);
-            switch (object.status) {
-                case "notAvailable":
-                    miniatureObject.icon.cadre.color(myColors.grey, 1, myColors.black);
-                    break;
-                case "done":
-                    var iconInfos = drawCheck(size / 2, -size / 2, iconsize);
-                    iconInfos.color(myColors.none, 5, myColors.green);
-                    let rect = new svg.Rect(iconsize, iconsize);
-                    rect.color(myColors.white, 1, myColors.green);
-                    rect.position(size / 2, -size / 2);
-                    miniatureObject.infosManipulator.ordonator.set(0, rect);
-                    miniatureObject.infosManipulator.ordonator.set(1, iconInfos);
-                    let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
-                    object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
-                    let result = autoAdjustText(resultString, 0, 0, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
-                    result.text.position(0, size / 2 - MARGIN / 2);
-                    break;
-                case "inProgress":
-                    var iconInfos = new svg.Circle(iconsize / 2).color(myColors.white, 1, myColors.orange).position(size / 2, -size / 2);
-                    let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 - iconsize / 4, -size / 2);
-                    let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2, -size / 2);
-                    let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 + iconsize / 4, -size / 2);
-                    miniatureObject.infosManipulator.ordonator.set(0, iconInfos);
-                    miniatureObject.infosManipulator.ordonator.set(1, iconInfosdot1);
-                    miniatureObject.infosManipulator.ordonator.set(2, iconInfosdot2);
-                    miniatureObject.infosManipulator.ordonator.set(3, iconInfosdot3);
-                    object.miniatureManipulator.last.add(miniatureObject.infosManipulator.first);
-                    break;
-            }
+    updateSelectionDesign() {
+        if(this.selected) {
+            this.game.parentFormation.selectedGame = this;
+            !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
+            this.icon.cadre.color(myColors.white, 3, SELECTION_COLOR);
+        } else {
+            this.checkAndDrawValidity(this);
+            !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            this.game.parentFormation.selectedGame = null;
+        }
+    }
+
+    checkAndDrawValidity(gameMiniature) {
+        let displayWhenPublished = () => {
+            let result = true;
+            gameMiniature.game.tabQuestions.forEach(question => {
+                if (!(question instanceof AddEmptyElement)) {
+                    question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                        result = result && funcEl(question).isValid;
+                    })
+                }
+            });
+            result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
         };
+        let displayWhenNotPublished = () => {
+            gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black);
+        };
+
+        (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
+    }
+
+    drawProgressIcon (object, size) {
+        let iconsize = 20;
+        this.infosManipulator = new Manipulator(this);
+        this.infosManipulator.addOrdonator(4);
+        switch (object.status) {
+            case "notAvailable":
+                this.icon.cadre.color(myColors.grey, 1, myColors.black);
+                break;
+            case "done":
+                let check = drawCheck(size / 2, -size / 2, iconsize)
+                    .color(myColors.none, 5, myColors.green);
+                let rect = new svg.Rect(iconsize, iconsize)
+                    .color(myColors.white, 1, myColors.green)
+                    .position(size/2, -size/2);
+                this.infosManipulator.ordonator.set(0, rect);
+                this.infosManipulator.ordonator.set(1, check);
+                let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
+                object.miniatureManipulator.last.add(this.infosManipulator.first);
+                let result = autoAdjustText(resultString, size/2, size/2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
+                result.text.position(0,size/2-MARGIN/2);
+                break;
+            case "inProgress":
+                let circle = new svg.Circle(iconsize/2)
+                    .color(myColors.white, 1, myColors.orange)
+                    .position(size/2, -size/2);
+                let iconInfosdot1 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2-iconsize / 4, -size/2);
+                let iconInfosdot2 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2, -size/2);
+                let iconInfosdot3 = new svg.Circle(iconsize / 12)
+                    .color(myColors.orange)
+                    .position(size/2+iconsize / 4, -size/2);
+                this.infosManipulator.ordonator.set(0, circle);
+                this.infosManipulator.ordonator.set(1, iconInfosdot1);
+                this.infosManipulator.ordonator.set(2, iconInfosdot2);
+                this.infosManipulator.ordonator.set(3, iconInfosdot3);
+                object.miniatureManipulator.last.add(this.infosManipulator.first);
+                break;
+        }
+    };
 
     }
 
@@ -955,16 +991,16 @@ exports.Util = function (globalVariables) {
             svg.addEvent(this.returnText, "click", returnHandler);
         }
 
-        display(x, y, w, h) {
-            this.returnText = new svg.Text(this.label);
-            this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
-            this.returnButton.color(myColors.black, 0, []);
-            this.returnText.font("Arial", 20).anchor("start").position(0, 0);
-            let textSize = svg.runtime.boundingRect(this.returnText.component);
-            let returnButtonSize = svg.runtime.boundingRect(this.returnButton.component);
-            this.manipulator.ordonator.set(0, this.returnText);
-            this.returnText.position(w + returnButtonSize.width, textSize.height / 2 + returnButtonSize.height / 4);
-            this.manipulator.translator.move(x + w, y);
+    display(x, y, w, h) {
+        this.returnText = new svg.Text(this.label);
+        this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
+        this.returnButton.color(myColors.black, 0, []);
+        this.returnText.font("Arial", 20).anchor("start").position(0, 0);
+        this.textSize = svg.runtime.boundingRect(this.returnText.component);
+        this.size = svg.runtime.boundingRect(this.returnButton.component);
+        this.manipulator.ordonator.set(0, this.returnText);
+        this.returnText.position(w+this.size.width, this.textSize.height/2+this.size.height/4);
+        this.manipulator.translator.move(x+w, y);
 
             this.returnText.parentObj = this;
             this.returnButton.parentObj = this;
@@ -1197,16 +1233,16 @@ exports.Util = function (globalVariables) {
             return dbListener.httpGetAsync("/getFormationById/" + id)
         }
 
-        static sendProgressToServer(quiz) {
-            var data = {
-                indexQuestion: quiz.currentQuestionIndex + 1,
-                tabWrongAnswers: [],
-                game: quiz.id,
-                formation: quiz.parentFormation._id
-            };
-            quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push(x.questionNum));
-            return dbListener.httpPostAsync("/sendProgress", data)
-        }
+    static sendProgressToServer(quiz) {
+        var data = {
+            indexQuestion: quiz.currentQuestionIndex+1,
+            tabWrongAnswers: [],
+            game: quiz.id,
+            formation: quiz.parentFormation._id,
+        };
+        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
+        return dbListener.httpPostAsync("/sendProgress", data)
+    }
 
         static getUser() {
             return dbListener.httpGetAsync("/getUser")
@@ -1225,26 +1261,185 @@ exports.Util = function (globalVariables) {
         }
     }
 
-    function Bdd() {
-        HEADER_SIZE = 0.05;
-        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
-        FORMATION_TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
-        REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
-        REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
-        EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
-        MARGIN = 10;
-        myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
-            "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
-            "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
-            "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
-            "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
-            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
-            "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
-            "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
-            "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
-            "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
-            "linesManipulator", "penManipulator", "blackCrossManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator"];
+gui.ScrollablePanel = class ScrollablePanel {
+    constructor(width, height, color, borderThickness = 3) {
+        let vHandleCallback = position => {
+            var x = this.content.x;
+            var y = -position*this.content.height/this.view.height + this.view.height/2;
+            this.contentV.move(x, y);
+        };
+        let hHandleCallback = position => {
+            var x = -position*this.content.width/this.view.width + this.view.width/2;
+            var y = this.content.y;
+            this.contentH.move(x, y);
+        };
+
+        this.width = width;
+        this.height = height;
+        this.component = new svg.Translation();
+        this.component.focus = this;
+        this.border = new svg.Rect(this.width, this.height).color([], borderThickness, [0, 0, 0]);
+        this.view = new svg.Drawing(width, height).position(-width/2, -height/2);
+        this.translate = new svg.Translation();
+        this.component.add(this.view.add(this.translate)).add(this.border);
+        this.vHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], vHandleCallback).vertical(width/2, -height/2, height/2);
+        this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-width/2, width/2, height/2);
+        this.component.add(this.vHandle.component).add(this.hHandle.component);
+        this.back = new svg.Rect(width, height).color(color, 0, []);
+        this.content = new svg.Translation();
+        this.contentH = new svg.Translation();
+        this.contentV = new svg.Translation();
+        this.content.width = width;
+        this.content.height = height;
+        this.translate.add(this.back.position(width/2, height/2)).add(this.content.add(this.contentV.add(this.contentH)));
+    }
+
+    position(x, y) {
+        this.component.move(x, y);
+        return this;
+    }
+
+    resize(width, height) {
+        this.width = width;
+        this.height = height;
+        this.border.dimension(width, height);
+        this.view.dimension(width, height).position(-width / 2, -height / 2);
+        this.vHandle.vertical(width / 2, -height / 2, height / 2);
+        this.hHandle.horizontal(-width / 2, width / 2, height / 2);
+        this.back.dimension(width, height).position(width / 2, height / 2);
+        return this;
+    }
+
+    updateHandle() {
+        this.vHandle.dimension(this.view.height, this.content.height)
+            .position((this.view.height / 2 - this.contentV.y) / (this.content.height) * this.view.height);
+        this.hHandle.dimension(this.view.width, this.content.width)
+            .position((this.view.width / 2 - this.contentH.x) / (this.content.width) * this.view.width);
+        return this;
+    }
+
+    add(component) {
+        this.content.add(component);
+        return this;
+    }
+
+    remove(component) {
+        this.content.remove(component);
+        return this;
+    }
+
+    resizeContent(width, height) {
+        if (height > this.height) {
+            this.content.height = height;
+        }
+        if (width > this.width) {
+            this.content.width = width;
+        }
+        if (height > this.height || width > this.width) {
+            this.back.position(this.content.width / 2, this.content.height / 2);
+            this.back.dimension(this.content.width, this.content.height);
+            this.updateHandle();
+        }
+        return this;
+    }
+
+    controlPosition(x, y) {
+        if (x > 0) {
+            x = 0;
+        }
+        if (y > 0) {
+            y = 0;
+        }
+        if (x < -this.content.width + this.view.width) {
+            x = -this.content.width + this.view.width;
+        }
+        if (y < -this.content.height + this.view.height) {
+            y = -this.content.height + this.view.height;
+        }
+        return {x, y};
+    }
+
+    moveContent(x, y, content) {
+        let completeMovement = progress=> {
+            this.updateHandle();
+            if (progress === 1) {
+                delete this.animation;
+            }
+        };
+        if (!this.animation) {
+            this.animation = true;
+            let point = this.controlPosition(x, y);
+            this[content].onChannel().smoothy(5, 100)
+                .execute(completeMovement).moveTo(point.x, point.y);
+        }
+        return this;
+    }
+
+    processKeys(keycode) {
+        if (isLeftArrow(keycode)) {
+            this.moveContent(this.contentH.x+100, this.contentH.y, 'contentH');
+        }
+        else if (isUpArrow(keycode)) {
+            this.moveContent(this.contentV.x, this.contentV.y+100, 'contentV');
+        }
+        else if (isRightArrow(keycode)) {
+            this.moveContent(this.contentH.x-100, this.contentH.y, 'contentH');
+        }
+        else if (isDownArrow(keycode)) {
+            this.moveContent(this.contentV.x, this.contentV.y-100, 'contentV');
+        }
+        else {
+            return false;
+        }
+        return true;
+
+        function isLeftArrow(keycode) {
+            return keycode === 37;
+        }
+
+        function isUpArrow(keycode) {
+            return keycode === 38;
+        }
+
+        function isRightArrow(keycode) {
+            return keycode === 39;
+        }
+
+        function isDownArrow(keycode) {
+            return keycode === 40;
+        }
+    }
+};
+
+svg.TextItem.prototype.enter = function() {
+    this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
+    if(this.component.value === "")this.messageText = "";
+};
+
+/////////////// Bdd.js //////////////////
+/**
+ * Created by ABL3483 on 10/03/2016.
+ */
+function Bdd() {
+    HEADER_SIZE = 0.05;
+    REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ©,;°?!'"-]){0,150}$/g;
+    FORMATION_TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
+    REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
+    REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
+    EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
+    MARGIN = 10;
+    myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
+        "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
+        "previewButtonManipulator", "saveQuizButtonManipulator","saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
+        "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
+        "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
+        "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
+        "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
+        "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
+        "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
+        "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
+        "linesManipulator","penManipulator","blackCrossManipulator","miniaturesManipulator","toggleFormationsManipulator","iconManipulator","infosManipulator","manip",
+        "formationsManipulator","miniatureManipulator","miniatureObject.infosManipulator","publicationFormationButtonManipulator"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1269,32 +1464,68 @@ exports.Util = function (globalVariables) {
             none: []
         };
 
-        myImagesSourceDimensions = {
-            "../resource/littleCat.png": {width: 80, height: 50},
-            "../resource/millions.png": {width: 1024, height: 1024},
-            "../resource/pomme.jpg": {width: 925, height: 1000},
-            "../resource/hollandeContent.jpg": {width: 166, height: 200},
-            "../resource/folder.png": {width: 256, height: 256},
-            "../resource/flanders.png": {width: 225, height: 225},
-            "../resource/flamantRose.jpg": {width: 183, height: 262},
-            "../resource/ChatTim.jpg": {width: 480, height: 640},
-            "../resource/cerise.jpg": {width: 2835, height: 2582},
-            "../resource/cat.png": {width: 1920, height: 1200}
-        };
+    myImagesSourceDimensions = {
+        "../resource/littleCat.png" : {width: 80, height: 50},
+        "../resource/millions.png" : {width:1024, height: 1024},
+        "../resource/pomme.jpg" : {width: 925, height: 1000},
+        "../resource/hollandeContent.jpg" : {width: 166, height: 200},
+        "../resource/folder.png" : {width: 256, height: 256},
+        "../resource/flanders.png" : {width: 225, height: 225},
+        "../resource/flamantRose.jpg" : {width: 183, height: 262},
+        "../resource/ChatTim.jpg" : {width: 480, height: 640},
+        "../resource/cerise.jpg" : {width: 2835, height: 2582},
+        "../resource/cat.png" : {width: 1920, height: 1200},
+        "../resource/Alba.jpg" : {width: 675, height: 800},
+        "../resource/tetris.png": {width: 700, height: 456},
+        "../resource/shiva.jpg": {width: 1816, height: 2439},
+        "../resource/poop.jpg": {width: 570, height: 238},
+        "../resource/monkey.jpg": {width: 1085, height: 610},
+        "../resource/Kenny.png": {width: 640, height: 360},
+        "../resource/Geneviève.jpg": {width: 590, height: 380},
+        "../resource/eagle.jpg": {width: 1200, height: 900},
+        "../resource/berlin.jpg": {width: 640, height: 480},
+        "../resource/couscous.jpg": {width: 1688, height: 1125},
+        "../resource/dora.jpg": {width: 2136, height: 2896},
+        "../resource/kassos.jpg": {width: 300, height: 300},
+        "../resource/kawai.png": {width: 900, height: 800},
+        "../resource/manipulator.jpg": {width: 1181, height: 888},
+        "../resource/minions.jpg": {width: 630, height: 354},
+        "../resource/vache.jpeg": {width: 1280, height: 960},
+         "../resource/pokeball.png": {width: 894, height: 893}
+    };
 
         SELECTION_COLOR = myColors.darkBlue;
 
-        myLibraryImage = {
-            title: "Bibliothèque",
-            tab: [
-                {imgSrc: "../resource/littleCat.png"},
-                {imgSrc: "../resource/millions.png"},
-                {imgSrc: "../resource/folder.png"},
-                {imgSrc: "../resource/cerise.jpg"},
-                {imgSrc: "../resource/ChatTim.jpg"}
-            ],
-            font: "Courier New", fontSize: 20
-        };
+    myLibraryImage = {
+        title: "Bibliothèque",
+        tab: [
+            {imgSrc: "../resource/Alba.jpg"},
+            {imgSrc: "../resource/littleCat.png"},
+            {imgSrc: "../resource/millions.png"},
+            {imgSrc: "../resource/folder.png"},
+            {imgSrc: "../resource/cerise.jpg"},
+            {imgSrc: "../resource/ChatTim.jpg"},
+            {imgSrc: "../resource/tetris.png"},
+            {imgSrc: "../resource/shiva.jpg"},
+            {imgSrc: "../resource/poop.jpg"},
+            {imgSrc: "../resource/monkey.jpg"},
+            {imgSrc: "../resource/Kenny.png"},
+            {imgSrc: "../resource/Geneviève.jpg"},
+            {imgSrc: "../resource/eagle.jpg"},
+            {imgSrc: "../resource/berlin.jpg"},
+            {imgSrc: "../resource/couscous.jpg"},
+            {imgSrc: "../resource/dora.jpg"},
+            {imgSrc: "../resource/kassos.jpg"},
+            {imgSrc: "../resource/kawai.png"},
+            {imgSrc: "../resource/manipulator.jpg"},
+            {imgSrc: "../resource/minions.jpg"},
+            {imgSrc: "../resource/vache.jpeg"},
+            {imgSrc: "../resource/pokeball.png"}
+
+
+        ],
+        font: "Courier New", fontSize: 20
+    };
 
         myLibraryGames = {
             title: "Type de jeux",
@@ -1328,1076 +1559,54 @@ exports.Util = function (globalVariables) {
             tabQuestions: [defaultQuestion]
         };
 
-        questionWithLabelImageAndMultipleAnswers = {
-            label: "Une divinité féminine est une...", imageSrc: "../resource/millions.png", multipleChoice: true,
-            tabAnswer: [
-                {
-                    label: "Comtesse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                },
-                {
-                    label: "Déesse", imageSrc: null, correct: true,
-                    colorBordure: myColors.green, bgColor: myColors.blue
-                },
-                {
-                    label: "Bougresse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                },
-                {
-                    label: "Diablesse", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                }
-            ],
-            rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-        };
+    singleAnswerValidationTab = [
+        // Check 1 Correct Answer:
+        question => ({
+            isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
+            message: "Votre question doit avoir une bonne réponse."
+        }),
+        // Check answer's name:
+        question => {
+            let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc));
+            let message = "Vous devez remplir toutes les réponses.";
 
-        myQuestion2 =
-        {
-            label: "Parmi ces fruits, lequel possède un noyau?", imageSrc: null, multipleChoice: true,
-            tabAnswer: [
-                {
-                    label: "", imageSrc: "../resource/pomme.jpg", correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.white
-                },
-                {
-                    label: "La cerise", imageSrc: "../resource/cerise.jpg", correct: true,
-                    colorBordure: myColors.green, bgColor: myColors.blue
-                },
-                {
-                    label: "La poire", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                },
-                {
-                    label: "L'orange", imageSrc: null, correct: false,
-                    colorBordure: myColors.green, bgColor: myColors.grey
-                }
-            ],
-            rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-        };
+            return {
+                isValid:isValid,
+                message:message
+            }
+        },
+        // Check Question Name:
+        question => {
+            let isValid = !!((question.label && question.validLabelInput) || question.imageSrc);
+            let message = "Vous devez remplir le nom de la question.";
 
-        myQuizzTestLong = {
-            title: "Qui veut gagner des millions ? Quiz n°1",
-            bgColor: myColors.raspberry,
-            puzzleLines: 3,
-            puzzleRows: 1,
-            tabQuestions: [
-                {
-                    label: "Question 1", imageSrc: null, multipleChoice: true,
-                    tabAnswer: [
-                        {
-                            label: "Comtesse", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Déesse", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Bougresse", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Diablesse", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-                },
+            return {
+                isValid:isValid,
+                message:message
+            }
+        },
+        // Check Quiz Name:
+        question => {
+            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined);
+            let message = "Vous devez remplir le nom du quiz.";
+            return {
+                isValid: isValid,
+                message: message
+            }
+        }
+    ];
 
-                {
-                    label: "Question 2", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Les danseuses", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Les boxeurs", imageSrc: null, correct: false,
-                            colorBordure: myColors.blue, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les rugbymen", imageSrc: null, correct: false,
-                            colorBordure: myColors.grey, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les sumos", imageSrc: null, correct: false,
-                            colorBordure: myColors.orange, bgColor: myColors.grey
-                        }
-
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Question 3", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Stupide", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Inculte", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Idiote", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Ignare", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.blue
-                },
-
-                {
-                    label: "Question 0", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Manteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Chapeau", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Gâteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Château", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Question 4", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Boïcotter", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Boycotter", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Boycoter", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-
-                    ],
-                    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Question -1", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Un flandrois", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Un flamby", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Un flamand", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Un flanders", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Question 5", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Cyclades", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.orange
-                        },
-                        {
-                            label: "Antilles", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.purple
-                        },
-                        {
-                            label: "Baléares", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Canaries", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.green
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Question 6", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Musée d'Orsay", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Musée Guimet", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Musée Grévin", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Le Louvre", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-                },
-
-                {
-                    label: "Question 7", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Luc", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Paul", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Patrick", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Albert", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Question 8",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "XVIe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "XVIIe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "XVIIIe siècle", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "XIXe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.green
-                },
-
-                {
-                    label: "Question 9", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Magnolias", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Lilas", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Lavandes", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Roses", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
-                },
-
-                {
-                    label: "Question 10",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "1996", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "1998", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "1994", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "1999", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.purple
-                }
-
-            ]
-        };
-
-        myQuizz = {
-            title: "Quiz n°1",
-            bgColor: myColors.raspberry,
-            puzzleLines: 3,
-            puzzleRows: 1,
-            parentFormation: {label: "Qui veut gagner des millions ?"},
-            tabQuestions: [
-                questionWithLabelImageAndMultipleAnswers, myQuestion2,
-                {
-                    label: "Traditionnellement, le justaucorps est porté par...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Les danseuses", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Les boxeurs", imageSrc: null, correct: false,
-                            colorBordure: myColors.blue, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les rugbymen", imageSrc: null, correct: false,
-                            colorBordure: myColors.grey, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les sumos", imageSrc: null, correct: false,
-                            colorBordure: myColors.orange, bgColor: myColors.grey
-                        }
-
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Quelle est la capitale de la Libye?",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    font: "Courier New",
-                    fontSize: 40,
-                    tabAnswer: [
-                        {
-                            label: "Malpoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Courier New", fontSize: 36
-                        },
-                        {
-                            label: "Papoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Lucida Grande", fontSize: 30
-                        },
-                        {
-                            label: "Tropoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Lucida Grande", fontSize: 12
-                        },
-                        {
-                            label: "Tripoli", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue, font: "Times New Roman", fontSize: 36
-                        }
-                    ],
-                    rows: 4,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.grey
-                },
-
-                {
-                    label: "Un terrain où on n'a rien planté est une terre...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Stupide", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Inculte", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Idiote", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Ignare", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.blue
-                },
-
-                {
-                    label: "Un galurin est un...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Manteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Chapeau", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Gâteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Château", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Boïcotter", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Boycotter", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Boycoter", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-
-                    ],
-                    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Un flandrois", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Un flamby", imageSrc: "../resource/hollandeContent.jpg", correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Un flamand", imageSrc: "../resource/flamantRose.jpg", correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Un flanders", imageSrc: "../resource/flanders.png", correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Cyclades", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.orange
-                        },
-                        {
-                            label: "Antilles", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.purple
-                        },
-                        {
-                            label: "Baléares", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Canaries", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.green
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Quel musée doit son nom à un dessinateur?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Musée d'Orsay", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Musée Guimet", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Musée Grévin", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Le Louvre", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-                },
-
-                {
-                    label: "Comment s'appelle le meilleur ami de Bob l'éponge?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Luc", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Paul", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Patrick", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Albert", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Le style 'rococo' était un style artistique en vogue au...",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "XVIe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "XVIIe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "XVIIIe siècle", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "XIXe siècle", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.green
-                },
-
-                {
-                    label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Magnolias", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Lilas", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Lavandes", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Roses", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
-                },
-
-                {
-                    label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "1996", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "1998", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "1994", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "1999", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.purple
-                }
-
-            ]
-        };
-
-        myQuizzTest = {
-            title: "Qui veut gagner des millions ? Quiz n°1",
-            bgColor: myColors.raspberry,
-            puzzleLines: 3,
-            puzzleRows: 1,
-            tabQuestions: [
-                questionWithLabelImageAndMultipleAnswers, myQuestion2,
-                {
-                    label: "Traditionnellement, le justaucorps est porté par...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Les danseuses", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Les boxeurs", imageSrc: null, correct: false,
-                            colorBordure: myColors.blue, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les rugbymen", imageSrc: null, correct: false,
-                            colorBordure: myColors.grey, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Les sumos", imageSrc: null, correct: false,
-                            colorBordure: myColors.orange, bgColor: myColors.grey
-                        }
-
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-                {
-                    label: "Un terrain où on n'a rien planté est une terre...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Stupide", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Inculte", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Idiote", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Ignare", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.blue
-                },
-
-                {
-                    label: "Un galurin est un...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Manteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Chapeau", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Gâteau", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Château", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                }//,
-                //
-                //{
-                //    label: "Quelle est l'orthographe correcte de ce verbe?", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Boïcotter", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Boycotter", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Boycoter", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //
-                //    ],
-                //    rows: 1, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                //},
-                //
-                //{
-                //    label: "Comment appelle-t-on un habitant de Flandre?", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Un flandrois", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Un flamby", imageSrc: "../resource/hollandeContent.jpg", correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Un flamand", imageSrc: "../resource/flamantRose.jpg", correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Un flanders", imageSrc: "../resource/flanders.png", correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                //},
-                //
-                //{
-                //    label: "Formentera est une île des...", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Cyclades", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.orange
-                //        },
-                //        {
-                //            label: "Antilles", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.purple
-                //        },
-                //        {
-                //            label: "Baléares", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Canaries", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.green
-                //        }
-                //    ],
-                //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                //},
-                //
-                //{
-                //    label: "Question x", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Musée d'Orsay", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Musée Guimet", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Musée Grévin", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Le Louvre", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.green
-                //},
-                //
-                //{
-                //    label: "Question y", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Luc", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Paul", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Patrick", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Albert", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                //},
-                //
-                //{
-                //    label: "Question z",
-                //    imageSrc: null,
-                //    multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "XVIe siècle", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "XVIIe siècle", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "XVIIIe siècle", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "XIXe siècle", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 2,
-                //    colorBordure: myColors.primaryBlue,
-                //    bgColor: myColors.green
-                //},
-                //
-                //{
-                //    label: "L'aspic est une variété de...", imageSrc: null, multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "Magnolias", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Lilas", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "Lavandes", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "Roses", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.grey
-                //},
-                //
-                //{
-                //    label: "En quelle année Yevgeny Kafelnikov a-t-il remporté la finale de Roland-Garros en simple4",
-                //    imageSrc: null,
-                //    multipleChoice: false,
-                //    tabAnswer: [
-                //        {
-                //            label: "1996", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "1998", imageSrc: null, crrect: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        },
-                //        {
-                //            label: "1994", imageSrc: null, correct: true,
-                //            colorBordure: myColors.green, bgColor: myColors.blue
-                //        },
-                //        {
-                //            label: "1999", imageSrc: null, correct: false,
-                //            colorBordure: myColors.green, bgColor: myColors.grey
-                //        }
-                //    ],
-                //    rows: 2,
-                //    colorBordure: myColors.primaryBlue,
-                //    bgColor: myColors.purple
-                //}
-
-            ]
-        };
-
-        myQuizzDemo = {
-            title: "Qui veut gagner des millions ? Quiz n°1",
-            tabQuestions: [
-                {
-                    label: "Parmi ces divinités, lesquelles sont de sexe féminin?",
-                    imageSrc: "../resource/millions.png",
-                    multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Athéna", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Isis", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Epona", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Freyja", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        }
-                    ],
-                    rows: 4,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.green
-                },
-
-                {
-                    label: "Parmi ces fruits, lequel ne possède pas de noyau?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "", imageSrc: "../resource/pomme.jpg", correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "La cerise", imageSrc: "../resource/cerise.jpg", correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "La poire", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "L'orange", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.purple
-                },
-
-                {
-                    label: "Quelle ceinture n'existe pas au judo?", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Bleue", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Violette", imageSrc: null, correct: true,
-                            colorBordure: myColors.blue, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Demi-verte (orange et verte)", imageSrc: null, correct: false,
-                            colorBordure: myColors.grey, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Demi-marron (bleue et marron)", imageSrc: null, correct: true,
-                            colorBordure: myColors.orange, bgColor: myColors.blue
-                        }
-
-                    ],
-                    rows: 2, colorBordure: myColors.primaryBlue, bgColor: myColors.orange
-                },
-
-                {
-                    label: "Quelle est la capitale de la Libye?",
-                    imageSrc: null,
-                    multipleChoice: false,
-                    font: "Courier New",
-                    fontSize: 40,
-                    tabAnswer: [
-                        {
-                            label: "Malpoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Courier New", fontSize: 36
-                        },
-                        {
-                            label: "Papoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Lucida Grande", fontSize: 30
-                        },
-                        {
-                            label: "Tropoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Lucida Grande", fontSize: 12
-                        },
-                        {
-                            label: "Aïoli", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey, font: "Times New Roman", fontSize: 36
-                        }
-                    ],
-                    rows: 1,
-                    colorBordure: myColors.primaryBlue,
-                    bgColor: myColors.grey
-                },
-
-                {
-                    label: "Un terrain où on n'a rien planté est une terre...", imageSrc: null, multipleChoice: false,
-                    tabAnswer: [
-                        {
-                            label: "Stupide", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Inculte", imageSrc: null, correct: true,
-                            colorBordure: myColors.green, bgColor: myColors.blue
-                        },
-                        {
-                            label: "Idiote", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        },
-                        {
-                            label: "Ignare", imageSrc: null, correct: false,
-                            colorBordure: myColors.green, bgColor: myColors.grey
-                        }
-                    ],
-                    rows: 3, colorBordure: myColors.primaryBlue, bgColor: myColors.blue
-                }
-            ],
-            bgColor: myColors.raspberry, puzzleLines: 3, puzzleRows: 1
-        };
-
-        singleAnswerValidationTab = [
-            // Check 1 Correct Answer:
-            question => ({
-                isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
-                message: "Votre question doit avoir une bonne réponse."
-            }),
-            // Check answer's name:
-            question => ({
-                isValid: question.tabAnswer.every(el => (el.label || el.imageSrc)),
-                message: "Vous devez remplir toutes les réponses."
-            }),
-            // Check Question Name:
-            question => ({
-                isValid: !!(question.label || question.imageSrc),
-                message: "Vous devez remplir le nom de la question."
-            }),
-            // Check Quiz Name:
-            question => ({
-                isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
-                message: "Vous devez remplir le nom du quiz."
-            })
-        ];
-
-        multipleAnswerValidationTab = [
-            // Check answer's name:
-            question => ({
-                isValid: question.tabAnswer.every(el => (el.label || el.imageSrc)),
-                message: "Vous devez remplir toutes les réponses."
-            }),
-            // Check Question Name:
-            question => ({
-                isValid: !!(question.label || question.imageSrc),
-                message: "Vous devez remplir le nom de la question."
-            }),
+    multipleAnswerValidationTab = [
+        // Check answer's name:
+        question => ({
+            isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc)),
+            message: "Vous devez remplir toutes les réponses."
+        }),
+        // Check Question Name:
+        question => ({
+            isValid: !!((question.label && question.validLabelInput) || question.imageSrc), // Checker si le champ saisi de la question est valide
+            message: "Vous devez remplir le nom de la question."
+        }),
             // Check Quiz Name:
             question => ({
                 isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
@@ -2420,67 +1629,37 @@ exports.Util = function (globalVariables) {
             ]
         };
 
-        statusEnum = {
-            Published: {
-                icon: size => {
-                    let check = drawCheck(0, 0, size).color(myColors.none, 5, myColors.white),
-                        square = new svg.Rect(size, size).color(myColors.green);
-                    return {
-                        check: check,
-                        square: square,
-                        elements: [square, check]
-                    }
+    statusEnum = {
+        Published: {
+            icon: size => {
+                let check = drawCheck(0, 0, size).color(myColors.none, 5, myColors.white),
+                    square = new svg.Rect(size, size).color(myColors.green);
+                return {
+                    check: check,
+                    square: square,
+                    elements: [square, check]
                 }
-            },
-            Edited: {
-                icon: size => {
-                    let circle = new svg.Circle(size / 2).color(myColors.orange),
-                        exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white),
-                        dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
-                    return {
-                        circle: circle,
-                        exclamation: exclamation,
-                        dot: dot,
-                        elements: [circle, exclamation, dot]
-                    }
+            }
+        },
+        Edited: {
+            icon: size => {
+                let circle = new svg.Circle(size / 2).color(myColors.orange),
+                    exclamation = new svg.Rect(size / 7, size / 2.5).position(0, -size / 6).color(myColors.white),
+                    dot = new svg.Rect(size / 6.5, size / 6.5).position(0, size / 4).color(myColors.white);
+                return {
+                    circle: circle,
+                    exclamation: exclamation,
+                    dot: dot,
+                    elements: [circle, exclamation, dot]
                 }
-            },
-            NotPublished: {
-                icon: () => ({elements: []})
             }
-        };
-
-        myFormations = {
-            tab: [{label: "Hibernate", status: statusEnum.NotPublished}, {
-                label: "Hibernate 2",
-                status: statusEnum.Published
-            }, {label: "HTML3", status: statusEnum.Edited}, {label: "Javascript"},
-                {label: "HTML5"}, {
-                    label: "HTML5 2",
-                    status: statusEnum.Edited
-                }, {label: "MongoDB"}, {label: "Node Js"}, {label: "Hibernate 3"}, {label: "Hibernate 4"}, {label: "HTML3 2"}, {label: "Php"},
-                {label: "Javascript 2"}, {label: "Javascript 3"}, {label: "Javascript 4"}, {
-                    label: "Javascript 5",
-                    status: statusEnum.Published
-                }, {label: "Angular js"}, {label: "Angular js 2"}, {label: "Angular js 3"}, {label: "Angular js 4"},
-                {label: "Angular js 5"}, {label: "Angular js 6"}, {
-                    label: "Angular js 7",
-                    status: statusEnum.Edited
-                }, {label: "Angular js 8"}, {label: "ZEdernier"}]
-        };
-
-        myFormation = {
-            gamesCounter: {
-                quizz: 0,
-                bd: 0
-            }
-            ,
-            quizzTab: [[{type: "Quiz", label: "Quiz 0"}, {type: "BD", label: "BD 0"}, {
-                type: "Quiz",
-                label: "Le premier Quiz"
-            }]]
-        };
-    }
+        },
+        NotPublished: {
+            icon: () => ({elements:[]})
+        }
+    };
+}
+/////////////////// end of Bdd.js //////////////////////
 
     return {
         SVGGlobalHandler,

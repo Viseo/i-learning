@@ -92,26 +92,26 @@ exports.Domain = function (globalVariables) {
         Server = globalVariables.util.Server;
     };
 
-    class Answer {
-        constructor(answerParameters, parent) {
-            this.parentQuestion = parent;
-            let answer = {
-                label: '',
-                imageSrc: null,
-                correct: false
-            };
-            answerParameters && (answer = answerParameters);
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(7);
-            this.label = answer.label;
-            this.imageSrc = answer.imageSrc;
-            this.correct = answer.correct;
-            this.selected = false;
-            this.answerNameValidInput = true;
-            this.fontSize = answer.fontSize ? answer.fontSize : 20;
-            this.explanation = answer.explanation;
-            answer.explanation && (this.filled = true);
-            answer.font && (this.font = answer.font);
+class Answer {
+    constructor (answerParameters, parent) {
+        this.parentQuestion = parent;
+        let answer = {
+            label: '',
+            imageSrc: null,
+            correct: false
+        };
+        answerParameters && (answer = answerParameters);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(7);
+        this.label = answer.label;
+        this.imageSrc = answer.imageSrc;
+        this.correct = answer.correct;
+        this.selected = false;
+        this.validLabelInput = true;
+        this.fontSize = answer.fontSize ? answer.fontSize : 20;
+        this.explanation = answer.explanation;
+        answer.explanation && (this.filled = true);
+        answer.font && (this.font = answer.font);
 
             this.imageLoaded = false;
 
@@ -143,34 +143,35 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-        isEditable(editor, editable) {
-            this.linesManipulator = new Manipulator(this);
-            this.linesManipulator.addOrdonator(4);
-            this.manipulator.last.add(this.linesManipulator.first);
-            this.penManipulator = new Manipulator(this);
-            this.penManipulator.addOrdonator(4);
-            this.manipulator.last.add(this.penManipulator.first);
-            this.editable = editable;
-            this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
-            this._acceptDrop = editable;
-            this.editor = editor;
-            let self = this;
-            this.checkInputContentArea = editable ? function (objCont) {
-                if (typeof objCont.contentarea.messageText !== "undefined") {
-                    if (objCont.contentarea.messageText.match(REGEX)) {
-                        self.label = objCont.contentarea.messageText;
-                        objCont.remove();
-                        objCont.contentarea.onblur = objCont.onblur;
-                    } else {
-                        self.label = objCont.contentarea.messageText;
-                        objCont.display();
-                    }
+    isEditable (editor, editable) {
+        this.linesManipulator = new Manipulator(this);
+        this.linesManipulator.addOrdonator(4);
+        this.manipulator.last.add(this.linesManipulator.first);
+        this.penManipulator = new Manipulator(this);
+        this.penManipulator.addOrdonator(4);
+        this.manipulator.last.add(this.penManipulator.first);
+        this.editable = editable;
+        this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
+        this._acceptDrop = editable;
+        this.editor = editor;
+        this.checkInputContentArea = editable ? ((objCont) => {
+            if (typeof objCont.contentarea.messageText !== "undefined") {
+                if (objCont.contentarea.messageText.match(REGEX)) {
+                    this.validLabelInput = true;
+                    this.label = objCont.contentarea.messageText;
+                    objCont.remove();
+                    //objCont.contentarea.onblur = objCont.onblur;
                 } else {
-                    self.label = "";
+                    this.validLabelInput = false;
+                    this.label = objCont.contentarea.messageText;
+                    objCont.display();
                 }
-            } : null;
-        }
+            } else {
+                this.label = "";
+            }
+        }) : null;
     }
+}
 
     class Question {
         constructor(question, quizz) {
@@ -191,50 +192,51 @@ exports.Domain = function (globalVariables) {
             this.invalidQuestionPictogramManipulator.addOrdonator(5);
             this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-            this.questionNameValidInput = true;
+        this.validLabelInput = true;
 
-            this.selected = false;
-            this.parentQuizz = quizz;
-            this.tabAnswer = [];
-            this.fontSize = 20;
-            this.questionNum = this.parentQuizz.tabQuestions.length + 1;
+        this.selected = false;
+        this.parentQuizz = quizz;
+        this.tabAnswer = [];
+        this.fontSize = 20;
+        this.questionNum = question && question.questionNum || this.parentQuizz.tabQuestions.length+1;
 
-            if (!question) {
-                this.label = "";
-                this.imageSrc = "";
-                this.rows = 4;
-                this.rightAnswers = [];
-                this.tabAnswer = [new Answer(null, this), new Answer(null, this)];
-                this.selectedAnswers = [];
-                this.multipleChoice = false;
-                this.font = "Arial";
-                this.bgColor = myColors.white;
-                this.colorBordure = myColors.black;
+        if (!question) {
+            this.label = "";
+            this.imageSrc = "";
+            this.rows = 4;
+            this.rightAnswers = [];
+            this.tabAnswer = [new Answer(null, this), new Answer(null, this)];
+            this.multipleChoice = false;
+            this.font = "Arial";
+            this.bgColor = myColors.white;
+            this.colorBordure = myColors.black;
+            this.selectedAnswers = [];
 
-            } else {
-                this.label = question.label;
-                this.imageSrc = question.imageSrc;
-                this.rows = question.rows;
-                this.rightAnswers = [];
-                this.selectedAnswers = [];
-                this.multipleChoice = question.multipleChoice;
+        } else {
+            this.label = question.label;
+            this.imageSrc = question.imageSrc;
+            this.rows = question.rows;
+            this.rightAnswers = [];
+            this.multipleChoice = question.multipleChoice;
+            this.selectedAnswers = question.selectedAnswers || [];
 
                 question.colorBordure && (this.colorBordure = question.colorBordure);
                 question.bgColor && (this.bgColor = question.bgColor);
                 question.font && (this.font = question.font);
                 question.fontSize && (this.fontSize = question.fontSize);
 
-                if (question.imageSrc) {
-                    this.image = imageController.getImage(this.imageSrc, () => {
-                        this.imageLoaded = true;
-                        this.dimImage = {width: this.image.width, height: this.image.height};
-                    });
-                    this.imageLoaded = false;
-                } else {
+            if (question.imageSrc) {
+                this.image = imageController.getImage(this.imageSrc, () => {
                     this.imageLoaded = true;
-                }
+                    this.dimImage = {width: this.image.width, height: this.image.height};
+                });
+                this.imageLoaded = false;
+            } else {
+                this.imageLoaded = true;
             }
-            if (question !== null && question.tabAnswer !== null) {
+        }
+        this.questionType = (this.multipleChoice) ? myQuestionType.tab[1]: myQuestionType.tab[0];
+        if (question !== null && question.tabAnswer !== null) {
 
                 question.tabAnswer.forEach(it => {
                     var tmp = new Answer(it, this);
@@ -257,52 +259,62 @@ exports.Domain = function (globalVariables) {
             this.content = null;
         }
 
-        remove() {
-            let index = this.parentQuizz.tabQuestions.indexOf(this);
-            if (index !== -1) {
-                this.parentQuizz.tabQuestions.splice(index, 1);
-                return true;
-            }
-            else {
-                return false;
-            }
+    remove () {
+        let index = this.parentQuizz.tabQuestions.indexOf(this);
+        if(index!== -1){
+            this.parentQuizz.tabQuestions.splice(index, 1);
+            return true;
         }
-
-        toggleInvalidQuestionPictogram(active) {
-            let pictoSize = 20;
-            if (active) {
-                this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
-                this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
-                this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
-                this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
-                this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
-            } else {
-                this.invalidQuestionPictogramManipulator.ordonator.unset(0);
-                this.invalidQuestionPictogramManipulator.ordonator.unset(2);
-                this.invalidQuestionPictogramManipulator.ordonator.unset(3);
-            }
+        else{
+            return false;
         }
     }
+
+    checkValidity () {
+        var validation = true;
+        this.questionType.validationTab.forEach((funcEl) => {
+            var result = funcEl(this);
+            validation = validation && result.isValid;
+        });
+        validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
+    }
+
+    toggleInvalidQuestionPictogram(active){
+        let pictoSize = 20;
+        if(active) {
+            this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
+            this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
+            this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
+            this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
+            this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
+        }else{
+            this.invalidQuestionPictogramManipulator.ordonator.unset(0);
+            this.invalidQuestionPictogramManipulator.ordonator.unset(2);
+            this.invalidQuestionPictogramManipulator.ordonator.unset(3);
+        }
+    }
+}
 
     class QuestionCreator {
         constructor(parent, question) {
             this.MAX_ANSWERS = 8;
             this.parent = parent;
 
-            this.manipulator = new Manipulator(this);
-            this.manipulatorQuizzInfo = new Manipulator(this);
-            this.questionCreatorManipulator = new Manipulator(this);
-            this.questionCreatorManipulator.addOrdonator(2);
-            this.questionManipulator = new Manipulator(this);
-            this.questionManipulator.addOrdonator(6);
-            this.toggleButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator.addOrdonator(2);
-            this.manipulator.last.add(this.previewButtonManipulator.first);
-            this.saveQuizButtonManipulator = new Manipulator(this);
-            this.manipulator.last.add(this.saveQuizButtonManipulator.first);
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(2);
+        this.manipulatorQuizzInfo = new Manipulator(this);
+        //this.questionCreatorManipulator = new Manipulator(this);
+        //this.questionCreatorManipulator.addOrdonator(2);
+        this.questionManipulator = new Manipulator(this);
+        this.questionManipulator.addOrdonator(6);
+        this.toggleButtonManipulator = new Manipulator(this);
+        this.previewButtonManipulator = new Manipulator(this);
+        this.previewButtonManipulator.addOrdonator(2);
+        this.manipulator.last.add(this.previewButtonManipulator.first);
+        this.saveQuizButtonManipulator = new Manipulator(this);
+        this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
-            this.questionNameValidInput = true;
+        this.validLabelInput = true;
 
             this.labelDefault = "Cliquer deux fois pour ajouter la question";
             this.questionType = myQuestionType.tab;
@@ -319,18 +331,18 @@ exports.Domain = function (globalVariables) {
             this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         }
 
-        checkInputTextArea(myObj) {
-            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-                this.labelValidInput = true;
-                myObj.remove();
-                myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.border = "none";
-                myObj.textarea.outline = "none";
-            } else {
-                myObj.display();
-                this.labelValidInput = false;
-            }
+    checkInputTextArea (myObj) {
+        if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
+            this.validLabelInput = true;
+            myObj.remove();
+            myObj.textarea.onblur = myObj.onblur;
+            myObj.textarea.border = "none";
+            myObj.textarea.outline = "none";
+        } else {
+            myObj.display();
+            this.validLabelInput = false;
         }
+    }
 
         loadQuestion(quest) {
             this.linkedQuestion = quest;
@@ -389,19 +401,19 @@ exports.Domain = function (globalVariables) {
 
             type && (this.type = type);
 
-            switch (type) {
-                case 'question':
-                    this.label = "Double-cliquez pour ajouter une question";
-                    this.questionNameValidInput = true;
-                    break;
-                case 'answer':
-                    this.answerNameValidInput = true;
-                    this.label = "Nouvelle réponse";
-                    break;
-            }
-            this.fontSize = 20;
-            this.parent = parent;
+        switch (type) {
+            case 'question':
+                this.label = "Double-cliquez pour ajouter une question";
+                this.validLabelInput = true;
+                break;
+            case 'answer':
+                this.validLabelInput = true;
+                this.label = "Nouvelle réponse";
+                break;
         }
+        this.fontSize = 20;
+        this.parent = parent;
+    }
 
         remove() {
             console.log("Tentative de suppression d'AddEmptyElement");
@@ -475,58 +487,62 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    class Formation {
-        constructor(formation, formationsManager) {
-            this.gamesCounter = {
-                quizz: 0,
-                bd: 0
-            };
-            this.link = [];
-            this._id = (formation._id || null);
-            this.progress = formation.progress;
-            this.formationsManager = formationsManager;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(5);
-            this.formationInfoManipulator = new Manipulator();
-            this.formationInfoManipulator.addOrdonator(3);
-            this.graphManipulator = new Manipulator(this);
-            this.graphManipulator.addOrdonator(10);
-            this.messageDragDropManipulator = new Manipulator(this);
-            this.messageDragDropManipulator.addOrdonator(2);
-            this.arrowsManipulator = new Manipulator(this);
-            this.miniaturesManipulator = new Manipulator(this);
-            this.graphManipulator.last.add(this.miniaturesManipulator.first);
-            this.graphManipulator.last.add(this.arrowsManipulator.first);
-            this.clippingManipulator = new Manipulator(this);
-            this.saveFormationButtonManipulator = new Manipulator(this);
-            this.saveFormationButtonManipulator.addOrdonator(2);
-            this.library = new GamesLibrary(myLibraryGames);
-            this.library.formation = this;
-            this.quizzManager = new QuizzManager();
-            this.quizzManager.parentFormation = this;
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButtonManipulator.addOrdonator(1);
-            this.returnButton = new ReturnButton(this, "Retour aux formations");
-            this.labelDefault = "Entrer le nom de la formation";
-            this.needUpdate = true;
-            // WIDTH
-            this.libraryWidthRatio = 0.15;
-            this.graphWidthRatio = 1 - this.libraryWidthRatio;
-            // HEIGHT
-            this.graphCreaHeightRatio = 0.85;
-            this.graphPlayHeightRatio = 0.90;
+class Formation {
+    constructor (formation, formationsManager) {
+        this.gamesCounter =  {
+            quizz: 0,
+            bd: 0
+        };
+        this.link = [];
+        this._id = (formation._id || null);
+        this.progress = formation.progress;
+        this.formationsManager = formationsManager;
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(5);
+        this.formationInfoManipulator = new Manipulator();
+        this.formationInfoManipulator.addOrdonator(3);
+        this.graphManipulator = new Manipulator(this);
+        this.graphManipulator.addOrdonator(10);
+        this.messageDragDropManipulator=new Manipulator(this);
+        this.messageDragDropManipulator.addOrdonator(2);
+        this.arrowsManipulator = new Manipulator(this);
+        this.miniaturesManipulator = new Manipulator(this);
+        this.graphManipulator.last.add(this.miniaturesManipulator.first);
+        this.graphManipulator.last.add(this.arrowsManipulator.first);
+        this.clippingManipulator = new Manipulator(this);
+        this.saveFormationButtonManipulator = new Manipulator(this);
+        this.saveFormationButtonManipulator.addOrdonator(2);
+        this.publicationFormationButtonManipulator = new Manipulator(this);
+        this.publicationFormationButtonManipulator.addOrdonator(2);
+        this.library = new GamesLibrary(myLibraryGames);
+        this.library.formation = this;
+        this.quizzManager = new QuizzManager();
+        this.quizzManager.parentFormation = this;
+        this.returnButtonManipulator = new Manipulator(this);
+        this.returnButtonManipulator.addOrdonator(1);
+        this.returnButton = new ReturnButton(this, "Retour aux formations");
+        this.labelDefault = "Entrer le nom de la formation";
+        this.needUpdate = true;
+        // WIDTH
+        this.libraryWidthRatio = 0.15;
+        this.graphWidthRatio = 1 - this.libraryWidthRatio;
+        // HEIGHT
+        this.graphCreaHeightRatio = 0.85;
+        this.graphPlayHeightRatio = 0.90;
 
-            this.x = MARGIN;
-            this.regex = FORMATION_TITLE_REGEX;
-            this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-            this.targetLevelIndex = 0;
-            this.levelsTab = [];
-            this.gamesTab = [];
-            this.saveButtonHeightRatio = 0.07;
-            this.marginRatio = 0.03;
-            this.label = formation.label ? formation.label : "";
-            this.status = formation.status ? formation.status : statusEnum.NotPublished;
-            this.labelValidInput = true;
+
+        this.x = MARGIN;
+        this.regex = FORMATION_TITLE_REGEX;
+        this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
+        this.targetLevelIndex = 0;
+        this.levelsTab = [];
+        this.gamesTab = [];
+        this.saveButtonHeightRatio = 0.07;
+        this.publicationButtonHeightRatio = 0.07;
+        this.marginRatio = 0.03;
+        this.label = formation.label ? formation.label : "";
+        this.status = formation.status ? formation.status : statusEnum.NotPublished;
+        this.validLabelInput = true ;
 
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
@@ -534,9 +550,10 @@ exports.Domain = function (globalVariables) {
             this.graphElementSize = this.levelHeight * 0.65;
             this.miniature = new MiniatureFormation(this);
 
-            this.redim();
-            this.manipulator.last.add(this.saveFormationButtonManipulator.first);
-        }
+        this.redim();
+        this.manipulator.last.add(this.saveFormationButtonManipulator.first);
+        this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
+    }
 
         addNewGame(event, lib) {
             var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
@@ -579,35 +596,41 @@ exports.Domain = function (globalVariables) {
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées";
 
-            const displayErrorMessage = (message) => {
-                (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-                this.errorMessage = new svg.Text(message)
-                    .position(this.formationLabel.cadre.width + this.formationWidth + MARGIN * 2, 0)
-                    .font("Arial", 15)
-                    .anchor('start').color(myColors.red);
-                this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
-                setTimeout(() => {
-                    this.formationInfoManipulator.ordonator.unset(2);
-                }, 5000);
-            };
+        const displayErrorMessage = (message) => {
+            if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            }
+            (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+            this.errorMessage = new svg.Text(message);
+            this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
+            this.errorMessage.position(this.buttonWidth, 0)
+                .font("Arial", 15)
+                .anchor('start').color(myColors.red);
+            setTimeout(() => {
+                this.formationInfoManipulator.ordonator.unset(2);
+            }, 5000);
+        };
 
-            const displaySaveMessage = (message, displayQuizzManager) => {
-                if (displayQuizzManager) {
-                    displayQuizzManager();
-                } else {
-                    (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-                    this.errorMessageSave = new svg.Text(message)
-                        .position(0, -this.saveButtonHeight / 2 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.green);
-                    this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
-                    svg.timeout(() => {
-                        if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
-                            this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-                        }
-                    }, 5000);
-                }
-            };
+        const displaySaveMessage = (message, displayQuizzManager) => {
+            if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            }
+            if (displayQuizzManager) {
+                displayQuizzManager();
+            } else {
+                (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+                this.errorMessageSave = new svg.Text(message)
+                    .position(this.buttonWidth, -this.saveButtonHeight / 2 - MARGIN)
+                    .font("Arial", 20)
+                    .anchor('middle').color(myColors.green);
+                this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
+                svg.timeout(() => {
+                    if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
+                        this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+                    }
+                }, 5000);
+            }
+        };
 
             const displayMessage = message => {
                 switch (message) {
@@ -692,20 +715,63 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-        loadFormation(formation) {
-            this.levelsTab = [];
-            this.gamesCounter = formation.gamesCounter;
-            formation.link ? this.link = formation.link : this.link = [];
-            formation.levelsTab.forEach(level => {
-                var gamesTab = [];
-                level.gamesTab.forEach(game => {
-                    game.tabQuestions && gamesTab.push(new Quizz(game, true, this));
-                    game.tabQuestions || gamesTab.push(new Bd(game, this));
-                    gamesTab[gamesTab.length - 1].id = game.id;
-                });
-                this.levelsTab.push(new Level(this, gamesTab));
+    publicationFormation () {
+        this.publishedButtonActivated = true;
+
+        [].concat(...this.levelsTab.map(level => level.gamesTab))
+            .filter(elem => elem.miniature.selected === true)
+            .forEach(game => {
+                game.miniature.selected = false;
+                game.miniature.updateSelectionDesign();
             });
+
+        const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+            messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.",
+            messagePublication = "ok";
+        this.displayPublicationMessage = (messagePublication) => {
+            if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
+                this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+            }
+            this.formationInfoManipulator.ordonator.unset(2);
+            (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+            this.errorMessagePublication = new svg.Text(messagePublication);
+            this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+            this.errorMessagePublication.position(-this.buttonWidth, -this.publicationButtonHeight / 2 - MARGIN)
+                .font("Arial", 20)
+                .anchor('middle').color(myColors.red);
+            svg.timeout(() => {
+                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
+                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                }
+            }, 5000);
+        };
+
+        this.displayPublicationMessage(messagePublication);
+        this.publicationFormationQuizzManager();
+
+        if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
+            this.displayPublicationMessage(messageErrorNoNameFormation);
         }
+
+        if (this.levelsTab.length === 0){
+            this.displayPublicationMessage(messageErrorNoGame);
+        }
+    };
+
+    loadFormation (formation) {
+        this.levelsTab = [];
+        this.gamesCounter = formation.gamesCounter;
+        formation.link ? this.link = formation.link : this.link = [];
+        formation.levelsTab.forEach(level => {
+            var gamesTab = [];
+            level.gamesTab.forEach(game => {
+                game.tabQuestions && gamesTab.push(new Quizz(game, false, this));
+                game.tabQuestions || gamesTab.push(new Bd(game, this));
+                gamesTab[gamesTab.length-1].id = game.id;
+            });
+            this.levelsTab.push(new Level(this, gamesTab));
+        });
+    }
 
         findLongestLevel() {
             var longestLevelCandidates = [];
@@ -751,28 +817,29 @@ exports.Domain = function (globalVariables) {
             this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
             this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
 
-            this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
-            this.ButtonWidth = 150;
-            this.globalMargin = {
-                height: this.marginRatio * drawing.height,
-                width: this.marginRatio * drawing.width
-            };
-            this.clippingManipulator.flush();
+        this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+        this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
+        this.buttonWidth = 150;
+        this.globalMargin = {
+            height: this.marginRatio * drawing.height,
+            width: this.marginRatio * drawing.width
+        };
+        this.clippingManipulator.flush();
 
         }
 
-        checkInputTextArea(myObj) {
-            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
-                this.labelValidInput = true;
-                myObj.remove();
-                myObj.textarea.onblur = myObj.onblur;
-                myObj.textarea.border = "none";
-                myObj.textarea.outline = "none";
-            } else {
-                myObj.display();
-                this.labelValidInput = false;
-            }
+    checkInputTextArea (myObj) {
+        if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
+            this.validLabelInput = true;
+            myObj.remove();
+            myObj.textarea.onblur = myObj.onblur;
+            myObj.textarea.border = "none";
+            myObj.textarea.outline = "none";
+        } else {
+            myObj.display();
+            this.validLabelInput = false;
         }
+    }
 
         addNewLevel(index) {
             var level = new Level(this);
@@ -830,21 +897,22 @@ exports.Domain = function (globalVariables) {
                             return;
                         }
 
-                        theGame.currentQuestionIndex = game.index;
-                        game.tabWrongAnswers.forEach(wrongAnswer => {
-                            theGame.questionsWithBadAnswers.add(theGame.tabQuestions[wrongAnswer - 1]);
-                        });
-                        theGame.score = game.index - theGame.questionsWithBadAnswers.length;
-                        theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                    theGame.currentQuestionIndex = game.index;
+                    theGame.questionsWithBadAnswers = [];
+                    game.tabWrongAnswers.forEach(wrongAnswer => {
+                        theGame.questionsWithBadAnswers.add({index: wrongAnswer.index - 1, question: theGame.tabQuestions[wrongAnswer.index - 1], selectedAnswers:wrongAnswer.selectedAnswers});
                     });
-                }
-                this.levelsTab.forEach(level => {
-                    level.gamesTab.forEach(game => {
-                        if (!this.isGameAvailable(game)) {
-                            game.status = "notAvailable";
-                        }
-                    });
+                    theGame.score = game.index - theGame.questionsWithBadAnswers.length;
+                    theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
                 });
+            }
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    if (!this.isGameAvailable(game)) {
+                        game.status = "notAvailable";
+                    }
+                });
+            });
 
                 displayFunction.call(this);
             });
@@ -896,61 +964,56 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    class ImagesLibrary extends Library {
-        constructor(lib) {
-            super(lib);
-            for (var i = 0; i < this.itemsTab.length; i++) {
-                this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
-                    this.imageLoaded = true; //this != library
-                });
-            }
-        }
-
-        dropAction(element, event) {
-            let target = drawings.background.getTarget(event.clientX, event.clientY);
-            if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject.answer) {
-                    target.parent.parentManip.parentObject.image = element.src;
-                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                    target.parent.parentManip.parentObject.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                }
-                else {
-                    var oldQuest = {
-                        cadre: target.parent.parentManip.ordonator.get(0),
-                        content: target.parent.parentManip.ordonator.get(1)
-                    };
-                    target.parent.parentManip.ordonator.unset(0);
-                    target.parent.parentManip.ordonator.unset(1);
-                    var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
-                        element.srcDimension,
-                        oldQuest.cadre.width, oldQuest.cadre.height,
-                        oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
-                    );
-                    oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                    oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-                    newQuest.image._acceptDrop = true;
-                    switch (true) {
-                        case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                            let questionCreator = target.parent.parentManip.parentObject;
-                            questionCreator.linkedQuestion.image = newQuest.image;
-                            questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
-                            questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                            questionCreator.display();
-                            break;
-                        case target.parent.parentManip.parentObject.editable:
-                            let answer = target.parent.parentManip.parentObject;
-                            answer.image = newQuest.image;
-                            answer.imageSrc = newQuest.image.src;
-                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                            //answer.display(-answer.w / 2, -answer.h / 2);
-                            break;
-                    }
-                    target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
-                }
-                //target.parent.parentManip.ordonator.set(1, oldQuest.content);
-            }
+class ImagesLibrary extends Library {
+    constructor (lib) {
+        super(lib);
+        this.addButtonManipulator = new Manipulator(this);
+        this.addButtonManipulator.addOrdonator(3);
+        for (var i = 0; i < this.itemsTab.length; i++) {
+            this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
+                this.imageLoaded = true; //this != library
+            });
         }
     }
+
+    dropAction (element, event) {
+        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        if (target && target._acceptDrop) {
+            var oldQuest = {
+                cadre: target.parent.parentManip.ordonator.get(0),
+                content: target.parent.parentManip.ordonator.get(1)
+            };
+            target.parent.parentManip.ordonator.unset(0);
+            target.parent.parentManip.ordonator.unset(1);
+            var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                element.srcDimension,
+                oldQuest.cadre.width, oldQuest.cadre.height,
+                oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+            );
+            oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
+            oldQuest.content.position(newQuest.content.x, newQuest.content.y);
+            newQuest.image._acceptDrop = true;
+            switch (true) {
+                case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                    let questionCreator = target.parent.parentManip.parentObject;
+                    questionCreator.linkedQuestion.image = newQuest.image;
+                    questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                    questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                    questionCreator.display();
+                    questionCreator.linkedQuestion.checkValidity();
+                    break;
+                case target.parent.parentManip.parentObject instanceof Answer:
+                    let answer = target.parent.parentManip.parentObject;
+                    answer.image = newQuest.image;
+                    answer.imageSrc = newQuest.image.src;
+                    answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                    answer.parentQuestion.checkValidity();
+                    break;
+            }
+            target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+        }
+    }
+}
 
     class Header {
         constructor() {
@@ -963,48 +1026,48 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    class QuizzManager {
-        constructor(quizz) {
-            this.quizzName = "";
-            this.quizzNameDefault = "Ecrire ici le nom du quiz";
-            this.tabQuestions = [defaultQuestion];
-            //this.questionPuzzle = {};
-            this.quizzNameValidInput = true;
-            if (!quizz) {
-                var initialQuizzObject = {
-                    title: defaultQuizz.title,
-                    bgColor: myColors.white,
-                    tabQuestions: this.tabQuestions,
-                    puzzleLines: 3,
-                    puzzleRows: 3
-                };
-                this.quizz = new Quizz(initialQuizzObject, false);
-                this.indexOfEditedQuestion = 0;
-                this.quizzName = this.quizz.title;
-            } else {
-                this.loadQuizz(quizz);
-            }
-            this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.header = new Header();
-            this.library = new ImagesLibrary(myLibraryImage);
-            this.quizz.tabQuestions[0].selected = true;
-            this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
-            this.quizzManagerManipulator = new Manipulator(this);
-            this.questionsPuzzleManipulator = new Manipulator(this);
-            this.questionsPuzzleManipulator.addOrdonator(1);
-            this.quizzInfoManipulator = new Manipulator(this);
-            this.quizzInfoManipulator.addOrdonator(6);
-            this.questionCreatorManipulator = this.questionCreator.manipulator;
-            this.questionCreatorManipulator.addOrdonator(1);
-            this.previewButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator.addOrdonator(2);
-            this.saveQuizButtonManipulator = new Manipulator(this);
-            this.saveQuizButtonManipulator.addOrdonator(2);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButtonManipulator.addOrdonator(1);
-            this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.libraryIManipulator = this.library.libraryManipulator;
+class QuizzManager {
+    constructor (quizz) {
+        this.quizzName = "";
+        this.quizzNameDefault = "Ecrire ici le nom du quiz";
+        this.tabQuestions = [defaultQuestion];
+        //this.questionPuzzle = {};
+        this.quizzNameValidInput = true;
+        if (!quizz) {
+            var initialQuizzObject = {
+                title: defaultQuizz.title,
+                bgColor: myColors.white,
+                tabQuestions: this.tabQuestions,
+                puzzleLines: 3,
+                puzzleRows: 3
+            };
+            this.quizz = new Quizz(initialQuizzObject, false);
+            this.indexOfEditedQuestion = 0;
+            this.quizzName = this.quizz.title;
+        } else {
+            this.loadQuizz(quizz);
+        }
+        this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
+        this.header = new Header();
+        this.library = new ImagesLibrary(myLibraryImage);
+        this.quizz.tabQuestions[0].selected = true;
+        this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
+        this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+        this.quizzManagerManipulator = new Manipulator(this);
+        this.questionsPuzzleManipulator = new Manipulator(this);
+        this.questionsPuzzleManipulator.addOrdonator(1);
+        this.quizzInfoManipulator = new Manipulator(this);
+        this.quizzInfoManipulator.addOrdonator(6);
+        //this.questionCreatorManipulator = this.questionCreator.manipulator;
+        //this.questionCreatorManipulator.addOrdonator(2);
+        this.previewButtonManipulator = new Manipulator(this);
+        this.previewButtonManipulator.addOrdonator(2);
+        this.saveQuizButtonManipulator = new Manipulator(this);
+        this.saveQuizButtonManipulator.addOrdonator(2);
+        this.returnButtonManipulator = new Manipulator(this);
+        this.returnButtonManipulator.addOrdonator(1);
+        this.returnButton = new ReturnButton(this, "Retour à la formation");
+        this.libraryIManipulator = this.library.libraryManipulator;
 
             // WIDTH
             this.libraryWidthRatio = 0.15;
@@ -1020,17 +1083,17 @@ exports.Domain = function (globalVariables) {
             this.marginRatio = 0.02;
         }
 
-        loadQuizz(quizz, indexOfEditedQuestion) {
-            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion !== -1 ? indexOfEditedQuestion : 0);
-            this.quizz = new Quizz(quizz, true);
-            this.quizzName = this.quizz.title;
-            this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
-            this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.forEach((question, index) => {
-                (quizz.tabQuestions[index].questionType) && (question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
-            });
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+    loadQuizz (quizz, indexOfEditedQuestion) {
+        this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
+        this.quizz = new Quizz(quizz, false);
+        this.quizzName = this.quizz.title;
+        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
+        this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
+        this.quizz.tabQuestions.forEach( (question, index )  => {
+                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+            (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+        });
+        this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
         };
 
@@ -1057,25 +1120,23 @@ exports.Domain = function (globalVariables) {
             };
         }
 
-        displayMessage(message, color) {
-            this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
-            this.questionCreator.errorMessagePreview = new svg.Text(message)
-                .position(this.ButtonWidth, -this.saveButton.cadre.height / 2 - MARGIN / 2)
-                .font("Arial", 20)
-                .anchor('middle').color(color);
-            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
-            setTimeout(() => {
-                this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview) !== -1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
-            }, 5000);
-        }
+    displayMessage (message, color) {
+        this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+        this.questionCreator.errorMessagePreview = new svg.Text(message)
+            .position(this.buttonWidth, -this.saveButton.cadre.height/2-MARGIN/2)
+            .font("Arial", 20)
+            .anchor('middle').color(color);
+        this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
+        setTimeout(() => {
+            this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview)!==-1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+        }, 5000);
+    }
 
-        saveQuizz() {
-            let completeQuizzMessage = "Les modifications ont bien été enregistrées";
-            let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
-            svg.addEvent(this.saveButton.cadre, "click", ()=> {
-            });
-            svg.addEvent(this.saveButton.content, "click", ()=> {
-            });
+    saveQuizz () {
+        let completeQuizzMessage = "Les modifications ont bien été enregistrées";
+        let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
+        let errorMessage = "Entrer un nom valide pour enregistrer";
+        if(this.quizzName.match(REGEX)) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
@@ -1089,6 +1150,8 @@ exports.Domain = function (globalVariables) {
 
             Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                 .then(() => {
+                    svg.addEvent(this.saveButton.cadre, "click", ()=>{});
+                    svg.addEvent(this.saveButton.content, "click", ()=>{});
                     this.quizz.title = this.quizzName;
                     this.quizz.tabQuestions = this.tabQuestions;
                     let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
@@ -1099,10 +1162,19 @@ exports.Domain = function (globalVariables) {
                     console.log("Votre travail a été bien enregistré");
                 });
         }
-
-        selectNextQuestion() {
-            this.indexOfEditedQuestion++;
+        else{
+            this.errorMessage = new svg.Text(errorMessage);
+            this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
+            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height+3+this.quizzLabel.cadre.height/2+svg.runtime.boundingRect(this.errorMessage.component).height/2)
+                .font("Arial", 15).color(myColors.red).anchor('start');
+            setTimeout(() => {
+                this.quizzInfoManipulator.ordonator.unset(5);
+            }, 5000);
         }
+    }
+    selectNextQuestion () {
+        this.indexOfEditedQuestion++;
+    }
 
         checkInputTextArea(myObj) {
             if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
@@ -1119,16 +1191,16 @@ exports.Domain = function (globalVariables) {
 
     }
 
-    class Quizz {
-        constructor(quizz, previewMode, parentFormation) {
-            this.id = quizz.id;
-            this.miniatureManipulator = new Manipulator(this);
-            this.parentFormation = parentFormation || quizz.parentFormation;
-            this.quizzManipulator = new Manipulator(this);
-            this.quizzManipulator.addOrdonator(2);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = globalVariables.playerMode ? new ReturnButton(this, "Retour à la formation") : new ReturnButton(this, "Retour à l'édition du jeu");
-            this.quizzManipulator.last.add(this.returnButtonManipulator.first);
+class Quizz {
+    constructor (quizz, previewMode, parentFormation) {
+        this.id = quizz.id;
+        this.miniatureManipulator = new Manipulator(this);
+        this.parentFormation = parentFormation || quizz.parentFormation;
+        this.quizzManipulator = new Manipulator(this);
+        this.quizzManipulator.addOrdonator(2);
+        this.returnButtonManipulator = new Manipulator(this);
+        this.returnButton = playerMode ?  (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
+        this.quizzManipulator.last.add(this.returnButtonManipulator.first);
 
             if (previewMode) {
                 this.chevronManipulator = new Manipulator(this);
@@ -1183,21 +1255,22 @@ exports.Domain = function (globalVariables) {
             this.finalMessage = "";
         }
 
-        loadQuestions(quizz) {
-            if (quizz && typeof quizz.tabQuestions !== 'undefined') {
-                this.tabQuestions = [];
-                quizz.tabQuestions.forEach(it => {
-                    var tmp = new Question(it, this);
-                    it.questionType && (tmp.questionType = it.questionType);
-                    tmp.parentQuizz = this;
-                    this.tabQuestions.push(tmp);
-                });
-            } else {
-                this.tabQuestions = [];
-                this.tabQuestions.push(new Question(defaultQuestion, this));
-                this.tabQuestions.push(new Question(defaultQuestion, this));
-            }
+    loadQuestions (quizz) {
+        if (quizz && typeof quizz.tabQuestions !== 'undefined') {
+            this.tabQuestions = [];
+            quizz.tabQuestions.forEach(it => {
+                it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
+                var tmp = new Question(it, this);
+                //it.questionType && (tmp.questionType = it.questionType);
+                tmp.parentQuizz = this;
+                this.tabQuestions.push(tmp);
+            });
+        } else {
+            this.tabQuestions = [];
+            this.tabQuestions.push(new Question(defaultQuestion, this));
+            this.tabQuestions.push(new Question(defaultQuestion, this));
         }
+    }
 
         run(x, y, w, h) {
             var intervalToken = asyncTimerController.interval(() => {
@@ -1239,23 +1312,25 @@ exports.Domain = function (globalVariables) {
                 this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
             }
 
-            if (this.previewMode) {
-                if (this.currentQuestionIndex === -1) {
-                    this.currentQuestionIndex++;
-                }
-                this.displayCurrentQuestion();
-            } else {
-                Server.sendProgressToServer(this)
-                    .then(() => {
-                        if (++this.currentQuestionIndex < this.tabQuestions.length) {
-                            this.displayCurrentQuestion();
-                        } else {
-                            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.questionsWithBadAnswers, "leftToRight", this);
-                            this.displayResult();
-                        }
-                    });
+        if (this.previewMode) {
+            if (this.currentQuestionIndex === -1) {
+                this.currentQuestionIndex++;
             }
+            this.displayCurrentQuestion();
+        } else {
+            Server.sendProgressToServer(this)
+                .then(() => {
+                    if (++this.currentQuestionIndex < this.tabQuestions.length) {
+                        this.displayCurrentQuestion();
+                    } else {
+                        let questionsWithBadAnswersTab = [];
+                        this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+                        this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "leftToRight", this);
+                        this.displayResult();
+                    }
+                });
         }
+    }
 
         getPositionInFormation() {
             var gameIndex, levelIndex;
@@ -1342,78 +1417,79 @@ exports.Domain = function (globalVariables) {
             this.formLabels = {};
         }
     }
+////////////////// end of InscriptionManager.js //////////////////////////
 
-    class ConnexionManager {
-        constructor() {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(6);
-            this.header = new Header("Connexion");
-            this.mailAddressManipulator = new Manipulator(this);
-            this.mailAddressManipulator.addOrdonator(4);
-            this.passwordManipulator = new Manipulator(this);
-            this.passwordManipulator.addOrdonator(4);
-            this.connexionButtonManipulator = new Manipulator(this);
-            this.connexionButtonManipulator.addOrdonator(4);
+////////////////// ConnexionManager.js //////////////////////////
+class ConnexionManager {
+    constructor () {
+        this.manipulator = new Manipulator(this);
+        this.manipulator.addOrdonator(6);
+        this.header = new Header("Connexion");
+        this.mailAddressManipulator = new Manipulator(this);
+        this.mailAddressManipulator.addOrdonator(4);
+        this.passwordManipulator = new Manipulator(this);
+        this.passwordManipulator.addOrdonator(4);
+        this.connexionButtonManipulator = new Manipulator(this);
+        this.connexionButtonManipulator.addOrdonator(4);
 
-            this.manipulator.last.add(this.mailAddressManipulator.first);
-            this.manipulator.last.add(this.passwordManipulator.first);
-            this.manipulator.last.add(this.connexionButtonManipulator.first);
+        this.manipulator.last.add(this.mailAddressManipulator.first);
+        this.manipulator.last.add(this.passwordManipulator.first);
+        this.manipulator.last.add(this.connexionButtonManipulator.first);
 
-            // HEIGHT
-            this.connexionButtonHeightRatio = 0.075;
+        // HEIGHT
+        this.connexionButtonHeightRatio = 0.075;
 
-            this.connexionButtonHeight = drawing.height * this.connexionButtonHeightRatio;
-            this.connexionButtonWidth = 200;
+        this.connexionButtonHeight = drawing.height * this.connexionButtonHeightRatio;
+        this.connexionButtonWidth = 200;
 
-            this.mailAddressLabel = "Adresse mail :";
-            this.passwordLabel = "Mot de passe :";
+        this.mailAddressLabel = "Adresse mail :";
+        this.passwordLabel = "Mot de passe :";
 
-            this.connexionButtonLabel = "Connexion";
-            this.tabForm = [];
+        this.connexionButtonLabel = "Connexion";
+        this.tabForm = [];
 
-            let listFormations = () => {
-                Server.getAllFormationsNames().then(data => {
-                    let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManager(myFormations);
-                    globalVariables.formationsManager.display();
-                });
-            };
+        let listFormations = () => {
+            Server.getAllFormationsNames().then(data => {
+                let myFormations = JSON.parse(data).myCollection;
+                globalVariables.formationsManager = new FormationsManager(myFormations);
+                globalVariables.formationsManager.display();
+            });
+        };
 
-            this.connexionButtonHandler = () => {
-
-                let emptyAreas = this.tabForm.filter(field => field.label === '');
-                emptyAreas.forEach(emptyArea => {
-                    emptyArea.cadre.color(myColors.white, 3, myColors.red);
-                });
-
-                if (emptyAreas.length > 0) {
-                    let message = autoAdjustText(EMPTY_FIELD_ERROR, 0, 0, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
-                    svg.timeout(() => {
-                        this.connexionButtonManipulator.ordonator.unset(3);
-                        emptyAreas.forEach(emptyArea => {
-                            emptyArea.cadre.color(myColors.white, 1, myColors.black);
-                        });
-                    }, 5000);
-                } else {
-                    Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
-                        data = data && JSON.parse(data);
-                        if (data.ack === 'OK') {
-                            drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                            data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
-                            listFormations();
-                        } else {
-                            let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', 0, 0, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                            message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
-                            svg.timeout(() => {
-                                this.connexionButtonManipulator.ordonator.unset(3);
-                            }, 5000);
-                        }
+        this.connexionButtonHandler = () => {
+            let emptyAreas = this.tabForm.filter(field => field.label === '');
+            emptyAreas.forEach(emptyArea => {
+                emptyArea.cadre.color(myColors.white, 3, myColors.red);
+            });
+            if (emptyAreas.length > 0) {
+                let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
+                svg.timeout(()=> {
+                    this.connexionButtonManipulator.ordonator.unset(3);
+                    emptyAreas.forEach(emptyArea => {
+                        emptyArea.cadre.color(myColors.white, 1, myColors.black);
                     });
-                }
-            };
-        }
+                }, 5000);
+            } else {
+                Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
+                    data = data && JSON.parse(data);
+                    if (data.ack === 'OK') {
+                        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+                        data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
+                        listFormations();
+                    } else {
+                        let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                        message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
+                        svg.timeout(() => {
+                            this.connexionButtonManipulator.ordonator.unset(3);
+                        }, 5000);
+                    }
+                });
+            }
+        };
     }
+}
+////////////////// end of ConnexionManager.js //////////////////////////
 
     return {
         setGlobalVariables,
