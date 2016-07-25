@@ -1069,9 +1069,7 @@ class QuizzManager {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
         let errorMessage = "Entrer un nom valide pour enregistrer";
-        svg.addEvent(this.saveButton.cadre, "click", ()=>{});
-        svg.addEvent(this.saveButton.content, "click", ()=>{});
-        if(this.quizzName) {
+        if(this.quizzName.match(REGEX)) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
@@ -1085,6 +1083,8 @@ class QuizzManager {
 
             Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                 .then(() => {
+                    svg.addEvent(this.saveButton.cadre, "click", ()=>{});
+                    svg.addEvent(this.saveButton.content, "click", ()=>{});
                     this.quizz.title = this.quizzName;
                     this.quizz.tabQuestions = this.tabQuestions;
                     let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
