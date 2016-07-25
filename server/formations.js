@@ -31,5 +31,38 @@ const getFormationById = (db, id) => {
     });
 };
 
+const insertFormation = (db, object) => {
+    return new Promise((resolve, fail) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations.insertOne(object, (err, docs) => {
+            if(err) fail(err);
+            resolve({formation:docs.insertedId[0]});
+        })
+    });
+};
+
+const getAllFormations = (db) => {
+    return new Promise((resolve, fail) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations.find().toArray((err, docs) => {
+            if(err) fail(err);
+            resolve({formations:docs});
+        })
+    })
+};
+
+const replaceFormation = (db, id, object) => {
+    return new Promise((resolve, fail) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations.replaceOne({"_id": new ObjectID(id)}, object, (err) => {
+            if(err) fail(err);
+            resolve({ack:'ok'});
+        })
+    })
+};
+
 exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
+exports.insertFormation = insertFormation;
+exports.getAllFormations = getAllFormations;
+exports.replaceFormation = replaceFormation;

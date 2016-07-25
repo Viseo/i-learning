@@ -3,7 +3,8 @@ module.exports = function (app, fs) {
     const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies'),
-        formations = require('../formations');
+        formations = require('../formations'),
+        users = require('../users');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -15,21 +16,17 @@ module.exports = function (app, fs) {
     var ObjectID = require('mongodb').ObjectID;
     var id = new ObjectID();
 
-    app.post('/inscription', function(req, res) {
-        var collection = db.get().collection('users');
-        var obj = req.body;
-        collection.insert(obj, () => {
-            res.send(JSON.stringify(obj));
-        });
-    });
-
-    app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
-        var collection = db.get().collection('users');
-        var result;
-        collection.find().toArray(function(err, docs) {
-            result = docs.find(user => user.mailAddress===req.params.mailAddress);
-            res.send({user: result});
-        });
+    app.post('/user/inscription/', function(req, res) {
+        users.getUserByEmailAddress(db, req.body.mailAddress)
+            .then(data => {
+                if(data) {
+                    res.send(false);
+                } else {
+                    return users.inscription(db, req.body)
+                        .then(() => res.send(true));
+                }
+            })
+            .catch(err => console.log(err));
     });
 
     app.post('/auth/connect', (req, res) => {
@@ -111,9 +108,8 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.get('/getUser', function(req, res) {
+    app.get('/user/getUser', function(req, res) {
         const collection = db.get().collection('users');
-
         collection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
                 const user = !err && decode.user._id,
@@ -123,28 +119,25 @@ module.exports = function (app, fs) {
         });
     });
 
-
-    app.post('/insert', function(req, res) {
-        var collection = db.get().collection('formations');
-        var obj = req.body;
-        collection.insert(obj, function (err, docs) {
-            res.send(docs.insertedIds[0]);
-        });
+    app.post('/formations/insert', function(req, res) {
+        formations.insertFormation(db, req.body)
+            .then((data) => res.send(data))
+            .catch((err) => console.log(err));
     });
 
-    app.get('/getFormationByName/:name', function(req, res) {
+    app.get('/formations/getFormationByName/:name', function(req, res) {
         formations.getFormationsByName(db, req.params.name)
             .then((data) => res.send(data))
             .catch((err) => console.log(err));
     });
 
-    app.get('/getFormationById/:id', function(req, res) {
+    app.get('/formations/getFormationById/:id', function(req, res) {
         formations.getFormationById(db, req.params.id)
             .then((data) => res.send(data))
             .catch((err) => console.log(err));
     });
 
-    app.get('/getAllFormationsNames', (req, res) => {
+    app.get('/formations/getAllFormationsNames', (req, res) => {
         const usersCollection = db.get().collection('users');
         usersCollection.find().toArray(function (err, docs) {
             cookies.verify(req, (err, decode) => {
@@ -203,13 +196,10 @@ module.exports = function (app, fs) {
         }
     });
 
-    app.post('/replaceFormation/:id', function (req, res) {
-        var collection = db.get().collection('formations');
-        collection.find({"_id": new ObjectID(req.params.id)}).toArray(function (err, docs) {
-            collection.replaceOne(docs[0], req.body, () => {
-                res.send({ack:'ok'});
-            });
-        });
+    app.post('/formations/replaceFormation/:id', function (req, res) {
+        formations.replaceFormation(db, req.params.id, req.body)
+            .then(data => res.send(data))
+            .catch(err => console.log(err));
     });
 
     app.post('/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
