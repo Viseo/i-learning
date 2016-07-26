@@ -130,7 +130,7 @@ module.exports = function (app, fs) {
     });
 
     app.get('/formations/getAdminFormations', (req, res) => {
-        formations.getAllFormations(db)
+        formations.getLastVersions(db)
             .then(data => res.send(data))
             .catch(err => console.log(err));
     });
@@ -139,12 +139,15 @@ module.exports = function (app, fs) {
         cookies.verify(req, (err, decode) => {
             users.getUserById(db, decode.user._id)
                 .then(user => {
-                    formations.getAllFormations(db)
-                        .then(data => {
-                            return users.getFormationsWithProgress(user.formationsTab, data.myCollection);
+                    formations.getLastVersions(db)
+                        .then(versions => {
+                            formations.getAllFormations(db)
+                                .then(formations => {
+                                    return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, formations.myCollection);
+                                })
+                                .then(data => res.send(data))
+                                .catch(err => console.log(err));
                         })
-                        .then(data => res.send(data))
-                        .catch(err => console.log(err));
                 });
         });
 

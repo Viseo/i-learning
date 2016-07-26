@@ -46,7 +46,7 @@ const getVersionById = (db, id) => {
                 if(err) fail(err);
                 let version = null;
                 docs.forEach(formation => {
-                    version = formation.versions.find(version => version._id.toString() === id);
+                    version = formation.versions.find(version => version._id.toString() === id) || version;
                 });
                 resolve({formation: version});
             })
@@ -59,7 +59,6 @@ const insertFormation = (db, object) => {
         object._id = new ObjectID();
         let formation = {
             versions: [object],
-            status: "NotPublished"
         };
         collectionFormations.insertOne(formation, (err, docs) => {
             if(err) fail(err);
@@ -68,7 +67,7 @@ const insertFormation = (db, object) => {
     });
 };
 
-const getAllFormations = (db) => {
+const getLastVersions = (db) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
@@ -79,6 +78,16 @@ const getAllFormations = (db) => {
                 formations.push(formation.versions[formation.versions.length-1]);
             });
             resolve({myCollection:formations});
+        })
+    })
+};
+
+const getAllFormations = (db) => {
+    return new Promise((resolve, fail) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations.find().toArray((err, docs) => {
+            if(err) fail(err);
+            resolve({myCollection:docs});
         })
     })
 };
@@ -130,6 +139,7 @@ exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
 exports.getVersionById = getVersionById;
 exports.insertFormation = insertFormation;
+exports.getLastVersions = getLastVersions;
 exports.getAllFormations = getAllFormations;
 exports.replaceFormation = replaceFormation;
 exports.replaceQuiz = replaceQuiz;

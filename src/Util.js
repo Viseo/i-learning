@@ -954,11 +954,13 @@ class MiniatureFormation {
         this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
         this.miniature.cadre.corners(50, 50);
 
-        let iconSize = this.formation.parent.iconeSize,
-            icon = this.formation.status.icon(iconSize);
+        let iconSize = this.formation.parent.iconeSize;
 
-        for (let i = 0; i < icon.elements.length; i++) {
-            this.iconManipulator.ordonator.set(i, icon.elements[i]);
+        if(statusEnum[this.formation.status]) {
+            let icon = statusEnum[this.formation.status].icon(iconSize);
+            for (let i = 0; i < icon.elements.length; i++) {
+                this.iconManipulator.ordonator.set(i, icon.elements[i]);
+            }
         }
         this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
 
@@ -1298,11 +1300,13 @@ class Server {
         return dbListener.httpGetAsync("/user/getUser")
     }
 
-    static replaceFormation(id, newFormation, ignoredData) {
+    static replaceFormation(id, newFormation, status, ignoredData) {
+        newFormation.status = status;
         return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
     }
 
-    static insertFormation(newFormation, ignoredData) {
+    static insertFormation(newFormation, status, ignoredData) {
+        newFormation.status = status;
         return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
     }
 

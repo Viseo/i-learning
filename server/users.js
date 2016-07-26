@@ -2,6 +2,7 @@
  * Created by qde3485 on 25/07/16.
  */
 
+let formations = require("./formations");
 let ObjectID = require('mongodb').ObjectID;
 
 const getUserByEmailAddress = (db, email) => {
@@ -74,19 +75,20 @@ const saveProgress = (db, body, user) => {
     })
 };
 
-const getFormationsWithProgress = (userFormationsArray, formations) => {
+const getFormationsWithProgress = (userFormationsArray, versions, formations) => {
     return new Promise((resolve, reject) => {
         let result = [];
-        formations.forEach(formation => {
+        versions.forEach(version => {
             const progressArray = userFormationsArray && userFormationsArray
-                    .find(f => f.formation === formation.formationId.toString());
+                    .find(f => f.formation === version.formationId.toString());
             let progress = '';
             let id = null;
             if(progressArray) {
+                // there is a correlation between the player's progress and a formation
                 progress = function() {
                     let i = 0;
-                    for (let x = 0; x < formation.levelsTab.length; x++) {
-                        const gamesTab = formation.levelsTab[x].gamesTab;
+                    for (let x = 0; x < version.levelsTab.length; x++) {
+                        const gamesTab = version.levelsTab[x].gamesTab;
                         for (let y = 0; y < gamesTab.length; y++) {
                             const game = gamesTab[y];
                             if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].index < game.tabQuestions.length) {
@@ -99,8 +101,19 @@ const getFormationsWithProgress = (userFormationsArray, formations) => {
                     id = progressArray.version;
                     return 'done';
                 }();
+                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+            } else {
+                // check status for a published version
+                if(version.status === "Published") {
+                    result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+                } else {
+                    let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
+                    if(myFormation.versions.length > 1) {
+                        version = myFormation.versions[myFormation.versions.length-2];
+                        result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+                    }
+                }
             }
-            result.push({_id: id ? new ObjectID(id) : formation._id, formationId: formation.formationId, label: formation.label, status: formation.status, progress});
         });
         resolve({myCollection: result});
     })

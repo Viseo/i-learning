@@ -598,7 +598,7 @@ class Formation {
             };
 
             let addNewFormation = () => {
-                Server.insertFormation(getObjectToSave(), ignoredData)
+                Server.insertFormation(getObjectToSave(), "Edited", ignoredData)
                     .then(data => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
@@ -614,7 +614,7 @@ class Formation {
             };
 
             let replaceFormation = () => {
-                Server.replaceFormation(this._id, getObjectToSave(), ignoredData)
+                Server.replaceFormation(this._id, getObjectToSave(), "Edited", ignoredData)
                     .then((data) => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
