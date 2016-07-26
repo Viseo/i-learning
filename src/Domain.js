@@ -812,7 +812,7 @@ class Formation {
         Server.getUser().then(data => {
             let user = JSON.parse(data);
             if (user.formationsTab) {
-                let formationUser = user.formationsTab.find(formation => formation.formation === this._id);
+                let formationUser = user.formationsTab.find(formation => formation.version === this._id);
                 formationUser && formationUser.gamesTab.forEach(game => {
                     let theGame = this.findGameById(game.game);
                     if (!theGame) {
