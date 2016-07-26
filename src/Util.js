@@ -597,6 +597,14 @@ function SVGUtil() {
             chevronManipulator.translator.move(x, y);
         };
 
+        if(w && h){
+            this.chevron.resize(w, h);
+        }
+
+        if(x && y){
+            this.chevron.move(x, y);
+        }
+
         this.chevron.activate = function(handler, eventType){
             this._activated = true;
             this.color(myColors.black, 1, myColors.black);
@@ -1025,13 +1033,15 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text(this.label);
-        this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
+        this.returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
+        this.returnButton.resize(w, h);
+        //this.returnButton.move(0, y);
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);
         this.textSize = svg.runtime.boundingRect(this.returnText.component);
         this.size = svg.runtime.boundingRect(this.returnButton.component);
         this.manipulator.ordonator.set(0, this.returnText);
-        this.returnText.position(w+this.size.width, this.textSize.height/2+this.size.height/4);
+        this.returnText.position(w+this.size.width/2, this.textSize.height/2+this.size.height/4);
         this.manipulator.translator.move(x+w, y);
 
         this.returnText.parentObj = this;
@@ -1058,8 +1068,8 @@ class Puzzle {
         this.chevronMinSize = 15;
         this.orientation = orientation;
         this.parentObject = parentObject;
-        this.leftChevron = new Chevron((this.chevronSize - this.width)/2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
-        this.rightChevron = new Chevron((this.width - this.chevronSize)/2, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
+        this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron(0, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
         this.leftChevron.handler = () => {
             self.updateStartPosition("left");
             self.fillVisibleElementsArray(self.orientation);

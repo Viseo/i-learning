@@ -1048,7 +1048,7 @@ class QuizzManager {
                     answer.popIn.label && (answer.explanation.label = answer.popIn.label);
                     answer.popIn = null;
                 }
-            })
+            });
         });
         return {
             id: this.quizz.id,

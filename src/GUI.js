@@ -715,7 +715,7 @@ function formationDisplayFormation() {
         });
     };
     this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
-    this.returnButton.display(0, -5, 20, 20);
+    this.returnButton.display(0, -MARGIN/2, 20, 20);
     this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
     this.returnButton.setHandler(returnHandler);
 
@@ -2010,7 +2010,7 @@ function quizzDisplay(x, y, w, h) {
         this.questionPercentage = 0.2;
         this.answerPercentageWithImage = 0.6;
         this.answerPercentage = 0.7;
-    }
+    };
     let setPreviewSizes = ()=> {
         this.x = x+w*0.15 || this.x || 0;
         this.y = y || this.y || 0;
@@ -2024,7 +2024,7 @@ function quizzDisplay(x, y, w, h) {
         this.questionPercentage = 0.2;
         this.answerPercentageWithImage = 0.6;
         this.answerPercentage = 0.7;
-    }
+    };
     this.previewMode ? setPreviewSizes() : setSizes();
 
     let heightPage = drawing.height;
@@ -2085,6 +2085,11 @@ function quizzDisplay(x, y, w, h) {
     if(this.previewMode) {
         this.leftChevron = new Chevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+        //this.leftChevron.resize(w*0.1, h*0.15);
+        //this.rightChevron.resize(w*0.1, h*0.15);
+        //this.leftChevron.move();
+        //this.rightChevron.move();
+
         this.leftChevron.parentObj = this;
         this.rightChevron.parentObj = this;
         let updateColorChevrons = (quiz) => {
@@ -2124,6 +2129,7 @@ function quizzDisplayResult (color){
     this.displayScore(color);
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
+    this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
 }
 
 function gameDisplayMiniature(size){
