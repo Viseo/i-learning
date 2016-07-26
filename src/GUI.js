@@ -2903,6 +2903,7 @@ function connexionManagerDisplay() {
 
 var AdminGUI = function () {
     globalVariables.playerMode = false;
+    playerMode = false;
     AddEmptyElement.prototype.display = addEmptyElementDisplay;
     Answer.prototype.display = answerDisplay;
     Bd.prototype.display = bdDisplay;
@@ -2941,6 +2942,7 @@ var AdminGUI = function () {
 
 var LearningGUI = function () {
     globalVariables.playerMode = true;
+    playerMode = true;
     Answer.prototype.display = answerDisplay;
     Bd.prototype.displayMiniature = gameDisplayMiniature;
     ConnexionManager.prototype.display = connexionManagerDisplay;
