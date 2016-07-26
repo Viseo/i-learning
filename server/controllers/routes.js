@@ -129,6 +129,12 @@ module.exports = function (app, fs) {
             .catch((err) => console.log(err));
     });
 
+    app.get('/formations/getVersionById/:id', (req, res) => {
+        formations.getVersionById(db, req.params.id)
+            .then((data) => res.send(data))
+            .catch((err) => console.log(err));
+    });
+
     app.get('/formations/getAdminFormations', (req, res) => {
         formations.getAllFormations(db)
             .then(data => res.send(data))
@@ -154,18 +160,23 @@ module.exports = function (app, fs) {
         formations.getFormationsByName(db, req.body.label)
             .then(data => {
                 if(data.formation) {
-                    if(req.params.id === data.formation._id.toString()) {
-                        if(formations.compareFormations(data.formation, req.body)) {
-                            res.send({saved: false, reason: "NoModif"})
-                        } else {
-                            data.formation._id = req.params.id;
-                            formations.replaceFormation(db, req.params.id, req.body)
-                                .then(data => res.send({saved: true, reason: ""}))
-                                .catch(err => console.log(err));
-                        }
-                    } else {
-                        res.send({saved: false, reason: "NameAlreadyUsed"});
-                    }
+                    formations.getFormationByVersionId(db, req.params.id)
+                        .then(formation => {
+                            if(formation) {
+                                if(formation._id.toString() === data.formation._id.toString()) {
+                                    if(formations.compareFormations(data.formation.versions[data.formation.versions.length-1], req.body)) {
+                                        res.send({saved: false, reason: "NoModif"})
+                                    } else {
+                                        data.formation._id = req.params.id;
+                                        formations.replaceFormation(db, formation._id, req.body)
+                                            .then(data => res.send({saved: true, reason: ""}))
+                                            .catch(err => console.log(err));
+                                    }
+                                } else {
+                                    res.send({saved: false, reason: "NameAlreadyUsed"});
+                                }
+                            }
+                        });
                 } else {
                     formations.replaceFormation(db, req.params.id, req.body)
                         .then(data => res.send({saved: true, reason: ""}))

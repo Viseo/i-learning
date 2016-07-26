@@ -1436,7 +1436,7 @@ ConnexionManager = function () {
     this.tabForm =[];
 
     let listFormations = ()=> {
-        Server.getAllFormationsNames().then(data => {
+        Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();

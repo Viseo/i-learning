@@ -1250,7 +1250,7 @@ class Puzzle {
 class Server {
     constructor() {}
 
-    static getAllFormationsNames() {
+    static getAllFormations() {
         return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
     }
 
@@ -1272,6 +1272,10 @@ class Server {
 
     static getFormationById(id) {
         return dbListener.httpGetAsync("/formations/getFormationById/" + id)
+    }
+
+    static getVersionById(id) {
+        return dbListener.httpGetAsync("/formations/getVersionById/" + id)
     }
 
     static sendProgressToServer(quiz) {

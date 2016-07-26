@@ -87,7 +87,7 @@ function main() {
     };
 
     let listFormations = function() {
-        Server.getAllFormationsNames().then(data => {
+        Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();

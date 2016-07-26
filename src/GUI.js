@@ -706,7 +706,7 @@ function formationDisplayFormation() {
     let returnHandler = (event) => {
         let target = drawings.background.getTarget(event.clientX,event.clientY);
         target.parentObj.parent.manipulator.flush();
-        Server.getAllFormationsNames().then(data => {
+        Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
             formationsManager.display();
@@ -1169,7 +1169,7 @@ function formationsManagerDisplay() {
     };
 
     let onClickFormation = formation => {
-        Server.getFormationById(formation._id).then(data => {
+        Server.getVersionById(formation._id).then(data => {
             var myFormation = JSON.parse(data).formation;
             formation.loadFormation(myFormation);
             this.formationDisplayed = formation;

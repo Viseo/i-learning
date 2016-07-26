@@ -19,7 +19,7 @@ const getFormationsByName = (db, name) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
             if(err) fail(err);
-            let result = docs.find(formation => formation.label === name);
+            let result = docs.find(formation => formation.versions[formation.versions.length-1].label === name);
             resolve({formation: result});
         })
     });
@@ -37,10 +37,31 @@ const getFormationById = (db, id) => {
     });
 };
 
+const getVersionById = (db, id) => {
+    return new Promise((resolve, fail) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations
+            .find()
+            .toArray((err, docs) => {
+                if(err) fail(err);
+                let version = null;
+                docs.forEach(formation => {
+                    version = formation.versions.find(version => version._id.toString() === id);
+                });
+                resolve({formation: version});
+            })
+    });
+};
+
 const insertFormation = (db, object) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
-        collectionFormations.insertOne(object, (err, docs) => {
+        object._id = new ObjectID();
+        let formation = {
+            versions: [object],
+            status: "NotPublished"
+        };
+        collectionFormations.insertOne(formation, (err, docs) => {
             if(err) fail(err);
             resolve({formation:docs.insertedId});
         })
@@ -52,7 +73,11 @@ const getAllFormations = (db) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
             if(err) fail(err);
-            resolve({myCollection:docs});
+            let formations = [];
+            docs.forEach(formation => {
+                formations.push(formation.versions[formation.versions.length-1]);
+            });
+            resolve({myCollection:formations});
         })
     })
 };
@@ -60,7 +85,8 @@ const getAllFormations = (db) => {
 const replaceFormation = (db, id, object) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
-        collectionFormations.replaceOne({"_id": new ObjectID(id)}, object, (err) => {
+        object._id = new ObjectID();
+        collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:object}}, (err) => {
             if(err) fail(err);
             resolve({ack:'ok'});
         })
@@ -79,10 +105,31 @@ const replaceQuiz = (db, indexes, object) => {
     })
 };
 
+const getFormationByVersionId = (db, versionId) => {
+    return new Promise((resolve, reject) => {
+        let collectionFormations = db.get().collection('formations');
+        collectionFormations.find()
+            .toArray((err, docs) => {
+                let object = null;
+                if(err) reject(err);
+                docs.forEach(formation => {
+                    formation.versions.forEach(version => {
+                        if(version._id.toString() === versionId){
+                            object = formation;
+                        }
+                    })
+                });
+                resolve(object);
+            })
+    })
+};
+
 exports.compareFormations = compareFormations;
 exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
+exports.getVersionById = getVersionById;
 exports.insertFormation = insertFormation;
 exports.getAllFormations = getAllFormations;
 exports.replaceFormation = replaceFormation;
 exports.replaceQuiz = replaceQuiz;
+exports.getFormationByVersionId = getFormationByVersionId;
