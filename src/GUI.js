@@ -245,28 +245,30 @@ function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     if (typeof h !== "undefined")(this.h = h);
     this.borderSize = 3;
 
-    this.bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator).color(myColors.white, this.borderSize, myColors.black);
-    this.bordure.position(w / 2, h / 2 );
-    this.libraryManipulator.ordonator.set(0, this.bordure);
-    this.titleSvg = autoAdjustText(this.title, w, (1 / 10) * h, null, this.font, this.libraryManipulator).text;
-    this.titleSvg.position(w / 2, (1 / 20) * h);
+    const bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator)
+         .color(myColors.white, this.borderSize, myColors.black)
+         .position(w / 2, h / 2 );
+    this.libraryManipulator.ordonator.set(0, bordure);
+    const titleSvg = autoAdjustText(this.title, 0.9*w, (0.08) * h, null, this.font, this.libraryManipulator);
+    titleSvg.text.position(w / 2, (1 / 20) * h + titleSvg.finalHeight/4);
     this.libraryManipulator.translator.move(this.x, this.y);
 
 
-    this.panel = new gui.Panel(w - 3, ratioPanelHeight * h, myColors.white, 3).position(w / 2, yPanel);
+    this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white, 2).position(w / 2+0.5, yPanel);
+    this.panel.border.color([], 3, [0, 0, 0]);
     this.libraryManipulator.ordonator.set(2, this.panel.component);
     this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
-    libraryDisplay.call(this, x+MARGIN, y, w, h, 5/8, 5*h/12);
+    libraryDisplay.call(this, x+MARGIN, y, w, h, 8/10, h/2);
 
     let displayArrowModeButton = () => {
         if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
             this.libraryManipulator.last.remove(this.arrowModeManipulator.first);
         }
         this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)===-1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
-        this.arrowModeManipulator.first.move(w / 2, h - (2 / 10) * h);
+        this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
         let isChildOf = function (parentGame,childGame){
             parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
@@ -359,7 +361,7 @@ function gamesLibraryDisplay(x, y, w, h) {
             let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
             this.libraryManipulators[i].first.move(X, tempY);
         });
-        this.panel.resizeContent(w, tempY += Math.min(w/2, h/4) );
+        this.panel.resizeContent(w, tempY += Math.min(w/2, h/4)-1 );
     };
 
     let assignEvents = () => {
@@ -713,7 +715,7 @@ function formationDisplayFormation() {
         });
     };
     this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
-    this.returnButton.display(0, -5, 20, 20);
+    this.returnButton.display(0, -MARGIN/2, 20, 20);
     this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
     this.returnButton.setHandler(returnHandler);
 
@@ -2008,7 +2010,7 @@ function quizzDisplay(x, y, w, h) {
         this.questionPercentage = 0.2;
         this.answerPercentageWithImage = 0.6;
         this.answerPercentage = 0.7;
-    }
+    };
     let setPreviewSizes = ()=> {
         this.x = x+w*0.15 || this.x || 0;
         this.y = y || this.y || 0;
@@ -2022,7 +2024,7 @@ function quizzDisplay(x, y, w, h) {
         this.questionPercentage = 0.2;
         this.answerPercentageWithImage = 0.6;
         this.answerPercentage = 0.7;
-    }
+    };
     this.previewMode ? setPreviewSizes() : setSizes();
 
     let heightPage = drawing.height;
@@ -2083,6 +2085,11 @@ function quizzDisplay(x, y, w, h) {
     if(this.previewMode) {
         this.leftChevron = new Chevron(x-w*0.3, y+h*0.45, w*0.1, h*0.15, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron(x+w*0.6, y+h*0.45, w*0.1, h*0.15, this.rightChevronManipulator, "right");
+        //this.leftChevron.resize(w*0.1, h*0.15);
+        //this.rightChevron.resize(w*0.1, h*0.15);
+        //this.leftChevron.move();
+        //this.rightChevron.move();
+
         this.leftChevron.parentObj = this;
         this.rightChevron.parentObj = this;
         let updateColorChevrons = (quiz) => {
@@ -2122,6 +2129,7 @@ function quizzDisplayResult (color){
     this.displayScore(color);
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
+    this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
 }
 
 function gameDisplayMiniature(size){
