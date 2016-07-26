@@ -1254,10 +1254,6 @@ class Server {
         return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
     }
 
-    static getFormationByName(name) {
-        return dbListener.httpGetAsync("/formations/getFormationByName/" + name)
-    }
-
     static connect(mail, password) {
         return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
     }
@@ -1270,10 +1266,6 @@ class Server {
         return dbListener.httpGetAsync('/auth/verify/')
     }
 
-    static getFormationById(id) {
-        return dbListener.httpGetAsync("/formations/getFormationById/" + id)
-    }
-
     static getVersionById(id) {
         return dbListener.httpGetAsync("/formations/getVersionById/" + id)
     }
@@ -1283,7 +1275,8 @@ class Server {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
             game: quiz.id,
-            formation: quiz.parentFormation._id,
+            version: quiz.parentFormation._id,
+            formation: quiz.parentFormation.formationId
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
         return dbListener.httpPostAsync("/user/saveProgress", data)

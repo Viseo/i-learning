@@ -427,6 +427,7 @@ class Formation {
         };
         this.link = [];
         this._id = (formation._id || null);
+        this.formationId = (formation.formationId || null);
         this.progress = formation.progress;
         this.formationsManager = formationsManager;
         this.manipulator = new Manipulator(this);

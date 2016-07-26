@@ -123,12 +123,6 @@ module.exports = function (app, fs) {
             .catch((err) => console.log(err));
     });
 
-    app.get('/formations/getFormationById/:id', function(req, res) {
-        formations.getFormationById(db, req.params.id)
-            .then((data) => res.send(data))
-            .catch((err) => console.log(err));
-    });
-
     app.get('/formations/getVersionById/:id', (req, res) => {
         formations.getVersionById(db, req.params.id)
             .then((data) => res.send(data))

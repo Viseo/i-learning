@@ -2,6 +2,8 @@
  * Created by qde3485 on 25/07/16.
  */
 
+let ObjectID = require('mongodb').ObjectID;
+
 const getUserByEmailAddress = (db, email) => {
     return new Promise((resolve, fail) => {
         let usersCollection = db.get().collection('users');
@@ -43,12 +45,13 @@ const saveProgress = (db, body, user) => {
             index: body.indexQuestion,
         };
         let newFormation = {
+            version: body.version,
             formation: body.formation,
             gamesTab : [newGame]
         };
         let formationsTab;
         if (user.formationsTab){
-            let formation = user.formationsTab.findIndex(x => x.formation === body.formation);
+            let formation = user.formationsTab.findIndex(x => x.formation === body.version);
             if(formation !== -1 ){
                 let game = user.formationsTab[formation].gamesTab.findIndex(x => x.game === body.game);
                 if(game !== -1 ){
@@ -57,7 +60,7 @@ const saveProgress = (db, body, user) => {
                     user.formationsTab[formation].gamesTab[user.formationsTab[formation].gamesTab.length] = newGame;
                 }
             } else {
-                user.formationsTab[user.formationsTab.length]=newFormation;
+                user.formationsTab[user.formationsTab.length] = newFormation;
             }
             formationsTab = user.formationsTab;
         } else {
@@ -76,8 +79,9 @@ const getFormationsWithProgress = (userFormationsArray, formations) => {
         let result = [];
         formations.forEach(formation => {
             const progressArray = userFormationsArray && userFormationsArray
-                    .find(f => f.formation === formation._id.toString());
+                    .find(f => f.formation === formation.formationId.toString());
             let progress = '';
+            let id = null;
             if(progressArray) {
                 progress = function() {
                     let i = 0;
@@ -86,15 +90,17 @@ const getFormationsWithProgress = (userFormationsArray, formations) => {
                         for (let y = 0; y < gamesTab.length; y++) {
                             const game = gamesTab[y];
                             if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].index < game.tabQuestions.length) {
+                                id = progressArray.version;
                                 return 'inProgress';
                             }
                             i++;
                         }
                     }
+                    id = progressArray.version;
                     return 'done';
                 }();
             }
-            result.push({_id: formation._id, label: formation.label, status: formation.status, progress});
+            result.push({_id: id ? new ObjectID(id) : formation._id, formationId: formation.formationId, label: formation.label, status: formation.status, progress});
         });
         resolve({myCollection: result});
     })

@@ -75,6 +75,7 @@ const getAllFormations = (db) => {
             if(err) fail(err);
             let formations = [];
             docs.forEach(formation => {
+                formation.versions[formation.versions.length-1].formationId = formation._id;
                 formations.push(formation.versions[formation.versions.length-1]);
             });
             resolve({myCollection:formations});
