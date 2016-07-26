@@ -956,7 +956,7 @@ class MiniatureFormation {
 
         let iconSize = this.formation.parent.iconeSize;
 
-        if(statusEnum[this.formation.status]) {
+        if(!playerMode && statusEnum[this.formation.status]) {
             let icon = statusEnum[this.formation.status].icon(iconSize);
             for (let i = 0; i < icon.elements.length; i++) {
                 this.iconManipulator.ordonator.set(i, icon.elements[i]);

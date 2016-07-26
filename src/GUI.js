@@ -1076,6 +1076,8 @@ function formationDisplayPublicationButton(x, y, w, h) {
         });
         if(!allQuizzValid) {
             this.displayPublicationMessage(message[0]);
+        } else {
+            this.saveFormation(null, "Published");
         }
     };
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
@@ -1241,8 +1243,6 @@ function formationsManagerDisplay() {
             count = 0,
             totalLines = 1;
         this.formations.forEach(formation => {
-            // we can't publish a formation yet
-            //if (playerMode && formation.status.toString() === statusEnum.NotPublished.toString()) return;
             if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
 
             if (count > (this.rows - 1)) {

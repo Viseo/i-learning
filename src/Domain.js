@@ -522,7 +522,7 @@ class Formation {
         this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
 
-    saveFormation (displayQuizzManager) {
+    saveFormation (displayQuizzManager, status = "Edited") {
         const messageSave = "Votre travail a bien été enregistré.",
             messageError = "Vous devez remplir correctement le nom de la formation.",
             messageReplace =  "Les modifications ont bien été enregistrées",
@@ -598,7 +598,7 @@ class Formation {
             };
 
             let addNewFormation = () => {
-                Server.insertFormation(getObjectToSave(), "Edited", ignoredData)
+                Server.insertFormation(getObjectToSave(), status, ignoredData)
                     .then(data => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
@@ -615,7 +615,7 @@ class Formation {
             };
 
             let replaceFormation = () => {
-                Server.replaceFormation(this._id, getObjectToSave(), "Edited", ignoredData)
+                Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
                     .then((data) => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
