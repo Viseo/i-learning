@@ -2282,8 +2282,17 @@ function quizzManagerDisplay(){
 function quizzManagerDisplayQuizzInfo (x, y, w, h) {
     this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first)===-1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
 
-    var returnHandler = (event)=>{
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
+    let returnHandler = (event)=>{
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.parentFormation.quizzManager.questionCreator.explanation = null;
+        if (this.quizz.tabQuestions[this.indexOfEditedQuestion]){
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=>{
+                if (answer.popIn) {
+                    this.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                }
+            })
+        }
         target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
