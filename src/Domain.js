@@ -924,33 +924,27 @@ class Formation {
 }
 
 class Library {
-    constructor(lib) {
+    constructor () {
         this.libraryManipulator = new Manipulator(this);
-        this.libraryManipulator.addOrdonator(2);
-
-        this.title = lib.title;
-
+        this.libraryManipulator.addOrdonator(3);
         this.itemsTab = [];
-        lib.tab && (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
         this.libraryManipulators = [];
-
-        this.imageWidth = 50;
-        this.imageHeight = 50;
-
-        for (let i = 0; i < this.itemsTab.length; i++) {
-            this.libraryManipulators[i] = new Manipulator(this);
-            this.libraryManipulators[i].addOrdonator(2);
-        }
-
-        this.font = lib.font || "Arial";
-        this.fontSize = lib.fontSize || 20;
     }
 }
 
 class GamesLibrary extends Library {
 
-    constructor(lib) {
-        super(lib);
+    constructor (lib) {
+        super();
+        this.title = lib.title;
+        this.font = lib.font ;
+        this.fontSize = lib.fontSize ;
+        lib.tab &&  (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
+        for (let i = 0; i < this.itemsTab.length; i++) {
+            this.libraryManipulators[i] = new Manipulator(this);
+            this.libraryManipulators[i].addOrdonator(2);
+        }
+
         this.arrowModeManipulator = new Manipulator(this);
         this.arrowModeManipulator.addOrdonator(3);
 
@@ -969,15 +963,14 @@ class GamesLibrary extends Library {
 }
 
 class ImagesLibrary extends Library {
-    constructor(lib) {
-        super(lib);
+    constructor () {
+        super();
+        this.title = "Bibliothèque";
+        this.font = "Courier New";
+        this.imageWidth = 50;
+        this.imageHeight = 50;
         this.addButtonManipulator = new Manipulator(this);
         this.addButtonManipulator.addOrdonator(3);
-        for (var i = 0; i < this.itemsTab.length; i++) {
-            this.itemsTab[i] = imageController.getImage(this.itemsTab[i].imgSrc, function () {
-                this.imageLoaded = true; //this != library
-            });
-        }
     }
 
     dropAction(element, event) {
@@ -1053,7 +1046,7 @@ class QuizzManager {
         }
         this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.header = new Header();
-        this.library = new ImagesLibrary(myLibraryImage);
+        this.library = new ImagesLibrary();
         this.quizz.tabQuestions[0].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
@@ -1085,6 +1078,20 @@ class QuizzManager {
         this.previewButtonHeightRatio = 0.1;
         this.saveButtonHeightRatio = 0.1;
         this.marginRatio = 0.02;
+
+        this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
+        this.questionPuzzle.leftChevronHandler = () => {
+            this.questionPuzzle.updateStartPosition("left");
+            this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+            this.questionPuzzle.display();
+            this.questionPuzzle.checkPuzzleElementsArrayValidity();
+        };
+        this.questionPuzzle.rightChevronHandler = () => {
+            this.questionPuzzle.updateStartPosition("right");
+            this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+            this.questionPuzzle.display();
+            this.questionPuzzle.checkPuzzleElementsArrayValidity();
+        };
     }
 
     loadQuizz(quizz, indexOfEditedQuestion) {
@@ -1113,7 +1120,7 @@ class QuizzManager {
                     answer.popIn.label && (answer.explanation.label = answer.popIn.label);
                     answer.popIn = null;
                 }
-            })
+            });
         });
         return {
             id: this.quizz.id,

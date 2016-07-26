@@ -554,20 +554,34 @@ function SVGUtil() {
                 .cubic(85, 190, 145, 140, 100, 100)
                 .line(0, 0);
         }
-        this.chevron.tempWidth = baseWidth;
-        this.chevron.tempHeight = baseHeight;
-        chevronManipulator.translator.move(x, y);
-        chevronManipulator.ordonator.set(0, this.chevron);
-        if (this.chevron.tempWidth > w) {
-            this.chevron.tempHeight *= w / this.chevron.tempWidth;
-            this.chevron.tempWidth = w;
+        this.chevron.resize = (w, h) => {
+            this.chevron.tempWidth = baseWidth;
+            this.chevron.tempHeight = baseHeight;
+            chevronManipulator.ordonator.set(0, this.chevron);
+            if (this.chevron.tempWidth > w) {
+                this.chevron.tempHeight *= w / this.chevron.tempWidth;
+                this.chevron.tempWidth = w;
+            }
+            if (this.chevron.tempHeight > h) {
+                this.chevron.tempWidth *= h / this.chevron.tempHeight;
+                this.chevron.tempHeight = h;
+            }
+            chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
+        };
+
+        this.chevron.move = (x, y) => {
+            chevronManipulator.translator.move(x, y);
+        };
+
+        if(w && h){
+            this.chevron.resize(w, h);
         }
-        if (this.chevron.tempHeight > h) {
-            this.chevron.tempWidth *= h / this.chevron.tempHeight;
-            this.chevron.tempHeight = h;
+
+        if(x && y){
+            this.chevron.move(x, y);
         }
-        chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
-        this.chevron.activate = function (handler, eventType) {
+
+        this.chevron.activate = function(handler, eventType){
             this._activated = true;
             this.color(myColors.black, 1, myColors.black);
             this.eventType = eventType;
@@ -998,14 +1012,16 @@ class ReturnButton {
 
     display(x, y, w, h) {
         this.returnText = new svg.Text(this.label);
-        this.returnButton = Chevron(0, 0, w, h, this.chevronManipulator, "left");
+        this.returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
+        this.returnButton.resize(w, h);
+        //this.returnButton.move(0, y);
         this.returnButton.color(myColors.black, 0, []);
         this.returnText.font("Arial", 20).anchor("start").position(0, 0);
         this.textSize = svg.runtime.boundingRect(this.returnText.component);
         this.size = svg.runtime.boundingRect(this.returnButton.component);
         this.manipulator.ordonator.set(0, this.returnText);
-        this.returnText.position(w + this.size.width, this.textSize.height / 2 + this.size.height / 4);
-        this.manipulator.translator.move(x + w, y);
+        this.returnText.position(w+this.size.width/2, this.textSize.height/2+this.size.height/4);
+        this.manipulator.translator.move(x+w, y);
 
         this.returnText.parentObj = this;
         this.returnButton.parentObj = this;
@@ -1031,6 +1047,29 @@ class Puzzle {
         this.chevronMinSize = 15;
         this.orientation = orientation;
         this.parentObject = parentObject;
+        this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron(0, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
+        this.leftChevron.handler = () => {
+            this.updateStartPosition("left");
+            this.fillVisibleElementsArray(this.orientation);
+            this.display();
+        };
+        this.rightChevron.handler = () => {
+            this.updateStartPosition("right");
+            this.fillVisibleElementsArray(this.orientation);
+            this.display();
+        };
+    }
+
+    checkPuzzleElementsArrayValidity() {
+        this.visibleElementsArray.forEach(array => {
+            array.forEach(
+                element => {
+                    if(!(element instanceof AddEmptyElement)) {
+                        element.checkValidity();
+                    }
+                });
+        });
     }
 
     updateElementsArray(newElementsArray) {
@@ -1039,18 +1078,10 @@ class Puzzle {
 
     drawChevrons() {
         var self = this;
-        this.leftChevron = new Chevron((this.chevronSize - this.width) / 2, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
-        this.rightChevron = new Chevron((this.width - this.chevronSize) / 2, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
-        this.leftChevron.handler = function () {
-            self.updateStartPosition("left");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
-        };
-        this.rightChevron.handler = function () {
-            self.updateStartPosition("right");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
-        };
+        this.leftChevron.resize(this.chevronSize, this.chevronSize);
+        this.rightChevron.resize(this.chevronSize, this.chevronSize);
+        this.leftChevron.move((this.chevronSize - this.width)/2, 0);
+        this.rightChevron.move((this.width - this.chevronSize)/2, 0);
         this.updateChevrons();
         let updateLeftChevron = this.leftChevron && this.leftChevron._activated;
         let updateRightChevron = this.rightChevron && this.rightChevron._activated;
@@ -1172,11 +1203,10 @@ class Puzzle {
         }
     }
 
-    display(x, y, w, h, needChevrons = true) {
-        if (this.parentObject.indexOfEditedQuestion) {
-            this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush();// questionPuzzle
+    display(x, y, w, h, needChevrons = true){
+        if(this.parentObject.indexOfEditedQuestion){
+            this.elementsArray[this.parentObject.indexOfEditedQuestion].manipulator.flush() ;// questionPuzzle
         }
-
         (typeof x !== "undefined") && (this.x = x);
         (typeof y !== "undefined") && (this.y = y);
         (typeof w !== "undefined") && (this.width = w);
@@ -1197,9 +1227,11 @@ class Puzzle {
         }
         this.visibleElementsArray.forEach(it => {
             it.forEach(elem => {
-                let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
-                elem.display(elem.x, elem.y, elem.width, elem.height);
+                if(elem){
+                    let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
+                    this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                    elem.display(elem.x, elem.y, elem.width, elem.height);
+                }
             });
             itNumber++;
         });
@@ -1266,6 +1298,9 @@ class Server {
 
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
         return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+    }
+    static getImages() {
+        return dbListener.httpGetAsync('/getAllImages')
     }
 }
 
@@ -1472,73 +1507,74 @@ function Bdd() {
         none: []
     };
 
-    myImagesSourceDimensions = {
-        "../resource/littleCat.png": {width: 80, height: 50},
-        "../resource/millions.png": {width: 1024, height: 1024},
-        "../resource/pomme.jpg": {width: 925, height: 1000},
-        "../resource/hollandeContent.jpg": {width: 166, height: 200},
-        "../resource/folder.png": {width: 256, height: 256},
-        "../resource/flanders.png": {width: 225, height: 225},
-        "../resource/flamantRose.jpg": {width: 183, height: 262},
-        "../resource/ChatTim.jpg": {width: 480, height: 640},
-        "../resource/cerise.jpg": {width: 2835, height: 2582},
-        "../resource/cat.png": {width: 1920, height: 1200},
-        "../resource/Alba.jpg": {width: 675, height: 800},
-        "../resource/tetris.png": {width: 700, height: 456},
-        "../resource/shiva.jpg": {width: 1816, height: 2439},
-        "../resource/poop.jpg": {width: 570, height: 238},
-        "../resource/monkey.jpg": {width: 1085, height: 610},
-        "../resource/Kenny.png": {width: 640, height: 360},
-        "../resource/Geneviève.jpg": {width: 590, height: 380},
-        "../resource/eagle.jpg": {width: 1200, height: 900},
-        "../resource/berlin.jpg": {width: 640, height: 480},
-        "../resource/couscous.jpg": {width: 1688, height: 1125},
-        "../resource/dora.jpg": {width: 2136, height: 2896},
-        "../resource/kassos.jpg": {width: 300, height: 300},
-        "../resource/kawai.png": {width: 900, height: 800},
-        "../resource/manipulator.jpg": {width: 1181, height: 888},
-        "../resource/minions.jpg": {width: 630, height: 354},
-        "../resource/vache.jpeg": {width: 1280, height: 960},
-        "../resource/pokeball.png": {width: 894, height: 893}
-    };
+    // myImagesSourceDimensions = {
+    //     "../resource/littleCat.png" : {width: 80, height: 50},
+    //     "../resource/millions.png" : {width:1024, height: 1024},
+    //     "../resource/pomme.jpg" : {width: 925, height: 1000},
+    //     "../resource/hollandeContent.jpg" : {width: 166, height: 200},
+    //     "../resource/folder.png" : {width: 256, height: 256},
+    //     "../resource/flanders.png" : {width: 225, height: 225},
+    //     "../resource/flamantRose.jpg" : {width: 183, height: 262},
+    //     "../resource/ChatTim.jpg" : {width: 480, height: 640},
+    //     "../resource/cerise.jpg" : {width: 2835, height: 2582},
+    //     "../resource/cat.png" : {width: 1920, height: 1200},
+    //     "../resource/Alba.jpg" : {width: 675, height: 800},
+    //     "../resource/tetris.png": {width: 700, height: 456},
+    //     "../resource/shiva.jpg": {width: 1816, height: 2439},
+    //     "../resource/poop.jpg": {width: 570, height: 238},
+    //     "../resource/monkey.jpg": {width: 1085, height: 610},
+    //     "../resource/Kenny.png": {width: 640, height: 360},
+    //     "../resource/Geneviève.jpg": {width: 590, height: 380},
+    //     "../resource/eagle.jpg": {width: 1200, height: 900},
+    //     "../resource/berlin.jpg": {width: 640, height: 480},
+    //     "../resource/couscous.jpg": {width: 1688, height: 1125},
+    //     "../resource/dora.jpg": {width: 2136, height: 2896},
+    //     "../resource/kassos.jpg": {width: 300, height: 300},
+    //     "../resource/kawai.png": {width: 900, height: 800},
+    //     "../resource/manipulator.jpg": {width: 1181, height: 888},
+    //     "../resource/minions.jpg": {width: 630, height: 354},
+    //     "../resource/vache.jpeg": {width: 1280, height: 960},
+    //      "../resource/pokeball.png": {width: 894, height: 893}
+    // };
 
     SELECTION_COLOR = myColors.darkBlue;
 
-    myLibraryImage = {
-        title: "Bibliothèque",
-        tab: [
-            {imgSrc: "../resource/Alba.jpg"},
-            {imgSrc: "../resource/littleCat.png"},
-            {imgSrc: "../resource/millions.png"},
-            {imgSrc: "../resource/folder.png"},
-            {imgSrc: "../resource/cerise.jpg"},
-            {imgSrc: "../resource/ChatTim.jpg"},
-            {imgSrc: "../resource/tetris.png"},
-            {imgSrc: "../resource/shiva.jpg"},
-            {imgSrc: "../resource/poop.jpg"},
-            {imgSrc: "../resource/monkey.jpg"},
-            {imgSrc: "../resource/Kenny.png"},
-            {imgSrc: "../resource/Geneviève.jpg"},
-            {imgSrc: "../resource/eagle.jpg"},
-            {imgSrc: "../resource/berlin.jpg"},
-            {imgSrc: "../resource/couscous.jpg"},
-            {imgSrc: "../resource/dora.jpg"},
-            {imgSrc: "../resource/kassos.jpg"},
-            {imgSrc: "../resource/kawai.png"},
-            {imgSrc: "../resource/manipulator.jpg"},
-            {imgSrc: "../resource/minions.jpg"},
-            {imgSrc: "../resource/vache.jpeg"},
-            {imgSrc: "../resource/pokeball.png"}
+    // myLibraryImage = {
+        // title: "Bibliothèque",
+        // tab: [
+        //     {imgSrc: "../resource/Alba.jpg"},
+        //     {imgSrc: "../resource/littleCat.png"},
+        //     {imgSrc: "../resource/millions.png"},
+        //     {imgSrc: "../resource/folder.png"},
+        //     {imgSrc: "../resource/cerise.jpg"},
+        //     {imgSrc: "../resource/ChatTim.jpg"},
+        //     {imgSrc: "../resource/tetris.png"},
+        //     {imgSrc: "../resource/shiva.jpg"},
+        //     {imgSrc: "../resource/poop.jpg"},
+        //     {imgSrc: "../resource/monkey.jpg"},
+        //     {imgSrc: "../resource/Kenny.png"},
+        //     {imgSrc: "../resource/Geneviève.jpg"},
+        //     {imgSrc: "../resource/eagle.jpg"},
+        //     {imgSrc: "../resource/berlin.jpg"},
+        //     {imgSrc: "../resource/couscous.jpg"},
+        //     {imgSrc: "../resource/dora.jpg"},
+        //     {imgSrc: "../resource/kassos.jpg"},
+        //     {imgSrc: "../resource/kawai.png"},
+        //     {imgSrc: "../resource/manipulator.jpg"},
+        //     {imgSrc: "../resource/minions.jpg"},
+        //     {imgSrc: "../resource/vache.jpeg"},
+        //     {imgSrc: "../resource/pokeball.png"}
 
-        ],
-        font: "Courier New", fontSize: 20
-    };
+
+        // ],
+        // font: "Courier New", fontSize: 20
+    // };
 
     myLibraryGames = {
         title: "Type de jeux",
         tab: [
             {label: "Quiz"},
-            {label: "Bd"}
+            {label: "Bd"},
         ],
         font: "Courier New", fontSize: 20
     };
