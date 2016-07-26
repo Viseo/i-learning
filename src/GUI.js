@@ -3,16 +3,12 @@
  */
 'use strict';
 
-var domain, svg, gui, runtime, playerMode, param, header;
+var domain, svg, gui, runtime, playerMode, header;
 function setDomain(_domain) {
     domain = _domain;
     // call setSvg on modules
 }
 
-/* istanbul ignore next */
-if(!param) {
-    param = {speed: 5, step: 100};
-}
 
 function setSVG(_svg){
     svg = _svg;
@@ -177,7 +173,7 @@ function answerDisplay (x, y, w, h) {
         this.penHandler = () => {
             this.popIn = this.popIn || new PopIn(this, true);
             let questionCreator = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-            this.popIn.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+            this.popIn.display(questionCreator,0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
             questionCreator.explanation = this.popIn;
         };
         displayPen(this.width/2-this.checkboxSize, this.height/2 - this.checkboxSize, this.checkboxSize, this);
@@ -242,7 +238,7 @@ function answerDisplay (x, y, w, h) {
     this.manipulator.translator.move(this.x,this.y);
 }
 
-function libraryDisplay(x, y, w, h) {
+function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     if (typeof x !== "undefined")(this.x = x);
     if (typeof y !== "undefined")(this.y = y);
     if (typeof w !== "undefined")(this.w = w);
@@ -252,15 +248,18 @@ function libraryDisplay(x, y, w, h) {
     this.bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator).color(myColors.white, this.borderSize, myColors.black);
     this.bordure.position(w / 2, h / 2 );
     this.libraryManipulator.ordonator.set(0, this.bordure);
-
     this.titleSvg = autoAdjustText(this.title, w, (1 / 10) * h, null, this.font, this.libraryManipulator).text;
     this.titleSvg.position(w / 2, (1 / 20) * h);
-
     this.libraryManipulator.translator.move(this.x, this.y);
+
+
+    this.panel = new gui.Panel(w - 3, ratioPanelHeight * h, myColors.white, 3).position(w / 2, yPanel);
+    this.libraryManipulator.ordonator.set(2, this.panel.component);
+    this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
-    libraryDisplay.call(this, x+MARGIN, y, w, h);
+    libraryDisplay.call(this, x+MARGIN, y, w, h, 5/8, 5*h/12);
 
     let displayArrowModeButton = () => {
         if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first)!==-1) {
@@ -343,13 +342,10 @@ function gamesLibraryDisplay(x, y, w, h) {
     let displayItems = () => {
         let maxGamesPerLine = 1,
             libMargin = (w - (maxGamesPerLine * w)) / (maxGamesPerLine + 1) + 2 * MARGIN,
-            tempY = (2 / 10 * h);
+            tempY = (0.15 * h);
 
         this.itemsTab.forEach((item, i) => {
-            if(this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first ) !== -1){
-                this.libraryManipulator.last.remove(this.libraryManipulators[i].first);
-            }
-            this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first)===-1 && this.libraryManipulator.last.add(this.libraryManipulators[i].first);
+            this.panel.content.children.indexOf(this.libraryManipulators[i].first)===-1 && this.panel.content.add(this.libraryManipulators[i].first);
 
             if (i % maxGamesPerLine === 0 && i !== 0) {
                 tempY += this.h / 4 + libMargin;
@@ -363,6 +359,7 @@ function gamesLibraryDisplay(x, y, w, h) {
             let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
             this.libraryManipulators[i].first.move(X, tempY);
         });
+        this.panel.resizeContent(w, tempY += Math.min(w/2, h/4) );
     };
 
     let assignEvents = () => {
@@ -443,40 +440,9 @@ function gamesLibraryDisplay(x, y, w, h) {
 }
 
 function imagesLibraryDisplay(x, y, w, h, callback) {
+
     let display = (x, y, w, h) => {
-        libraryDisplay.call(this, x, y, w, h);
-
-        let displayPanel = () => {
-            this.panel = new gui.Panel(w-3,0.75*h, myColors.white, 3).position(w/2,0.45*h);
-            this.libraryManipulator.last.add(this.panel.component);
-            this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
-        };
-
-        let displayItems = () => {
-            let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
-                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
-                tempY = (0.075 * h);
-
-            this.itemsTab.forEach((item, i) => {
-                if (i % maxImagesPerLine === 0 && i !== 0) {
-                    tempY += this.imageHeight + libMargin;
-                }
-
-                // if (this.libraryManipulator.last.children.indexOf(this.libraryManipulators[i].first) !== -1) {
-                //     this.panel.content.remove(this.libraryManipulators[i].first);
-                // }
-                this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
-
-                let image = displayImage(myLibraryImage.tab[i].imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
-                image.srcDimension = {width: item.width, height: item.height};
-                this.libraryManipulators[i].ordonator.set(0, image);
-
-                let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
-                this.libraryManipulators[i].first.move(X, tempY);
-
-            });
-            this.panel.resizeContent(w, tempY + this.imageHeight);
-        };
+        libraryDisplay.call(this, x, y, w, h, 3/4, 0.45 * h);
 
         let assignEvents = () => {
             this.libraryManipulators.forEach(libraryManipulator => {
@@ -524,6 +490,55 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             });
         };
 
+        let displayItems = () => {
+            let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
+                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
+                tempY = (0.075 * h);
+
+            const displayImages = () => {
+                this.itemsTab.forEach((item, i) => {
+                    if (i % maxImagesPerLine === 0 && i !== 0) {
+                        tempY += this.imageHeight + libMargin;
+                    }
+
+                    this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
+                    let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                    image.srcDimension = {width: item.width, height: item.height};
+                    this.libraryManipulators[i].ordonator.set(0, image);
+
+                    let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
+                    this.libraryManipulators[i].first.move(X, tempY);
+
+                });
+                this.panel.resizeContent(w,tempY += this.imageHeight);
+                assignEvents();
+            };
+
+            if (this.itemsTab.length === 0) {
+                Server.getImages().then(data => {
+                        let myLibraryImage = JSON.parse(data).images;
+                        myLibraryImage.forEach((url, i) => {
+                            this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
+                            this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
+                            this.itemsTab[i] = imageController.getImage(url.imgSrc, function (){
+                                this.imageLoaded = true; //this != library
+                            });
+                            this.itemsTab[i].imgSrc = url.imgSrc;
+                        });
+                    })
+                    .then(() => {
+                        let intervalToken = asyncTimerController.interval(() => {
+                            if (this.itemsTab.every(e => e.imageLoaded)) {
+                                asyncTimerController.clearInterval(intervalToken);
+                                displayImages();
+                            }
+                        }, 100);
+                    });
+            } else {
+                displayImages();
+            }
+        };
+
         let displaySaveButton = () => {
 
             let doraHandler = () => {
@@ -546,42 +561,44 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             };
             let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                 addButtonLabel = "Ajouter une image",
-                addButtonText =  autoAdjustText(addButtonLabel, 2*this.w/3, this.h/15, 20, "Arial", this.addButtonManipulator),
-                plus = drawPlus(0,0, this.w / 7, this.w / 7);
-            addButtonText.text.position(0,this.h/12 - (this.h/15)/2 + 3/2*MARGIN);
-            addButton.corners(10 , 10);
+                addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
+                plus = drawPlus(0, 0, this.w / 7, this.w / 7);
+            addButtonText.text.position(0, this.h / 12 - (this.h / 15) / 2 + 3 / 2 * MARGIN);
+            addButton.corners(10, 10);
 
             this.addButtonManipulator.ordonator.set(0, addButton);
             this.addButtonManipulator.ordonator.set(2, plus);
             this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
-            this.addButtonManipulator.translator.move(this.w/2, 9 *this.h / 10);
+            this.addButtonManipulator.translator.move(this.w / 2, 9 * this.h / 10);
             svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
             svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
             svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
 
         };
 
-        displayPanel();
         displayItems();
         displaySaveButton();
-        assignEvents();
+
 
     };
 
-    let intervalToken = asyncTimerController.interval(() => {
-        if (this.itemsTab.every(e => e.imageLoaded)) {
-            asyncTimerController.clearInterval(intervalToken);
-            display(x, y, w, h);
-            callback();
-        }
-    }, 100);
-    runtime && this.itemsTab.forEach(e => {
-        imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
-    });
-    if (runtime) {
         display(x, y, w, h);
         callback();
-    }
+
+    // let intervalToken = asyncTimerController.interval(() => {
+    //     if (this.itemsTab.every(e => e.imageLoaded)) {
+    //         asyncTimerController.clearInterval(intervalToken);
+    //         display(x, y, w, h);
+    //         callback();
+    //     }
+    // }, 100);
+    // runtime && this.itemsTab.forEach(e => {
+    //     imageController.imageLoaded(e.id, myImagesSourceDimensions[e.src].width, myImagesSourceDimensions[e.src].height);
+    // });
+    // if (runtime) {
+    //     display(x, y, w, h);
+    //     callback();
+    // }
 
 }
 
@@ -628,7 +645,7 @@ function addEmptyElementDisplay(x, y, w, h) {
                     questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
                     questionCreator.coordinatesAnswers.h, false);
                 questionCreator.linkedQuestion.checkValidity();
-                
+
                 break;
             case 'question':
                 let quizzManager = this.parent;
@@ -1620,7 +1637,7 @@ function questionDisplayAnswers(x, y, w, h) {
 function questionSelectedQuestion() {
     this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
     if(!this.redCrossManipulator){
-        let redCrossClickHandler = () =>{
+        let redCrossClickHandler = () => {
             let quizzManager = this.parentQuizz.parentFormation.quizzManager;
             let questionCreator = quizzManager.questionCreator;
             let questionPuzzle = quizzManager.questionPuzzle;
@@ -1630,13 +1647,12 @@ function questionSelectedQuestion() {
             (questionsArray[index] instanceof AddEmptyElement) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
             if(index !== -1) {
                 quizzManager.indexOfEditedQuestion = index;
-                quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
                 this.parentQuizz.tabQuestions[index].selected = true;
                 resetQuestionsIndex(this.parentQuizz);
                 questionPuzzle && questionPuzzle.indexOfFirstVisibleElement!=0 && questionPuzzle.indexOfFirstVisibleElement--;
                 questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuizz.tabQuestions);
                 questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
-                questionPuzzle.display();
+                quizzManager.questionClickHandler({question:this.parentQuizz.tabQuestions[index]});
             }
             else{
                 this.parentQuizz.tabQuestions.splice(0,0, new Question(defaultQuestion, this.parentQuizz));
@@ -2076,20 +2092,22 @@ function quizzDisplay(x, y, w, h) {
 
         let leftChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
-            if(target.parentObj.currentQuestionIndex > 0) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
-                target.parentObj.currentQuestionIndex--;
-                updateColorChevrons(target.parentObj);
-                target.parentObj.displayCurrentQuestion();
+            let puzzle = target.parentObj;
+            if(puzzle.currentQuestionIndex > 0) {
+                puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex--;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
             }
         };
         let rightChevronHandler = (event) => {
             let target = drawings.background.getTarget(event.clientX,event.clientY);
-            if(target.parentObj.currentQuestionIndex < target.parentObj.tabQuestions.length-1) {
-                target.parentObj.quizzManipulator.last.remove(target.parentObj.tabQuestions[target.parentObj.currentQuestionIndex].manipulator.first);
-                target.parentObj.currentQuestionIndex++;
-                updateColorChevrons(target.parentObj);
-                target.parentObj.displayCurrentQuestion();
+            let puzzle = target.parentObj;
+            if(puzzle.currentQuestionIndex < puzzle.tabQuestions.length-1) {
+                puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex++;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
             }
         };
         updateColorChevrons(this);
@@ -2264,8 +2282,17 @@ function quizzManagerDisplay(){
 function quizzManagerDisplayQuizzInfo (x, y, w, h) {
     this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first)===-1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
 
-    var returnHandler = (event)=>{
-        var target = drawings.background.getTarget(event.clientX,event.clientY);
+    let returnHandler = (event)=>{
+        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        target.parentObj.parent.parentFormation.quizzManager.questionCreator.explanation = null;
+        if (this.quizz.tabQuestions[this.indexOfEditedQuestion]){
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=>{
+                if (answer.popIn) {
+                    this.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                }
+            })
+        }
         target.parentObj.parent.quizzNameValidInput = true;
         target.parentObj.parent.quizzManagerManipulator.flush();
         target.parentObj.parent.quizzDisplayed = false;
@@ -2436,24 +2463,16 @@ function quizzManagerDisplayQuestionPuzzle(x, y, w, h, ind) {
         w: border.width - this.globalMargin.width / 2,
         h: this.questionsPuzzleHeight - this.globalMargin.height
     };
-    if (this.questionPuzzle){
-        this.questionPuzzle.updateElementsArray(this.quizz.tabQuestions);
-        this.questionPuzzle.fillVisibleElementsArray("leftToRight");
-    }
-    else {
-        this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
+    this.questionPuzzle.updateElementsArray(this.quizz.tabQuestions);
+    this.questionPuzzle.fillVisibleElementsArray("leftToRight");
+    if(!this.questionPuzzle.handlersSet){
+        this.questionPuzzle.leftChevron.handler = this.questionPuzzle.leftChevronHandler;
+        this.questionPuzzle.rightChevron.handler = this.questionPuzzle.rightChevronHandler;
+        this.questionPuzzle.handlersSet = true;
     }
     this.questionsPuzzleManipulator.last.children.indexOf(this.questionPuzzle.manipulator.first)===-1 && this.questionsPuzzleManipulator.last.add(this.questionPuzzle.manipulator.first);
     this.questionPuzzle.display(this.coordinatesQuestion.x, this.coordinatesQuestion.y, this.qPuzzleW, this.qPuzzleH, true);
-    checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
-}
-
-function checkPuzzleElementsArrayValidity(array){
-    array.forEach(question => {
-        if(!(question instanceof AddEmptyElement)){
-            question.checkValidity();
-        }
-    });
+    this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
 }
 
 function inscriptionManagerDisplay() {

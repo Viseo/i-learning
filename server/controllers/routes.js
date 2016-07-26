@@ -180,6 +180,13 @@ module.exports = function (app, fs) {
             .catch(err => console.log(err));
     });
 
+    app.get('/getAllImages', function(req, res) {
+        var collection = db.get().collection('images');
+        collection.find().toArray(function(err, docs) {
+            res.send({images: docs});
+        });
+    });
+
     app.post('/data', function (req, res) {
         try {
             fs.accessSync("./log/db.json", fs.F_OK);
