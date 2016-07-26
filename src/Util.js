@@ -1071,14 +1071,14 @@ class Puzzle {
         this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron(0, 0 , this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
         this.leftChevron.handler = () => {
-            self.updateStartPosition("left");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
+            this.updateStartPosition("left");
+            this.fillVisibleElementsArray(this.orientation);
+            this.display();
         };
         this.rightChevron.handler = () => {
-            self.updateStartPosition("right");
-            self.fillVisibleElementsArray(self.orientation);
-            self.display();
+            this.updateStartPosition("right");
+            this.fillVisibleElementsArray(this.orientation);
+            this.display();
         };
     }
 
@@ -1248,9 +1248,11 @@ class Puzzle {
         }
         this.visibleElementsArray.forEach(it =>{
             it.forEach(elem => {
-                let layer = this.orientation === "leftToRight" ? itNumber*this.columns + it.indexOf(elem)+3 : itNumber*this.rows + it.indexOf(elem)+3;
-                this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
-                elem.display(elem.x, elem.y, elem.width, elem.height);
+                if(elem){
+                    let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
+                    this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                    elem.display(elem.x, elem.y, elem.width, elem.height);
+                }
             });
             itNumber++;
         });
