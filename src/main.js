@@ -5,7 +5,7 @@ const Domain = require('./Domain').Domain,
 
 exports.main = function (svg, runtime, dbListener) {
 
-    let domain, util, Gui, drawing, drawings, formationsManager;
+    let domain, util, Gui, drawing, drawings;
 
     let globalVariables = {svg, runtime, dbListener};
 
@@ -43,7 +43,9 @@ exports.main = function (svg, runtime, dbListener) {
         if ((document.documentElement.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
             drawing.dimension(document.documentElement.clientWidth, document.documentElement.clientHeight);
             drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
-            const formation = formationsManager.formationDisplayed,
+            const
+                formationsManager = globalVariables.formationsManager,
+                formation = formationsManager.formationDisplayed,
                 quizzManager = formation && formation.quizzManager;
             let quizz;
             switch (drawing.currentPageDisplayed) {
@@ -104,8 +106,8 @@ exports.main = function (svg, runtime, dbListener) {
     let listFormations = function () {
         util.Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
-            formationsManager = new domain.FormationsManager(myFormations);
-            formationsManager.display();
+            globalVariables.formationsManager = new domain.FormationsManager(myFormations);
+            globalVariables.formationsManager.display();
         });
     };
 

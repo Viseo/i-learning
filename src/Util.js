@@ -7,7 +7,8 @@ let
     dbListener = globalVariables.dbListener,
     svg = globalVariables.svg,
     gui = globalVariables.gui,
-    playerMode = globalVariables.playerMode;
+    playerMode = globalVariables.playerMode,
+    AddEmptyElement;
 
 setGlobalVariables = () => {
     runtime = globalVariables.runtime;
@@ -17,33 +18,20 @@ setGlobalVariables = () => {
     svg = globalVariables.svg;
     gui = globalVariables.gui;
     playerMode = globalVariables.playerMode;
+    AddEmptyElement = globalVariables.domain.AddEmptyElement;
 };
 
 function SVGGlobalHandler() {
 
-    ImageController = function (imageRuntime) {
-        return imageRuntime || {
-                getImage: function (imgUrl, onloadHandler) {
-                    var image = new Image();
-                    image.src = imgUrl;
-                    image.onload = onloadHandler;
-                    return image;
-                }
-            };
-    };
-
-    AsyncTimerController = function (asyncTimerRuntime) {
-        return asyncTimerRuntime || {
-                interval: function (handler, timer) {
-                    return setInterval(handler, timer);
-                },
-                clearInterval: function (id) {
-                    clearInterval(id);
-                },
-                timeout: function (handler, timer) {
-                    return setTimeout(handler, timer);
-                }
-            };
+    ImageController = function () {
+        return  {
+            getImage: function (imgUrl, onloadHandler) {
+                var image = new Image();
+                image.src = imgUrl;
+                image.onload = onloadHandler;
+                return image;
+            }
+        };
     };
 
 }

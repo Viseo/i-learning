@@ -5,7 +5,6 @@
 const
     assert = require('assert'),
     testutils = require('../lib/testutils'),
-    targetRuntime = require('../lib/targetruntime').targetRuntime,
     mockRuntime = require('../lib/runtimemock').mockRuntime,
     SVG = require('../lib/svghandler').SVG,
     inspect = testutils.inspect,
@@ -42,6 +41,40 @@ let runtime,
     main,
     dbListenerModule,
     dbListener;
+
+describe('Tests de merde', function () {
+
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(true, false);
+    });
+
+    it("Rien", function (done) {
+        this.timeout(100000);
+        const jsonFile = "./log/rien.json";
+        const execute = () => {
+            checkScenario(() => {
+                main(svg, runtime, dbListener)
+            }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+
+    it("Un clic sur rien", function (done) {
+        this.timeout(100000);
+        const jsonFile = "./log/clic_rien.json";
+        const execute = () => {
+            checkScenario(() => {
+                main(svg, runtime, dbListener)
+            }, jsonFile, 'content', runtime, done);
+        };
+        runTest(jsonFile, execute);
+    });
+});
 
 describe('Quizz game', function () {
 

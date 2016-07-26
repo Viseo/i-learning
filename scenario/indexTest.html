@@ -6,7 +6,6 @@
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
-<script src="../node_modules/twin-bcrypt/twin-bcrypt.min.js"></script>
 <script src="../lib/module.js"></script>
 <script src="../lib/targetruntime.js"></script>
 <script src="../lib/runtimemock.js"></script>
@@ -24,7 +23,6 @@
         SVG = exports.SVG,
         main = exports.main;
         dbListener = new DbListener(false, true);
-        param = {speed: 5, step: 100};
     main(SVG(runtime), runtime, dbListener);
 </script>
 </body>

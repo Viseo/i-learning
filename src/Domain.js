@@ -1,6 +1,6 @@
 exports.Domain = function (globalVariables) {
 
-let iRuntime, aRuntime, imageController, asyncTimerController;
+let iRuntime, imageController;
 
 let
     runtime = globalVariables.runtime,
@@ -38,46 +38,8 @@ const ImageRuntime = {
     }
 };
 
-const AsyncTimerRuntime = {
-    timers: {},
-    count: 0,
-
-    interval: function (handler, timer) {
-        const interval = {
-            id: "interval" + this.count,
-            next: handler,
-            timer: timer
-        };
-        this.count++;
-        this.timers[interval.id] = interval;
-        return interval;
-    },
-
-    clearInterval: function (id) {
-        delete this.timers[id];
-    },
-
-    timeout: function (handler, timer) {
-        const timeout = {
-            id: "timeout" + this.count,
-            next: function () {
-                handler();
-                delete this;
-            },
-            timer: timer
-        };
-        this.count++;
-        this.timers[timeout.id] = timeout;
-        return timeout;
-    }
-};
-
-runtime && (iRuntime = ImageRuntime);
-runtime && (aRuntime = AsyncTimerRuntime);
-imageController = ImageController(iRuntime);
+imageController = ImageController(ImageRuntime);
 globalVariables.imageController = imageController;
-asyncTimerController = runtime ? AsyncTimerController(AsyncTimerRuntime) : AsyncTimerController();
-globalVariables.asyncTimerController = asyncTimerController;
 
 setGlobalVariables = () => {
     runtime = globalVariables.runtime;
@@ -1287,20 +1249,20 @@ class Quizz {
     }
 
     run(x, y, w, h) {
-        var intervalToken = asyncTimerController.interval(() => {
+        var intervalToken = runtime.interval(() => {
             if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
-                asyncTimerController.clearInterval(intervalToken);
+                runtime.clearInterval(intervalToken);
                 this.display(x, y, w, h);
             }
         }, 100);
-        runtime && this.tabQuestions.forEach(e => {
-            e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
-            e.tabAnswer.forEach(el => {
-                el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
-            });
-
-        });
-        runtime && this.display(x, y, w, h);
+        // runtime && this.tabQuestions.forEach(e => {
+        //     e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
+        //     e.tabAnswer.forEach(el => {
+        //         el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
+        //     });
+        //
+        // });
+        // runtime && this.display(x, y, w, h);
     }
 
     displayCurrentQuestion() {

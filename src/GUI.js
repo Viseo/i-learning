@@ -1,6 +1,6 @@
 exports.GUI = function (globalVariables) {
 
-let svg, gui, util, domain, runtime, drawings, drawing, asyncTimerController, imageController, playerMode,
+let svg, gui, util, domain, runtime, drawings, drawing, imageController, playerMode,
     header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
     ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quizz, QuizzManager,
     InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server, mainManipulator;
@@ -13,7 +13,6 @@ setGlobalVariables = () => {
     runtime = globalVariables.runtime;
     drawings = globalVariables.drawings;
     drawing = globalVariables.drawing;
-    asyncTimerController = globalVariables.asyncTimerController;
     imageController = globalVariables.imageController;
 
     playerMode = globalVariables.playerMode;
@@ -553,9 +552,9 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                         });
                     })
                     .then(() => {
-                        let intervalToken = asyncTimerController.interval(() => {
+                        let intervalToken = runtime.interval(() => {
                             if (this.itemsTab.every(e => e.imageLoaded)) {
-                                asyncTimerController.clearInterval(intervalToken);
+                                runtime.clearInterval(intervalToken);
                                 displayImages();
                             }
                         }, 100);
@@ -611,9 +610,9 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
         display(x, y, w, h);
         callback();
 
-    // let intervalToken = asyncTimerController.interval(() => {
+    // let intervalToken = runtime.interval(() => {
     //     if (this.itemsTab.every(e => e.imageLoaded)) {
-    //         asyncTimerController.clearInterval(intervalToken);
+    //         runtime.clearInterval(intervalToken);
     //         display(x, y, w, h);
     //         callback();
     //     }
