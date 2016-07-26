@@ -105,9 +105,16 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/insert', function(req, res) {
-        formations.insertFormation(db, req.body)
-            .then((data) => res.send(data))
-            .catch((err) => console.log(err));
+        formations.getFormationsByName(db, req.body.label)
+            .then(data => {
+                if (data.formation) {
+                    res.send({saved: false, reason: "NameAlreadyUsed"});
+                } else {
+                    formations.insertFormation(db, req.body)
+                        .then((data) => res.send({saved: true, id: data.formation}))
+                        .catch((err) => console.log(err));
+                }
+            })
     });
 
     app.get('/formations/getFormationByName/:name', function(req, res) {

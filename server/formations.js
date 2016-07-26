@@ -42,7 +42,7 @@ const insertFormation = (db, object) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.insertOne(object, (err, docs) => {
             if(err) fail(err);
-            resolve({formation:docs.insertedId[0]});
+            resolve({formation:docs.insertedId});
         })
     });
 };

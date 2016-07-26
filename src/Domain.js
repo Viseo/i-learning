@@ -597,19 +597,17 @@ class Formation {
             };
 
             let addNewFormation = () => {
-                Server.getFormationByName(this.label)
+                Server.insertFormation(getObjectToSave(), ignoredData)
                     .then(data => {
-                        const formationWithSameName = JSON.parse(data).formation;
-                        if (!formationWithSameName) {
-                            return getObjectToSave();
+                        let answer = JSON.parse(data);
+                        if(answer.saved) {
+                            this._id = answer.id;
+                            displayMessage(messageSave);
                         } else {
-                            throw messageUsedName;
+                            if(answer.reason === "NameAlreadyUsed") {
+                                throw messageUsedName;
+                            }
                         }
-                    })
-                    .then(formation => Server.insertFormation(formation, ignoredData))
-                    .then(data => {
-                        this._id = JSON.parse(data);
-                        displayMessage(messageSave);
                     })
                     .catch(displayMessage);
             };
@@ -1014,7 +1012,7 @@ class QuizzManager {
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.quizz.tabQuestions.forEach( (question, index )  => {
-                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+            //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
             (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
         });
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
