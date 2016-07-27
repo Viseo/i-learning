@@ -1,8 +1,8 @@
 module.exports = function (app, fs) {
-    var multer = require('multer');
     const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
-        cookies = require('../cookies');
+        cookies = require('../cookies'),
+        multer = require('multer');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -22,36 +22,34 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.post('/insertPicture', multer({dest: __dirname+ '/../../resource/'}).single("file"), function(req, res){
-        const collection = db.get().collection('images');
+    app.post('/insertPicture', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
+
         function insertAsync() {
             return new Promise((resolve, reject) => {
-                collection.insert({imgSrc:"../resource/"+req.file.originalname}, ()=>{ // penser à utiliser InsertOne ?
-                    resolve();
-                });
-            });
+                const collection = db.get().collection('images');
+                collection.insert({imgSrc:"../resource/"+req.file.originalname}, (err) => { // penser à utiliser InsertOne ?
+                    err ? reject() : resolve(err)
+                })
+            })
         }
+
         function renameAsync() {
             return new Promise((resolve, reject) => {
                 const newPath = __dirname + "/../../resource/";
-                fs.rename(newPath + req.file.filename, newPath + req.file.originalname, ()=>{
-                    resolve();
-                });
-            });
+                fs.rename(newPath + req.file.filename, newPath + req.file.originalname, (err) => {
+                    err ? reject() : resolve(err)
+                })
+            })
         }
 
-        Promise.all([renameAsync(), insertAsync()]).then(() => {
-            res.send("ok");
-        });
-
-        /*collection.insert({imgSrc:"../resource/"+req.file.originalname}, ()=>{ // penser à utiliser InsertOne ?
-            res.send("Picture successfully added");
-        });
-        const newPath = __dirname + "/../../resource/";
-        fs.rename(newPath + req.file.filename, newPath + req.file.originalname, ()=>{
-            console.log("réafficher là bibli");
-            res.send()
-        });*/
+        Promise.all([renameAsync(), insertAsync()])
+            .then(() => {
+                res.send('ok')
+            })
+            .catch((err) => {
+                // TODO traiter l'erreur et envoyer un message clair
+                res.send('err')
+            });
     });
 
     app.get('/getUserByMailAddress/:mailAddress', function(req, res) {

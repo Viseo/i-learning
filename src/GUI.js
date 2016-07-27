@@ -571,8 +571,12 @@ function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
 
                 let src = this.fileExplorer.component.files[0].name;
                 let pictureObject = this.fileExplorer.component.files[0];
-                Server.insertPicture(pictureObject).then(()=>{
-                    this.display();
+                Server.insertPicture(pictureObject).then((status)=>{
+                    if (status === 'ok') {
+                        this.display();
+                    } else {
+                        // TODO message d'erreur
+                    }
                 });
             };
 
