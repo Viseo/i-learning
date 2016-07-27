@@ -11,6 +11,8 @@ let ObjectID = require('mongodb').ObjectID;
 const compareFormations = (form1, form2) => {
     if(form1._id) delete form1._id;
     if(form2._id) delete form2._id;
+    if(form1.status) delete form1.status;
+    if(form2.status) delete form2.status
     return JSON.stringify(form1) === JSON.stringify(form2);
 };
 
@@ -44,11 +46,19 @@ const getVersionById = (db, id) => {
             .find()
             .toArray((err, docs) => {
                 if(err) fail(err);
-                let version = null;
+                let versionResult = null;
+                let indexVersion = null;
+                let versions = null;
                 docs.forEach(formation => {
-                    version = formation.versions.find(version => version._id.toString() === id) || version;
+                     formation.versions.find(version => {
+                         if (version._id.toString() === id){
+                             versionResult = version;
+                             indexVersion = formation.versions.indexOf(versionResult);
+                             versions = formation.versions ;
+                        }
+                    });
                 });
-                resolve({formation: version});
+                resolve({versions: versions, version: versionResult, indexVersion: indexVersion});
             })
     });
 };
@@ -62,7 +72,7 @@ const insertFormation = (db, object) => {
         };
         collectionFormations.insertOne(formation, (err, docs) => {
             if(err) fail(err);
-            resolve({formation:docs.insertedId});
+            resolve({formation:docs.insertedId, version:object._id});
         })
     });
 };
@@ -103,15 +113,24 @@ const replaceFormation = (db, id, object) => {
     })
 };
 
-const replaceQuiz = (db, indexes, object) => {
+const replaceQuiz = (db, formationId, indexes, object) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
-        let placeholder = {};
-        placeholder["levelsTab." + indexes.level + ".gamesTab." + indexes.game] = object;
-        collectionFormations.updateOne({"_id": new ObjectID(indexes.id)}, {$set: placeholder}, (err, docs) => {
-            if (err) reject(err);
-            resolve(docs.upsertedId);
-        })
+        this.getVersionById(db, indexes.id)
+            .then((data) => {
+                if (data.status === "Published" && data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] !== object){
+                    data.versions.push(data.versions[data.indexVersion].levelsTab[indexes.level]);
+                    data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                }
+                else {
+                    data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                }
+                collectionFormations.updateOne({"_id": new ObjectID(formationId.toString())}, {$set: {versions:data.versions}}, (err, docs) => {
+                    if (err) reject(err);
+                    resolve(docs.upsertedId);
+        })})
+            .catch((err) => console.log(err));
+
     })
 };
 

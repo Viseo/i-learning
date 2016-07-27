@@ -603,6 +603,7 @@ class Formation {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
                             this._id = answer.id;
+                            this.formationId = answer.formationId;
                             displayMessage(messageSave);
                         } else {
                             if(answer.reason === "NameAlreadyUsed") {
@@ -1077,7 +1078,7 @@ class QuizzManager {
 
             this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
-            Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
+            Server.replaceQuizz(quiz, this.parentFormation.formationId, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                 .then(() => {
                     svg.addEvent(this.saveButton.cadre, "click", ()=>{});
                     svg.addEvent(this.saveButton.content, "click", ()=>{});

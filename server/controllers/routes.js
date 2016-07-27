@@ -111,7 +111,7 @@ module.exports = function (app, fs) {
                     res.send({saved: false, reason: "NameAlreadyUsed"});
                 } else {
                     formations.insertFormation(db, req.body)
-                        .then((data) => res.send({saved: true, id: data.formation}))
+                        .then((data) => res.send({saved: true, formationId: data.formation, id: data.version}))
                         .catch((err) => console.log(err));
                 }
             })
@@ -153,7 +153,7 @@ module.exports = function (app, fs) {
 
     });
 
-    app.post('/formations/replaceFormation/:id', function (req, res) {
+    app.post('/formations/replaceFormation/:id/:status', function (req, res) {
         formations.getFormationsByName(db, req.body.label)
             .then(data => {
                 if(data.formation) {
@@ -165,6 +165,7 @@ module.exports = function (app, fs) {
                                         res.send({saved: false, reason: "NoModif"})
                                     } else {
                                         data.formation._id = req.params.id;
+                                        req.body.status = req.params.status;
                                         formations.replaceFormation(db, formation._id, req.body)
                                             .then(data => res.send({saved: true, reason: ""}))
                                             .catch(err => console.log(err));
@@ -182,8 +183,8 @@ module.exports = function (app, fs) {
             })
     });
 
-    app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
-        formations.replaceQuiz(db, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body)
+    app.post('/formations/replaceQuizz/:formationId/:id/:levelIndex/:gameIndex', function (req, res) {
+        formations.replaceQuiz(db, req.params.formationId, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body)
             .then(data => res.send({ack:'ok'}))
             .catch(err => console.log(err));
     });

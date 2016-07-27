@@ -1174,7 +1174,7 @@ function formationsManagerDisplay() {
 
     let onClickFormation = formation => {
         Server.getVersionById(formation._id).then(data => {
-            var myFormation = JSON.parse(data).formation;
+            var myFormation = JSON.parse(data).version;
             formation.loadFormation(myFormation);
             this.formationDisplayed = formation;
             this.formationDisplayed.displayFormation();

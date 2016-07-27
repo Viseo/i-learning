@@ -1301,8 +1301,8 @@ class Server {
     }
 
     static replaceFormation(id, newFormation, status, ignoredData) {
-        newFormation.status = status;
-        return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
+        // newFormation.status = status;
+        return dbListener.httpPostAsync("/formations/replaceFormation/" + id + "/" + status, newFormation, ignoredData)
     }
 
     static insertFormation(newFormation, status, ignoredData) {
@@ -1310,8 +1310,8 @@ class Server {
         return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
     }
 
-    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
-        return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+    static replaceQuizz(newQuizz, formationId, id, levelIndex, gameIndex, ignoredData) {
+        return dbListener.httpPostAsync('/formations/replaceQuizz/' + formationId + "/" + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
     static getImages() {
         return dbListener.httpGetAsync('/getAllImages')
