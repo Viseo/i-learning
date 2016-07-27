@@ -161,7 +161,8 @@ module.exports = function (app, fs) {
                         .then(formation => {
                             if(formation) {
                                 if(formation._id.toString() === data.formation._id.toString()) {
-                                    if(formations.compareFormations(data.formation.versions[data.formation.versions.length-1], req.body)) {
+                                    let compare = formations.compareFormations(data.formation.versions[data.formation.versions.length-1], req.body);
+                                    if(req.params.status !== "Published" && compare) {
                                         res.send({saved: false, reason: "NoModif"})
                                     } else {
                                         data.formation._id = req.params.id;

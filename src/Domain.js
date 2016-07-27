@@ -594,7 +594,7 @@ class Formation {
                         levelsTab[i].gamesTab.push(game);
                     });
                 });
-                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
+                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab, _id: this._id, formationId: this.formationId};
             };
 
             let addNewFormation = () => {

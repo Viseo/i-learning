@@ -9,11 +9,23 @@
 let ObjectID = require('mongodb').ObjectID;
 
 const compareFormations = (form1, form2) => {
-    if(form1._id) delete form1._id;
-    if(form2._id) delete form2._id;
-    if(form1.status) delete form1.status;
-    if(form2.status) delete form2.status
-    return JSON.stringify(form1) === JSON.stringify(form2);
+    class Form{
+        constructor(form) {
+            this.gamesCounter = form.gamesCounter;
+            this.label = form.label;
+            this.levelsTab = form.levelsTab;
+            this.link = form.link
+        }
+    }
+    // if(form1._id) delete form1._id;
+    // if(form2._id) delete form2._id;
+    // if(form1.status) delete form1.status;
+    // if(form2.status) delete form2.status;
+
+    let let1 = new Form(form1);
+    let let2 = new Form(form2);
+
+    return  let1 === let2 ;
 };
 
 const getFormationsByName = (db, name) => {
@@ -105,11 +117,30 @@ const getAllFormations = (db) => {
 const replaceFormation = (db, id, object) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
-        object._id = new ObjectID();
-        collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:object}}, (err) => {
-            if(err) fail(err);
-            resolve({ack:'ok'});
-        })
+        // if (object.status === "Published"){
+        //     object._id = new ObjectID();
+        //     collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:object}}, (err) => {
+        //         if(err) fail(err);
+        //         resolve({ack:'ok'});
+        //     })
+        // }
+        // else {
+        this.getVersionById(db, object._id)
+            .then((data) => {
+                if (data.versions[data.versions.length-1].status === "Published"){
+                    object._id = new ObjectID();
+                    data.versions.push(object);
+                }
+                else {
+                    data.versions[data.versions.length-1] = object;
+                }
+                collectionFormations.replaceOne({"_id": new ObjectID(id)}, {versions: data.versions}, (err) => {
+                    if(err) fail(err);
+                    resolve({ack:'ok'});
+                })
+            })
+            .catch((err) => console.log(err));
+
     })
 };
 
@@ -118,12 +149,19 @@ const replaceQuiz = (db, formationId, indexes, object) => {
         let collectionFormations = db.get().collection('formations');
         this.getVersionById(db, indexes.id)
             .then((data) => {
-                if (data.status === "Published" && data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] !== object){
-                    data.versions.push(data.versions[data.indexVersion].levelsTab[indexes.level]);
-                    data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                if (data.status === "Published" && data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game] !== object){
+                    data.versions.push(data.versions[data.versions.length-1]);
+                    data.versions[data.versions.length].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                    data.versions[data.versions.length]._id = new ObjectID();
                 }
                 else {
-                    data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                    if (indexes.level && data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab){
+                        data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                    }
+                    else {
+                        data.versions[data.indexVersion].levelsTab[indexes.level].gameTab = [];
+                        data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab.push(object);
+                    }
                 }
                 collectionFormations.updateOne({"_id": new ObjectID(formationId.toString())}, {$set: {versions:data.versions}}, (err, docs) => {
                     if (err) reject(err);
