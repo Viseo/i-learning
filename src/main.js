@@ -32,8 +32,6 @@ exports.main = function (svg, runtime, dbListener) {
     Gui = GUI(globalVariables);
     globalVariables.GUI = Gui;
 
-    globalVariables.mainManipulator = drawing.manipulator;
-
     util.setGlobalVariables();
     domain.setGlobalVariables();
     Gui.setGlobalVariables();

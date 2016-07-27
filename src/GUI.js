@@ -17,7 +17,7 @@ setGlobalVariables = () => {
 
     playerMode = globalVariables.playerMode;
     header = globalVariables.header;
-    mainManipulator = globalVariables.mainManipulator;
+    mainManipulator = drawing.manipulator;
 
     AddEmptyElement = domain.AddEmptyElement;
     Answer = domain.Answer;
