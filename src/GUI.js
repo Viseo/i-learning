@@ -245,10 +245,10 @@ function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     if (typeof h !== "undefined")(this.h = h);
     this.borderSize = 3;
 
-    const bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator)
+    this.bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator)
          .color(myColors.white, this.borderSize, myColors.black)
          .position(w / 2, h / 2 );
-    this.libraryManipulator.ordonator.set(0, bordure);
+    this.libraryManipulator.ordonator.set(0, this.bordure);
     const titleSvg = autoAdjustText(this.title, 0.9*w, (0.08) * h, null, this.font, this.libraryManipulator);
     titleSvg.text.position(w / 2, (1 / 20) * h + titleSvg.finalHeight/4);
     this.libraryManipulator.translator.move(this.x, this.y);
@@ -441,7 +441,11 @@ function gamesLibraryDisplay(x, y, w, h) {
     assignEvents();
 }
 
-function imagesLibraryDisplay(x, y, w, h, callback) {
+function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
+    if (typeof x !== "undefined")(this.x = x);
+    if (typeof y !== "undefined")(this.y = y);
+    if (typeof w !== "undefined")(this.w = w);
+    if (typeof h !== "undefined")(this.h = h);
 
     let display = (x, y, w, h) => {
         libraryDisplay.call(this, x, y, w, h, 3/4, 0.45 * h);
@@ -516,7 +520,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                 assignEvents();
             };
 
-            if (this.itemsTab.length === 0) {
+            if (true) { //this.itemsTab.length === 0) {
                 Server.getImages().then(data => {
                         let myLibraryImage = JSON.parse(data).images;
                         myLibraryImage.forEach((url, i) => {
@@ -543,24 +547,35 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
 
         let displaySaveButton = () => {
 
-            let doraHandler = () => {
-                if (!this.dora) {
+            let fileExplorerHandler = () => {
+                if (!this.fileExplorer) {
                     let globalPointCenter = this.bordure.globalPoint(0, 0);
-                    var doraStyle = {
+                    var fileExplorerStyle = {
                         leftpx: globalPointCenter.x,
                         toppx: globalPointCenter.y,
                         width: this.w / 5,
                         height: this.w / 5
                     };
-                    this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
-                    this.dora.type("file");
-                    svg.runtime.attr(this.dora.component, "accept", "image/*");
-                    svg.runtime.attr(this.dora.component, "id", "dora");
-                    svg.runtime.attr(this.dora.component, "hidden", "true");
-                    drawings.screen.add(this.dora);
+                    this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                    this.fileExplorer.type("file");
+                    svg.addEvent(this.fileExplorer, "change", onChangeFileExplorerHandler);
+                    svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
+                    svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
+                    svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
+                    drawings.screen.add(this.fileExplorer);
                 }
-                svg.runtime.anchor("dora").click();
+                svg.runtime.anchor("fileExplorer").click();
             };
+
+            let onChangeFileExplorerHandler = () => {
+
+                let src = this.fileExplorer.component.files[0].name;
+                let pictureObject = this.fileExplorer.component.files[0];
+                Server.insertPicture(pictureObject).then(()=>{
+                    this.display();
+                });
+            };
+
             let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                 addButtonLabel = "Ajouter une image",
                 addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
@@ -572,19 +587,18 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             this.addButtonManipulator.ordonator.set(2, plus);
             this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
             this.addButtonManipulator.translator.move(this.w / 2, 9 * this.h / 10);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
 
         };
 
         displayItems();
+
         displaySaveButton();
-
-
     };
 
-        display(x, y, w, h);
+        display(this.x, this.y, this.w, this.h);
         callback();
 
     // let intervalToken = asyncTimerController.interval(() => {

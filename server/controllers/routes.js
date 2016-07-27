@@ -1,5 +1,5 @@
 module.exports = function (app, fs) {
-
+    var multer = require('multer');
     const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies');
@@ -20,6 +20,38 @@ module.exports = function (app, fs) {
         collection.insert(obj, () => {
             res.send(JSON.stringify(obj));
         });
+    });
+
+    app.post('/insertPicture', multer({dest: __dirname+ '/../../resource/'}).single("file"), function(req, res){
+        const collection = db.get().collection('images');
+        function insertAsync() {
+            return new Promise((resolve, reject) => {
+                collection.insert({imgSrc:"../resource/"+req.file.originalname}, ()=>{ // penser à utiliser InsertOne ?
+                    resolve();
+                });
+            });
+        }
+        function renameAsync() {
+            return new Promise((resolve, reject) => {
+                const newPath = __dirname + "/../../resource/";
+                fs.rename(newPath + req.file.filename, newPath + req.file.originalname, ()=>{
+                    resolve();
+                });
+            });
+        }
+
+        Promise.all([renameAsync(), insertAsync()]).then(() => {
+            res.send("ok");
+        });
+
+        /*collection.insert({imgSrc:"../resource/"+req.file.originalname}, ()=>{ // penser à utiliser InsertOne ?
+            res.send("Picture successfully added");
+        });
+        const newPath = __dirname + "/../../resource/";
+        fs.rename(newPath + req.file.filename, newPath + req.file.originalname, ()=>{
+            console.log("réafficher là bibli");
+            res.send()
+        });*/
     });
 
     app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
@@ -124,7 +156,7 @@ module.exports = function (app, fs) {
     });
 
 
-    app.post('/insert', function(req, res) {
+    app.post('/insertFormation', function(req, res) {
         var collection = db.get().collection('formations');
         var obj = req.body;
         collection.insert(obj, function (err, docs) {
@@ -233,7 +265,6 @@ module.exports = function (app, fs) {
                 res.send({ack:'ok'});
             });
         });
-
 
 };
 

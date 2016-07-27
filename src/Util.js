@@ -1306,16 +1306,21 @@ class Server {
     }
 
     static replaceFormation(id, newFormation, ignoredData) {
-        return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData)
+        return dbListener.httpPostAsync("/replaceFormation/" + id, newFormation, ignoredData);
     }
 
     static insertFormation(newFormation, ignoredData) {
-        return dbListener.httpPostAsync("/insert", newFormation, ignoredData)
+        return dbListener.httpPostAsync("/insertFormation", newFormation, ignoredData);
+    }
+
+    static insertPicture(newPicture){
+        return dbListener.httpUpload("/insertPicture", newPicture);
     }
 
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
         return dbListener.httpPostAsync('/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
+
     static getImages() {
         return dbListener.httpGetAsync('/getAllImages')
     }
