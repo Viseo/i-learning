@@ -447,6 +447,8 @@ class Formation {
         this.saveFormationButtonManipulator.addOrdonator(2);
         this.publicationFormationButtonManipulator = new Manipulator(this);
         this.publicationFormationButtonManipulator.addOrdonator(2);
+        this.deactivateFormationButtonManipulator = new Manipulator(this);
+        this.deactivateFormationButtonManipulator.addOrdonator(2);
         this.library = new GamesLibrary(myLibraryGames);
         this.library.formation = this;
         this.quizzManager = new QuizzManager();
@@ -486,6 +488,7 @@ class Formation {
         this.redim();
         this.manipulator.last.add(this.saveFormationButtonManipulator.first);
         this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
+        this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
     }
 
     addNewGame (event, lib) {
@@ -520,6 +523,19 @@ class Formation {
                 break;
         }
         this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+    }
+
+    deactivateFormation() {
+        this.status = "NotPublished";
+        Server.deactivateFormation(this.formationId, ignoredData)
+            .then(() => {
+                this.manipulator.flush();
+                Server.getAllFormations().then(data => {
+                    let myFormations = JSON.parse(data).myCollection;
+                    let formationsManager = new FormationsManager(myFormations);
+                    formationsManager.display();
+                });
+            })
     }
 
     saveFormation (displayQuizzManager, status = "Edited") {
@@ -1020,7 +1036,7 @@ class QuizzManager {
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
         this.quizz.tabQuestions.forEach( (question, index )  => {
-                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+            //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
             (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
         });
         this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));

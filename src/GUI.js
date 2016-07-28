@@ -1022,8 +1022,15 @@ function formationDisplayFormation() {
         };
         showTitle();
         this.library.display(0, drawing.height*HEADER_SIZE, this.libraryWidth-MARGIN, this.graphCreaHeight);
-        this.displayFormationSaveButton(drawing.width/2 - this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
-        this.displayFormationPublicationButton(drawing.width/2 + this.buttonWidth , drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
+
+        if(this.status !== "NotPublished") {
+            this.displayFormationSaveButton(drawing.width/2 - 2*this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
+            this.displayFormationPublicationButton(drawing.width/2 + 2*this.buttonWidth, drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
+            this.displayFormationDeactivationButton(drawing.width/2, drawing.height*0.87, this.buttonWidth, this.saveButtonHeight);
+        } else {
+            this.displayFormationSaveButton(drawing.width/2 - this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
+            this.displayFormationPublicationButton(drawing.width/2 + this.buttonWidth , drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
+        }
         displayFrame(this.graphCreaWidth, this.graphCreaHeight);
         this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
@@ -1047,8 +1054,16 @@ function formationDisplaySaveButton(x, y, w, h) {
     this.saveFormationButtonManipulator.translator.move(x, y);
 }
 
+function formationDisplayDeactivateButton(x, y, w, h) {
+    this.deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
+    svg.addEvent(this.deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
+    svg.addEvent(this.deactivateFormationButton.content, "click", () => this.deactivateFormation());
+    this.deactivateFormationButtonManipulator.translator.move(x, y);
+}
+
 function formationDisplayPublicationButton(x, y, w, h) {
-    this.publicationFormationButton = displayText("Publier", w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
+    let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
+    this.publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
     this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
     this.publicationFormationQuizzManager = () => {
         let message = [];
@@ -1078,6 +1093,12 @@ function formationDisplayPublicationButton(x, y, w, h) {
             this.displayPublicationMessage(message[0]);
         } else {
             this.saveFormation(null, "Published");
+            this.manipulator.flush();
+            Server.getAllFormations().then(data => {
+                let myFormations = JSON.parse(data).myCollection;
+                let formationsManager = new FormationsManager(myFormations);
+                formationsManager.display();
+            });
         }
     };
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
@@ -2896,6 +2917,7 @@ var AdminGUI = function (){
     Formation.prototype.removeErrorMessage = formationRemoveErrorMessage;
     Formation.prototype.displayFormationSaveButton = formationDisplaySaveButton;
     Formation.prototype.displayFormationPublicationButton = formationDisplayPublicationButton;
+    Formation.prototype.displayFormationDeactivationButton = formationDisplayDeactivateButton;
     FormationsManager.prototype.display = formationsManagerDisplay;
     Question.prototype.display = questionDisplay;
     Question.prototype.displayAnswers = questionDisplayAnswers;

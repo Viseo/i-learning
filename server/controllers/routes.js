@@ -117,6 +117,17 @@ module.exports = function (app, fs) {
             })
     });
 
+    app.post('/formations/deactivateFormation', function (req, res) {
+        formations.getFormationById(db, req.body.id)
+            .then(data => {
+                formations.deactivateFormation(db, data.formation)
+                    .then(data => {
+                        res.send(data);
+                    })
+                    .catch(err => console.log(err));
+            });
+    });
+
     app.get('/formations/getFormationByName/:name', function(req, res) {
         formations.getFormationsByName(db, req.params.name)
             .then((data) => res.send(data))

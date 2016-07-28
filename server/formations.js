@@ -70,6 +70,16 @@ const insertFormation = (db, object) => {
     });
 };
 
+const deactivateFormation = (db, formation) => {
+    return new Promise((resolve, reject) => {
+        let collectionFormations = db.get().collection('formations');
+        formation.versions[formation.versions.length-1].status = "NotPublished";
+        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$set: formation}, (err, docs) => {
+            resolve(docs.upsertedId);
+        });
+    });
+};
+
 const getLastVersions = (db) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
@@ -178,6 +188,7 @@ exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
 exports.getVersionById = getVersionById;
 exports.insertFormation = insertFormation;
+exports.deactivateFormation = deactivateFormation;
 exports.getLastVersions = getLastVersions;
 exports.getAllFormations = getAllFormations;
 exports.newVersion = newVersion;

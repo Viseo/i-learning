@@ -1310,6 +1310,10 @@ class Server {
         return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
     }
 
+    static deactivateFormation(id, ignoredData) {
+        return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
+    }
+
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
         return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
