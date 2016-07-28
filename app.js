@@ -13,7 +13,6 @@ app.use(bodyParser.json({limit: '500mb'}));
 
 var routes = require("./server/controllers/routes")(app, fs);
 var db = require('./server/db');
-
 // Connect to Mongo on start
 db.connect('mongodb://localhost:27017/myDatabase', function(err) {
     if (err) {

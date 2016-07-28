@@ -61,6 +61,32 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(redCross,'click',redCrossClickHandler);
             this.redCrossManipulator.ordonator.set(1,redCross);
         };
+
+        let removeErrorMessage = () => {
+            this.validLabelInput = true;
+            this.errorMessage && this.editor.parent.questionCreator.manipulator.ordonator.unset(1);
+            this.border.color(myColors.white, 1, myColors.black);
+        };
+
+        let displayErrorMessage = (contentarea) => {
+            removeErrorMessage();
+            this.border.color(myColors.white, 2, myColors.red);
+            let libraryRatio = 0.2,
+                previewButtonHeightRatio = 0.1,
+                marginErrorMessagePreviewButton = 0.03,
+            //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
+                quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
+                position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
+                anchor = 'middle';
+            this.errorMessage = new svg.Text(REGEX_ERROR);
+            quizzManager.questionCreator.manipulator.ordonator.set(1,this.errorMessage);
+            this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
+                .font('Arial', 15).color(myColors.red).anchor(anchor);
+            contentarea && contentarea.focus();
+            this.validLabelInput = false;
+        };
+
+
         let showTitle = ()=> {
             let text = (this.label) ? this.label : this.labelDefault,
                 color = (this.label) ? myColors.black : myColors.grey;
@@ -80,6 +106,7 @@ function answerDisplay (x, y, w, h) {
             }
 
             (this.validLabelInput && text !== "") ? (this.border.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(this.border.color(myColors.white,2,myColors.red).fillOpacity(0.001));
+            (this.validLabelInput && text !== "") || displayErrorMessage();
             this.obj.content.color(color);
             this.border._acceptDrop = true;
             this.obj.content._acceptDrop = true;
@@ -115,29 +142,6 @@ function answerDisplay (x, y, w, h) {
             this.manipulator.ordonator.unset(1);
             contentarea.focus();
 
-            let removeErrorMessage = () => {
-                this.validLabelInput = true;
-                this.errorMessage && this.editor.parent.questionCreator.manipulator.ordonator.unset(1);
-                this.border.color(myColors.white, 1, myColors.black);
-            };
-
-            let displayErrorMessage = () => {
-                removeErrorMessage();
-                this.border.color(myColors.white, 2, myColors.red);
-                let libraryRatio = 0.2,
-                    previewButtonHeightRatio = 0.1,
-                    marginErrorMessagePreviewButton = 0.03,
-                    //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
-                    quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
-                    position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
-                    anchor = 'middle';
-                this.errorMessage = new svg.Text(REGEX_ERROR);
-                quizzManager.questionCreator.manipulator.ordonator.set(1,this.errorMessage);
-                this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
-                    .font('Arial', 15).color(myColors.red).anchor(anchor);
-                contentarea.focus();
-                this.validLabelInput = false;
-            };
 
             let onblur = ()=> {
                 contentarea.enter();
@@ -155,7 +159,7 @@ function answerDisplay (x, y, w, h) {
                     border: this.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
-                    display: displayErrorMessage
+                    display: () => {displayErrorMessage(contentarea)}
                 });
             });
             svg.addEvent(contentarea,'blur',onblur);
@@ -245,10 +249,10 @@ function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     if (typeof h !== "undefined")(this.h = h);
     this.borderSize = 3;
 
-    const bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator)
+    this.bordure = new svg.Rect(w - this.borderSize, h, this.libraryManipulator)
          .color(myColors.white, this.borderSize, myColors.black)
          .position(w / 2, h / 2 );
-    this.libraryManipulator.ordonator.set(0, bordure);
+    this.libraryManipulator.ordonator.set(0, this.bordure);
     const titleSvg = autoAdjustText(this.title, 0.9*w, (0.08) * h, null, this.font, this.libraryManipulator);
     titleSvg.text.position(w / 2, (1 / 20) * h + titleSvg.finalHeight/4);
     this.libraryManipulator.translator.move(this.x, this.y);
@@ -441,7 +445,11 @@ function gamesLibraryDisplay(x, y, w, h) {
     assignEvents();
 }
 
-function imagesLibraryDisplay(x, y, w, h, callback) {
+function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
+    if (typeof x !== "undefined")(this.x = x);
+    if (typeof y !== "undefined")(this.y = y);
+    if (typeof w !== "undefined")(this.w = w);
+    if (typeof h !== "undefined")(this.h = h);
 
     let display = (x, y, w, h) => {
         libraryDisplay.call(this, x, y, w, h, 3/4, 0.45 * h);
@@ -464,7 +472,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                     if (this.itemsTab && this.itemsTab.length !== 0) {
 
                         let elementCopy = libraryManipulator.ordonator.children[0],
-                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
+                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height, elementCopy.name).image;
                         img.srcDimension = elementCopy.srcDimension;
                         manip.ordonator.set(0, img);
                         manageDnD(img, manip);
@@ -505,6 +513,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
 
                     this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                     let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                    image.name = item.name;
                     image.srcDimension = {width: item.width, height: item.height};
                     this.libraryManipulators[i].ordonator.set(0, image);
 
@@ -516,7 +525,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                 assignEvents();
             };
 
-            if (this.itemsTab.length === 0) {
+            if (true) { //this.itemsTab.length === 0) {
                 Server.getImages().then(data => {
                         let myLibraryImage = JSON.parse(data).images;
                         myLibraryImage.forEach((url, i) => {
@@ -525,6 +534,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                             this.itemsTab[i] = imageController.getImage(url.imgSrc, function (){
                                 this.imageLoaded = true; //this != library
                             });
+                            this.itemsTab[i].name = url.name;
                             this.itemsTab[i].imgSrc = url.imgSrc;
                         });
                     })
@@ -543,24 +553,39 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
 
         let displaySaveButton = () => {
 
-            let doraHandler = () => {
-                if (!this.dora) {
+            let fileExplorerHandler = () => {
+                if (!this.fileExplorer) {
                     let globalPointCenter = this.bordure.globalPoint(0, 0);
-                    var doraStyle = {
+                    var fileExplorerStyle = {
                         leftpx: globalPointCenter.x,
                         toppx: globalPointCenter.y,
                         width: this.w / 5,
                         height: this.w / 5
                     };
-                    this.dora = new svg.TextField(doraStyle.leftpx, doraStyle.toppx, doraStyle.width, doraStyle.height);
-                    this.dora.type("file");
-                    svg.runtime.attr(this.dora.component, "accept", "image/*");
-                    svg.runtime.attr(this.dora.component, "id", "dora");
-                    svg.runtime.attr(this.dora.component, "hidden", "true");
-                    drawings.screen.add(this.dora);
+                    this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                    this.fileExplorer.type("file");
+                    svg.addEvent(this.fileExplorer, "change", onChangeFileExplorerHandler);
+                    svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
+                    svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
+                    svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
+                    drawings.screen.add(this.fileExplorer);
                 }
-                svg.runtime.anchor("dora").click();
+                svg.runtime.anchor("fileExplorer").click();
             };
+
+            let onChangeFileExplorerHandler = () => {
+
+                let src = this.fileExplorer.component.files[0].name;
+                let pictureObject = this.fileExplorer.component.files[0];
+                Server.insertPicture(pictureObject).then((status)=>{
+                    if (status === 'ok') {
+                        this.display();
+                    } else {
+                        // TODO message d'erreur
+                    }
+                });
+            };
+
             let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                 addButtonLabel = "Ajouter une image",
                 addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
@@ -572,19 +597,18 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
             this.addButtonManipulator.ordonator.set(2, plus);
             this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
             this.addButtonManipulator.translator.move(this.w / 2, 9 * this.h / 10);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', doraHandler);
-            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', doraHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
+            svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
 
         };
 
         displayItems();
+
         displaySaveButton();
-
-
     };
 
-        display(x, y, w, h);
+        display(this.x, this.y, this.w, this.h);
         callback();
 
     // let intervalToken = asyncTimerController.interval(() => {
@@ -1786,6 +1810,27 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     this.questionBlock.rect.fillOpacity(0.001);
     this.manipulator.last.children.indexOf(this.questionBlock.rect)===-1 && this.manipulator.last.add(this.questionBlock.rect);
     this.manipulator.last.children.indexOf(this.questionManipulator.first)===-1 && this.manipulator.last.add(this.questionManipulator.first);
+
+    var removeErrorMessage = () => {
+        this.linkedQuestion.validLabelInput = true;
+        this.errorMessage && this.manipulator.ordonator.unset(0);
+        this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+    };
+
+    var displayErrorMessage = (textarea)=> {
+        removeErrorMessage();
+        this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
+        var anchor = 'middle';
+        var quizzInfoHeightRatio = 0.05;
+        var questionsPuzzleHeightRatio = 0.25;
+        this.errorMessage = new svg.Text(REGEX_ERROR);
+        this.manipulator.ordonator.set(0, this.errorMessage);
+        this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
+            .font("Arial", 15).color(myColors.red).anchor(anchor);
+        textarea && textarea.focus();
+        this.linkedQuestion.validLabelInput = false;
+    };
+
     var showTitle = () => {
         var color = (this.linkedQuestion.label) ? myColors.black : myColors.grey;
         var text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
@@ -1806,6 +1851,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         this.questionBlock.title.content._acceptDrop = true;
         this.linkedQuestion.validLabelInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
             this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
+        this.linkedQuestion.validLabelInput || displayErrorMessage();
         this.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(this.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(this.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
@@ -1843,34 +1889,15 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
         };
 
-        var removeErrorMessage = () => {
-            this.linkedQuestion.validLabelInput = true;
-            this.errorMessage && this.manipulator.ordonator.unset(0);
-            this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
-        };
-
-        var displayErrorMessage = ()=> {
-            removeErrorMessage();
-            this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
-            var anchor = 'middle';
-            var quizzInfoHeightRatio = 0.05;
-            var questionsPuzzleHeightRatio = 0.25;
-            this.errorMessage = new svg.Text(REGEX_ERROR);
-            this.manipulator.ordonator.set(0, this.errorMessage);
-            this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
-                .font("Arial", 15).color(myColors.red).anchor(anchor);
-            textarea.focus();
-            this.linkedQuestion.validLabelInput = false;
-        };
 
         var oninput = ()=> {
             textarea.enter();
-            this.parent.checkInputTextArea({
+            this.parent.questionCreator.checkInputTextArea({
                 textarea: textarea,
                 border: this.questionBlock.title.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
-                display: displayErrorMessage
+                display: () => {displayErrorMessage(textarea)}
             });
         };
         svg.runtime.addEvent(textarea.component, "blur", onblur);
@@ -1899,7 +1926,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
     this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h , false);
     if (this.explanation){
-        this.explanation.display(this, this.previousX, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
+        this.explanation.display(this, 0, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
     }
 }
 
@@ -1907,13 +1934,13 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     let rect = new svg.Rect(w+2, h); //+2 border
     rect._acceptDrop = this.editable;
     rect.color(myColors.white, 1, myColors.black);
-    this.manipulator.ordonator.set(0, rect);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
-    this.manipulator.translator.move(x, y);
+    this.manipulator.ordonator.set(0, rect);
+    this.manipulator.translator.move(previousX, y);
     let blackCrossSize = 30, blackCross;
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
-    !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
+    !this.answer.label && this.answer.image && (answerText+= this.answer.image.name);
     this.answerTextSVG = autoAdjustText(answerText, w, blackCrossSize, 20, null, this.manipulator, 1).text;
     this.answerTextSVG.position(0, -h / 2 + blackCrossSize);
     blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
@@ -1958,7 +1985,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         let draganddropTextSVG = autoAdjustText(this.draganddropText, w/6, h / 3, 20, null, this.manipulator, 3).text;
         draganddropTextSVG.position(-w/2 + w/12 + MARGIN, 0).color(myColors.grey);
         draganddropTextSVG._acceptDrop = this.editable;
-       this.label ? this.answer.filled = true : this.answer.filled = false;
+        this.label ? this.answer.filled = true : this.answer.filled = false;
     }
     else {
         panelWidth = w - 2*MARGIN;
@@ -1967,18 +1994,19 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-        this.panel.border.color([], 1, [0, 0, 0]);
+        this.panel.component.noFlush = true;
     }
     else {
         this.panel.resize(panelWidth, panelHeight);
     }
-    this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
-    this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
-    this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
+    this.panel.border.color(myColors.white, 1, [0, 0, 0]);
+    this.panelManipulator.ordonator.set(0, this.panel.component);
+    this.panelManipulator.ordonator.set(1, this.textManipulator.first);
+    this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
-    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
+
     let clickEdition = event => {
         let contentArea = {};
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
@@ -2146,11 +2174,26 @@ function quizzDisplay(x, y, w, h) {
 
 function quizzDisplayResult (color){
     this.questionsWithBadAnswers.forEach(x=>{
-        x.question.manipulator.ordonator.unset(3)});
+       x.question.manipulator.ordonator.unset(3)});
     this.displayScore(color);
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
     this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
+    this.buttonAnswersExpHeight = 50;
+    this.answersExpButtonManipulator = new Manipulator(this);
+    this.answersExpButtonManipulator.addOrdonator(2);
+    this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
+
+    this.textAnswersExp = "Voir les réponses et explications";
+    this.returnText = new svg.Text(this.textAnswersExp).font("Arial", 20);
+    this.answersExpButtonManipulator.ordonator.set(1,this.returnText);
+    this.width = svg.runtime.boundingRect(this.returnText.component).width;
+    this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width/4 , this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
+    this.answerExpFunction = () => {
+        };
+    svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
+    svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
+    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
 }
 
 function gameDisplayMiniature(size){
@@ -2398,6 +2441,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         var onblur = ()=> {
             textarea.enter();
             this.quizzName = textarea.messageText.trim();
+            this.quizz.title = textarea.messageText.trim();
             drawings.screen.remove(textarea);
             drawing.notInTextArea = true;
             showTitle();
@@ -2434,6 +2478,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
         let arrayOfUncorrectQuestions = [];
         this.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
+                console.log(question.parentQuizz.title.match(REGEX));
                 question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
                     if (!result.isValid) {

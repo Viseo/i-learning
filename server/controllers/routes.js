@@ -1,11 +1,10 @@
 module.exports = function (app, fs) {
-
     const db = require('../db'),
         TwinBcrypt = require('twin-bcrypt'),
         cookies = require('../cookies'),
         formations = require('../formations'),
-        users = require('../users');
-
+        users = require('../users'),
+        multer = require('multer');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -16,6 +15,45 @@ module.exports = function (app, fs) {
     }
     var ObjectID = require('mongodb').ObjectID;
     var id = new ObjectID();
+
+    app.post('/insertPicture', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
+
+        function insertAsync() {
+            return new Promise((resolve, reject) => {
+                const collection = db.get().collection('images');
+                collection.insert({imgSrc:"../resource/"+req.file.filename, name:req.file.originalname}, (err) => { // penser à utiliser InsertOne ?
+                    err ? reject() : resolve(err)
+                })
+            })
+        }
+
+        //function renameAsync() {
+        //    return new Promise((resolve, reject) => {
+        //        const newPath = __dirname + "/../../resource/";
+        //        fs.rename(newPath + req.file.filename, newPath + req.file.originalname, (err) => {
+        //            err ? reject() : resolve(err)
+        //        })
+        //    })
+        //}
+
+        Promise.all([/**renameAsync(),**/ insertAsync()])
+            .then(() => {
+                res.send('ok')
+            })
+            .catch((err) => {
+                // TODO traiter l'erreur et envoyer un message clair
+                res.send('err')
+            });
+    });
+
+    app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
+        var collection = db.get().collection('users');
+        var result;
+        collection.find().toArray(function(err, docs) {
+            result = docs.find(user => user.mailAddress===req.params.mailAddress);
+            res.send({user: result});
+        });
+    });
 
     app.get('/auth/verify', (req, res) => {
         const hasCookie = cookies.verify(req, (err, decode) => {

@@ -22,6 +22,7 @@ function DbListener(isWriting, isMock) {
     self.httpGetAsync = self.runtime.httpGetRequest;
     self.httpPostAsync = self.runtime.httpPostRequest;
     self.httpPutAsync = self.runtime.httpPutRequest;
+    self.httpUpload = self.runtime.httpUpload;
 }
 
 function HttpRequests(isWriting, isMock, listener) {
@@ -57,7 +58,24 @@ function HttpRequests(isWriting, isMock, listener) {
             };
             request.open('POST', theUrl, true); // true for asynchronous
             request.setRequestHeader('Content-type', 'application/json');
-            request.send(JSON.stringify(body, ignoredData));
+            let obj = ignoredData? JSON.stringify(body, ignoredData) : JSON.stringify(body) ;
+            request.send(obj);
+        })
+    }
+
+    function httpUpload(theUrl, file) {
+        return new Promise((resolve) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200)
+                    resolve(request.responseText);
+            };
+            request.open('POST', theUrl, true); // true for asynchronous
+            //request.setRequestHeader('Content-Type', 'multipart/form-data');
+
+            request.send(formData);
         })
     }
 
@@ -96,7 +114,8 @@ function HttpRequests(isWriting, isMock, listener) {
     return {
         httpGetRequest:httpGetAsync,
         httpPostRequest:httpPostAsync,
-        httpPutRequest:httpPutAsync
+        httpPutRequest:httpPutAsync,
+        httpUpload:httpUpload
     };
 }
 

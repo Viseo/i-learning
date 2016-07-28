@@ -90,20 +90,22 @@ class Manipulator {
 
     flush () {
         const clean = (handler) => {
-            for (let i = 0; i < handler.children.length; i++) {
-                if((handler instanceof svg.Ordered)){
-                    for (let j = 0; j < handler.children.length; j++) {
-                        if (!(handler.children[j] instanceof svg.Handler)) {
-                            handler.unset(j);
-                        } else {
-                            clean(handler.children[j]);
+            if(typeof handler.noFlush ==="undefined" || !handler.noFlush){
+                for (let i = 0; i < handler.children.length; i++) {
+                    if((handler instanceof svg.Ordered)){
+                        for (let j = 0; j < handler.children.length; j++) {
+                            if (!(handler.children[j] instanceof svg.Handler)) {
+                                handler.unset(j);
+                            } else {
+                                clean(handler.children[j]);
+                            }
                         }
+                    } else if (handler.children[i] instanceof svg.Handler) {
+                        clean(handler.children[i]);
+                    } else {
+                        handler.remove(handler.children[i]);
+                        i--;
                     }
-                } else if (handler.children[i] instanceof svg.Handler) {
-                    clean(handler.children[i]);
-                } else {
-                    handler.remove(handler.children[i]);
-                    i--;
                 }
             }
         };
@@ -342,7 +344,7 @@ function SVGUtil() {
      * @param w
      * @param h
      */
-    displayImage = function (imageSrc, image, w, h) {
+    displayImage = function (imageSrc, image, w, h, name = "not specified") {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;
@@ -360,9 +362,11 @@ function SVGUtil() {
             width *= (h / height);
             height = h;
         }
-        return {
+        let img = {
             image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
         };
+        img.image.name = name;
+        return img;
     };
 
     /**
@@ -1314,9 +1318,14 @@ class Server {
         return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
     }
 
+    static insertPicture(newPicture){
+        return dbListener.httpUpload("/insertPicture", newPicture);
+    }
+
     static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
         return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
     }
+
     static getImages() {
         return dbListener.httpGetAsync('/getAllImages')
     }
@@ -1500,7 +1509,7 @@ function Bdd() {
         "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
         "resultArea", "questionArea", "titleArea", "redCrossManipulator","parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
         "linesManipulator","penManipulator","blackCrossManipulator","miniaturesManipulator","toggleFormationsManipulator","iconManipulator","infosManipulator","manip",
-        "formationsManipulator","miniatureManipulator","miniatureObject.infosManipulator","publicationFormationButtonManipulator"];
+        "formationsManipulator","miniatureManipulator","miniatureObject.infosManipulator","publicationFormationButtonManipulator","answersExpButtonManipulator"];
 
     ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1557,37 +1566,6 @@ function Bdd() {
     // };
 
     SELECTION_COLOR = myColors.darkBlue;
-
-    // myLibraryImage = {
-        // title: "Bibliothèque",
-        // tab: [
-        //     {imgSrc: "../resource/Alba.jpg"},
-        //     {imgSrc: "../resource/littleCat.png"},
-        //     {imgSrc: "../resource/millions.png"},
-        //     {imgSrc: "../resource/folder.png"},
-        //     {imgSrc: "../resource/cerise.jpg"},
-        //     {imgSrc: "../resource/ChatTim.jpg"},
-        //     {imgSrc: "../resource/tetris.png"},
-        //     {imgSrc: "../resource/shiva.jpg"},
-        //     {imgSrc: "../resource/poop.jpg"},
-        //     {imgSrc: "../resource/monkey.jpg"},
-        //     {imgSrc: "../resource/Kenny.png"},
-        //     {imgSrc: "../resource/Geneviève.jpg"},
-        //     {imgSrc: "../resource/eagle.jpg"},
-        //     {imgSrc: "../resource/berlin.jpg"},
-        //     {imgSrc: "../resource/couscous.jpg"},
-        //     {imgSrc: "../resource/dora.jpg"},
-        //     {imgSrc: "../resource/kassos.jpg"},
-        //     {imgSrc: "../resource/kawai.png"},
-        //     {imgSrc: "../resource/manipulator.jpg"},
-        //     {imgSrc: "../resource/minions.jpg"},
-        //     {imgSrc: "../resource/vache.jpeg"},
-        //     {imgSrc: "../resource/pokeball.png"}
-
-
-        // ],
-        // font: "Courier New", fontSize: 20
-    // };
 
     myLibraryGames = {
         title: "Type de jeux",
@@ -1649,7 +1627,7 @@ function Bdd() {
         },
         // Check Quiz Name:
         question => {
-            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined);
+            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && !!question.parentQuizz.title.match(REGEX));
             let message = "Vous devez remplir le nom du quiz.";
             return {
                 isValid: isValid,
@@ -1671,7 +1649,7 @@ function Bdd() {
         }),
             // Check Quiz Name:
         question => ({
-            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
+            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && question.parentQuizz.title.match(REGEX)),
             message: "Vous devez remplir le nom du quiz."
         })
     ];

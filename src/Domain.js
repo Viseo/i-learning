@@ -38,7 +38,7 @@ class Answer {
         this.imageSrc = answer.imageSrc;
         this.correct = answer.correct;
         this.selected = false;
-        this.validLabelInput = true;
+        this.validLabelInput = answerParameters.validLabelInput !== undefined ? answerParameters.validLabelInput : true;
         this.fontSize = answer.fontSize ? answer.fontSize : 20;
         this.explanation = answer.explanation;
         answer.explanation && (this.filled = true);
@@ -123,7 +123,7 @@ class Question {
         this.invalidQuestionPictogramManipulator.addOrdonator(5);
         this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-        this.validLabelInput = true;
+        this.validLabelInput = (question.validLabelInput !== undefined) ? question.validLabelInput : true;
 
         this.selected = false;
         this.parentQuizz = quizz;
@@ -245,7 +245,7 @@ class QuestionCreator {
         this.saveQuizButtonManipulator = new Manipulator(this);
         this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
-        this.validLabelInput = true;
+        // this.validLabelInput = true;
 
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
@@ -265,14 +265,14 @@ class QuestionCreator {
 
     checkInputTextArea (myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-            this.validLabelInput = true;
+            // this.validLabelInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.border = "none";
             myObj.textarea.outline = "none";
         } else {
             myObj.display();
-            this.validLabelInput = false;
+            // this.validLabelInput = false;
         }
     }
 
@@ -308,6 +308,7 @@ class PopIn {
         this.manipulator.ordonator.set(2,this.blackCrossManipulator.first);
         this.panelManipulator = new Manipulator(this);
         this.manipulator.last.add(this.panelManipulator.first);
+        this.panelManipulator.addOrdonator(2);
         this.textManipulator = new Manipulator(this);
         this.textManipulator.addOrdonator(1);
         this.editable = editable;
@@ -321,7 +322,7 @@ class PopIn {
         if (answer.explanation && answer.explanation.image){
             this.image = answer.explanation.image;
         }
-        answer.filled = (!this.image && !this.label) ? false : true;
+        answer.filled = (!this.image && !this.label);
     }
 }
 
@@ -925,6 +926,7 @@ class ImagesLibrary extends Library {
             oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
             oldQuest.content.position(newQuest.content.x, newQuest.content.y);
             newQuest.image._acceptDrop = true;
+            newQuest.image.name = element.name;
             switch (true) {
                 case target.parent.parentManip.parentObject instanceof QuestionCreator:
                     let questionCreator = target.parent.parentManip.parentObject;
@@ -1082,7 +1084,7 @@ class QuizzManager {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
         let errorMessage = "Entrer un nom valide pour enregistrer";
-        if(this.quizzName.match(REGEX)) {
+        if(this.quizzName!== "" && this.quizzName.match(REGEX)) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
@@ -1098,24 +1100,18 @@ class QuizzManager {
                 .then(() => {
                     svg.addEvent(this.saveButton.cadre, "click", ()=>{});
                     svg.addEvent(this.saveButton.content, "click", ()=>{});
-                    this.quizz.title = this.quizzName;
                     this.quizz.tabQuestions = this.tabQuestions;
                     let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
                     (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                     this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex] = this.quizz;
                     this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
+                    this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
                     this.display();
-                    console.log("Votre travail a été bien enregistré");
+
                 });
         }
         else{
-            this.errorMessage = new svg.Text(errorMessage);
-            this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
-            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height+3+this.quizzLabel.cadre.height/2+svg.runtime.boundingRect(this.errorMessage.component).height/2)
-                .font("Arial", 15).color(myColors.red).anchor('start');
-            setTimeout(() => {
-                this.quizzInfoManipulator.ordonator.unset(5);
-            }, 5000);
+            this.displayMessage (errorMessage, myColors.red);
         }
     }
     selectNextQuestion () {
@@ -1328,7 +1324,7 @@ function Domain() {
 
         getImage: function (imgUrl, onloadHandler) {
             this.count++;
-            const image = {
+            let image = {
                 src: imgUrl,
                 onload: onloadHandler,
                 id: "i"+ this.count

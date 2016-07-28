@@ -12,6 +12,7 @@
     "mocha": "^2.5.3",
     "mocha-istanbul": "^0.2.0",
     "mongodb": "^2.1.19",
+    "multer": "^1.1.0",
     "twin-bcrypt": "^2.1.1"
   },
   "devDependencies": {
