@@ -90,20 +90,22 @@ class Manipulator {
 
     flush () {
         const clean = (handler) => {
-            for (let i = 0; i < handler.children.length; i++) {
-                if((handler instanceof svg.Ordered)){
-                    for (let j = 0; j < handler.children.length; j++) {
-                        if (!(handler.children[j] instanceof svg.Handler)) {
-                            handler.unset(j);
-                        } else {
-                            clean(handler.children[j]);
+            if(typeof handler.noFlush ==="undefined" || !handler.noFlush){
+                for (let i = 0; i < handler.children.length; i++) {
+                    if((handler instanceof svg.Ordered)){
+                        for (let j = 0; j < handler.children.length; j++) {
+                            if (!(handler.children[j] instanceof svg.Handler)) {
+                                handler.unset(j);
+                            } else {
+                                clean(handler.children[j]);
+                            }
                         }
+                    } else if (handler.children[i] instanceof svg.Handler) {
+                        clean(handler.children[i]);
+                    } else {
+                        handler.remove(handler.children[i]);
+                        i--;
                     }
-                } else if (handler.children[i] instanceof svg.Handler) {
-                    clean(handler.children[i]);
-                } else {
-                    handler.remove(handler.children[i]);
-                    i--;
                 }
             }
         };

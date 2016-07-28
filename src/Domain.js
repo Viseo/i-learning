@@ -308,6 +308,7 @@ class PopIn {
         this.manipulator.ordonator.set(2,this.blackCrossManipulator.first);
         this.panelManipulator = new Manipulator(this);
         this.manipulator.last.add(this.panelManipulator.first);
+        this.panelManipulator.addOrdonator(2);
         this.textManipulator = new Manipulator(this);
         this.textManipulator.addOrdonator(1);
         this.editable = editable;

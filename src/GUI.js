@@ -1905,14 +1905,14 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 
     this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h , false);
     if (this.explanation){
-        this.explanation.display(this, this.previousX, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
+        this.explanation.display(this, 0, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
     }
 }
 
 function popInDisplay(parent, previousX, x, y, w, h) {
     let rect = new svg.Rect(w+2, h); //+2 border
     rect._acceptDrop = this.editable;
-    rect.color(myColors.white, 1, myColors.black);
+    rect.color(myColors.blue, 1, myColors.black);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
     this.manipulator.ordonator.set(0, rect);
     this.manipulator.translator.move(previousX, y);
@@ -1964,7 +1964,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
         let draganddropTextSVG = autoAdjustText(this.draganddropText, w/6, h / 3, 20, null, this.manipulator, 3).text;
         draganddropTextSVG.position(-w/2 + w/12 + MARGIN, 0).color(myColors.grey);
         draganddropTextSVG._acceptDrop = this.editable;
-       this.label ? this.answer.filled = true : this.answer.filled = false;
+        this.label ? this.answer.filled = true : this.answer.filled = false;
     }
     else {
         panelWidth = w - 2*MARGIN;
@@ -1973,18 +1973,20 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-        this.panel.border.color([], 1, [0, 0, 0]);
+        this.panel.component.noFlush = true;
     }
     else {
         this.panel.resize(panelWidth, panelHeight);
     }
-    this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
-    this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
-    this.panel.vHandle.handle.color(myColors.lightgrey,3,myColors.grey);
+    this.panel.border.color(myColors.red, 1, [0, 0, 0]);
+
+    this.panelManipulator.ordonator.set(0, this.panel.component);
+    this.panelManipulator.ordonator.set(1, this.textManipulator.first);
+    this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
-    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
+    console.log("é");
     let clickEdition = event => {
         let contentArea = {};
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
