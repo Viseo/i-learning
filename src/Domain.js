@@ -1076,7 +1076,7 @@ class QuizzManager {
         let completeQuizzMessage = "Les modifications ont bien été enregistrées";
         let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
         let errorMessage = "Entrer un nom valide pour enregistrer";
-        if(this.quizzName.match(REGEX)) {
+        if(this.quizzName!== "" && this.quizzName.match(REGEX)) {
             let quiz = this.getObjectToSave();
             this.quizz.isValid = true;
             quiz.tabQuestions.forEach(question => {
@@ -1092,15 +1092,14 @@ class QuizzManager {
                 .then(() => {
                     svg.addEvent(this.saveButton.cadre, "click", ()=>{});
                     svg.addEvent(this.saveButton.content, "click", ()=>{});
-                    this.quizz.title = this.quizzName;
                     this.quizz.tabQuestions = this.tabQuestions;
                     let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
                     (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
                     this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex] = this.quizz;
                     this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
-                    this.display();
                     this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
-                    console.log("Votre travail a été bien enregistré");
+                    this.display();
+
                 });
         }
         else{
