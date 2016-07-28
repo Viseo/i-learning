@@ -1828,7 +1828,6 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         this.questionManipulator.ordonator.set(4, this.questNum);
         this.questionBlock.title.content.color(color);
         this.questionBlock.title.content._acceptDrop = true;
-        console.log(this.linkedQuestion.validLabelInput);
         this.linkedQuestion.validLabelInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
             this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
         this.linkedQuestion.validLabelInput || displayErrorMessage();

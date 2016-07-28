@@ -38,7 +38,7 @@ class Answer {
         this.imageSrc = answer.imageSrc;
         this.correct = answer.correct;
         this.selected = false;
-        this.validLabelInput = true;
+        this.validLabelInput = answerParameters.validLabelInput !== undefined ? answerParameters.validLabelInput : true;
         this.fontSize = answer.fontSize ? answer.fontSize : 20;
         this.explanation = answer.explanation;
         answer.explanation && (this.filled = true);
@@ -123,7 +123,7 @@ class Question {
         this.invalidQuestionPictogramManipulator.addOrdonator(5);
         this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-        this.validLabelInput = true;
+        this.validLabelInput = (question.validLabelInput !== undefined) ? question.validLabelInput : true;
 
         this.selected = false;
         this.parentQuizz = quizz;
@@ -245,7 +245,7 @@ class QuestionCreator {
         this.saveQuizButtonManipulator = new Manipulator(this);
         this.manipulator.last.add(this.saveQuizButtonManipulator.first);
 
-        this.validLabelInput = true;
+        // this.validLabelInput = true;
 
 
         this.labelDefault = "Cliquer deux fois pour ajouter la question";
@@ -265,14 +265,14 @@ class QuestionCreator {
 
     checkInputTextArea (myObj) {
         if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-            this.validLabelInput = true;
+            // this.validLabelInput = true;
             myObj.remove();
             myObj.textarea.onblur = myObj.onblur;
             myObj.textarea.border = "none";
             myObj.textarea.outline = "none";
         } else {
             myObj.display();
-            this.validLabelInput = false;
+            // this.validLabelInput = false;
         }
     }
 
