@@ -111,7 +111,7 @@ module.exports = function (app, fs) {
                     res.send({saved: false, reason: "NameAlreadyUsed"});
                 } else {
                     formations.insertFormation(db, req.body)
-                        .then((data) => res.send({saved: true, id: data.formation}))
+                        .then((data) => res.send({saved: true, id: data.formation, idVersion: data.version}))
                         .catch((err) => console.log(err));
                 }
             })
@@ -183,9 +183,12 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
-        formations.replaceQuiz(db, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body)
-            .then(data => res.send({ack:'ok'}))
-            .catch(err => console.log(err));
+        formations.getFormationByVersionId(db, req.params.id)
+            .then(formation => {
+                formations.replaceQuiz(db, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body, formation)
+                    .then(data => res.send({ack:'ok'}))
+                    .catch(err => console.log(err));
+            });
     });
 
     app.get('/getAllImages', function(req, res) {

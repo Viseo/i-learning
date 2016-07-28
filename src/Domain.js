@@ -602,7 +602,8 @@ class Formation {
                     .then(data => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
-                            this._id = answer.id;
+                            this._id = answer.idVersion;
+                            this.formationId = answer.id;
                             displayMessage(messageSave);
                         } else {
                             if(answer.reason === "NameAlreadyUsed") {

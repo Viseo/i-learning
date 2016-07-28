@@ -57,12 +57,13 @@ const insertFormation = (db, object) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
         object._id = new ObjectID();
+        object.status = "NotPublished";
         let formation = {
             versions: [object],
         };
         collectionFormations.insertOne(formation, (err, docs) => {
             if(err) fail(err);
-            resolve({formation:docs.insertedId});
+            resolve({formation:docs.insertedId, version: object._id});
         })
     });
 };
@@ -103,15 +104,34 @@ const replaceFormation = (db, id, object) => {
     })
 };
 
-const replaceQuiz = (db, indexes, object) => {
+const replaceQuiz = (db, indexes, object, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
-        let placeholder = {};
-        placeholder["levelsTab." + indexes.level + ".gamesTab." + indexes.game] = object;
-        collectionFormations.updateOne({"_id": new ObjectID(indexes.id)}, {$set: placeholder}, (err, docs) => {
-            if (err) reject(err);
-            resolve(docs.upsertedId);
-        })
+        let version = {};
+        if(formation.versions[formation.versions.length-1].status === "Published") {
+            if(JSON.stringify(object) !== JSON.stringify(formation.versions[formation.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game])) {
+                // new version
+                version = formation.versions[formation.versions.length-1];
+                version.status = "Edited";
+                version._id = new ObjectID();
+                version.levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:version}}, (err) => {
+                    if (err) reject(err);
+                    resolve(docs.upsertedId);
+                })
+            } else {
+                resolve(null);
+            }
+        } else {
+            // update last version
+            version = formation.versions[formation.versions.length - 1];
+            version.levelsTab[indexes.level].gamesTab[indexes.game] = object;
+            collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
+                {$set: {versions:formation.versions}}, (err, docs) => {
+                    if (err) reject(err);
+                    resolve(docs.upsertedId);
+            });
+        }
     })
 };
 
