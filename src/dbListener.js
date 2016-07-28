@@ -72,10 +72,10 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpMockGet() {
-        return new Promise((resolve) => {
-            var obj = listener.data.shift();
-            resolve(obj);
-        });
+        function then(callback) {
+            callback(listener.data.shift())
+        }
+        return {then}
     }
 
     function httpMockPost(theUrl, body, ignoredData) {
