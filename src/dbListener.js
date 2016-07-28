@@ -4,7 +4,6 @@
 
 function DbListener(isWriting, isMock) {
     var self = this;
-    self.data = [1, 2];
     self.loadData = function (callback) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
@@ -74,7 +73,7 @@ function HttpRequests(isWriting, isMock, listener) {
 
     function httpMockGet() {
         return new Promise((resolve) => {
-            var obj = parent.data.shift();
+            var obj = listener.data.shift();
             resolve(obj);
         });
     }

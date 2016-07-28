@@ -42,7 +42,7 @@ let runtime,
     dbListenerModule,
     dbListener;
 
-describe('Tests de merde', function () {
+describe('Vilains tests', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
@@ -50,10 +50,10 @@ describe('Tests de merde', function () {
         runtime.declareAnchor('content');
         main = require("../src/main").main;
         dbListenerModule = require("../src/dbListener").dbListener;
-        dbListener = new dbListenerModule(true, false);
+        dbListener = new dbListenerModule(false, true);
     });
 
-    it("Rien", function (done) {
+    /*it("Rien", function (done) {
         this.timeout(100000);
         const jsonFile = "./log/rien.json";
         const execute = () => {
@@ -62,21 +62,23 @@ describe('Tests de merde', function () {
             }, jsonFile, 'content', runtime, done);
         };
         runTest(jsonFile, execute);
-    });
+    });*/
 
     it("Un clic sur rien", function (done) {
-        this.timeout(100000);
         const jsonFile = "./log/clic_rien.json";
-        const execute = () => {
-            checkScenario(() => {
-                main(svg, runtime, dbListener)
-            }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+        this.timeout(100000);
+        testutils.retrieveDB("./log/dbclic_rien.json", dbListener, function () {
+            const execute = () => {
+                checkScenario(() => {
+                    main(svg, runtime, dbListener)
+                }, jsonFile, 'content', runtime, done);
+            };
+            runTest(jsonFile, execute);
+        });
     });
 });
 
-describe('Quizz game', function () {
+/*describe('Quizz game', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
@@ -411,5 +413,5 @@ describe('Admin use', function () {
         });
         this.timeout(100000);
     });
-});
+});*/
 
