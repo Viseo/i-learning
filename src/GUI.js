@@ -2456,6 +2456,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
         let arrayOfUncorrectQuestions = [];
         this.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
+                console.log(question.parentQuizz.title.match(REGEX));
                 question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
                     if (!result.isValid) {

@@ -1564,37 +1564,6 @@ function Bdd() {
 
     SELECTION_COLOR = myColors.darkBlue;
 
-    // myLibraryImage = {
-        // title: "Bibliothèque",
-        // tab: [
-        //     {imgSrc: "../resource/Alba.jpg"},
-        //     {imgSrc: "../resource/littleCat.png"},
-        //     {imgSrc: "../resource/millions.png"},
-        //     {imgSrc: "../resource/folder.png"},
-        //     {imgSrc: "../resource/cerise.jpg"},
-        //     {imgSrc: "../resource/ChatTim.jpg"},
-        //     {imgSrc: "../resource/tetris.png"},
-        //     {imgSrc: "../resource/shiva.jpg"},
-        //     {imgSrc: "../resource/poop.jpg"},
-        //     {imgSrc: "../resource/monkey.jpg"},
-        //     {imgSrc: "../resource/Kenny.png"},
-        //     {imgSrc: "../resource/Geneviève.jpg"},
-        //     {imgSrc: "../resource/eagle.jpg"},
-        //     {imgSrc: "../resource/berlin.jpg"},
-        //     {imgSrc: "../resource/couscous.jpg"},
-        //     {imgSrc: "../resource/dora.jpg"},
-        //     {imgSrc: "../resource/kassos.jpg"},
-        //     {imgSrc: "../resource/kawai.png"},
-        //     {imgSrc: "../resource/manipulator.jpg"},
-        //     {imgSrc: "../resource/minions.jpg"},
-        //     {imgSrc: "../resource/vache.jpeg"},
-        //     {imgSrc: "../resource/pokeball.png"}
-
-
-        // ],
-        // font: "Courier New", fontSize: 20
-    // };
-
     myLibraryGames = {
         title: "Type de jeux",
         tab: [
@@ -1655,7 +1624,7 @@ function Bdd() {
         },
         // Check Quiz Name:
         question => {
-            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined);
+            let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && !!question.parentQuizz.title.match(REGEX));
             let message = "Vous devez remplir le nom du quiz.";
             return {
                 isValid: isValid,
@@ -1677,7 +1646,7 @@ function Bdd() {
         }),
             // Check Quiz Name:
         question => ({
-            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined),
+            isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && question.parentQuizz.title.match(REGEX)),
             message: "Vous devez remplir le nom du quiz."
         })
     ];
