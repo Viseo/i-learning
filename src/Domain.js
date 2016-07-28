@@ -1079,7 +1079,8 @@ class QuizzManager {
             this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
 
             Server.replaceQuizz(quiz, this.parentFormation.formationId, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
-                .then(() => {
+                .then((data) => {
+                    this.parentFormation._id = data.versionId;
                     svg.addEvent(this.saveButton.cadre, "click", ()=>{});
                     svg.addEvent(this.saveButton.content, "click", ()=>{});
                     this.quizz.title = this.quizzName;

@@ -155,12 +155,17 @@ const replaceQuiz = (db, formationId, indexes, object) => {
                     data.versions[data.versions.length]._id = new ObjectID();
                 }
                 else {
-                    if (indexes.level && data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab){
-                        data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                    if (indexes.level && !data.versions[data.versions.length-1].levelsTab[indexes.level]){
+                        data.versions[data.versions.length-1].levelsTab[indexes.level] = [];
+                        data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab = [];
+                        data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab.push(object);
+                    }
+                    else if (indexes.level && data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab){
+                        data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game] = object;
                     }
                     else {
-                        data.versions[data.indexVersion].levelsTab[indexes.level].gameTab = [];
-                        data.versions[data.indexVersion].levelsTab[indexes.level].gamesTab.push(object);
+                        data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab = [];
+                        data.versions[data.versions.length-1].levelsTab[indexes.level].gamesTab.push(object);
                     }
                 }
                 collectionFormations.updateOne({"_id": new ObjectID(formationId.toString())}, {$set: {versions:data.versions}}, (err, docs) => {
