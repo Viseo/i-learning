@@ -1912,7 +1912,7 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
 function popInDisplay(parent, previousX, x, y, w, h) {
     let rect = new svg.Rect(w+2, h); //+2 border
     rect._acceptDrop = this.editable;
-    rect.color(myColors.blue, 1, myColors.black);
+    rect.color(myColors.white, 1, myColors.black);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
     this.manipulator.ordonator.set(0, rect);
     this.manipulator.translator.move(previousX, y);
@@ -1978,15 +1978,14 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     else {
         this.panel.resize(panelWidth, panelHeight);
     }
-    this.panel.border.color(myColors.red, 1, [0, 0, 0]);
-
+    this.panel.border.color(myColors.white, 1, [0, 0, 0]);
     this.panelManipulator.ordonator.set(0, this.panel.component);
     this.panelManipulator.ordonator.set(1, this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
     this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
-    console.log("é");
+
     let clickEdition = event => {
         let contentArea = {};
         contentArea.y = panelHeight-svg.runtime.boundingRect(this.answerTextSVG.component).height;
