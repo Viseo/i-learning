@@ -1103,13 +1103,7 @@ class QuizzManager {
                 });
         }
         else{
-            this.errorMessage = new svg.Text(errorMessage);
-            this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
-            this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, svg.runtime.boundingRect(this.quizzLabel.content.component).height+3+this.quizzLabel.cadre.height/2+svg.runtime.boundingRect(this.errorMessage.component).height/2)
-                .font("Arial", 15).color(myColors.red).anchor('start');
-            setTimeout(() => {
-                this.quizzInfoManipulator.ordonator.unset(5);
-            }, 5000);
+            this.displayMessage (errorMessage, myColors.red);
         }
     }
     selectNextQuestion () {
