@@ -2412,6 +2412,7 @@ function quizzManagerDisplayQuizzInfo (x, y, w, h) {
         var onblur = ()=> {
             textarea.enter();
             this.quizzName = textarea.messageText.trim();
+            this.quizz.title = textarea.messageText.trim();
             drawings.screen.remove(textarea);
             drawing.notInTextArea = true;
             showTitle();
