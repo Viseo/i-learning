@@ -342,7 +342,7 @@ function SVGUtil() {
      * @param w
      * @param h
      */
-    displayImage = function (imageSrc, image, w, h) {
+    displayImage = function (imageSrc, image, w, h, name = "not specified") {
         if((w <= 0) || (h <= 0)){
             w = 1;
             h = 1;
@@ -360,9 +360,11 @@ function SVGUtil() {
             width *= (h / height);
             height = h;
         }
-        return {
+        let img = {
             image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
         };
+        img.image.name = name;
+        return img;
     };
 
     /**

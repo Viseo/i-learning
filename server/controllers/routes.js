@@ -27,22 +27,22 @@ module.exports = function (app, fs) {
         function insertAsync() {
             return new Promise((resolve, reject) => {
                 const collection = db.get().collection('images');
-                collection.insert({imgSrc:"../resource/"+req.file.originalname}, (err) => { // penser à utiliser InsertOne ?
+                collection.insert({imgSrc:"../resource/"+req.file.filename, name:req.file.originalname}, (err) => { // penser à utiliser InsertOne ?
                     err ? reject() : resolve(err)
                 })
             })
         }
 
-        function renameAsync() {
-            return new Promise((resolve, reject) => {
-                const newPath = __dirname + "/../../resource/";
-                fs.rename(newPath + req.file.filename, newPath + req.file.originalname, (err) => {
-                    err ? reject() : resolve(err)
-                })
-            })
-        }
+        //function renameAsync() {
+        //    return new Promise((resolve, reject) => {
+        //        const newPath = __dirname + "/../../resource/";
+        //        fs.rename(newPath + req.file.filename, newPath + req.file.originalname, (err) => {
+        //            err ? reject() : resolve(err)
+        //        })
+        //    })
+        //}
 
-        Promise.all([renameAsync(), insertAsync()])
+        Promise.all([/**renameAsync(),**/ insertAsync()])
             .then(() => {
                 res.send('ok')
             })

@@ -468,7 +468,7 @@ function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
                     if (this.itemsTab && this.itemsTab.length !== 0) {
 
                         let elementCopy = libraryManipulator.ordonator.children[0],
-                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height).image;
+                            img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height, elementCopy.name).image;
                         img.srcDimension = elementCopy.srcDimension;
                         manip.ordonator.set(0, img);
                         manageDnD(img, manip);
@@ -509,6 +509,7 @@ function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
 
                     this.panel.content.children.indexOf(this.libraryManipulators[i].first) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                     let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                    image.name = item.name;
                     image.srcDimension = {width: item.width, height: item.height};
                     this.libraryManipulators[i].ordonator.set(0, image);
 
@@ -529,6 +530,7 @@ function imagesLibraryDisplay(x, y, w, h, callback = ()=>{}) {
                             this.itemsTab[i] = imageController.getImage(url.imgSrc, function (){
                                 this.imageLoaded = true; //this != library
                             });
+                            this.itemsTab[i].name = url.name;
                             this.itemsTab[i].imgSrc = url.imgSrc;
                         });
                     })
@@ -1904,13 +1906,13 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     let rect = new svg.Rect(w+2, h); //+2 border
     rect._acceptDrop = this.editable;
     rect.color(myColors.white, 1, myColors.black);
-    this.manipulator.ordonator.set(0, rect);
     parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
+    this.manipulator.ordonator.set(0, rect);
     this.manipulator.translator.move(previousX, y);
     let blackCrossSize = 30, blackCross;
     let answerText = "Réponse : ";
     this.answer.label && (answerText+= this.answer.label);
-    !this.answer.label && this.answer.image && (answerText+= this.answer.image.src);
+    !this.answer.label && this.answer.image && (answerText+= this.answer.image.name);
     this.answerTextSVG = autoAdjustText(answerText, w, blackCrossSize, 20, null, this.manipulator, 1).text;
     this.answerTextSVG.position(0, -h / 2 + blackCrossSize);
     blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);

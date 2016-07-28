@@ -321,7 +321,7 @@ class PopIn {
         if (answer.explanation && answer.explanation.image){
             this.image = answer.explanation.image;
         }
-        answer.filled = (!this.image && !this.label) ? false : true;
+        answer.filled = (!this.image && !this.label);
     }
 }
 
@@ -918,6 +918,7 @@ class ImagesLibrary extends Library {
             oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
             oldQuest.content.position(newQuest.content.x, newQuest.content.y);
             newQuest.image._acceptDrop = true;
+            newQuest.image.name = element.name;
             switch (true) {
                 case target.parent.parentManip.parentObject instanceof QuestionCreator:
                     let questionCreator = target.parent.parentManip.parentObject;
@@ -1321,7 +1322,7 @@ function Domain() {
 
         getImage: function (imgUrl, onloadHandler) {
             this.count++;
-            const image = {
+            let image = {
                 src: imgUrl,
                 onload: onloadHandler,
                 id: "i"+ this.count
