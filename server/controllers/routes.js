@@ -154,32 +154,31 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/replaceFormation/:id', function (req, res) {
-        formations.getFormationsByName(db, req.body.label)
-            .then(data => {
-                if(data.formation) {
-                    formations.getFormationByVersionId(db, req.params.id)
-                        .then(formation => {
-                            if(formation) {
-                                if(formation._id.toString() === data.formation._id.toString()) {
-                                    if(formations.compareFormations(data.formation.versions[data.formation.versions.length-1], req.body)) {
+        formations.getFormationByVersionId(db, req.params.id)
+            .then(formation => {
+                if(formation) {
+                    formations.getFormationsByName(db, req.body.label)
+                        .then(data => {
+                            if (data.formation) {
+                                if (formation._id.toString() === data.formation._id.toString()) {
+                                    if (formations.compareVersions(data.formation.versions[data.formation.versions.length - 1], req.body)) {
                                         res.send({saved: false, reason: "NoModif"})
                                     } else {
-                                        data.formation._id = req.params.id;
-                                        formations.replaceFormation(db, formation._id, req.body)
-                                            .then(data => res.send({saved: true, reason: ""}))
+                                        formations.newVersion(db, formation, req.body)
+                                            .then(data => res.send({saved: true, id: data}))
                                             .catch(err => console.log(err));
                                     }
                                 } else {
-                                    res.send({saved: false, reason: "NameAlreadyUsed"});
+                                    res.send({saved: false, reason: "NameAlreadformationyUsed"});
                                 }
+                            } else {
+                                formations.newVersion(db, req.params.id, req.body)
+                                    .then(data => res.send({saved: true, id: data}))
+                                    .catch(err => console.log(err));
                             }
                         });
-                } else {
-                    formations.replaceFormation(db, req.params.id, req.body)
-                        .then(data => res.send({saved: true, reason: ""}))
-                        .catch(err => console.log(err));
                 }
-            })
+            });
     });
 
     app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {

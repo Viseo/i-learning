@@ -8,10 +8,12 @@
 
 let ObjectID = require('mongodb').ObjectID;
 
-const compareFormations = (form1, form2) => {
-    if(form1._id) delete form1._id;
-    if(form2._id) delete form2._id;
-    return JSON.stringify(form1) === JSON.stringify(form2);
+const compareVersions = (version1, version2) => {
+    let myVersion1 = Object.assign({}, version1);
+    let myVersion2 = Object.assign({}, version2);
+    if(myVersion1._id) delete myVersion1._id;
+    if(myVersion2._id) delete myVersion2._id;
+    return JSON.stringify(myVersion1) === JSON.stringify(myVersion2);
 };
 
 const getFormationsByName = (db, name) => {
@@ -93,28 +95,45 @@ const getAllFormations = (db) => {
     })
 };
 
-const replaceFormation = (db, id, object) => {
+const newVersion = (db, formation, version) => {
     return new Promise((resolve, fail) => {
         let collectionFormations = db.get().collection('formations');
-        object._id = new ObjectID();
-        collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:object}}, (err) => {
-            if(err) fail(err);
-            resolve({ack:'ok'});
-        })
+
+        if(formation.versions[formation.versions.length-1].status === "Published") {
+            if(JSON.stringify(version) !== JSON.stringify(formation.versions[formation.versions.length-1])) {
+                // new version
+                version._id = new ObjectID();
+                collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err) => {
+                    if (err) reject(err);
+                    resolve(version._id);
+                })
+            } else {
+                resolve(null);
+            }
+        } else {
+            // update last version
+            version._id = formation.versions[formation.versions.length - 1]._id;
+            formation.versions[formation.versions.length - 1] = version;
+            collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
+                {$set: {versions:formation.versions}}, (err, docs) => {
+                    if (err) reject(err);
+                    resolve(version._id);
+                });
+        }
     })
 };
 
-const replaceQuiz = (db, indexes, object, formation) => {
+const replaceQuiz = (db, indexes, game, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         let version = {};
         if(formation.versions[formation.versions.length-1].status === "Published") {
-            if(JSON.stringify(object) !== JSON.stringify(formation.versions[formation.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game])) {
+            if(JSON.stringify(game) !== JSON.stringify(formation.versions[formation.versions.length-1].levelsTab[indexes.level].gamesTab[indexes.game])) {
                 // new version
                 version = formation.versions[formation.versions.length-1];
                 version.status = "Edited";
                 version._id = new ObjectID();
-                version.levelsTab[indexes.level].gamesTab[indexes.game] = object;
+                version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
                 collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:version}}, (err) => {
                     if (err) reject(err);
                     resolve(docs.upsertedId);
@@ -125,7 +144,7 @@ const replaceQuiz = (db, indexes, object, formation) => {
         } else {
             // update last version
             version = formation.versions[formation.versions.length - 1];
-            version.levelsTab[indexes.level].gamesTab[indexes.game] = object;
+            version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
                 {$set: {versions:formation.versions}}, (err, docs) => {
                     if (err) reject(err);
@@ -154,13 +173,13 @@ const getFormationByVersionId = (db, versionId) => {
     })
 };
 
-exports.compareFormations = compareFormations;
+exports.compareVersions = compareVersions;
 exports.getFormationsByName = getFormationsByName;
 exports.getFormationById = getFormationById;
 exports.getVersionById = getVersionById;
 exports.insertFormation = insertFormation;
 exports.getLastVersions = getLastVersions;
 exports.getAllFormations = getAllFormations;
-exports.replaceFormation = replaceFormation;
+exports.newVersion = newVersion;
 exports.replaceQuiz = replaceQuiz;
 exports.getFormationByVersionId = getFormationByVersionId;

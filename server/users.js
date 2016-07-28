@@ -52,7 +52,7 @@ const saveProgress = (db, body, user) => {
         };
         let formationsTab;
         if (user.formationsTab){
-            let formation = user.formationsTab.findIndex(x => x.formation === body.version);
+            let formation = user.formationsTab.findIndex(x => x.version === body.version);
             if(formation !== -1 ){
                 let game = user.formationsTab[formation].gamesTab.findIndex(x => x.game === body.game);
                 if(game !== -1 ){
@@ -106,7 +106,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                 // check status for a published version
                 if(version.status === "Published") {
                     result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
-                } else {
+                } else if(version.status && version.status !== "NotPublished") {
                     let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
                     if(myFormation.versions.length > 1) {
                         version = myFormation.versions[myFormation.versions.length-2];
