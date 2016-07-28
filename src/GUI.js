@@ -61,6 +61,32 @@ function answerDisplay (x, y, w, h) {
             svg.addEvent(redCross,'click',redCrossClickHandler);
             this.redCrossManipulator.ordonator.set(1,redCross);
         };
+
+        let removeErrorMessage = () => {
+            this.validLabelInput = true;
+            this.errorMessage && this.editor.parent.questionCreator.manipulator.ordonator.unset(1);
+            this.border.color(myColors.white, 1, myColors.black);
+        };
+
+        let displayErrorMessage = (contentarea) => {
+            removeErrorMessage();
+            this.border.color(myColors.white, 2, myColors.red);
+            let libraryRatio = 0.2,
+                previewButtonHeightRatio = 0.1,
+                marginErrorMessagePreviewButton = 0.03,
+            //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
+                quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
+                position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
+                anchor = 'middle';
+            this.errorMessage = new svg.Text(REGEX_ERROR);
+            quizzManager.questionCreator.manipulator.ordonator.set(1,this.errorMessage);
+            this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
+                .font('Arial', 15).color(myColors.red).anchor(anchor);
+            contentarea && contentarea.focus();
+            this.validLabelInput = false;
+        };
+
+
         let showTitle = ()=> {
             let text = (this.label) ? this.label : this.labelDefault,
                 color = (this.label) ? myColors.black : myColors.grey;
@@ -80,6 +106,7 @@ function answerDisplay (x, y, w, h) {
             }
 
             (this.validLabelInput && text !== "") ? (this.border.color(myColors.white,1,myColors.black).fillOpacity(0.001)):(this.border.color(myColors.white,2,myColors.red).fillOpacity(0.001));
+            (this.validLabelInput && text !== "") || displayErrorMessage();
             this.obj.content.color(color);
             this.border._acceptDrop = true;
             this.obj.content._acceptDrop = true;
@@ -115,29 +142,6 @@ function answerDisplay (x, y, w, h) {
             this.manipulator.ordonator.unset(1);
             contentarea.focus();
 
-            let removeErrorMessage = () => {
-                this.validLabelInput = true;
-                this.errorMessage && this.editor.parent.questionCreator.manipulator.ordonator.unset(1);
-                this.border.color(myColors.white, 1, myColors.black);
-            };
-
-            let displayErrorMessage = () => {
-                removeErrorMessage();
-                this.border.color(myColors.white, 2, myColors.red);
-                let libraryRatio = 0.2,
-                    previewButtonHeightRatio = 0.1,
-                    marginErrorMessagePreviewButton = 0.03,
-                    //position = (drawing.width - 0.5 * libraryRatio * drawing.width)/2,
-                    quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
-                    position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
-                    anchor = 'middle';
-                this.errorMessage = new svg.Text(REGEX_ERROR);
-                quizzManager.questionCreator.manipulator.ordonator.set(1,this.errorMessage);
-                this.errorMessage.position(-(drawing.width-quizzManager.questionCreator.w)/2, quizzManager.questionCreator.h/2-MARGIN/2)
-                    .font('Arial', 15).color(myColors.red).anchor(anchor);
-                contentarea.focus();
-                this.validLabelInput = false;
-            };
 
             let onblur = ()=> {
                 contentarea.enter();
@@ -155,7 +159,7 @@ function answerDisplay (x, y, w, h) {
                     border: this.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
-                    display: displayErrorMessage
+                    display: () => {displayErrorMessage(contentarea)}
                 });
             });
             svg.addEvent(contentarea,'blur',onblur);
@@ -1785,6 +1789,27 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
     this.questionBlock.rect.fillOpacity(0.001);
     this.manipulator.last.children.indexOf(this.questionBlock.rect)===-1 && this.manipulator.last.add(this.questionBlock.rect);
     this.manipulator.last.children.indexOf(this.questionManipulator.first)===-1 && this.manipulator.last.add(this.questionManipulator.first);
+
+    var removeErrorMessage = () => {
+        this.linkedQuestion.validLabelInput = true;
+        this.errorMessage && this.manipulator.ordonator.unset(0);
+        this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+    };
+
+    var displayErrorMessage = (textarea)=> {
+        removeErrorMessage();
+        this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
+        var anchor = 'middle';
+        var quizzInfoHeightRatio = 0.05;
+        var questionsPuzzleHeightRatio = 0.25;
+        this.errorMessage = new svg.Text(REGEX_ERROR);
+        this.manipulator.ordonator.set(0, this.errorMessage);
+        this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
+            .font("Arial", 15).color(myColors.red).anchor(anchor);
+        textarea && textarea.focus();
+        this.linkedQuestion.validLabelInput = false;
+    };
+
     var showTitle = () => {
         var color = (this.linkedQuestion.label) ? myColors.black : myColors.grey;
         var text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
@@ -1803,8 +1828,10 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
         this.questionManipulator.ordonator.set(4, this.questNum);
         this.questionBlock.title.content.color(color);
         this.questionBlock.title.content._acceptDrop = true;
+        console.log(this.linkedQuestion.validLabelInput);
         this.linkedQuestion.validLabelInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
             this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
+        this.linkedQuestion.validLabelInput || displayErrorMessage();
         this.questionBlock.title.cadre._acceptDrop = true;
         svg.addEvent(this.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
         svg.addEvent(this.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
@@ -1842,34 +1869,15 @@ function questionCreatorDisplayQuestionCreator (x, y, w, h) {
             this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
         };
 
-        var removeErrorMessage = () => {
-            this.linkedQuestion.validLabelInput = true;
-            this.errorMessage && this.manipulator.ordonator.unset(0);
-            this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
-        };
-
-        var displayErrorMessage = ()=> {
-            removeErrorMessage();
-            this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
-            var anchor = 'middle';
-            var quizzInfoHeightRatio = 0.05;
-            var questionsPuzzleHeightRatio = 0.25;
-            this.errorMessage = new svg.Text(REGEX_ERROR);
-            this.manipulator.ordonator.set(0, this.errorMessage);
-            this.errorMessage.position(0,-this.h/2 + this.toggleButtonHeight+ this.questionBlock.title.cadre.height+svg.runtime.boundingRect(this.errorMessage.component).height+MARGIN)
-                .font("Arial", 15).color(myColors.red).anchor(anchor);
-            textarea.focus();
-            this.linkedQuestion.validLabelInput = false;
-        };
 
         var oninput = ()=> {
             textarea.enter();
-            this.parent.checkInputTextArea({
+            this.parent.questionCreator.checkInputTextArea({
                 textarea: textarea,
                 border: this.questionBlock.title.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
-                display: displayErrorMessage
+                display: () => {displayErrorMessage(textarea)}
             });
         };
         svg.runtime.addEvent(textarea.component, "blur", onblur);
