@@ -49,7 +49,7 @@ function HttpRequests(isWriting, isMock, listener) {
         })
     }
 
-    function httpPost(theUrl, body, ignoredData =[]) {
+    function httpPost(theUrl, body, ignoredData) {
         return new Promise((resolve) => {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function () {
@@ -58,7 +58,8 @@ function HttpRequests(isWriting, isMock, listener) {
             };
             request.open('POST', theUrl, true); // true for asynchronous
             request.setRequestHeader('Content-type', 'application/json');
-            request.send(JSON.stringify(body, ignoredData));
+            let obj = ignoredData? JSON.stringify(body, ignoredData) : JSON.stringify(body) ;
+            request.send(obj);
         })
     }
 
