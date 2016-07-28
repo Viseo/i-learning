@@ -97,7 +97,7 @@ class Drawings {
 
         const onmousedownHandler = event => {
             !runtime && document.activeElement.blur();
-            this.target = this.background.getTarget(event.clientX, event.clientY);
+            this.target = this.background.getTarget(event.pageX, event.pageY);
             this.drag = this.target;
             // Rajouter des lignes pour target.bordure et target.image si existe ?
             if (this.target) {
@@ -107,10 +107,10 @@ class Drawings {
         svg.addEvent(this.glass, "mousedown", onmousedownHandler);
 
         const onmousemoveHandler = event => {
-            this.target = this.drag || this.background.getTarget(event.clientX, event.clientY);
+            this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
             if (this.target) {
                 if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
-                    const bool = this.drawing.mousedOverTarget.target.inside(event.clientX, event.clientY);
+                    const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
                     if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
                         svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
                         this.drawing.mousedOverTarget = null;
@@ -127,7 +127,7 @@ class Drawings {
         svg.addEvent(this.glass, "mousemove", onmousemoveHandler);
 
         const ondblclickHandler = event => {
-            this.target = this.background.getTarget(event.clientX, event.clientY);
+            this.target = this.background.getTarget(event.pageX, event.pageY);
             if (this.target) {
                 svg.event(this.target, "dblclick", event);
             }
@@ -135,7 +135,7 @@ class Drawings {
         svg.addEvent(this.glass, "dblclick", ondblclickHandler);
 
         const onmouseupHandler = event => {
-            self.target = this.drag || this.background.getTarget(event.clientX, event.clientY);
+            this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
             if (this.target) {
                 svg.event(this.target, "mouseup", event);
                 svg.event(this.target, "click", event);
@@ -164,7 +164,7 @@ function SVGUtil() {
     };
 
     onclickFunction = function (event) {
-        var target = drawings.background.getTarget(event.clientX, event.clientY);
+        var target = drawings.background.getTarget(event.pageX, event.pageY);
         var sender = null;
         target.answerParent && (sender = target.answerParent);
         var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
@@ -418,7 +418,7 @@ function SVGUtil() {
             let word = words.shift();
             // set text to test the BBox.width
             t.message(text + ' ' + word);
-            if (svg.runtime.boundingRect(t.component) && svg.runtime.boundingRect(t.component).width <= w) {
+            if (t.boundingRect() && t.boundingRect().width <= w) {
                 text += ' ' + word;
             } else {
                 let tmpStr = text + '\n' + word;
@@ -589,12 +589,12 @@ function SVGUtil() {
         var ref;
         var mousedownHandler = function (event) {
             event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
-            ref = svgItem.localPoint(event.clientX, event.clientY);
+            ref = svgItem.localPoint(event.pageX, event.pageY);
             svg.addEvent(svgItem, "mousemove", mousemoveHandler);
             svg.addEvent(svgItem, "mouseup", mouseupHandler);
         };
         var mousemoveHandler = function (event) {
-            var mouse = svgItem.localPoint(event.clientX, event.clientY);
+            var mouse = svgItem.localPoint(event.pageX, event.pageY);
             var dx = mouse.x - ref.x;
             var dy = mouse.y - ref.y;
             manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations

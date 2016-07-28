@@ -121,9 +121,9 @@ exports.main = function (svg, runtime, dbListener) {
         }
     });
 
-    setTimeout(function () {
-        window.onresize = resizePaper;
-    }, 200);
+    // setTimeout(function () {
+    //     window.onresize = resizePaper;
+    // }, 200);
 
 
 };

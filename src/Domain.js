@@ -518,7 +518,7 @@ class Formation {
     }
 
     addNewGame(event, lib) {
-        var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
+        var dropLocation = this.panel.back.localPoint(event.pageX, event.pageY).y - this.panel.contentV.y;
         let level = -1;
         while (dropLocation > -this.panel.content.height / 2) {
             dropLocation -= this.levelHeight;
@@ -913,7 +913,7 @@ class GamesLibrary extends Library {
     }
 
     dropAction(element, event) {
-        const target = drawings.background.getTarget(event.clientX, event.clientY);
+        const target = drawings.background.getTarget(event.pageX, event.pageY);
         let formation;
 
         if (target && target._acceptDrop) {
@@ -936,7 +936,7 @@ class ImagesLibrary extends Library {
     }
 
     dropAction(element, event) {
-        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        let target = drawings.background.getTarget(event.pageX, event.pageY);
         if (target && target._acceptDrop) {
             var oldQuest = {
                 cadre: target.parent.parentManip.ordonator.get(0),

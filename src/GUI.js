@@ -331,10 +331,10 @@ function gamesLibraryDisplay(x, y, w, h) {
 
                 let mouseDownAction = function (event) {
                     event.preventDefault();
-                    let targetParent = graph.getTarget(event.clientX, event.clientY);
+                    let targetParent = graph.getTarget(event.pageX, event.pageY);
 
                     let mouseUpAction = function (event) {
-                        let targetChild = graph.getTarget(event.clientX, event.clientY);
+                        let targetChild = graph.getTarget(event.pageX, event.pageY);
                         let booleanInstanceOfCorrect = function (e) {
                             return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
                                 (e.parent.parentManip.parentObject instanceof Quizz ||
@@ -348,7 +348,7 @@ function gamesLibraryDisplay(x, y, w, h) {
                 };
 
                 let clickAction = function (event) {
-                    let target = graph.getTarget(event.clientX, event.clientY);
+                    let target = graph.getTarget(event.pageX, event.pageY);
                     (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
                 };
 
@@ -412,7 +412,7 @@ function gamesLibraryDisplay(x, y, w, h) {
                     }
 
                     let mouseClick = event => {
-                        let target = drawings.background.getTarget(event.clientX, event.clientY);
+                        let target = drawings.background.getTarget(event.pageX, event.pageY);
                         this.itemsTab.forEach(libraryManipulator => {
                             if (libraryManipulator.content.messageText === target.parent.children[1].messageText) {
                                 if (libraryManipulator !== this.gameSelected) {
@@ -432,7 +432,7 @@ function gamesLibraryDisplay(x, y, w, h) {
                     let mouseupHandler = event => {
                         var svgObj = manip.ordonator.children.shift();
                         manip.first.parent.remove(manip.first);
-                        var target = drawings.background.getTarget(event.clientX, event.clientY);
+                        var target = drawings.background.getTarget(event.pageX, event.pageY);
                         if (target && target.parent && target.parent.parentManip) {
                             if (!(target.parent.parentManip.parentObject instanceof Library)) {
                                 this.dropAction(svgObj, event);
@@ -497,7 +497,7 @@ function imagesLibraryDisplay(x, y, w, h, callback) {
                         let mouseupHandler = event => {
                             let svgObj = manip.ordonator.children.shift();
                             manip.first.parent.remove(manip.first);
-                            let target = drawings.background.getTarget(event.clientX, event.clientY);
+                            let target = drawings.background.getTarget(event.pageX, event.pageY);
                             if (target && target.parent && target.parent.parentManip) {
                                 if (!(target.parent.parentManip.parentObject instanceof Library)) {
                                     this.dropAction(svgObj, event);
@@ -730,7 +730,7 @@ function formationDisplayFormation() {
     this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
 
     let returnHandler = (event) => {
-        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        let target = drawings.background.getTarget(event.pageX, event.pageY);
         target.parentObj.parent.manipulator.flush();
         Server.getAllFormationsNames().then(data => {
             let myFormations = JSON.parse(data).myCollection;
@@ -744,7 +744,7 @@ function formationDisplayFormation() {
     this.returnButton.setHandler(returnHandler);
 
     let dblclickQuizzHandler = (event) => {
-        let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        let targetQuizz = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
         let displayQuizzManager = ()=> {
             this.quizzManager.loadQuizz(targetQuizz);
             this.quizzDisplayed = targetQuizz;
@@ -761,7 +761,7 @@ function formationDisplayFormation() {
     };
 
     let clickQuizHandler = (event) => {
-        let targetQuizz = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+        let targetQuizz = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
         mainManipulator.ordonator.unset(1, this.manipulator.first);
         drawing.currentPageDisplayed = "QuizPreview";
         this.quizzDisplayed = new Quizz(targetQuizz);
@@ -903,7 +903,7 @@ function formationDisplayFormation() {
                 let eventToUse = playerMode ? ["click", clickBdHandler] : ["dblclick", dblclickQuizzHandler];
                 let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                 var clickBdHandler = (event)=> {
-                    let targetBd = drawings.background.getTarget(event.clientX, event.clientY).parent.parentManip.parentObject;
+                    let targetBd = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                     bdDisplay(targetBd);
                 };
                 tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
@@ -1340,6 +1340,7 @@ function headerDisplay(message) {
     if (message) {
         const messageText = autoAdjustText(message, this.width * 0.3, 50, 32, 'Arial', manip, 2);
         messageText.text.position(this.width / 2, this.height / 2 + MARGIN);
+        messageText.text.mark("headerMessage");
     } else {
         manip.ordonator.unset(2);
     }
@@ -1734,7 +1735,7 @@ function questionCreatorDisplayToggleButton(x, y, w, h, clicked) {
     this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
     this.toggleButtonWidth = drawing.width / 5;
     var toggleHandler = (event)=> {
-        this.target = drawings.background.getTarget(event.clientX, event.clientY);
+        this.target = drawings.background.getTarget(event.pageX, event.pageY);
         var questionType = this.target.parent.children[1].messageText;
         this.linkedQuestion.tabAnswer.forEach(function (answer) {
             answer.correct = false;
@@ -1933,7 +1934,7 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     let blackCrossHandler = event=> {
         blackCross = null;
         this.editable && (parent.explanation = false);
-        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        let target = drawings.background.getTarget(event.pageX, event.pageY);
         parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
         this.editable && parent.puzzle.display(x, y, w, h, false);
     };
@@ -2074,7 +2075,7 @@ function quizzDisplay(x, y, w, h) {
     if (this.previewMode) {
         if (playerMode) {
             this.returnButton.setHandler((event) => {
-                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                let target = drawings.background.getTarget(event.pageX, event.pageY);
                 target.parentObj.parent.previewMode = false;
                 target.parentObj.parent.currentQuestionIndex = this.tabQuestions.length;
                 target.parentObj.parent.quizzManipulator.flush();
@@ -2087,7 +2088,7 @@ function quizzDisplay(x, y, w, h) {
         }
         else {
             this.returnButton.setHandler((event) => {
-                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                let target = drawings.background.getTarget(event.pageX, event.pageY);
                 target.parentObj.parent.quizzManipulator.flush();
                 target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
                 target.parentObj.parent.parentFormation.quizzManager.display();
@@ -2096,7 +2097,7 @@ function quizzDisplay(x, y, w, h) {
     }
     else {
         this.returnButton.setHandler((event) => {
-            let target = drawings.background.getTarget(event.clientX, event.clientY);
+            let target = drawings.background.getTarget(event.pageX, event.pageY);
             target.parentObj.parent.quizzManipulator.flush();
             target.parentObj.parent.parentFormation.displayFormation();
         });
@@ -2130,7 +2131,7 @@ function quizzDisplay(x, y, w, h) {
         };
 
         let leftChevronHandler = (event) => {
-            let target = drawings.background.getTarget(event.clientX,event.clientY);
+            let target = drawings.background.getTarget(event.pageX,event.pageY);
             let puzzle = target.parentObj;
             if(puzzle.currentQuestionIndex > 0) {
                 puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
@@ -2140,7 +2141,7 @@ function quizzDisplay(x, y, w, h) {
             }
         };
         let rightChevronHandler = (event) => {
-            let target = drawings.background.getTarget(event.clientX,event.clientY);
+            let target = drawings.background.getTarget(event.pageX,event.pageY);
             let puzzle = target.parentObj;
             if(puzzle.currentQuestionIndex < puzzle.tabQuestions.length-1) {
                 puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
@@ -2176,12 +2177,12 @@ function bdDisplay(bd) {
     (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
     bd.returnButton.display(0, drawing.height * header.size + 2 * MARGIN, 20, 20);
     bd.returnButton.setHandler(self.previewMode ? (event) => {
-        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        let target = drawings.background.getTarget(event.pageX, event.pageY);
         target.parentObj.parent.manipulator.flush();
         target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
         target.parentObj.parent.parentFormation.quizzManager.display();
     } : (event) => {
-        let target = drawings.background.getTarget(event.clientX, event.clientY);
+        let target = drawings.background.getTarget(event.pageX, event.pageY);
         target.parentObj.parent.manipulator.flush();
         target.parentObj.parent.parentFormation.displayFormation();
     });
@@ -2272,11 +2273,11 @@ function quizzManagerDisplay() {
 
     this.questionClickHandler = event => {
         let question;
-        if (typeof event.clientX == "undefined" || typeof event.clientY == "undefined") {
+        if (typeof event.pageX == "undefined" || typeof event.pageY == "undefined") {
             question = event.question;
         }
         else {
-            var target = drawings.background.getTarget(event.clientX, event.clientY);
+            var target = drawings.background.getTarget(event.pageX, event.pageY);
             question = target.parent.parentManip.parentObject;
         }
         question.parentQuizz.parentFormation.quizzManager.questionCreator.explanation = null;
@@ -2324,7 +2325,7 @@ function quizzManagerDisplayQuizzInfo(x, y, w, h) {
     this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
 
     let returnHandler = (event)=>{
-        let target = drawings.background.getTarget(event.clientX,event.clientY);
+        let target = drawings.background.getTarget(event.pageX,event.pageY);
         target.parentObj.parent.parentFormation.quizzManager.questionCreator.explanation = null;
         if (this.quizz.tabQuestions[this.indexOfEditedQuestion]){
             this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();

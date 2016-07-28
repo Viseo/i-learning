@@ -41,8 +41,44 @@ let runtime,
     main,
     dbListenerModule,
     dbListener;
+let retrieve = testutils.retrieve;
+// describe('Vilains tests', function () {
+//
+//     beforeEach(function () {
+//         runtime = mockRuntime();
+//         svg = SVG(runtime);
+//         runtime.declareAnchor('content');
+//         main = require("../src/main").main;
+//         dbListenerModule = require("../src/dbListener").dbListener;
+//         dbListener = new dbListenerModule(false, true);
+//     });
+//
+//     /*it("Rien", function (done) {
+//         this.timeout(100000);
+//         const jsonFile = "./log/rien.json";
+//         const execute = () => {
+//             checkScenario(() => {
+//                 main(svg, runtime, dbListener)
+//             }, jsonFile, 'content', runtime, done);
+//         };
+//         runTest(jsonFile, execute);
+//     });*/
+//
+//     // it("Un clic sur rien", function (done) {
+//     //     const jsonFile = "./log/clic_rien.json";
+//     //     this.timeout(100000);
+//     //     testutils.retrieveDB("./log/dbRien.json", dbListener, function () {
+//     //         const execute = () => {
+//     //             checkScenario(() => {
+//     //                 main(svg, runtime, dbListener)
+//     //             }, jsonFile, 'content', runtime, done);
+//     //         };
+//     //         runTest(jsonFile, execute);
+//     //     });
+//     // });
+// });
 
-describe('Vilains tests', function () {
+describe('Connection', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
@@ -53,30 +89,32 @@ describe('Vilains tests', function () {
         dbListener = new dbListenerModule(false, true);
     });
 
-    /*it("Rien", function (done) {
-        this.timeout(100000);
-        const jsonFile = "./log/rien.json";
-        const execute = () => {
-            checkScenario(() => {
-                main(svg, runtime, dbListener)
-            }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });*/
+    it("user connection", function (done) {
+        testutils.retrieveDB("./log/dbRien.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+            // MARCHE PAS A CAUSE BOUNDINGRECT !!!!!
 
-    it("Un clic sur rien", function (done) {
-        const jsonFile = "./log/clic_rien.json";
-        this.timeout(100000);
-        testutils.retrieveDB("./log/dbclic_rien.json", dbListener, function () {
-            const execute = () => {
-                checkScenario(() => {
-                    main(svg, runtime, dbListener)
-                }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
+            done();
         });
+
+        // let wilfried = retrieve(root, "[Wilfried].[image]");
+        // let wilfriedChance = retrieve(root, "[Wilfried].[chance]");
+        // let heweraldChance = retrieve(root, "[Hewerald].[chance]");
+        // assert.equal(wilfriedChance.text, "?");
+        // assert.equal(heweraldChance.text, "?");
+        // wilfried.event("click", {});
+        // rollDice(6, 6, 6);
+        // assert.equal(wilfriedChance.text, "Azar !");
+        // assert.equal(heweraldChance.text, "?");
+
+
     });
 });
+
 
 /*describe('Quizz game', function () {
 
