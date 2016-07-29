@@ -2158,21 +2158,21 @@ function quizzDisplayResult (color){
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
     this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
-    this.buttonAnswersExpHeight = 50;
-    this.answersExpButtonManipulator = new Manipulator(this);
-    this.answersExpButtonManipulator.addOrdonator(2);
-    this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
-
-    this.textAnswersExp = "Voir les réponses et explications";
-    this.returnText = new svg.Text(this.textAnswersExp).font("Arial", 20);
-    this.answersExpButtonManipulator.ordonator.set(1,this.returnText);
-    this.width = svg.runtime.boundingRect(this.returnText.component).width;
-    this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width/4 , this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
-    this.answerExpFunction = () => {
-        };
-    svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
-    svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
-    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
+    // this.buttonAnswersExpHeight = 50;
+    // this.answersExpButtonManipulator = new Manipulator(this);
+    // this.answersExpButtonManipulator.addOrdonator(2);
+    // this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
+    //
+    // this.textAnswersExp = "Voir les réponses et explications";
+    // this.returnText = new svg.Text(this.textAnswersExp).font("Arial", 20);
+    // this.answersExpButtonManipulator.ordonator.set(1,this.returnText);
+    // this.width = svg.runtime.boundingRect(this.returnText.component).width;
+    // this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width/4 , this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
+    // this.answerExpFunction = () => {
+    //     };
+    // svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
+    // svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
+    // this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
 }
 
 function gameDisplayMiniature(size){
@@ -2457,7 +2457,6 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
         let arrayOfUncorrectQuestions = [];
         this.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
-                console.log(question.parentQuizz.title.match(REGEX));
                 question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
                     if (!result.isValid) {
