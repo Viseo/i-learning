@@ -322,7 +322,7 @@ class PopIn {
         if (answer.explanation && answer.explanation.image){
             this.image = answer.explanation.image;
         }
-        answer.filled = (!this.image && !this.label);
+        answer.filled = this.image || this.label;
     }
 }
 
