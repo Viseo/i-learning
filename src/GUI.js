@@ -262,6 +262,16 @@ function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     this.panel.border.color([], 3, [0, 0, 0]);
     this.libraryManipulator.ordonator.set(2, this.panel.component);
     this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
+    drawing.notInTextArea = true;
+    svg.runtime.addGlobalEvent("keydown", (event) => {
+        if(drawing.notInTextArea && hasKeyDownEvent(event)) {
+            event.preventDefault();
+        }
+    });
+    var hasKeyDownEvent = (event) => {
+        this.target = this.panel;
+        return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
+    };
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
