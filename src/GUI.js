@@ -2466,6 +2466,12 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
         this.quizz.isValid = true;
         let message;
         let arrayOfUncorrectQuestions = [];
+        if (this.questionCreator.explanation){
+            if (this.questionCreator.explanation.answer.popIn) {
+                this.questionCreator.manipulator.last.children.indexOf(this.questionCreator.explanation.answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(this.questionCreator.explanation.answer.popIn.manipulator.first);
+                this.questionCreator.explanation = null;
+            }
+        }
         this.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
                 question.questionType.validationTab.forEach((funcEl) => {
