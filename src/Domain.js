@@ -38,7 +38,7 @@ class Answer {
         this.imageSrc = answer.imageSrc;
         this.correct = answer.correct;
         this.selected = false;
-        this.validLabelInput = answerParameters.validLabelInput !== undefined ? answerParameters.validLabelInput : true;
+        this.validLabelInput = answer.validLabelInput !== undefined ? answer.validLabelInput : true;
         this.fontSize = answer.fontSize ? answer.fontSize : 20;
         this.explanation = answer.explanation;
         answer.explanation && (this.filled = true);
@@ -123,7 +123,7 @@ class Question {
         this.invalidQuestionPictogramManipulator.addOrdonator(5);
         this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
-        this.validLabelInput = (question.validLabelInput !== undefined) ? question.validLabelInput : true;
+        this.validLabelInput = (question && question.validLabelInput !== undefined) ? question.validLabelInput : true;
 
         this.selected = false;
         this.parentQuizz = quizz;
