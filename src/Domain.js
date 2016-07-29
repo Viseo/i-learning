@@ -477,7 +477,7 @@ class Formation {
         this.publicationButtonHeightRatio = 0.07;
         this.marginRatio = 0.03;
         this.label = formation.label ? formation.label : "";
-        this.status = formation.status ? formation.status : statusEnum.NotPublished;
+        this.status = formation.status ? formation.status : "NotPublished";
         this.validLabelInput = true ;
 
         this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
