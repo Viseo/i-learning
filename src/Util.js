@@ -1607,7 +1607,7 @@ function Bdd() {
         // Check answer's name:
         question => {
             let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc));
-            let message = "Vous devez remplir toutes les réponses.";
+            let message = "Vous devez remplir correctement toutes les réponses.";
 
             return {
                 isValid:isValid,
@@ -1617,7 +1617,7 @@ function Bdd() {
         // Check Question Name:
         question => {
             let isValid = !!((question.label && question.validLabelInput) || question.imageSrc);
-            let message = "Vous devez remplir le nom de la question.";
+            let message = "Vous devez remplir correctement le nom de la question.";
 
             return {
                 isValid:isValid,
@@ -1627,7 +1627,7 @@ function Bdd() {
         // Check Quiz Name:
         question => {
             let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && !!question.parentQuizz.title.match(REGEX));
-            let message = "Vous devez remplir le nom du quiz.";
+            let message = "Vous devez remplir correctement le nom du quiz.";
             return {
                 isValid: isValid,
                 message: message
@@ -1639,17 +1639,17 @@ function Bdd() {
         // Check answer's name:
         question => ({
             isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc)),
-            message: "Vous devez remplir toutes les réponses."
+            message: "Vous devez remplir correctement toutes les réponses."
         }),
         // Check Question Name:
         question => ({
             isValid: !!((question.label && question.validLabelInput) || question.imageSrc), // Checker si le champ saisi de la question est valide
-            message: "Vous devez remplir le nom de la question."
+            message: "Vous devez remplir correctement le nom de la question."
         }),
             // Check Quiz Name:
         question => ({
             isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && question.parentQuizz.title.match(REGEX)),
-            message: "Vous devez remplir le nom du quiz."
+            message: "Vous devez remplir correctement le nom du quiz."
         })
     ];
     
