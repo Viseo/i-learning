@@ -2169,7 +2169,7 @@ function quizzDisplayResult (color){
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
     this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
-    /*this.buttonAnswersExpHeight = 50;
+    this.buttonAnswersExpHeight = 50;
     this.answersExpButtonManipulator = new Manipulator(this);
     this.answersExpButtonManipulator.addOrdonator(2);
     this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
@@ -2193,7 +2193,7 @@ function quizzDisplayResult (color){
 
     svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
     svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
-    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);*/
+    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
 }
 
 function gameDisplayMiniature(size){
