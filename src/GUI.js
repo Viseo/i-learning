@@ -1973,17 +1973,18 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
+        this.panel.border.color([], 1, [0, 0, 0]);
         this.panel.component.noFlush = true;
     }
     else {
         this.panel.resize(panelWidth, panelHeight);
     }
-    this.panel.border.color(myColors.white, 1, [0, 0, 0]);
-    this.panelManipulator.ordonator.set(0, this.panel.component);
-    this.panelManipulator.ordonator.set(1, this.textManipulator.first);
+    this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
+    this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
+    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
 
     let clickEdition = event => {
