@@ -2477,7 +2477,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
             this.quizzManagerManipulator.flush();
             this.quizz.tabQuestions.pop();
             this.quizz.tabQuestions.forEach((it) => {
-                it.tabAnswer.pop();
+                (it.tabAnswer[it.tabAnswer.length-1] instanceof AddEmptyElement) && it.tabAnswer.pop();
             });
 
             this.previewQuiz = new Quizz(this.quizz, true);
