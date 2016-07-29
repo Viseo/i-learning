@@ -768,7 +768,7 @@ class Picture {
             }
             else if (this.parent.answer) {
                 let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                this.parent.display(questionCreator, questionCreator.previousX, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                this.parent.display(questionCreator, 0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 this.parent.answer.parentQuestion.checkValidity();
             }
             else {

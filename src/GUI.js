@@ -262,6 +262,16 @@ function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
     this.panel.border.color([], 3, [0, 0, 0]);
     this.libraryManipulator.ordonator.set(2, this.panel.component);
     this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
+    drawing.notInTextArea = true;
+    svg.runtime.addGlobalEvent("keydown", (event) => {
+        if(drawing.notInTextArea && hasKeyDownEvent(event)) {
+            event.preventDefault();
+        }
+    });
+    var hasKeyDownEvent = (event) => {
+        this.target = this.panel;
+        return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
+    };
 }
 
 function gamesLibraryDisplay(x, y, w, h) {
@@ -1973,17 +1983,18 @@ function popInDisplay(parent, previousX, x, y, w, h) {
     }
     if(typeof this.panel === "undefined"){
         this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
+        this.panel.border.color([], 1, [0, 0, 0]);
         this.panel.component.noFlush = true;
     }
     else {
         this.panel.resize(panelWidth, panelHeight);
     }
-    this.panel.border.color(myColors.white, 1, [0, 0, 0]);
-    this.panelManipulator.ordonator.set(0, this.panel.component);
-    this.panelManipulator.ordonator.set(1, this.textManipulator.first);
+    this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
+    this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
     this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
     this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
     this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator,0).text;
+    this.text.position(panelWidth/2,svg.runtime.boundingRect(this.text.component).height);
     this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
 
     let clickEdition = event => {
@@ -2158,7 +2169,7 @@ function quizzDisplayResult (color){
     this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
     this.puzzle.display(0, this.questionHeight/2 + this.answerHeight/2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
     this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
-    this.buttonAnswersExpHeight = 50;
+    /*this.buttonAnswersExpHeight = 50;
     this.answersExpButtonManipulator = new Manipulator(this);
     this.answersExpButtonManipulator.addOrdonator(2);
     this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
@@ -2169,7 +2180,7 @@ function quizzDisplayResult (color){
     this.width = svg.runtime.boundingRect(this.returnText.component).width;
     this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width/4 , this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
     this.answerExpFunction = () => {
-/*        this.displayAnswersExp = ()=> {
+        this.displayAnswersExp = ()=> {
            this.quizzManipulator.flush();
            this.quizzManipulator.parentObject.tabQuestions.forEach(y=>{
                 y.manipulator.ordonator.unset(3)});
@@ -2177,12 +2188,12 @@ function quizzDisplayResult (color){
             this.questionPuzzle.display();
 
         };
-            this.displayAnswersExp();*/
+            this.displayAnswersExp();
     };
 
     svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
     svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
-    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
+    this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);*/
 }
 
 function gameDisplayMiniature(size){
@@ -2465,9 +2476,14 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
         this.quizz.isValid = true;
         let message;
         let arrayOfUncorrectQuestions = [];
+        if (this.questionCreator.explanation){
+            if (this.questionCreator.explanation.answer.popIn) {
+                this.questionCreator.manipulator.last.children.indexOf(this.questionCreator.explanation.answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(this.questionCreator.explanation.answer.popIn.manipulator.first);
+                this.questionCreator.explanation = null;
+            }
+        }
         this.quizz.tabQuestions.forEach(question => {
             if(!(question instanceof AddEmptyElement)){
-                console.log(question.parentQuizz.title.match(REGEX));
                 question.questionType.validationTab.forEach((funcEl) => {
                     var result = funcEl(question);
                     if (!result.isValid) {
@@ -2487,7 +2503,7 @@ function quizzManagerDisplayPreviewButton (x, y, w, h) {
             this.quizzManagerManipulator.flush();
             this.quizz.tabQuestions.pop();
             this.quizz.tabQuestions.forEach((it) => {
-                it.tabAnswer.pop();
+                (it.tabAnswer[it.tabAnswer.length-1] instanceof AddEmptyElement) && it.tabAnswer.pop();
             });
 
             this.previewQuiz = new Quizz(this.quizz, true);
