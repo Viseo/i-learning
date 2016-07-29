@@ -2169,7 +2169,17 @@ function quizzDisplayResult (color){
     this.width = svg.runtime.boundingRect(this.returnText.component).width;
     this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width/4 , this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
     this.answerExpFunction = () => {
+/*        this.displayAnswersExp = ()=> {
+           this.quizzManipulator.flush();
+           this.quizzManipulator.parentObject.tabQuestions.forEach(y=>{
+                y.manipulator.ordonator.unset(3)});
+            this.questionPuzzle = new Puzzle(1, 6, this.quizzManipulator.parentObject.tabQuestions, "leftToRight", this);
+            this.questionPuzzle.display();
+
         };
+            this.displayAnswersExp();*/
+    };
+
     svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
     svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
     this.answersExpButtonManipulator.translator.move(0, drawing.height- 3*MARGIN-this.buttonAnswersExpHeight);
