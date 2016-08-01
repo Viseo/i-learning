@@ -512,7 +512,7 @@ exports.Domain = function (globalVariables) {
         }
 
         addNewGame(event, lib) {
-            var dropLocation = this.panel.back.localPoint(event.clientX, event.clientY).y - this.panel.contentV.y;
+            var dropLocation = this.panel.back.localPoint(event.pageX, event.pageY).y - this.panel.contentV.y;
             let level = -1;
             while (dropLocation > -this.panel.content.height / 2) {
                 dropLocation -= this.levelHeight;
@@ -903,7 +903,7 @@ exports.Domain = function (globalVariables) {
         }
 
         dropAction(element, event) {
-            const target = drawings.background.getTarget(event.clientX, event.clientY);
+            const target = drawings.background.getTarget(event.pageX, event.pageY);
             let formation;
 
             if (target && target._acceptDrop) {
@@ -926,7 +926,7 @@ exports.Domain = function (globalVariables) {
         }
 
         dropAction(element, event) {
-            let target = drawings.background.getTarget(event.clientX, event.clientY);
+            let target = drawings.background.getTarget(event.pageX, event.pageY);
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject.answer) {
                     target.parent.parentManip.parentObject.image = element.src;

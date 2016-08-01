@@ -26,9 +26,9 @@ var ImageRuntime = {
 };
 
 var onClickMock = function (obj, x, y) {
-    obj.node.onclick({clientX:x, clientY:y});
+    obj.node.onclick({pageX:x, pageY:y});
 };
 
 var onDblclickMock = function(obj, x, y){
-    obj.node.ondblclick({clientX:x, clientY:y});
+    obj.node.ondblclick({pageX:x, pageY:y});
 };
