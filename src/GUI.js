@@ -1250,11 +1250,13 @@ function formationDisplayPublicationButton(x, y, w, h) {
             this.formationDisplayed = formation;
             formation.parent = this;
             formation.displayFormation();
+            formation.formationLabel.content.mark('formationLabelContent');
         };
 
         this.displayHeaderFormations = () => {
             this.headerManipulator.translator.move(0, 0);
             this.addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
+            this.addFormationButton.cadre.mark("addFormationCadre");
             var addFormationButtonTextBr = svg.runtime.boundingRect(this.addFormationButton.content.component);
             this.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
             this.addFormationButton.content.position(this.plusDim + svg.runtime.boundingRect(this.addFormationButton.content.component).width / 2, -addFormationButtonTextBr.height / 8);

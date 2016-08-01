@@ -89,7 +89,7 @@ describe('Connection', function () {
         dbListener = new dbListenerModule(false, true);
     });
 
-    it("header message without connexion", function (done) {
+    it("header message without connection", function (done) {
         testutils.retrieveDB("./log/dbRien.json", dbListener, function () {
             svg.screenSize(1920, 1500);
             main(svg, runtime, dbListener);
@@ -134,6 +134,30 @@ describe('Connection', function () {
 
 });
 
+describe('formationsManager', function () {
+
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should add a formation", function(done){
+        testutils.retrieveDB("./log/dbAdminConnexionFormationsManager.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener);
+            let root = runtime.anchor("content");
+            let addFormationCadre = retrieve(root, "[addFormationCadre]");
+            addFormationCadre.listeners["click"];
+            let formationLabelContent = retrieve(root, "[formationLabelContent]");
+            assert.equal(formationLabelContent.text, "Entrer le nom de la formation");
+            done();
+        });
+    });
+});
 
 /*describe('Quizz game', function () {
 
@@ -471,4 +495,3 @@ describe('Connection', function () {
  this.timeout(100000);
  });
  });*/
-

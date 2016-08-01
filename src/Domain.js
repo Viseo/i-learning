@@ -457,7 +457,7 @@ exports.Domain = function (globalVariables) {
             this.formationsManager = formationsManager;
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(5);
-            this.formationInfoManipulator = new Manipulator();
+            this.formationInfoManipulator = new Manipulator(this);
             this.formationInfoManipulator.addOrdonator(3);
             this.graphManipulator = new Manipulator(this);
             this.graphManipulator.addOrdonator(10);
