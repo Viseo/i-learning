@@ -1022,7 +1022,7 @@ class MiniatureFormation {
 class ReturnButton {
     constructor(parent, label) {
         this.parent = parent;
-        this.labelDefault = "Retour"
+        this.labelDefault = "Retour";
         this.label = label ? label : this.labelDefault;
         this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
         this.manipulator.addOrdonator(1);
@@ -1102,7 +1102,6 @@ class Puzzle {
     }
 
     drawChevrons(){
-        var self = this;
         this.leftChevron.resize(this.chevronSize, this.chevronSize);
         this.rightChevron.resize(this.chevronSize, this.chevronSize);
         this.leftChevron.move((this.chevronSize - this.width)/2, 0);
@@ -1187,11 +1186,11 @@ class Puzzle {
                 }
             }
         }else if(orientation === "upToDown"){
-            var count = this.indexOfFirstVisibleElement;
-            var stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement+1) + this.nbOfVisibleElements));
-            for(var column = 0; column < this.columns; column++){
+            count = this.indexOfFirstVisibleElement;
+            stop = Math.min(this.elementsArray.length, ((this.indexOfFirstVisibleElement+1) + this.nbOfVisibleElements));
+            for( column = 0; column < this.columns; column++){
                 var columnsArray = [];
-                for(var row = 0; row < this.rows ; row++){
+                for( row = 0; row < this.rows ; row++){
                     let index = count;
                     if(this.elementsArray[index]) {
                         this.elementsArray[index].puzzleRowIndex = row;
@@ -1299,7 +1298,7 @@ class Server {
             indexQuestion: quiz.currentQuestionIndex+1,
             tabWrongAnswers: [],
             game: quiz.id,
-            formation: quiz.parentFormation._id,
+            formation: quiz.parentFormation._id
         };
         quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
         return dbListener.httpPostAsync("/sendProgress", data)
@@ -1570,7 +1569,7 @@ function Bdd() {
         title: "Type de jeux",
         tab: [
             {label: "Quiz"},
-            {label: "Bd"},
+            {label: "Bd"}
         ],
         font: "Courier New", fontSize: 20
     };

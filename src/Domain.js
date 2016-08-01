@@ -373,13 +373,6 @@ class Level {
         }
     }
 
-    addGame (game, index) {
-        if(!index) {
-            this.gamesTab.push(game);
-        } else {
-            this.gamesTab.splice(index, 0, game);
-        }
-    }
 }
 
 class FormationsManager {
@@ -402,7 +395,7 @@ class FormationsManager {
             this.formations.push(new Formation(formation, this));
         }
         this.manipulator = new Manipulator();
-        this.header = new Header();
+        //this.header = new Header();
         this.headerManipulator = new Manipulator();
         this.headerManipulator.addOrdonator(1);
         this.addButtonManipulator = new Manipulator();
@@ -455,19 +448,19 @@ class Formation {
         this.returnButtonManipulator.addOrdonator(1);
         this.returnButton = new ReturnButton(this, "Retour aux formations");
         this.labelDefault = "Entrer le nom de la formation";
-        this.needUpdate = true;
+        //this.needUpdate = true;
         // WIDTH
         this.libraryWidthRatio = 0.15;
         this.graphWidthRatio = 1 - this.libraryWidthRatio;
         // HEIGHT
         this.graphCreaHeightRatio = 0.85;
-        this.graphPlayHeightRatio = 0.90;
+        //this.graphPlayHeightRatio = 0.90;
 
 
         this.x = MARGIN;
         this.regex = FORMATION_TITLE_REGEX;
-        this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-        this.targetLevelIndex = 0;
+        //this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
+        //this.targetLevelIndex = 0;
         this.levelsTab = [];
         this.gamesTab = [];
         this.saveButtonHeightRatio = 0.07;
@@ -783,10 +776,6 @@ class Formation {
         }
     }
 
-    removeLevel (index) {
-        this.levelsTab.splice(index - 1, 1);
-    }
-
     clickToAdd () {
         this.mouseUpGraphBlock = event => {
             this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
@@ -983,7 +972,7 @@ class QuizzManager {
             this.loadQuizz(quizz);
         }
         this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-        this.header = new Header();
+        //this.header = new Header();
         this.library = new ImagesLibrary();
         this.quizz.tabQuestions[0].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
@@ -1038,7 +1027,7 @@ class QuizzManager {
         this.quizzName = this.quizz.title;
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-        this.quizz.tabQuestions.forEach( (question, index )  => {
+        this.quizz.tabQuestions.forEach( (question )  => {
                 //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
             (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
         });
@@ -1114,9 +1103,6 @@ class QuizzManager {
         else{
             this.displayMessage (errorMessage, myColors.red);
         }
-    }
-    selectNextQuestion () {
-        this.indexOfEditedQuestion++;
     }
 
     checkInputTextArea (myObj) {
@@ -1382,7 +1368,7 @@ function Domain() {
 ////////////////// InscriptionManager.js //////////////////////////
 InscriptionManager = function () {
     this.manipulator = new Manipulator(this);
-    this.header = new Header("Inscription");
+    //this.header = new Header("Inscription");
     this.firstNameManipulator = new Manipulator(this);
     this.firstNameManipulator.addOrdonator(4);
     this.lastNameManipulator = new Manipulator(this);
@@ -1426,7 +1412,7 @@ InscriptionManager = function () {
 ConnexionManager = function () {
     this.manipulator = new Manipulator(this);
     this.manipulator.addOrdonator(6);
-    this.header = new Header("Connexion");
+    //this.header = new Header("Connexion");
     this.mailAddressManipulator = new Manipulator(this);
     this.mailAddressManipulator.addOrdonator(4);
     this.passwordManipulator = new Manipulator(this);
