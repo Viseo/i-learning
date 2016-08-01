@@ -235,19 +235,19 @@ exports.GUI = function (globalVariables) {
 
         if (this.parentQuestion.parentQuizz.previewMode) {
             let event = () => {
+                let popInParent = this.parentQuestion,
+                    popInPreviousX = 0,
+                    popInX = this.parentQuestion.parentQuizz.x,
+                    popInY,
+                    popInWidth = this.parentQuestion.width,
+                    popInHeight = this.parentQuestion.tileHeightMax * this.parentQuestion.lines * 0.8;
                 this.explanationPopIn = new PopIn(this, false);
-                if (this.parentQuestion.image && this.image) {
-                    this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN);
+                if (this.parentQuestion.image) {
+                    popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN;
+                } else {
+                    popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
                 }
-                else if (this.parentQuestion.image && !this.image) {
-                    this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN);
-                }
-                else if (!this.parentQuestion.image && this.image) {
-                    this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN);
-                }
-                else {
-                    this.explanationPopIn.display(this.parentQuestion, 0, this.parentQuestion.parentQuizz.x, (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN, this.parentQuestion.width, this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN);
-                }
+                this.explanationPopIn.display(popInParent, popInPreviousX, popInX, popInY, popInWidth, popInHeight);
             };
             this.image && svg.addEvent(this.image, "click", event);
             this.bordure && svg.addEvent(this.bordure, "click", event);
@@ -1962,40 +1962,43 @@ function formationDisplayPublicationButton(x, y, w, h) {
     }
 
     function popInDisplay(parent, previousX, x, y, w, h) {
-        let rect = new svg.Rect(w + 2, h); //+2 border
+        const rect = new svg.Rect(w + 2, h) //+2 border
+            .color(myColors.white, 1, myColors.black);
         rect._acceptDrop = this.editable;
-        rect.color(myColors.white, 1, myColors.black);
-        parent.manipulator.last.children.indexOf(this.manipulator.first) === -1 && parent.manipulator.last.add(this.manipulator.first);
+        if (parent.manipulator.last.children.indexOf(this.manipulator.first) === -1) {
+            parent.manipulator.last.add(this.manipulator.first);
+        }
         this.manipulator.ordonator.set(0, rect);
         this.manipulator.translator.move(previousX, y);
-        let blackCrossSize = 30, blackCross;
-        let answerText = "Réponse : ";
-        this.answer.label && (answerText += this.answer.label);
-        !this.answer.label && this.answer.image && (answerText += this.answer.image.name);
-        this.answerTextSVG = autoAdjustText(answerText, w, blackCrossSize, 20, null, this.manipulator, 1).text;
-        this.answerTextSVG.position(0, -h / 2 + blackCrossSize);
-        blackCross = blackCross || drawRedCross(w / 2 - blackCrossSize, -h / 2 + blackCrossSize, blackCrossSize, this.blackCrossManipulator);
-        blackCross.color(myColors.black, 1, myColors.black);
-        this.blackCrossManipulator.ordonator.set(0, blackCross);
-        let blackCrossHandler = event=> {
-            blackCross = null;
-            this.editable && (parent.explanation = false);
-            let target = drawings.background.getTarget(event.clientX, event.clientY);
-            parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
-            this.editable && parent.puzzle.display(x, y, w, h, false);
+
+        let crossSize = 12;
+        let drawCross = () => {
+            let circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white);
+            let cross = drawRedCross(w / 2, -h / 2, crossSize, this.blackCrossManipulator)
+                .color(myColors.lightgrey, 1, myColors.lightgrey);
+            this.blackCrossManipulator.ordonator.set(0, circle);
+            this.blackCrossManipulator.ordonator.set(1, cross);
+            let crossHandler = event => {
+                this.editable && (parent.explanation = false);
+                let target = drawings.background.getTarget(event.clientX, event.clientY);
+                parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
+                this.editable && parent.puzzle.display(x, y, w, h, false);
+            };
+            svg.addEvent(cross, "click", crossHandler);
+            svg.addEvent(circle, "click", crossHandler);
         };
-        svg.addEvent(blackCross, "click", blackCrossHandler);
+        drawCross();
+
         drawing.notInTextArea = true;
-        svg.runtime.addGlobalEvent("keydown", (event) => {
+        runtime.addGlobalEvent("keydown", (event) => {
             if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
         });
-        var hasKeyDownEvent = (event)=> {
+        var hasKeyDownEvent = (event) => {
             this.target = this.panel;
             if (blackCross && event.keyCode === 27) { // suppr
                 this.editable && (parent.explanation = false);
-                blackCross = null;
                 parent.manipulator.last.remove(this.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 drawing.mousedOverTarget = false;
@@ -2011,26 +2014,25 @@ function formationDisplayPublicationButton(x, y, w, h) {
             let imageSize = Math.min(w / 4, panelHeight);
             picture.draw(-w / 2 + imageSize / 4 + w / 12, 0, imageSize, imageSize);
             this.answer.filled = true;
-        }
-        else if (this.editable) {
+        } else if (this.editable) {
             let draganddropTextSVG = autoAdjustText(this.draganddropText, w / 6, h / 3, 20, null, this.manipulator, 3).text;
             draganddropTextSVG.position(-w / 2 + w / 12 + MARGIN, 0).color(myColors.grey);
             draganddropTextSVG._acceptDrop = this.editable;
             this.label ? this.answer.filled = true : this.answer.filled = false;
-        }
-        else {
+        } else {
             panelWidth = w - 2 * MARGIN;
-            panelHeight = h - blackCrossSize - 3 * MARGIN;
-            this.panelManipulator.translator.move(0, blackCrossSize / 2 + MARGIN / 2);
+            panelHeight = h - crossSize - 3 * MARGIN;
+            this.panelManipulator.translator.move(0, crossSize / 2 + MARGIN / 2);
         }
+
         if (typeof this.panel === "undefined") {
             this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
             this.panel.border.color([], 1, [0, 0, 0]);
             this.panel.component.noFlush = true;
-        }
-        else {
+        } else {
             this.panel.resize(panelWidth, panelHeight);
         }
+
         this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
         this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
         this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -2041,7 +2043,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
 
         let clickEdition = () => {
             let contentArea = {};
-            contentArea.y = panelHeight - svg.runtime.boundingRect(this.answerTextSVG.component).height;
+            contentArea.y = panelHeight;
             contentArea.x = panelWidth / 2;
             contentArea.globalPointCenter = this.panel.border.globalPoint(-contentArea.x, -contentArea.y / 2 - MARGIN);
             drawing.notInTextArea = false;
@@ -2054,7 +2056,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             drawings.screen.add(contentArea);
             contentArea.focus();
-            let onblur = ()=> {
+            let onblur = () => {
                 contentArea.enter();
                 this.label = contentArea.messageText;
                 drawings.screen.remove(contentArea);
@@ -2062,7 +2064,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 this.display(parent, previousX, x, y, w, h);
             };
             svg.addEvent(contentArea, 'blur', onblur);
-            svg.addEvent(contentArea, 'input', ()=> {
+            svg.addEvent(contentArea, 'input', () => {
                 contentArea.enter();
             });
         };
@@ -2223,9 +2225,9 @@ function formationDisplayPublicationButton(x, y, w, h) {
         this.width = svg.runtime.boundingRect(this.returnText.component).width;
         this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width / 4, this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
         this.answerExpFunction = () => {
-            this.displayAnswersExp = ()=> {
+            this.displayAnswersExp = () => {
                 this.quizzManipulator.flush();
-                this.quizzManipulator.parentObject.tabQuestions.forEach(y=> {
+                this.quizzManipulator.parentObject.tabQuestions.forEach(y => {
                     y.manipulator.ordonator.unset(3)
                 });
                 this.questionPuzzle = new Puzzle(1, 6, this.quizzManipulator.parentObject.tabQuestions, "leftToRight", this);

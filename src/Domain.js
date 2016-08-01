@@ -335,7 +335,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(5);
             this.blackCrossManipulator = new Manipulator(this);
-            this.blackCrossManipulator.addOrdonator(1);
+            this.blackCrossManipulator.addOrdonator(2);
             this.manipulator.ordonator.set(2, this.blackCrossManipulator.first);
             this.panelManipulator = new Manipulator(this);
             this.manipulator.last.add(this.panelManipulator.first);
