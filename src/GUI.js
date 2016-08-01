@@ -386,18 +386,18 @@ exports.GUI = function (globalVariables) {
                     tempY += this.h / 4 + libMargin;
                 }
 
-                let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label)),
-                    obj = displayTextWithCircle(label, Math.min(w / 2, h / 4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
+                let label = myLibraryGames.tab[i].label,
+                    obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
                 obj.cadre.mark("game" + label);
                 obj.cadre.clicked = false;
-                this.itemsTab[i] = obj;
+                this.itemsTab[i].miniature = obj;
 
                 let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
                 this.libraryManipulators[i].first.move(X, tempY);
             });
             this.panel.resizeContent(w, tempY += Math.min(w / 2, h / 4) - 1);
         };
-
+    (
         let assignEvents = () => {
             this.libraryManipulators.forEach(libraryManipulator => {
                 let mouseDownAction = event => {
@@ -413,14 +413,15 @@ exports.GUI = function (globalVariables) {
                         point2 = manip.first.globalPoint(0, 0);
                     manip.first.move(point.x - point2.x, point.y - point2.y);
 
-                    if (this.itemsTab && this.itemsTab.length !== 0) {
-                        if (this.itemsTab[0].content && (this.itemsTab[0].content.messageText !== "")) {
-                            this.gameMiniature = displayTextWithCircle(libraryManipulator.ordonator.children[1].messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
-                            this.draggedObjectLabel = this.gameMiniature.content.messageText;
-                            manip.ordonator.set(0, this.gameMiniature.cadre);
-                            manageDnD(this.gameMiniature.cadre, manip);
-                            manageDnD(this.gameMiniature.content, manip);
-                        }
+                if (this.itemsTab && this.itemsTab.length !== 0) {
+                    if (this.itemsTab[0].miniature.content && (this.itemsTab[0].miniature.content.messageText !== "")) {
+                        this.gameMiniature = displayTextWithCircle(this.itemsTab[0].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
+                        this.gameMiniature.create=this.itemsTab[0].create;
+                        this.draggedObject = this.gameMiniature;
+                        manip.ordonator.set(0, this.gameMiniature.cadre);
+                        manageDnD(this.gameMiniature.cadre, manip);
+                        manageDnD(this.gameMiniature.content, manip);
+                    }
 
                         let mouseClick = event => {
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
@@ -440,20 +441,20 @@ exports.GUI = function (globalVariables) {
                             this.formation && this.formation.clickToAdd();
                         };
 
-                        let mouseupHandler = event => {
-                            var svgObj = manip.ordonator.children.shift();
-                            manip.first.parent.remove(manip.first);
-                            var target = drawings.background.getTarget(event.pageX, event.pageY);
-                            if (target && target.parent && target.parent.parentManip) {
-                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                    this.dropAction(svgObj, event);
-                                }
-                                else {
-                                    mouseClick(event);
-                                }
+                    let mouseupHandler = event => {
+                        var svgObj = manip.ordonator.children.shift();
+                        manip.first.parent.remove(manip.first);
+                        var target = drawings.background.getTarget(event.pageX, event.pageY);
+                        if (target && target.parent && target.parent.parentManip) {
+                            if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                this.dropAction(svgObj, event);
                             }
-                            this.draggedObjectLabel = "";
-                        };
+                            else {
+                                mouseClick(event);
+                            }
+                        }
+                        this.draggedObject= null;
+                    };
 
                         this.gameMiniature.cadre.component.listeners && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.listeners.mouseup);
                         this.gameMiniature.cadre.component.target && this.gameMiniature.cadre.component.target.listeners && this.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.target.listeners.mouseup);
@@ -510,17 +511,17 @@ exports.GUI = function (globalVariables) {
                             img.component.listeners && svg.removeEvent(img, 'mouseup');
                             img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
 
-                            let mouseupHandler = event => {
-                                let svgObj = manip.ordonator.children.shift();
-                                manip.first.parent.remove(manip.first);
-                                let target = drawings.background.getTarget(event.pageX, event.pageY);
-                                if (target && target.parent && target.parent.parentManip) {
-                                    if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                        this.dropAction(svgObj, event);
-                                    }
+                        let mouseupHandler = event => {
+                            let svgObj = manip.ordonator.children.shift();
+                            manip.first.parent.remove(manip.first);
+                            let target = drawings.background.getTarget(event.pageX, event.pageY);
+                            if (target && target.parent && target.parent.parentManip) {
+                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                    this.dropAction(svgObj, event);
                                 }
-                                this.draggedObjectLabel = "";
-                            };
+                            }
+                            this.draggedObject = null;
+                        };
 
                             svg.event(drawings.glass, "mousedown", event);
                             svg.addEvent(img, 'mouseup', mouseupHandler);

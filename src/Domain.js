@@ -515,39 +515,43 @@ exports.Domain = function (globalVariables) {
         this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
     }
 
-        addNewGame(event, lib) {
-            var dropLocation = this.panel.back.localPoint(event.pageX, event.pageY).y - this.panel.contentV.y;
+    addNewGame (event, lib) {
+        let getDropLocation = event => {
+            let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
+            dropLocation.y -= this.panel.contentV.y;
+            dropLocation.x -= this.panel.contentV.x;
+            return dropLocation;
+        };
+        let getLevel = (dropLocation) => {
             let level = -1;
-            while (dropLocation > -this.panel.content.height / 2) {
-                dropLocation -= this.levelHeight;
+            while(dropLocation.y > -this.panel.content.height/2) {
+                dropLocation.y -= this.levelHeight;
                 level++;
             }
             if (level >= this.levelsTab.length) {
                 level = this.levelsTab.length;
                 this.addNewLevel(level);
             }
-            var objectToBeAddedLabel = lib.draggedObjectLabel ? lib.draggedObjectLabel : (lib.gameSelected.content.messageText ? lib.gameSelected.content.messageText : false);
-            switch (objectToBeAddedLabel) {
-                case ("Quiz"):
-                    var newQuizz = new Quizz(defaultQuizz, false, this);
-                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
-                    newQuizz.id = "quizz" + this.gamesCounter.quizz;
-                    this.gamesCounter.quizz++;
-                    newQuizz.title = objectToBeAddedLabel + " " + this.gamesCounter.quizz;
-                    this.levelsTab[level].gamesTab.push(newQuizz);
+            return level;
+        };
+        let getColumn = (dropLocation, level)=>{
+            let posX=0;
+            for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
+                if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
+                    posX = i;
                     break;
-                case ("Bd"):
-                    var newBd = new Bd({}, this);
-                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
-                    newBd.id = "bd" + this.gamesCounter.bd;
-                    this.gamesCounter.bd++;
-                    newBd.title = objectToBeAddedLabel + " " + this.gamesCounter.bd;
-                    this.levelsTab[level].gamesTab.push(newBd);
-                    break;
+                }
             }
-            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-        }
+            return posX;
+        };
+        
+        let dropLocation=getDropLocation(event);
+        let level =getLevel(dropLocation);
+        let posX = getColumn(dropLocation, level);
+        let gameBuilder = lib.draggedObject || lib.gameSelected || null;
+        gameBuilder.create(this, level, posX);
+        this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+    }
 
     deactivateFormation() {
         this.status = "NotPublished";
@@ -901,13 +905,13 @@ exports.Domain = function (globalVariables) {
     }
 
     class GamesLibrary extends Library {
-
-        constructor(lib) {
+    
+        constructor (lib) {
             super();
             this.title = lib.title;
-            this.font = lib.font;
-            this.fontSize = lib.fontSize;
-            lib.tab && (this.itemsTab = JSON.parse(JSON.stringify(lib.tab)));
+            this.font = lib.font ;
+            this.fontSize = lib.fontSize ;
+            this.itemsTab = lib.tab;
             for (let i = 0; i < this.itemsTab.length; i++) {
                 this.libraryManipulators[i] = new Manipulator(this);
                 this.libraryManipulators[i].addOrdonator(2);

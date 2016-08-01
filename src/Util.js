@@ -1533,14 +1533,32 @@ exports.Util = function (globalVariables) {
 
         SELECTION_COLOR = myColors.darkBlue;
 
-        myLibraryGames = {
-            title: "Type de jeux",
-            tab: [
-                {label: "Quiz"},
-                {label: "Bd"}
-            ],
-            font: "Courier New", fontSize: 20
-        };
+    myLibraryGames = {
+        title: "Type de jeux",
+        tab: [
+            {
+                label: "Quiz",
+                create: function (formation, level, posX) {
+                    var newQuizz = new Quizz(defaultQuizz, false, formation);
+                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                    newQuizz.title = "Quiz "  + formation.gamesCounter.quizz;
+                    newQuizz.id = "quizz" + formation.gamesCounter.quizz;
+                    formation.gamesCounter.quizz++;
+                    formation.levelsTab[level].gamesTab.splice(posX,0 ,newQuizz);
+                }
+            },
+            {label: "Bd",
+                create: function (formation, level, posX) {
+                    var newBd = new Bd({}, formation);
+                    newBd.title = "Bd "  + formation.gamesCounter.bd;
+                    newBd.id = "bd" + formation.gamesCounter.bd;
+                    formation.gamesCounter.bd++;
+                    formation.levelsTab[level].gamesTab.splice(posX,0, newBd);
+                }
+            },
+        ],
+        font: "Courier New", fontSize: 20
+    };
 
         defaultQuestion = {
             label: "", imageSrc: "", multipleChoice: false,
