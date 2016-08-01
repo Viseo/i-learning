@@ -86,8 +86,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
             if(progressArray) {
                 // there is a correlation between the player's progress and a formation
                 progress = function() {
-                    let i = 0;
-                    for (let x = 0; x < version.levelsTab.length; x++) {
+                    for (let x = 0, i = 0; x < version.levelsTab.length; x++) {
                         const gamesTab = version.levelsTab[x].gamesTab;
                         for (let y = 0; y < gamesTab.length; y++) {
                             const game = gamesTab[y];
@@ -110,7 +109,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                     let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
                     if(myFormation.versions.length > 1) {
                         version = myFormation.versions[myFormation.versions.length-2];
-                        result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+                        if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
                     }
                 }
             }

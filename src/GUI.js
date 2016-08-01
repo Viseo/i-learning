@@ -1127,12 +1127,6 @@ function formationDisplayPublicationButton(x, y, w, h) {
             this.displayPublicationMessage(message[0]);
         } else {
             this.saveFormation(null, "Published");
-            this.manipulator.flush();
-            Server.getAllFormations().then(data => {
-                let myFormations = JSON.parse(data).myCollection;
-                let formationsManager = new FormationsManager(myFormations);
-                formationsManager.display();
-            });
         }
     };
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());

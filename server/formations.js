@@ -73,8 +73,10 @@ const insertFormation = (db, object) => {
 const deactivateFormation = (db, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
-        formation.versions[formation.versions.length-1].status = "NotPublished";
-        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$set: formation}, (err, docs) => {
+        let version = formation.versions[formation.versions.length-1];
+        version.status = "NotPublished";
+        version._id = new ObjectID();
+        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err, docs) => {
             resolve(docs.upsertedId);
         });
     });
@@ -123,6 +125,7 @@ const newVersion = (db, formation, version) => {
         } else {
             // update last version
             version._id = formation.versions[formation.versions.length - 1]._id;
+            if(formation.versions[formation.versions.length - 1].status === "NotPublished" && version.status === "Edited") version.status = "NotPublished";
             formation.versions[formation.versions.length - 1] = version;
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
                 {$set: {versions:formation.versions}}, (err, docs) => {

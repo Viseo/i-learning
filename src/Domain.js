@@ -593,6 +593,15 @@ class Formation {
             }
         };
 
+        const returnToFormationList = () => {
+            this.manipulator.flush();
+            Server.getAllFormations().then(data => {
+                let myFormations = JSON.parse(data).myCollection;
+                let formationsManager = new FormationsManager(myFormations);
+                formationsManager.display();
+            });
+        };
+
         if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
             const getObjectToSave = () => {
                 const levelsTab = [];
@@ -621,7 +630,7 @@ class Formation {
                         if(answer.saved) {
                             this._id = answer.idVersion;
                             this.formationId = answer.id;
-                            displayMessage(messageSave);
+                            status === "Edited" ? displayMessage(messageSave) : returnToFormationList();
                         } else {
                             if(answer.reason === "NameAlreadyUsed") {
                                 throw messageUsedName;
@@ -636,7 +645,7 @@ class Formation {
                     .then((data) => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
-                            displayMessage(messageReplace)
+                            status === "Edited" ? displayMessage(messageReplace) : returnToFormationList();
                         } else {
                             if(answer.reason === "NoModif") {
                                 throw messageNoModification;
@@ -686,7 +695,6 @@ class Formation {
             }, 5000);
         };
 
-        this.displayPublicationMessage(messagePublication);
         this.publicationFormationQuizzManager();
 
         if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
