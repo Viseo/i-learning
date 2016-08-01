@@ -784,26 +784,25 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        redCrossClickHandler() {
-            this.removeAllLinks();
-            this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
-            this.game.miniatureManipulator.ordonator.unset(0);
-            this.game.miniatureManipulator.ordonator.unset(1);
-            this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
-            var indexes = this.game.getPositionInFormation();
-            var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
+    redCrossClickHandler () {
+        this.removeAllLinks();
+        this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
+        this.game.miniatureManipulator.ordonator.unset(0);
+        this.game.miniatureManipulator.ordonator.unset(1);
+        this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+        var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
-            if (longestLevelCandidates.length === 1 && (indexes.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)) {
-                this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
-                this.game.parentFormation.movePanelContent();
-            }
-            this.game.parentFormation.levelsTab[indexes.levelIndex].removeGame(indexes.gameIndex);
-            var levelsTab = this.game.parentFormation.levelsTab;
-            while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-                levelsTab[levelsTab.length - 1].manipulator.ordonator.unset(2);
-                levelsTab[levelsTab.length - 1].manipulator.ordonator.remove(levelsTab[levelsTab.length - 1].obj.text);
-                this.game.parentFormation.levelsTab.pop();
-            }
+        if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
+            this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
+            this.game.parentFormation.movePanelContent();
+        }
+        this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+        var levelsTab = this.game.parentFormation.levelsTab;
+        while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+            levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
+            levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
+            this.game.parentFormation.levelsTab.pop();
+        }
 
             this.game.parentFormation.selectedGame.selected = false;
             this.game.parentFormation.selectedGame = null;

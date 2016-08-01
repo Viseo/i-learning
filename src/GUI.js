@@ -301,16 +301,16 @@ exports.GUI = function (globalVariables) {
             this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) === -1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
-            let isChildOf = function (parentGame, childGame) {
-                parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
-            };
-            let createLink = function (parentGame, childGame) {
-                if (isChildOf(parentGame, childGame)) return;
-                if (parentGame.getPositionInFormation().levelIndex >= childGame.getPositionInFormation().levelIndex) return;
-                parentGame.parentFormation.link.push({parentGame: parentGame.id, childGame: childGame.id});
-                let arrow = new Arrow(parentGame, childGame);
-                parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
-            };
+        let isChildOf = function (parentGame,childGame){
+            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
+        };
+        let createLink = function (parentGame, childGame) {
+            if (isChildOf(parentGame,childGame)) return;
+            if (parentGame.levelIndex >= childGame.levelIndex) return;
+            parentGame.parentFormation.link.push({parentGame : parentGame.id,childGame : childGame.id});
+            let arrow = new Arrow(parentGame, childGame);
+            parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
+        };
 
             let arrowModeButton = displayText('', w * 0.9, (6 / 100) * h, myColors.black, myColors.white, null, this.font, this.arrowModeManipulator);
             arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);

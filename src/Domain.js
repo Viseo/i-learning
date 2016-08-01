@@ -535,7 +535,7 @@ exports.Domain = function (globalVariables) {
             return level;
         };
         let getColumn = (dropLocation, level)=>{
-            let posX=0;
+            let posX=this.levelsTab[level].gamesTab.length;
             for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
                 if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
                     posX = i;
@@ -840,16 +840,25 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-        adjustGamesPositions(level) {
-            var nbOfGames = level.gamesTab.length;
-            var spaceOccupied = (nbOfGames) * (this.minimalMarginBetweenGraphElements) + this.graphElementSize * nbOfGames;
+    adjustGamesPositions (level) {
+        let computeIndexes =() => {
+            var gameIndex, levelIndex;
+            for (let i = 0; i < this.levelsTab.length; i++) {
+                for(let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
+                    this.levelsTab[i].gamesTab[j].levelIndex = i;
+                    this.levelsTab[i].gamesTab[j].gameIndex = j;
+                }
+            }
+        };
 
-            level.gamesTab.forEach(game => {
-                var pos = game.getPositionInFormation();
-                game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (pos.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
-            });
-        }
+        computeIndexes();
+        var nbOfGames = level.gamesTab.length;
+        var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
+        level.gamesTab.forEach(game => {
+            game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+            game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
+        });
+    }
 
     trackProgress (displayFunction) {
         this.levelsTab.forEach(level => {
