@@ -911,34 +911,34 @@ class ImagesLibrary extends Library {
                 target.parent.parentManip.parentObject.display(questionCreator, 0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
             }
             else {
-                var oldQuest = {
+                var oldElement = {
                     cadre: target.parent.parentManip.ordonator.get(0),
                     content: target.parent.parentManip.ordonator.get(1)
                 };
                 target.parent.parentManip.ordonator.unset(0);
                 target.parent.parentManip.ordonator.unset(1);
-                var newQuest = displayImageWithTitle(oldQuest.content.messageText, element.src,
+                var newElement = displayImageWithTitle(oldElement.content.messageText, element.src,
                     element.srcDimension,
-                    oldQuest.cadre.width, oldQuest.cadre.height,
-                    oldQuest.cadre.strokeColor, oldQuest.cadre.fillColor, null, null, target.parent.parentManip
+                    oldElement.cadre.width, oldElement.cadre.height,
+                    oldElement.cadre.strokeColor, oldElement.cadre.fillColor, null, null, target.parent.parentManip
                 );
-                oldQuest.cadre.position(newQuest.cadre.x, newQuest.cadre.y);
-                oldQuest.content.position(newQuest.content.x, newQuest.content.y);
-                newQuest.image._acceptDrop = true;
-                newQuest.image.name = element.name;
+                oldElement.cadre.position(newElement.cadre.x, newElement.cadre.y);
+                oldElement.content.position(newElement.content.x, newElement.content.y);
+                newElement.image._acceptDrop = true;
+                newElement.image.name = element.name;
                 switch (true) {
                     case target.parent.parentManip.parentObject instanceof QuestionCreator:
                         let questionCreator = target.parent.parentManip.parentObject;
-                        questionCreator.linkedQuestion.image = newQuest.image;
-                        questionCreator.linkedQuestion.imageSrc = newQuest.image.src;
+                        questionCreator.linkedQuestion.image = newElement.image;
+                        questionCreator.linkedQuestion.imageSrc = newElement.image.src;
                         questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
                         questionCreator.display();
                         questionCreator.linkedQuestion.checkValidity();
                         break;
                     case target.parent.parentManip.parentObject instanceof Answer:
                         let answer = target.parent.parentManip.parentObject;
-                        answer.image = newQuest.image;
-                        answer.imageSrc = newQuest.image.src;
+                        answer.image = newElement.image;
+                        answer.imageSrc = newElement.image.src;
                         answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                         answer.parentQuestion.checkValidity();
                         break;
