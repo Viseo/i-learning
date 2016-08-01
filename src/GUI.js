@@ -569,9 +569,9 @@ exports.GUI = function (globalVariables) {
                     });
                 })
                     .then(() => {
-                        let intervalToken = asyncTimerController.interval(() => {
+                        let intervalToken = runtime.interval(() => {
                             if (this.itemsTab.every(e => e.imageLoaded)) {
-                                asyncTimerController.clearInterval(intervalToken);
+                                runtime.clearInterval(intervalToken);
                                 displayImages();
                             }
                         }, 100);
