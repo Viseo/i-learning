@@ -325,11 +325,11 @@ exports.GUI = function (globalVariables) {
                     clip = this.formation.clippingManipulator.last,
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-                if (this.arrowMode) {
-                    this.gameSelected = null;
-                    this.itemsTab.forEach(e => {
-                        e.cadre.color(myColors.white, 1, myColors.black)
-                    });
+            if (this.arrowMode) {
+                this.gameSelected = null;
+                this.itemsTab.forEach(e => {
+                    e.miniature.cadre.color(myColors.white, 1, myColors.black)
+                });
 
                     this.formation.selectedGame && this.formation.selectedGame.icon.cadre.component.listeners.click();
 
