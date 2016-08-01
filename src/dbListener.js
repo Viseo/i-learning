@@ -4,7 +4,6 @@
 
 function DbListener(isWriting, isMock) {
     var self = this;
-    self.data = [1, 2];
     self.loadData = function (callback) {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
@@ -27,7 +26,7 @@ function DbListener(isWriting, isMock) {
 
 function HttpRequests(isWriting, isMock, listener) {
     this.parent = listener;
-    
+
     function register(data) {
         var request = new XMLHttpRequest();
         request.open("POST", "/data", true); // true for asynchronous
@@ -91,10 +90,10 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpMockGet() {
-        return new Promise((resolve) => {
-            var obj = parent.data.shift();
-            resolve(obj);
-        });
+        function then(callback) {
+            callback(listener.data.shift())
+        }
+        return {then}
     }
 
     function httpMockPost(theUrl, body, ignoredData) {
@@ -122,3 +121,5 @@ function HttpRequests(isWriting, isMock, listener) {
 if (typeof exports !== "undefined") {
     exports.DbListener = DbListener;
 }
+
+exports.dbListener = DbListener;
