@@ -336,7 +336,7 @@ class AddEmptyElement {
 
         switch (type) {
             case 'question':
-                this.label = "Double-cliquez pour ajouter une question";
+                this.label = "Double cliquer pour ajouter une question";
                 this.validLabelInput = true;
                 break;
             case 'answer':
