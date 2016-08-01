@@ -2,20 +2,22 @@
  * Created by ACA3502 on 12/04/2016.
  */
 
-var assert = require('assert');
-var testutils = require('../lib/testutils');
-var targetRuntime = require('../lib/targetruntime').targetRuntime;
-var mockRuntime = require('../lib/runtimemock').mockRuntime;
-var SVG = require('../lib/svghandler').SVG;
+const
+    assert = require('assert'),
+    testutils = require('../lib/testutils'),
+    mockRuntime = require('../lib/runtimemock').mockRuntime,
+    SVG = require('../lib/svghandler').SVG,
+    inspect = testutils.inspect,
+    checkScenario = testutils.checkScenario;
 
-var runTest = function (file, exec) {
-    var lineReader = require('readline').createInterface({
+const runTest = function (file, exec) {
+    const lineReader = require('readline').createInterface({
         input: require('fs').createReadStream(file)
     });
 
-    var first = false;
+    let first = false;
     lineReader.on('line', function (line) {
-        var data = JSON.parse(line);
+        const data = JSON.parse(line);
         if(data.screenSize && !first) {
             svg.screenSize(data.screenSize.width, data.screenSize.height);
             first = true;
@@ -33,473 +35,440 @@ describe('Mocha marche bien', function() {
     });
 });
 
-var inspect = testutils.inspect;
-var checkScenario = testutils.checkScenario;
 
-var runtime,
+let runtime,
     svg,
-    guiSvgModule,
-    util,
-    gui,
-    domain,
-    mainModule,
-    adminModule,
-    testModule,
+    main,
     dbListenerModule,
-    inscriptionModule,
-    connexionModule,
-    Server,
-    TwinBcrypt,
-    FormationsManager,
-    Level,
-    AddEmptyElement,
-    QuestionCreator,
-    Question,
-    Answer,
-    ReturnButton,
-    Formation,
-    Library,
-    Header,
-    Puzzle,
-    QuizzManager,
-    Quizz,
-    Bd;
+    dbListener;
+let retrieve = testutils.retrieve;
+// describe('Vilains tests', function () {
+//
+//     beforeEach(function () {
+//         runtime = mockRuntime();
+//         svg = SVG(runtime);
+//         runtime.declareAnchor('content');
+//         main = require("../src/main").main;
+//         dbListenerModule = require("../src/dbListener").dbListener;
+//         dbListener = new dbListenerModule(false, true);
+//     });
+//
+//     /*it("Rien", function (done) {
+//         this.timeout(100000);
+//         const jsonFile = "./log/rien.json";
+//         const execute = () => {
+//             checkScenario(() => {
+//                 main(svg, runtime, dbListener)
+//             }, jsonFile, 'content', runtime, done);
+//         };
+//         runTest(jsonFile, execute);
+//     });*/
+//
+//     // it("Un clic sur rien", function (done) {
+//     //     const jsonFile = "./log/clic_rien.json";
+//     //     this.timeout(100000);
+//     //     testutils.retrieveDB("./log/dbRien.json", dbListener, function () {
+//     //         const execute = () => {
+//     //             checkScenario(() => {
+//     //                 main(svg, runtime, dbListener)
+//     //             }, jsonFile, 'content', runtime, done);
+//     //         };
+//     //         runTest(jsonFile, execute);
+//     //     });
+//     // });
+// });
 
-describe('Quizz game', function () {
-
-    beforeEach(function () {
-        runtime = mockRuntime();
-        svg = SVG(runtime);
-        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
-        util = require("../src/Util");
-        gui = require("../src/GUI");
-        domain = require("../src/Domain");
-        mainModule = require("../src/main");
-        testModule = require("../test/testTest");
-        dbListenerModule = require("../src/dbListener");
-        runtime.declareAnchor('content');
-        util.SVGUtil();
-        util.Bdd();
-        util.setSvg(svg);
-        util.setGui(guiSvgModule);
-        util.setRuntime(runtime);
-        dbListener = new dbListenerModule.DbListener(false, true);
-        Server = util.Server;
-        mainModule.setSvg(svg);
-        mainModule.setUtil(util);
-        testModule.setUtil(util);
-        testModule.setSvg(svg);
-        ReturnButton = util.ReturnButton;
-        Answer = domain.Answer;
-        Question = domain.Question;
-        QuestionCreator = domain.QuestionCreator;
-        AddEmptyElement = domain.AddEmptyElement;
-        Level = domain.Level;
-        FormationsManager = domain.FormationsManager;
-        Formation = domain.Formation;
-        Library = domain.Library;
-        Header = domain.Header;
-        Puzzle = domain.Puzzle;
-        QuizzManager = domain.QuizzManager;
-        Quizz = domain.Quizz;
-        Bd = domain.Bd;
-        domain.setUtil(util);
-        domain.Domain();
-        domain.setRuntime(runtime);
-        domain.setSvg(svg);
-        gui.setDomain(domain);
-        gui.LearningGUI(domain);
-        gui.setSVG(svg);
-        gui.setGui(guiSvgModule);
-        gui.setRuntime(runtime);
-
-    });
-
-    it("plays a complete quizz game with 2 Answers correct", function (done) {
-        var jsonFile = "./log/testQuizzTwoRightAnswers.json";
-        testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        mainModule.main(myQuizzTest);
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
-    it("plays a complete quizz game with all wrong", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testQuizzAllWrong.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
-    it("plays a complete quizz game with all correct but one", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testQuizzAllCorrectButOne.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
-    it("plays a complete quizz game with all correct", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testQuizzAllCorrect.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
-    it("plays a complete quizz game with only one right answer", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testQuizzAllWrongButOne.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    mainModule.main(myQuizzTest);
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
-});
-describe('Inscritpion/Connexion', function () {
+describe('Connection', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
-        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
-        util = require("../src/Util");
-        gui = require("../src/GUI");
-        domain = require("../src/Domain");
-        mainModule = require("../src/main");
-        adminModule = require("../src/admin");
-        testModule = require("../test/testTest");
-        inscriptionModule = require("../src/inscription");
-        connexionModule = require("../src/main");
-        dbListenerModule = require("../src/dbListener");
-        TwinBcrypt = require("../node_modules/twin-bcrypt/twin-bcrypt.min.js");
         runtime.declareAnchor('content');
-        util.SVGUtil();
-        util.Bdd();
-        util.setSvg(svg);
-        util.setGui(guiSvgModule);
-        util.setRuntime(runtime);
-        mainModule.setSvg(svg);
-        mainModule.setUtil(util);
-        adminModule.setSvg(svg);
-        adminModule.setUtil(util);
-        testModule.setUtil(util);
-        testModule.setSvg(svg);
-        inscriptionModule.setSvg(svg);
-        connexionModule.setSvg(svg);
-        //quizzManagerModule.setSvg(svg);
-        //quizzManagerModule.setUtil(util);
-        domain.setUtil(util);
-        domain.Domain();
-        domain.setRuntime(runtime);
-        domain.setSvg(svg);
-        gui.setDomain(domain);
-        gui.LearningGUI();
-        gui.setSVG(svg);
-        gui.setGui(guiSvgModule);
-        gui.setRuntime(runtime);
-        dbListener = new dbListenerModule.DbListener(false, true);
-        Server = util.Server;
-        ReturnButton = util.ReturnButton;
-        Answer = domain.Answer;
-        Question = domain.Question;
-        QuestionCreator = domain.QuestionCreator;
-        AddEmptyElement = domain.AddEmptyElement;
-        Level = domain.Level;
-        FormationsManager = domain.FormationsManager;
-        Formation = domain.Formation;
-        Library = domain.Library;
-        Header = domain.Header;
-        Puzzle = domain.Puzzle;
-        QuizzManager = domain.QuizzManager;
-        Quizz = domain.Quizz;
-        Bd = domain.Bd;
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
     });
-    it("Inscription page", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testInscription.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    inscriptionModule.inscription();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+
+    it("header message without connexion", function (done) {
+        testutils.retrieveDB("./log/dbRien.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+            done();
+        });
+        // let wilfried = retrieve(root, "[Wilfried].[image]");
+        // let wilfriedChance = retrieve(root, "[Wilfried].[chance]");
+        // let heweraldChance = retrieve(root, "[Hewerald].[chance]");
+        // assert.equal(wilfriedChance.text, "?");
+        // assert.equal(heweraldChance.text, "?");
+        // wilfried.event("click", {});
+        // rollDice(6, 6, 6);
+        // assert.equal(wilfriedChance.text, "Azar !");
+        // assert.equal(heweraldChance.text, "?");
+
     });
-    it("Inscription Ok", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testInscriptionOK.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    inscriptionModule.inscription();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+
+    it("admin log in on formationsManager", function (done) {
+        testutils.retrieveDB("./log/dbAdminConnexionFormationsManager.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Liste des formations");
+            done();
+        });
     });
-    it("Inscription Errors", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testInscriptionErrors.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    inscriptionModule.inscription();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
+
+    it("player log in on formationsManager", function (done) {
+        testutils.retrieveDB("./log/dbPlayerConnexionFormationsManager.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Liste des formations");
+            done();
+        });
     });
-    it("Connection page", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testConnection.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    connexionModule.connexion();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
-    it("Connection texfield filled but no click on the connection button", function (done) {
-        this.timeout(100000);
-        var jsonFile = "./log/testConnectionSansClick.json";
-        var execute = function () {
-            var globalVariables = mainModule.setGlobalVariable();
-            domain.setGlobalVariables(globalVariables);
-            checkScenario(
-                function () {
-                    connexionModule.connexion();
-                }, jsonFile, 'content', runtime, done);
-        };
-        runTest(jsonFile, execute);
-    });
+
 });
-describe('Admin use', function () {
-    beforeEach(function () {
-        runtime = mockRuntime();
-        svg = SVG(runtime);
-        guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
-        util = require("../src/Util");
-        gui = require("../src/GUI");
-        domain = require("../src/Domain");
-        mainModule = require("../src/main");
-        adminModule = require("../src/admin");
-        testModule = require("../test/testTest");
-        dbListenerModule = require("../src/dbListener");
-        runtime.declareAnchor('content');
-        util.SVGUtil();
-        util.Bdd();
-        util.setSvg(svg);
-        util.setGui(guiSvgModule);
-        util.setRuntime(runtime);
-        mainModule.setSvg(svg);
-        mainModule.setUtil(util);
-        adminModule.setSvg(svg);
-        adminModule.setUtil(util);
-        testModule.setUtil(util);
-        testModule.setSvg(svg);
-        //quizzManagerModule.setSvg(svg);
-        //quizzManagerModule.setUtil(util);
-        domain.setUtil(util);
-        domain.Domain();
-        domain.setRuntime(runtime);
-        domain.setSvg(svg);
-        gui.setDomain(domain);
-        gui.AdminGUI();
-        gui.setSVG(svg);
-        gui.setGui(guiSvgModule);
-        gui.setRuntime(runtime);
-        dbListener = new dbListenerModule.DbListener(false, true);
-        Server = util.Server;
-        ReturnButton = util.ReturnButton;
-        Answer = domain.Answer;
-        Question = domain.Question;
-        QuestionCreator = domain.QuestionCreator;
-        AddEmptyElement = domain.AddEmptyElement;
-        Level = domain.Level;
-        FormationsManager = domain.FormationsManager;
-        Formation = domain.Formation;
-        Library = domain.Library;
-        Header = domain.Header;
-        Puzzle = domain.Puzzle;
-        QuizzManager = domain.QuizzManager;
-        Quizz = domain.Quizz;
-        Bd = domain.Bd;
-    });
 
-    it("a short admin use (to Formation)", function (done) {
-        var jsonFile = "./log/testAdminShortUse.json";
-        testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
-    it("an admin use formationLabel correct and not", function (done) {
-        var jsonFile = "./log/testAdminFormationLabel.json";
-        testutils.retrieveDB("./log/dbtestAdminFormationLabel.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
-    it("an admin quizz textareas Ok and not", function (done) {
-        var jsonFile = "./log/testAdminQuizzTextAreas.json";
-        testutils.retrieveDB("./log/dbtestAdminQuizzTextAreas.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
-    it("an admin goes to formation and creates games and save", function (done) {
-        var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
-        testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
 
-    it("an admin creates a new game and fill it with pictures", function (done) {
-        var jsonFile = "./log/testAdminNewGame.json";
-        testutils.retrieveDB("./log/dbtestAdminNewGame.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
+/*describe('Quizz game', function () {
 
-    // Mock AppendChild
-    // it("an admin creates a new game and fill it with data", function (done) {
-    //     var jsonFile = "./log/testAdminNewGameData.json";
-    //     testutils.retrieveDB("./log/dbtestAdminNewGameData.json", dbListener, function () {
-    //         var execute = function () {
-    //             var globalVariables = mainModule.setGlobalVariable();
-    //             domain.setGlobalVariables(globalVariables);
-    //             checkScenario(
-    //                 function () {
-    //                     adminModule.admin();
-    //                 }, jsonFile, 'content', runtime, done);
-    //         };
-    //         runTest(jsonFile, execute);
-    //     });
-    //     this.timeout(100000);
-    // });
+ beforeEach(function () {
+ runtime = mockRuntime();
+ svg = SVG(runtime);
+ runtime.declareAnchor('content');
+ main = require("../src/main").main;
+ dbListenerModule = require("../src/dbListener").dbListener;
+ dbListener = new dbListenerModule(true, false);
+ });
 
-    it("an admin use with add/delete arrows game and level", function (done) {
-        var jsonFile = "./log/testAdminArrows.json";
-        testutils.retrieveDB("./log/dbtestAdminArrows.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
+ it("plays a complete quizz game with 2 Answers correct", function (done) {
+ this.timeout(100000);
+ const jsonFile = "./log/testQuizzTwoRightAnswers.json";
+ const execute = () => {
+ checkScenario(() => {main(svg, runtime, dbListener)}, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("plays a complete quizz game with all wrong", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testQuizzAllWrong.json";
+ var execute = function () {
+ checkScenario(
+ function () {
+ main(svg, runtime);
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("plays a complete quizz game with all correct but one", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testQuizzAllCorrectButOne.json";
+ var execute = function () {
+ checkScenario(
+ function () {
+ main(svg, runtime);
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("plays a complete quizz game with all correct", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testQuizzAllCorrect.json";
+ var execute = function () {
+ checkScenario(
+ function () {
+ main(svg, runtime);
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("plays a complete quizz game with only one right answer", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testQuizzAllWrongButOne.json";
+ var execute = function () {
+ checkScenario(
+ function () {
+ main(svg, runtime);
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ });
 
-    it("an admin use with quiz preview and its validation tests", function (done) {
-        var jsonFile = "./log/testAdminPreview.json";
-        testutils.retrieveDB("./log/dbtestAdminPreview.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
+ describe('Inscription/Connexion', function () {
 
-    it("an admin use (quiz) with creation of new answer and new question", function (done) {
-        var jsonFile = "./log/testAdminCreateQuestionAnswer.json";
-        testutils.retrieveDB("./log/dbtestAdminCreateQuestionAnswer.json", dbListener, function () {
-            var execute = function () {
-                var globalVariables = mainModule.setGlobalVariable();
-                domain.setGlobalVariables(globalVariables);
-                checkScenario(
-                    function () {
-                        adminModule.admin();
-                    }, jsonFile, 'content', runtime, done);
-            };
-            runTest(jsonFile, execute);
-        });
-        this.timeout(100000);
-    });
-});
+ beforeEach(function () {
+ runtime = mockRuntime();
+ svg = SVG(runtime);
+ runtime.declareAnchor('content');
+ main = require("../src/main").main;
+ dbListenerModule = require("../src/dbListener").dbListener;
+ dbListener = new dbListenerModule(true, false);
+ });
+ it("Inscription page", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testInscription.json";
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ inscriptionModule.inscription();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("Inscription Ok", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testInscriptionOK.json";
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ inscriptionModule.inscription();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("Inscription Errors", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testInscriptionErrors.json";
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ inscriptionModule.inscription();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("Connection page", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testConnection.json";
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ connexionModule.connexion();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ it("Connection texfield filled but no click on the connection button", function (done) {
+ this.timeout(100000);
+ var jsonFile = "./log/testConnectionSansClick.json";
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ connexionModule.connexion();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ });
+ describe('Admin use', function () {
+ beforeEach(function () {
+ runtime = mockRuntime();
+ svg = SVG(runtime);
+ guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
+ util = require("../src/Util");
+ gui = require("../src/GUI");
+ domain = require("../src/Domain");
+ mainModule = require("../src/main");
+ adminModule = require("../src/admin");
+ testModule = require("../test/testTest");
+ dbListenerModule = require("../src/dbListener");
+ runtime.declareAnchor('content');
+ util.SVGUtil();
+ util.Bdd();
+ util.setSvg(svg);
+ util.setGui(guiSvgModule);
+ util.setRuntime(runtime);
+ mainModule.setSvg(svg);
+ mainModule.setUtil(util);
+ adminModule.setSvg(svg);
+ adminModule.setUtil(util);
+ testModule.setUtil(util);
+ testModule.setSvg(svg);
+ //quizzManagerModule.setSvg(svg);
+ //quizzManagerModule.setUtil(util);
+ domain.setUtil(util);
+ domain.Domain();
+ domain.setRuntime(runtime);
+ domain.setSvg(svg);
+ gui.setDomain(domain);
+ gui.AdminGUI();
+ gui.setSVG(svg);
+ gui.setGui(guiSvgModule);
+ gui.setRuntime(runtime);
+ dbListener = new dbListenerModule.DbListener(false, true);
+ Server = util.Server;
+ ReturnButton = util.ReturnButton;
+ Answer = domain.Answer;
+ Question = domain.Question;
+ QuestionCreator = domain.QuestionCreator;
+ AddEmptyElement = domain.AddEmptyElement;
+ Level = domain.Level;
+ FormationsManager = domain.FormationsManager;
+ Formation = domain.Formation;
+ Library = domain.Library;
+ Header = domain.Header;
+ Puzzle = domain.Puzzle;
+ QuizzManager = domain.QuizzManager;
+ Quizz = domain.Quizz;
+ Bd = domain.Bd;
+ });
+
+ it("a short admin use (to Formation)", function (done) {
+ var jsonFile = "./log/testAdminShortUse.json";
+ testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+ it("an admin use formationLabel correct and not", function (done) {
+ var jsonFile = "./log/testAdminFormationLabel.json";
+ testutils.retrieveDB("./log/dbtestAdminFormationLabel.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+ it("an admin quizz textareas Ok and not", function (done) {
+ var jsonFile = "./log/testAdminQuizzTextAreas.json";
+ testutils.retrieveDB("./log/dbtestAdminQuizzTextAreas.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+ it("an admin goes to formation and creates games and save", function (done) {
+ var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
+ testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+
+ it("an admin creates a new game and fill it with pictures", function (done) {
+ var jsonFile = "./log/testAdminNewGame.json";
+ testutils.retrieveDB("./log/dbtestAdminNewGame.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+
+ // Mock AppendChild
+ // it("an admin creates a new game and fill it with data", function (done) {
+ //     var jsonFile = "./log/testAdminNewGameData.json";
+ //     testutils.retrieveDB("./log/dbtestAdminNewGameData.json", dbListener, function () {
+ //         var execute = function () {
+ //             var globalVariables = mainModule.setGlobalVariable();
+ //             domain.setGlobalVariables(globalVariables);
+ //             checkScenario(
+ //                 function () {
+ //                     adminModule.admin();
+ //                 }, jsonFile, 'content', runtime, done);
+ //         };
+ //         runTest(jsonFile, execute);
+ //     });
+ //     this.timeout(100000);
+ // });
+
+ it("an admin use with add/delete arrows game and level", function (done) {
+ var jsonFile = "./log/testAdminArrows.json";
+ testutils.retrieveDB("./log/dbtestAdminArrows.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+
+ it("an admin use with quiz preview and its validation tests", function (done) {
+ var jsonFile = "./log/testAdminPreview.json";
+ testutils.retrieveDB("./log/dbtestAdminPreview.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+
+ it("an admin use (quiz) with creation of new answer and new question", function (done) {
+ var jsonFile = "./log/testAdminCreateQuestionAnswer.json";
+ testutils.retrieveDB("./log/dbtestAdminCreateQuestionAnswer.json", dbListener, function () {
+ var execute = function () {
+ var globalVariables = mainModule.setGlobalVariable();
+ domain.setGlobalVariables(globalVariables);
+ checkScenario(
+ function () {
+ adminModule.admin();
+ }, jsonFile, 'content', runtime, done);
+ };
+ runTest(jsonFile, execute);
+ });
+ this.timeout(100000);
+ });
+ });*/
 

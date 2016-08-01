@@ -6,32 +6,23 @@
 </head>
 <body style="overflow: hidden;">
 <div id="content"></div>
-<script src="node_modules/twin-bcrypt/twin-bcrypt.min.js"></script>
 <script src="lib/module.js"></script>
 <script src="lib/targetruntime.js"></script>
 <script src="lib/runtimemock.js"></script>
 <script src="lib/svghandler.js"></script>
 <script src="lib/svggui.js"></script>
-<script>
-    let targetRuntime = require("lib/targetruntime").targetRuntime;
-    let SVG = require("lib/svghandler").SVG;
-    svg = SVG(targetRuntime());
-</script>
-
 <script src="src/dbListener.js"></script>
 <script src="src/Util.js"></script>
 <script src="src/Domain.js"></script>
 <script src="src/GUI.js"></script>
 <script src="src/main.js"></script>
 <script>
-    SVGGlobalHandler();
-    Domain();
-    SVGUtil();
-    Bdd();
-    LearningGUI();
-    setGlobalVariable();
-    var dbListener = new DbListener(true, false);
-    main();
+    const
+        targetRuntime = exports.targetRuntime(),
+        SVG = exports.SVG,
+        main = exports.main;
+        dbListener = new DbListener(true, false);
+    main(SVG(targetRuntime), targetRuntime, dbListener);
 </script>
 </body>
 

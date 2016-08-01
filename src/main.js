@@ -1,36 +1,51 @@
-var svg, util, connexionManager, inscriptionManager, formationsManager;
+const Domain = require('./Domain').Domain,
+    Util = require('./Util').Util,
+    GUI = require('./GUI').GUI,
+    gui = require('../lib/svggui').Gui;
 
-if(typeof SVG !== "undefined") {
-    if(!svg) {
-        svg = new SVG();
-    }
-}
+exports.main = function (svg, runtime, dbListener) {
 
-function setSvg(_svg) {
-    svg = _svg;
-    // call setSvg on modules
-}
-function setUtil(_util){
-    util = _util;
-}
+    let domain, util, Gui, drawing, drawings;
 
-function setGlobalVariable() {
-    util && util.SVGGlobalHandler();
-    drawings = new Drawings(svg.screenSize().width, svg.screenSize().height);
+    let globalVariables = {svg, runtime, dbListener};
+
+    globalVariables.gui = gui(svg, {speed: 5, step: 100});
+
+    util = Util(globalVariables);
+    globalVariables.util = util;
+    util.SVGGlobalHandler();
+    util.Bdd();
+    util.SVGUtil();
+
+    drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
+    globalVariables.drawings = drawings;
     drawing = drawings.drawing;
-    mainManipulator = drawing.manipulator;
-    return {drawing:drawing, mainManipulator:mainManipulator, clientHeight:svg.screenSize().height, clientWidth:svg.screenSize().width};
-}
+    globalVariables.drawing = drawing;
+    domain = Domain(globalVariables);
+    globalVariables.domain = domain;
 
-function main() {
-    let resizePaper = function() {
+    const inscriptionManager = new domain.InscriptionManager();
+    globalVariables.inscriptionManager = inscriptionManager;
+    const connexionManager = new domain.ConnexionManager();
+    globalVariables.connexionManager = connexionManager;
+
+    Gui = GUI(globalVariables);
+    globalVariables.GUI = Gui;
+
+    util.setGlobalVariables();
+    domain.setGlobalVariables();
+    Gui.setGlobalVariables();
+
+    let resizePaper = function () {
         !runtime && document.activeElement.blur();
         if ((document.documentElement.clientWidth > 0) && (document.documentElement.clientHeight > 0)) {
-            drawing.dimension(document.documentElement.clientWidth,document.documentElement.clientHeight);
-            drawings.glass.dimension(drawing.width,drawing.height).position(drawing.width/2, drawing.height/2);
-            let formation, quizzManager, quizz;
-            if (typeof formationsManager !== 'undefined') formation = formationsManager.formationDisplayed;
-            if (typeof formation !== 'undefined') quizzManager = formation.quizzManager;
+            drawing.dimension(document.documentElement.clientWidth, document.documentElement.clientHeight);
+            drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
+            const
+                formationsManager = globalVariables.formationsManager,
+                formation = formationsManager.formationDisplayed,
+                quizzManager = formation && formation.quizzManager;
+            let quizz;
             switch (drawing.currentPageDisplayed) {
                 case "ConnexionManager":
                     connexionManager.display();
@@ -65,7 +80,7 @@ function main() {
                     break;
                 case "Quizz":
                     quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
-                    if (formation.quizzManager.previewQuiz){
+                    if (formation.quizzManager.previewQuiz) {
                         if (quizz.currentQuestionIndex !== -1) {
                             quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator.first);
                         }
@@ -87,35 +102,27 @@ function main() {
     };
 
     let listFormations = function() {
-        Server.getAllFormations().then(data => {
+        util.Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
-            formationsManager = new FormationsManager(myFormations);
-            formationsManager.display();
+            globalVariables.formationsManager = new domain.FormationsManager(myFormations);
+            globalVariables.formationsManager.display();
         });
     };
 
-    inscriptionManager = new InscriptionManager();
-    connexionManager = new ConnexionManager();
-
-    Server.checkCookie().then(data => {
+    util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-            data.user.admin ? AdminGUI() : LearningGUI();
+            data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
             listFormations();
         } else {
+            Gui.LearningGUI();
             connexionManager.display();
         }
     });
 
-    setTimeout(function(){
-        window.onresize = resizePaper;
-    },200);
-}
+    // setTimeout(function () {
+    //     window.onresize = resizePaper;
+    // }, 200);
 
-if (typeof exports !== "undefined") {
-    exports.main = main;
-    exports.setSvg = setSvg;
-    exports.setUtil = setUtil;
-    exports.setGlobalVariable = setGlobalVariable;
-}
+};
