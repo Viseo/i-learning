@@ -567,29 +567,14 @@ exports.Domain = function (globalVariables) {
     }
 
     saveFormation (displayQuizzManager, status = "Edited") {
-        const messageSave = "Votre travail a bien été enregistré.",
+        const
+            messageSave = "Votre travail a bien été enregistré.",
             messageError = "Vous devez remplir correctement le nom de la formation.",
-            messageReplace =  "Les modifications ont bien été enregistrées",
+            messageReplace =  "Les modifications ont bien été enregistrées.",
             messageUsedName = "Le nom de cette formation est déjà utilisé !",
-            messageNoModification = "Les modifications ont déjà été enregistrées";
+            messageNoModification = "Les modifications ont déjà été enregistrées.";
 
-            const displayErrorMessage = (message) => {
-                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
-                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                }
-                (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-                this.errorMessage = new svg.Text(message);
-                this.errorMessage.mark("formationErrorMessage");
-                this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
-                this.errorMessage.position(this.buttonWidth, 0)
-                    .font("Arial", 15)
-                    .anchor('start').color(myColors.red);
-                setTimeout(() => {
-                    this.formationInfoManipulator.ordonator.unset(2);
-                }, 5000);
-            };
-
-            const displaySaveMessage = (message, displayQuizzManager) => {
+            const displaySaveMessage = (message, displayQuizzManager, error = false) => {
                 if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                     this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 }
@@ -598,9 +583,9 @@ exports.Domain = function (globalVariables) {
                 } else {
                     (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                     this.errorMessageSave = new svg.Text(message)
-                        .position(this.buttonWidth, -this.saveButtonHeight / 2 - MARGIN)
+                        .position(this.buttonWidth * 2, -this.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
-                        .anchor('middle').color(myColors.green);
+                        .anchor('middle').color(error ? myColors.red : myColors.green);
                     this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
                     svg.timeout(() => {
                         if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
@@ -614,7 +599,7 @@ exports.Domain = function (globalVariables) {
                 switch (message) {
                     case messageError:
                     case messageUsedName:
-                        displayErrorMessage(message);
+                        displaySaveMessage(message, null, true);
                         break;
                     default:
                         displaySaveMessage(message, displayQuizzManager);
