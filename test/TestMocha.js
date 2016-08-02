@@ -168,7 +168,7 @@ describe('formationsManager', function () {
             let gameQuiz = retrieve(root, "[gameQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             let gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
-            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre.listeners["click"](); //{pageX:165, pageY:300, preventDefault:()=>{}}
             assert.equal(gameQuiz.stroke, 'rgb(25,25,112)');
 
             let panelBack = retrieve(root, "[panelBack]");
@@ -188,7 +188,7 @@ describe('formationsManager', function () {
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
-            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game1 = retrieve(root, "[level1quizz1]");
             assert.equal(game1.text, "Quiz 2");
@@ -197,7 +197,7 @@ describe('formationsManager', function () {
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
-            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game2 = retrieve(root, "[level1quizz2]");
             assert.equal(game2.text, "Quiz 3");
@@ -206,7 +206,7 @@ describe('formationsManager', function () {
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
-            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game3 = retrieve(root, "[level1quizz3]");
             assert.equal(game3.text, "Quiz 4");
