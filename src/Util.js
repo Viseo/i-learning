@@ -1024,7 +1024,7 @@ exports.Util = function (globalVariables) {
             this.size = this.returnButton.boundingRect();
             this.returnText.position(w + this.size.width/2, this.size.height/4);
             const backgroundW = w + this.size.width + this.textSize.width;
-            this.background = new svg.Rect(backgroundW * 1.15, h * 1.5)
+            this.background = new svg.Rect(backgroundW * 1.15, h * 1.1)
                 .position(backgroundW/2, 0)
                 .color(myColors.white, 0, myColors.white);
             this.manipulator.ordonator.set(0, this.background);
