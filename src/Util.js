@@ -1002,7 +1002,7 @@ exports.Util = function (globalVariables) {
             this.labelDefault = "Retour";
             this.label = label ? label : this.labelDefault;
             this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
-            this.manipulator.addOrdonator(1);
+            this.manipulator.addOrdonator(2);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
             this.manipulator.last.add(this.chevronManipulator.first);
         }
@@ -1010,23 +1010,29 @@ exports.Util = function (globalVariables) {
         setHandler(returnHandler) {
             svg.addEvent(this.returnButton, "click", returnHandler);
             svg.addEvent(this.returnText, "click", returnHandler);
+            svg.addEvent(this.background, "click", returnHandler);
         }
 
         display(x, y, w, h) {
             this.returnText = new svg.Text(this.label);
             this.returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
             this.returnButton.resize(w, h);
-            //this.returnButton.move(0, y);
             this.returnButton.color(myColors.black, 0, []);
             this.returnText.font("Arial", 20).anchor("start").position(0, 0);
-            this.textSize = svg.runtime.boundingRect(this.returnText.component);
-            this.size = svg.runtime.boundingRect(this.returnButton.component);
-            this.manipulator.ordonator.set(0, this.returnText);
-            this.returnText.position(w + this.size.width / 2, this.textSize.height / 2 + this.size.height / 4);
+            this.manipulator.ordonator.set(1, this.returnText);
+            this.textSize = this.returnText.boundingRect();
+            this.size = this.returnButton.boundingRect();
+            this.returnText.position(w + this.size.width/2, this.size.height/4);
+            const backgroundW = w + this.size.width + this.textSize.width;
+            this.background = new svg.Rect(backgroundW * 1.15, h * 1.5)
+                .position(backgroundW/2, 0)
+                .color(myColors.white, 0, myColors.white);
+            this.manipulator.ordonator.set(0, this.background);
             this.manipulator.translator.move(x + w, y);
 
             this.returnText.parentObj = this;
             this.returnButton.parentObj = this;
+            this.background.parentObj = this;
         }
     }
 
