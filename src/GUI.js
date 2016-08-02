@@ -1982,12 +1982,13 @@ exports.GUI = function (globalVariables) {
 
         let crossSize = 12;
         let drawCross = () => {
-            let circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white);
-            let cross = drawRedCross(w / 2, -h / 2, crossSize, this.closeButtonManipulator)
-                .color(myColors.lightgrey, 1, myColors.lightgrey);
+            const
+                circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
+                cross = drawRedCross(w / 2, -h / 2, crossSize, this.closeButtonManipulator)
+                    .color(myColors.lightgrey, 1, myColors.lightgrey);
             this.closeButtonManipulator.ordonator.set(0, circle);
             this.closeButtonManipulator.ordonator.set(1, cross);
-            let crossHandler = () => {
+            const crossHandler = () => {
                 this.editable && (parent.explanation = false);
                 parent.manipulator.last.remove(cross.parent.parentManip.parentObject.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
@@ -2006,7 +2007,7 @@ exports.GUI = function (globalVariables) {
         });
         var hasKeyDownEvent = (event) => {
             this.target = this.panel;
-            if (blackCross && event.keyCode === 27) { // suppr
+            if (event.keyCode === 27 && this.cross) { // suppr
                 this.editable && (parent.explanation = false);
                 parent.manipulator.last.remove(this.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
@@ -2014,24 +2015,26 @@ exports.GUI = function (globalVariables) {
             }
             return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
         };
-        let panelWidth = 2 * w / 3,
-            panelHeight = 2 * h / 3;
-        this.panelManipulator.translator.move(w / 8, 0);
+        let panelWidth = (w - 2*MARGIN) * 0.7,
+            panelHeight = h - 2*MARGIN;
+        const imageW = (w - 2*MARGIN)*0.3 - MARGIN,
+            imageX = (-w + imageW)/2 + MARGIN;
+        this.panelManipulator.translator.move((w - panelWidth)/2 - MARGIN, 0);
         if (this.image) {
             this.imageLayer = 3;
-            let picture = new Picture(this.image, this.editable, this);
-            let imageSize = Math.min(w / 4, panelHeight);
-            picture.draw(-w / 2 + imageSize / 4 + w / 12, 0, imageSize, imageSize);
+            const imageSize = Math.min(imageW, panelHeight);
+            new Picture(this.image, this.editable, this)
+                .draw(imageX, 0, imageSize, imageSize);
             this.answer.filled = true;
         } else if (this.editable) {
-            let draganddropTextSVG = autoAdjustText(this.draganddropText, w / 6, h / 3, 20, null, this.manipulator, 3).text;
-            draganddropTextSVG.position(-w / 2 + w / 12 + MARGIN, 0).color(myColors.grey);
-            draganddropTextSVG._acceptDrop = this.editable;
+            const textW = (w - 2*MARGIN)*0.3 - MARGIN;
+            autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
+                .position(imageX, 0).color(myColors.grey)
+                ._acceptDrop = this.editable;
             this.label ? this.answer.filled = true : this.answer.filled = false;
         } else {
             panelWidth = w - 2 * MARGIN;
-            panelHeight = h - crossSize - 3 * MARGIN;
-            this.panelManipulator.translator.move(0, crossSize / 2 + MARGIN / 2);
+            this.panelManipulator.translator.move(0, 0);
         }
 
         if (typeof this.panel === "undefined") {
@@ -2050,14 +2053,12 @@ exports.GUI = function (globalVariables) {
         this.text.position(panelWidth / 2, svg.runtime.boundingRect(this.text.component).height);
         this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
 
-        let clickEdition = () => {
+        const clickEdition = () => {
             let contentArea = {};
-            contentArea.y = panelHeight;
-            contentArea.x = panelWidth / 2;
-            contentArea.globalPointCenter = this.panel.border.globalPoint(-contentArea.x, -contentArea.y / 2 - MARGIN);
+            contentArea.globalPointCenter = this.panel.border.globalPoint(-panelWidth/2, -panelHeight /2);
             drawing.notInTextArea = false;
-            contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y, panelWidth - MARGIN, panelHeight - MARGIN);
-            contentArea.color(null, 0, myColors.black).font("Arial", 20);
+            contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y, panelWidth - MARGIN, panelHeight - MARGIN)
+                .color(null, 0, myColors.black).font("Arial", 20);
             (this.textToDisplay === "" || this.textToDisplay === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
             contentArea.message(this.label || "");
             this.textManipulator.ordonator.unset(0);
@@ -2065,7 +2066,7 @@ exports.GUI = function (globalVariables) {
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             drawings.screen.add(contentArea);
             contentArea.focus();
-            let onblur = () => {
+            const onblur = () => {
                 contentArea.enter();
                 this.label = contentArea.messageText;
                 drawings.screen.remove(contentArea);
