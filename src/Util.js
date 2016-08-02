@@ -773,6 +773,8 @@ exports.Util = function (globalVariables) {
             this.game = game;
             this.scoreSize = 13;
             this.icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+            // this.icon.content.mark(game.id);
+            this.icon.content.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);

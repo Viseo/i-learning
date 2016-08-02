@@ -836,7 +836,6 @@ exports.Domain = function (globalVariables) {
             if (this.library.gameSelected) {
                 svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
                 svg.addEvent(this.messageDragDrop, "mouseup", this.mouseUpGraphBlock);
-                runtime && runtime.addEvent(this.panel.back.component, "mouseup", this.mouseUpGraphBlock);
             }
         }
 

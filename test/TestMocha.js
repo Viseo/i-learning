@@ -147,25 +147,72 @@ describe('formationsManager', function () {
 
     it("should add a formation", function(done){
         testutils.retrieveDB("./log/dbAdminConnexionFormationsManager.json", dbListener, function () {
-            svg.screenSize(1920, 1500);
+            svg.screenSize(1920, 947);
             main(svg, runtime, dbListener);
             let root = runtime.anchor("content");
             let addFormationCadre = retrieve(root, "[addFormationCadre]");
             addFormationCadre.listeners["click"]();
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
             assert.equal(formationLabelContent.text, "Entrer le nom de la formation");
+
             let saveFormationButtonCadre = retrieve(root, "[saveFormationButtonCadre]");
             saveFormationButtonCadre.listeners["click"]();
             let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
             assert.equal(formationErrorMessage.text, "Vous devez remplir correctement le nom de la formation.");
+
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
             let errorMessagePublication = retrieve(root, "[errorMessagePublication]");
             assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");
+
             let gameQuiz = retrieve(root, "[gameQuiz]");
-            gameQuiz.listeners["mousedown"](gameQuiz.globalPoint(0,0));
-            // gameQuiz.listeners["down"]();
-            assert.equal(gameQuiz.color, [25, 122, 230]);
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            let gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
+            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            assert.equal(gameQuiz.stroke, 'rgb(25,25,112)');
+
+            let panelBack = retrieve(root, "[panelBack]");
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game0 = retrieve(root, "[level0quizz0]");
+            assert.equal(game0.text, "Quiz 1");
+
+            publicationFormationButtonCadre.listeners["click"]();
+            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");
+
+            formationLabelContent.listeners["dblclick"]();
+            let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
+            formationLabelContentArea.value = "La première formation";
+            formationLabelContentArea.listeners["blur"]();
+            formationLabelContent = retrieve(root, "[formationLabelContent]");
+            assert.equal(formationLabelContent.text, "La première formation");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
+            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game1 = retrieve(root, "[level1quizz1]");
+            assert.equal(game1.text, "Quiz 2");
+            let miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
+            assert.equal(miniaturesManipulatorLast.children.length, 2);
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
+            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game2 = retrieve(root, "[level1quizz2]");
+            assert.equal(game2.text, "Quiz 3");
+            miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
+            assert.equal(miniaturesManipulatorLast.children.length, 3);
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameMiniatureCadre = retrieve(root, "[gameMiniatureCadre]");
+            gameMiniatureCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game3 = retrieve(root, "[level1quizz3]");
+            assert.equal(game3.text, "Quiz 4");
+            miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
+            assert.equal(miniaturesManipulatorLast.children.length, 4);
+
             done();
         });
     });
