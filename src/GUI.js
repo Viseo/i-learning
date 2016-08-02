@@ -95,10 +95,10 @@ exports.GUI = function (globalVariables) {
                 removeErrorMessage();
                 this.border.color(myColors.white, 2, myColors.red);
                 let /*libraryRatio = 0.2,*/
-                    // previewButtonHeightRatio = 0.1,
-                    // marginErrorMessagePreviewButton = 0.03,
+                // previewButtonHeightRatio = 0.1,
+                // marginErrorMessagePreviewButton = 0.03,
                     quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
-                    //position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
+                //position = 0.5*libraryRatio * drawing.width + (quizzManager.questCreaWidth/2),//-this.editor.parent.globalMargin.width)/2,
                     anchor = 'middle';
                 this.errorMessage = new svg.Text(REGEX_ERROR);
                 quizzManager.questionCreator.manipulator.ordonator.set(1, this.errorMessage);
@@ -327,11 +327,11 @@ exports.GUI = function (globalVariables) {
                     clip = this.formation.clippingManipulator.last,
                     glass = new svg.Rect(panel.width, panel.height).opacity(0.001).color(myColors.white);
 
-            if (this.arrowMode) {
-                this.gameSelected = null;
-                this.itemsTab.forEach(e => {
-                    e.miniature.cadre.color(myColors.white, 1, myColors.black)
-                });
+                if (this.arrowMode) {
+                    this.gameSelected = null;
+                    this.itemsTab.forEach(e => {
+                        e.miniature.cadre.color(myColors.white, 1, myColors.black)
+                    });
 
                     this.formation.selectedGame && this.formation.selectedGame.icon.cadre.component.listeners.click();
 
@@ -389,7 +389,7 @@ exports.GUI = function (globalVariables) {
                 }
 
                 let label = myLibraryGames.tab[i].label,
-                    obj = displayTextWithCircle(label, Math.min(w/2, h/4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
+                    obj = displayTextWithCircle(label, Math.min(w / 2, h / 4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
                 obj.cadre.mark("game" + label);
                 obj.cadre.clicked = false;
                 this.itemsTab[i].miniature = obj;
@@ -401,78 +401,68 @@ exports.GUI = function (globalVariables) {
         };
 
         let assignEvents = () => {
-            this.libraryManipulators.forEach((libraryManipulator, i) => {
+            this.itemsTab.forEach((item, i) => {
                 let mouseDownAction = event => {
                     this.arrowMode && this.toggleArrowMode();
-
-                    libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
                     let manip = new Manipulator(this);
                     manip.addOrdonator(2);
                     drawings.piste.last.add(manip.first);
-                    this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
+                    let point = item.miniature.cadre.globalPoint(0, 0);
+                    manip.first.move(point.x, point.y);
 
-                    let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
-                        point2 = manip.first.globalPoint(0, 0);
-                    manip.first.move(point.x - point2.x, point.y - point2.y);
-
+                    
                     let mouseClickHandler = event => {
-                        let target = this.gameMiniature.cadre;
-                        this.itemsTab.forEach(item => {
-                            if (item.miniature.content.messageText === target.parent.children[1].messageText) {
-                                if (item !== this.gameSelected) {
-                                    this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-                                    item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                    this.gameSelected = item;
-                                } else {
-                                    item.miniature.cadre.color(myColors.white, 1, myColors.black);
-                                    this.gameSelected = null;
-                                }
-                            }
-                        });
-                        this.formation && this.formation.graphBlock && !this.gameSelected && svg.removeEvent(this.formation.graphBlock.rect, "mouseup", this.formation.mouseUpGraphBlock);
+                        if (item !== this.gameSelected) {
+                            this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                            item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                            this.gameSelected = item;
+                        } else {
+                            item.miniature.cadre.color(myColors.white, 1, myColors.black);
+                            this.gameSelected = null;
+                        }
+
+                        this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
                         this.formation && this.formation.clickToAdd();
                     };
 
+                    this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
+                    this.draggedObject.cadre.mark("draggedGameCadre");
+                    this.draggedObject.create = this.itemsTab[i].create;
+                    manip.ordonator.set(0, this.draggedObject.cadre);
+                    manageDnD(this.draggedObject.cadre, manip);
+                    manageDnD(this.draggedObject.content, manip);
 
-                    if (this.itemsTab && this.itemsTab.length !== 0) {
-                    if (this.itemsTab[i].miniature.content && (this.itemsTab[i].miniature.content.messageText !== "")) {
-                        this.gameMiniature = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
-                        this.gameMiniature.cadre.mark("gameMiniatureCadre");
-                        svg.addEvent(this.gameMiniature.cadre, 'click', mouseClickHandler);
-                        this.gameMiniature.create = this.itemsTab[i].create;
-                        this.draggedObject = this.gameMiniature;
-                        manip.ordonator.set(0, this.gameMiniature.cadre);
-                        manageDnD(this.gameMiniature.cadre, manip);
-                        manageDnD(this.gameMiniature.content, manip);
-                    }
+
+                    
+
 
                     let mouseupHandler = event => {
                         var svgObj = manip.ordonator.children.slice(0)[0];
                         manip.first.parent.remove(manip.first);
                         var target = drawings.background.getTarget(event.pageX, event.pageY);
                         if (target && target.parent && target.parent.parentManip) {
-                            if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                            if (target.parent.parentManip.parentObject instanceof Formation) {
                                 this.dropAction(svgObj, event);
                             }
                             else {
-                                svg.event(this.gameMiniature.content, "click", mouseClickHandler);
+                                svg.event(this.draggedObject.content, "click", mouseClickHandler);
                             }
                         }
                         this.draggedObject = null;
                     };
 
-                        this.gameMiniature.cadre.component.listeners && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.listeners.mouseup);
-                        this.gameMiniature.cadre.component.target && this.gameMiniature.cadre.component.target.listeners && this.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.target.listeners.mouseup);
+                    this.draggedObject.cadre.component.listeners && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.listeners.mouseup);
+                    this.draggedObject.cadre.component.target && this.draggedObject.cadre.component.target.listeners && this.draggedObject.cadre.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.target.listeners.mouseup);
 
                         svg.event(drawings.glass, "mousedown", event);
-                        this.gameMiniature.content.component.listeners && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.listeners.mouseup);
-                        this.gameMiniature.content.component.target && this.gameMiniature.content.component.target.listeners && this.gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.target.listeners.mouseup);
-                        svg.addEvent(this.gameMiniature.cadre, 'mouseup', mouseupHandler);
-                        svg.addEvent(this.gameMiniature.content, 'mouseup', mouseupHandler);
+                        this.draggedObject.content.component.listeners && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.listeners.mouseup);
+                        this.draggedObject.content.component.target && this.draggedObject.content.component.target.listeners && this.draggedObject.content.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.target.listeners.mouseup);
+                        svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
+                        svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
                     }
                 };
-                svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
-                svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+                svg.addEvent(item.miniature.cadre, 'mousedown', mouseDownAction);
+                svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
             });
         };
 
@@ -516,17 +506,17 @@ exports.GUI = function (globalVariables) {
                             img.component.listeners && svg.removeEvent(img, 'mouseup');
                             img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
 
-                        let mouseupHandler = event => {
-                            let svgObj = manip.ordonator.children.shift();
-                            manip.first.parent.remove(manip.first);
-                            let target = drawings.background.getTarget(event.pageX, event.pageY);
-                            if (target && target.parent && target.parent.parentManip) {
-                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                    this.dropAction(svgObj, event);
+                            let mouseupHandler = event => {
+                                let svgObj = manip.ordonator.children.shift();
+                                manip.first.parent.remove(manip.first);
+                                let target = drawings.background.getTarget(event.pageX, event.pageY);
+                                if (target && target.parent && target.parent.parentManip) {
+                                    if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                        this.dropAction(event);
+                                    }
                                 }
-                            }
-                            this.draggedObject = null;
-                        };
+                                this.draggedObject = null;
+                            };
 
                             svg.event(drawings.glass, "mousedown", event);
                             svg.addEvent(img, 'mouseup', mouseupHandler);
@@ -564,17 +554,17 @@ exports.GUI = function (globalVariables) {
 
                 //this.itemsTab.length === 0) {
                 Server.getImages().then(data => {
-                    let myLibraryImage = JSON.parse(data).images;
-                    myLibraryImage.forEach((url, i) => {
-                        this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
-                        this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
-                        this.itemsTab[i] = imageController.getImage(url.imgSrc, function () {
-                            this.imageLoaded = true; //this != library
+                        let myLibraryImage = JSON.parse(data).images;
+                        myLibraryImage.forEach((url, i) => {
+                            this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
+                            this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
+                            this.itemsTab[i] = imageController.getImage(url.imgSrc, function () {
+                                this.imageLoaded = true; //this != library
+                            });
+                            this.itemsTab[i].name = url.name;
+                            this.itemsTab[i].imgSrc = url.imgSrc;
                         });
-                        this.itemsTab[i].name = url.name;
-                        this.itemsTab[i].imgSrc = url.imgSrc;
-                    });
-                })
+                    })
                     .then(() => {
                         let intervalToken = runtime.interval(() => {
                             if (this.itemsTab.every(e => e.imageLoaded)) {
@@ -925,6 +915,9 @@ exports.GUI = function (globalVariables) {
             }
 
             let manageMiniature = (tabElement) => {
+
+                let mouseDownAction = () => {}
+
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
@@ -1073,26 +1066,26 @@ exports.GUI = function (globalVariables) {
                 this.validLabelInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
                 this.formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
 
-            this.formationInfoManipulator.ordonator.set(0, this.formationLabel.cadre);
-            this.formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-            this.formationInfoManipulator.translator.move(0, this.returnButton.height);
-            svg.addEvent(this.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
-            svg.addEvent(this.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
-        };
-        showTitle();
-        this.library.display(0, drawing.height*HEADER_SIZE, this.libraryWidth-MARGIN, this.graphCreaHeight);
+                this.formationInfoManipulator.ordonator.set(0, this.formationLabel.cadre);
+                this.formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+                this.formationInfoManipulator.translator.move(0, this.returnButton.height);
+                svg.addEvent(this.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(this.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
+            };
+            showTitle();
+            this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
 
-        if(this.status !== "NotPublished") {
-            this.displayFormationSaveButton(drawing.width/2 - 2*this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
-            this.displayFormationPublicationButton(drawing.width/2 + 2*this.buttonWidth, drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
-            this.displayFormationDeactivationButton(drawing.width/2, drawing.height*0.87, this.buttonWidth, this.saveButtonHeight);
-        } else {
-            this.displayFormationSaveButton(drawing.width/2 - this.buttonWidth, drawing.height*0.87 ,this.buttonWidth, this.saveButtonHeight);
-            this.displayFormationPublicationButton(drawing.width/2 + this.buttonWidth , drawing.height* 0.87 ,this.buttonWidth, this.publicationButtonHeight);
+            if (this.status !== "NotPublished") {
+                this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                this.displayFormationPublicationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+                this.displayFormationDeactivationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+            } else {
+                this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+            }
+            displayFrame(this.graphCreaWidth, this.graphCreaHeight);
+            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
         }
-        displayFrame(this.graphCreaWidth, this.graphCreaHeight);
-        this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-    }
 
         ////15: Height Message Error
     }
@@ -1138,7 +1131,7 @@ exports.GUI = function (globalVariables) {
                             question.questionType && question.questionType.validationTab.forEach(funcEl => {
                                 var result = funcEl && funcEl(question);
                                 if (result && (!result.isValid)) {
-                                    message.push ("Un ou plusieurs jeu(x) ne sont pas complet(s)");
+                                    message.push("Un ou plusieurs jeu(x) ne sont pas complet(s)");
                                     arrayOfUncorrectQuestions.push(question.questionNum - 1);
                                 }
                                 result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
@@ -1146,10 +1139,10 @@ exports.GUI = function (globalVariables) {
                         }
                         allQuizzValid = allQuizzValid && checkQuizz.isValid;
                     });
-                    checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white,3,myColors.red);
+                    checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white, 3, myColors.red);
                 });
             });
-            if(!allQuizzValid) {
+            if (!allQuizzValid) {
                 this.displayPublicationMessage(message[0]);
             } else {
                 this.saveFormation(null, "Published");
@@ -1248,14 +1241,14 @@ exports.GUI = function (globalVariables) {
             this.formationsManipulator.translator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + this.spaceBetweenElements.height / 2);
         };
 
-    let onClickFormation = formation => {
-        Server.getVersionById(formation._id).then(data => {
-            var myFormation = JSON.parse(data).formation;
-            formation.loadFormation(myFormation);
-            this.formationDisplayed = formation;
-            this.formationDisplayed.displayFormation();
-        })
-    };
+        let onClickFormation = formation => {
+            Server.getVersionById(formation._id).then(data => {
+                var myFormation = JSON.parse(data).formation;
+                formation.loadFormation(myFormation);
+                this.formationDisplayed = formation;
+                this.formationDisplayed.displayFormation();
+            })
+        };
 
         var onClickNewFormation = () => {
             var formation = new Formation({}, this);
@@ -1314,13 +1307,13 @@ exports.GUI = function (globalVariables) {
         (this.tileHeight < 0) && (this.tileHeight = undefined);
         (!this.tileHeight || this.tileHeight > 0) && displayPanel();
 
-    this.displayFormations = ()=> {
-        let posx = this.initialFormationsPosX,
-            posy = MARGIN,
-            count = 0,
-            totalLines = 1;
-        this.formations.forEach(formation => {
-            if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
+        this.displayFormations = ()=> {
+            let posx = this.initialFormationsPosX,
+                posy = MARGIN,
+                count = 0,
+                totalLines = 1;
+            this.formations.forEach(formation => {
+                if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
 
                 if (count > (this.rows - 1)) {
                     count = 0;
@@ -2861,49 +2854,49 @@ exports.GUI = function (globalVariables) {
             return (emptyAreas.length > 0);
         };
 
-    this.saveButtonHandler = () => {
-        if (!emptyAreasHandler(true) && AllOk()){
-            this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
-            let tempObject = {
-                lastName: this.lastNameField.label,
-                firstName: this.firstNameField.label,
-                mailAddress: this.mailAddressField.label,
-                password: this.passwordField.hash
-            };
-            Server.inscription(tempObject)
-                .then(data => {
-                    let created = JSON.parse(data);
-                    if (created) {
-                        var messageText = "Votre compte a bien été créé !";
-                        var message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                        message.text.color(myColors.green).position(0, - this.saveButton.cadre.height+MARGIN);
+        this.saveButtonHandler = () => {
+            if (!emptyAreasHandler(true) && AllOk()) {
+                this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
+                let tempObject = {
+                    lastName: this.lastNameField.label,
+                    firstName: this.firstNameField.label,
+                    mailAddress: this.mailAddressField.label,
+                    password: this.passwordField.hash
+                };
+                Server.inscription(tempObject)
+                    .then(data => {
+                        let created = JSON.parse(data);
+                        if (created) {
+                            var messageText = "Votre compte a bien été créé !";
+                            var message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                            message.text.color(myColors.green).position(0, -this.saveButton.cadre.height + MARGIN);
+                            setTimeout(() => {
+                                this.saveButtonManipulator.ordonator.unset(3);
+                            }, 10000);
+                        } else {
+                            throw "Un utilisateur possède déjà cette adresse mail !"
+                        }
+                    })
+                    .catch((messageText) => {
+                        let message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                        message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
                         setTimeout(() => {
                             this.saveButtonManipulator.ordonator.unset(3);
                         }, 10000);
-                    } else {
-                        throw "Un utilisateur possède déjà cette adresse mail !"
-                    }
-                })
-                .catch((messageText) => {
-                    let message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
-                    setTimeout(() => {
-                        this.saveButtonManipulator.ordonator.unset(3);
-                    }, 10000);
-                });
-        }
-        else if (!AllOk()){
-            let messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
-                message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-            message.text.color(myColors.red).position(0, - this.saveButton.cadre.height+MARGIN);
-        }
-    };
-    this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
-    this.saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
-    this.saveButton = displayText(this.saveButtonLabel, this.saveButtonWidth, this.saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
-    this.saveButtonManipulator.first.move(0, 2.5*drawing.height/10);
-    svg.addEvent(this.saveButton.content, "click", this.saveButtonHandler);
-    svg.addEvent(this.saveButton.cadre, "click", this.saveButtonHandler);
+                    });
+            }
+            else if (!AllOk()) {
+                let messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
+                    message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
+            }
+        };
+        this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+        this.saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
+        this.saveButton = displayText(this.saveButtonLabel, this.saveButtonWidth, this.saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
+        this.saveButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
+        svg.addEvent(this.saveButton.content, "click", this.saveButtonHandler);
+        svg.addEvent(this.saveButton.cadre, "click", this.saveButtonHandler);
 
         let nextField = (backwards = false)=> {
             let index = this.tabForm.indexOf(focusedField);

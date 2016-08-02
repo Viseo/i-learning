@@ -515,45 +515,45 @@ exports.Domain = function (globalVariables) {
         this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
     }
 
-    addNewGame (event, lib) {
-        let getDropLocation = event => {
-            let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
-            dropLocation.y -= this.panel.contentV.y;
-            dropLocation.x -= this.panel.contentV.x;
-            return dropLocation;
-        };
-        let getLevel = (dropLocation) => {
-            let level = -1;
-            while(dropLocation.y > -this.panel.content.height/2) {
-                dropLocation.y -= this.levelHeight;
-                level++;
-            }
-            if (level >= this.levelsTab.length) {
-                level = this.levelsTab.length;
-                this.addNewLevel(level);
-            }
-            return level;
-        };
-        let getColumn = (dropLocation, level)=>{
-            let posX=this.levelsTab[level].gamesTab.length;
-            for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
-                if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
-                    posX = i;
-                    break;
+        addNewGame (event, lib) {
+            let getDropLocation = event => {
+                let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
+                dropLocation.y -= this.panel.contentV.y;
+                dropLocation.x -= this.panel.contentV.x;
+                return dropLocation;
+            };
+            let getLevel = (dropLocation) => {
+                let level = -1;
+                while(dropLocation.y > -this.panel.content.height/2) {
+                    dropLocation.y -= this.levelHeight;
+                    level++;
                 }
-            }
-            return posX;
-        };
-        
-        let dropLocation=getDropLocation(event);
-        let level =getLevel(dropLocation);
-        let posX = getColumn(dropLocation, level);
-        let gameBuilder = lib.draggedObject || lib.gameSelected || null;
-        gameBuilder.create(this, level, posX);
-        this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+                if (level >= this.levelsTab.length) {
+                    level = this.levelsTab.length;
+                    this.addNewLevel(level);
+                }
+                return level;
+            };
+            let getColumn = (dropLocation, level)=>{
+                let posX=this.levelsTab[level].gamesTab.length;
+                for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
+                    if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
+                        posX = i;
+                        break;
+                    }
+                }
+                return posX;
+            };
+
+            let dropLocation=getDropLocation(event);
+            let level =getLevel(dropLocation);
+            let posX = getColumn(dropLocation, level);
+            let gameBuilder = lib.draggedObject || lib.gameSelected || null;
+            gameBuilder.create(this, level, posX);
+            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
 
-    deactivateFormation() {
+        deactivateFormation() {
         this.status = "NotPublished";
         Server.deactivateFormation(this.formationId, ignoredData)
             .then(() => {
@@ -812,7 +812,7 @@ exports.Domain = function (globalVariables) {
 
         clickToAdd() {
             this.mouseUpGraphBlock = event => {
-                this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
+                this.library.gameSelected && this.library.dropAction(event);
                 this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
                 this.library.gameSelected = null;
                 svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
@@ -905,16 +905,14 @@ exports.Domain = function (globalVariables) {
             this.fontSize = lib.fontSize ;
             this.itemsTab = lib.tab;
             for (let i = 0; i < this.itemsTab.length; i++) {
-                this.libraryManipulators[i] = new Manipulator(this);
+                this.libraryManipulators[i] = new Manipulator(this.itemsTab[i]);
                 this.libraryManipulators[i].addOrdonator(2);
             }
-
             this.arrowModeManipulator = new Manipulator(this);
             this.arrowModeManipulator.addOrdonator(3);
-
         }
 
-        dropAction(element, event) {
+        dropAction(event) {
             const target = drawings.background.getTarget(event.pageX, event.pageY);
             let formation;
 
