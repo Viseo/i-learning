@@ -334,9 +334,9 @@ exports.Domain = function (globalVariables) {
             this.answer = answer;
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(5);
-            this.blackCrossManipulator = new Manipulator(this);
-            this.blackCrossManipulator.addOrdonator(2);
-            this.manipulator.ordonator.set(2, this.blackCrossManipulator.first);
+            this.closeButtonManipulator = new Manipulator(this);
+            this.closeButtonManipulator.addOrdonator(2);
+            this.manipulator.ordonator.set(2, this.closeButtonManipulator.first);
             this.panelManipulator = new Manipulator(this);
             this.manipulator.last.add(this.panelManipulator.first);
             this.panelManipulator.addOrdonator(2);
@@ -995,7 +995,7 @@ exports.Domain = function (globalVariables) {
                             answer.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.ordonator.set(0, oldQuest.cadre);
+                    target.parent.parentManip.ordonator.set(0, oldElement.cadre);
                 }
 
             }

@@ -51,7 +51,7 @@ exports.GUI = function (globalVariables) {
         if (typeof w !== "undefined")(this.width = w);
         if (typeof h !== "undefined")(this.height = h);
 
-        let answerEditableDisplay = (x, y, w, h)=> {
+        let answerEditableDisplay = (x, y, w, h) => {
             this.checkboxSize = h * 0.2;
             this.obj = {};
             let redCrossClickHandler = ()=> {
@@ -223,7 +223,6 @@ exports.GUI = function (globalVariables) {
             let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
             this.bordure = obj.cadre;
             this.content = obj.content;
-
         } else if (this.imageSrc && !this.label) { // Reponse avec Image uniquement
             let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.width, this.height, this.manipulator);
             this.image = obj.image;
@@ -397,7 +396,7 @@ exports.GUI = function (globalVariables) {
             });
             this.panel.resizeContent(w, tempY += Math.min(w / 2, h / 4) - 1);
         };
-    (
+
         let assignEvents = () => {
             this.libraryManipulators.forEach(libraryManipulator => {
                 let mouseDownAction = event => {
@@ -476,7 +475,7 @@ exports.GUI = function (globalVariables) {
         assignEvents();
     }
 
-    function imagesLibraryDisplay(x, y, w, h, callback = ()=> {
+    function imagesLibraryDisplay(x, y, w, h, callback = () => {
     }) {
         if (typeof x !== "undefined")(this.x = x);
         if (typeof y !== "undefined")(this.y = y);
@@ -1106,52 +1105,52 @@ exports.GUI = function (globalVariables) {
         this.saveFormationButtonManipulator.translator.move(x, y);
     }
 
-function formationDisplayDeactivateButton(x, y, w, h) {
-    this.deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
-    svg.addEvent(this.deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
-    svg.addEvent(this.deactivateFormationButton.content, "click", () => this.deactivateFormation());
-    this.deactivateFormationButtonManipulator.translator.move(x, y);
-}
+    function formationDisplayDeactivateButton(x, y, w, h) {
+        this.deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
+        svg.addEvent(this.deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
+        svg.addEvent(this.deactivateFormationButton.content, "click", () => this.deactivateFormation());
+        this.deactivateFormationButtonManipulator.translator.move(x, y);
+    }
 
-function formationDisplayPublicationButton(x, y, w, h) {
-    let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
-    this.publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
-    this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-    this.publicationFormationQuizzManager = () => {
-        let message = [];
-        let arrayOfUncorrectQuestions = [];
-        let allQuizzValid = true;
-        this.levelsTab.forEach(level => {
-            level.gamesTab.forEach(game => {
-                let checkQuizz = new Quizz(game, false, this);
-                checkQuizz.isValid = true;
-                checkQuizz.tabQuestions.forEach(question => {
-                    if (!(question instanceof AddEmptyElement)) {
-                        question.questionType && question.questionType.validationTab.forEach(funcEl => {
-                            var result = funcEl && funcEl(question);
-                            if (result && (!result.isValid)) {
-                                message.push ("Un ou plusieurs jeu(x) ne sont pas complet(s)");
-                                arrayOfUncorrectQuestions.push(question.questionNum - 1);
-                            }
-                            result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
-                        });
-                    }
-                    allQuizzValid = allQuizzValid && checkQuizz.isValid;
+    function formationDisplayPublicationButton(x, y, w, h) {
+        let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
+        this.publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
+        this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+        this.publicationFormationQuizzManager = () => {
+            let message = [];
+            let arrayOfUncorrectQuestions = [];
+            let allQuizzValid = true;
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    let checkQuizz = new Quizz(game, false, this);
+                    checkQuizz.isValid = true;
+                    checkQuizz.tabQuestions.forEach(question => {
+                        if (!(question instanceof AddEmptyElement)) {
+                            question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                                var result = funcEl && funcEl(question);
+                                if (result && (!result.isValid)) {
+                                    message.push ("Un ou plusieurs jeu(x) ne sont pas complet(s)");
+                                    arrayOfUncorrectQuestions.push(question.questionNum - 1);
+                                }
+                                result && (checkQuizz.isValid = checkQuizz.isValid && result.isValid);
+                            });
+                        }
+                        allQuizzValid = allQuizzValid && checkQuizz.isValid;
+                    });
+                    checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white,3,myColors.red);
                 });
-                checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white,3,myColors.red);
             });
-        });
-        if(!allQuizzValid) {
-            this.displayPublicationMessage(message[0]);
-        } else {
-            this.saveFormation(null, "Published");
-        }
-    };
-    this.publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
-    svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
-    svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
-    this.publicationFormationButtonManipulator.translator.move(x, y);
-}
+            if(!allQuizzValid) {
+                this.displayPublicationMessage(message[0]);
+            } else {
+                this.saveFormation(null, "Published");
+            }
+        };
+        this.publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
+        svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
+        svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
+        this.publicationFormationButtonManipulator.translator.move(x, y);
+    }
 
     function formationsManagerDisplay() {
         drawing.currentPageDisplayed = 'FormationsManager';
@@ -1978,20 +1977,20 @@ function formationDisplayPublicationButton(x, y, w, h) {
         let crossSize = 12;
         let drawCross = () => {
             let circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white);
-            let cross = drawRedCross(w / 2, -h / 2, crossSize, this.blackCrossManipulator)
+            let cross = drawRedCross(w / 2, -h / 2, crossSize, this.closeButtonManipulator)
                 .color(myColors.lightgrey, 1, myColors.lightgrey);
-            this.blackCrossManipulator.ordonator.set(0, circle);
-            this.blackCrossManipulator.ordonator.set(1, cross);
-            let crossHandler = event => {
+            this.closeButtonManipulator.ordonator.set(0, circle);
+            this.closeButtonManipulator.ordonator.set(1, cross);
+            let crossHandler = () => {
                 this.editable && (parent.explanation = false);
-                let target = drawings.background.getTarget(event.clientX, event.clientY);
-                parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
+                parent.manipulator.last.remove(cross.parent.parentManip.parentObject.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
             };
             svg.addEvent(cross, "click", crossHandler);
             svg.addEvent(circle, "click", crossHandler);
+            return cross;
         };
-        drawCross();
+        this.cross = drawCross();
 
         drawing.notInTextArea = true;
         runtime.addGlobalEvent("keydown", (event) => {
@@ -2184,7 +2183,14 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
             };
 
+            const closeAppPopIn = () => {
+                this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
+                    answer.explanationPopIn && answer.explanationPopIn.cross.component.listeners["click"]();
+                });
+            };
+
             let leftChevronHandler = (event) => {
+                closeAppPopIn();
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex > 0) {
@@ -2195,6 +2201,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 }
             };
             let rightChevronHandler = (event) => {
+                closeAppPopIn();
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
