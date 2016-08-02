@@ -574,7 +574,17 @@ exports.Domain = function (globalVariables) {
             messageUsedName = "Le nom de cette formation est déjà utilisé !",
             messageNoModification = "Les modifications ont déjà été enregistrées.";
 
-            const displaySaveMessage = (message, displayQuizzManager, error = false) => {
+            const displayMessage = (message, displayQuizzManager) => {
+                let error = false;
+                switch (message) {
+                    case messageError:
+                    case messageUsedName:
+                        error = true;
+                        break;
+                    default:
+                        error = false;
+                }
+
                 if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                     this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 }
@@ -585,6 +595,7 @@ exports.Domain = function (globalVariables) {
                     this.errorMessageSave = new svg.Text(message)
                         .position(this.buttonWidth * 2, -this.saveButtonHeight / 2 - MARGIN)
                         .font("Arial", 20)
+                        .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
                     this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
                     svg.timeout(() => {
@@ -592,17 +603,6 @@ exports.Domain = function (globalVariables) {
                             this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                         }
                     }, 5000);
-                }
-            };
-
-            const displayMessage = message => {
-                switch (message) {
-                    case messageError:
-                    case messageUsedName:
-                        displaySaveMessage(message, null, true);
-                        break;
-                    default:
-                        displaySaveMessage(message, displayQuizzManager);
                 }
             };
 
