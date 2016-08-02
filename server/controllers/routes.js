@@ -221,7 +221,7 @@ module.exports = function (app, fs) {
                                     res.send({saved: false, reason: "NameAlreadformationyUsed"});
                                 }
                             } else {
-                                formations.newVersion(db, req.params.id, req.body)
+                                formations.newVersion(db, formation, req.body)
                                     .then(data => res.send({saved: true, id: data}))
                                     .catch(err => console.log(err));
                             }
