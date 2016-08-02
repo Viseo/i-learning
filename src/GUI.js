@@ -388,6 +388,7 @@ exports.GUI = function (globalVariables) {
 
                 let label = JSON.parse(JSON.stringify(myLibraryGames.tab[i].label)),
                     obj = displayTextWithCircle(label, Math.min(w / 2, h / 4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
+                obj.cadre.mark("game" + label);
                 obj.cadre.clicked = false;
                 this.itemsTab[i] = obj;
 
@@ -1098,6 +1099,7 @@ exports.GUI = function (globalVariables) {
     function formationDisplaySaveButton(x, y, w, h) {
         this.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
         this.errorMessageSave && this.errorMessageSave.parent && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+        this.saveFormationButton.cadre.mark("saveFormationButtonCadre");
         svg.addEvent(this.saveFormationButton.cadre, "click", () => this.saveFormation());
         svg.addEvent(this.saveFormationButton.content, "click", () => this.saveFormation());
         this.saveFormationButtonManipulator.translator.move(x, y);
@@ -1144,6 +1146,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
             this.saveFormation(null, "Published");
         }
     };
+    this.publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
     svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
     svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
     this.publicationFormationButtonManipulator.translator.move(x, y);

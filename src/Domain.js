@@ -575,6 +575,7 @@ exports.Domain = function (globalVariables) {
                 }
                 (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
                 this.errorMessage = new svg.Text(message);
+                this.errorMessage.mark("formationErrorMessage");
                 this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
                 this.errorMessage.position(this.buttonWidth, 0)
                     .font("Arial", 15)
@@ -710,7 +711,9 @@ exports.Domain = function (globalVariables) {
                 this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
                 this.errorMessagePublication.position(-this.buttonWidth, -this.publicationButtonHeight / 2 - MARGIN)
                     .font("Arial", 20)
-                    .anchor('middle').color(myColors.red);
+                    .anchor('middle').color(myColors.red)
+                    .mark("errorMessagePublication");
+
                 svg.timeout(() => {
                     if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                         this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
@@ -718,14 +721,12 @@ exports.Domain = function (globalVariables) {
                 }, 5000);
             };
 
-        this.publicationFormationQuizzManager();
-
-            if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
-                this.displayPublicationMessage(messageErrorNoNameFormation);
-            }
-
+            this.publicationFormationQuizzManager();
             if (this.levelsTab.length === 0) {
                 this.displayPublicationMessage(messageErrorNoGame);
+            }
+            if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
+                this.displayPublicationMessage(messageErrorNoNameFormation);
             }
         };
 
