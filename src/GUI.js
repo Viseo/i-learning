@@ -396,7 +396,7 @@ exports.GUI = function (globalVariables) {
             });
             this.panel.resizeContent(w, tempY += Math.min(w / 2, h / 4) - 1);
         };
-
+        
         let assignEvents = () => {
             this.libraryManipulators.forEach((libraryManipulator,i) => {
                 let mouseDownAction = event => {
@@ -424,14 +424,14 @@ exports.GUI = function (globalVariables) {
 
                         let mouseClick = event => {
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
-                            this.itemsTab.forEach(libraryManipulator => {
-                                if (libraryManipulator.content.messageText === target.parent.children[1].messageText) {
-                                    if (libraryManipulator !== this.gameSelected) {
-                                        this.gameSelected && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
-                                        libraryManipulator.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                        this.gameSelected = libraryManipulator;
+                            this.itemsTab.forEach(item => {
+                                if (item.miniature.content.messageText === target.parent.children[1].messageText) {
+                                    if (item !== this.gameSelected) {
+                                        this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                                        item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                        this.gameSelected = item;
                                     } else {
-                                        libraryManipulator.cadre.color(myColors.white, 1, myColors.black);
+                                        item.miniature.cadre.color(myColors.white, 1, myColors.black);
                                         this.gameSelected = null;
                                     }
                                 }

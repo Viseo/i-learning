@@ -829,7 +829,7 @@ exports.Domain = function (globalVariables) {
         clickToAdd() {
             this.mouseUpGraphBlock = event => {
                 this.library.gameSelected && this.library.dropAction(this.library.gameSelected.cadre, event);
-                this.library.gameSelected && this.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
                 this.library.gameSelected = null;
                 svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
             };
@@ -939,7 +939,7 @@ exports.Domain = function (globalVariables) {
                 formation = target.parent.parentManip.parentObject;
                 formation.addNewGame(event, this);
             }
-            this.gameSelected && formation && this.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+            this.gameSelected && formation && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
         }
     }
 
