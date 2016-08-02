@@ -398,7 +398,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let assignEvents = () => {
-            this.libraryManipulators.forEach(libraryManipulator => {
+            this.libraryManipulators.forEach((libraryManipulator,i) => {
                 let mouseDownAction = event => {
                     this.arrowMode && this.toggleArrowMode();
 
@@ -413,9 +413,9 @@ exports.GUI = function (globalVariables) {
                     manip.first.move(point.x - point2.x, point.y - point2.y);
 
                 if (this.itemsTab && this.itemsTab.length !== 0) {
-                    if (this.itemsTab[0].miniature.content && (this.itemsTab[0].miniature.content.messageText !== "")) {
-                        this.gameMiniature = displayTextWithCircle(this.itemsTab[0].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
-                        this.gameMiniature.create=this.itemsTab[0].create;
+                    if (this.itemsTab[i].miniature.content && (this.itemsTab[i].miniature.content.messageText !== "")) {
+                        this.gameMiniature = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
+                        this.gameMiniature.create=this.itemsTab[i].create;
                         this.draggedObject = this.gameMiniature;
                         manip.ordonator.set(0, this.gameMiniature.cadre);
                         manageDnD(this.gameMiniature.cadre, manip);
