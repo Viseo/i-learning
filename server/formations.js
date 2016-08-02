@@ -8,11 +8,15 @@
 
 let ObjectID = require('mongodb').ObjectID;
 
-const compareVersions = (version1, version2) => {
+const compareVersions = (version1, version2, checkStatus = false) => {
     let myVersion1 = Object.assign({}, version1);
     let myVersion2 = Object.assign({}, version2);
     if(myVersion1._id) delete myVersion1._id;
     if(myVersion2._id) delete myVersion2._id;
+    if(checkStatus) {
+        if(myVersion1.status) delete myVersion1.status;
+        if(myVersion2.status) delete myVersion2.status;
+    }
     return JSON.stringify(myVersion1) === JSON.stringify(myVersion2);
 };
 

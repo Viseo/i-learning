@@ -210,7 +210,7 @@ module.exports = function (app, fs) {
                         .then(data => {
                             if (data.formation) {
                                 if (formation._id.toString() === data.formation._id.toString()) {
-                                    if (formations.compareVersions(data.formation.versions[data.formation.versions.length - 1], req.body)) {
+                                    if (formations.compareVersions(data.formation.versions[data.formation.versions.length - 1], req.body, req.body.status !== "Published")) {
                                         res.send({saved: false, reason: "NoModif"})
                                     } else {
                                         formations.newVersion(db, formation, req.body)
