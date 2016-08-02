@@ -317,6 +317,8 @@ exports.GUI = function (globalVariables) {
             arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
             arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
             this.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
+            arrowModeButton.arrow.mark("arrowModeArrow");
+            arrowModeButton.cadre.mark('arrowModeButtonCadre');
 
             this.toggleArrowMode = () => {
                 this.arrowMode = !this.arrowMode;
@@ -463,10 +465,11 @@ exports.GUI = function (globalVariables) {
                         this.gameMiniature.cadre.component.target && this.gameMiniature.cadre.component.target.listeners && this.gameMiniature.cadre.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.cadre, 'mouseup', this.gameMiniature.cadre.component.target.listeners.mouseup);
 
                         svg.event(drawings.glass, "mousedown", event);
-                        svg.addEvent(this.gameMiniature.cadre, 'mouseup', mouseupHandler);
                         this.gameMiniature.content.component.listeners && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.listeners.mouseup);
                         this.gameMiniature.content.component.target && this.gameMiniature.content.component.target.listeners && this.gameMiniature.content.component.target.listeners.mouseup && svg.removeEvent(this.gameMiniature.content, 'mouseup', this.gameMiniature.content.component.target.listeners.mouseup);
+                        svg.addEvent(this.gameMiniature.cadre, 'mouseup', mouseupHandler);
                         svg.addEvent(this.gameMiniature.content, 'mouseup', mouseupHandler);
+                        this.gameMiniature.cadre.mark("gameMiniatureCadre");
                     }
                 };
                 svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
@@ -479,7 +482,7 @@ exports.GUI = function (globalVariables) {
         assignEvents();
     }
 
-    function imagesLibraryDisplay(x, y, w, h, callback = ()=> {
+    function imagesLibraryDisplay(x, y, w, h, callback = () => {
     }) {
         if (typeof x !== "undefined")(this.x = x);
         if (typeof y !== "undefined")(this.y = y);
@@ -875,6 +878,7 @@ exports.GUI = function (globalVariables) {
                 this.clippingManipulator.last.remove(this.panel.component);
             }
             this.panel = new gui.ScrollablePanel(w, h, myColors.white);
+            this.panel.back.mark("panelBack");
             this.panel.contentV.add(this.messageDragDropManipulator.first);
             this.panel.component.move(w / 2, h / 2);
             this.clippingManipulator.last.add(this.panel.component);
@@ -945,6 +949,7 @@ exports.GUI = function (globalVariables) {
                 displayLevel(this.graphCreaWidth, this.graphCreaHeight, this.levelsTab[i]);
                 this.adjustGamesPositions(this.levelsTab[i]);
                 this.levelsTab[i].gamesTab.forEach((tabElement)=> {
+                    this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
                     (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                     if (typeof tabElement.miniature === "undefined") {
@@ -1001,6 +1006,7 @@ exports.GUI = function (globalVariables) {
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
                 contentarea.color(myColors.lightgrey, 0, myColors.black)
                     .font("Arial", 15)
+                    .mark("formationLabelContentArea")
                     .anchor("start");
                 (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
                 drawings.screen.add(contentarea);
@@ -1060,6 +1066,7 @@ exports.GUI = function (globalVariables) {
                 this.formationLabelWidth = 400;
                 this.formationLabel = {};
                 this.formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                this.formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = svg.runtime.boundingRect(this.formationLabel.content.component).height;
 
                 this.formationTitleWidth = svg.runtime.boundingRect(this.title.component).width;
