@@ -1604,13 +1604,20 @@ function formationDisplayPublicationButton(x, y, w, h) {
             if (this.parentQuizz.previewMode) {
                 let index;
                 for (let j = 0; j < this.parentQuizz.questionsWithBadAnswers.length; j++) {
-                    (this.parentQuizz.questionsWithBadAnswers[j].index + 1 === this.questionNum) && (index = j);
+                    (this.parentQuizz.questionsWithBadAnswers[j].questionNum === this.questionNum) && (index = j);
                 }
-                playerMode && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=> {
-                    this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
-                    //this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.darkBlue, 5, myColors.red);
-                    //this.tabAnswer[selectedAnswer].content.color(getComplementary(myColors.darkBlue));
-                });
+                if (playerMode && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length > 0){
+                    this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=> {
+                        this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
+                    });
+                }
+                else if (playerMode && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length <= 0) {
+                    this.tabAnswer.forEach(answer => {
+                        if (answer.correct){
+                            answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
+                        }
+                    });
+                }
             }
 
         }
@@ -1989,6 +1996,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 this.editable && (parent.explanation = false);
                 let target = drawings.background.getTarget(event.clientX, event.clientY);
                 parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
+                parent.manipulator.last.children.indexOf(target.parent.parentManip.parentObject.manipulator.first) !== -1 && parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 this.displayed = false;
             };
@@ -2005,7 +2013,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
         });
         var hasKeyDownEvent = (event) => {
             this.target = this.panel;
-            if (event.keyCode === 27 && this.cross) { // suppr
+            if (this.cross && event.keyCode === 27) { // suppr
                 this.editable && (parent.explanation = false);
                 parent.manipulator.last.remove(this.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
@@ -2249,13 +2257,19 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 this.quizzManipulator.parentObject.tabQuestions.forEach(y => {
                     y.manipulator.ordonator.unset(3)
                 });
-                this.questionPuzzle = new Puzzle(1, 6, this.quizzManipulator.parentObject.tabQuestions, "leftToRight", this);
-                this.questionPuzzle.display();
-
+                let questionTabExplanation = this.tabQuestions;
+                this.questionsWithBadAnswers.forEach(question => {
+                    questionTabExplanation[question.index] = question.question;
+                    questionTabExplanation[question.index].selectedAnswers = question.selectedAnswers;
+                });
+                let quizzExplanation = new Quizz(this, true);
+                quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
+                quizzExplanation.score = null;
+                quizzExplanation.currentQuestionIndex = 0;
+                quizzExplanation.run(1,1,drawing.width,drawing.height);
             };
             this.displayAnswersExp();
         };
-
         svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
         svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
         this.answersExpButtonManipulator.translator.move(0, drawing.height - 3 * MARGIN - this.buttonAnswersExpHeight);
