@@ -213,6 +213,11 @@ describe('formationsManager', function () {
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
+            let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
+            arrowModeButtonCadre.listeners['click']();
+            let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
+            assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
+
             done();
         });
     });

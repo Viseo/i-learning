@@ -315,6 +315,8 @@ exports.GUI = function (globalVariables) {
             arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
             arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
             this.arrowModeManipulator.ordonator.set(2, arrowModeButton.arrow);
+            arrowModeButton.arrow.mark("arrowModeArrow");
+            arrowModeButton.cadre.mark('arrowModeButtonCadre');
 
             this.toggleArrowMode = () => {
                 this.arrowMode = !this.arrowMode;
@@ -436,9 +438,6 @@ exports.GUI = function (globalVariables) {
                                     }
                                 }
                             });
-                            console.log(drawing.width + "____" + drawing.height);
-
-                            console.log(event.pageX + "____" + event.pageY);
                             this.formation && !this.gameSelected && svg.removeEvent(this.formation.graphBlock.rect, "mouseup", this.formation.mouseUpGraphBlock);
                             this.formation && this.formation.clickToAdd();
                         };
