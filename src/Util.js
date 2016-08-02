@@ -106,6 +106,7 @@ exports.Util = function (globalVariables) {
                 !runtime && document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
+                console.log(event.pageX + "_____" + event.pageY);
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
@@ -633,6 +634,7 @@ exports.Util = function (globalVariables) {
 
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
+            this.redCross.mark('redCross');
             this.redCrossManipulator.last.add(this.redCross);
 
             let removeLink = () => {

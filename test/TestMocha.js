@@ -218,6 +218,24 @@ describe('formationsManager', function () {
             let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
             assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
 
+            let glass = retrieve(root, '[theGlass]');
+            glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
+            glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
+            let arrow01 = retrieve(root, '[quizz0quizz1]');
+            let arrow02 = retrieve(root, '[quizz0quizz2]');
+            let arrow03 = retrieve(root, '[quizz0quizz3]');
+            let arrow20 = retrieve(root, '[quizz2quizz0]');
+            assert(arrow02);
+            assert(!arrow01);
+            assert(!arrow03);
+            assert(!arrow20);
+
+            arrow02.listeners['click']();
+            assert.equal(arrow02.fill, 'rgb(25,122,230)');
+            let redCross = retrieve(root, '[redCross]');
+            redCross.listeners['click']();
+            arrow02 = retrieve(root, '[quizz0quizz2]');
+            assert(!arrow02);
             done();
         });
     });

@@ -308,6 +308,7 @@ exports.GUI = function (globalVariables) {
             if (parentGame.levelIndex >= childGame.levelIndex) return;
             parentGame.parentFormation.link.push({parentGame : parentGame.id,childGame : childGame.id});
             let arrow = new Arrow(parentGame, childGame);
+            arrow.arrowPath.mark(parentGame.id + childGame.id);
             parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
         };
 
@@ -362,7 +363,7 @@ exports.GUI = function (globalVariables) {
                         let target = graph.getTarget(event.pageX, event.pageY);
                         (target instanceof svg.Path ) && target.component && target.component.listeners && target.component.listeners.click();
                     };
-
+                    glass.mark("theGlass");
                     svg.addEvent(glass, 'mousedown', mouseDownAction);
                     svg.addEvent(glass, 'click', clickAction);
                 } else {
@@ -762,8 +763,7 @@ exports.GUI = function (globalVariables) {
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
 
     let returnHandler = (event) => {
-        let target = drawings.background.getTarget(event.pageX,event.pageY);
-        target.parentObj.parent.manipulator.flush();
+        this.returnButton.manipulator.flush();
         Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             formationsManager = new FormationsManager(myFormations);
