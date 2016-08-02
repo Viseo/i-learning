@@ -172,7 +172,7 @@ exports.GUI = function (globalVariables) {
                     contentarea.enter();
                     this.checkInputContentArea({
                         contentarea: contentarea,
-                        border: this.border,
+                        border: this.bogrder,
                         onblur: onblur,
                         remove: removeErrorMessage,
                         display: () => {
@@ -1990,6 +1990,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 let target = drawings.background.getTarget(event.clientX, event.clientY);
                 parent.manipulator.last.remove(target.parent.parentManip.parentObject.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
+                this.displayed = false;
             };
             svg.addEvent(cross, "click", crossHandler);
             svg.addEvent(circle, "click", crossHandler);
@@ -2079,6 +2080,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
             svg.addEvent(this.text, "click", clickEdition);
             svg.addEvent(this.panel.back, "click", clickEdition);
         }
+        this.displayed = true;
     }
 
     function quizzDisplay(x, y, w, h) {
@@ -2187,7 +2189,16 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
             };
 
+            const closePopIn = () => {
+                this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
+                    if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
+                        answer.explanationPopIn.cross.component.listeners["click"]();
+                    }
+                });
+            };
+
             let leftChevronHandler = (event) => {
+                closePopIn();
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex > 0) {
@@ -2198,6 +2209,7 @@ function formationDisplayPublicationButton(x, y, w, h) {
                 }
             };
             let rightChevronHandler = (event) => {
+                closePopIn();
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
