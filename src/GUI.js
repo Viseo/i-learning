@@ -405,42 +405,39 @@ exports.GUI = function (globalVariables) {
                 let mouseDownAction = event => {
 
                     this.arrowMode && this.toggleArrowMode();
-                    let mouseupHandler = event => {
-                        let addMouseClickHandler = () => {
-                            let mouseClickHandler = ()=> {
-                                if (item !== this.gameSelected) {
-                                    this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-                                    item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                                    this.gameSelected = item;
-                                } else {
-                                    item.miniature.cadre.color(myColors.white, 1, myColors.black);
-                                    this.gameSelected = null;
-                                }
-
-                                this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
-                                this.formation && this.formation.clickToAdd();
-                            };
-                            svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
-                            svg.event(this.draggedObject.cadre, "click", mouseClickHandler);
-                            svg.addEvent(this.draggedObject.cadre, 'click', ()=>{});
+                    let mouseClickHandler = () => {
+                        if (item !== this.gameSelected) {
+                            this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                            item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                            this.gameSelected = item;
+                        } else {
+                            item.miniature.cadre.color(myColors.white, 1, myColors.black);
+                            this.gameSelected = null;
                         }
+                        this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
+                        this.formation && this.formation.clickToAdd();
+                    };
 
+
+                    let mouseupHandler = event => {
                         drawings.piste.last.remove(this.draggedObject.manipulator.first);
                         let target = drawings.background.getTarget(event.pageX, event.pageY);
-                        if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject === item) {
-                            addMouseClickHandler();
-                        }
-                        else if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
-                            this.dropAction(event);
+                        let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
+                        if (parentObject !== item) {
+                            svg.removeEvent(this.draggedObject.cadre, 'click');
+                            if (parentObject instanceof Formation) {
+                                this.dropAction(event);
+                            }
                         }
                         this.draggedObject = null;
                     };
+
                     let createDraggbleCopy = () =>{
                         let manipulator = new Manipulator(this);
                         manipulator.addOrdonator(2);
                         drawings.piste.last.add(manipulator.first);
                         let point = item.miniature.cadre.globalPoint(0, 0);
-                        manipulator.first.move(point.x, point.y);s
+                        manipulator.first.move(point.x, point.y);
                         this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
                         this.draggedObject.manipulator = manipulator;
                         this.draggedObject.cadre.mark("draggedGameCadre");
@@ -452,15 +449,11 @@ exports.GUI = function (globalVariables) {
 
                     createDraggbleCopy();
 
-                    // svg.removeEvent(this.draggedObject.cadre, 'mouseup');
-
                     svg.event(drawings.glass, "mousedown", event);
-
-                    // svg.removeEvent(this.draggedObject.content, 'mouseup');
-
+                    svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
                     svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
                     svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
-                }
+                };
 
                 svg.addEvent(item.miniature.cadre, 'mousedown', mouseDownAction);
                 svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
