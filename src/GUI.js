@@ -1094,7 +1094,7 @@ exports.GUI = function (globalVariables) {
 
     function formationDisplaySaveButton(x, y, w, h) {
         this.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
-        this.errorMessageSave && this.errorMessageSave.parent && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+        this.message && this.message.parent && this.saveFormationButtonManipulator.last.remove(this.message);
         this.saveFormationButton.cadre.mark("saveFormationButtonCadre");
         svg.addEvent(this.saveFormationButton.cadre, "click", () => this.saveFormation());
         svg.addEvent(this.saveFormationButton.content, "click", () => this.saveFormation());

@@ -491,18 +491,18 @@ exports.Domain = function (globalVariables) {
             this.graphCreaHeightRatio = 0.85;
             //this.graphPlayHeightRatio = 0.90;
 
-        this.x = MARGIN;
-        this.regex = FORMATION_TITLE_REGEX;
-        // this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-        // this.targetLevelIndex = 0;
-        this.levelsTab = [];
-        this.gamesTab = [];
-        this.saveButtonHeightRatio = 0.07;
-        this.publicationButtonHeightRatio = 0.07;
-        this.marginRatio = 0.03;
-        this.label = formation.label ? formation.label : "";
-        this.status = formation.status ? formation.status : "NotPublished";
-        this.validLabelInput = true ;
+            this.x = MARGIN;
+            this.regex = FORMATION_TITLE_REGEX;
+            // this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
+            // this.targetLevelIndex = 0;
+            this.levelsTab = [];
+            this.gamesTab = [];
+            this.saveButtonHeightRatio = 0.07;
+            this.publicationButtonHeightRatio = 0.07;
+            this.marginRatio = 0.03;
+            this.label = formation.label ? formation.label : "";
+            this.status = formation.status ? formation.status : "NotPublished";
+            this.validLabelInput = true ;
 
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
@@ -510,11 +510,11 @@ exports.Domain = function (globalVariables) {
             this.graphElementSize = this.levelHeight * 0.65;
             this.miniature = new MiniatureFormation(this);
 
-        this.redim();
-        this.manipulator.last.add(this.saveFormationButtonManipulator.first);
-        this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
-        this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
-    }
+            this.redim();
+            this.manipulator.last.add(this.saveFormationButtonManipulator.first);
+            this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
+            this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
+        }
 
         addNewGame (event) {
             let getDropLocation = event => {
@@ -592,16 +592,17 @@ exports.Domain = function (globalVariables) {
                 if (displayQuizzManager) {
                     displayQuizzManager();
                 } else {
-                    (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) && this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
-                    this.errorMessageSave = new svg.Text(message)
-                        .position(this.buttonWidth * 2, -this.saveButtonHeight / 2 - MARGIN)
+                    (this.manipulator.last.children.indexOf(this.message) !== -1) && this.manipulator.last.remove(this.message);
+                    const messageY = this.saveFormationButton.cadre.globalPoint(0, 0).y;
+                    this.message = new svg.Text(message)
+                        .position(drawing.width/2, messageY - this.saveFormationButton.cadre.height*1.5 - MARGIN)
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
-                    this.saveFormationButtonManipulator.last.add(this.errorMessageSave);
+                    this.manipulator.last.add(this.message);
                     svg.timeout(() => {
-                        if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
-                            this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+                        if (this.manipulator.last.children.indexOf(this.message) !== -1) {
+                            this.manipulator.last.remove(this.message);
                         }
                     }, 5000);
                 }
@@ -650,7 +651,7 @@ exports.Domain = function (globalVariables) {
                                 throw messageUsedName;
                             }
                         }
-                    })
+                    });
                     // .catch(()=>displayMessage(messageSave, displayQuizzManager));
             };
 
@@ -691,8 +692,8 @@ exports.Domain = function (globalVariables) {
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
 
             this.displayPublicationMessage = (messagePublication) => {
-                if (this.saveFormationButtonManipulator.last.children.indexOf(this.errorMessageSave) !== -1) {
-                    this.saveFormationButtonManipulator.last.remove(this.errorMessageSave);
+                if (this.saveFormationButtonManipulator.last.children.indexOf(this.message) !== -1) {
+                    this.saveFormationButtonManipulator.last.remove(this.message);
                 }
                 this.formationInfoManipulator.ordonator.unset(2);
                 (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
