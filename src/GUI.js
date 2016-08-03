@@ -426,7 +426,6 @@ exports.GUI = function (globalVariables) {
                     };
 
                     this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
-                    svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
                     this.draggedObject.cadre.mark("draggedGameCadre");
                     this.draggedObject.create = this.itemsTab[i].create;
                     manip.ordonator.set(0, this.draggedObject.cadre);
@@ -437,15 +436,17 @@ exports.GUI = function (globalVariables) {
                     let mouseupHandler = event => {
                         manip.first.parent.remove(manip.first);
                         var target = drawings.background.getTarget(event.pageX, event.pageY);
-                        if (target && target.parent && target.parent.parentManip) {
-                            if (target.parent.parentManip.parentObject instanceof Formation) {
+                        if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject === item) {
+                            svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
+                            svg.event(this.draggedObject.cadre, "click", mouseClickHandler);
+                            svg.addEvent(this.draggedObject.cadre, 'click', ()=>{});
+                        }
+                        else {
+                            if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
                                 this.dropAction(event);
                             }
-                            else {
-                                svg.event(this.draggedObject.content, "click", mouseClickHandler);
-                            }
                         }
-                        this.draggedObject = null;
+                        draggedObject = null;
                     };
 
                     this.draggedObject.cadre.component.listeners && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.listeners.mouseup);
