@@ -912,7 +912,7 @@ exports.Domain = function (globalVariables) {
             this.arrowModeManipulator.addOrdonator(3);
         }
 
-        dropAction(event) {
+        dropAction(element, event) {
             const target = drawings.background.getTarget(event.pageX, event.pageY);
             let formation;
 

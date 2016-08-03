@@ -512,7 +512,7 @@ exports.GUI = function (globalVariables) {
                                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                                 if (target && target.parent && target.parent.parentManip) {
                                     if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                        this.dropAction(event);
+                                        this.dropAction(svgObj, event);
                                     }
                                 }
                                 this.draggedObject = null;
