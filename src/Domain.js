@@ -53,6 +53,7 @@ exports.Domain = function (globalVariables) {
         Puzzle = globalVariables.util.Puzzle;
         ReturnButton = globalVariables.util.ReturnButton;
         Server = globalVariables.util.Server;
+        playerMode = globalVariables.playerMode;
     };
 
     class Answer {

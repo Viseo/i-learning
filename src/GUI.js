@@ -749,7 +749,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.set(1, this.manipulator.first);
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
 
-    let returnHandler = (event) => {
+    let returnHandler = () => {
         this.returnButton.manipulator.flush();
         Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
@@ -763,10 +763,10 @@ exports.GUI = function (globalVariables) {
     this.returnButton.setHandler(returnHandler);
 
         let dblclickQuizzHandler = (event, target) => {
-            let targetQuizz = target.parent.parentManip.parentObject;
-            let displayQuizzManager = ()=> {
-                this.quizzManager.loadQuizz(targetQuizz);
-                this.quizzDisplayed = targetQuizz;
+            target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+            let displayQuizzManager = () => {
+                this.quizzManager.loadQuizz(target);
+                this.quizzDisplayed = target;
                 this.quizzManager.display();
                 this.selectedArrow = null;
                 this.selectedGame = null;
@@ -779,11 +779,11 @@ exports.GUI = function (globalVariables) {
             }
         };
 
-        let clickQuizHandler = (event) => {
-            let targetQuizz = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+        let clickQuizHandler = (event, target) => {
+            target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
             mainManipulator.ordonator.unset(1, this.manipulator.first);
             drawing.currentPageDisplayed = "QuizPreview";
-            this.quizzDisplayed = new Quizz(targetQuizz);
+            this.quizzDisplayed = new Quizz(target);
             this.quizzDisplayed.puzzleLines = 3;
             this.quizzDisplayed.puzzleRows = 3;
             this.quizzDisplayed.run(0, 0, drawing.width, drawing.height);
@@ -853,7 +853,6 @@ exports.GUI = function (globalVariables) {
                 }
             });
             this.manipulator.ordonator.set(1, this.clippingManipulator.first);
-            //!playerMode && this.clippingManipulator.translator.move(this.libraryWidth, drawing.height*HEADER_SIZE);
             playerMode ? this.clippingManipulator.translator.move(MARGIN, drawing.height * HEADER_SIZE)
                 : this.clippingManipulator.translator.move(this.libraryWidth, drawing.height * HEADER_SIZE);
             this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio - drawing.height * 0.1;//-15-this.saveButtonHeight;//15: Height Message Error
@@ -911,18 +910,18 @@ exports.GUI = function (globalVariables) {
 
             let manageMiniature = (tabElement) => {
 
-                let mouseDownAction = () => {}
+                let mouseDownAction = () => {};
 
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
-                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", (event)=>dblclickQuizzHandler(event, tabElement.miniature.icon.cadre)];
+                    let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizzHandler(event, tabElement)];
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
                 } else if (tabElement instanceof Bd) {
-                    let eventToUse = playerMode ? ["click", clickBdHandler] : ["dblclick", (event)=>dblclickQuizzHandler(event, tabElement.miniature.icon.cadre)];
+                    let eventToUse = playerMode ? ["click",() => {}] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    var clickBdHandler = (event)=> {
+                    var dblclickBdHandler = (event)=> {
                         let targetBd = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                         bdDisplay(targetBd);
                     };
