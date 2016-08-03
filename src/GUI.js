@@ -1978,11 +1978,10 @@ exports.GUI = function (globalVariables) {
         this.manipulator.translator.move(previousX, y);
 
         let crossSize = 12;
-        let drawCross = () => {
+        let drawGreyCross = () => {
             const
                 circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
-                cross = drawRedCross(w / 2, -h / 2, crossSize, this.closeButtonManipulator)
-                    .color(myColors.lightgrey, 1, myColors.lightgrey);
+                cross = drawCross(w / 2, -h / 2, crossSize, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
             this.closeButtonManipulator.ordonator.set(0, circle);
             this.closeButtonManipulator.ordonator.set(1, cross);
             const crossHandler = () => {
@@ -1995,7 +1994,7 @@ exports.GUI = function (globalVariables) {
             svg.addEvent(circle, "click", crossHandler);
             return cross;
         };
-        this.cross = drawCross();
+        this.cross = drawGreyCross();
 
         drawing.notInTextArea = true;
         runtime.addGlobalEvent("keydown", (event) => {

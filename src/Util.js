@@ -530,21 +530,18 @@ exports.Util = function (globalVariables) {
             return path;
         };
 
-        drawRedCross = function (x, y, size, manipulator) {
-            var redCross = drawPlus(0, 0, size, size);
-            redCross.size = size;
-            redCross.color(myColors.red, 1, myColors.black);
+        drawCross = function (x, y, size, innerColor, outerColor, manipulator) {
+            var cross = drawPlus(0, 0, size, size);
+            cross.size = size;
+            cross.color(innerColor, 1, outerColor);
             manipulator.rotator.rotate(45);
             manipulator.translator.move(x, y);
-            return redCross;
+            return cross;
         };
-        /**
-         *
-         * @param x
-         * @param y
-         * @param w
-         * @param h
-         */
+
+        drawRedCross = function (x, y, size, manipulator) {
+            return drawCross(x, y, size, myColors.red, myColors.black, manipulator);
+        };
 
         drawPlusWithCircle = function (x, y, w, h) {
             var circle = new svg.Circle(w / 2).color(myColors.black);
