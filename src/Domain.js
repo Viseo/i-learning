@@ -517,7 +517,18 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
         }
 
-        addNewGame (event) {
+        dropAction(event) {
+            const target = drawings.background.getTarget(event.pageX, event.pageY);
+
+
+
+                formation.addNewGame(event);
+
+            this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+        }
+
+        dropAction(event,game){
+
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
                 dropLocation.y -= this.panel.contentV.y;
@@ -537,61 +548,31 @@ exports.Domain = function (globalVariables) {
                 return level;
             };
             let getColumn = (dropLocation, level)=>{
-                let posX=this.levelsTab[level].gamesTab.length;
+                let column=this.levelsTab[level].gamesTab.length;
                 for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
                     if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
-                        posX = i;
+                        column = i;
                         break;
                     }
                 }
-                return posX;
+                return column;
             };
 
             let dropLocation=getDropLocation(event);
             let level =getLevel(dropLocation);
-            let posX = getColumn(dropLocation, level);
+            let column = getColumn(dropLocation, level);
+            game ? this.moveGame(game, level, column) : this.addNewGame(level, column) ;
+            this.displayGraph();
+        }
+
+        addNewGame (level, column) {
             let gameBuilder = this.library.draggedObject || this.library.gameSelected || null;
-            gameBuilder.create(this, level, posX);
-            this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-    }
+            gameBuilder.create(this, level, column);
+        }
 
-        moveGame(event, game)
-        {
-            let getDropLocation = event => {
-                let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
-                dropLocation.y -= this.panel.contentV.y;
-                dropLocation.x -= this.panel.contentV.x;
-                return dropLocation;
-            };
-            let getLevel = (dropLocation) => {
-                let level = -1;
-                while(dropLocation.y > -this.panel.content.height/2) {
-                    dropLocation.y -= this.levelHeight;
-                    level++;
-                }
-                if (level >= this.levelsTab.length) {
-                    level = this.levelsTab.length;
-                    this.addNewLevel(level);
-                }
-                return level;
-            };
-            let getColumn = (dropLocation, level)=>{
-                let posX=this.levelsTab[level].gamesTab.length;
-                for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
-                    if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
-                        posX = i;
-                        break;
-                    }
-                }
-                return posX;
-            };
-
-            let dropLocation=getDropLocation(event);
-            let level =getLevel(dropLocation);
-            let posX = getColumn(dropLocation, level);
-            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex,1 ,game);
-            this.levelsTab[level].gamesTab.splice(posX,0 ,game);
-            // this.gameSelected && formation && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+        moveGame(game, level, column) {
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex,1);
+            this.levelsTab[level].gamesTab.splice(column,0 ,game);
         }
 
         deactivateFormation() {
@@ -854,7 +835,7 @@ exports.Domain = function (globalVariables) {
 
         clickToAdd() {
             this.mouseUpGraphBlock = event => {
-                this.library.gameSelected && this.library.dropAction(event);
+                this.library.gameSelected && this.dropAction(event);
                 this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
                 this.library.gameSelected = null;
                 svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
@@ -865,68 +846,68 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-    adjustGamesPositions (level) {
-        let computeIndexes =() => {
-            for (let i = 0; i < this.levelsTab.length; i++) {
-                for(let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
-                    this.levelsTab[i].gamesTab[j].levelIndex = i;
-                    this.levelsTab[i].gamesTab[j].gameIndex = j;
-                }
-            }
-        };
-
-        computeIndexes();
-        var nbOfGames = level.gamesTab.length;
-        var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
-        level.gamesTab.forEach(game => {
-            game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-            game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
-        });
-    }
-
-    trackProgress (displayFunction) {
-        this.levelsTab.forEach(level => {
-            level.gamesTab.forEach(game => {
-                delete game.miniature;
-                delete game.status;
-            });
-        });
-        this.miniaturesManipulator.flush();
-        Server.getUser().then(data => {
-            let user = JSON.parse(data);
-            if (user.formationsTab) {
-                let formationUser = user.formationsTab.find(formation => formation.version === this._id);
-                formationUser && formationUser.gamesTab.forEach(game => {
-                    let theGame = this.findGameById(game.game);
-                    if (!theGame) {
-                        return;
+        adjustGamesPositions (level) {
+            let computeIndexes =() => {
+                for (let i = 0; i < this.levelsTab.length; i++) {
+                    for(let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
+                        this.levelsTab[i].gamesTab[j].levelIndex = i;
+                        this.levelsTab[i].gamesTab[j].gameIndex = j;
                     }
-
-                        theGame.currentQuestionIndex = game.index;
-                        theGame.questionsWithBadAnswers = [];
-                        game.tabWrongAnswers.forEach(wrongAnswer => {
-                            theGame.questionsWithBadAnswers.add({
-                                index: wrongAnswer.index - 1,
-                                question: theGame.tabQuestions[wrongAnswer.index - 1],
-                                selectedAnswers: wrongAnswer.selectedAnswers
-                            });
-                        });
-                        theGame.score = game.index - theGame.questionsWithBadAnswers.length;
-                        theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
-                    });
                 }
-                this.levelsTab.forEach(level => {
-                    level.gamesTab.forEach(game => {
-                        if (!this.isGameAvailable(game)) {
-                            game.status = "notAvailable";
-                        }
-                    });
-                });
+            };
 
-                displayFunction.call(this);
+            computeIndexes();
+            var nbOfGames = level.gamesTab.length;
+            var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
+            level.gamesTab.forEach(game => {
+                game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+                game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
             });
         }
-    }
+
+        trackProgress (displayFunction) {
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    delete game.miniature;
+                    delete game.status;
+                });
+            });
+            this.miniaturesManipulator.flush();
+            Server.getUser().then(data => {
+                let user = JSON.parse(data);
+                if (user.formationsTab) {
+                    let formationUser = user.formationsTab.find(formation => formation.version === this._id);
+                    formationUser && formationUser.gamesTab.forEach(game => {
+                        let theGame = this.findGameById(game.game);
+                        if (!theGame) {
+                            return;
+                        }
+
+                            theGame.currentQuestionIndex = game.index;
+                            theGame.questionsWithBadAnswers = [];
+                            game.tabWrongAnswers.forEach(wrongAnswer => {
+                                theGame.questionsWithBadAnswers.add({
+                                    index: wrongAnswer.index - 1,
+                                    question: theGame.tabQuestions[wrongAnswer.index - 1],
+                                    selectedAnswers: wrongAnswer.selectedAnswers
+                                });
+                            });
+                            theGame.score = game.index - theGame.questionsWithBadAnswers.length;
+                            theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                        });
+                    }
+                    this.levelsTab.forEach(level => {
+                        level.gamesTab.forEach(game => {
+                            if (!this.isGameAvailable(game)) {
+                                game.status = "notAvailable";
+                            }
+                        });
+                    });
+
+                    displayFunction.call(this);
+                });
+            }
+        }
 
     class Library {
         constructor() {
@@ -953,16 +934,6 @@ exports.Domain = function (globalVariables) {
             this.arrowModeManipulator.addOrdonator(3);
         }
 
-        dropAction(event) {
-            const target = drawings.background.getTarget(event.pageX, event.pageY);
-            let formation;
-
-            if (target && target._acceptDrop) {
-                formation = target.parent.parentManip.parentObject;
-                formation.addNewGame(event);
-            }
-            this.gameSelected && formation && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-        }
     }
 
     class ImagesLibrary extends Library {

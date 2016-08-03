@@ -434,7 +434,7 @@ exports.GUI = function (globalVariables) {
                         if (parentObject !== item) {
                             svg.removeEvent(this.draggedObject.cadre, 'click');
                             if (parentObject instanceof Formation) {
-                                this.dropAction(event);
+                                this.formation.dropAction(event);
                             }
                         }
                         this.draggedObject = null;
@@ -918,19 +918,6 @@ exports.GUI = function (globalVariables) {
             let manageMiniature = (tabElement) => {
 
                 let mouseDownAction = eventDown => {
-                    let mouseupHandler = eventUp => {
-                        drawings.piste.last.remove(tabElement.movingManipulator.first);
-                        let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
-                        if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
-                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
-                            tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                            tabElement.miniature.miniatureClickHandler();
-                        }
-                        else if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
-                            this.moveGame(event, tabElement);
-                            this.displayGraph();
-                        }
-                    };
                     let putMiniatureInPiste = () =>{
                         let point = tabElement.miniature.icon.cadre.globalPoint(0, 0);
                         this.miniaturesManipulator.last.remove(tabElement.miniatureManipulator.first);
@@ -941,7 +928,20 @@ exports.GUI = function (globalVariables) {
                         manageDnD(tabElement.miniature.icon.cadre, tabElement.movingManipulator);
                         manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator);
                     };
-
+                    let mouseupHandler = eventUp => {
+                        console.log("mouseupHandler");
+                        drawings.piste.last.remove(tabElement.movingManipulator.first);
+                        let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
+                        if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
+                            tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
+                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
+                            tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                            tabElement.miniature.miniatureClickHandler();
+                        }
+                        else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject)) {
+                            this.dropAction(event, tabElement);
+                        }
+                    };
                     putMiniatureInPiste();
 
                     svg.event(drawings.glass, "mousedown", eventDown);
