@@ -256,6 +256,21 @@ exports.Util = function (globalVariables) {
             elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
         };
 
+        drawExplanationIcon = function (x, y, size, manipulator) {
+            let square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(0, 0),
+                line1 = new svg.Line(-size / 2 + size / 8, -size / 2 + size / 5, size / 2 - size / 8, -size / 2 + size / 5).color(myColors.black, 1, myColors.black),
+                line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.black, 1, myColors.black),
+                line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.black, 1, myColors.black),
+                line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.black, 1, myColors.black);
+            manipulator.ordonator.set(0, square);
+            manipulator.ordonator.set(1, line1);
+            manipulator.ordonator.set(2, line2);
+            manipulator.ordonator.set(3, line3);
+            manipulator.ordonator.set(4, line4);
+            manipulator.translator.move(x, y);
+            return [square, line1, line2, line3, line4];
+        };
+
         /**
          *
          * @param label

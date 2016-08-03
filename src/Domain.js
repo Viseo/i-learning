@@ -66,7 +66,8 @@ exports.Domain = function (globalVariables) {
             };
             answerParameters && (answer = answerParameters);
             this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(7);
+            this.manipulator.addOrdonator(8);
+            this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
             this.correct = answer.correct;

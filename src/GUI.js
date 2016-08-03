@@ -233,24 +233,32 @@ exports.GUI = function (globalVariables) {
         }
 
         if (this.parentQuestion.parentQuizz.previewMode) {
-            let event = () => {
-                let popInParent = this.parentQuestion,
-                    popInPreviousX = 0,
-                    popInX = this.parentQuestion.parentQuizz.x,
-                    popInY,
-                    popInWidth = this.parentQuestion.width,
-                    popInHeight = this.parentQuestion.tileHeightMax * this.parentQuestion.lines * 0.8;
-                this.explanationPopIn = new PopIn(this, false);
-                if (this.parentQuestion.image) {
-                    popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN;
-                } else {
-                    popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
-                }
-                this.explanationPopIn.display(popInParent, popInPreviousX, popInX, popInY, popInWidth, popInHeight);
-            };
-            this.image && svg.addEvent(this.image, "click", event);
-            this.bordure && svg.addEvent(this.bordure, "click", event);
-            this.content && svg.addEvent(this.content, "click", event);
+            if (this.explanation.label || this.explanation.image) {
+                const openPopIn = () => {
+                    let popInParent = this.parentQuestion,
+                        popInPreviousX = 0,
+                        popInX = this.parentQuestion.parentQuizz.x,
+                        popInY,
+                        popInWidth = this.parentQuestion.width,
+                        popInHeight = this.parentQuestion.tileHeightMax * this.parentQuestion.lines * 0.8;
+                    this.explanationPopIn = new PopIn(this, false);
+                    if (this.parentQuestion.image) {
+                        popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN;
+                    } else {
+                        popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
+                    }
+                    this.explanationPopIn.display(popInParent, popInPreviousX, popInX, popInY, popInWidth, popInHeight);
+                };
+                this.image && svg.addEvent(this.image, "click", openPopIn);
+                this.bordure && svg.addEvent(this.bordure, "click", openPopIn);
+                this.content && svg.addEvent(this.content, "click", openPopIn);
+
+                const pictoSize = 20,
+                    explanationIconArray = drawExplanationIcon(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
+                this.manipulator.ordonator.set(7, this.explanationIconManipulator.first);
+                explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));
+            }
+
         }
 
         if (this.selected) { // image pré-selectionnée
