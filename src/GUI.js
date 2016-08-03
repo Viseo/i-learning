@@ -1298,7 +1298,7 @@ exports.GUI = function (globalVariables) {
             });
         };
         header.display("Liste des formations");
-        this.displayHeaderFormations();
+        !playerMode && this.displayHeaderFormations();
         (this.tileHeight < 0) && (this.tileHeight = undefined);
         (!this.tileHeight || this.tileHeight > 0) && displayPanel();
 

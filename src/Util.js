@@ -418,13 +418,36 @@ exports.Util = function (globalVariables) {
         autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer = 1) {
             let words = content.split(' '),
                 text = '',
-                w = wi * 99 / 100,
+                w = wi*0.94,
                 t = new svg.Text('text');
             manipulator.ordonator.set(layer, t);
             (fontSize) || (fontSize = 20);
             t.font(font ? font : 'Arial', fontSize);
+            t.message(content.replace(/\r?\n|\r/g), " ");
+            let boundingRect = t.boundingRect(),
+                charSpace = boundingRect.width/content.length,
+                numCharsPerLine = Math.floor(w/charSpace*0.98),
+                lineHeight = boundingRect.height,
+                maxLines = Math.floor(h/lineHeight);
 
-            while (words.length > 0) {
+            let lines = [];
+            for (let i = 0, charsLength = content.length; i < charsLength; i += numCharsPerLine) {
+                if (lines.length <= maxLines) {
+                    lines.push(content.substring(i, i + numCharsPerLine));
+                } else {
+                    lines[maxLines] = lines[maxLines].slice(0, -1) + "…";
+                }
+            }
+
+            for (let i = 0; i < lines.length-1; i++) {
+                if (" ?.,!;:".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:".indexOf(lines[i+1][0]) === -1) {
+                    lines[i]+= "-";
+                }
+            }
+
+            t.message(lines.join("\n"));
+
+            /*while (words.length > 0) {
                 let word = words.shift();
                 // set text to test the BBox.width
                 t.message(text + ' ' + word);
@@ -458,7 +481,7 @@ exports.Util = function (globalVariables) {
                     }
                 }
             }
-            t.message(text.substring(1));
+            t.message(text.substring(1));*/
             let finalHeight = svg.runtime.boundingRect(t.component).height;
             (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
