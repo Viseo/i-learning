@@ -431,16 +431,24 @@ exports.Util = function (globalVariables) {
                 maxLines = Math.floor(h/lineHeight);
 
             let lines = [];
-            for (let i = 0, charsLength = content.length; i < charsLength; i += numCharsPerLine) {
-                if (lines.length <= maxLines) {
-                    lines.push(content.substring(i, i + numCharsPerLine));
+            for (let i = 0, charsLength = content.length; i < charsLength; ) {
+                let line = content.substring(i, i + numCharsPerLine);
+                let pos = line.lastIndexOf("\n");
+                if (pos !== -1 && pos !== 0) {
+                    line = line.substring(0, pos);
+                    i+= pos;
+                } else {
+                    i+= numCharsPerLine;
+                }
+                if (lines.length <= maxLines && line !== "\n") {
+                    lines.push(line);
                 } else {
                     lines[maxLines] = lines[maxLines].slice(0, -1) + "…";
                 }
             }
 
             for (let i = 0; i < lines.length-1; i++) {
-                if (" ?.,!;:".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:".indexOf(lines[i+1][0]) === -1) {
+                if (" ?.,!;:\n".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:\n".indexOf(lines[i+1][0]) === -1) {
                     lines[i]+= "-";
                 }
             }
