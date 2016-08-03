@@ -515,7 +515,7 @@ exports.Domain = function (globalVariables) {
         this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
     }
 
-        addNewGame (event, lib) {
+        addNewGame (event) {
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
                 dropLocation.y -= this.panel.contentV.y;
@@ -548,7 +548,7 @@ exports.Domain = function (globalVariables) {
             let dropLocation=getDropLocation(event);
             let level =getLevel(dropLocation);
             let posX = getColumn(dropLocation, level);
-            let gameBuilder = lib.draggedObject || lib.gameSelected || null;
+            let gameBuilder = this.library.draggedObject || this.library.gameSelected || null;
             gameBuilder.create(this, level, posX);
             this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
@@ -825,7 +825,6 @@ exports.Domain = function (globalVariables) {
 
     adjustGamesPositions (level) {
         let computeIndexes =() => {
-            var gameIndex, levelIndex;
             for (let i = 0; i < this.levelsTab.length; i++) {
                 for(let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
                     this.levelsTab[i].gamesTab[j].levelIndex = i;
@@ -912,13 +911,13 @@ exports.Domain = function (globalVariables) {
             this.arrowModeManipulator.addOrdonator(3);
         }
 
-        dropAction(element, event) {
+        dropAction(event) {
             const target = drawings.background.getTarget(event.pageX, event.pageY);
             let formation;
 
             if (target && target._acceptDrop) {
                 formation = target.parent.parentManip.parentObject;
-                formation.addNewGame(event, this);
+                formation.addNewGame(event);
             }
             this.gameSelected && formation && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
         }

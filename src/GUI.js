@@ -410,7 +410,7 @@ exports.GUI = function (globalVariables) {
                     let point = item.miniature.cadre.globalPoint(0, 0);
                     manip.first.move(point.x, point.y);
 
-                    
+
                     let mouseClickHandler = event => {
                         if (item !== this.gameSelected) {
                             this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
@@ -426,6 +426,7 @@ exports.GUI = function (globalVariables) {
                     };
 
                     this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
+                    svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
                     this.draggedObject.cadre.mark("draggedGameCadre");
                     this.draggedObject.create = this.itemsTab[i].create;
                     manip.ordonator.set(0, this.draggedObject.cadre);
@@ -433,16 +434,12 @@ exports.GUI = function (globalVariables) {
                     manageDnD(this.draggedObject.content, manip);
 
 
-                    
-
-
                     let mouseupHandler = event => {
-                        var svgObj = manip.ordonator.children.slice(0)[0];
                         manip.first.parent.remove(manip.first);
                         var target = drawings.background.getTarget(event.pageX, event.pageY);
                         if (target && target.parent && target.parent.parentManip) {
                             if (target.parent.parentManip.parentObject instanceof Formation) {
-                                this.dropAction(svgObj, event);
+                                this.dropAction(event);
                             }
                             else {
                                 svg.event(this.draggedObject.content, "click", mouseClickHandler);
@@ -454,17 +451,17 @@ exports.GUI = function (globalVariables) {
                     this.draggedObject.cadre.component.listeners && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.listeners.mouseup);
                     this.draggedObject.cadre.component.target && this.draggedObject.cadre.component.target.listeners && this.draggedObject.cadre.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.target.listeners.mouseup);
 
-                        svg.event(drawings.glass, "mousedown", event);
-                        this.draggedObject.content.component.listeners && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.listeners.mouseup);
-                        this.draggedObject.content.component.target && this.draggedObject.content.component.target.listeners && this.draggedObject.content.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.target.listeners.mouseup);
-                        svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
-                        svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
-                    }
-                };
+                    svg.event(drawings.glass, "mousedown", event);
+                    this.draggedObject.content.component.listeners && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.listeners.mouseup);
+                    this.draggedObject.content.component.target && this.draggedObject.content.component.target.listeners && this.draggedObject.content.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.target.listeners.mouseup);
+                    svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
+                    svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
+                }
                 svg.addEvent(item.miniature.cadre, 'mousedown', mouseDownAction);
                 svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
             });
         };
+
 
         displayItems();
         displayArrowModeButton();
