@@ -403,61 +403,65 @@ exports.GUI = function (globalVariables) {
         let assignEvents = () => {
             this.itemsTab.forEach((item, i) => {
                 let mouseDownAction = event => {
+
                     this.arrowMode && this.toggleArrowMode();
-                    let manip = new Manipulator(this);
-                    manip.addOrdonator(2);
-                    drawings.piste.last.add(manip.first);
-                    let point = item.miniature.cadre.globalPoint(0, 0);
-                    manip.first.move(point.x, point.y);
-
-
-                    let mouseClickHandler = event => {
-                        if (item !== this.gameSelected) {
-                            this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-                            item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
-                            this.gameSelected = item;
-                        } else {
-                            item.miniature.cadre.color(myColors.white, 1, myColors.black);
-                            this.gameSelected = null;
-                        }
-
-                        this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
-                        this.formation && this.formation.clickToAdd();
-                    };
-
-                    this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manip);
-                    this.draggedObject.cadre.mark("draggedGameCadre");
-                    this.draggedObject.create = this.itemsTab[i].create;
-                    manip.ordonator.set(0, this.draggedObject.cadre);
-                    manageDnD(this.draggedObject.cadre, manip);
-                    manageDnD(this.draggedObject.content, manip);
-
-
                     let mouseupHandler = event => {
-                        manip.first.parent.remove(manip.first);
-                        var target = drawings.background.getTarget(event.pageX, event.pageY);
-                        if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject === item) {
+                        let addMouseClickHandler = () => {
+                            let mouseClickHandler = ()=> {
+                                if (item !== this.gameSelected) {
+                                    this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                                    item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                                    this.gameSelected = item;
+                                } else {
+                                    item.miniature.cadre.color(myColors.white, 1, myColors.black);
+                                    this.gameSelected = null;
+                                }
+
+                                this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
+                                this.formation && this.formation.clickToAdd();
+                            };
                             svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
                             svg.event(this.draggedObject.cadre, "click", mouseClickHandler);
                             svg.addEvent(this.draggedObject.cadre, 'click', ()=>{});
                         }
-                        else {
-                            if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
-                                this.dropAction(event);
-                            }
+
+                        drawings.piste.last.remove(this.draggedObject.manipulator.first);
+                        let target = drawings.background.getTarget(event.pageX, event.pageY);
+                        if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject === item) {
+                            addMouseClickHandler();
                         }
-                        draggedObject = null;
+                        else if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
+                            this.dropAction(event);
+                        }
+                        this.draggedObject = null;
+                    };
+                    let createDraggbleCopy = () =>{
+                        let manipulator = new Manipulator(this);
+                        manipulator.addOrdonator(2);
+                        drawings.piste.last.add(manipulator.first);
+                        let point = item.miniature.cadre.globalPoint(0, 0);
+                        manipulator.first.move(point.x, point.y);s
+                        this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
+                        this.draggedObject.manipulator = manipulator;
+                        this.draggedObject.cadre.mark("draggedGameCadre");
+                        this.draggedObject.create = this.itemsTab[i].create;
+                        manipulator.ordonator.set(0, this.draggedObject.cadre);
+                        manageDnD(this.draggedObject.cadre, manipulator);
+                        manageDnD(this.draggedObject.content, manipulator);
                     };
 
-                    this.draggedObject.cadre.component.listeners && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.listeners.mouseup);
-                    this.draggedObject.cadre.component.target && this.draggedObject.cadre.component.target.listeners && this.draggedObject.cadre.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.cadre, 'mouseup', this.draggedObject.cadre.component.target.listeners.mouseup);
+                    createDraggbleCopy();
+
+                    // svg.removeEvent(this.draggedObject.cadre, 'mouseup');
 
                     svg.event(drawings.glass, "mousedown", event);
-                    this.draggedObject.content.component.listeners && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.listeners.mouseup);
-                    this.draggedObject.content.component.target && this.draggedObject.content.component.target.listeners && this.draggedObject.content.component.target.listeners.mouseup && svg.removeEvent(this.draggedObject.content, 'mouseup', this.draggedObject.content.component.target.listeners.mouseup);
+
+                    // svg.removeEvent(this.draggedObject.content, 'mouseup');
+
                     svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
                     svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
                 }
+
                 svg.addEvent(item.miniature.cadre, 'mousedown', mouseDownAction);
                 svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
             });
