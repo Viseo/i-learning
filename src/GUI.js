@@ -416,7 +416,7 @@ exports.GUI = function (globalVariables) {
                     manip.first.move(point.x - point2.x, point.y - point2.y);
 
                     let mouseClickHandler = event => {
-                        let target = this.gameMiniature.cadre; //drawings.background.getTarget(event.pageX, event.pageY);
+                        let target = this.gameMiniature.cadre;
                         this.itemsTab.forEach(item => {
                             if (item.miniature.content.messageText === target.parent.children[1].messageText) {
                                 if (item !== this.gameSelected) {
@@ -447,7 +447,7 @@ exports.GUI = function (globalVariables) {
                     }
 
                     let mouseupHandler = event => {
-                        var svgObj = manip.ordonator.children.shift();
+                        var svgObj = manip.ordonator.children.slice(0)[0];
                         manip.first.parent.remove(manip.first);
                         var target = drawings.background.getTarget(event.pageX, event.pageY);
                         if (target && target.parent && target.parent.parentManip) {
