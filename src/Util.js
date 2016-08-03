@@ -106,7 +106,7 @@ exports.Util = function (globalVariables) {
                 !runtime && document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
-                console.log(event.pageX + "_____" + event.pageY);
+                console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
