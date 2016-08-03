@@ -777,8 +777,8 @@ exports.GUI = function (globalVariables) {
     this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
     this.returnButton.setHandler(returnHandler);
 
-        let dblclickQuizzHandler = (event) => {
-            let targetQuizz = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+        let dblclickQuizzHandler = (event, target) => {
+            let targetQuizz = target.parent.parentManip.parentObject;
             let displayQuizzManager = ()=> {
                 this.quizzManager.loadQuizz(targetQuizz);
                 this.quizzDisplayed = targetQuizz;
@@ -928,11 +928,11 @@ exports.GUI = function (globalVariables) {
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
-                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", dblclickQuizzHandler];
+                    let eventToUse = playerMode ? ["click", clickQuizHandler] : ["dblclick", (event)=>dblclickQuizzHandler(event, tabElement.miniature.icon.cadre)];
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
                 } else if (tabElement instanceof Bd) {
-                    let eventToUse = playerMode ? ["click", clickBdHandler] : ["dblclick", dblclickQuizzHandler];
+                    let eventToUse = playerMode ? ["click", clickBdHandler] : ["dblclick", (event)=>dblclickQuizzHandler(event, tabElement.miniature.icon.cadre)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                     var clickBdHandler = (event)=> {
                         let targetBd = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
@@ -2471,6 +2471,7 @@ exports.GUI = function (globalVariables) {
             this.quizzLabel = {};
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
             this.quizzLabel.content = autoAdjustText(text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
+            this.quizzLabel.content.mark("quizzLabelContent");
             this.quizzNameHeight = svg.runtime.boundingRect(this.quizzLabel.content.component).height;
 
             this.quizzLabel.cadre = new svg.Rect(width, 0.5 * h);

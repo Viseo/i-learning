@@ -52,8 +52,10 @@ function HttpRequests(isWriting, isMock, listener) {
         return new Promise((resolve) => {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function () {
-                if (request.readyState == 4 && request.status == 200)
+                if (request.readyState == 4 && request.status == 200){
+                    isWriting && register(JSON.parse(request.responseText));
                     resolve(request.responseText);
+                }
             };
             request.open('POST', theUrl, true); // true for asynchronous
             request.setRequestHeader('Content-type', 'application/json');
@@ -98,7 +100,7 @@ function HttpRequests(isWriting, isMock, listener) {
 
     function httpMockPost(theUrl, body, ignoredData) {
         return new Promise((resolve) => {
-            resolve(body);
+            resolve(listener.data.shift());
         });
     }
 

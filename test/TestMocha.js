@@ -146,7 +146,7 @@ describe('formationsManager', function () {
     });
 
     it("should add a formation", function(done){
-        testutils.retrieveDB("./log/dbAdminConnexionFormationsManager.json", dbListener, function () {
+        testutils.retrieveDB("./log/dbNewQuizz.json", dbListener, function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener);
             let root = runtime.anchor("content");
@@ -236,6 +236,11 @@ describe('formationsManager', function () {
             redCross.listeners['click']();
             arrow02 = retrieve(root, '[quizz0quizz2]');
             assert(!arrow02);
+
+            game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
+            let quizzLabelContent = retrieve(root, '[quizzLabelContent]');
+            assert(quizzLabelContent.text, "Quiz 1");
+
             done();
         });
     });

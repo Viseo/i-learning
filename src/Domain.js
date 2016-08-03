@@ -643,14 +643,14 @@ exports.Domain = function (globalVariables) {
                         if(answer.saved) {
                             this._id = answer.idVersion;
                             this.formationId = answer.id;
-                            status === "Edited" ? displayMessage(messageSave) : returnToFormationList();
+                            status === "Edited" ? displayMessage(messageSave, displayQuizzManager) : returnToFormationList();
                         } else {
                             if(answer.reason === "NameAlreadyUsed") {
                                 throw messageUsedName;
                             }
                         }
                     })
-                    .catch(displayMessage);
+                    .catch(()=>displayMessage(messageSave, displayQuizzManager));
             };
 
             let replaceFormation = () => {
@@ -658,7 +658,7 @@ exports.Domain = function (globalVariables) {
                     .then((data) => {
                         let answer = JSON.parse(data);
                         if(answer.saved) {
-                            status === "Edited" ? displayMessage(messageReplace) : returnToFormationList();
+                            status === "Edited" ? displayMessage(messageReplace, displayQuizzManager) : returnToFormationList();
                         } else {
                             if(answer.reason === "NoModif") {
                                 throw messageNoModification;
@@ -666,14 +666,13 @@ exports.Domain = function (globalVariables) {
                                 throw messageUsedName;
                             }
                         }
-
                     })
-                    .catch(displayMessage);
+                    .catch(()=>displayMessage(messageSave, displayQuizzManager));
             };
 
                 this._id ? replaceFormation() : addNewFormation();
             } else {
-                displayMessage(messageError);
+                displayMessage(messageError, displayQuizzManager);
             }
         }
 
