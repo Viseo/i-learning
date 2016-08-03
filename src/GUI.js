@@ -468,7 +468,6 @@ exports.GUI = function (globalVariables) {
             });
         };
 
-
         displayItems();
         displayArrowModeButton();
         assignEvents();
@@ -918,7 +917,39 @@ exports.GUI = function (globalVariables) {
 
             let manageMiniature = (tabElement) => {
 
-                let mouseDownAction = () => {};
+                let mouseDownAction = eventDown => {
+                    let mouseupHandler = eventUp => {
+                        drawings.piste.last.remove(tabElement.movingManipulator.first);
+                        let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
+                        if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
+                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
+                            tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                            tabElement.miniature.miniatureClickHandler();
+                        }
+                        else if (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject instanceof Formation) {
+                            this.moveGame(event, tabElement);
+                            this.displayGraph();
+                        }
+                    };
+                    let putMiniatureInPiste = () =>{
+                        let point = tabElement.miniature.icon.cadre.globalPoint(0, 0);
+                        this.miniaturesManipulator.last.remove(tabElement.miniatureManipulator.first);
+                        tabElement.movingManipulator = new Manipulator(tabElement);
+                        tabElement.movingManipulator.last.add(tabElement.miniatureManipulator.first);
+                        drawings.piste.last.add(tabElement.movingManipulator.first);
+                        tabElement.miniatureManipulator.first.move(point.x, point.y);
+                        manageDnD(tabElement.miniature.icon.cadre, tabElement.movingManipulator);
+                        manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator);
+                    };
+
+                    putMiniatureInPiste();
+
+                    svg.event(drawings.glass, "mousedown", eventDown);
+                    svg.addEvent(tabElement.miniature.icon.cadre, 'mouseup', mouseupHandler);
+                    svg.addEvent(tabElement.miniature.icon.content, 'mouseup', mouseupHandler);
+                };
+                svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
+                svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
 
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);

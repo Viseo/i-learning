@@ -827,8 +827,8 @@ exports.Util = function (globalVariables) {
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
 
-            !globalVariables.playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
-            !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
+            // !globalVariables.playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
+            // !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
             this.icon.cadre.color(myColors.white, 1, myColors.black);
 
             if (playerMode) {
@@ -836,7 +836,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-    redCrossClickHandler () {
+        redCrossClickHandler () {
         this.removeAllLinks();
         this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
         this.game.miniatureManipulator.ordonator.unset(0);

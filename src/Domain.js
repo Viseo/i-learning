@@ -555,6 +555,45 @@ exports.Domain = function (globalVariables) {
             this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
     }
 
+        moveGame(event, game)
+        {
+            let getDropLocation = event => {
+                let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
+                dropLocation.y -= this.panel.contentV.y;
+                dropLocation.x -= this.panel.contentV.x;
+                return dropLocation;
+            };
+            let getLevel = (dropLocation) => {
+                let level = -1;
+                while(dropLocation.y > -this.panel.content.height/2) {
+                    dropLocation.y -= this.levelHeight;
+                    level++;
+                }
+                if (level >= this.levelsTab.length) {
+                    level = this.levelsTab.length;
+                    this.addNewLevel(level);
+                }
+                return level;
+            };
+            let getColumn = (dropLocation, level)=>{
+                let posX=this.levelsTab[level].gamesTab.length;
+                for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
+                    if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
+                        posX = i;
+                        break;
+                    }
+                }
+                return posX;
+            };
+
+            let dropLocation=getDropLocation(event);
+            let level =getLevel(dropLocation);
+            let posX = getColumn(dropLocation, level);
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex,1 ,game);
+            this.levelsTab[level].gamesTab.splice(posX,0 ,game);
+            // this.gameSelected && formation && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+        }
+
         deactivateFormation() {
         this.status = "NotPublished";
         Server.deactivateFormation(this.formationId, ignoredData)
@@ -568,7 +607,7 @@ exports.Domain = function (globalVariables) {
             })
     }
 
-    saveFormation (displayQuizzManager, status = "Edited") {
+        saveFormation (displayQuizzManager, status = "Edited") {
         const
             messageSave = "Votre travail a bien été enregistré.",
             messageError = "Vous devez remplir correctement le nom de la formation.",
