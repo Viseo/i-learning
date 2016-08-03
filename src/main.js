@@ -3,11 +3,11 @@ const Domain = require('./Domain').Domain,
     GUI = require('./GUI').GUI,
     gui = require('../lib/svggui').Gui;
 
-exports.main = function (svg, runtime, dbListener) {
+exports.main = function (svg, runtime, dbListener, ImageRuntime) {
 
     let domain, util, Gui, drawing, drawings;
 
-    let globalVariables = {svg, runtime, dbListener};
+    let globalVariables = {svg, runtime, dbListener, ImageRuntime};
 
     globalVariables.gui = gui(svg, {speed: 5, step: 100});
 

@@ -28,8 +28,8 @@ exports.Util = function (globalVariables) {
 
     function SVGGlobalHandler() {
 
-        ImageController = function () {
-            return {
+        ImageController = function (imageRuntime) {
+            return imageRuntime || {
                 getImage: function (imgUrl, onloadHandler) {
                     var image = new Image();
                     image.src = imgUrl;
@@ -1308,7 +1308,7 @@ exports.Util = function (globalVariables) {
     }
 
         static getImages() {
-            return dbListener.httpGetAsync('/getAllImages')
+            return dbListener.httpPostAsync('/getAllImages')
         }
     }
 

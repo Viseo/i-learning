@@ -16,29 +16,29 @@ exports.Domain = function (globalVariables) {
         Server = globalVariables.util.Server,
         playerMode = globalVariables.playerMode;
 
-    const ImageRuntime = {
-        images: {},
-        count: 0,
+    // const ImageRuntime = {
+    //     images: {},
+    //     count: 0,
+    //
+    //     getImage: function (imgUrl, onloadHandler) {
+    //         this.count++;
+    //         const image = {
+    //             src: imgUrl,
+    //             onload: onloadHandler,
+    //             id: "i" + this.count
+    //         };
+    //         this.images[image.id] = image;
+    //         return image;
+    //     },
+    //
+    //     imageLoaded: function (id, w, h) {
+    //         this.images[id].width = w;
+    //         this.images[id].height = h;
+    //         this.images[id].onload();
+    //     }
+    // };
 
-        getImage: function (imgUrl, onloadHandler) {
-            this.count++;
-            const image = {
-                src: imgUrl,
-                onload: onloadHandler,
-                id: "i" + this.count
-            };
-            this.images[image.id] = image;
-            return image;
-        },
-
-        imageLoaded: function (id, w, h) {
-            this.images[id].width = w;
-            this.images[id].height = h;
-            this.images[id].onload();
-        }
-    };
-
-    imageController = ImageController(ImageRuntime);
+    imageController = ImageController(globalVariables.ImageRuntime);
     globalVariables.imageController = imageController;
 
     setGlobalVariables = () => {
@@ -650,7 +650,7 @@ exports.Domain = function (globalVariables) {
                             }
                         }
                     })
-                    .catch(()=>displayMessage(messageSave, displayQuizzManager));
+                    // .catch(()=>displayMessage(messageSave, displayQuizzManager));
             };
 
             let replaceFormation = () => {
