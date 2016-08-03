@@ -114,9 +114,15 @@ exports.main = function (svg, runtime, dbListener, ImageRuntime) {
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;
             data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
+            util.setGlobalVariables();
+            domain.setGlobalVariables();
+            Gui.setGlobalVariables();
             listFormations();
         } else {
             Gui.LearningGUI();
+            util.setGlobalVariables();
+            domain.setGlobalVariables();
+            Gui.setGlobalVariables();
             connexionManager.display();
         }
     });
