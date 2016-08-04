@@ -570,6 +570,16 @@ exports.Domain = function (globalVariables) {
             this.levelsTab[level].gamesTab.splice(column,0 ,game);
         }
 
+        createLink (parentGame, childGame) {
+
+            let isChildOf = function (parentGame,childGame){
+                parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
+            };
+            if (isChildOf(parentGame, childGame)) return;
+            if (parentGame.levelIndex >= childGame.levelIndex) return;
+            this.link.push({parentGame : parentGame.id, childGame : childGame.id});
+        };
+
         deactivateFormation() {
         this.status = "NotPublished";
         Server.deactivateFormation(this.formationId, ignoredData)
@@ -914,7 +924,7 @@ exports.Domain = function (globalVariables) {
     }
 
     class GamesLibrary extends Library {
-    
+
         constructor (lib) {
             super();
             this.title = lib.title;
@@ -1000,6 +1010,7 @@ exports.Domain = function (globalVariables) {
             this.size = HEADER_SIZE;
         }
     }
+
 
     class QuizzManager {
         constructor(quizz, formation) {

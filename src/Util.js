@@ -644,7 +644,7 @@ exports.Util = function (globalVariables) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
-                manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
+                manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
                 return true;
             };
             var mouseupHandler = function () {
@@ -868,6 +868,13 @@ exports.Util = function (globalVariables) {
                     link.splice(i, 1);
             }
         }
+
+        // moveAllLinks() {
+        //     for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+        //         if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
+        //             link.splice(i, 1);
+        //     }
+        // }
 
         miniatureClickHandler() {
             this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();

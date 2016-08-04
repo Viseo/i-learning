@@ -308,16 +308,12 @@ exports.GUI = function (globalVariables) {
             this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) === -1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
-        let isChildOf = function (parentGame,childGame){
-            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
-        };
-        let createLink = function (parentGame, childGame) {
-            if (isChildOf(parentGame, childGame)) return;
-            if (parentGame.levelIndex >= childGame.levelIndex) return;
-            parentGame.parentFormation.link.push({parentGame : parentGame.id, childGame : childGame.id});
+        let createLink = (parentGame, childGame) =>{
+            this.formation.createLink(parentGame, childGame);
             let arrow = new Arrow(parentGame, childGame);
+            this.formation.arrowsManipulator.last.add(arrow.arrowPath);
             arrow.arrowPath.mark(parentGame.id + childGame.id);
-            parentGame.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
+
         };
 
             let arrowModeButton = displayText('', w * 0.9, (6 / 100) * h, myColors.black, myColors.white, null, this.font, this.arrowModeManipulator);
@@ -349,11 +345,11 @@ exports.GUI = function (globalVariables) {
                     clip.add(glass);
                     glass.position(glass.width / 2, glass.height / 2);
 
-                    let mouseDownAction = function (event) {
+                    let mouseDownAction = (event) => {
                         event.preventDefault();
                         let targetParent = graph.getTarget(event.pageX, event.pageY);
 
-                        let mouseUpAction = function (event) {
+                        let mouseUpAction =  (event) => {
                             let targetChild = graph.getTarget(event.pageX, event.pageY);
                             let booleanInstanceOfCorrect = function (e) {
                                 return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
@@ -937,7 +933,7 @@ exports.GUI = function (globalVariables) {
                             svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
                             svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
                             tabElement.miniature.miniatureClickHandler();
-                        }
+                        };
 
                         drawings.piste.last.remove(tabElement.movingManipulator.first);
                         let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
