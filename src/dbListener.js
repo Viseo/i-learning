@@ -99,9 +99,10 @@ function HttpRequests(isWriting, isMock, listener) {
     }
 
     function httpMockPost(theUrl, body, ignoredData) {
-        return new Promise((resolve) => {
-            resolve(listener.data.shift());
-        });
+        function then(callback) {
+            callback(listener.data.shift())
+        }
+        return {then}
     }
 
     function httpMockPut(theUrl, body, callback, ignoredData) {
