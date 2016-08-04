@@ -517,16 +517,6 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
         }
 
-        dropAction(event) {
-            const target = drawings.background.getTarget(event.pageX, event.pageY);
-
-
-
-                formation.addNewGame(event);
-
-            this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-        }
-
         dropAction(event,game){
 
             let getDropLocation = event => {
@@ -561,7 +551,13 @@ exports.Domain = function (globalVariables) {
             let dropLocation=getDropLocation(event);
             let level =getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
-            game ? this.moveGame(game, level, column) : this.addNewGame(level, column) ;
+            if(game){
+                this.moveGame(game, level, column);
+                game.levelIndex === level || game.miniature.removeAllLinks();
+            }else{
+                this.addNewGame(level, column)
+            };
+            this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
             this.displayGraph();
         }
 
