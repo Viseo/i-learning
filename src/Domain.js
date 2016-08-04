@@ -570,10 +570,17 @@ exports.Domain = function (globalVariables) {
             this.levelsTab[level].gamesTab.splice(column,0 ,game);
         }
 
-        createLink (parentGame, childGame) {
+        createLink (parentGame, childGame, arrow) {
             if (childGame.isChildOf(childGame)) return;
             if (parentGame.levelIndex >= childGame.levelIndex) return;
-            this.link.push({parentGame : parentGame.id, childGame : childGame.id});
+            this.link.push({parentGame : parentGame.id, childGame : childGame.id, arrow: arrow});
+        };
+
+        removeLink (parentGame, childGame){
+            for (let i = this.link.length - 1; i >= 0; i--) {
+                if (this.link[i].childGame === childGame.id && this.link[i].parentGame === parentGame.id)
+                    this.link.splice(i, 1);
+            }
         };
 
         deactivateFormation() {

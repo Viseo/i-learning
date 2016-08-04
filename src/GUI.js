@@ -309,9 +309,9 @@ exports.GUI = function (globalVariables) {
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
         let createLink = (parentGame, childGame) =>{
-            this.formation.createLink(parentGame, childGame);
             let arrow = new Arrow(parentGame, childGame);
-            this.formation.arrowsManipulator.last.add(arrow.arrowPath);
+            // arrow.draw();
+            this.formation.createLink(parentGame, childGame, arrow);
             arrow.arrowPath.mark(parentGame.id + childGame.id);
 
         };
@@ -879,15 +879,15 @@ exports.GUI = function (globalVariables) {
         let updateAllLinks = () => {
             this.arrowsManipulator.flush();
             var childElement, parentElement;
-            this.link.forEach((links)=> {
+            this.link.forEach((link)=> {
                 this.levelsTab.forEach((level)=> {
                     level.gamesTab.forEach((game)=> {
-                        game.id === links.childGame && (childElement = game);
-                        game.id === links.parentGame && (parentElement = game);
+                        game.id === link.childGame && (childElement = game);
+                        game.id === link.parentGame && (parentElement = game);
                     })
                 });
-                let arrow = new Arrow(parentElement, childElement);
-                parentElement.parentFormation.arrowsManipulator.last.add(arrow.arrowPath);
+                link.arrow = new Arrow(parentElement, childElement);
+                // link.arrow.draw();
             });
         };
 
@@ -921,8 +921,8 @@ exports.GUI = function (globalVariables) {
                         tabElement.movingManipulator.last.add(tabElement.miniatureManipulator.first);
                         drawings.piste.last.add(tabElement.movingManipulator.first);
                         tabElement.miniatureManipulator.first.move(point.x, point.y);
-                        manageDnD(tabElement.miniature.icon.cadre, tabElement.movingManipulator);
-                        manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator);
+                        manageDnD(tabElement.miniature.icon.cadre, tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
+                        manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                     };
                     let mouseupHandler = eventUp => {
 

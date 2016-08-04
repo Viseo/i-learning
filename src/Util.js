@@ -638,13 +638,14 @@ exports.Util = function (globalVariables) {
             return this.chevron;
         };
 
-        manageDnD = function (svgItem, manipulator) {
+        manageDnD = function (svgItem, manipulator, redraw) {
             var ref;
             var mousemoveHandler = function (event) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
                 manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
+                redraw();
                 return true;
             };
             var mouseupHandler = function () {
@@ -671,56 +672,62 @@ exports.Util = function (globalVariables) {
         };
 
         Arrow = function (parentGame, childGame) {
-            var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize / 2);
-            var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-            var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize / 2);
-            var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+            let formation = parentGame.parentFormation;
+            let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
+            let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+            let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
+            let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
             this.redCross.mark('redCross');
             this.redCrossManipulator.last.add(this.redCross);
 
-            let removeLink = () => {
-                for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                    if (link[i].childGame === childGame.id && link[i].parentGame === parentGame.id)
-                        link.splice(i, 1);
-                }
-            };
+            this.redrawWhenDragParent = () => {
+                let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
+                let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+                formation.arrowsManipulator.last.remove(this.arrowPath);
 
-            let redraw = () => {
-                for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                    if (link[i].childGame === childGame.id && link[i].parentGame === parentGame.id)
-                        link.splice(i, 1);
-                }
+                this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+                formation.arrowsManipulator.last.add(this.arrowPath);
+
+            };
+            this.redrawWhenDragChild = () => {
+                let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
+                let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+                formation.arrowsManipulator.last.remove(this.arrowPath);
+                this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+                formation.arrowsManipulator.last.add(this.arrowPath);
+
             };
 
             this.redCrossClickHandler = () => {
-                removeLink();
-                parentGame.parentFormation.arrowsManipulator.last.remove(this.arrowPath);
-                parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
-                parentGame.parentFormation.selectedArrow = null;
+                formation.removeLink(parentGame, childGame);
+                formation.arrowsManipulator.last.remove(this.arrowPath);
+                formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                formation.selectedArrow = null;
             };
 
             svg.addEvent(this.redCross, 'click', this.redCrossClickHandler);
 
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+            formation.arrowsManipulator.last.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
-                parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
+                formation.selectedGame && formation.selectedGame.icon.cadre.component.listeners.click();
                 if (!this.selected) {
-                    if (parentGame.parentFormation.selectedArrow) {
-                        parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
-                        parentGame.parentFormation.selectedArrow.selected = false;
-                        parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
+                    if (formation.selectedArrow) {
+                        formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
+                        formation.selectedArrow.selected = false;
+                        formation.arrowsManipulator.last.remove(formation.selectedArrow.redCrossManipulator.first);
                     }
-                    parentGame.parentFormation.selectedArrow = this;
-                    parentGame.parentFormation.arrowsManipulator.last.add(this.redCrossManipulator.first);
+                    formation.selectedArrow = this;
+                    formation.arrowsManipulator.last.add(this.redCrossManipulator.first);
                     this.arrowPath.color(myColors.blue, 2, myColors.black);
                 } else {
                     this.arrowPath.color(myColors.black, 1, myColors.black);
-                    parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
-                    parentGame.parentFormation.selectedArrow = null;
+                    formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                    formation.selectedArrow = null;
                 }
                 this.selected = !this.selected;
             };
@@ -876,12 +883,14 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        // moveAllLinks() {
-        //     for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-        //         if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
-        //             link.splice(i, 1);
-        //     }
-        // }
+        moveAllLinks() {
+            for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+                if (link[i].childGame === this.game.id)
+                    link[i].arrow.redrawWhenDragChild();
+                else if (link[i].parentGame === this.game.id)
+                    link[i].arrow.redrawWhenDragParent();
+            }
+        }
 
         miniatureClickHandler() {
             this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
