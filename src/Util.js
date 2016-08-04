@@ -683,18 +683,11 @@ exports.Util = function (globalVariables) {
             this.redCross.mark('redCross');
             this.redCrossManipulator.last.add(this.redCross);
 
-            this.redrawWhenDragParent = () => {
-                let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
-                let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-                formation.arrowsManipulator.last.remove(this.arrowPath);
-
-                this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-                formation.arrowsManipulator.last.add(this.arrowPath);
-
-            };
-            this.redrawWhenDragChild = () => {
+            this.redraw = () => {
                 let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
                 let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+                let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
+                let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
                 formation.arrowsManipulator.last.remove(this.arrowPath);
                 this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
                 formation.arrowsManipulator.last.add(this.arrowPath);
@@ -885,10 +878,8 @@ exports.Util = function (globalVariables) {
 
         moveAllLinks() {
             for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                if (link[i].childGame === this.game.id)
-                    link[i].arrow.redrawWhenDragChild();
-                else if (link[i].parentGame === this.game.id)
-                    link[i].arrow.redrawWhenDragParent();
+                if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
+                    link[i].arrow.redraw();
             }
         }
 
