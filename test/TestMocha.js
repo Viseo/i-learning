@@ -9,6 +9,7 @@ const
     SVG = require('../lib/svghandler').SVG,
     inspect = testutils.inspect,
     checkScenario = testutils.checkScenario;
+
 const ImageRuntime = {
     images: {},
     count: 0,
@@ -171,6 +172,7 @@ describe('formationsManager', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
+
             let addFormationCadre = retrieve(root, "[addFormationCadre]");
             addFormationCadre.listeners["click"]();
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
@@ -260,14 +262,50 @@ describe('formationsManager', function () {
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             let quizzLabelContent = retrieve(root, '[quizzLabelContent]');
-            console.log(quizzLabelContent);
-            // assert(quizzLabelContent.text, "Quiz 1");
+            assert(quizzLabelContent.text, "Quiz 1");
 
             done();
 
 
         });
     });
+});
+
+describe('Player mode', function () {
+
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should go into a quiz and play it", function (done) {
+        testutils.retrieveDB("./log/dbPlayQuiz.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let greekMythFormationCadre = retrieve(root, "[Mythologie grecque]");
+            greekMythFormationCadre.listeners["click"]();
+
+            let firstGame = retrieve(root, "[level0quizz1]");
+            assert.equal(firstGame.text, "Le Chaos");
+            firstGame.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advance();
+
+            let header = retrieve(root, "[headerMessage]");
+            assert.equal(header.text, "Mythologie grecque - Le Chaos");
+
+
+            done();
+        });
+    })
 });
 
 /*describe('Quizz game', function () {

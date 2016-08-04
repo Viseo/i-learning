@@ -128,7 +128,7 @@ exports.main = function (svg, runtime, dbListener, ImageRuntime) {
     });
 
     setTimeout(function () {
-        window.onresize = resizePaper;
+        //window.onresize = resizePaper;
     }, 200);
 
 };

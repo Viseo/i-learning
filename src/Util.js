@@ -30,13 +30,13 @@ exports.Util = function (globalVariables) {
 
         ImageController = function (imageRuntime) {
             return imageRuntime || {
-                getImage: function (imgUrl, onloadHandler) {
-                    var image = new Image();
-                    image.src = imgUrl;
-                    image.onload = onloadHandler;
-                    return image;
-                }
-            };
+                    getImage: function (imgUrl, onloadHandler) {
+                        var image = new Image();
+                        image.src = imgUrl;
+                        image.onload = onloadHandler;
+                        return image;
+                    }
+                };
         };
 
     }
@@ -106,7 +106,7 @@ exports.Util = function (globalVariables) {
                 !runtime && document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
-                //console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
+                console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
@@ -471,40 +471,40 @@ exports.Util = function (globalVariables) {
             t.message(lines.join("\n"));
 
             /*while (words.length > 0) {
-                let word = words.shift();
-                // set text to test the BBox.width
-                t.message(text + ' ' + word);
-                if (t.boundingRect() && t.boundingRect().width <= w) {
-                    text += ' ' + word;
-                } else {
-                    let tmpStr = text + '\n' + word;
-                    t.message(tmpStr);
-                    if (svg.runtime.boundingRect(t.component).height <= (h - MARGIN)) {
-                        if (svg.runtime.boundingRect(t.component).width <= w) {
-                            text = tmpStr;
-                        } else {
-                            text += ' ';
-                            let longWord = word;
-                            for (let j = 0; j < longWord.length; j++) {
-                                t.message(text + " " + longWord.charAt(j));
-                                if (svg.runtime.boundingRect(t.component).width <= w) {
-                                    text += longWord.charAt(j);
-                                } else {
-                                    text = text.slice(0, -1);
-                                    j--;
-                                    text += '-\n';
-                                    words.unshift(longWord.slice(j));
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        text = text.slice(0, -2) + '…';
-                        break;
-                    }
-                }
-            }
-            t.message(text.substring(1));*/
+             let word = words.shift();
+             // set text to test the BBox.width
+             t.message(text + ' ' + word);
+             if (t.boundingRect() && t.boundingRect().width <= w) {
+             text += ' ' + word;
+             } else {
+             let tmpStr = text + '\n' + word;
+             t.message(tmpStr);
+             if (svg.runtime.boundingRect(t.component).height <= (h - MARGIN)) {
+             if (svg.runtime.boundingRect(t.component).width <= w) {
+             text = tmpStr;
+             } else {
+             text += ' ';
+             let longWord = word;
+             for (let j = 0; j < longWord.length; j++) {
+             t.message(text + " " + longWord.charAt(j));
+             if (svg.runtime.boundingRect(t.component).width <= w) {
+             text += longWord.charAt(j);
+             } else {
+             text = text.slice(0, -1);
+             j--;
+             text += '-\n';
+             words.unshift(longWord.slice(j));
+             break;
+             }
+             }
+             }
+             } else {
+             text = text.slice(0, -2) + '…';
+             break;
+             }
+             }
+             }
+             t.message(text.substring(1));*/
             let finalHeight = svg.runtime.boundingRect(t.component).height;
             (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
@@ -838,24 +838,24 @@ exports.Util = function (globalVariables) {
         }
 
         redCrossClickHandler () {
-        this.removeAllLinks();
-        this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
-        this.game.miniatureManipulator.ordonator.unset(0);
-        this.game.miniatureManipulator.ordonator.unset(1);
-        this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
-        var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
+            this.removeAllLinks();
+            this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
+            this.game.miniatureManipulator.ordonator.unset(0);
+            this.game.miniatureManipulator.ordonator.unset(1);
+            this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
-        if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
-            this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
-            this.game.parentFormation.movePanelContent();
-        }
-        this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
-        var levelsTab = this.game.parentFormation.levelsTab;
-        while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-            levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
-            levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
-            this.game.parentFormation.levelsTab.pop();
-        }
+            if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
+                this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
+                this.game.parentFormation.movePanelContent();
+            }
+            this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+            var levelsTab = this.game.parentFormation.levelsTab;
+            while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
+                levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
+                this.game.parentFormation.levelsTab.pop();
+            }
 
             this.game.parentFormation.selectedGame.selected = false;
             this.game.parentFormation.selectedGame = null;
@@ -977,15 +977,17 @@ exports.Util = function (globalVariables) {
             this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
             this.miniature.cadre.corners(50, 50);
 
-        let iconSize = this.formation.parent.iconeSize;
+            this.miniature.cadre.mark(this.formation.label);
 
-        if(!playerMode && statusEnum[this.formation.status]) {
-            let icon = statusEnum[this.formation.status].icon(iconSize);
-            for (let i = 0; i < icon.elements.length; i++) {
-                this.iconManipulator.ordonator.set(i, icon.elements[i]);
+            let iconSize = this.formation.parent.iconeSize;
+
+            if(!playerMode && statusEnum[this.formation.status]) {
+                let icon = statusEnum[this.formation.status].icon(iconSize);
+                for (let i = 0; i < icon.elements.length; i++) {
+                    this.iconManipulator.ordonator.set(i, icon.elements[i]);
+                }
             }
-        }
-        this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
+            this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
 
             this.miniatureManipulator.translator.move(x, y);
             this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
@@ -1293,63 +1295,63 @@ exports.Util = function (globalVariables) {
         constructor() {
         }
 
-    static getAllFormations() {
-        return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
-    }
+        static getAllFormations() {
+            return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
+        }
 
         static connect(mail, password) {
             return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
         }
 
-    static inscription(user) {
-        return dbListener.httpPostAsync('/user/inscription/', user)
-    }
+        static inscription(user) {
+            return dbListener.httpPostAsync('/user/inscription/', user)
+        }
 
         static checkCookie() {
             return dbListener.httpGetAsync('/auth/verify/')
         }
 
-    static getVersionById(id) {
-        return dbListener.httpGetAsync("/formations/getVersionById/" + id)
-    }
+        static getVersionById(id) {
+            return dbListener.httpGetAsync("/formations/getVersionById/" + id)
+        }
 
-    static sendProgressToServer(quiz) {
-        var data = {
-            indexQuestion: quiz.currentQuestionIndex+1,
-            tabWrongAnswers: [],
-            game: quiz.id,
-            version: quiz.parentFormation._id,
-            formation: quiz.parentFormation.formationId
-        };
-        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
-        return dbListener.httpPostAsync("/user/saveProgress", data)
-    }
+        static sendProgressToServer(quiz) {
+            var data = {
+                indexQuestion: quiz.currentQuestionIndex+1,
+                tabWrongAnswers: [],
+                game: quiz.id,
+                version: quiz.parentFormation._id,
+                formation: quiz.parentFormation.formationId
+            };
+            quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
+            return dbListener.httpPostAsync("/user/saveProgress", data)
+        }
 
-    static getUser() {
-        return dbListener.httpGetAsync("/user/getUser")
-    }
+        static getUser() {
+            return dbListener.httpGetAsync("/user/getUser")
+        }
 
-    static replaceFormation(id, newFormation, status, ignoredData) {
-        newFormation.status = status;
-        return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
-    }
+        static replaceFormation(id, newFormation, status, ignoredData) {
+            newFormation.status = status;
+            return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
+        }
 
-    static insertFormation(newFormation, status, ignoredData) {
-        newFormation.status = status;
-        return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
-    }
+        static insertFormation(newFormation, status, ignoredData) {
+            newFormation.status = status;
+            return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
+        }
 
-    static deactivateFormation(id, ignoredData) {
-        return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
-    }
+        static deactivateFormation(id, ignoredData) {
+            return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
+        }
 
         static insertPicture(newPicture) {
             return dbListener.httpUpload("/insertPicture", newPicture);
         }
 
-    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
-        return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
-    }
+        static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
+            return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+        }
 
         static getImages() {
             return dbListener.httpPostAsync('/getAllImages')
@@ -1562,32 +1564,32 @@ exports.Util = function (globalVariables) {
 
         SELECTION_COLOR = myColors.darkBlue;
 
-    myLibraryGames = {
-        title: "Type de jeux",
-        tab: [
-            {
-                label: "Quiz",
-                create: function (formation, level, posX) {
-                    var newQuizz = new Quizz(defaultQuizz, false, formation);
-                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                    newQuizz.id = "quizz" + formation.gamesCounter.quizz;
-                    formation.gamesCounter.quizz++;
-                    newQuizz.title = "Quiz "  + formation.gamesCounter.quizz;
-                    formation.levelsTab[level].gamesTab.splice(posX,0 ,newQuizz);
-                }
-            },
-            {label: "Bd",
-                create: function (formation, level, posX) {
-                    var newBd = new Bd({}, formation);
-                    newBd.id = "bd" + formation.gamesCounter.bd;
-                    formation.gamesCounter.bd++;
-                    newBd.title = "Bd "  + formation.gamesCounter.bd;
-                    formation.levelsTab[level].gamesTab.splice(posX,0, newBd);
-                }
-            },
-        ],
-        font: "Courier New", fontSize: 20
-    };
+        myLibraryGames = {
+            title: "Type de jeux",
+            tab: [
+                {
+                    label: "Quiz",
+                    create: function (formation, level, posX) {
+                        var newQuizz = new Quizz(defaultQuizz, false, formation);
+                        newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                        newQuizz.id = "quizz" + formation.gamesCounter.quizz;
+                        formation.gamesCounter.quizz++;
+                        newQuizz.title = "Quiz "  + formation.gamesCounter.quizz;
+                        formation.levelsTab[level].gamesTab.splice(posX,0 ,newQuizz);
+                    }
+                },
+                {label: "Bd",
+                    create: function (formation, level, posX) {
+                        var newBd = new Bd({}, formation);
+                        newBd.id = "bd" + formation.gamesCounter.bd;
+                        formation.gamesCounter.bd++;
+                        newBd.title = "Bd "  + formation.gamesCounter.bd;
+                        formation.levelsTab[level].gamesTab.splice(posX,0, newBd);
+                    }
+                },
+            ],
+            font: "Courier New", fontSize: 20
+        };
 
         defaultQuestion = {
             label: "", imageSrc: "", multipleChoice: false,
