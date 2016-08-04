@@ -640,12 +640,6 @@ exports.Util = function (globalVariables) {
 
         manageDnD = function (svgItem, manipulator) {
             var ref;
-            var mousedownHandler = function (event) {
-                event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
-                ref = svgItem.localPoint(event.pageX, event.pageY);
-                svg.addEvent(svgItem, "mousemove", mousemoveHandler);
-                svg.addEvent(svgItem, "mouseup", mouseupHandler);
-            };
             var mousemoveHandler = function (event) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
@@ -656,6 +650,13 @@ exports.Util = function (globalVariables) {
             var mouseupHandler = function () {
                 svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
             };
+            var mousedownHandler = function (event) {
+                event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
+                ref = svgItem.localPoint(event.pageX, event.pageY);
+                svg.addEvent(svgItem, "mousemove", mousemoveHandler);
+                svg.addEvent(svgItem, "mouseup", mouseupHandler);
+            };
+
             svg.addEvent(svgItem, "mousedown", mousedownHandler);
         };
 

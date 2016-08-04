@@ -929,13 +929,14 @@ exports.GUI = function (globalVariables) {
                         manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator);
                     };
                     let mouseupHandler = eventUp => {
-                        console.log("mouseupHandler");
                         drawings.piste.last.remove(tabElement.movingManipulator.first);
                         let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
                             tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
                             this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                            // svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
+                            // svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
                             tabElement.miniature.miniatureClickHandler();
                         }
                         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject)) {

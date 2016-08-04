@@ -556,7 +556,7 @@ exports.Domain = function (globalVariables) {
                 game.levelIndex === level || game.miniature.removeAllLinks();
             }else{
                 this.addNewGame(level, column)
-            };
+            }
             this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
             this.displayGraph();
         }
