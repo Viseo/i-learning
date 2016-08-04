@@ -2125,7 +2125,7 @@ exports.GUI = function (globalVariables) {
     function quizzDisplay(x, y, w, h) {
         drawing.currentPageDisplayed = "Quizz";
         header.display(this.parentFormation.label + " - " + this.title);
-        mainManipulator.ordonator.set(1, this.quizzManipulator.first);
+        mainManipulator.ordonator.set(1, this.manipulator.first);
 
         let setSizes = ()=> {
             this.x = x || this.x || 0;
@@ -2167,7 +2167,7 @@ exports.GUI = function (globalVariables) {
         this.questionHeightWithImage = heightPage * this.questionPercentageWithImage - MARGIN;
         this.answerHeightWithImage = heightPage * this.answerPercentageWithImage - MARGIN;
 
-        this.quizzManipulator.translator.move(this.questionArea.w / 2, this.headerHeight);
+        this.manipulator.translator.move(this.questionArea.w / 2, this.headerHeight);
 
         this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
         if (this.previewMode) {
@@ -2176,7 +2176,7 @@ exports.GUI = function (globalVariables) {
                     let target = drawings.background.getTarget(event.pageX, event.pageY);
                     target.parentObj.parent.previewMode = false;
                     target.parentObj.parent.currentQuestionIndex = this.tabQuestions.length;
-                    target.parentObj.parent.quizzManipulator.flush();
+                    target.parentObj.parent.manipulator.flush();
                     drawing.currentPageDisplayed = "QuizPreview";
                     target.parentObj.parent.puzzleLines = 3;
                     target.parentObj.parent.puzzleRows = 3;
@@ -2187,7 +2187,7 @@ exports.GUI = function (globalVariables) {
             else {
                 this.returnButton.setHandler((event) => {
                     let target = drawings.background.getTarget(event.pageX, event.pageY);
-                    target.parentObj.parent.quizzManipulator.flush();
+                    target.parentObj.parent.manipulator.flush();
                     target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
                     target.parentObj.parent.parentFormation.quizzManager.display();
                 });
@@ -2196,7 +2196,7 @@ exports.GUI = function (globalVariables) {
         else {
             this.returnButton.setHandler((event) => {
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
-                target.parentObj.parent.quizzManipulator.flush();
+                target.parentObj.parent.manipulator.flush();
                 target.parentObj.parent.parentFormation.displayFormation();
             });
         }
@@ -2241,7 +2241,7 @@ exports.GUI = function (globalVariables) {
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex > 0) {
-                    puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                    puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
                     puzzle.currentQuestionIndex--;
                     updateColorChevrons(puzzle);
                     puzzle.displayCurrentQuestion();
@@ -2252,7 +2252,7 @@ exports.GUI = function (globalVariables) {
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 let puzzle = target.parentObj;
                 if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
-                    puzzle.quizzManipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                    puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
                     puzzle.currentQuestionIndex++;
                     updateColorChevrons(puzzle);
                     puzzle.displayCurrentQuestion();
@@ -2275,7 +2275,7 @@ exports.GUI = function (globalVariables) {
         this.buttonAnswersExpHeight = 50;
         this.answersExpButtonManipulator = new Manipulator(this);
         this.answersExpButtonManipulator.addOrdonator(2);
-        this.quizzManipulator.last.add(this.answersExpButtonManipulator.first);
+        this.manipulator.last.add(this.answersExpButtonManipulator.first);
 
         this.textAnswersExp = "Voir les réponses et explications";
         this.returnText = new svg.Text(this.textAnswersExp).font("Arial", 20);
@@ -2284,8 +2284,8 @@ exports.GUI = function (globalVariables) {
         this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width / 4, this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
         this.answerExpFunction = () => {
             this.displayAnswersExp = () => {
-                this.quizzManipulator.flush();
-                this.quizzManipulator.parentObject.tabQuestions.forEach(y => {
+                this.manipulator.flush();
+                this.manipulator.parentObject.tabQuestions.forEach(y => {
                     y.manipulator.ordonator.unset(3)
                 });
                 let questionTabExplanation = this.tabQuestions;
@@ -2366,7 +2366,7 @@ exports.GUI = function (globalVariables) {
             usedColor = color;
         }
 
-        this.resultManipulator && (this.quizzManipulator.last.children.indexOf(this.resultManipulator.first) !== -1) && this.quizzManipulator.last.remove(this.resultManipulator.first);
+        this.resultManipulator && (this.manipulator.last.children.indexOf(this.resultManipulator.first) !== -1) && this.manipulator.last.remove(this.resultManipulator.first);
 
         this.resultManipulator = new Manipulator(this);
         this.scoreManipulator = new Manipulator(this);
@@ -2374,7 +2374,7 @@ exports.GUI = function (globalVariables) {
         this.resultManipulator.translator.move(0, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
         this.resultManipulator.last.add(this.scoreManipulator.first);
         this.resultManipulator.last.add(this.puzzle.manipulator.first);
-        this.quizzManipulator.last.add(this.resultManipulator.first);
+        this.manipulator.last.add(this.resultManipulator.first);
         displayText(this.finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, usedColor, this.fontSize, this.font, this.scoreManipulator);
     }
 

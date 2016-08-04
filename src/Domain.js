@@ -1185,187 +1185,161 @@ exports.Domain = function (globalVariables) {
 
     }
 
-    class Quizz {
-        constructor(quizz, previewMode, parentFormation) {
-            this.id = quizz.id;
+    class Game {
+        constructor(game, parentFormation) {
+            this.id = game.id;
             this.miniatureManipulator = new Manipulator(this);
-            this.parentFormation = parentFormation || quizz.parentFormation;
-            this.quizzManipulator = new Manipulator(this);
-            this.quizzManipulator.addOrdonator(2);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = playerMode ? (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
-            this.quizzManipulator.last.add(this.returnButtonManipulator.first);
-
-            if (previewMode) {
-                this.chevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator = new Manipulator(this);
-                this.rightChevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator.addOrdonator(1);
-                this.rightChevronManipulator.addOrdonator(1);
-                this.quizzManipulator.last.add(this.chevronManipulator.first);
-                this.chevronManipulator.last.add(this.leftChevronManipulator.first);
-                this.chevronManipulator.last.add(this.rightChevronManipulator.first);
-            }
-            this.loadQuestions(quizz);
-            if (this.levelIndex === undefined) {
-                this.levelIndex = quizz.levelIndex;
-            }
-            if (this.gameIndex === undefined) {
-                this.gameIndex = quizz.gameIndex;
-            }
-            (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
-            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
-            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
-            quizz.font && (this.font = quizz.font);
-            quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
-            quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
-            quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
-
-            this.resultArea = {
-                x: drawing.width / 2,
-                y: 220,
-                w: drawing.width,
-                h: 200
-            };
-            this.titleArea = {
-                x: 0,
-                y: 0,
-                w: drawing.width,
-                h: 200
-            };
-            this.questionArea = {
-                x: 0,
-                y: 210,
-                w: drawing.width,
-                h: 200
-            };
+            this.parentFormation = parentFormation;
+            this.title = game.title || '';
             this.miniaturePosition = {x: 0, y: 0};
-            //this.questionsWithBadAnswers = [];
-            this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
-            this.score = (quizz.score ? quizz.score : 0);
-            this.drawing = drawing;
-            this.title = quizz.title ? quizz.title : '';
-            this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
-            this.finalMessage = "";
-        }
-
-        loadQuestions(quizz) {
-            if (quizz && typeof quizz.tabQuestions !== 'undefined') {
-                this.tabQuestions = [];
-                quizz.tabQuestions.forEach(it => {
-                    it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    var tmp = new Question(it, this);
-                    //it.questionType && (tmp.questionType = it.questionType);
-                    tmp.parentQuizz = this;
-                    this.tabQuestions.push(tmp);
-                });
-            } else {
-                this.tabQuestions = [];
-                this.tabQuestions.push(new Question(defaultQuestion, this));
-                this.tabQuestions.push(new Question(defaultQuestion, this));
-            }
-        }
-
-        run(x, y, w, h) {
-            var intervalToken = runtime.interval(() => {
-                if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
-                    runtime.clearInterval(intervalToken);
-                    this.display(x, y, w, h);
-                }
-            }, 100);
-            // runtime && this.tabQuestions.forEach(e => {
-            //     e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
-            //     e.tabAnswer.forEach(el => {
-            //         el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
-            //     });
-            //
-            // });
-            // runtime && this.display(x, y, w, h);
-        }
-
-        displayCurrentQuestion() {
-            if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
-                this.questionHeight = this.questionHeightWithImage;
-                this.answerHeight = this.answerHeightWithImage;
-            } else {
-                this.questionHeight = this.questionHeightWithoutImage;
-                this.answerHeight = this.answerHeightWithoutImage;
-            }
-            this.quizzManipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.quizzManipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-            this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
-            this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
-                this.questionArea.w, this.questionHeight);
-            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
-            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
-                this.questionArea.w, this.answerHeight);
-        }
-
-        // !_! bof, y'a encore des display appelés ici
-        nextQuestion() {
-            if (this.currentQuestionIndex !== -1) {
-                this.quizzManipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-            }
-
-            if (this.previewMode) {
-                if (this.currentQuestionIndex === -1) {
-                    this.currentQuestionIndex++;
-                }
-                this.displayCurrentQuestion();
-            } else {
-                Server.sendProgressToServer(this)
-                    .then(() => {
-                        if (++this.currentQuestionIndex < this.tabQuestions.length) {
-                            this.displayCurrentQuestion();
-                        } else {
-                            let questionsWithBadAnswersTab = [];
-                            this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
-                            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "leftToRight", this);
-                            this.displayResult();
-                        }
-                    });
-            }
-        }
-
-        getPositionInFormation() {
-            var gameIndex, levelIndex;
-            for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
-                gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
-                if (gameIndex !== -1) {
-                    break;
-                }
-            }
-            levelIndex = i;
-            this.levelIndex = levelIndex;
-            this.gameIndex = gameIndex;
-            return {levelIndex, gameIndex};
+            this.returnButtonManipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this);
         }
 
     }
 
-    class Bd {
-        constructor(bd, parentFormation) {
-            this.miniatureManipulator = new Manipulator(this);
-            this.parentFormation = parentFormation;
-            this.title = bd.title || "BD";
-            this.miniaturePosition = {x: 0, y: 0};
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.manipulator = new Manipulator(this);
-            this.manipulator.last.add(this.returnButtonManipulator.first);
-        }
+    class Quizz extends Game{
+            constructor(quizz, previewMode, parentFormation) {
+                super(quizz,parentFormation);
+                this.returnButton = playerMode ? (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
+                this.manipulator.last.add(this.returnButtonManipulator.first);
 
-        getPositionInFormation() {
-            var gameIndex, levelIndex;
-            for (var i = 0; i < this.parentFormation.levelsTab.length; i++) {
-                gameIndex = this.parentFormation.levelsTab[i].gamesTab.indexOf(this);
-                if (gameIndex !== -1) {
-                    break;
+                if (previewMode) {
+                    this.chevronManipulator = new Manipulator(this);
+                    this.leftChevronManipulator = new Manipulator(this);
+                    this.rightChevronManipulator = new Manipulator(this);
+                    this.leftChevronManipulator.addOrdonator(1);
+                    this.rightChevronManipulator.addOrdonator(1);
+                    this.manipulator.last.add(this.chevronManipulator.first);
+                    this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+                    this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+                }
+                this.loadQuestions(quizz);
+                if (this.levelIndex === undefined) {
+                    this.levelIndex = quizz.levelIndex;
+                }
+                if (this.gameIndex === undefined) {
+                    this.gameIndex = quizz.gameIndex;
+                }
+                (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
+                quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
+                quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
+                quizz.font && (this.font = quizz.font);
+                quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
+                quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
+                quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
+
+                this.resultArea = {
+                    x: drawing.width / 2,
+                    y: 220,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.titleArea = {
+                    x: 0,
+                    y: 0,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.questionArea = {
+                    x: 0,
+                    y: 210,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.miniaturePosition = {x: 0, y: 0};
+                //this.questionsWithBadAnswers = [];
+                this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
+                this.score = (quizz.score ? quizz.score : 0);
+                this.drawing = drawing;
+                this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
+                this.finalMessage = "";
+            }
+
+            loadQuestions(quizz) {
+                if (quizz && typeof quizz.tabQuestions !== 'undefined') {
+                    this.tabQuestions = [];
+                    quizz.tabQuestions.forEach(it => {
+                        it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
+                        var tmp = new Question(it, this);
+                        //it.questionType && (tmp.questionType = it.questionType);
+                        tmp.parentQuizz = this;
+                        this.tabQuestions.push(tmp);
+                    });
+                } else {
+                    this.tabQuestions = [];
+                    this.tabQuestions.push(new Question(defaultQuestion, this));
+                    this.tabQuestions.push(new Question(defaultQuestion, this));
                 }
             }
-            levelIndex = i;
-            this.levelIndex = levelIndex;
-            this.gameIndex = gameIndex;
-            return {levelIndex: levelIndex, gameIndex: gameIndex};
+
+            run(x, y, w, h) {
+                var intervalToken = runtime.interval(() => {
+                    if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
+                        runtime.clearInterval(intervalToken);
+                        this.display(x, y, w, h);
+                    }
+                }, 100);
+                // runtime && this.tabQuestions.forEach(e => {
+                //     e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
+                //     e.tabAnswer.forEach(el => {
+                //         el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
+                //     });
+                //
+                // });
+                // runtime && this.display(x, y, w, h);
+            }
+
+            displayCurrentQuestion() {
+                if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
+                    this.questionHeight = this.questionHeightWithImage;
+                    this.answerHeight = this.answerHeightWithImage;
+                } else {
+                    this.questionHeight = this.questionHeightWithoutImage;
+                    this.answerHeight = this.answerHeightWithoutImage;
+                }
+                this.manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
+                this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
+                    this.questionArea.w, this.questionHeight);
+                !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+                this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
+                    this.questionArea.w, this.answerHeight);
+            }
+
+            // !_! bof, y'a encore des display appelés ici
+            nextQuestion() {
+                if (this.currentQuestionIndex !== -1) {
+                    this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                }
+
+                if (this.previewMode) {
+                    if (this.currentQuestionIndex === -1) {
+                        this.currentQuestionIndex++;
+                    }
+                    this.displayCurrentQuestion();
+                } else {
+                    Server.sendProgressToServer(this)
+                        .then(() => {
+                            if (++this.currentQuestionIndex < this.tabQuestions.length) {
+                                this.displayCurrentQuestion();
+                            } else {
+                                let questionsWithBadAnswersTab = [];
+                                this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
+                                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "leftToRight", this);
+                                this.displayResult();
+                            }
+                        });
+                }
+            }
+
+    }
+
+    class Bd extends Game{
+        constructor(bd, parentFormation) {
+          super(bd,parentFormation);
+            this.returnButton = new ReturnButton(this, "Retour à la formation");
+            this.manipulator.last.add(this.returnButtonManipulator.first);
         }
     }
 

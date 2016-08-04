@@ -1535,7 +1535,7 @@ exports.Util = function (globalVariables) {
         myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
             "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
-            "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
+            "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizzManager",
             "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
             "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
             "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",

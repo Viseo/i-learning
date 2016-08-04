@@ -70,7 +70,7 @@ exports.main = function (svg, runtime, dbListener, ImageRuntime) {
                 case "QuizPreview":
                     quizz = formation.quizzManager.previewQuiz;
                     if (quizz.currentQuestionIndex !== -1) {
-                        quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator.first);
+                        quizz.manipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator.first);
                     }
                     quizz.display(0, 0, drawing.width, drawing.height);
 
@@ -82,7 +82,7 @@ exports.main = function (svg, runtime, dbListener, ImageRuntime) {
                     quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
                     if (formation.quizzManager.previewQuiz) {
                         if (quizz.currentQuestionIndex !== -1) {
-                            quizz.quizzManipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator.first);
+                            quizz.manipulator.last.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator.first);
                         }
                         quizz.display(0, 0, drawing.width, drawing.height);
                     }
