@@ -688,6 +688,13 @@ exports.Util = function (globalVariables) {
                 }
             };
 
+            let redraw = () => {
+                for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+                    if (link[i].childGame === childGame.id && link[i].parentGame === parentGame.id)
+                        link.splice(i, 1);
+                }
+            };
+
             this.redCrossClickHandler = () => {
                 removeLink();
                 parentGame.parentFormation.arrowsManipulator.last.remove(this.arrowPath);

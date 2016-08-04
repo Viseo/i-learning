@@ -571,11 +571,7 @@ exports.Domain = function (globalVariables) {
         }
 
         createLink (parentGame, childGame) {
-
-            let isChildOf = function (parentGame,childGame){
-                parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === childGame.id);
-            };
-            if (isChildOf(parentGame, childGame)) return;
+            if (childGame.isChildOf(childGame)) return;
             if (parentGame.levelIndex >= childGame.levelIndex) return;
             this.link.push({parentGame : parentGame.id, childGame : childGame.id});
         };
@@ -1195,6 +1191,10 @@ exports.Domain = function (globalVariables) {
             this.returnButtonManipulator = new Manipulator(this);
             this.manipulator = new Manipulator(this);
         }
+
+        isChildOf(parentGame){
+        parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
+    };
 
     }
 
