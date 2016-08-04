@@ -478,8 +478,7 @@ exports.Domain = function (globalVariables) {
             this.deactivateFormationButtonManipulator.addOrdonator(2);
             this.library = new GamesLibrary(myLibraryGames);
             this.library.formation = this;
-            this.quizzManager = new QuizzManager();
-            this.quizzManager.parentFormation = this;
+            this.quizzManager = new QuizzManager(null, this);
             this.returnButtonManipulator = new Manipulator(this);
             this.returnButtonManipulator.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
@@ -1003,10 +1002,11 @@ exports.Domain = function (globalVariables) {
     }
 
     class QuizzManager {
-        constructor(quizz) {
+        constructor(quizz, formation) {
             this.quizzName = "";
             this.quizzNameDefault = "Ecrire ici le nom du quiz";
             this.tabQuestions = [defaultQuestion];
+            this.parentFormation = formation;
             //this.questionPuzzle = {};
             this.quizzNameValidInput = true;
             if (!quizz) {
@@ -1017,7 +1017,7 @@ exports.Domain = function (globalVariables) {
                     puzzleLines: 3,
                     puzzleRows: 3
                 };
-                this.quizz = new Quizz(initialQuizzObject, false);
+                this.quizz = new Quizz(initialQuizzObject, false, this.parentFormation);
                 this.indexOfEditedQuestion = 0;
                 this.quizzName = this.quizz.title;
             } else {
@@ -1075,7 +1075,7 @@ exports.Domain = function (globalVariables) {
 
     loadQuizz (quizz, indexOfEditedQuestion) {
         this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
-        this.quizz = new Quizz(quizz, false);
+        this.quizz = new Quizz(quizz, false, this.parentFormation);
         this.quizzName = this.quizz.title;
         this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
         this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);

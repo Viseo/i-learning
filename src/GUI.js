@@ -790,7 +790,7 @@ exports.GUI = function (globalVariables) {
             target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
             mainManipulator.ordonator.unset(1, this.manipulator.first);
             drawing.currentPageDisplayed = "QuizPreview";
-            this.quizzDisplayed = new Quizz(target);
+            this.quizzDisplayed = new Quizz(target, false, this);
             this.quizzDisplayed.puzzleLines = 3;
             this.quizzDisplayed.puzzleRows = 3;
             this.quizzDisplayed.run(0, 0, drawing.width, drawing.height);
