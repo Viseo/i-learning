@@ -1013,9 +1013,9 @@ exports.GUI = function (globalVariables) {
 
             this.y = drawing.height * HEADER_SIZE;
 
-            this.title = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height).font("Arial", 20).anchor("start");
-            this.manipulator.ordonator.set(0, this.title);
-            this.formationWidth = svg.runtime.boundingRect(this.title.component).width;
+            this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height).font("Arial", 20).anchor("start");
+            this.manipulator.ordonator.set(0, this.titleSvg);
+            this.formationWidth = svg.runtime.boundingRect(this.titleSvg.component).width;
 
             let dblclickEditionFormationLabel = () => {
                 let bounds = svg.runtime.boundingRect(this.formationLabel.cadre.component);
@@ -1095,7 +1095,7 @@ exports.GUI = function (globalVariables) {
                 this.formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = svg.runtime.boundingRect(this.formationLabel.content.component).height;
 
-                this.formationTitleWidth = svg.runtime.boundingRect(this.title.component).width;
+                this.formationTitleWidth = svg.runtime.boundingRect(this.titleSvg.component).width;
                 this.formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
                 this.validLabelInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
                 this.formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
