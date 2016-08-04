@@ -93,14 +93,16 @@ function HttpRequests(isWriting, isMock, listener) {
 
     function httpMockGet() {
         function then(callback) {
-            callback(listener.data.shift())
+            callback(listener.data.shift());
+            return {then};
         }
         return {then}
     }
 
     function httpMockPost(theUrl, body, ignoredData) {
         function then(callback) {
-            callback(listener.data.shift())
+            callback(listener.data.shift());
+            return {then};
         }
         return {then}
     }
