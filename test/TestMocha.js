@@ -302,7 +302,12 @@ describe('Player mode', function () {
             let header = retrieve(root, "[headerMessage]");
             assert.equal(header.text, "Mythologie grecque - Le Chaos");
 
+            let firstAnswer = retrieve(root, "[answer0]");
+            assert.equal(firstAnswer.text, "Zeus");
+            firstAnswer.listeners["click"]();
 
+            firstAnswer = retrieve(root, "[answer0]");
+            assert.equal(firstAnswer.text, "Nyx, la Nuit");
             done();
         });
     })

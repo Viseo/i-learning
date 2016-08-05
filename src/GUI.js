@@ -231,6 +231,8 @@ exports.GUI = function (globalVariables) {
             this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
             this.manipulator.last.children.indexOf(this.bordure) === -1 && this.manipulator.last.add(this.bordure);
         }
+        let index = "answer" + this.parentQuestion.tabAnswer.indexOf(this);
+        this.content && this.content.mark(index);
 
         if (this.parentQuestion.parentQuizz.previewMode) {
             if (this.explanation.label || this.explanation.image) {
