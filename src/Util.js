@@ -1550,7 +1550,7 @@ exports.Util = function (globalVariables) {
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
             "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "answersExpButtonManipulator"];
+            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "answersExpButtonManipulator", "arrow"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 

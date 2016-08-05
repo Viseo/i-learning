@@ -313,13 +313,14 @@ exports.GUI = function (globalVariables) {
             this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) === -1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
-        let createLink = (parentGame, childGame) =>{
-            let arrow = new Arrow(parentGame, childGame);
-            // arrow.draw();
-            this.formation.createLink(parentGame, childGame, arrow);
-            arrow.arrowPath.mark(parentGame.id + childGame.id);
+            let createLink = (parentGame, childGame) =>{
+                if (childGame.isChildOf(parentGame)) return;
+                if (parentGame.levelIndex >= childGame.levelIndex) return;
+                let arrow = new Arrow(parentGame, childGame);
+                this.formation.createLink(parentGame, childGame, arrow);
+                arrow.arrowPath.mark(parentGame.id + childGame.id);
 
-        };
+            };
 
             let arrowModeButton = displayText('', w * 0.9, (6 / 100) * h, myColors.black, myColors.white, null, this.font, this.arrowModeManipulator);
             arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
@@ -427,7 +428,6 @@ exports.GUI = function (globalVariables) {
                         this.formation && this.formation.clickToAdd();
                     };
 
-
                     let mouseupHandler = event => {
                         drawings.piste.last.remove(this.draggedObject.manipulator.first);
                         let target = drawings.background.getTarget(event.pageX, event.pageY);
@@ -441,7 +441,7 @@ exports.GUI = function (globalVariables) {
                         this.draggedObject = null;
                     };
 
-                    let createDraggbleCopy = () =>{
+                    let createDraggableCopy = () =>{
                         let manipulator = new Manipulator(this);
                         manipulator.addOrdonator(2);
                         drawings.piste.last.add(manipulator.first);
@@ -456,7 +456,7 @@ exports.GUI = function (globalVariables) {
                         manageDnD(this.draggedObject.content, manipulator);
                     };
 
-                    createDraggbleCopy();
+                    createDraggableCopy();
 
                     svg.event(drawings.glass, "mousedown", event);
                     svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);

@@ -571,8 +571,6 @@ exports.Domain = function (globalVariables) {
         }
 
         createLink (parentGame, childGame, arrow) {
-            if (childGame.isChildOf(childGame)) return;
-            if (parentGame.levelIndex >= childGame.levelIndex) return;
             this.link.push({parentGame : parentGame.id, childGame : childGame.id, arrow: arrow});
         };
 
