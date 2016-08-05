@@ -1190,7 +1190,7 @@ exports.Domain = function (globalVariables) {
         constructor(game, parentFormation) {
             this.id = game.id;
             this.miniatureManipulator = new Manipulator(this);
-            this.parentFormation = parentFormation;
+            this.parentFormation = parentFormation || game.parentFormation;
             this.title = game.title || '';
             this.miniaturePosition = {x: 0, y: 0};
             this.returnButtonManipulator = new Manipulator(this);
@@ -1198,16 +1198,19 @@ exports.Domain = function (globalVariables) {
         }
 
         isChildOf(parentGame){
-        parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
-    };
+            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
+        };
 
     }
 
     class Quizz extends Game{
             constructor(quizz, previewMode, parentFormation) {
-                super(quizz,parentFormation);
-                this.returnButton = playerMode ? (previewMode ? new ReturnButton(this, "Retour aux résultats") : new ReturnButton(this, "Retour à la formation")) : new ReturnButton(this, "Retour à l'édition du jeu");
+                super(quizz, parentFormation);
+                const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
+                this.returnButton = new ReturnButton(this, returnText);
                 this.manipulator.last.add(this.returnButtonManipulator.first);
+                this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.manipulator.last.add(this.expButtonManipulator.first);
 
                 if (previewMode) {
                     this.chevronManipulator = new Manipulator(this);

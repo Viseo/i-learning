@@ -238,7 +238,7 @@ exports.GUI = function (globalVariables) {
         this.content && this.content.mark(index);
 
         if (this.parentQuestion.parentQuizz.previewMode) {
-            if (this.explanation.label || this.explanation.image) {
+            if (this.explanation && (this.explanation.image || this.explanation.label)) {
                 const openPopIn = () => {
                     let popInParent = this.parentQuestion,
                         popInPreviousX = 0,
@@ -2211,21 +2211,19 @@ exports.GUI = function (globalVariables) {
                     target.parentObj.parent.parentFormation.quizzManager.display();
                 });
             }
-        }
-        else {
+        } else {
             this.returnButton.setHandler((event) => {
                 let target = drawings.background.getTarget(event.pageX, event.pageY);
                 target.parentObj.parent.manipulator.flush();
                 target.parentObj.parent.parentFormation.displayFormation();
             });
         }
+
         if (this.currentQuestionIndex === -1) {// on passe à la première question
             this.nextQuestion();
-        }
-        else if (this.currentQuestionIndex < this.tabQuestions.length) {
+        } else if (this.currentQuestionIndex < this.tabQuestions.length) {
             this.displayCurrentQuestion();
-        }
-        else {
+        } else {
             let questionsWithBadAnswersTab = [];
             this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
             this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "upToDown", this);
@@ -2235,10 +2233,6 @@ exports.GUI = function (globalVariables) {
         if (this.previewMode) {
             this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
             this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
-            //this.leftChevron.resize(w*0.1, h*0.15);
-            //this.rightChevron.resize(w*0.1, h*0.15);
-            //this.leftChevron.move();
-            //this.rightChevron.move();
 
             this.leftChevron.parentObj = this;
             this.rightChevron.parentObj = this;
@@ -2284,45 +2278,33 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzDisplayResult(color) {
-        this.questionsWithBadAnswers.forEach(x=> {
-            x.question.manipulator.ordonator.unset(3)
-        });
         this.displayScore(color);
         this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
         this.puzzle.display(0, this.questionHeight / 2 + this.answerHeight / 2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
         this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
-        this.buttonAnswersExpHeight = 50;
-        this.answersExpButtonManipulator = new Manipulator(this);
-        this.answersExpButtonManipulator.addOrdonator(2);
-        this.manipulator.last.add(this.answersExpButtonManipulator.first);
 
-        this.textAnswersExp = "Voir les réponses et explications";
-        this.returnText = new svg.Text(this.textAnswersExp).font("Arial", 20);
-        this.answersExpButtonManipulator.ordonator.set(1, this.returnText);
-        this.width = svg.runtime.boundingRect(this.returnText.component).width;
-        this.answerExpButton = displayText(this.textAnswersExp, this.width + this.width / 4, this.buttonAnswersExpHeight, myColors.black, myColors.white, 20, null, this.answersExpButtonManipulator);
-        this.answerExpFunction = () => {
-            this.displayAnswersExp = () => {
-                this.manipulator.flush();
-                this.manipulator.parentObject.tabQuestions.forEach(y => {
-                    y.manipulator.ordonator.unset(3)
-                });
-                let questionTabExplanation = this.tabQuestions;
-                this.questionsWithBadAnswers.forEach(question => {
-                    questionTabExplanation[question.index] = question.question;
-                    questionTabExplanation[question.index].selectedAnswers = question.selectedAnswers;
-                });
-                let quizzExplanation = new Quizz(this, true);
-                quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
-                quizzExplanation.score = null;
-                quizzExplanation.currentQuestionIndex = 0;
-                quizzExplanation.run(1,1,drawing.width,drawing.height);
-            };
-            this.displayAnswersExp();
+        const
+            buttonExpHeight = 50,
+            textExp = "Voir les réponses et explications",
+            expButton = displayText(textExp, drawing.width * 0.12, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
+        this.expButtonManipulator.translator.move(0, drawing.height - 3 * MARGIN - buttonExpHeight);
+
+        const displayExp = () => {
+            this.manipulator.flush();
+            let questionTabExplanation = this.tabQuestions;
+            this.questionsWithBadAnswers.forEach((question, i) => {
+                questionTabExplanation[i] = question.question;
+                questionTabExplanation[i].selectedAnswers = question.selectedAnswers;
+            });
+            let quizzExplanation = new Quizz(this, true);
+            quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
+            quizzExplanation.score = null;
+            quizzExplanation.currentQuestionIndex = 0;
+            quizzExplanation.run(1, 1, drawing.width, drawing.height);
         };
-        svg.addEvent(this.answerExpButton.cadre, "click", this.answerExpFunction);
-        svg.addEvent(this.answerExpButton.content, "click", this.answerExpFunction);
-        this.answersExpButtonManipulator.translator.move(0, drawing.height - 3 * MARGIN - this.buttonAnswersExpHeight);
+
+        svg.addEvent(expButton.cadre, "click", displayExp);
+        svg.addEvent(expButton.content, "click", displayExp);
     }
 
     function gameDisplayMiniature(size) {
