@@ -80,7 +80,7 @@ exports.GUI = function (globalVariables) {
                 }
                 let redCrossSize = 15;
                 let redCross = drawRedCross(this.width / 2 - redCrossSize, -this.height / 2 + redCrossSize, redCrossSize, this.redCrossManipulator);
-
+                redCross.mark('redCross');
                 svg.addEvent(redCross, 'click', redCrossClickHandler);
                 this.redCrossManipulator.ordonator.set(1, redCross);
             };
@@ -1876,6 +1876,7 @@ exports.GUI = function (globalVariables) {
             (type.label == clicked) ? (this.completeBanner[i].color = SELECTION_COLOR) : (this.completeBanner[i].color = myColors.white);
             this.completeBanner[i].toggleButton = displayTextWithoutCorners(type.label, this.toggleButtonWidth, h, myColors.black, this.completeBanner[i].color, 20, null, this.completeBanner[i].manipulator);
             this.completeBanner[i].toggleButton.content.color(getComplementary(this.completeBanner[i].color), 0, myColors.black);
+            this.completeBanner[i].toggleButton.cadre.mark('toggleButtonCadre' + type.label.split(" ")[1]);
             this.completeBanner[i].manipulator.translator.move(this.x - this.w / 2, h - this.h / 2);
             this.x += this.toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(this.completeBanner[i].toggleButton.content, "click", toggleHandler));
@@ -2013,6 +2014,9 @@ exports.GUI = function (globalVariables) {
         this.manipulator.last.children.indexOf(this.puzzle.manipulator.first) === -1 && this.manipulator.last.add(this.puzzle.manipulator.first);
         this.puzzle && this.puzzle.fillVisibleElementsArray("leftToRight");
 
+        this.puzzle.leftChevron.mark('answerLeftChevron');
+        this.puzzle.rightChevron.mark('answerRightChevron');
+
         this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h, false);
         if (this.explanation) {
             this.explanation.display(this, 0, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
@@ -2034,6 +2038,7 @@ exports.GUI = function (globalVariables) {
             const
                 circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
                 cross = drawCross(w / 2, -h / 2, crossSize, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
+            circle.mark('circleCloseExplanation');
             this.closeButtonManipulator.ordonator.set(0, circle);
             this.closeButtonManipulator.ordonator.set(1, cross);
             const crossHandler = () => {
@@ -2093,13 +2098,14 @@ exports.GUI = function (globalVariables) {
         } else {
             this.panel.resize(panelWidth, panelHeight);
         }
-
+        this.panel.back.mark('explanationPanel');
         this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
         this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
         this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
         this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
-        this.text.position(panelWidth / 2, svg.runtime.boundingRect(this.text.component).height);
+        this.text.position(panelWidth / 2, svg.runtime.boundingRect(this.text.component).height)
+            .mark('textExplanation');
         this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
 
         const clickEdition = () => {
@@ -2107,7 +2113,8 @@ exports.GUI = function (globalVariables) {
             contentArea.globalPointCenter = this.panel.border.globalPoint(-panelWidth/2, -panelHeight /2);
             drawing.notInTextArea = false;
             contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y, panelWidth - MARGIN, panelHeight - MARGIN)
-                .color(null, 0, myColors.black).font("Arial", 20);
+                .color(null, 0, myColors.black).font("Arial", 20)
+                .mark('explanationContentArea');
             (this.textToDisplay === "" || this.textToDisplay === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
             contentArea.message(this.label || "");
             this.textManipulator.ordonator.unset(0);
@@ -2670,6 +2677,8 @@ exports.GUI = function (globalVariables) {
         };
         this.questionPuzzle.updateElementsArray(this.quizz.tabQuestions);
         this.questionPuzzle.fillVisibleElementsArray("leftToRight");
+        this.questionPuzzle.leftChevron.mark('questionLeftChevron');
+        this.questionPuzzle.rightChevron.mark('questionRightChevron');
         if (!this.questionPuzzle.handlersSet) {
             this.questionPuzzle.leftChevron.handler = this.questionPuzzle.leftChevronHandler;
             this.questionPuzzle.rightChevron.handler = this.questionPuzzle.rightChevronHandler;

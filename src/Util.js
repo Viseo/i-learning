@@ -242,6 +242,7 @@ exports.Util = function (globalVariables) {
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey);
             let elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+            square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
             object.manipulator.ordonator.set(6, square);
             object.linesManipulator.translator.move(x, y);
             object.linesManipulator.ordonator.set(0, line1);

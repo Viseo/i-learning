@@ -381,6 +381,61 @@ describe('formationsManager', function () {
             let emptyAnswerAddCadreanswerDoesNotExistAnymore = retrieve(root, '[emptyAnswerAddCadreanswer]');
             assert(!emptyAnswerAddCadreanswerDoesNotExistAnymore);
 
+            let answerLabelCadre7 = retrieve(root, '[answerLabelCadre7]');
+            answerLabelCadre7.listeners['mouseover']();
+            redCross = retrieve(root, '[redCross]');
+            redCross.listeners['click']();
+
+            answerLabelCadre7 = retrieve(root, '[answerLabelCadre7]');
+            assert(!answerLabelCadre7);
+
+            let emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            emptyAnswerAddCadrequestion.listeners['dblclick']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            emptyAnswerAddCadrequestion.listeners['dblclick']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            emptyAnswerAddCadrequestion.listeners['dblclick']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            emptyAnswerAddCadrequestion.listeners['dblclick']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            emptyAnswerAddCadrequestion.listeners['dblclick']();
+
+            let questionLeftChevron = retrieve(root, '[questionLeftChevron]');
+            questionLeftChevron.listeners['click']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            assert(!emptyAnswerAddCadrequestion);
+            let questionRightChevron = retrieve(root, '[questionRightChevron]');
+            questionRightChevron.listeners['click']();
+            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            assert(emptyAnswerAddCadrequestion);
+
+            let toggleButtonCadreMultiple = retrieve(root, '[toggleButtonCadremultiples]');
+            let toggleButtonCadreUnique = retrieve(root, '[toggleButtonCadreunique]');
+            assert(toggleButtonCadreMultiple.fill, 'rgb(0,0,0)');
+            assert(toggleButtonCadreUnique.fill, 'rgb(25,25,112)');
+            toggleButtonCadreMultiple.listeners['click']({pageX:1306, pageY:365, preventDefault:()=>{}});
+            assert(toggleButtonCadreUnique.fill, 'rgb(0,0,0)');
+            assert(toggleButtonCadreMultiple.fill, 'rgb(25,25,112)');
+
+            let explanationCadre0 = retrieve(root, '[explanationSquare0]');
+            explanationCadre0.listeners['click']();
+            let textExplanation = retrieve(root, '[textExplanation]');
+            assert(textExplanation.text, 'Cliquer ici pour ajouter du texte');
+            let explanationPanel = retrieve(root, '[explanationPanel]');
+            explanationPanel.listeners['click']();
+            let explanationContentArea = retrieve(root, '[explanationContentArea]');
+            explanationContentArea.value = "Ceci est la première explication";
+            explanationContentArea.listeners['input']();
+            explanationContentArea.value = "Ceci est la première explication";
+            explanationContentArea.listeners['blur']();
+            textExplanation = retrieve(root, '[textExplanation]');
+            assert(textExplanation.text, "Ceci est la première explication");
+
+            let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
+            circleCloseExplanation.listeners['click']();
+            textExplanation = retrieve(root, '[textExplanation]');
+            assert(!textExplanation);
+
             done();
 
 
