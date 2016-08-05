@@ -425,6 +425,28 @@ describe('Player mode', function () {
 
             firstAnswer = retrieve(root, "[answer0]");
             assert.equal(firstAnswer.text, "Nyx, la Nuit");
+            firstAnswer.listeners["click"]();
+
+            firstAnswer = retrieve(root, "[answer0]");
+            assert.equal(firstAnswer.text, "Les Titans");
+            firstAnswer.listeners["click"]();
+
+            let fourthAnswer = retrieve(root, "[answer3]");
+            assert.equal(fourthAnswer.text, "Les Cyclopes");
+            fourthAnswer.listeners["click"]();
+
+            let seventhAnswer = retrieve(root, "[answer6]");
+            assert.equal(seventhAnswer.text, "Les Hecatonchires");
+            seventhAnswer.listeners["click"]();
+
+            let validateButtonQuiz = retrieve(root, "[validateButtonQuiz]");
+            assert.equal(validateButtonQuiz.text, "Valider");
+            validateButtonQuiz.listeners["click"]();
+
+            fourthAnswer = retrieve(root, "[answer3]");
+            assert.equal(fourthAnswer.text, "12");
+            fourthAnswer.listeners["click"]();
+
             done();
         });
     })

@@ -1677,6 +1677,7 @@ exports.GUI = function (globalVariables) {
             validateY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
 
             var validateButton = displayText("Valider", w, h, myColors.green, myColors.yellow, 20, this.font, this.validateManipulator);
+            validateButton.content.mark("validateButtonQuiz");
             this.validateManipulator.translator.move(validateX + w / 2, validateY + h / 2);
 
             //button. onclick
