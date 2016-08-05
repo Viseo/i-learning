@@ -645,7 +645,7 @@ exports.Util = function (globalVariables) {
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
                 manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
-                redraw();
+                redraw && redraw();
                 return true;
             };
             var mouseupHandler = function () {
