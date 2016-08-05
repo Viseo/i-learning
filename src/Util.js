@@ -432,8 +432,7 @@ exports.Util = function (globalVariables) {
          * @param layer
          */
         autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer = 1) {
-            let words = content.split(' '),
-                text = '',
+            let text = '',
                 w = wi*0.94,
                 t = new svg.Text('text');
             manipulator.ordonator.set(layer, t);
@@ -471,58 +470,13 @@ exports.Util = function (globalVariables) {
 
             t.message(lines.join("\n"));
 
-            /*while (words.length > 0) {
-             let word = words.shift();
-             // set text to test the BBox.width
-             t.message(text + ' ' + word);
-             if (t.boundingRect() && t.boundingRect().width <= w) {
-             text += ' ' + word;
-             } else {
-             let tmpStr = text + '\n' + word;
-             t.message(tmpStr);
-             if (svg.runtime.boundingRect(t.component).height <= (h - MARGIN)) {
-             if (svg.runtime.boundingRect(t.component).width <= w) {
-             text = tmpStr;
-             } else {
-             text += ' ';
-             let longWord = word;
-             for (let j = 0; j < longWord.length; j++) {
-             t.message(text + " " + longWord.charAt(j));
-             if (svg.runtime.boundingRect(t.component).width <= w) {
-             text += longWord.charAt(j);
-             } else {
-             text = text.slice(0, -1);
-             j--;
-             text += '-\n';
-             words.unshift(longWord.slice(j));
-             break;
-             }
-             }
-             }
-             } else {
-             text = text.slice(0, -2) + '…';
-             break;
-             }
-             }
-             }
-             t.message(text.substring(1));*/
-            let finalHeight = svg.runtime.boundingRect(t.component).height;
-            (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
+            let finalHeight = t.boundingRect().height;
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
-            let finalWidth = svg.runtime.boundingRect(t.component).width;
-            (typeof finalWidth === 'undefined' && t.messageText !== '') && (finalWidth = runtime.boundingRect(t.component).width);
+            let finalWidth = t.boundingRect().width;
             (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
             t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
             return {finalHeight, finalWidth, text: t};
         };
-
-        /**
-         *
-         * @param x
-         * @param y
-         * @param w
-         * @param h
-         */
 
         drawPlus = function (x, y, w, h) {
             var baseWidth = w;
@@ -1633,7 +1587,7 @@ exports.Util = function (globalVariables) {
             // Check 1 Correct Answer:
             question => ({
                 isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
-                message: "Votre question doit avoir une bonne réponse."
+                message: "Vous devez cocher au moins une bonne réponse."
             }),
             // Check answer's name:
             question => {
