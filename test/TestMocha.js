@@ -8,7 +8,9 @@ const
     mockRuntime = require('../lib/runtimemock').mockRuntime,
     SVG = require('../lib/svghandler').SVG,
     inspect = testutils.inspect,
-    checkScenario = testutils.checkScenario;
+    checkScenario = testutils.checkScenario,
+    ERROR_MESSAGE_INPUT = 'Seuls les caractères alphanumériques, avec accent et "-,\',.;?!°© sont permis.';
+
 
 const ImageRuntime = {
     images: {},
@@ -263,6 +265,121 @@ describe('formationsManager', function () {
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             let quizzLabelContent = retrieve(root, '[quizzLabelContent]');
             assert(quizzLabelContent.text, "Quiz 1");
+
+            quizzLabelContent.listeners["dblclick"]();
+            let quizEditionTextArea = retrieve(root, "[quizEditionTextArea]");
+            quizEditionTextArea.value = "Quiz n°1==";
+            quizEditionTextArea.listeners["input"]();
+            quizEditionTextArea.value = "Quiz n°1==";
+            quizEditionTextArea.listeners["blur"]();
+            quizzLabelContent = retrieve(root, "[quizzLabelContent]");
+            let quizzLabelCadre = retrieve(root, "[quizzLabelCadre]");
+            let quizErrorMessage = retrieve(root, "[quizErrorMessage]");
+            assert.equal(quizzLabelCadre.stroke, 'rgb(255,0,0)');
+            assert.equal(quizErrorMessage.text, ERROR_MESSAGE_INPUT);
+            assert.equal(quizzLabelContent.text, "Quiz n°1==");
+
+            quizzLabelContent.listeners["dblclick"]();
+            quizEditionTextArea = retrieve(root, "[quizEditionTextArea]");
+            quizEditionTextArea.value = "Quiz n°1";
+            quizEditionTextArea.listeners["input"]();
+            quizEditionTextArea.value = "Quiz n°1";
+            quizEditionTextArea.listeners["blur"]();
+            quizzLabelContent = retrieve(root, "[quizzLabelContent]");
+            quizzLabelCadre = retrieve(root, "[quizzLabelCadre]");
+            quizErrorMessage = retrieve(root, "[quizErrorMessage]");
+            assert.equal(quizzLabelCadre.stroke, 'none');
+            assert.equal(quizErrorMessage, null);
+            assert.equal(quizzLabelContent.text, "Quiz n°1");
+
+            let questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
+            questionBlockTitle1.listeners['dblclick']();
+            let questionBlockTextArea = retrieve(root, '[questionBlockTextArea]');
+            questionBlockTextArea.value = "La première question ?==";
+            questionBlockTextArea.listeners['input']();
+            questionBlockTextArea.value = "La première question ?==";
+            questionBlockTextArea.listeners['blur']();
+            questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
+            let questionBlockCadre1 = retrieve(root, '[questionBlockCadre1]');
+            let questionBlockErrorMessage = retrieve(root, '[questionBlockErrorMessage]');
+            assert.equal(questionBlockCadre1.stroke, 'rgb(255,0,0)');
+            assert.equal(questionBlockErrorMessage.text, ERROR_MESSAGE_INPUT);
+            assert.equal(questionBlockTitle1.text, "La première question ?==");
+
+            questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
+            questionBlockTitle1.listeners['dblclick']();
+            questionBlockTextArea = retrieve(root, '[questionBlockTextArea]');
+            questionBlockTextArea.value = "La première question ?";
+            questionBlockTextArea.listeners['input']();
+            questionBlockTextArea.value = "La première question ?";
+            questionBlockTextArea.listeners['blur']();
+            questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
+            questionBlockCadre1 = retrieve(root, '[questionBlockCadre1]');
+            questionBlockErrorMessage = retrieve(root, '[questionBlockErrorMessage]');
+            assert.equal(questionBlockCadre1.stroke, 'rgb(0,0,0)');
+            assert.equal(questionBlockErrorMessage, null);
+            assert.equal(questionBlockTitle1.text, "La première question ?");
+
+            let answerLabelContent0 = retrieve(root, '[answerLabelContent0]');
+            answerLabelContent0.listeners['dblclick']();
+            let answerLabelContentArea = retrieve(root, '[answerLabelContentArea]');
+            answerLabelContentArea.value = "La première réponse ?==";
+            answerLabelContentArea.listeners['input']();
+            answerLabelContentArea.value = "La première réponse ?==";
+            answerLabelContentArea.listeners['blur']();
+            answerLabelContent0 = retrieve(root, '[answerLabelContent0]');
+            let answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            let answerErrorMessage = retrieve(root, '[answerErrorMessage]');
+            assert.equal(answerLabelCadre0.stroke, 'rgb(255,0,0)');
+            assert.equal(answerErrorMessage.text, ERROR_MESSAGE_INPUT);
+            assert.equal(answerLabelContent0.text, "La première réponse ?==");
+
+            answerLabelContent0 = retrieve(root, '[answerLabelContent0]');
+            answerLabelContent0.listeners['dblclick']();
+            answerLabelContentArea = retrieve(root, '[answerLabelContentArea]');
+            answerLabelContentArea.value = "La première réponse ?";
+            answerLabelContentArea.listeners['input']();
+            answerLabelContentArea.value = "La première réponse ?";
+            answerLabelContentArea.listeners['blur']();
+            answerLabelContent0 = retrieve(root, '[answerLabelContent0]');
+            answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            answerErrorMessage = retrieve(root, '[answerErrorMessage]');
+            assert.equal(answerLabelCadre0.stroke, 'rgb(0,0,0)');
+            assert.equal(answerErrorMessage, null);
+            assert.equal(answerLabelContent0.text, "La première réponse ?");
+
+            let emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent2 = retrieve(root, '[answerLabelContent2]');
+            assert.equal(answerLabelContent2.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent3 = retrieve(root, '[answerLabelContent3]');
+            assert.equal(answerLabelContent3.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent4 = retrieve(root, '[answerLabelContent4]');
+            assert.equal(answerLabelContent4.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent5 = retrieve(root, '[answerLabelContent5]');
+            assert.equal(answerLabelContent5.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent6 = retrieve(root, '[answerLabelContent6]');
+            assert.equal(answerLabelContent6.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            emptyAnswerAddCadreanswer.listeners['dblclick']();
+            let answerLabelContent7 = retrieve(root, '[answerLabelContent7]');
+            assert.equal(answerLabelContent6.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+
+            let emptyAnswerAddCadreanswerDoesNotExistAnymore = retrieve(root, '[emptyAnswerAddCadreanswer]');
+            assert(!emptyAnswerAddCadreanswerDoesNotExistAnymore);
 
             done();
 

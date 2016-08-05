@@ -103,7 +103,8 @@ exports.GUI = function (globalVariables) {
                 this.errorMessage = new svg.Text(REGEX_ERROR);
                 quizzManager.questionCreator.manipulator.ordonator.set(1, this.errorMessage);
                 this.errorMessage.position(-(drawing.width - quizzManager.questionCreator.w) / 2, quizzManager.questionCreator.h / 2 - MARGIN / 2)
-                    .font('Arial', 15).color(myColors.red).anchor(anchor);
+                    .font('Arial', 15).color(myColors.red).anchor(anchor)
+                    .mark('answerErrorMessage');
                 contentarea && contentarea.focus();
                 this.validLabelInput = false;
             };
@@ -128,9 +129,10 @@ exports.GUI = function (globalVariables) {
 
                 (this.validLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
                 (this.validLabelInput && text !== "") || displayErrorMessage();
-                this.obj.content.color(color);
+                this.obj.content.color(color).mark('answerLabelContent' + this.parentQuestion.tabAnswer.indexOf(this));
                 this.border._acceptDrop = true;
                 this.obj.content._acceptDrop = true;
+                this.border.mark('answerLabelCadre' + this.parentQuestion.tabAnswer.indexOf(this));
 
                 svg.addEvent(this.obj.content, 'dblclick', dblclickEditionAnswer);
                 svg.addEvent(this.border, 'dblclick', dblclickEditionAnswer);
@@ -151,8 +153,9 @@ exports.GUI = function (globalVariables) {
                 drawing.notInTextArea = false;
                 contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(null, 0, myColors.black).font("Arial", 20);
                 (this.label === "" || this.label === this.labelDefault) && contentarea.placeHolder(this.labelDefault);
-                contentarea.message(this.label || "");
-                contentarea.width = w;
+                contentarea.message(this.label || "")
+                    .mark('answerLabelContentArea')
+                    .width = w;
                 contentarea.globalPointCenter = this.obj.content.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
                 drawings.screen.add(contentarea);
                 contentarea.height = svg.runtime.boundingRect(this.obj.content.component).height;
@@ -172,7 +175,7 @@ exports.GUI = function (globalVariables) {
                     contentarea.enter();
                     this.checkInputContentArea({
                         contentarea: contentarea,
-                        border: this.bogrder,
+                        border: this.border,
                         onblur: onblur,
                         remove: removeErrorMessage,
                         display: () => {
@@ -671,7 +674,8 @@ exports.GUI = function (globalVariables) {
         this.manipulator.translator.move(x, y);
         this.manipulator.ordonator.set(2, this.plus);
         this.obj.content.position(0, this.height * 0.35);
-        this.obj.cadre.color(myColors.white, 3, myColors.black);
+        this.obj.cadre.color(myColors.white, 3, myColors.black)
+            .mark('emptyAnswerAddCadre' + this.type);
         this.obj.cadre.component.setAttribute && this.obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
         this.obj.cadre.component.target && this.obj.cadre.component.target.setAttribute('stroke-dasharray', '10, 5');
 
@@ -1902,6 +1906,7 @@ exports.GUI = function (globalVariables) {
             //var quizzInfoHeightRatio = 0.05;
             //var questionsPuzzleHeightRatio = 0.25;
             this.errorMessage = new svg.Text(REGEX_ERROR);
+            this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.ordonator.set(0, this.errorMessage);
             this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + this.questionBlock.title.cadre.height + svg.runtime.boundingRect(this.errorMessage.component).height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
@@ -1922,6 +1927,8 @@ exports.GUI = function (globalVariables) {
             } else {
                 this.questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
+            this.questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
+            this.questionBlock.title.cadre.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
             var fontSize = Math.min(20, this.h * 0.1);
             this.questNum = new svg.Text(this.linkedQuestion.questionNum).position(-this.w / 2 + 2 * MARGIN + (fontSize * (this.linkedQuestion.questionNum.toString.length) / 2), -this.h * 0.25 / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
             this.questionManipulator.ordonator.set(4, this.questNum);
@@ -1950,6 +1957,7 @@ exports.GUI = function (globalVariables) {
             var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
                 .color(myColors.white, 0, myColors.black)
                 .message(this.linkedQuestion.label)
+                .mark('questionBlockTextArea')
                 .font("Arial", 20);
             drawings.screen.add(textarea);
             textarea.focus();
@@ -2504,6 +2512,7 @@ exports.GUI = function (globalVariables) {
             this.quizzNameHeight = svg.runtime.boundingRect(this.quizzLabel.content.component).height;
 
             this.quizzLabel.cadre = new svg.Rect(width, 0.5 * h);
+            this.quizzLabel.cadre.mark("quizzLabelCadre");
             this.quizzNameValidInput ? this.quizzLabel.cadre.color(bgcolor) : this.quizzLabel.cadre.color(bgcolor, 2, myColors.red);
             this.quizzLabel.cadre.position(width / 2, h / 2 + this.quizzLabel.cadre.height / 2);
             this.quizzInfoManipulator.ordonator.set(0, this.quizzLabel.cadre);
@@ -2528,6 +2537,7 @@ exports.GUI = function (globalVariables) {
             textarea.color([], 0, myColors.black)
                 .message(this.quizzName)
                 .font("Arial", 15)
+                .mark("quizEditionTextArea")
                 .anchor("start");
             (this.quizzNameDefault || this.quizzName === "") && textarea.placeHolder(this.quizzNameDefault);
             drawings.screen.add(textarea);
@@ -2545,6 +2555,7 @@ exports.GUI = function (globalVariables) {
                 this.quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
                 var anchor = 'start';
                 this.errorMessage = new svg.Text(REGEX_ERROR);
+                this.errorMessage.mark("quizErrorMessage");
                 this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
                 this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, bounds.height + 3 + this.quizzLabel.cadre.height / 2 + svg.runtime.boundingRect(this.errorMessage.component).height / 2)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
