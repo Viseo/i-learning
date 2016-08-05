@@ -447,6 +447,26 @@ describe('Player mode', function () {
             assert.equal(fourthAnswer.text, "12");
             fourthAnswer.listeners["click"]();
 
+            fourthAnswer = retrieve(root, "[answer3]");
+            assert.equal(fourthAnswer.text, "Stéropès");
+            fourthAnswer.listeners["click"]();
+
+            let resetButtonQuiz = retrieve(root, "[resetButtonQuiz]");
+            assert.equal(resetButtonQuiz.text, "Réinitialiser");
+            resetButtonQuiz.listeners["click"]();
+
+            validateButtonQuiz = retrieve(root, "[validateButtonQuiz]");
+            assert.equal(validateButtonQuiz.text, "Valider");
+            validateButtonQuiz.listeners["click"]();
+
+            fourthAnswer = retrieve(root, "[answer3]");
+            assert.equal(fourthAnswer.text, "Cronos et Rhéa");
+            fourthAnswer.listeners["click"]();
+
+            fourthAnswer = retrieve(root, "[answer3]");
+            assert.equal(fourthAnswer.text, "Il les abandonna dans la nature.");
+            fourthAnswer.listeners["click"]();
+
             done();
         });
     })

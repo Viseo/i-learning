@@ -1735,6 +1735,7 @@ exports.GUI = function (globalVariables) {
             var resetX = -w / 2 - 0.08 * drawing.width;
             var resetY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
             this.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
+            this.resetButton.content.mark("resetButtonQuiz");
             this.resetManipulator.translator.move(resetX + w / 2, resetY + h / 2);
             if (this.selectedAnswers.length !== 0) {
                 this.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
