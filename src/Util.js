@@ -97,6 +97,7 @@ exports.Util = function (globalVariables) {
             this.drawing.manipulator.addOrdonator(3);
             this.piste = new Manipulator(this);
             this.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
+            this.glass.mark('bigGlass');
             this.drawing.add(this.drawing.manipulator.translator);
             this.background = this.drawing.manipulator.translator;
             this.drawing.manipulator.ordonator.set(2, this.piste.first);
@@ -761,7 +762,7 @@ exports.Util = function (globalVariables) {
             };
             this.imageMouseoverHandler = ()=> {
                 if (typeof this.redCrossManipulator === 'undefined') {
-                    this.redCrossManipulator = new Manipulator(self);
+                    this.redCrossManipulator = new Manipulator(this);
                     this.redCrossManipulator.addOrdonator(2);
                     manipulator.last.add(this.redCrossManipulator.first);
                 }
@@ -769,6 +770,7 @@ exports.Util = function (globalVariables) {
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
 
+                redCross.mark('imageRedCross');
                 svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
                 this.redCrossManipulator.ordonator.set(1, redCross);
             };

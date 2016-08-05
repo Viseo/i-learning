@@ -263,6 +263,10 @@ describe('formationsManager', function () {
             assert(!arrow02);
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advance();
             let quizzLabelContent = retrieve(root, '[quizzLabelContent]');
             assert(quizzLabelContent.text, "Quiz 1");
 
@@ -315,6 +319,7 @@ describe('formationsManager', function () {
             questionBlockTextArea.listeners['blur']();
             questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
             questionBlockCadre1 = retrieve(root, '[questionBlockCadre1]');
+
             questionBlockErrorMessage = retrieve(root, '[questionBlockErrorMessage]');
             assert.equal(questionBlockCadre1.stroke, 'rgb(0,0,0)');
             assert.equal(questionBlockErrorMessage, null);
@@ -436,9 +441,121 @@ describe('formationsManager', function () {
             textExplanation = retrieve(root, '[textExplanation]');
             assert(!textExplanation);
 
+            let image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            let imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:425, pageY:438, preventDefault:()=>{}});
+            let questionImage = retrieve(root, '[questionImage6]');
+            assert(questionImage);
+
+            let questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
+            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            let questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
+            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
+            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
+            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+            let questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
+            questionFromPuzzleBordure1.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
+            let answerImage = retrieve(root, '[answerImage0]');
+            assert(answerImage);
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            answerImage = retrieve(root, '[answerImage1]');
+            answerImage.listeners['mouseover']();
+            let imageRedCross = retrieve(root, '[imageRedCross]');
+            imageRedCross.listeners['click']();
+            answerImage = retrieve(root, '[answerImage1]');
+            assert(!answerImage);
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            answerImage = retrieve(root, '[answerImage1]');
+            assert(answerImage);
+
+
+            let checkbox = retrieve(root, '[checkbox0]');
+            checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
+
+            let saveButtonQuiz = retrieve(root, '[saveButtonQuiz]');
+            saveButtonQuiz.listeners['click']();
+
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+
+            let previewButton = retrieve(root, '[previewButton]');
+            previewButton.listeners['click']();
+
+            let returnButtonPreview = retrieve(root, '[returnButtonPreview]');
+            // returnButtonPreview.listeners['click']();
+
+            let bigGlass = retrieve(root, '[bigGlass]');
+            bigGlass.listeners['mousedown']({pageX:0, pageY:0, preventDefault:()=>{}});
+            bigGlass.listeners['mouseup']({pageX:0, pageY:0, preventDefault:()=>{}});
+            bigGlass.listeners['dblclick']({pageX:0, pageY:0, preventDefault:()=>{}});
+
+
+
+            let deconnection = retrieve(root, '[deconnection]');
+            // deconnection.listeners['click'](); // Pb document. ...
+
             done();
 
 
+        });
+    });
+});
+
+describe('connection', function(){
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should connect someone", function (done) {
+        testutils.retrieveDB("./log/dbConnection.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+            let mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            let connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'a@a.a';
+            connectionContentArea.listeners['blur']();
+            let passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'aaaaaa';
+            connectionContentArea.listeners['blur']();
+            let connexionButton = retrieve(root, '[connexionButton]');
+            connexionButton.listeners['click']();
+            done();
         });
     });
 });

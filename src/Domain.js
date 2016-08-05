@@ -1224,10 +1224,10 @@ exports.Domain = function (globalVariables) {
                 }
                 this.loadQuestions(quizz);
                 if (this.levelIndex === undefined) {
-                    this.levelIndex = quizz.levelIndex;
+                    this.levelIndex = quizz.levelIndex || 0;
                 }
                 if (this.gameIndex === undefined) {
-                    this.gameIndex = quizz.gameIndex;
+                    this.gameIndex = quizz.gameIndex || 0;
                 }
                 (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
                 quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
@@ -1277,7 +1277,7 @@ exports.Domain = function (globalVariables) {
                 } else {
                     this.tabQuestions = [];
                     this.tabQuestions.push(new Question(defaultQuestion, this));
-                    this.tabQuestions.push(new Question(defaultQuestion, this));
+                    // this.tabQuestions.push(new Question(defaultQuestion, this));
                 }
             }
 

@@ -120,6 +120,7 @@ exports.GUI = function (globalVariables) {
                     this.border = picture.imageSVG.cadre;
                     this.obj.image = picture.imageSVG.image;
                     this.obj.content = picture.imageSVG.content;
+                    this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
                 } else {
                     var tempObj = displayText(text, w, h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, w - 2 * this.checkboxSize);
                     this.border = tempObj.cadre;
@@ -205,6 +206,7 @@ exports.GUI = function (globalVariables) {
 
             if (typeof this.obj.checkbox === 'undefined') {
                 this.obj.checkbox = displayCheckbox(-this.width / 2 + this.checkboxSize, this.height / 2 - this.checkboxSize, this.checkboxSize, this).checkbox;
+                this.obj.checkbox.mark('checkbox' + this.parentQuestion.tabAnswer.indexOf(this));
                 this.obj.checkbox.answerParent = this;
             }
             this.manipulator.ordonator.children.forEach((e) => {
@@ -503,6 +505,7 @@ exports.GUI = function (globalVariables) {
 
                             let elementCopy = libraryManipulator.ordonator.children[0],
                                 img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height, elementCopy.name).image;
+                            img.mark('imgDraged');
                             img.srcDimension = elementCopy.srcDimension;
                             manip.ordonator.set(0, img);
                             manageDnD(img, manip);
@@ -546,6 +549,7 @@ exports.GUI = function (globalVariables) {
                         image.name = item.name;
                         image.srcDimension = {width: item.width, height: item.height};
                         this.libraryManipulators[i].ordonator.set(0, image);
+                        image.mark('image' + image.src.split('/')[2].split('.')[0]);
 
                         let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
                         this.libraryManipulators[i].first.move(X, tempY);
@@ -1399,6 +1403,7 @@ exports.GUI = function (globalVariables) {
                 head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
                 userText = autoAdjustText(drawing.username, this.width * 0.23, 50, 20, null, userManip, 3);
 
+            deconnexion.cadre.mark('deconnection');
             pos -= deconnexionWidth / 2;
             deconnexion.content.position(pos, 0);
             deconnexion.cadre.position(pos, -30 / 2);
@@ -1510,6 +1515,8 @@ exports.GUI = function (globalVariables) {
             this.content && svg.addEvent(this.content, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
             this.image && svg.addEvent(this.image, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
         }
+
+        this.bordure.mark('questionFromPuzzleBordure' + this.questionNum);
 
         var fontSize = Math.min(20, this.height * 0.1);
         this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
@@ -1802,6 +1809,7 @@ exports.GUI = function (globalVariables) {
             this.redCrossManipulator = new Manipulator(this);
             let size = 20;
             this.redCross || (this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size / 2, size, this.redCrossManipulator));
+            this.redCross.mark('questionRedCross');
             svg.addEvent(this.redCross, "click", redCrossClickHandler);
             this.redCrossManipulator.last.children.indexOf(this.redCross) === -1 && this.redCrossManipulator.last.add(this.redCross);
             this.manipulator.last.add(this.redCrossManipulator.first);
@@ -1925,6 +1933,7 @@ exports.GUI = function (globalVariables) {
                 this.imageLayer = 2;
                 var picture = new Picture(this.image.src, true, this, text);
                 picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
+                picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 this.questionBlock.title = picture.imageSVG;
 
             } else {
@@ -2204,6 +2213,7 @@ exports.GUI = function (globalVariables) {
                 });
             }
             else {
+                this.returnButton.returnButton.mark('returnButtonPreview');
                 this.returnButton.setHandler((event) => {
                     let target = drawings.background.getTarget(event.pageX, event.pageY);
                     target.parentObj.parent.manipulator.flush();
@@ -2586,6 +2596,7 @@ exports.GUI = function (globalVariables) {
 
     function quizzManagerDisplayPreviewButton(x, y, w, h) {
         this.previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, this.previewButtonManipulator);
+        this.previewButton.cadre.mark('previewButton');
         this.previewFunction = () => {
             this.toggleButtonHeight = 40;
             this.quizz.isValid = true;
@@ -2636,6 +2647,7 @@ exports.GUI = function (globalVariables) {
 
     function quizzManagerDisplaySaveButton(x, y, w, h) {
         this.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
+        this.saveButton.cadre.mark('saveButtonQuiz');
         svg.addEvent(this.saveButton.cadre, "click", () => this.saveQuizz());
         svg.addEvent(this.saveButton.content, "click", () => this.saveQuizz());
         this.saveQuizButtonManipulator.translator.move(x, y);
@@ -2984,7 +2996,7 @@ exports.GUI = function (globalVariables) {
                 };
                 drawing.notInTextArea = false;
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-
+                contentarea.mark('connectionContentArea');
                 contentarea.message(this[field].labelSecret || this[field].label);
                 contentarea.color(null, 0, myColors.black).font("Arial", 20);
                 this[field].secret && contentarea.type('password');
@@ -3027,6 +3039,7 @@ exports.GUI = function (globalVariables) {
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
             this[field].cadre = displayText.cadre;
+            this[field].cadre.mark(field);
             var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
             this[field].content.position(x, 0);
             this[field].cadre.position(x, y);
@@ -3056,6 +3069,7 @@ exports.GUI = function (globalVariables) {
 
         displayField('passwordField', this.passwordManipulator);
         this.connexionButton = displayText(this.connexionButtonLabel, this.connexionButtonWidth, this.connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
+        this.connexionButton.cadre.mark('connexionButton');
         this.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
         svg.addEvent(this.connexionButton.content, "click", this.connexionButtonHandler);
         svg.addEvent(this.connexionButton.cadre, "click", this.connexionButtonHandler);
