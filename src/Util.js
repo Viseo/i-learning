@@ -439,6 +439,7 @@ exports.Util = function (globalVariables) {
             manipulator.ordonator.set(layer, t);
             (fontSize) || (fontSize = 20);
             t.font(font ? font : 'Arial', fontSize);
+            content = content.trim();
             t.message(content.replace(/\r?\n|\r/g), " ");
             let boundingRect = t.boundingRect(),
                 charSpace = boundingRect.width/content.length,
@@ -446,30 +447,33 @@ exports.Util = function (globalVariables) {
                 lineHeight = boundingRect.height,
                 maxLines = Math.floor(h/lineHeight);
 
+            if (maxLines === 0) maxLines = 1;
+
             let lines = [];
-            for (let i = 0, charsLength = content.length; i < charsLength; ) {
+            for (let i = 0, charsLength = content.length; i < charsLength;) {
                 let line = content.substring(i, i + numCharsPerLine);
                 let pos = line.lastIndexOf("\n");
                 if (pos !== -1 && pos !== 0) {
                     line = line.substring(0, pos);
-                    i+= pos;
+                    i += pos;
                 } else {
-                    i+= numCharsPerLine;
+                    i += numCharsPerLine;
                 }
-                if (lines.length <= maxLines && line !== "\n") {
+                if (lines.length < maxLines && line !== "\n") {
                     lines.push(line);
                 } else {
-                    lines[maxLines] = lines[maxLines].slice(0, -1) + "…";
+                    lines[maxLines - 1] = lines[maxLines - 1].slice(0, -1) + "…";
                 }
             }
 
-            for (let i = 0; i < lines.length-1; i++) {
-                if (" ?.,!;:\n".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:\n".indexOf(lines[i+1][0]) === -1) {
-                    lines[i]+= "-";
+            for (let i = 0; i < lines.length - 1; i++) {
+                if (" ?.,!;:\n".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:\n".indexOf(lines[i + 1][0]) === -1) {
+                    lines[i] += "-";
                 }
             }
 
             t.message(lines.join("\n"));
+
 
             let finalHeight = t.boundingRect().height;
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);

@@ -1397,15 +1397,14 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.set(0, manip.first);
 
         const displayUser = () => {
-            const svgwidth = x => svg.runtime.boundingRect(x.component).width;
 
             let pos = -MARGIN;
-            const deconnexion = displayText("Déconnexion", this.width * 0.15, 50, myColors.none, myColors.none, 20, null, userManip, 4, 5),
-                deconnexionWidth = svgwidth(deconnexion.content),
+            const deconnexion = displayText("Déconnexion", this.width * 0.15, this.height, myColors.none, myColors.none, 20, null, userManip, 4, 5),
+                deconnexionWidth = deconnexion.content.boundingRect().width,
                 ratio = 0.65,
                 body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.black),
                 head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
-                userText = autoAdjustText(drawing.username, this.width * 0.23, 50, 20, null, userManip, 3);
+                userText = autoAdjustText(drawing.username, this.width * 0.23, this.height, 20, null, userManip, 3);
 
             deconnexion.cadre.mark('deconnection');
             pos -= deconnexionWidth / 2;
@@ -1418,7 +1417,7 @@ exports.GUI = function (globalVariables) {
             userManip.ordonator.set(0, body);
             userManip.ordonator.set(1, head);
 
-            pos -= svgwidth(body) / 2 + MARGIN;
+            pos -= body.boundingRect().width / 2 + MARGIN;
             body.position(pos, -5 * ratio);
             head.position(pos, -20 * ratio);
             userManip.translator.move(this.width, this.height * 0.75);
@@ -1434,7 +1433,7 @@ exports.GUI = function (globalVariables) {
         };
 
         if (message) {
-            const messageText = autoAdjustText(message, this.width * 0.3, 50, 32, 'Arial', manip, 2);
+            const messageText = autoAdjustText(message, this.width * 0.3, this.height, 32, 'Arial', manip, 2);
             messageText.text.position(this.width / 2, this.height / 2 + MARGIN);
             messageText.text.mark("headerMessage");
         } else {
