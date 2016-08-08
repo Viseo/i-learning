@@ -595,15 +595,14 @@ exports.Domain = function (globalVariables) {
     }
 
         saveFormation (displayQuizzManager, status = "Edited") {
-        const
-            messageSave = "Votre travail a bien été enregistré.",
-            messageError = "Vous devez remplir correctement le nom de la formation.",
-            messageReplace =  "Les modifications ont bien été enregistrées.",
-            messageUsedName = "Le nom de cette formation est déjà utilisé !",
-            messageNoModification = "Les modifications ont déjà été enregistrées.";
+            const
+                messageSave = "Votre travail a bien été enregistré.",
+                messageError = "Vous devez remplir correctement le nom de la formation.",
+                messageReplace =  "Les modifications ont bien été enregistrées.",
+                messageUsedName = "Le nom de cette formation est déjà utilisé !",
+                messageNoModification = "Les modifications ont déjà été enregistrées.";
 
-            const displayMessage = (message, displayQuizzManager) => {
-                let error = false;
+            const displayMessage = (message, displayQuizzManager, error = false) => {
                 switch (message) {
                     case messageError:
                     case messageUsedName:
@@ -616,7 +615,7 @@ exports.Domain = function (globalVariables) {
                 if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                     this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 }
-                if (displayQuizzManager) {
+                if (displayQuizzManager && !error) {
                     displayQuizzManager();
                 } else {
                     (this.manipulator.last.children.indexOf(this.message) !== -1) && this.manipulator.last.remove(this.message);
@@ -635,69 +634,70 @@ exports.Domain = function (globalVariables) {
                 }
             };
 
-        const returnToFormationList = () => {
-            this.manipulator.flush();
-            Server.getAllFormations().then(data => {
-                let myFormations = JSON.parse(data).myCollection;
-                let formationsManager = new FormationsManager(myFormations);
-                formationsManager.display();
-            });
-        };
-
-        if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
-            const getObjectToSave = () => {
-                const levelsTab = [];
-                const gamesCounter = {quizz: 0 , bd : 0};
-                this.levelsTab.forEach((level, i) => {
-                    const gamesTab = [];
-                    levelsTab.push({gamesTab: gamesTab});
-                    level.gamesTab.forEach(game => {
-                        if (game.tabQuestions) {
-                            game.id || (game.id = "quizz"  + gamesCounter.quizz);
-                            gamesCounter.quizz ++;
-                        } else {
-                            game.id || (game.id = "bd" + gamesCounter.bd);
-                            gamesCounter.bd ++;
-                        }
-                        levelsTab[i].gamesTab.push(game);
-                    });
+            const returnToFormationList = () => {
+                this.manipulator.flush();
+                Server.getAllFormations().then(data => {
+                    let myFormations = JSON.parse(data).myCollection;
+                    let formationsManager = new FormationsManager(myFormations);
+                    formationsManager.display();
                 });
-                return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
             };
 
-            let addNewFormation = () => {
-                Server.insertFormation(getObjectToSave(), status, ignoredData)
-                    .then(data => {
-                        let answer = JSON.parse(data);
-                        if(answer.saved) {
-                            this._id = answer.idVersion;
-                            this.formationId = answer.id;
-                            status === "Edited" ? displayMessage(messageSave, displayQuizzManager) : returnToFormationList();
-                        } else {
-                            if(answer.reason === "NameAlreadyUsed") {
-                                throw messageUsedName;
+            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+                const getObjectToSave = () => {
+                    const levelsTab = [];
+                    const gamesCounter = {quizz: 0 , bd : 0};
+                    this.levelsTab.forEach((level, i) => {
+                        const gamesTab = [];
+                        levelsTab.push({gamesTab: gamesTab});
+                        level.gamesTab.forEach(game => {
+                            if (game.tabQuestions) {
+                                game.id || (game.id = "quizz"  + gamesCounter.quizz);
+                                gamesCounter.quizz ++;
+                            } else {
+                                game.id || (game.id = "bd" + gamesCounter.bd);
+                                gamesCounter.bd ++;
                             }
-                        }
+                            levelsTab[i].gamesTab.push(game);
+                        });
                     });
-                    // .catch(()=>displayMessage(messageSave, displayQuizzManager));
-            };
+                    return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
+                };
 
-            let replaceFormation = () => {
-                Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
-                    .then((data) => {
-                        let answer = JSON.parse(data);
-                        if(answer.saved) {
-                            status === "Edited" ? displayMessage(messageReplace, displayQuizzManager) : returnToFormationList();
-                        } else {
-                            if(answer.reason === "NoModif") {
-                                throw messageNoModification;
-                            } else if(answer.reason === "NameAlreadyUsed") {
-                                throw messageUsedName;
+                let addNewFormation = () => {
+                    Server.insertFormation(getObjectToSave(), status, ignoredData)
+                        .then(data => {
+                            let answer = JSON.parse(data);
+                            if(answer.saved) {
+                                this._id = answer.idVersion;
+                                this.formationId = answer.id;
+                                status === "Edited" ? displayMessage(messageSave, displayQuizzManager) : returnToFormationList();
+                            } else {
+                                if(answer.reason === "NameAlreadyUsed") {
+                                    displayMessage(messageUsedName, displayQuizzManager);
+                                }
                             }
-                        }
-                    })
-                    .catch(()=>displayMessage(messageSave, displayQuizzManager));
-            };
+                        })
+                };
+
+                let replaceFormation = () => {
+                    Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
+                        .then((data) => {
+                            let answer = JSON.parse(data);
+                            if(answer.saved) {
+                                status === "Edited" ? displayMessage(messageReplace, displayQuizzManager) : returnToFormationList();
+                            } else {
+                                switch (answer.reason) {
+                                    case "NoModif" :
+                                    displayMessage(messageNoModification, displayQuizzManager);
+                                        break;
+                                    case "NameAlreadyUsed" :
+                                    displayMessage(messageUsedName, displayQuizzManager);
+                                        break;
+                                }
+                            }
+                        })
+                };
 
                 this._id ? replaceFormation() : addNewFormation();
             } else {

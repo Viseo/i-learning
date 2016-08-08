@@ -2926,19 +2926,16 @@ exports.GUI = function (globalVariables) {
                                 this.saveButtonManipulator.ordonator.unset(3);
                             }, 10000);
                         } else {
-                            throw "Un utilisateur possède déjà cette adresse mail !"
+                            const messageText = "Un utilisateur possède déjà cette adresse mail !",
+                                message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                            message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
+                            setTimeout(() => {
+                                this.saveButtonManipulator.ordonator.unset(3);
+                            }, 10000);
                         }
                     })
-                    .catch((messageText) => {
-                        let message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                        message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
-                        setTimeout(() => {
-                            this.saveButtonManipulator.ordonator.unset(3);
-                        }, 10000);
-                    });
-            }
-            else if (!AllOk()) {
-                let messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
+            } else if (!AllOk()) {
+                const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
                     message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
                 message.text.color(myColors.red).position(0, -this.saveButton.cadre.height + MARGIN);
             }
