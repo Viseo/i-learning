@@ -763,18 +763,18 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.set(1, this.manipulator.first);
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
 
-    let returnHandler = () => {
-        this.returnButton.manipulator.flush();
-        Server.getAllFormations().then(data => {
-            let myFormations = JSON.parse(data).myCollection;
-            formationsManager = new FormationsManager(myFormations);
-            formationsManager.display();
-        });
-    };
-    this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
-    this.returnButton.display(0, -MARGIN/2, 20, 20);
-    this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
-    this.returnButton.setHandler(returnHandler);
+        let returnHandler = () => {
+            this.returnButton.manipulator.flush();
+            Server.getAllFormations().then(data => {
+                let myFormations = JSON.parse(data).myCollection;
+                formationsManager = new FormationsManager(myFormations);
+                formationsManager.display();
+            });
+        };
+        this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
+        this.returnButton.display(0, -MARGIN/2, 20, 20);
+        this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
+        this.returnButton.setHandler(returnHandler);
 
         let dblclickQuizzHandler = (event, target) => {
             target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
@@ -1654,18 +1654,20 @@ exports.GUI = function (globalVariables) {
                 for (let j = 0; j < this.parentQuizz.questionsWithBadAnswers.length; j++) {
                     (this.parentQuizz.questionsWithBadAnswers[j].questionNum === this.questionNum) && (index = j);
                 }
-                if (playerMode && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length > 0){
-                    this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=> {
-                        this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
-                    });
+                if (playerMode) {
+                    if (index && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length > 0){
+                        this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=> {
+                            this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
+                        });
+                    } else {
+                        this.tabAnswer.forEach(answer => {
+                            if (answer.correct){
+                                answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
+                            }
+                        });
+                    }
                 }
-                else if (playerMode && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length <= 0) {
-                    this.tabAnswer.forEach(answer => {
-                        if (answer.correct){
-                            answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
-                        }
-                    });
-                }
+
             }
 
         }
@@ -2202,32 +2204,28 @@ exports.GUI = function (globalVariables) {
         this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
         if (this.previewMode) {
             if (playerMode) {
-                this.returnButton.setHandler((event) => {
-                    let target = drawings.background.getTarget(event.pageX, event.pageY);
-                    target.parentObj.parent.previewMode = false;
-                    target.parentObj.parent.currentQuestionIndex = this.tabQuestions.length;
-                    target.parentObj.parent.manipulator.flush();
+                this.returnButton.setHandler(() => {
+                    this.previewMode = false;
+                    this.currentQuestionIndex = this.tabQuestions.length;
+                    this.manipulator.flush();
+                    this.puzzleLines = 3;
+                    this.puzzleRows = 3;
+                    this.returnButton.label = "Retour à la formation";
                     drawing.currentPageDisplayed = "QuizPreview";
-                    target.parentObj.parent.puzzleLines = 3;
-                    target.parentObj.parent.puzzleRows = 3;
-                    target.parentObj.parent.returnButton.label = "Retour à la formation";
-                    target.parentObj.parent.display(0, 0, drawing.width, drawing.height);
+                    (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
-            }
-            else {
+            } else {
                 this.returnButton.returnButton.mark('returnButtonPreview');
-                this.returnButton.setHandler((event) => {
-                    let target = drawings.background.getTarget(event.pageX, event.pageY);
-                    target.parentObj.parent.manipulator.flush();
-                    target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
-                    target.parentObj.parent.parentFormation.quizzManager.display();
+                this.returnButton.setHandler(() => {
+                    this.manipulator.flush();
+                    this.parentFormation.quizzManager.loadQuizz(this, this.currentQuestionIndex);
+                    this.parentFormation.quizzManager.display();
                 });
             }
         } else {
-            this.returnButton.setHandler((event) => {
-                let target = drawings.background.getTarget(event.pageX, event.pageY);
-                target.parentObj.parent.manipulator.flush();
-                target.parentObj.parent.parentFormation.displayFormation();
+            this.returnButton.setHandler(() => {
+                this.manipulator.flush();
+                this.parentFormation.displayFormation();
             });
         }
 
@@ -2312,6 +2310,7 @@ exports.GUI = function (globalVariables) {
             quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
             quizzExplanation.score = null;
             quizzExplanation.currentQuestionIndex = 0;
+            quizzExplanation.oldQuiz = this;
             quizzExplanation.run(1, 1, drawing.width, drawing.height);
         };
 
