@@ -370,9 +370,9 @@ describe('formationsManager', function () {
             let game16 = retrieve(root, "[level1quizz16]");
 
             let bdQuiz = retrieve(root, "[gameBd]");
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
+            bdQuiz.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:1142, pageY:791, preventDefault:()=>{}}); //{pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["mouseup"]({pageX:500, pageY:791, preventDefault:()=>{}}); //{pageX:165, pageY:300, preventDefault:()=>{}}
 
 
             runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
