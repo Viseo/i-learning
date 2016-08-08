@@ -241,16 +241,6 @@ describe('formationsManager', function () {
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
-            panelBack.listeners['mouseup']({pageX:300, pageY:500, preventDefault:()=>{}});
-            let game4 = retrieve(root, "[level2quizz4]");
-            assert.equal(game4.text, "Quiz 5");
-            miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
-            assert.equal(miniaturesManipulatorLast.children.length, 5);
-
-
             let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
             arrowModeButtonCadre.listeners['click']();
             let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
@@ -280,14 +270,19 @@ describe('formationsManager', function () {
             arrow03 = retrieve(root, '[quizz0quizz3]');
             assert(arrow03);
 
-            // game3
-
             game3.listeners['mousedown']({pageX:945, pageY:373, preventDefault:()=>{}});
             game3.listeners['mouseup']({pageX:945, pageY:373, preventDefault:()=>{}});
             let gameRedCross = retrieve(root, '[gameRedCross]');
             gameRedCross.listeners['click']();
             game3 = retrieve(root, "[level1quizz3]");
             assert(!game3);
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:500, preventDefault:()=>{}});
+            let game4 = retrieve(root, "[level2quizz4]");
+            assert.equal(game4.text, "Quiz 5");
 
             game4.listeners['mousedown']({pageX:862, pageY:474, preventDefault:()=>{}});
             game4.listeners['mouseup']({pageX:862, pageY:474, preventDefault:()=>{}});
@@ -299,6 +294,85 @@ describe('formationsManager', function () {
             gameRedCross.listeners['click']();
             game4 = retrieve(root, "[level1quizz3]");
             assert(!game4);
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game5 = retrieve(root, "[level1quizz5]");
+            assert.equal(game5.text, "Quiz 6");
+            miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game6 = retrieve(root, "[level1quizz6]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game7 = retrieve(root, "[level1quizz7]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game8 = retrieve(root, "[level1quizz8]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game9 = retrieve(root, "[level1quizz9]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game10 = retrieve(root, "[level1quizz10]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game11 = retrieve(root, "[level1quizz11]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game12 = retrieve(root, "[level1quizz12]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            let game13 = retrieve(root, "[level1quizz13]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            let game14 = retrieve(root, "[level1quizz14]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            let game15 = retrieve(root, "[level1quizz15]");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            let game16 = retrieve(root, "[level1quizz16]");
+
+            // runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
+            // runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
+            // runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
+            // runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
