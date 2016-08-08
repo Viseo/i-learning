@@ -2162,7 +2162,7 @@ exports.GUI = function (globalVariables) {
         header.display(this.parentFormation.label + " - " + this.title);
         mainManipulator.ordonator.set(1, this.manipulator.first);
 
-        let setSizes = ()=> {
+        let setSizes = () => {
             this.x = x || this.x || 0;
             if (x === 0)this.x = 0;
             this.y = y || this.y || 0;
@@ -2177,7 +2177,7 @@ exports.GUI = function (globalVariables) {
             this.answerPercentageWithImage = 0.6;
             this.answerPercentage = 0.7;
         };
-        let setPreviewSizes = ()=> {
+        let setPreviewSizes = () => {
             this.x = x + w * 0.15 || this.x || 0;
             this.y = y || this.y || 0;
             w && (this.questionArea.w = w * 0.7);
@@ -2294,15 +2294,12 @@ exports.GUI = function (globalVariables) {
 
     function quizzDisplayResult(color) {
         this.displayScore(color);
-        this.puzzle && this.puzzle.fillVisibleElementsArray("upToDown");
-        this.puzzle.display(0, this.questionHeight / 2 + this.answerHeight / 2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
-        this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
 
         const
             buttonExpHeight = 50,
             textExp = "Voir les réponses et explications",
-            expButton = displayText(textExp, drawing.width * 0.12, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
-        this.expButtonManipulator.translator.move(0, drawing.height - 3 * MARGIN - buttonExpHeight);
+            expButton = displayText(textExp, drawing.width * 0.3, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
+        this.expButtonManipulator.translator.move(0, drawing.height - this.headerHeight - buttonExpHeight);
 
         const displayExp = () => {
             this.manipulator.flush();
@@ -2321,6 +2318,11 @@ exports.GUI = function (globalVariables) {
 
         svg.addEvent(expButton.cadre, "click", displayExp);
         svg.addEvent(expButton.content, "click", displayExp);
+
+        this.puzzle.fillVisibleElementsArray("upToDown");
+        this.answerHeight = (drawing.height - this.headerHeight - buttonExpHeight)*this.answerPercentage - MARGIN;
+        this.puzzle.display(0, this.questionHeight / 2 + this.answerHeight / 2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
+        this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
     }
 
     function gameDisplayMiniature(size) {
