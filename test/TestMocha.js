@@ -369,10 +369,12 @@ describe('formationsManager', function () {
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
             let game16 = retrieve(root, "[level1quizz16]");
 
-            // runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
-            // runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
-            // runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
-            // runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+            runtime.advanceTo(6);
+            runtime.advanceTo(7);
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
@@ -654,7 +656,7 @@ describe('formationsManager', function () {
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
-            runtime.advanceTo(10);
+            runtime.advance();
 
             let returnButtonPreview = retrieve(root, '[returnButtonPreview]');
             returnButtonPreview.listeners['click']();
