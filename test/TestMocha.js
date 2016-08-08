@@ -570,9 +570,6 @@ describe('formationsManager', function () {
             let saveButtonQuiz = retrieve(root, '[saveButtonQuiz]');
             saveButtonQuiz.listeners['click']();
 
-            // let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
-            // returnButtonToFormation.listeners['click']();
-
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
@@ -879,6 +876,12 @@ describe('Player mode', function () {
             fourthAnswer = retrieve(root, "[answer3]");
             assert.equal(fourthAnswer.text, "Il les abandonna dans la nature.");
             fourthAnswer.listeners["click"]();
+
+            let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
+            returnButtonToFormation.listeners['click']();
+
+            let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
+            returnButtonToFormationsManager.listeners['click']();
 
             done();
         });

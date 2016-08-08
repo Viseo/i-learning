@@ -2214,6 +2214,7 @@ exports.GUI = function (globalVariables) {
                     this.puzzleLines = 3;
                     this.puzzleRows = 3;
                     this.returnButton.label = "Retour à la formation";
+                    this.returnButton.returnButton.mark('returnButtonToFormation');
                     drawing.currentPageDisplayed = "QuizPreview";
                     (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
@@ -2226,6 +2227,7 @@ exports.GUI = function (globalVariables) {
                 });
             }
         } else {
+            this.returnButton.returnButton.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
