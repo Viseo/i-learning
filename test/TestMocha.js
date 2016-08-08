@@ -184,6 +184,9 @@ describe('formationsManager', function () {
             saveFormationButtonCadre.listeners["click"]();
             let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
             assert.equal(formationErrorMessage.text, "Vous devez remplir correctement le nom de la formation.");
+            runtime.advance();
+            formationErrorMessage = retrieve(root, "[formationErrorMessage]");
+            assert(!formationErrorMessage);
 
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
@@ -238,6 +241,16 @@ describe('formationsManager', function () {
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:300, pageY:500, preventDefault:()=>{}});
+            let game4 = retrieve(root, "[level2quizz4]");
+            assert.equal(game4.text, "Quiz 5");
+            miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
+            assert.equal(miniaturesManipulatorLast.children.length, 5);
+
+
             let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
             arrowModeButtonCadre.listeners['click']();
             let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
@@ -261,6 +274,29 @@ describe('formationsManager', function () {
             redCross.listeners['click']();
             arrow02 = retrieve(root, '[quizz0quizz2]');
             assert(!arrow02);
+
+            glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
+            glass.listeners['mouseup']({pageX:945, pageY:373, preventDefault:()=>{}});
+            arrow03 = retrieve(root, '[quizz0quizz3]');
+            assert(arrow03);
+
+            game3.listeners['mousedown']({pageX:945, pageY:373, preventDefault:()=>{}});
+            game3.listeners['mouseup']({pageX:945, pageY:373, preventDefault:()=>{}});
+            let gameRedCross = retrieve(root, '[gameRedCross]');
+            gameRedCross.listeners['click']();
+            game3 = retrieve(root, "[level1quizz3]");
+            assert(!game3);
+
+            game4.listeners['mousedown']({pageX:862, pageY:474, preventDefault:()=>{}});
+            game4.listeners['mouseup']({pageX:862, pageY:474, preventDefault:()=>{}});
+            game4.listeners['mousedown']({pageX:862, pageY:474, preventDefault:()=>{}});
+            game4.listeners['mouseup']({pageX:862, pageY:474, preventDefault:()=>{}});
+            game4.listeners['mousedown']({pageX:862, pageY:474, preventDefault:()=>{}});
+            game4.listeners['mouseup']({pageX:862, pageY:474, preventDefault:()=>{}});
+            gameRedCross = retrieve(root, '[gameRedCross]');
+            gameRedCross.listeners['click']();
+            game4 = retrieve(root, "[level1quizz3]");
+            assert(!game4);
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
@@ -494,6 +530,33 @@ describe('formationsManager', function () {
             answerImage = retrieve(root, '[answerImage1]');
             assert(answerImage);
 
+            let answerLabelCadre1 = retrieve(root, '[answerLabelCadre1]');
+            answerLabelCadre1.listeners['mouseover']();
+            redCross = retrieve(root, '[redCross]');
+            redCross.listeners['click']();
+            answerLabelCadre1 = retrieve(root, '[answerLabelCadre1]');
+            assert(answerLabelCadre1);
+
+            // answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            // answerLabelCadre0.listeners['mouseover']();
+            // redCross = retrieve(root, '[redCross]');
+            // redCross.listeners['click']();
+            // answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            // assert(answerLabelCadre0);
+            //
+            // image = retrieve(root, '[imageAlba]');
+            // image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            // imgDraged = retrieve(root, '[imgDraged]');
+            // imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
+            // answerImage = retrieve(root, '[answerImage0]');
+            // assert(answerImage);
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            answerImage = retrieve(root, '[answerImage1]');
+            assert(answerImage);
 
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
@@ -543,10 +606,11 @@ describe('connection', function(){
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
+
             let mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'a@a.a';
+            connectionContentArea.value = '';
             connectionContentArea.listeners['blur']();
             let passwordField = retrieve(root, '[passwordField]');
             passwordField.listeners['click']();
@@ -555,6 +619,162 @@ describe('connection', function(){
             connectionContentArea.listeners['blur']();
             let connexionButton = retrieve(root, '[connexionButton]');
             connexionButton.listeners['click']();
+            runtime.advance();
+
+            mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'a@';
+            connectionContentArea.listeners['blur']();
+            passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'aaaaaa';
+            connectionContentArea.listeners['blur']();
+            connexionButton = retrieve(root, '[connexionButton]');
+            connexionButton.listeners['click']();
+            runtime.advance();
+
+            mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'a@a.a';
+            connectionContentArea.listeners['blur']();
+            passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'aaaaaa';
+            connectionContentArea.listeners['blur']();
+            connexionButton = retrieve(root, '[connexionButton]');
+            connexionButton.listeners['click']();
+            done();
+        });
+    });
+});
+
+describe('inscription', function(){
+    beforeEach(function () {
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should sign up someone", function (done) {
+        testutils.retrieveDB("./log/dbInscription.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let  inscriptionLink = retrieve(root, '[inscriptionLink]');
+            inscriptionLink.listeners['click']();
+
+            let lastNameField = retrieve(root, '[lastNameField]');
+            lastNameField.listeners['click']();
+            let inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = '';
+            inscriptionContentArea.listeners['input']();
+            inscriptionContentArea.value = '';
+            inscriptionContentArea.listeners['blur']();
+            let inscriptionErrorMessagelastNameField = retrieve(root, '[inscriptionErrorMessagelastNameField]');
+            assert.equal(inscriptionErrorMessagelastNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
+
+            lastNameField = retrieve(root, '[lastNameField]');
+            lastNameField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'nom';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagelastNameField = retrieve(root, '[inscriptionErrorMessagelastNameField]');
+            assert(!inscriptionErrorMessagelastNameField);
+
+            let firstNameField = retrieve(root, '[firstNameField]');
+            firstNameField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = '';
+            inscriptionContentArea.listeners['blur']();
+            let inscriptionErrorMessagefirstNameField = retrieve(root, '[inscriptionErrorMessagefirstNameField]');
+            assert.equal(inscriptionErrorMessagefirstNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
+
+            firstNameField = retrieve(root, '[firstNameField]');
+            firstNameField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'prénom';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagefirstNameField = retrieve(root, '[inscriptionErrorMessagefirstNameField]');
+            assert(!inscriptionErrorMessagefirstNameField);
+
+            let mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = '';
+            inscriptionContentArea.listeners['blur']();
+            mailAddressField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'ra@';
+            inscriptionContentArea.listeners['blur']();
+            let inscriptionErrorMessagemailAddressField= retrieve(root, '[inscriptionErrorMessagemailAddressField]');
+            assert.equal(inscriptionErrorMessagemailAddressField.text, "L'adresse email n'est pas valide");
+
+            mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'test@test.test';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagemailAddressField = retrieve(root, '[inscriptionErrorMessagemailAddressField]');
+            assert(!inscriptionErrorMessagemailAddressField);
+
+            let passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'aaa';
+            inscriptionContentArea.listeners['blur']();
+            let inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
+            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
+
+            passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'testtes';
+            inscriptionContentArea.listeners['input']();
+            inscriptionContentArea.value = 'testtest';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
+            assert(!inscriptionErrorMessagepasswordField);
+
+            let passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
+            passwordConfirmationField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'aaa';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
+            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
+
+            passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
+            passwordConfirmationField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'aaaaaa';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
+            assert.equal(inscriptionErrorMessagepasswordField.text, "La confirmation du mot de passe n'est pas valide");
+
+            let inscriptionButton = retrieve(root, '[inscriptionButton]');
+            inscriptionButton.listeners['click']();
+
+            passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
+            passwordConfirmationField.listeners['click']();
+            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
+            inscriptionContentArea.value = 'testtest';
+            inscriptionContentArea.listeners['blur']();
+            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
+            assert(!inscriptionErrorMessagepasswordField);
+
+            inscriptionButton = retrieve(root, '[inscriptionButton]');
+            // inscriptionButton.listeners['click'](); //DO NOT CLICK TwinBcrypt NOT DEFINED
+            // runtime.advance();
+
+
             done();
         });
     });

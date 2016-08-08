@@ -787,6 +787,7 @@ exports.Util = function (globalVariables) {
             this.icon.content.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
+            this.redCross.mark('gameRedCross');
             (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
 
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());

@@ -3,7 +3,8 @@ exports.GUI = function (globalVariables) {
     let svg, gui, util, domain, runtime, drawings, drawing, imageController, playerMode,
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quizz, QuizzManager,
-        InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server, mainManipulator;
+        InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server,
+        mainManipulator;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -1445,6 +1446,7 @@ exports.GUI = function (globalVariables) {
                 (link === "Inscription") ? globalVariables.inscriptionManager.display() : globalVariables.connexionManager.display();
             };
             const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
+            special.cadre.mark('inscriptionLink');
             special.content.anchor("end");
             userManip.translator.move(this.width - MARGIN, this.height * 0.5);
             userManip.scalor.scale(1);
@@ -2706,8 +2708,9 @@ exports.GUI = function (globalVariables) {
                 };
                 drawing.notInTextArea = false;
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-                contentarea.message(this[field].labelSecret || this[field].label);
-                contentarea.color(null, 0, myColors.black).font("Arial", 20);
+                contentarea.message(this[field].labelSecret || this[field].label)
+                    .color(null, 0, myColors.black).font("Arial", 20)
+                    .mark('inscriptionContentArea');
                 this[field].secret ? contentarea.type('password') : contentarea.type("text");
                 manipulator.ordonator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
@@ -2717,17 +2720,18 @@ exports.GUI = function (globalVariables) {
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
                         var message = autoAdjustText(this[field].errorMessage, drawing.width, this.h, 20, null, trueManipulator, 3);
                         message.text.color(myColors.red).position(this[field].cadre.width / 2 + MARGIN, this[field].cadre.height + MARGIN);
+                        message.text.mark('inscriptionErrorMessage' + field);
                     }
                 };
                 var oninput = ()=> {
                     contentarea.enter();
-                    if (this[field].secret && trueValue && contentarea.messageText && trueValue.length < contentarea.messageText.length) {
-                        trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
-                    } else if (this[field].secret) {
-                        trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
-                    }
+                    // if (this[field].secret && trueValue && contentarea.messageText && trueValue.length < contentarea.messageText.length) {
+                    //     trueValue += contentarea.messageText.substring(contentarea.messageText.length - 1);
+                    // } else if (this[field].secret) {
+                    //     trueValue = trueValue && contentarea.messageText && trueValue.substring(0, contentarea.messageText.length);
+                    // }
                     this[field].label = contentarea.messageText;
-                    this[field].labelSecret !== "undefined" && (this[field].labelSecret = trueValue);
+                    this[field].labelSecret !== "undefined" && (this[field].labelSecret = contentarea.messageText);
                     if ((field === "lastNameField" || field === 'firstNameField' ) && !this[field].checkInput()) {
                         displayErrorMessage();
                         this[field].cadre.color(myColors.white, 3, myColors.red);
@@ -2779,6 +2783,7 @@ exports.GUI = function (globalVariables) {
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
             this[field].cadre = displayText.cadre;
+            this[field].cadre.mark(field);
             var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
             this[field].content.position(x, 0);
             this[field].cadre.position(x, y);
@@ -2834,11 +2839,13 @@ exports.GUI = function (globalVariables) {
                     this.passwordField.cadre.color(myColors.white, 3, myColors.red);
                     var message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
                     message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                    message.text.mark('inscriptionErrorMessagepasswordField');
                 }
                 if (confTooShort) {
                     this.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
                     message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
                     message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                    message.text.mark('inscriptionErrorMessagepasswordField');
                 }
             }
             else if (this.passwordConfirmationField.labelSecret !== "" && this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret) {
@@ -2847,16 +2854,17 @@ exports.GUI = function (globalVariables) {
                 this.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
                 message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
                 message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                message.text.mark('inscriptionErrorMessagepasswordField');
             }
-            else if (this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
+            else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
                 this.passwordField.cadre.color(myColors.white, 1, myColors.black);
                 this.passwordManipulator.ordonator.unset(3);
                 cleanIfEgality();
             }
-            else {
-                cleanIfEgality();
-                this.passwordManipulator.ordonator.unset(3);
-            }
+            // else {
+            //     cleanIfEgality();
+            //     this.passwordManipulator.ordonator.unset(3);
+            // }
             return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
         };
 
@@ -2944,6 +2952,7 @@ exports.GUI = function (globalVariables) {
         this.saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
         this.saveButton = displayText(this.saveButtonLabel, this.saveButtonWidth, this.saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
         this.saveButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
+        this.saveButton.cadre.mark('inscriptionButton');
         svg.addEvent(this.saveButton.content, "click", this.saveButtonHandler);
         svg.addEvent(this.saveButton.cadre, "click", this.saveButtonHandler);
 
