@@ -595,6 +595,7 @@ exports.GUI = function (globalVariables) {
                             height: this.w / 5
                         };
                         this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                        this.fileExplorer.mark('fileExlorerSvg');
                         this.fileExplorer.type("file");
                         svg.addEvent(this.fileExplorer, "change", onChangeFileExplorerHandler);
                         svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
@@ -622,6 +623,7 @@ exports.GUI = function (globalVariables) {
                     addButtonLabel = "Ajouter une image",
                     addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
                     plus = drawPlus(0, 0, this.w / 7, this.w / 7);
+                addButton.mark('addImageButton');
                 addButtonText.text.position(0, this.h / 12 - (this.h / 15) / 2 + 3 / 2 * MARGIN);
                 addButton.corners(10, 10);
 
@@ -774,6 +776,7 @@ exports.GUI = function (globalVariables) {
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
         this.returnButton.display(0, -MARGIN/2, 20, 20);
         this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
+        this.returnButton.returnButton.mark('returnButtonToFormationsManager');
         this.returnButton.setHandler(returnHandler);
 
         let dblclickQuizzHandler = (event, target) => {
@@ -2477,8 +2480,8 @@ exports.GUI = function (globalVariables) {
         this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
 
         let returnHandler = (event)=> {
-            let target = drawings.background.getTarget(event.pageX, event.pageY);
-            target.parentObj.parent.parentFormation.quizzManager.questionCreator.explanation = null;
+            let target = this.returnButton;//drawings.background.getTarget(event.pageX, event.pageY);
+            target.parent.parentFormation.quizzManager.questionCreator.explanation = null;
             if (this.quizz.tabQuestions[this.indexOfEditedQuestion]) {
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=> {
@@ -2487,12 +2490,12 @@ exports.GUI = function (globalVariables) {
                     }
                 })
             }
-            target.parentObj.parent.quizzNameValidInput = true;
-            target.parentObj.parent.quizzManagerManipulator.flush();
-            target.parentObj.parent.quizzDisplayed = false;
-            target.parentObj.parent.parentFormation.publishedButtonActivated = false;
-            target.parentObj.parent.parentFormation.displayFormation();
-            [].concat(...target.parentObj.parent.parentFormation.levelsTab.map(level => level.gamesTab))
+            target.parent.quizzNameValidInput = true;
+            target.parent.quizzManagerManipulator.flush();
+            target.parent.quizzDisplayed = false;
+            target.parent.parentFormation.publishedButtonActivated = false;
+            target.parent.parentFormation.displayFormation();
+            [].concat(...target.parent.parentFormation.levelsTab.map(level => level.gamesTab))
                 .forEach(game => {
                     game.miniature.selected = false;
                     game.miniature.updateSelectionDesign();
@@ -2501,6 +2504,7 @@ exports.GUI = function (globalVariables) {
 
         this.returnButton.display(-2 * MARGIN, 0, 20, 20);
         this.returnButton.setHandler(returnHandler);
+        this.returnButton.returnButton.mark('returnButtonToFormation');
 
         var showTitle = ()=> {
             var text = (this.quizzName) ? this.quizzName : this.quizzNameDefault;

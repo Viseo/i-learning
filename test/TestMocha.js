@@ -280,6 +280,8 @@ describe('formationsManager', function () {
             arrow03 = retrieve(root, '[quizz0quizz3]');
             assert(arrow03);
 
+            // game3
+
             game3.listeners['mousedown']({pageX:945, pageY:373, preventDefault:()=>{}});
             game3.listeners['mouseup']({pageX:945, pageY:373, preventDefault:()=>{}});
             let gameRedCross = retrieve(root, '[gameRedCross]');
@@ -561,18 +563,37 @@ describe('formationsManager', function () {
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
 
+            // let addImageButton = retrieve(root, '[addImageButton]');
+            // addImageButton.listeners['click']();
+            // let fileExplorer = retrieve(root, '[addImageButton]');
+
             let saveButtonQuiz = retrieve(root, '[saveButtonQuiz]');
             saveButtonQuiz.listeners['click']();
+
+            // let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
+            // returnButtonToFormation.listeners['click']();
 
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
+            runtime.advance();
 
             let previewButton = retrieve(root, '[previewButton]');
             previewButton.listeners['click']();
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advanceTo(10);
 
             let returnButtonPreview = retrieve(root, '[returnButtonPreview]');
-            // returnButtonPreview.listeners['click']();
+            returnButtonPreview.listeners['click']();
+            runtime.advance();
+
+            let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
+            returnButtonToFormation.listeners['click']();
+
+            let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
+            returnButtonToFormationsManager.listeners['click']();
 
             let bigGlass = retrieve(root, '[bigGlass]');
             bigGlass.listeners['mousedown']({pageX:0, pageY:0, preventDefault:()=>{}});
