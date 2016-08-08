@@ -679,6 +679,7 @@ describe('formationsManager', function () {
             bigGlass.listeners['mouseup']({pageX:0, pageY:0, preventDefault:()=>{}});
             bigGlass.listeners['dblclick']({pageX:0, pageY:0, preventDefault:()=>{}});
 
+            runtime.listeners['resize']({w:1500, h:1500});
 
 
             let deconnection = retrieve(root, '[deconnection]');
