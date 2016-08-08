@@ -1055,7 +1055,7 @@ exports.Util = function (globalVariables) {
             this.leftChevronManipulator = new Manipulator(this);
             this.leftChevronManipulator.addOrdonator(3);
             this.rightChevronManipulator = new Manipulator(this);
-            this.rightChevronManipulator.addOrdonator(3);
+            this.rightChevronManipulator.addOrdonator(1);
             this.elementsArray = elementsArray;
             this.visibleElementsArray = [];
             this.indexOfFirstVisibleElement = 0;

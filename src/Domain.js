@@ -989,8 +989,7 @@ exports.Domain = function (globalVariables) {
             this.size = HEADER_SIZE;
         }
     }
-
-
+    
     class QuizzManager {
         constructor(quizz, formation) {
             this.quizzName = "";
@@ -1186,16 +1185,15 @@ exports.Domain = function (globalVariables) {
                 this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.manipulator.last.add(this.expButtonManipulator.first);
 
-                if (previewMode) {
-                    this.chevronManipulator = new Manipulator(this);
-                    this.leftChevronManipulator = new Manipulator(this);
-                    this.rightChevronManipulator = new Manipulator(this);
-                    this.leftChevronManipulator.addOrdonator(1);
-                    this.rightChevronManipulator.addOrdonator(1);
-                    this.manipulator.last.add(this.chevronManipulator.first);
-                    this.chevronManipulator.last.add(this.leftChevronManipulator.first);
-                    this.chevronManipulator.last.add(this.rightChevronManipulator.first);
-                }
+                this.chevronManipulator = new Manipulator(this);
+                this.leftChevronManipulator = new Manipulator(this);
+                this.rightChevronManipulator = new Manipulator(this);
+                this.leftChevronManipulator.addOrdonator(1);
+                this.rightChevronManipulator.addOrdonator(1);
+                this.manipulator.last.add(this.chevronManipulator.first);
+                this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+                this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+
                 this.loadQuestions(quizz);
                 if (this.levelIndex === undefined) {
                     this.levelIndex = quizz.levelIndex || 0;

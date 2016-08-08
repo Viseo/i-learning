@@ -948,8 +948,15 @@ exports.GUI = function (globalVariables) {
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
                             clicAction();
                         }
-                        else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject)) {
+                        else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject instanceof Quizz)) {
                             this.dropAction(eventUp, tabElement);
+                        }
+                        else{
+                            tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
+                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
+                            tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                            svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
+                            svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
                         }
                     };
                     putMiniatureInPiste();
@@ -958,8 +965,8 @@ exports.GUI = function (globalVariables) {
                     svg.addEvent(tabElement.miniature.icon.cadre, 'mouseup', mouseupHandler);
                     svg.addEvent(tabElement.miniature.icon.content, 'mouseup', mouseupHandler);
                 };
-                svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
-                svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
+                !playerMode && svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
+                !playerMode && svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
 
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
@@ -2137,28 +2144,28 @@ exports.GUI = function (globalVariables) {
         header.display(this.parentFormation.label + " - " + this.title);
         mainManipulator.ordonator.set(1, this.manipulator.first);
 
-        let setSizes = () => {
-            this.x = x || this.x || 0;
-            if (x === 0)this.x = 0;
-            this.y = y || this.y || 0;
-            w && (this.questionArea.w = w);
-            (w && x) && (this.resultArea.w = w );
-            x && (this.resultArea.x = x);
-            w && (this.titleArea.w = w);
-            //x && (this.quizzMarginX = x);
-            this.headerPercentage = HEADER_SIZE;
-            this.questionPercentageWithImage = 0.3;
-            this.questionPercentage = 0.2;
-            this.answerPercentageWithImage = 0.6;
-            this.answerPercentage = 0.7;
-        };
-        let setPreviewSizes = () => {
+        // let setSizes = ()=> {
+        //     // this.x = x || this.x || 0;
+        //     // if (x === 0)this.x = 0;
+        //     // this.y = y || this.y || 0;
+        //     // w && (this.questionArea.w = w);
+        //     (w && x) && (this.resultArea.w = w );
+        //     x && (this.resultArea.x = x);
+        //     w && (this.titleArea.w = w);
+        //     //x && (this.quizzMarginX = x);
+        //     this.headerPercentage = HEADER_SIZE;
+        //     this.questionPercentageWithImage = 0.3;
+        //     this.questionPercentage = 0.2;
+        //     this.answerPercentageWithImage = 0.6;
+        //     this.answerPercentage = 0.7;
+        // };
+        let setSizes = ()=> {
             this.x = x + w * 0.15 || this.x || 0;
             this.y = y || this.y || 0;
             w && (this.questionArea.w = w * 0.7);
-            (w && x) && (this.resultArea.w = w * 0.85);
-            x && (this.resultArea.x = x + w * 0.15);
-            w && (this.titleArea.w = w * 0.85);
+            (w && x) && (this.resultArea.w = w );
+            x && (this.resultArea.x = x );
+            w && (this.titleArea.w = w );
             //x && (this.quizzMarginX = x+w*0.15);
             this.headerPercentage = HEADER_SIZE;
             this.questionPercentageWithImage = 0.3;
@@ -2166,7 +2173,7 @@ exports.GUI = function (globalVariables) {
             this.answerPercentageWithImage = 0.6;
             this.answerPercentage = 0.7;
         };
-        this.previewMode ? setPreviewSizes() : setSizes();
+        setSizes();
 
         let heightPage = drawing.height;
         this.headerHeight = heightPage * this.headerPercentage;
@@ -2176,7 +2183,6 @@ exports.GUI = function (globalVariables) {
         this.answerHeightWithoutImage = heightPage * this.answerPercentage - MARGIN;
         this.questionHeightWithImage = heightPage * this.questionPercentageWithImage - MARGIN;
         this.answerHeightWithImage = heightPage * this.answerPercentageWithImage - MARGIN;
-
         this.manipulator.translator.move(this.questionArea.w / 2, this.headerHeight);
 
         this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
@@ -2208,68 +2214,71 @@ exports.GUI = function (globalVariables) {
                 this.parentFormation.displayFormation();
             });
         }
+        this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
+        this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
+        this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
+
+        this.leftChevron.parentObj = this;
+        this.rightChevron.parentObj = this;
+        let updateColorChevrons = (quiz) => {
+            quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length - 1 ? myColors.grey : myColors.black);
+            quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
+        };
+
+        const closePopIn = () => {
+            this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
+                if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
+                    answer.explanationPopIn.cross.component.listeners["click"]();
+                }
+            });
+        };
+
+        let leftChevronHandler = (event) => {
+            closePopIn();
+            let target = drawings.background.getTarget(event.pageX, event.pageY);
+            let puzzle = target.parentObj;
+            if (puzzle.currentQuestionIndex > 0) {
+                puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex--;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
+            }
+        };
+        let rightChevronHandler = (event) => {
+            closePopIn();
+            let target = drawings.background.getTarget(event.pageX, event.pageY);
+            let puzzle = target.parentObj;
+            if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
+                puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
+                puzzle.currentQuestionIndex++;
+                updateColorChevrons(puzzle);
+                puzzle.displayCurrentQuestion();
+            }
+        };
+        updateColorChevrons(this);
+        svg.addEvent(this.leftChevron, "click", leftChevronHandler);
+        svg.addEvent(this.rightChevron, "click", rightChevronHandler);
 
         if (this.currentQuestionIndex === -1) {// on passe à la première question
             this.nextQuestion();
-        } else if (this.currentQuestionIndex < this.tabQuestions.length) {
+        }
+        else if (this.currentQuestionIndex < this.tabQuestions.length) {
             this.displayCurrentQuestion();
-        } else {
+        }
+        else {
             let questionsWithBadAnswersTab = [];
             this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
             this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "upToDown", this);
             this.displayResult();
         }
-
-        if (this.previewMode) {
-            this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
-            this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
-
-            this.leftChevron.parentObj = this;
-            this.rightChevron.parentObj = this;
-            let updateColorChevrons = (quiz) => {
-                quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length - 1 ? myColors.grey : myColors.black);
-                quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
-            };
-
-            const closePopIn = () => {
-                this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
-                    if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
-                        answer.explanationPopIn.cross.component.listeners["click"]();
-                    }
-                });
-            };
-
-            let leftChevronHandler = (event) => {
-                closePopIn();
-                let target = drawings.background.getTarget(event.pageX, event.pageY);
-                let puzzle = target.parentObj;
-                if (puzzle.currentQuestionIndex > 0) {
-                    puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
-                    puzzle.currentQuestionIndex--;
-                    updateColorChevrons(puzzle);
-                    puzzle.displayCurrentQuestion();
-                }
-            };
-            let rightChevronHandler = (event) => {
-                closePopIn();
-                let target = drawings.background.getTarget(event.pageX, event.pageY);
-                let puzzle = target.parentObj;
-                if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
-                    puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
-                    puzzle.currentQuestionIndex++;
-                    updateColorChevrons(puzzle);
-                    puzzle.displayCurrentQuestion();
-                }
-            };
-            updateColorChevrons(this);
-            svg.addEvent(this.leftChevron, "click", leftChevronHandler);
-            svg.addEvent(this.rightChevron, "click", rightChevronHandler);
-        }
     }
 
     function quizzDisplayResult(color) {
         this.displayScore(color);
-
+        this.leftChevronManipulator.ordonator.unset(0);
+        this.rightChevronManipulator.ordonator.unset(0);
+        
         const
             buttonExpHeight = 50,
             textExp = "Voir les réponses et explications",
@@ -2366,7 +2375,7 @@ exports.GUI = function (globalVariables) {
         this.resultManipulator = new Manipulator(this);
         this.scoreManipulator = new Manipulator(this);
         this.scoreManipulator.addOrdonator(2);
-        this.resultManipulator.translator.move(0, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
+        this.resultManipulator.translator.move(this.titleArea.w/2-this.questionArea.w / 2, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
         this.resultManipulator.last.add(this.scoreManipulator.first);
         this.resultManipulator.last.add(this.puzzle.manipulator.first);
         this.manipulator.last.add(this.resultManipulator.first);
