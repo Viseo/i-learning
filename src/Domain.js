@@ -1282,9 +1282,9 @@ exports.Domain = function (globalVariables) {
             }
 
             run(x, y, w, h) {
-                var intervalToken = runtime.interval(() => {
+                var intervalToken = svg.interval(() => {
                     if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
-                        runtime.clearInterval(intervalToken);
+                        svg.clearInterval(intervalToken);
                         this.display(x, y, w, h);
                     }
                 }, 100);

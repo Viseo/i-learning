@@ -46,7 +46,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         }
         else if (document.documentElement.clientWidth > 0 && document.documentElement.clientHeight > 0){
             newWidth = document.documentElement.clientWidth;
-            newHeight = document.documentElement.clientHeight > 0;
+            newHeight = document.documentElement.clientHeight;
         }
         drawing.dimension(newWidth, newHeight);
         drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);

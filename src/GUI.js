@@ -576,9 +576,9 @@ exports.GUI = function (globalVariables) {
                         });
                     })
                     .then(() => {
-                        let intervalToken = runtime.interval(() => {
+                        let intervalToken = svg.interval(() => {
                             if (this.itemsTab.every(e => e.imageLoaded)) {
-                                runtime.clearInterval(intervalToken);
+                                svg.clearInterval(intervalToken);
                                 displayImages();
                             }
                         }, 100);
