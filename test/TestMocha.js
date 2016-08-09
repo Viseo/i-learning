@@ -357,25 +357,32 @@ describe('formationsManager', function () {
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            let game14 = retrieve(root, "[level1quizz14]");
+            let game14 = retrieve(root, "[level2quizz14]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            let game15 = retrieve(root, "[level1quizz15]");
+            let game15 = retrieve(root, "[level3quizz15]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            let game16 = retrieve(root, "[level1quizz16]");
+            let game16 = retrieve(root, "[level4quizz16]");
 
             let bdQuiz = retrieve(root, "[gameBd]");
             bdQuiz.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:500, pageY:791, preventDefault:()=>{}}); //{pageX:165, pageY:300, preventDefault:()=>{}}
+            let bd1 = retrieve(root, "[level4bd0]");
 
+            bd1.listeners['mousedown']({pageX:500, pageY:791, preventDefault:()=>{}});
+            bd1.listeners['mouseup']({pageX:500, pageY:500, preventDefault:()=>{}});
+
+            bd1.listeners['dblclick']();
+            let returnButtonFromBdToFormation = retrieve(root, '[returnButtonFromBdToFormation]');
+            returnButtonFromBdToFormation.listeners['click']();
 
             runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
             runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
@@ -755,6 +762,10 @@ describe('connection', function(){
             connectionContentArea = retrieve(root, '[connectionContentArea]');
             connectionContentArea.value = 'aaaaaa';
             connectionContentArea.listeners['blur']();
+
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            // runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}}); // PB DOCUMENT DANS FONCTION
+
             connexionButton = retrieve(root, '[connexionButton]');
             connexionButton.listeners['click']();
             done();

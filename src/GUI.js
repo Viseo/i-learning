@@ -955,7 +955,7 @@ exports.GUI = function (globalVariables) {
                             clicAction();
                         }
                         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject)) {
-                            this.dropAction(event, tabElement);
+                            this.dropAction(eventUp, tabElement);
                         }
                     };
                     putMiniatureInPiste();
@@ -977,7 +977,7 @@ exports.GUI = function (globalVariables) {
                     let eventToUse = playerMode ? ["click",() => {}] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                     var dblclickBdHandler = (event)=> {
-                        let targetBd = drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+                        let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                         bdDisplay(targetBd);
                     };
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
@@ -2334,15 +2334,16 @@ exports.GUI = function (globalVariables) {
         header.display(bd.title);
         (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
         bd.returnButton.display(0, drawing.height * header.size + 2 * MARGIN, 20, 20);
-        bd.returnButton.setHandler(self.previewMode ? (event) => {
-            let target = drawings.background.getTarget(event.pageX, event.pageY);
-            target.parentObj.parent.manipulator.flush();
-            target.parentObj.parent.parentFormation.quizzManager.loadQuizz(target.parentObj.parent, target.parentObj.parent.currentQuestionIndex);
-            target.parentObj.parent.parentFormation.quizzManager.display();
+        bd.returnButton.returnButton.mark('returnButtonFromBdToFormation');
+        bd.returnButton.setHandler(this.previewMode ? (event) => {
+            let target = bd.returnButton;
+            target.parent.manipulator.flush();
+            target.parent.parentFormation.quizzManager.loadQuizz(target.parent, target.parent.currentQuestionIndex);
+            target.parent.parentFormation.quizzManager.display();
         } : (event) => {
-            let target = drawings.background.getTarget(event.pageX, event.pageY);
-            target.parentObj.parent.manipulator.flush();
-            target.parentObj.parent.parentFormation.displayFormation();
+            let target = bd.returnButton;//drawings.background.getTarget(event.pageX, event.pageY);
+            target.parent.manipulator.flush();
+            target.parent.parentFormation.displayFormation();
         });
     }
 
