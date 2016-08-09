@@ -312,7 +312,7 @@ exports.GUI = function (globalVariables) {
             this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) === -1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
-            let createLink = (parentGame, childGame) =>{
+            let createLink = (parentGame, childGame) => {
                 if (childGame.isChildOf(parentGame)) return;
                 if (parentGame.levelIndex >= childGame.levelIndex) return;
                 let arrow = new Arrow(parentGame, childGame);
@@ -350,7 +350,7 @@ exports.GUI = function (globalVariables) {
                         event.preventDefault();
                         let targetParent = graph.getTarget(event.pageX, event.pageY);
 
-                        let mouseUpAction =  (event) => {
+                        let mouseUpAction = (event) => {
                             let targetChild = graph.getTarget(event.pageX, event.pageY);
                             let booleanInstanceOfCorrect = function (e) {
                                 return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
@@ -980,7 +980,7 @@ exports.GUI = function (globalVariables) {
                         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject instanceof Quizz)) {
                             this.dropAction(eventUp, tabElement);
                         }
-                        else{
+                        else {
                             tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
                             this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
@@ -1005,7 +1005,8 @@ exports.GUI = function (globalVariables) {
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
                 } else if (tabElement instanceof Bd) {
-                    let eventToUse = playerMode ? ["click",() => {}] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
+                    let eventToUse = playerMode ? ["click", () => {
+                    }] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
                     var dblclickBdHandler = (event)=> {
                         let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
@@ -1520,7 +1521,7 @@ exports.GUI = function (globalVariables) {
                 let event = () => {
                     let wrongQuiz = Object.assign({}, this.parentQuizz);
                     this.wrongQuestionsQuiz = new Quizz(wrongQuiz, true);
-                    this.wrongQuestionsQuiz.currentQuestionIndex = this.questionNum-1;
+                    this.wrongQuestionsQuiz.currentQuestionIndex = this.questionNum - 1;
                     this.wrongQuestionsQuiz.parentFormation.quizzDisplayed = this.wrongQuestionsQuiz;
                     this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
                 };
@@ -1593,84 +1594,83 @@ exports.GUI = function (globalVariables) {
     }
 
     function questionDisplayAnswers(x, y, w, h) {
-        if (this.rows !== 0) {
-            this.tileWidth = (w - MARGIN * (this.rows - 1)) / this.rows;
-            this.tileHeight = 0;
-            h = h - 50;
-            this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
-            this.tileHeightMin = 2.50 * this.fontSize;
-            var tmpTileHeight;
+        this.tileWidth = (w - MARGIN * (this.columns - 1)) / this.columns;
+        this.tileHeight = 0;
+        h = h - 50;
+        this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
+        this.tileHeightMin = 2.50 * this.fontSize;
+        var tmpTileHeight;
 
-            for (var answer of this.tabAnswer) {//answer.image.height
-                answer.image ? (tmpTileHeight = this.tileHeightMax) : (tmpTileHeight = this.tileHeightMin);
-                if (tmpTileHeight > this.tileHeightMax && tmpTileHeight > this.tileHeight) {
-                    this.tileHeight = this.tileHeightMax;
-                }
-                else if (tmpTileHeight > this.tileHeight) {
-                    this.tileHeight = tmpTileHeight;
-                }
+        this.tabAnswer.forEach(answer=>{
+            tmpTileHeight = answer.image ? this.tileHeightMax : this.tileHeightMin;
+            if (tmpTileHeight > this.tileHeightMax) {
+                this.tileHeight = this.tileHeightMax;
             }
-            this.manipulator.ordonator.set(3, this.answersManipulator.first);
-            this.answersManipulator.translator.move(0, this.height / 2 + (this.tileHeight) / 2);
+            else if (tmpTileHeight > this.tileHeight) {
+                this.tileHeight = tmpTileHeight;
+            }
+        });
+        this.manipulator.ordonator.set(3, this.answersManipulator.first);
+        this.answersManipulator.translator.move(0, this.height / 2 + (this.tileHeight) / 2);
 
-            var posx = 0;
-            var posy = 0;
-            var count = 0;
-            for (var i = 0; i < this.tabAnswer.length; i++) {
-                if (i !== 0) {
-                    posx += (this.tileWidth + MARGIN);
+        var posx = 0;
+        var posy = 0;
+        var count = 0;
+        for (var i = 0; i < this.tabAnswer.length; i++) {
+            if (i !== 0) {
+                posx += (this.tileWidth + MARGIN);
+            }
+            if (count > (this.columns - 1)) {
+                count = 0;
+                posy += (this.tileHeight + MARGIN);
+                posx = 0;
+            }
+
+            this.answersManipulator.last.children.indexOf(this.tabAnswer[i].manipulator.first) === -1 && this.answersManipulator.last.add(this.tabAnswer[i].manipulator.first);
+            this.tabAnswer[i].display(-this.tileWidth / 2, -this.tileHeight / 2, this.tileWidth, this.tileHeight);
+            this.tabAnswer[i].manipulator.translator.move(posx - (this.columns - 1) * this.tileWidth / 2 - (this.columns - 1) * MARGIN / 2, posy + MARGIN);
+
+            if (this.parentQuizz.previewMode) {
+                if (this.tabAnswer[i].correct) {
+                    this.tabAnswer[i].bordure.color(this.tabAnswer[i].bordure.component.fillColor || myColors.white, 5, myColors.primaryGreen);
                 }
-                if (count > (this.rows - 1)) {
-                    count = 0;
-                    posy += (this.tileHeight + MARGIN);
-                    posx = 0;
-                }
-
-                this.answersManipulator.last.children.indexOf(this.tabAnswer[i].manipulator.first) === -1 && this.answersManipulator.last.add(this.tabAnswer[i].manipulator.first);
-                this.tabAnswer[i].display(-this.tileWidth / 2, -this.tileHeight / 2, this.tileWidth, this.tileHeight);
-                this.tabAnswer[i].manipulator.translator.move(posx - (this.rows - 1) * this.tileWidth / 2 - (this.rows - 1) * MARGIN / 2, posy + MARGIN);
-
-                if (this.parentQuizz.previewMode) {
-                    if (this.tabAnswer[i].correct) {
-                        this.tabAnswer[i].bordure.color(this.tabAnswer[i].bordure.component.fillColor || myColors.white, 5, myColors.primaryGreen);
+            } else {
+                ((element)=> {
+                    if (element.bordure) {
+                        svg.addEvent(element.bordure, "click", ()=> {
+                            this.elementClicked(element);
+                        });
                     }
-                } else {
-                    ((element)=> {
-                        if (element.bordure) {
-                            svg.addEvent(element.bordure, "click", ()=> {
-                                this.elementClicked(element);
-                            });
-                        }
-                        if (element.content) {
-                            svg.addEvent(element.content, "click", ()=> {
-                                this.elementClicked(element);
-                            });
-                        }
-                        if (element.image) {
-                            svg.addEvent(element.image, "click", ()=> {
-                                this.elementClicked(element);
-                            });
-                        }
-                    })(this.tabAnswer[i]);
-                }
-                count++;
+                    if (element.content) {
+                        svg.addEvent(element.content, "click", ()=> {
+                            this.elementClicked(element);
+                        });
+                    }
+                    if (element.image) {
+                        svg.addEvent(element.image, "click", ()=> {
+                            this.elementClicked(element);
+                        });
+                    }
+                })(this.tabAnswer[i]);
             }
-            if (playerMode && this.parentQuizz.previewMode) {
-                if (this.parentQuizz.questionsAnswered[this.questionNum-1].selectedAnswers.length > 0){
-                    this.parentQuizz.questionsAnswered[this.questionNum-1].selectedAnswers.forEach(selectedAnswer=> {
+            count++;
+        }
+        if (playerMode && this.parentQuizz.previewMode) {
+
+            (displayClickedAnswers =  () => {
+                if (this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.length > 0) {
+                    this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.forEach(selectedAnswer=> {
                         this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
                     });
                 } else {
                     this.tabAnswer.forEach(answer => {
-                        if (answer.correct){
-                            answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
+                        if (answer.correct) {
+                            answer.bordure.color(myColors.white, 5, myColors.primaryGreen)
                         }
                     });
                 }
-            }
+            })();
 
-        }
-        if (playerMode && this.parentQuizz.previewMode) {
             w = 0.5 * drawing.width;
             h = Math.min(this.tileHeight, 50);
             var buttonX = -w / 2;
@@ -2072,11 +2072,11 @@ exports.GUI = function (globalVariables) {
             }
             return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
         };
-        let panelWidth = (w - 2*MARGIN) * 0.7,
-            panelHeight = h - 2*MARGIN;
-        const imageW = (w - 2*MARGIN)*0.3 - MARGIN,
-            imageX = (-w + imageW)/2 + MARGIN;
-        this.panelManipulator.translator.move((w - panelWidth)/2 - MARGIN, 0);
+        let panelWidth = (w - 2 * MARGIN) * 0.7,
+            panelHeight = h - 2 * MARGIN;
+        const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
+            imageX = (-w + imageW) / 2 + MARGIN;
+        this.panelManipulator.translator.move((w - panelWidth) / 2 - MARGIN, 0);
         if (this.image) {
             this.imageLayer = 3;
             const imageSize = Math.min(imageW, panelHeight);
@@ -2084,7 +2084,7 @@ exports.GUI = function (globalVariables) {
                 .draw(imageX, 0, imageSize, imageSize);
             this.answer.filled = true;
         } else if (this.editable) {
-            const textW = (w - 2*MARGIN)*0.3 - MARGIN;
+            const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
             autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
                 .position(imageX, 0).color(myColors.grey)
                 ._acceptDrop = this.editable;
@@ -2113,7 +2113,7 @@ exports.GUI = function (globalVariables) {
 
         const clickEdition = () => {
             let contentArea = {};
-            contentArea.globalPointCenter = this.panel.border.globalPoint(-panelWidth/2, -panelHeight /2);
+            contentArea.globalPointCenter = this.panel.border.globalPoint(-panelWidth / 2, -panelHeight / 2);
             drawing.notInTextArea = false;
             contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y, panelWidth - MARGIN, panelHeight - MARGIN)
                 .color(null, 0, myColors.black).font("Arial", 20)
@@ -2274,7 +2274,7 @@ exports.GUI = function (globalVariables) {
             this.displayCurrentQuestion();
         }
         else {
-            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows,  this.getQuestionsWithBadAnswers(), "upToDown", this);
+            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.getQuestionsWithBadAnswers(), "upToDown", this);
             this.displayResult();
         }
     }
@@ -2309,7 +2309,7 @@ exports.GUI = function (globalVariables) {
         svg.addEvent(expButton.content, "click", displayExplanation);
 
         this.puzzle.fillVisibleElementsArray("upToDown");
-        this.answerHeight = (drawing.height - this.headerHeight - buttonExpHeight)*this.answerPercentage - MARGIN;
+        this.answerHeight = (drawing.height - this.headerHeight - buttonExpHeight) * this.answerPercentage - MARGIN;
         this.puzzle.display(0, this.questionHeight / 2 + this.answerHeight / 2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
         this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
     }

@@ -138,7 +138,7 @@ exports.Domain = function (globalVariables) {
             if (!question) {
                 this.label = "";
                 this.imageSrc = "";
-                this.rows = 4;
+                this.columns = 4;
                 this.rightAnswers = [];
                 this.tabAnswer = [new Answer(null, this), new Answer(null, this)];
                 this.multipleChoice = false;
@@ -150,7 +150,7 @@ exports.Domain = function (globalVariables) {
             } else {
                 this.label = question.label;
                 this.imageSrc = question.imageSrc;
-                this.rows = question.rows;
+                this.columns = question.columns ? question.columns : 4;
                 this.rightAnswers = [];
                 this.multipleChoice = question.multipleChoice;
                 this.selectedAnswers = question.selectedAnswers || [];
@@ -181,8 +181,8 @@ exports.Domain = function (globalVariables) {
                 });
             }
 
-            this.lines = Math.floor(this.tabAnswer.length / this.rows); //+ 1;
-            if (this.tabAnswer.length % this.rows !== 0) {
+            this.lines = Math.floor(this.tabAnswer.length / this.columns); //+ 1;
+            if (this.tabAnswer.length % this.columns !== 0) {
                 this.lines += 1;
             }
             this.bordure = null;
@@ -814,29 +814,31 @@ exports.Domain = function (globalVariables) {
                         }
                         theGame.currentQuestionIndex = game.index;
                         theGame.questionsAnswered = [];
-                        game.questionsAnswered.forEach(wrongAnswer => {
-                            theGame.questionsAnswered.push({
-                                index: wrongAnswer.index - 1,
-                                question: theGame.tabQuestions[wrongAnswer.index - 1],
-                                selectedAnswers: wrongAnswer.selectedAnswers
+                        if(game.questionsAnswered) {
+                            game.questionsAnswered.forEach(wrongAnswer => {
+                                theGame.questionsAnswered.push({
+                                    index: wrongAnswer.index - 1,
+                                    question: theGame.tabQuestions[wrongAnswer.index - 1],
+                                    selectedAnswers: wrongAnswer.selectedAnswers
+                                });
                             });
-                        });
-                        theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
-                        theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
-                        });
-                    }
-                    this.levelsTab.forEach(level => {
-                        level.gamesTab.forEach(game => {
-                            if (!this.isGameAvailable(game)) {
-                                game.status = "notAvailable";
-                            }
-                        });
+                            theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
+                            theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                        }
                     });
-
-                    displayFunction.call(this);
+                }
+                this.levelsTab.forEach(level => {
+                    level.gamesTab.forEach(game => {
+                        if (!this.isGameAvailable(game)) {
+                            game.status = "notAvailable";
+                        }
+                    });
                 });
-            }
+
+                displayFunction.call(this);
+            });
         }
+    }
 
     class Library {
         constructor() {
