@@ -697,7 +697,7 @@ describe('formationsManager', function () {
 
 
             let deconnection = retrieve(root, '[deconnection]');
-            // deconnection.listeners['click'](); // Pb document. ...
+            deconnection.listeners['click']();
 
             done();
 
@@ -764,10 +764,8 @@ describe('connection', function(){
             connectionContentArea.listeners['blur']();
 
             runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
-            // runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}}); // PB DOCUMENT DANS FONCTION
+            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
 
-            connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
             done();
         });
     });

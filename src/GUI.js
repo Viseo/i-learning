@@ -4,7 +4,7 @@ exports.GUI = function (globalVariables) {
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quizz, QuizzManager,
         InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server,
-        mainManipulator;
+        mainManipulator, main, dbListener;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -15,6 +15,8 @@ exports.GUI = function (globalVariables) {
         drawings = globalVariables.drawings;
         drawing = globalVariables.drawing;
         imageController = globalVariables.imageController;
+        main = globalVariables.main;
+        dbListener = globalVariables.dbListener;
 
         playerMode = globalVariables.playerMode;
         header = globalVariables.header;
@@ -1423,7 +1425,8 @@ exports.GUI = function (globalVariables) {
             userManip.translator.move(this.width, this.height * 0.75);
 
             const deconnexionHandler = () => {
-                document.cookie = "token=; path=/; max-age=0;";
+                // document.cookie = "token=; path=/; max-age=0;";
+                svg.setCookie("token=; path=/; max-age=0;");
                 drawing.username = null;
                 mainManipulator.flush();
                 main(svg, runtime, dbListener);
@@ -3104,7 +3107,8 @@ exports.GUI = function (globalVariables) {
                 nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                document.activeElement && document.activeElement.blur();
+                // document.activeElement && document.activeElement.blur();
+                svg.activeElement() && svg.activeElement().blur();
                 this.connexionButtonHandler();
             }
         });
