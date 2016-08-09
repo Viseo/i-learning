@@ -654,9 +654,8 @@ describe('formationsManager', function () {
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
 
-            // let addImageButton = retrieve(root, '[addImageButton]');
-            // addImageButton.listeners['click']();
-            // let fileExplorer = retrieve(root, '[addImageButton]');
+            let addImageButton = retrieve(root, '[addImageButton]');
+            addImageButton.listeners['click']();
 
             let saveButtonQuiz = retrieve(root, '[saveButtonQuiz]');
             saveButtonQuiz.listeners['click']();

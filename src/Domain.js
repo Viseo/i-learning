@@ -16,28 +16,6 @@ exports.Domain = function (globalVariables) {
         Server = globalVariables.util.Server,
         playerMode = globalVariables.playerMode;
 
-    // const ImageRuntime = {
-    //     images: {},
-    //     count: 0,
-    //
-    //     getImage: function (imgUrl, onloadHandler) {
-    //         this.count++;
-    //         const image = {
-    //             src: imgUrl,
-    //             onload: onloadHandler,
-    //             id: "i" + this.count
-    //         };
-    //         this.images[image.id] = image;
-    //         return image;
-    //     },
-    //
-    //     imageLoaded: function (id, w, h) {
-    //         this.images[id].width = w;
-    //         this.images[id].height = h;
-    //         this.images[id].onload();
-    //     }
-    // };
-
     imageController = ImageController(globalVariables.ImageRuntime);
     globalVariables.imageController = imageController;
 
@@ -1019,7 +997,6 @@ exports.Domain = function (globalVariables) {
             this.quizzNameDefault = "Ecrire ici le nom du quiz";
             this.tabQuestions = [defaultQuestion];
             this.parentFormation = formation;
-            //this.questionPuzzle = {};
             this.quizzNameValidInput = true;
             if (!quizz) {
                 var initialQuizzObject = {
@@ -1036,7 +1013,6 @@ exports.Domain = function (globalVariables) {
                 this.loadQuizz(quizz);
             }
             this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            //this.header = new Header();
             this.library = new ImagesLibrary();
             this.quizz.tabQuestions[0].selected = true;
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
@@ -1046,8 +1022,6 @@ exports.Domain = function (globalVariables) {
             this.questionsPuzzleManipulator.addOrdonator(1);
             this.quizzInfoManipulator = new Manipulator(this);
             this.quizzInfoManipulator.addOrdonator(6);
-            //this.questionCreatorManipulator = this.questionCreator.manipulator;
-            //this.questionCreatorManipulator.addOrdonator(2);
             this.previewButtonManipulator = new Manipulator(this);
             this.previewButtonManipulator.addOrdonator(2);
             this.saveQuizButtonManipulator = new Manipulator(this);

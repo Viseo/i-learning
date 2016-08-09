@@ -481,10 +481,10 @@ exports.GUI = function (globalVariables) {
 
     function imagesLibraryDisplay(x, y, w, h, callback = () => {
     }) {
-        if (typeof x !== "undefined")(this.x = x);
-        if (typeof y !== "undefined")(this.y = y);
-        if (typeof w !== "undefined")(this.w = w);
-        if (typeof h !== "undefined")(this.h = h);
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
 
         let display = (x, y, w, h) => {
             libraryDisplay.call(this, x, y, w, h, 3 / 4, 0.45 * h);
@@ -597,15 +597,18 @@ exports.GUI = function (globalVariables) {
                             height: this.w / 5
                         };
                         this.fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                        this.fileExplorer.mark('fileExlorerSvg');
                         this.fileExplorer.type("file");
                         svg.addEvent(this.fileExplorer, "change", onChangeFileExplorerHandler);
                         svg.runtime.attr(this.fileExplorer.component, "accept", "image/*");
                         svg.runtime.attr(this.fileExplorer.component, "id", "fileExplorer");
                         svg.runtime.attr(this.fileExplorer.component, "hidden", "true");
                         drawings.screen.add(this.fileExplorer);
+                        this.fileExplorer.fileclick = function(){
+                            svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+                        }
                     }
-                    svg.runtime.anchor("fileExplorer").click();
+                    // svg.runtime.anchor("fileExplorer").click();
+                    this.fileExplorer.fileclick();
                 };
 
                 let onChangeFileExplorerHandler = () => {
@@ -665,18 +668,10 @@ exports.GUI = function (globalVariables) {
     }
 
     function addEmptyElementDisplay(x, y, w, h) {
-        if (typeof x !== 'undefined') {
-            this.x = x;
-        }
-        if (typeof y !== 'undefined') {
-            this.y = y;
-        }
-        if (typeof w !== 'undefined') {
-            w && (this.width = w);
-        }
-        if (typeof h !== 'undefined') {
-            h && (this.height = h);
-        }
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
 
         this.obj = displayText(this.label, this.width, this.height, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
         this.plus = drawPlus(0, 0, this.height * 0.3, this.height * 0.3);
@@ -1458,18 +1453,10 @@ exports.GUI = function (globalVariables) {
     }
 
     function questionDisplay(x, y, w, h) {
-        if (typeof x !== 'undefined') {
-            this.x = x;
-        }
-        if (typeof y !== 'undefined') {
-            this.y = y;
-        }
-        if (typeof w !== 'undefined') {
-            w && (this.width = w);
-        }
-        if (typeof h !== 'undefined') {
-            h && (this.height = h);
-        }
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
         this.manipulator.flush();
 
         // Question avec Texte ET image
@@ -1581,19 +1568,10 @@ exports.GUI = function (globalVariables) {
 
     function questionDisplayAnswers(x, y, w, h) {
         if (this.rows !== 0) {
-            if (typeof x !== 'undefined') {
-                //(this.initialAnswersPosX=x);
-            }
-            if (typeof w !== 'undefined') {
-                ( this.tileWidth = (w - MARGIN * (this.rows - 1)) / this.rows);
-            }
+            this.tileWidth = (w - MARGIN * (this.rows - 1)) / this.rows;
             this.tileHeight = 0;
             h = h - 50;
-
-            if (typeof h !== 'undefined') {
-                (this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN);
-            }
-
+            this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
             this.tileHeightMin = 2.50 * this.fontSize;
             var tmpTileHeight;
 
@@ -1920,8 +1898,6 @@ exports.GUI = function (globalVariables) {
             removeErrorMessage();
             this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
             var anchor = 'middle';
-            //var quizzInfoHeightRatio = 0.05;
-            //var questionsPuzzleHeightRatio = 0.25;
             this.errorMessage = new svg.Text(REGEX_ERROR);
             this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.ordonator.set(0, this.errorMessage);

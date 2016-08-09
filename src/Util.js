@@ -372,10 +372,6 @@ exports.Util = function (globalVariables) {
          * @returns {{content, cadre}} : SVG items for text & cadre
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
-            if ((w <= 0) || (h <= 0)) {
-                w = 1;
-                h = 1;
-            }
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.ordonator.set(layer1, cadre);
@@ -1000,21 +996,12 @@ exports.Util = function (globalVariables) {
         }
 
         setHandler(handler) {
-            if (this.miniature.cadre) {
-                svg.addEvent(this.miniature.cadre, "click", () => {
-                    handler(this.formation);
-                });
-            }
-            if (this.miniature.content) {
-                svg.addEvent(this.miniature.content, "click", () => {
-                    handler(this.formation);
-                });
-            }
-            if (this.miniature.image) {
-                svg.addEvent(this.miniature.image, "click", () => {
-                    handler(this.formation);
-                });
-            }
+            svg.addEvent(this.miniature.cadre, "click", () => {
+                handler(this.formation);
+            });
+            svg.addEvent(this.miniature.content, "click", () => {
+                handler(this.formation);
+            });
         }
     }
 
