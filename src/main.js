@@ -51,7 +51,7 @@ exports.main = function (svg, runtime, dbListener, ImageRuntime) {
         drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
         const
             formationsManager = globalVariables.formationsManager,
-            formation = formationsManager.formationDisplayed,
+            formation = formationsManager && formationsManager.formationDisplayed,
             quizzManager = formation && formation.quizzManager;
         let quizz;
         switch (drawing.currentPageDisplayed) {

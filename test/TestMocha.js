@@ -276,6 +276,8 @@ describe('formationsManager', function () {
             gameRedCross.listeners['click']();
             game3 = retrieve(root, "[level1quizz3]");
             assert(!game3);
+            arrow03 = retrieve(root, '[quizz0quizz3]');
+            assert(!arrow03);
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
@@ -663,13 +665,18 @@ describe('formationsManager', function () {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
             runtime.advance();
+            runtime.listeners['resize']({w:1500, h:1500});
 
             let returnButtonPreview = retrieve(root, '[returnButtonPreview]');
             returnButtonPreview.listeners['click']();
             runtime.advance();
 
+            runtime.listeners['resize']({w:1500, h:1500});
+
             let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
             returnButtonToFormation.listeners['click']();
+
+            runtime.listeners['resize']({w:1500, h:1500});
 
             let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
             returnButtonToFormationsManager.listeners['click']();
@@ -707,6 +714,8 @@ describe('connection', function(){
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
+
+            runtime.listeners['resize']({w:1500, h:1500});
 
             let mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
@@ -771,6 +780,8 @@ describe('inscription', function(){
 
             let  inscriptionLink = retrieve(root, '[inscriptionLink]');
             inscriptionLink.listeners['click']();
+
+            runtime.listeners['resize']({w:1500, h:1500});
 
             let lastNameField = retrieve(root, '[lastNameField]');
             lastNameField.listeners['click']();
@@ -916,6 +927,8 @@ describe('Player mode', function () {
             assert.equal(firstAnswer.text, "Zeus");
             firstAnswer.listeners["click"]();
 
+            runtime.listeners['resize']({w:1500, h:1500});
+
             firstAnswer = retrieve(root, "[answer0]");
             assert.equal(firstAnswer.text, "Nyx, la Nuit");
             firstAnswer.listeners["click"]();
@@ -959,6 +972,8 @@ describe('Player mode', function () {
             fourthAnswer = retrieve(root, "[answer3]");
             assert.equal(fourthAnswer.text, "Il les abandonna dans la nature.");
             fourthAnswer.listeners["click"]();
+
+            runtime.listeners['resize']({w:1500, h:1500});
 
             let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
             returnButtonToFormation.listeners['click']();
