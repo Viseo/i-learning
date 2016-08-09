@@ -104,7 +104,7 @@ exports.Util = function (globalVariables) {
             this.drawing.add(this.glass);
 
             const onmousedownHandler = event => {
-                !runtime && document.activeElement.blur();
+                svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
                 console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");

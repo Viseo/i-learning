@@ -1,6 +1,6 @@
 exports.Domain = function (globalVariables) {
 
-    let iRuntime, imageController;
+    let imageController;
 
     let
         runtime = globalVariables.runtime,
@@ -1175,8 +1175,8 @@ exports.Domain = function (globalVariables) {
             if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
-                !runtime && (myObj.textarea.border = "none");
-                !runtime && (myObj.textarea.outline = "none");
+                myObj.textarea.border = "none";
+                myObj.textarea.outline = "none";
                 this.quizzNameValidInput = true;
             } else {
                 myObj.display();

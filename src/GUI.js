@@ -146,7 +146,7 @@ exports.GUI = function (globalVariables) {
 
             let dblclickEditionAnswer = () => {
                 let contentarea = {};
-                contentarea.height = svg.runtime.boundingRect(this.obj.content.component).height;
+                contentarea.height = this.obj.content.boundingRect().height;
                 contentarea.globalPointCenter = this.obj.content.globalPoint(-(w) / 2, -(contentarea.height) / 2);
                 let contentareaStyle = {
                     toppx: contentarea.globalPointCenter.y - (contentarea.height / 2) * 2 / 3,
@@ -162,7 +162,7 @@ exports.GUI = function (globalVariables) {
                     .width = w;
                 contentarea.globalPointCenter = this.obj.content.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
                 drawings.screen.add(contentarea);
-                contentarea.height = svg.runtime.boundingRect(this.obj.content.component).height;
+                contentarea.height = this.obj.content.boundingRect().height;
                 this.manipulator.ordonator.unset(1);
                 contentarea.focus();
 
@@ -297,7 +297,7 @@ exports.GUI = function (globalVariables) {
         this.libraryManipulator.ordonator.set(2, this.panel.component);
         this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
         drawing.notInTextArea = true;
-        svg.runtime.addGlobalEvent("keydown", (event) => {
+        svg.addGlobalEvent("keydown", (event) => {
             if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -777,7 +777,7 @@ exports.GUI = function (globalVariables) {
         };
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
         this.returnButton.display(0, -MARGIN/2, 20, 20);
-        this.returnButton.height = svg.runtime.boundingRect(this.returnButton.returnButton.component).height;
+        this.returnButton.height = this.returnButton.returnButton.boundingRect().height;
         this.returnButton.returnButton.mark('returnButtonToFormationsManager');
         this.returnButton.setHandler(returnHandler);
 
@@ -791,11 +791,12 @@ exports.GUI = function (globalVariables) {
                 this.selectedGame = null;
             };
             this.saveFormation(displayQuizzManager);
-            if (!runtime && window.getSelection) {
-                window.getSelection().removeAllRanges();
-            } else if (!runtime && document.selection) {
-                document.selection.empty();
-            }
+            svg.removeSelection();
+            // if (window.getSelection) {
+            //     window.getSelection().removeAllRanges();
+            // } else if (document.selection) {
+            //     document.selection.empty();
+            // }
         };
 
         let clickQuizHandler = (event, target) => {
@@ -806,11 +807,7 @@ exports.GUI = function (globalVariables) {
             this.quizzDisplayed.puzzleLines = 3;
             this.quizzDisplayed.puzzleRows = 3;
             this.quizzDisplayed.run(0, 0, drawing.width, drawing.height);
-            if (!runtime && window.getSelection) {
-                window.getSelection().removeAllRanges();
-            } else if (!runtime && document.selection) {
-                document.selection.empty();
-            }
+            svg.removeSelection();
         };
 
         let resizePanel = () => {
@@ -843,7 +840,7 @@ exports.GUI = function (globalVariables) {
             level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
 
             level.manipulator.ordonator.set(2, level.obj.line);
-            level.obj.text.position(svg.runtime.boundingRect(level.obj.text.component).width, svg.runtime.boundingRect(level.obj.text.component).height);
+            level.obj.text.position(level.obj.text.boundingRect().width, level.obj.text.boundingRect().height);
             level.obj.text._acceptDrop = true;
             level.w = w;
             level.h = h;
@@ -866,7 +863,7 @@ exports.GUI = function (globalVariables) {
                 return this.target && this.target.processKeys && this.target.processKeys(event.keyCode);
             };
             drawing.notInTextArea = true;
-            svg.runtime.addGlobalEvent("keydown", (event) => {
+            svg.addGlobalEvent("keydown", (event) => {
                 if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                     event.preventDefault();
                 }
@@ -1032,10 +1029,10 @@ exports.GUI = function (globalVariables) {
 
             this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height).font("Arial", 20).anchor("start");
             this.manipulator.ordonator.set(0, this.titleSvg);
-            this.formationWidth = svg.runtime.boundingRect(this.titleSvg.component).width;
+            this.formationWidth = this.titleSvg.boundingRect().width;
 
             let dblclickEditionFormationLabel = () => {
-                let bounds = svg.runtime.boundingRect(this.formationLabel.cadre.component);
+                let bounds = this.formationLabel.cadre.boundingRect();
                 this.formationInfoManipulator.ordonator.unset(1);
                 let globalPointCenter = this.formationLabel.cadre.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
                 var contentareaStyle = {
@@ -1110,9 +1107,9 @@ exports.GUI = function (globalVariables) {
                 this.formationLabel = {};
                 this.formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 this.formationLabel.content.mark('formationLabelContent');
-                this.labelHeight = svg.runtime.boundingRect(this.formationLabel.content.component).height;
+                this.labelHeight = this.formationLabel.content.boundingRect().height;
 
-                this.formationTitleWidth = svg.runtime.boundingRect(this.titleSvg.component).width;
+                this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 this.formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
                 this.validLabelInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
                 this.formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
@@ -1216,7 +1213,7 @@ exports.GUI = function (globalVariables) {
             let manip = this.toggleFormationsManipulator,
                 pos = -MARGIN,
                 toggleFormationsText = displayText('Formations en cours', drawing.width * 0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
-                textWidth = svg.runtime.boundingRect(toggleFormationsText.content.component).width;
+                textWidth = toggleFormationsText.content.boundingRect().width;
             this.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
             pos -= textWidth / 2;
             toggleFormationsText.content.position(pos, 6);
@@ -1264,7 +1261,7 @@ exports.GUI = function (globalVariables) {
             if (this.rows === 0) this.rows = 1;
 
             drawing.notInTextArea = true;
-            svg.runtime.addGlobalEvent("keydown", (event) => {
+            svg.addGlobalEvent("keydown", (event) => {
                 if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                     event.preventDefault();
                 }
@@ -1312,9 +1309,9 @@ exports.GUI = function (globalVariables) {
             this.headerManipulator.translator.move(0, 0);
             this.addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
             this.addFormationButton.cadre.mark("addFormationCadre");
-            var addFormationButtonTextBr = svg.runtime.boundingRect(this.addFormationButton.content.component);
+            var addFormationButtonTextBr = this.addFormationButton.content.boundingRect();
             this.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
-            this.addFormationButton.content.position(this.plusDim + svg.runtime.boundingRect(this.addFormationButton.content.component).width / 2, -addFormationButtonTextBr.height / 8);
+            this.addFormationButton.content.position(this.plusDim + this.addFormationButton.content.boundingRect().width / 2, -addFormationButtonTextBr.height / 8);
             this.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height / 2, this.addButtonHeight, this.addButtonHeight);
             this.addButtonManipulator.ordonator.set(2, this.addFormationObject.circle);
             this.addButtonManipulator.ordonator.set(3, this.addFormationObject.plus);
@@ -1340,8 +1337,8 @@ exports.GUI = function (globalVariables) {
             this.toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
             this.toPublish.position(25, this.toPublish.y);
             //this.legendWidth = drawing.width * 0.3;
-            this.legendItemLength = svg.runtime.boundingRect(this.toPublish.component).width + svg.runtime.boundingRect(this.exclamationLegend.circle.component).width + MARGIN;
-            this.checkManipulator.first.move(drawing.width - this.legendItemLength - svg.runtime.boundingRect(this.published.component).width - svg.runtime.boundingRect(this.checkLegend.square.component).width - 2 * MARGIN, 30);
+            this.legendItemLength = this.toPublish.boundingRect().width + this.exclamationLegend.circle.boundingRect().width + MARGIN;
+            this.checkManipulator.first.move(drawing.width - this.legendItemLength - this.published.boundingRect().width - this.checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
             this.exclamationManipulator.first.move(drawing.width - this.legendItemLength, 30);
 
             this.formations.sort((a, b) => {
@@ -1928,7 +1925,7 @@ exports.GUI = function (globalVariables) {
             this.errorMessage = new svg.Text(REGEX_ERROR);
             this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.ordonator.set(0, this.errorMessage);
-            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + this.questionBlock.title.cadre.height + svg.runtime.boundingRect(this.errorMessage.component).height + MARGIN)
+            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + this.questionBlock.title.cadre.height + this.errorMessage.boundingRect().height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea && textarea.focus();
             this.linkedQuestion.validLabelInput = false;
@@ -1966,9 +1963,9 @@ exports.GUI = function (globalVariables) {
         };
 
         var dblclickEditionQuestionBlock = () => {
-            var globalPointCenter = this.questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? svg.runtime.boundingRect(this.questionBlock.title.content.component).height : ((this.h * .25) / 2)) / 2);
+            var globalPointCenter = this.questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? this.questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
             var contentareaStyle = {
-                height: (this.linkedQuestion.image) ? svg.runtime.boundingRect(this.questionBlock.title.content.component).height : ((this.h * .25) / 2),
+                height: (this.linkedQuestion.image) ? this.questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
                 toppx: globalPointCenter.y,
                 leftpx: (globalPointCenter.x + 1 / 12 * this.w),
                 width: (this.w * 5 / 6)
@@ -2008,8 +2005,8 @@ exports.GUI = function (globalVariables) {
                     }
                 });
             };
-            svg.runtime.addEvent(textarea.component, "blur", onblur);
-            svg.runtime.addEvent(textarea.component, "input", oninput);
+            svg.addEvent(textarea, "blur", onblur);
+            svg.addEvent(textarea, "input", oninput);
         };
 
         (typeof x !== "undefined") && (this.x = x);
@@ -2072,7 +2069,7 @@ exports.GUI = function (globalVariables) {
         this.cross = drawGreyCross();
 
         drawing.notInTextArea = true;
-        runtime.addGlobalEvent("keydown", (event) => {
+        svg.addGlobalEvent("keydown", (event) => {
             if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                 event.preventDefault();
             }
@@ -2122,9 +2119,9 @@ exports.GUI = function (globalVariables) {
         this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         this.textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
         this.text = autoAdjustText(this.textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
-        this.text.position(panelWidth / 2, svg.runtime.boundingRect(this.text.component).height)
+        this.text.position(panelWidth / 2, this.text.boundingRect().height)
             .mark('textExplanation');
-        this.panel.resizeContent(this.panel.width, svg.runtime.boundingRect(this.text.component).height + MARGIN);
+        this.panel.resizeContent(this.panel.width, this.text.boundingRect().height + MARGIN);
 
         const clickEdition = () => {
             let contentArea = {};
@@ -2522,7 +2519,7 @@ exports.GUI = function (globalVariables) {
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
             this.quizzLabel.content = autoAdjustText(text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
             this.quizzLabel.content.mark("quizzLabelContent");
-            this.quizzNameHeight = svg.runtime.boundingRect(this.quizzLabel.content.component).height;
+            this.quizzNameHeight = this.quizzLabel.content.boundingRect().height;
 
             this.quizzLabel.cadre = new svg.Rect(width, 0.5 * h);
             this.quizzLabel.cadre.mark("quizzLabelCadre");
@@ -2536,7 +2533,7 @@ exports.GUI = function (globalVariables) {
         };
 
         var dblclickEditionQuizz = ()=> {
-            let bounds = svg.runtime.boundingRect(this.quizzLabel.content.component);
+            let bounds = this.quizzLabel.content.boundingRect();
             let globalPointCenter = this.quizzLabel.content.globalPoint(0, -bounds.height + 3);
             this.quizzInfoManipulator.ordonator.unset(1);
             let contentareaStyle = {
@@ -2570,7 +2567,7 @@ exports.GUI = function (globalVariables) {
                 this.errorMessage = new svg.Text(REGEX_ERROR);
                 this.errorMessage.mark("quizErrorMessage");
                 this.quizzInfoManipulator.ordonator.set(5, this.errorMessage);
-                this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, bounds.height + 3 + this.quizzLabel.cadre.height / 2 + svg.runtime.boundingRect(this.errorMessage.component).height / 2)
+                this.errorMessage.position(this.quizzLabel.cadre.width + MARGIN, bounds.height + 3 + this.quizzLabel.cadre.height / 2 + this.errorMessage.boundingRect().height / 2)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
                 textarea.focus();
                 //this.quizzNameValidInput = false;
@@ -2789,12 +2786,12 @@ exports.GUI = function (globalVariables) {
             manipulator.translator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
             var fieldTitle = new svg.Text(this[field].title).position(0, 0).font("Arial", 20).anchor("end");
             manipulator.ordonator.set(2, fieldTitle);
-            this.h = 1.5 * svg.runtime.boundingRect(fieldTitle.component).height;
+            this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
             this[field].cadre = displayText.cadre;
             this[field].cadre.mark(field);
-            var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
+            var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(x, 0);
             this[field].cadre.position(x, y);
             var clickEdition = clickEditionField(field, manipulator);
@@ -2975,7 +2972,7 @@ exports.GUI = function (globalVariables) {
                 clickEditionField(this.tabForm[index].field, this.tabForm[index].cadre.parent.parentManip)();
             }
         };
-        svg.runtime.addGlobalEvent("keydown", (event)=> {
+        svg.addGlobalEvent("keydown", (event)=> {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
                 nextField(event.shiftKey);
@@ -3051,12 +3048,12 @@ exports.GUI = function (globalVariables) {
             fieldTitle.font("Arial", 20).anchor("end");
             manipulator.ordonator.set(2, fieldTitle);
             manipulator.first.move(-drawing.width / 10, this[field].line * drawing.height / 10);
-            this.h = 1.5 * svg.runtime.boundingRect(fieldTitle.component).height;
+            this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
             this[field].cadre = displayText.cadre;
             this[field].cadre.mark(field);
-            var y = -svg.runtime.boundingRect(fieldTitle.component).height / 4;
+            var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(x, 0);
             this[field].cadre.position(x, y);
             var clickEdition = clickEditionField(field, manipulator);
@@ -3101,7 +3098,7 @@ exports.GUI = function (globalVariables) {
             }
         };
 
-        svg.runtime.addGlobalEvent("keydown", (event)=> {
+        svg.addGlobalEvent("keydown", (event)=> {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
                 nextField(event.shiftKey);

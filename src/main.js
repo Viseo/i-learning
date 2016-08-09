@@ -140,7 +140,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     //     //window.onresize = resizePaper;
     // }, 200);
 
-    svg.runtime.addGlobalEvent("resize", resizePaper);
+    svg.addGlobalEvent("resize", resizePaper);
 
 
 };
