@@ -42,7 +42,7 @@ const saveProgress = (db, body, user) => {
     return new Promise((resolve, reject) => {
         let newGame = {
             game: body.game,
-            tabWrongAnswers: body.tabWrongAnswers,
+            questionsAnswered: body.questionsAnswered,
             index: body.indexQuestion,
         };
         let newFormation = {

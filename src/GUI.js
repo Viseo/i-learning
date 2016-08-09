@@ -1496,11 +1496,8 @@ exports.GUI = function (globalVariables) {
             if (this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
                 let event = () => {
                     let wrongQuiz = Object.assign({}, this.parentQuizz);
-                    let questionsWithBadAnswersTab = [];
-                    this.parentQuizz.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
-                    wrongQuiz.tabQuestions = questionsWithBadAnswersTab;
                     this.wrongQuestionsQuiz = new Quizz(wrongQuiz, true);
-                    this.wrongQuestionsQuiz.currentQuestionIndex = questionsWithBadAnswersTab.indexOf(this);
+                    this.wrongQuestionsQuiz.currentQuestionIndex = this.questionNum-1;
                     this.wrongQuestionsQuiz.parentFormation.quizzDisplayed = this.wrongQuestionsQuiz;
                     this.wrongQuestionsQuiz.run(1, 1, drawing.width, drawing.height);
                 };
@@ -1534,12 +1531,6 @@ exports.GUI = function (globalVariables) {
                 this.parentQuizz.score++;
                 console.log("Bonne réponse!\n");
             } else {
-                let selectedAnswerIndexTab = [this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(sourceElement)];
-                this.parentQuizz.questionsWithBadAnswers.push({
-                    index: this.parentQuizz.currentQuestionIndex,
-                    question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
-                    selectedAnswers: selectedAnswerIndexTab
-                });
                 var reponseD = "";
                 this.rightAnswers.forEach(function (e) {
                     if (e.label) {
@@ -1552,7 +1543,12 @@ exports.GUI = function (globalVariables) {
                 });
                 console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
             }
-
+            let selectedAnswerIndexTab = [this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(sourceElement)];
+            this.parentQuizz.questionsAnswered.push({
+                index: this.parentQuizz.currentQuestionIndex,
+                question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
+                selectedAnswers: selectedAnswerIndexTab
+            });
             this.parentQuizz.nextQuestion();
         } else {// question à choix multiples
             if (sourceElement.selected === false) {
@@ -1636,25 +1632,18 @@ exports.GUI = function (globalVariables) {
                 }
                 count++;
             }
-            if (this.parentQuizz.previewMode) {
-                let index;
-                for (let j = 0; j < this.parentQuizz.questionsWithBadAnswers.length; j++) {
-                    (this.parentQuizz.questionsWithBadAnswers[j].questionNum === this.questionNum) && (index = j);
+            if (playerMode && this.parentQuizz.previewMode) {
+                if (this.parentQuizz.questionsAnswered[this.questionNum-1].selectedAnswers.length > 0){
+                    this.parentQuizz.questionsAnswered[this.questionNum-1].selectedAnswers.forEach(selectedAnswer=> {
+                        this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
+                    });
+                } else {
+                    this.tabAnswer.forEach(answer => {
+                        if (answer.correct){
+                            answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
+                        }
+                    });
                 }
-                if (playerMode) {
-                    if (index && this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.length > 0){
-                        this.parentQuizz.questionsWithBadAnswers[index].selectedAnswers.forEach(selectedAnswer=> {
-                            this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
-                        });
-                    } else {
-                        this.tabAnswer.forEach(answer => {
-                            if (answer.correct){
-                                answer.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen)
-                            }
-                        });
-                    }
-                }
-
             }
 
         }
@@ -1680,7 +1669,7 @@ exports.GUI = function (globalVariables) {
 
             //button. onclick
             if (!this.parentQuizz.previewMode) {
-                var oclk = ()=> {
+                var onClickValidateButton = ()=> {
                     // test des valeurs, en gros si selectedAnswers === rigthAnswers
                     var allRight = false;
 
@@ -1700,15 +1689,7 @@ exports.GUI = function (globalVariables) {
                         this.parentQuizz.score++;
                         console.log("Bonne réponse!\n");
                     } else {
-                        let indexOfSelectedAnswers = [];
-                        this.selectedAnswers.forEach(aSelectedAnswer => {
-                            indexOfSelectedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
-                        });
-                        this.parentQuizz.questionsWithBadAnswers.push({
-                            index: this.parentQuizz.currentQuestionIndex,
-                            question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
-                            selectedAnswers: indexOfSelectedAnswers
-                        });
+                        
                         var reponseD = "";
                         this.rightAnswers.forEach((e)=> {
                             if (e.label) {
@@ -1721,10 +1702,19 @@ exports.GUI = function (globalVariables) {
                         });
                         console.log("Mauvaise réponse!\n  Bonnes réponses: " + reponseD);
                     }
+                    let indexOfSelectedAnswers = [];
+                    this.selectedAnswers.forEach(aSelectedAnswer => {
+                        indexOfSelectedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+                    });
+                    this.parentQuizz.questionsAnswered.push({
+                        index: this.parentQuizz.currentQuestionIndex,
+                        question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
+                        selectedAnswers: indexOfSelectedAnswers
+                    });
                     this.parentQuizz.nextQuestion();
                 };
-                svg.addEvent(validateButton.cadre, 'click', oclk);
-                svg.addEvent(validateButton.content, 'click', oclk);
+                svg.addEvent(validateButton.cadre, 'click', onClickValidateButton);
+                svg.addEvent(validateButton.content, 'click', onClickValidateButton);
             }
 
             //Button reset
@@ -2267,9 +2257,7 @@ exports.GUI = function (globalVariables) {
             this.displayCurrentQuestion();
         }
         else {
-            let questionsWithBadAnswersTab = [];
-            this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
-            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "upToDown", this);
+            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows,  this.getQuestionsWithBadAnswers(), "upToDown", this);
             this.displayResult();
         }
     }
@@ -2285,23 +2273,23 @@ exports.GUI = function (globalVariables) {
             expButton = displayText(textExp, drawing.width * 0.3, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
         this.expButtonManipulator.translator.move(0, drawing.height - this.headerHeight - buttonExpHeight);
 
-        const displayExp = () => {
+        const displayExplanation = () => {
             this.manipulator.flush();
-            let questionTabExplanation = this.tabQuestions;
-            this.questionsWithBadAnswers.forEach((question, i) => {
-                questionTabExplanation[i] = question.question;
-                questionTabExplanation[i].selectedAnswers = question.selectedAnswers;
-            });
+            // let questionTabExplanation = this.tabQuestions;
+            // this.questionsAnswered.forEach((question, i) => {
+            //     questionTabExplanation[i] = question.question;
+            //     questionTabExplanation[i].selectedAnswers = question.selectedAnswers;
+            // });
             let quizzExplanation = new Quizz(this, true);
-            quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
-            quizzExplanation.score = null;
+            // quizzExplanation.questionsWithBadAnswers = questionTabExplanation;
+            // quizzExplanation.score = null;
             quizzExplanation.currentQuestionIndex = 0;
             quizzExplanation.oldQuiz = this;
             quizzExplanation.run(1, 1, drawing.width, drawing.height);
         };
 
-        svg.addEvent(expButton.cadre, "click", displayExp);
-        svg.addEvent(expButton.content, "click", displayExp);
+        svg.addEvent(expButton.cadre, "click", displayExplanation);
+        svg.addEvent(expButton.content, "click", displayExplanation);
 
         this.puzzle.fillVisibleElementsArray("upToDown");
         this.answerHeight = (drawing.height - this.headerHeight - buttonExpHeight)*this.answerPercentage - MARGIN;
@@ -2371,7 +2359,6 @@ exports.GUI = function (globalVariables) {
         }
 
         this.resultManipulator && (this.manipulator.last.children.indexOf(this.resultManipulator.first) !== -1) && this.manipulator.last.remove(this.resultManipulator.first);
-
         this.resultManipulator = new Manipulator(this);
         this.scoreManipulator = new Manipulator(this);
         this.scoreManipulator.addOrdonator(2);

@@ -904,7 +904,7 @@ exports.Util = function (globalVariables) {
                         .position(size / 2, -size / 2);
                     this.infosManipulator.ordonator.set(0, rect);
                     this.infosManipulator.ordonator.set(1, check);
-                    let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
+                    let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
                     object.miniatureManipulator.last.add(this.infosManipulator.first);
                     let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                     result.text.position(0, size / 2 - MARGIN / 2);
@@ -1281,12 +1281,12 @@ exports.Util = function (globalVariables) {
         static sendProgressToServer(quiz) {
             var data = {
                 indexQuestion: quiz.currentQuestionIndex+1,
-                tabWrongAnswers: [],
+                questionsAnswered: [],
                 game: quiz.id,
                 version: quiz.parentFormation._id,
                 formation: quiz.parentFormation.formationId
             };
-            quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
             return dbListener.httpPostAsync("/user/saveProgress", data)
         }
 

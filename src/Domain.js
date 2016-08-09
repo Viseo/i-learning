@@ -866,18 +866,17 @@ exports.Domain = function (globalVariables) {
                         if (!theGame) {
                             return;
                         }
-
-                            theGame.currentQuestionIndex = game.index;
-                            theGame.questionsWithBadAnswers = [];
-                            game.tabWrongAnswers.forEach(wrongAnswer => {
-                                theGame.questionsWithBadAnswers.add({
-                                    index: wrongAnswer.index - 1,
-                                    question: theGame.tabQuestions[wrongAnswer.index - 1],
-                                    selectedAnswers: wrongAnswer.selectedAnswers
-                                });
+                        theGame.currentQuestionIndex = game.index;
+                        theGame.questionsAnswered = [];
+                        game.questionsAnswered.forEach(wrongAnswer => {
+                            theGame.questionsAnswered.push({
+                                index: wrongAnswer.index - 1,
+                                question: theGame.tabQuestions[wrongAnswer.index - 1],
+                                selectedAnswers: wrongAnswer.selectedAnswers
                             });
-                            theGame.score = game.index - theGame.questionsWithBadAnswers.length;
-                            theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                        });
+                        theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
+                        theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
                         });
                     }
                     this.levelsTab.forEach(level => {
@@ -1228,12 +1227,13 @@ exports.Domain = function (globalVariables) {
                     h: 200
                 };
                 this.miniaturePosition = {x: 0, y: 0};
-                //this.questionsWithBadAnswers = [];
-                this.questionsWithBadAnswers = quizz.questionsWithBadAnswers ? quizz.questionsWithBadAnswers : [];
+                this.questionsAnswered = quizz.questionsAnswered ? quizz.questionsAnswered : [];
+
                 this.score = (quizz.score ? quizz.score : 0);
                 this.drawing = drawing;
                 this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
                 this.finalMessage = "";
+
             }
 
             loadQuestions(quizz) {
@@ -1304,15 +1304,38 @@ exports.Domain = function (globalVariables) {
                             if (++this.currentQuestionIndex < this.tabQuestions.length) {
                                 this.displayCurrentQuestion();
                             } else {
-                                let questionsWithBadAnswersTab = [];
-                                this.questionsWithBadAnswers.forEach(x => questionsWithBadAnswersTab.push(x.question));
-                                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, questionsWithBadAnswersTab, "leftToRight", this);
+                                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.getQuestionsWithBadAnswers(), "leftToRight", this);
                                 this.displayResult();
                             }
                         });
                 }
             }
 
+            getQuestionsWithBadAnswers (){
+                let questionsWithBadAnswers =[];
+                let allRight = false;
+                this.questionsAnswered.forEach(questionAnswered => {
+                    let question = questionAnswered.question;
+                    if(question.multipleChoice){
+                        if (question.rightAnswers.length !== question.selectedAnswers.length) {
+                            questionsWithBadAnswers.push(question);
+                        } else {
+                            var subTotal = 0;
+                            question.selectedAnswers.forEach((e)=> {
+                                if (e.correct) {
+                                    subTotal++;
+                                }
+                            });
+                            allRight = (subTotal === question.rightAnswers.length);
+                            !allRight && questionsWithBadAnswers.push(question);
+                        }
+                    }else if(!question.multipleChoice && !question.tabAnswer[questionAnswered.selectedAnswers[0]].correct) {
+                            questionsWithBadAnswers.push(question);
+                    }
+
+                });
+                return questionsWithBadAnswers;
+            }
     }
 
     class Bd extends Game{
