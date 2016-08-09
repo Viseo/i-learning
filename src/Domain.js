@@ -43,8 +43,7 @@ exports.Domain = function (globalVariables) {
                 correct: false
             };
             answerParameters && (answer = answerParameters);
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(8);
+            this.manipulator = new Manipulator(this).addOrdonator(8);
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
@@ -87,11 +86,9 @@ exports.Domain = function (globalVariables) {
         }
 
         isEditable(editor, editable) {
-            this.linesManipulator = new Manipulator(this);
-            this.linesManipulator.addOrdonator(4);
+            this.linesManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator.last.add(this.linesManipulator.first);
-            this.penManipulator = new Manipulator(this);
-            this.penManipulator.addOrdonator(4);
+            this.penManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator.last.add(this.penManipulator.first);
             this.editable = editable;
             this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
@@ -118,21 +115,16 @@ exports.Domain = function (globalVariables) {
 
     class Question {
         constructor(question, quizz) {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(6);
+            this.manipulator = new Manipulator(this).addOrdonator(6);
             this.answersManipulator = new Manipulator(this);
             this.manipulator.last.add(this.answersManipulator.first);
-            this.resetManipulator = new Manipulator(this);
-            this.resetManipulator.addOrdonator(2);
+            this.resetManipulator = new Manipulator(this).addOrdonator(2);
             this.answersManipulator.last.add(this.resetManipulator.first);
-            this.validateManipulator = new Manipulator(this);
-            this.validateManipulator.addOrdonator(2);
+            this.validateManipulator = new Manipulator(this).addOrdonator(2);
             this.answersManipulator.last.add(this.validateManipulator.first);
-            this.simpleChoiceMessageManipulator = new Manipulator(this);
-            this.simpleChoiceMessageManipulator.addOrdonator(2);
+            this.simpleChoiceMessageManipulator = new Manipulator(this).addOrdonator(2);
             this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
-            this.invalidQuestionPictogramManipulator = new Manipulator(this);
-            this.invalidQuestionPictogramManipulator.addOrdonator(5);
+            this.invalidQuestionPictogramManipulator = new Manipulator(this).addOrdonator(5);
             this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
 
             this.validLabelInput = (question && question.validLabelInput !== undefined) ? question.validLabelInput : true;
@@ -180,24 +172,19 @@ exports.Domain = function (globalVariables) {
             }
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
-
                 question.tabAnswer.forEach(it => {
                     var tmp = new Answer(it, this);
                     this.tabAnswer.push(tmp);
                     if (tmp.correct) {
                         this.rightAnswers.push(tmp);
                     }
-
                 });
             }
 
             this.lines = Math.floor(this.tabAnswer.length / this.rows); //+ 1;
             if (this.tabAnswer.length % this.rows !== 0) {
                 this.lines += 1;
-            }// else {
-            //    this.lines = Math.floor(this.tabAnswer.length / this.rows) + 1;
-            //}
-
+            }
             this.bordure = null;
             this.content = null;
         }
@@ -243,21 +230,14 @@ exports.Domain = function (globalVariables) {
             this.MAX_ANSWERS = 8;
             this.parent = parent;
 
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(2);
+            this.manipulator = new Manipulator(this).addOrdonator(2);
             this.manipulatorQuizzInfo = new Manipulator(this);
-            //this.questionCreatorManipulator = new Manipulator(this);
-            //this.questionCreatorManipulator.addOrdonator(2);
-            this.questionManipulator = new Manipulator(this);
-            this.questionManipulator.addOrdonator(6);
+            this.questionManipulator = new Manipulator(this).addOrdonator(6);
             this.toggleButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator.addOrdonator(2);
+            this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.last.add(this.previewButtonManipulator.first);
             this.saveQuizButtonManipulator = new Manipulator(this);
             this.manipulator.last.add(this.saveQuizButtonManipulator.first);
-
-            // this.validLabelInput = true;
 
             this.labelDefault = "Cliquer deux fois pour ajouter la question";
             this.questionType = myQuestionType.tab;
@@ -276,14 +256,12 @@ exports.Domain = function (globalVariables) {
 
         checkInputTextArea(myObj) {
             if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
-                // this.validLabelInput = true;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
                 myObj.textarea.border = "none";
                 myObj.textarea.outline = "none";
             } else {
                 myObj.display();
-                // this.validLabelInput = false;
             }
         }
 
@@ -312,16 +290,12 @@ exports.Domain = function (globalVariables) {
     class PopIn {
         constructor(answer, editable) {
             this.answer = answer;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(5);
-            this.closeButtonManipulator = new Manipulator(this);
-            this.closeButtonManipulator.addOrdonator(2);
+            this.manipulator = new Manipulator(this).addOrdonator(5);
+            this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.ordonator.set(2, this.closeButtonManipulator.first);
-            this.panelManipulator = new Manipulator(this);
+            this.panelManipulator = new Manipulator(this).addOrdonator(2);;
             this.manipulator.last.add(this.panelManipulator.first);
-            this.panelManipulator.addOrdonator(2);
-            this.textManipulator = new Manipulator(this);
-            this.textManipulator.addOrdonator(1);
+            this.textManipulator = new Manipulator(this).addOrdonator(1);
             this.editable = editable;
             if (this.editable) {
                 this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
@@ -339,12 +313,8 @@ exports.Domain = function (globalVariables) {
 
     class AddEmptyElement {
         constructor(parent, type) {
-            this.manipulator = new Manipulator(this);
-
-            this.manipulator.addOrdonator(3);
-
+            this.manipulator = new Manipulator(this).addOrdonator(3);
             type && (this.type = type);
-
             switch (type) {
                 case 'question':
                     this.label = "Double cliquer pour ajouter une question";
@@ -367,8 +337,7 @@ exports.Domain = function (globalVariables) {
     class Level {
         constructor(formation, gamesTab) {
             this.parentFormation = formation;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(3);
+            this.manipulator = new Manipulator(this).addOrdonator(3);
             this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
@@ -406,21 +375,15 @@ exports.Domain = function (globalVariables) {
                 this.formations.push(new Formation(formation, this));
             }
             this.manipulator = new Manipulator();
-            //this.header = new Header();
-            this.headerManipulator = new Manipulator();
-            this.headerManipulator.addOrdonator(1);
-            this.addButtonManipulator = new Manipulator();
-            this.addButtonManipulator.addOrdonator(4);
-            this.checkManipulator = new Manipulator();
-            this.checkManipulator.addOrdonator(4);
-            this.exclamationManipulator = new Manipulator();
-            this.exclamationManipulator.addOrdonator(4);
+            this.headerManipulator = new Manipulator().addOrdonator(1);
+            this.addButtonManipulator = new Manipulator().addOrdonator(4);
+            this.checkManipulator = new Manipulator().addOrdonator(4);
+            this.exclamationManipulator = new Manipulator().addOrdonator(4);
             this.formationsManipulator = new Manipulator();
             this.clippingManipulator = new Manipulator(this);
 
             /* for Player */
-            this.toggleFormationsManipulator = new Manipulator(this);
-            this.toggleFormationsManipulator.addOrdonator(3);
+            this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
         }
     }
 
@@ -435,44 +398,31 @@ exports.Domain = function (globalVariables) {
             this.formationId = (formation.formationId || null);
             this.progress = formation.progress;
             this.formationsManager = formationsManager;
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(5);
-            this.formationInfoManipulator = new Manipulator(this);
-            this.formationInfoManipulator.addOrdonator(3);
-            this.graphManipulator = new Manipulator(this);
-            this.graphManipulator.addOrdonator(10);
-            this.messageDragDropManipulator = new Manipulator(this);
-            this.messageDragDropManipulator.addOrdonator(2);
+            this.manipulator = new Manipulator(this).addOrdonator(5);
+            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
+            this.graphManipulator = new Manipulator(this).addOrdonator(10);
+            this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
             this.miniaturesManipulator = new Manipulator(this);
             this.graphManipulator.last.add(this.miniaturesManipulator.first);
             this.graphManipulator.last.add(this.arrowsManipulator.first);
             this.clippingManipulator = new Manipulator(this);
-            this.saveFormationButtonManipulator = new Manipulator(this);
-            this.saveFormationButtonManipulator.addOrdonator(2);
-            this.publicationFormationButtonManipulator = new Manipulator(this);
-            this.publicationFormationButtonManipulator.addOrdonator(2);
-            this.deactivateFormationButtonManipulator = new Manipulator(this);
-            this.deactivateFormationButtonManipulator.addOrdonator(2);
+            this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.library = new GamesLibrary(myLibraryGames);
             this.library.formation = this;
             this.quizzManager = new QuizzManager(null, this);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButtonManipulator.addOrdonator(1);
+            this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
-            //this.needUpdate = true;
             // WIDTH
             this.libraryWidthRatio = 0.15;
             this.graphWidthRatio = 1 - this.libraryWidthRatio;
             // HEIGHT
             this.graphCreaHeightRatio = 0.85;
-            //this.graphPlayHeightRatio = 0.90;
-
             this.x = MARGIN;
             this.regex = FORMATION_TITLE_REGEX;
-            // this.maxGameInARowMessage = "Le nombre maximum de jeux dans ce niveau est atteint.";
-            // this.targetLevelIndex = 0;
             this.levelsTab = [];
             this.gamesTab = [];
             this.saveButtonHeightRatio = 0.07;
@@ -483,7 +433,6 @@ exports.Domain = function (globalVariables) {
             this.validLabelInput = true ;
 
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-
             this.levelHeight = 150;
             this.graphElementSize = this.levelHeight * 0.65;
             this.miniature = new MiniatureFormation(this);
@@ -560,17 +509,17 @@ exports.Domain = function (globalVariables) {
         };
 
         deactivateFormation() {
-        this.status = "NotPublished";
-        Server.deactivateFormation(this.formationId, ignoredData)
-            .then(() => {
-                this.manipulator.flush();
-                Server.getAllFormations().then(data => {
-                    let myFormations = JSON.parse(data).myCollection;
-                    let formationsManager = new FormationsManager(myFormations);
-                    formationsManager.display();
-                });
-            })
-    }
+            this.status = "NotPublished";
+            Server.deactivateFormation(this.formationId, ignoredData)
+                .then(() => {
+                    this.manipulator.flush();
+                    Server.getAllFormations().then(data => {
+                        let myFormations = JSON.parse(data).myCollection;
+                        let formationsManager = new FormationsManager(myFormations);
+                        formationsManager.display();
+                    });
+                })
+        }
 
         saveFormation (displayQuizzManager, status = "Edited") {
             const
@@ -589,7 +538,6 @@ exports.Domain = function (globalVariables) {
                     default:
                         error = false;
                 }
-
                 if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
                     this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 }
@@ -667,10 +615,10 @@ exports.Domain = function (globalVariables) {
                             } else {
                                 switch (answer.reason) {
                                     case "NoModif" :
-                                    displayMessage(messageNoModification, displayQuizzManager);
+                                        displayMessage(messageNoModification, displayQuizzManager);
                                         break;
                                     case "NameAlreadyUsed" :
-                                    displayMessage(messageUsedName, displayQuizzManager);
+                                        displayMessage(messageUsedName, displayQuizzManager);
                                         break;
                                 }
                             }
@@ -894,8 +842,7 @@ exports.Domain = function (globalVariables) {
 
     class Library {
         constructor() {
-            this.libraryManipulator = new Manipulator(this);
-            this.libraryManipulator.addOrdonator(3);
+            this.libraryManipulator = new Manipulator(this).addOrdonator(3);
             this.itemsTab = [];
             this.libraryManipulators = [];
         }
@@ -910,11 +857,9 @@ exports.Domain = function (globalVariables) {
             this.fontSize = lib.fontSize ;
             this.itemsTab = lib.tab;
             for (let i = 0; i < this.itemsTab.length; i++) {
-                this.libraryManipulators[i] = new Manipulator(this.itemsTab[i]);
-                this.libraryManipulators[i].addOrdonator(2);
+                this.libraryManipulators[i] = new Manipulator(this.itemsTab[i]).addOrdonator(2);
             }
-            this.arrowModeManipulator = new Manipulator(this);
-            this.arrowModeManipulator.addOrdonator(3);
+            this.arrowModeManipulator = new Manipulator(this).addOrdonator(3);
         }
 
     }
@@ -926,8 +871,7 @@ exports.Domain = function (globalVariables) {
             this.font = "Courier New";
             this.imageWidth = 50;
             this.imageHeight = 50;
-            this.addButtonManipulator = new Manipulator(this);
-            this.addButtonManipulator.addOrdonator(3);
+            this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
         }
 
         dropAction(element, event) {
@@ -980,15 +924,13 @@ exports.Domain = function (globalVariables) {
 
     class Header {
         constructor() {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(3);
-            this.userManipulator = new Manipulator(this);
-            this.userManipulator.addOrdonator(6);
+            this.manipulator = new Manipulator(this).addOrdonator(3);
+            this.userManipulator = new Manipulator(this).addOrdonator(6);
             this.label = "I-learning";
             this.size = HEADER_SIZE;
         }
     }
-    
+
     class QuizzManager {
         constructor(quizz, formation) {
             this.quizzName = "";
@@ -1016,16 +958,11 @@ exports.Domain = function (globalVariables) {
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
             this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
             this.quizzManagerManipulator = new Manipulator(this);
-            this.questionsPuzzleManipulator = new Manipulator(this);
-            this.questionsPuzzleManipulator.addOrdonator(1);
-            this.quizzInfoManipulator = new Manipulator(this);
-            this.quizzInfoManipulator.addOrdonator(6);
-            this.previewButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator.addOrdonator(2);
-            this.saveQuizButtonManipulator = new Manipulator(this);
-            this.saveQuizButtonManipulator.addOrdonator(2);
-            this.returnButtonManipulator = new Manipulator(this);
-            this.returnButtonManipulator.addOrdonator(1);
+            this.questionsPuzzleManipulator = new Manipulator(this).addOrdonator(1);
+            this.quizzInfoManipulator = new Manipulator(this).addOrdonator(6);
+            this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.libraryIManipulator = this.library.libraryManipulator;
 
@@ -1057,17 +994,17 @@ exports.Domain = function (globalVariables) {
             };
         }
 
-    loadQuizz (quizz, indexOfEditedQuestion) {
-        this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
-        this.quizz = new Quizz(quizz, false, this.parentFormation);
-        this.quizzName = this.quizz.title;
-        this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
-        this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-        this.quizz.tabQuestions.forEach( (question, index )  => {
-            //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
-            (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
-        });
-        this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+        loadQuizz (quizz, indexOfEditedQuestion) {
+            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
+            this.quizz = new Quizz(quizz, false, this.parentFormation);
+            this.quizzName = this.quizz.title;
+            this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
+            this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
+            this.quizz.tabQuestions.forEach((question, index ) => {
+                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
+                (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+            });
+            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
         };
 
@@ -1176,37 +1113,37 @@ exports.Domain = function (globalVariables) {
     }
 
     class Quizz extends Game{
-            constructor(quizz, previewMode, parentFormation) {
-                super(quizz, parentFormation);
-                const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
-                this.returnButton = new ReturnButton(this, returnText);
-                this.manipulator.last.add(this.returnButtonManipulator.first);
-                this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
-                this.manipulator.last.add(this.expButtonManipulator.first);
+        constructor(quizz, previewMode, parentFormation) {
+            super(quizz, parentFormation);
+            const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
+            this.returnButton = new ReturnButton(this, returnText);
+            this.manipulator.last.add(this.returnButtonManipulator.first);
+            this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.manipulator.last.add(this.expButtonManipulator.first);
 
-                this.chevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator = new Manipulator(this);
-                this.rightChevronManipulator = new Manipulator(this);
-                this.leftChevronManipulator.addOrdonator(1);
-                this.rightChevronManipulator.addOrdonator(1);
-                this.manipulator.last.add(this.chevronManipulator.first);
-                this.chevronManipulator.last.add(this.leftChevronManipulator.first);
-                this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+            this.chevronManipulator = new Manipulator(this);
+            this.leftChevronManipulator = new Manipulator(this);
+            this.rightChevronManipulator = new Manipulator(this);
+            this.leftChevronManipulator.addOrdonator(1);
+            this.rightChevronManipulator.addOrdonator(1);
+            this.manipulator.last.add(this.chevronManipulator.first);
+            this.chevronManipulator.last.add(this.leftChevronManipulator.first);
+            this.chevronManipulator.last.add(this.rightChevronManipulator.first);
 
-                this.loadQuestions(quizz);
-                if (this.levelIndex === undefined) {
-                    this.levelIndex = quizz.levelIndex || 0;
-                }
-                if (this.gameIndex === undefined) {
-                    this.gameIndex = quizz.gameIndex || 0;
-                }
-                (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
-                quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
-                quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
-                quizz.font && (this.font = quizz.font);
-                quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
-                quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
-                quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
+            this.loadQuestions(quizz);
+            if (this.levelIndex === undefined) {
+                this.levelIndex = quizz.levelIndex || 0;
+            }
+            if (this.gameIndex === undefined) {
+                this.gameIndex = quizz.gameIndex || 0;
+            }
+            (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
+            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
+            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
+            quizz.font && (this.font = quizz.font);
+            quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
+            quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
+            quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
 
                 this.resultArea = {
                     x: drawing.width / 2,
@@ -1228,88 +1165,77 @@ exports.Domain = function (globalVariables) {
                 };
                 this.miniaturePosition = {x: 0, y: 0};
                 this.questionsAnswered = quizz.questionsAnswered ? quizz.questionsAnswered : [];
-
                 this.score = (quizz.score ? quizz.score : 0);
                 this.drawing = drawing;
                 this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
-                this.finalMessage = "";
+                // this.finalMessage = "";
 
             }
 
-            loadQuestions(quizz) {
-                if (quizz && typeof quizz.tabQuestions !== 'undefined') {
-                    this.tabQuestions = [];
-                    quizz.tabQuestions.forEach(it => {
-                        it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                        var tmp = new Question(it, this);
-                        //it.questionType && (tmp.questionType = it.questionType);
-                        tmp.parentQuizz = this;
-                        this.tabQuestions.push(tmp);
+        loadQuestions(quizz) {
+            if (quizz && typeof quizz.tabQuestions !== 'undefined') {
+                this.tabQuestions = [];
+                quizz.tabQuestions.forEach(it => {
+                    it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
+                    var tmp = new Question(it, this);
+                    tmp.parentQuizz = this;
+                    this.tabQuestions.push(tmp);
+                });
+            } else {
+                this.tabQuestions = [];
+                this.tabQuestions.push(new Question(defaultQuestion, this));
+            }
+        }
+
+        run(x, y, w, h) {
+            var intervalToken = svg.interval(() => {
+                if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
+                    svg.clearInterval(intervalToken);
+                    this.display(x, y, w, h);
+                }
+            }, 100);
+        }
+
+        displayCurrentQuestion() {
+            if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
+                this.questionHeight = this.questionHeightWithImage;
+                this.answerHeight = this.answerHeightWithImage;
+            } else {
+                this.questionHeight = this.questionHeightWithoutImage;
+                this.answerHeight = this.answerHeightWithoutImage;
+            }
+            this.manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+            this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
+            this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
+                this.questionArea.w, this.questionHeight);
+            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
+                this.questionArea.w, this.answerHeight);
+        }
+
+        // !_! bof, y'a encore des display appelés ici
+        nextQuestion() {
+            if (this.currentQuestionIndex !== -1) {
+                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+            }
+
+            if (this.previewMode) {
+                if (this.currentQuestionIndex === -1) {
+                    this.currentQuestionIndex++;
+                }
+                this.displayCurrentQuestion();
+            } else {
+                Server.sendProgressToServer(this)
+                    .then(() => {
+                        if (++this.currentQuestionIndex < this.tabQuestions.length) {
+                            this.displayCurrentQuestion();
+                        } else {
+                            this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.getQuestionsWithBadAnswers(), "leftToRight", this);
+                            this.displayResult();
+                        }
                     });
-                } else {
-                    this.tabQuestions = [];
-                    this.tabQuestions.push(new Question(defaultQuestion, this));
-                    // this.tabQuestions.push(new Question(defaultQuestion, this));
-                }
             }
-
-            run(x, y, w, h) {
-                var intervalToken = svg.interval(() => {
-                    if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
-                        svg.clearInterval(intervalToken);
-                        this.display(x, y, w, h);
-                    }
-                }, 100);
-                // runtime && this.tabQuestions.forEach(e => {
-                //     e.image && imageController.imageLoaded(e.image.id, myImagesSourceDimensions[e.image.src].width, myImagesSourceDimensions[e.image.src].height);
-                //     e.tabAnswer.forEach(el => {
-                //         el.image && imageController.imageLoaded(el.image.id, myImagesSourceDimensions[el.image.src].width, myImagesSourceDimensions[el.image.src].height);
-                //     });
-                //
-                // });
-                // runtime && this.display(x, y, w, h);
-            }
-
-            displayCurrentQuestion() {
-                if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
-                    this.questionHeight = this.questionHeightWithImage;
-                    this.answerHeight = this.answerHeightWithImage;
-                } else {
-                    this.questionHeight = this.questionHeightWithoutImage;
-                    this.answerHeight = this.answerHeightWithoutImage;
-                }
-                this.manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-                this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
-                this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
-                    this.questionArea.w, this.questionHeight);
-                !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
-                this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
-                    this.questionArea.w, this.answerHeight);
-            }
-
-            // !_! bof, y'a encore des display appelés ici
-            nextQuestion() {
-                if (this.currentQuestionIndex !== -1) {
-                    this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
-                }
-
-                if (this.previewMode) {
-                    if (this.currentQuestionIndex === -1) {
-                        this.currentQuestionIndex++;
-                    }
-                    this.displayCurrentQuestion();
-                } else {
-                    Server.sendProgressToServer(this)
-                        .then(() => {
-                            if (++this.currentQuestionIndex < this.tabQuestions.length) {
-                                this.displayCurrentQuestion();
-                            } else {
-                                this.puzzle = new Puzzle(this.puzzleLines, this.puzzleRows, this.getQuestionsWithBadAnswers(), "leftToRight", this);
-                                this.displayResult();
-                            }
-                        });
-                }
-            }
+        }
 
             getQuestionsWithBadAnswers (){
                 let questionsWithBadAnswers =[];
@@ -1340,7 +1266,7 @@ exports.Domain = function (globalVariables) {
 
     class Bd extends Game{
         constructor(bd, parentFormation) {
-          super(bd,parentFormation);
+            super(bd,parentFormation);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.manipulator.last.add(this.returnButtonManipulator.first);
         }
@@ -1350,19 +1276,12 @@ exports.Domain = function (globalVariables) {
         constructor() {
             this.manipulator = new Manipulator(this);
             this.header = new Header("Inscription");
-            this.firstNameManipulator = new Manipulator(this);
-            this.firstNameManipulator.addOrdonator(4);
-            this.lastNameManipulator = new Manipulator(this);
-            this.lastNameManipulator.addOrdonator(4);
-            this.mailAddressManipulator = new Manipulator(this);
-            this.mailAddressManipulator.addOrdonator(4);
-            this.passwordManipulator = new Manipulator(this);
-            this.passwordManipulator.addOrdonator(4);
-            this.passwordConfirmationManipulator = new Manipulator(this);
-            this.passwordConfirmationManipulator.addOrdonator(3);
-            this.saveButtonManipulator = new Manipulator(this);
-            this.saveButtonManipulator.addOrdonator(4);
-            //this.errorMessageManipulator = new Manipulator(this);
+            this.firstNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.lastNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(3);
+            this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
 
             this.manipulator.last.add(this.firstNameManipulator.first);
             this.manipulator.last.add(this.lastNameManipulator.first);
@@ -1370,8 +1289,6 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.passwordManipulator.first);
             this.manipulator.last.add(this.passwordConfirmationManipulator.first);
             this.manipulator.last.add(this.saveButtonManipulator.first);
-            //this.saveButtonManipulator.last.add(this.errorMessageManipulator.first);
-            //this.errorMessageManipulator.addOrdonator(2);
 
             // HEIGHT
             this.saveButtonHeightRatio = 0.075;
@@ -1393,15 +1310,11 @@ exports.Domain = function (globalVariables) {
 ////////////////// ConnexionManager.js //////////////////////////
     class ConnexionManager {
         constructor() {
-            this.manipulator = new Manipulator(this);
-            this.manipulator.addOrdonator(6);
+            this.manipulator = new Manipulator(this).addOrdonator(6);
             this.header = new Header("Connexion");
-            this.mailAddressManipulator = new Manipulator(this);
-            this.mailAddressManipulator.addOrdonator(4);
-            this.passwordManipulator = new Manipulator(this);
-            this.passwordManipulator.addOrdonator(4);
-            this.connexionButtonManipulator = new Manipulator(this);
-            this.connexionButtonManipulator.addOrdonator(4);
+            this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordManipulator = new Manipulator(this).addOrdonator(4);
+            this.connexionButtonManipulator = new Manipulator(this).addOrdonator(4);
 
             this.manipulator.last.add(this.mailAddressManipulator.first);
             this.manipulator.last.add(this.passwordManipulator.first);

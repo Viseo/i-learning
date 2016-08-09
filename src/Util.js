@@ -721,7 +721,6 @@ exports.Util = function (globalVariables) {
                 this.imageSVG._acceptDrop = this.editable;
                 manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
             }
-
         }
 
         drawImageRedCross(x, y, w, h, parent, manipulator) {
@@ -741,7 +740,6 @@ exports.Util = function (globalVariables) {
                 }
                 if (this.parent.parentQuestion) {
                     let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-
                     let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
                     let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                     this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
@@ -769,7 +767,6 @@ exports.Util = function (globalVariables) {
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
-
                 redCross.mark('imageRedCross');
                 svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
                 this.redCrossManipulator.ordonator.set(1, redCross);
@@ -783,20 +780,14 @@ exports.Util = function (globalVariables) {
             this.game = game;
             this.scoreSize = 13;
             this.icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-            // this.icon.content.mark(game.id);
             this.icon.content.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
             (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
-
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
-
-            // !globalVariables.playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
-            // !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
             this.icon.cadre.color(myColors.white, 1, myColors.black);
-
             if (playerMode) {
                 this.drawProgressIcon(game, size);
             }
@@ -945,14 +936,10 @@ exports.Util = function (globalVariables) {
 
         display(x, y, w, h) {
             this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first) === -1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
-
             this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
             this.miniature.cadre.corners(50, 50);
-
             this.miniature.cadre.mark(this.formation.label);
-
             let iconSize = this.formation.parent.iconeSize;
-
             if(!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
                 for (let i = 0; i < icon.elements.length; i++) {
@@ -960,7 +947,6 @@ exports.Util = function (globalVariables) {
                 }
             }
             this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
-
             this.miniatureManipulator.translator.move(x, y);
             this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
             this.drawIcon();
@@ -1038,7 +1024,6 @@ exports.Util = function (globalVariables) {
                 .color(myColors.white, 0, myColors.white);
             this.manipulator.ordonator.set(0, this.background);
             this.manipulator.translator.move(x + w, y);
-
             this.returnText.parentObj = this;
             this.returnButton.parentObj = this;
             this.background.parentObj = this;
