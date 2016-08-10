@@ -1051,17 +1051,6 @@ exports.Domain = function (globalVariables) {
             this.libraryIManipulator = this.library.libraryManipulator;
 
             // WIDTH
-            this.libraryWidthRatio = 0.15;
-            this.questCreaWidthRatio = 1 - this.libraryWidthRatio;
-
-            // HEIGHT
-            this.quizzInfoHeightRatio = 0.05;
-            this.questionsPuzzleHeightRatio = 0.25;
-            this.questCreaHeightRatio = 0.57;
-            this.libraryHeightRatio = this.questCreaHeightRatio;
-            this.previewButtonHeightRatio = 0.1;
-            this.saveButtonHeightRatio = 0.1;
-            this.marginRatio = 0.02;
 
             this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
             this.questionPuzzle.leftChevronHandler = () => {
@@ -1399,12 +1388,6 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.mailAddressManipulator.first);
             this.manipulator.last.add(this.passwordManipulator.first);
             this.manipulator.last.add(this.connexionButtonManipulator.first);
-
-            // HEIGHT
-            this.connexionButtonHeightRatio = 0.075;
-
-            this.connexionButtonHeight = drawing.height * this.connexionButtonHeightRatio;
-            this.connexionButtonWidth = 200;
 
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";

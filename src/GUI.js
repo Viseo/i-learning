@@ -2307,18 +2307,27 @@ exports.GUI = function (globalVariables) {
         this.quizzManagerManipulator.last.children.indexOf(this.questionCreator.manipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.questionCreator.manipulator.first);
         this.quizzManagerManipulator.last.children.indexOf(this.previewButtonManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.previewButtonManipulator.first);
         this.quizzManagerManipulator.last.children.indexOf(this.saveQuizButtonManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.saveQuizButtonManipulator.first);
-        this.libraryWidth = drawing.width * this.libraryWidthRatio;
-        this.questCreaWidth = drawing.width * this.questCreaWidthRatio;
-        this.quizzInfoHeight = this.height * this.quizzInfoHeightRatio;
-        this.questionsPuzzleHeight = this.height * this.questionsPuzzleHeightRatio;
-        this.libraryHeight = this.height * this.libraryHeightRatio;
-        this.questCreaHeight = this.height * this.questCreaHeightRatio;
-        this.saveButtonHeight = this.height * this.saveButtonHeightRatio;
-        this.previewButtonHeight = this.height * this.previewButtonHeightRatio;
+        let libraryWidthRatio = 0.15;
+        let quizzInfoHeightRatio = 0.05;
+        let questCreaWidthRatio = 1 - libraryWidthRatio;
+        let questionsPuzzleHeightRatio = 0.25;
+        let questCreaHeightRatio = 0.57;
+        let previewButtonHeightRatio = 0.1;
+        let saveButtonHeightRatio = 0.1;
+        let marginRatio = 0.02;
+
+        this.libraryWidth = drawing.width * libraryWidthRatio;
+        this.questCreaWidth = drawing.width * questCreaWidthRatio;
+        this.quizzInfoHeight = this.height * quizzInfoHeightRatio;
+        this.questionsPuzzleHeight = this.height * questionsPuzzleHeightRatio;
+        this.libraryHeight = this.height * questCreaHeightRatio;
+        this.questCreaHeight = this.height * questCreaHeightRatio;
+        this.saveButtonHeight = this.height * saveButtonHeightRatio;
+        this.previewButtonHeight = this.height * previewButtonHeightRatio;
         this.buttonWidth = 150;
         this.globalMargin = {
-            height: this.marginRatio * this.height * 2,
-            width: this.marginRatio * drawing.width
+            height: marginRatio * this.height * 2,
+            width: marginRatio * drawing.width
         };
         this.questionPuzzleCoordinates = {
             x: this.globalMargin.width / 2,
@@ -2976,7 +2985,10 @@ exports.GUI = function (globalVariables) {
         };
 
         displayField('passwordField', this.passwordManipulator);
-        let connexionButton = displayText(this.connexionButtonLabel, this.connexionButtonWidth, this.connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
+        let connexionButtonHeightRatio = 0.075;
+        let connexionButtonHeight = drawing.height * connexionButtonHeightRatio;
+        let connexionButtonWidth = 200;
+        let connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
         connexionButton.cadre.mark('connexionButton');
         this.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
         svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);

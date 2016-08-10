@@ -102,7 +102,7 @@ let retrieve = testutils.retrieve;
 //     // });
 // });
 
-describe('Connection', function () {
+describe('Connection check headerMessage', function () {
 
     beforeEach(function () {
         runtime = mockRuntime();
@@ -122,16 +122,6 @@ describe('Connection', function () {
             assert.equal(headerMessage.text, "Connexion");
             done();
         });
-        // let wilfried = retrieve(root, "[Wilfried].[image]");
-        // let wilfriedChance = retrieve(root, "[Wilfried].[chance]");
-        // let heweraldChance = retrieve(root, "[Hewerald].[chance]");
-        // assert.equal(wilfriedChance.text, "?");
-        // assert.equal(heweraldChance.text, "?");
-        // wilfried.event("click", {});
-        // rollDice(6, 6, 6);
-        // assert.equal(wilfriedChance.text, "Azar !");
-        // assert.equal(heweraldChance.text, "?");
-
     });
 
     it("admin log in on formationsManager", function (done) {
@@ -705,7 +695,7 @@ describe('formationsManager', function () {
     });
 });
 
-describe('connection', function(){
+describe('connection check textarea', function(){
     beforeEach(function () {
         runtime = mockRuntime();
         svg = SVG(runtime);
