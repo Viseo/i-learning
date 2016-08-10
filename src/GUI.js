@@ -1111,24 +1111,24 @@ exports.GUI = function (globalVariables) {
     }
 
     function formationDisplaySaveButton(x, y, w, h) {
-        this.saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
+        let saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
         this.message && this.message.parent && this.saveFormationButtonManipulator.last.remove(this.message);
-        this.saveFormationButton.cadre.mark("saveFormationButtonCadre");
-        svg.addEvent(this.saveFormationButton.cadre, "click", () => this.saveFormation());
-        svg.addEvent(this.saveFormationButton.content, "click", () => this.saveFormation());
+        saveFormationButton.cadre.mark("saveFormationButtonCadre");
+        svg.addEvent(saveFormationButton.cadre, "click", () => this.saveFormation());
+        svg.addEvent(saveFormationButton.content, "click", () => this.saveFormation());
         this.saveFormationButtonManipulator.translator.move(x, y);
     }
 
     function formationDisplayDeactivateButton(x, y, w, h) {
-        this.deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
-        svg.addEvent(this.deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
-        svg.addEvent(this.deactivateFormationButton.content, "click", () => this.deactivateFormation());
+        let deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
+        svg.addEvent(deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
+        svg.addEvent(deactivateFormationButton.content, "click", () => this.deactivateFormation());
         this.deactivateFormationButtonManipulator.translator.move(x, y);
     }
 
     function formationDisplayPublicationButton(x, y, w, h) {
         let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
-        this.publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
+        let publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
         this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
         this.publicationFormationQuizzManager = () => {
             let message = [];
@@ -1160,9 +1160,9 @@ exports.GUI = function (globalVariables) {
                 this.saveFormation(null, "Published");
             }
         };
-        this.publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
-        svg.addEvent(this.publicationFormationButton.cadre, "click", () => this.publicationFormation());
-        svg.addEvent(this.publicationFormationButton.content, "click", () => this.publicationFormation());
+        publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
+        svg.addEvent(publicationFormationButton.cadre, "click", () => this.publicationFormation());
+        svg.addEvent(publicationFormationButton.content, "click", () => this.publicationFormation());
         this.publicationFormationButtonManipulator.translator.move(x, y);
     }
 
@@ -1210,10 +1210,12 @@ exports.GUI = function (globalVariables) {
             this.headerManipulator.last.add(this.exclamationManipulator.first);
         }
 
+        let addFormationButton;
+
         let displayPanel = () => {
             this.heightAllocatedToPanel = drawing.height - (playerMode ?
                 this.toggleFormationsCheck.globalPoint(0, 0).y + this.toggleFormationsCheck.height + MARGIN :
-                this.addFormationButton.cadre.globalPoint(0, 0).y + this.addFormationButton.cadre.height);
+                addFormationButton.cadre.globalPoint(0, 0).y + addFormationButton.cadre.height);
             this.spaceBetweenElements = {
                 width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                 height: this.panel ? 0.030 * this.panel.height : 0.030 * drawing.height
@@ -1269,20 +1271,20 @@ exports.GUI = function (globalVariables) {
 
         this.displayHeaderFormations = () => {
             this.headerManipulator.translator.move(0, 0);
-            this.addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
-            this.addFormationButton.cadre.mark("addFormationCadre");
-            var addFormationButtonTextBr = this.addFormationButton.content.boundingRect();
-            this.addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
-            this.addFormationButton.content.position(this.plusDim + this.addFormationButton.content.boundingRect().width / 2, -addFormationButtonTextBr.height / 8);
-            this.addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height / 2, this.addButtonHeight, this.addButtonHeight);
-            this.addButtonManipulator.ordonator.set(2, this.addFormationObject.circle);
-            this.addButtonManipulator.ordonator.set(3, this.addFormationObject.plus);
-            this.addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height / 2);
+            addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
+            addFormationButton.cadre.mark("addFormationCadre");
+            var addFormationButtonTextBr = addFormationButton.content.boundingRect();
+            addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
+            addFormationButton.content.position(this.plusDim + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 8);
+            let addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height / 2, this.addButtonHeight, this.addButtonHeight);
+            this.addButtonManipulator.ordonator.set(2, addFormationObject.circle);
+            this.addButtonManipulator.ordonator.set(3, addFormationObject.plus);
+            addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height / 2);
 
-            svg.addEvent(this.addFormationObject.circle, "click", onClickNewFormation);
-            svg.addEvent(this.addFormationObject.plus, "click", onClickNewFormation);
-            svg.addEvent(this.addFormationButton.content, "click", onClickNewFormation);
-            svg.addEvent(this.addFormationButton.cadre, "click", onClickNewFormation);
+            svg.addEvent(addFormationObject.circle, "click", onClickNewFormation);
+            svg.addEvent(addFormationObject.plus, "click", onClickNewFormation);
+            svg.addEvent(addFormationButton.content, "click", onClickNewFormation);
+            svg.addEvent(addFormationButton.cadre, "click", onClickNewFormation);
 
             this.checkLegend = statusEnum.Published.icon(this.iconeSize);
             this.checkManipulator.ordonator.set(2, this.checkLegend.square);
@@ -1765,7 +1767,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function questionCreatorDisplayToggleButton(x, y, w, h, clicked) {
-        var size = this.questionBlock.rect.height * 0.05;
+        var size = this.manipulator.ordonator.children[1].height * 0.05;
         this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
         this.toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
@@ -1802,22 +1804,21 @@ exports.GUI = function (globalVariables) {
         this.margin = (w - lengthToUse) / 2;
         this.x = this.margin + this.toggleButtonWidth / 2 + MARGIN;
         var i = 0;
-        (!this.completeBanner) && (this.completeBanner = []);
+        (!this.questionTypeSelectorManipulators) && (this.questionTypeSelectorManipulators = []);
         this.questionType.forEach((type)=> {
-            if (this.completeBanner[i] && this.completeBanner[i].manipulator) {
-                this.toggleButtonManipulator.last.remove(this.completeBanner[i].manipulator.first);
+            if (this.questionTypeSelectorManipulators[i]) {
+                this.toggleButtonManipulator.last.remove(this.questionTypeSelectorManipulators[i].first);
             }
-            this.completeBanner[i] = {};
-            this.completeBanner[i].manipulator = new Manipulator(this).addOrdonator(2);
-            this.toggleButtonManipulator.last.add(this.completeBanner[i].manipulator.first);
-            (type.label == clicked) ? (this.completeBanner[i].color = SELECTION_COLOR) : (this.completeBanner[i].color = myColors.white);
-            this.completeBanner[i].toggleButton = displayTextWithoutCorners(type.label, this.toggleButtonWidth, h, myColors.black, this.completeBanner[i].color, 20, null, this.completeBanner[i].manipulator);
-            this.completeBanner[i].toggleButton.content.color(getComplementary(this.completeBanner[i].color), 0, myColors.black);
-            this.completeBanner[i].toggleButton.cadre.mark('toggleButtonCadre' + type.label.split(" ")[1]);
-            this.completeBanner[i].manipulator.translator.move(this.x - this.w / 2, h - this.h / 2);
+            this.questionTypeSelectorManipulators[i] = new Manipulator(this).addOrdonator(2);
+            this.toggleButtonManipulator.last.add(this.questionTypeSelectorManipulators[i].first);
+            (type.label == clicked) ? (this.questionTypeSelectorManipulators[i].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[i].color = myColors.white);
+            let toggleButton = displayTextWithoutCorners(type.label, this.toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[i].color, 20, null, this.questionTypeSelectorManipulators[i]);
+            toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[i].color), 0, myColors.black);
+            toggleButton.cadre.mark('toggleButtonCadre' + type.label.split(" ")[1]);
+            this.questionTypeSelectorManipulators[i].translator.move(this.x - this.w / 2, h - this.h / 2);
             this.x += this.toggleButtonWidth + MARGIN;
-            (type.label != clicked) && (svg.addEvent(this.completeBanner[i].toggleButton.content, "click", toggleHandler));
-            (type.label != clicked) && (svg.addEvent(this.completeBanner[i].toggleButton.cadre, "click", toggleHandler));
+            (type.label != clicked) && (svg.addEvent(toggleButton.content, "click", toggleHandler));
+            (type.label != clicked) && (svg.addEvent(toggleButton.cadre, "click", toggleHandler));
             i++;
         });
         this.linkedQuestion.questionType = (this.multipleChoice) ? this.questionType[1] : this.questionType[0];
@@ -1827,26 +1828,27 @@ exports.GUI = function (globalVariables) {
     function questionCreatorDisplayQuestionCreator(x, y, w, h) {
         // bloc Question
         this.manipulator.flush();
-        this.questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
-        this.questionBlock.rect.position(0, 0);
-        this.questionBlock.rect.fillOpacity(0.001);
-        this.manipulator.last.children.indexOf(this.questionBlock.rect) === -1 && this.manipulator.last.add(this.questionBlock.rect);
+        let questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
+        questionBlock.rect.position(0, 0);
+        questionBlock.rect.fillOpacity(0.001);
+        this.manipulator.ordonator.set(1, questionBlock.rect);
+        // this.manipulator.last.children.indexOf(questionBlock.rect) === -1 && this.manipulator.last.add(questionBlock.rect);
         this.manipulator.last.children.indexOf(this.questionManipulator.first) === -1 && this.manipulator.last.add(this.questionManipulator.first);
 
         var removeErrorMessage = () => {
             this.linkedQuestion.validLabelInput = true;
             this.errorMessage && this.manipulator.ordonator.unset(0);
-            this.questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+            questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
 
         var displayErrorMessage = (textarea)=> {
             removeErrorMessage();
-            this.questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
+            questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
             var anchor = 'middle';
             this.errorMessage = new svg.Text(REGEX_ERROR);
             this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.ordonator.set(0, this.errorMessage);
-            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + this.questionBlock.title.cadre.height + this.errorMessage.boundingRect().height + MARGIN)
+            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.cadre.height + this.errorMessage.boundingRect().height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             textarea && textarea.focus();
             this.linkedQuestion.validLabelInput = false;
@@ -1861,37 +1863,36 @@ exports.GUI = function (globalVariables) {
                 var picture = new Picture(this.image.src, true, this, text);
                 picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
-                this.questionBlock.title = picture.imageSVG;
-
+                questionBlock.title = picture.imageSVG;
             } else {
-                this.questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
+                questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
-            this.questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
-            this.questionBlock.title.cadre.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
+            questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
+            questionBlock.title.cadre.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
             var fontSize = Math.min(20, this.h * 0.1);
             this.questNum = new svg.Text(this.linkedQuestion.questionNum).position(-this.w / 2 + 2 * MARGIN + (fontSize * (this.linkedQuestion.questionNum.toString.length) / 2), -this.h * 0.25 / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
             this.questionManipulator.ordonator.set(4, this.questNum);
-            this.questionBlock.title.content.color(color);
-            this.questionBlock.title.content._acceptDrop = true;
-            this.linkedQuestion.validLabelInput ? this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
-                this.questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
+            questionBlock.title.content.color(color);
+            questionBlock.title.content._acceptDrop = true;
+            this.linkedQuestion.validLabelInput ? questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
+                questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
             this.linkedQuestion.validLabelInput || displayErrorMessage();
-            this.questionBlock.title.cadre._acceptDrop = true;
-            svg.addEvent(this.questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
-            svg.addEvent(this.questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
-            this.questionManipulator.translator.move(0, -this.h / 2 + this.questionBlock.title.cadre.height / 2 + this.toggleButtonHeight + MARGIN);
+            questionBlock.title.cadre._acceptDrop = true;
+            svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
+            svg.addEvent(questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
+            this.questionManipulator.translator.move(0, -this.h / 2 + questionBlock.title.cadre.height / 2 + this.toggleButtonHeight + MARGIN);
             this.manipulator.translator.move(x + w / 2, y + h / 2);
         };
 
         var dblclickEditionQuestionBlock = () => {
-            var globalPointCenter = this.questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? this.questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
+            var globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
             var contentareaStyle = {
-                height: (this.linkedQuestion.image) ? this.questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
+                height: (this.linkedQuestion.image) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
                 toppx: globalPointCenter.y,
                 leftpx: (globalPointCenter.x + 1 / 12 * this.w),
                 width: (this.w * 5 / 6)
             };
-            this.questionBlock.title.content.message("");
+            questionBlock.title.content.message("");
             drawing.notInTextArea = false;
             var textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
                 .color(myColors.white, 0, myColors.black)
@@ -1918,7 +1919,7 @@ exports.GUI = function (globalVariables) {
                 textarea.enter();
                 this.parent.questionCreator.checkInputTextArea({
                     textarea: textarea,
-                    border: this.questionBlock.title.cadre,
+                    border: questionBlock.title.cadre,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: () => {
@@ -1935,7 +1936,7 @@ exports.GUI = function (globalVariables) {
         (typeof w !== "undefined") && (this.w = w);
         (typeof h !== "undefined") && (this.h = h);
         showTitle();
-        var height = this.h - this.toggleButtonHeight - this.questionBlock.title.cadre.height - 3 * MARGIN;
+        var height = this.h - this.toggleButtonHeight - questionBlock.title.cadre.height - 3 * MARGIN;
         this.coordinatesAnswers = {
             x: 0,
             y: (this.h - height) / 2 - MARGIN, //this.y + 3 * MARGIN ,
@@ -2573,10 +2574,10 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzManagerDisplaySaveButton(x, y, w, h) {
-        this.saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
-        this.saveButton.cadre.mark('saveButtonQuiz');
-        svg.addEvent(this.saveButton.cadre, "click", () => this.saveQuizz());
-        svg.addEvent(this.saveButton.content, "click", () => this.saveQuizz());
+        let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
+        saveButton.cadre.mark('saveButtonQuiz');
+        svg.addEvent(saveButton.cadre, "click", () => this.saveQuizz());
+        svg.addEvent(saveButton.content, "click", () => this.saveQuizz());
         this.saveQuizButtonManipulator.translator.move(x, y);
     }
 
@@ -2924,11 +2925,11 @@ exports.GUI = function (globalVariables) {
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
                     .mark('connectionContentArea')
                     .message(this[field].labelSecret || this[field].label)
-                    .color(null, 0, myColors.black).font("Arial", 20)
-                    .focus();
+                    .color(null, 0, myColors.black).font("Arial", 20);
                 this[field].secret && contentarea.type('password');
                 manipulator.ordonator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
+                contentarea.focus();
 
                 var alreadyDeleted = false;
                 var onblur = ()=> {
@@ -2994,11 +2995,11 @@ exports.GUI = function (globalVariables) {
         };
 
         displayField('passwordField', this.passwordManipulator);
-        this.connexionButton = displayText(this.connexionButtonLabel, this.connexionButtonWidth, this.connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
-        this.connexionButton.cadre.mark('connexionButton');
+        let connexionButton = displayText(this.connexionButtonLabel, this.connexionButtonWidth, this.connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
+        connexionButton.cadre.mark('connexionButton');
         this.connexionButtonManipulator.first.move(0, 2.5 * drawing.height / 10);
-        svg.addEvent(this.connexionButton.content, "click", this.connexionButtonHandler);
-        svg.addEvent(this.connexionButton.cadre, "click", this.connexionButtonHandler);
+        svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
+        svg.addEvent(connexionButton.cadre, "click", this.connexionButtonHandler);
 
         let nextField = (backwards = false)=> {
             let index = this.tabForm.indexOf(focusedField);

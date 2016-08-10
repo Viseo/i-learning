@@ -81,7 +81,8 @@ const deactivateFormation = (db, formation) => {
         version.status = "NotPublished";
         version._id = new ObjectID();
         collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err, docs) => {
-            resolve(docs.upsertedId);
+            if (err) reject(err);
+            resolve({version:version._id.toString()});
         });
     });
 };

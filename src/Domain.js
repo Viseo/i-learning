@@ -543,9 +543,10 @@ exports.Domain = function (globalVariables) {
                     displayQuizzManager();
                 } else {
                     (this.manipulator.last.children.indexOf(this.message) !== -1) && this.manipulator.last.remove(this.message);
-                    const messageY = this.saveFormationButton.cadre.globalPoint(0, 0).y;
+                    let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
+                    const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
-                        .position(drawing.width/2, messageY - this.saveFormationButton.cadre.height*1.5 - MARGIN)
+                        .position(drawing.width/2, messageY - saveFormationButtonCadre.height*1.5 - MARGIN)
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
@@ -1031,7 +1032,7 @@ exports.Domain = function (globalVariables) {
         displayMessage(message, color) {
             this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
             this.questionCreator.errorMessagePreview = new svg.Text(message)
-                .position(this.buttonWidth, -this.saveButton.cadre.height / 2 - MARGIN / 2)
+                .position(this.buttonWidth, -this.saveQuizButtonManipulator.ordonator.children[0].height / 2 - MARGIN / 2)
                 .font("Arial", 20)
                 .anchor('middle').color(color);
             this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
@@ -1058,9 +1059,9 @@ exports.Domain = function (globalVariables) {
 
                 Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
                     .then(() => {
-                        svg.addEvent(this.saveButton.cadre, "click", ()=> {
+                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", ()=> {
                         });
-                        svg.addEvent(this.saveButton.content, "click", ()=> {
+                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[1], "click", ()=> {
                         });
                         this.quizz.tabQuestions = this.tabQuestions;
                         let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
@@ -1338,7 +1339,7 @@ exports.Domain = function (globalVariables) {
                 });
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
+                    message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
                     svg.timeout(()=> {
                         this.connexionButtonManipulator.ordonator.unset(3);
                         emptyAreas.forEach(emptyArea => {
@@ -1354,7 +1355,7 @@ exports.Domain = function (globalVariables) {
                             listFormations();
                         } else {
                             let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                            message.text.color(myColors.red).position(0, -this.connexionButton.cadre.height + MARGIN);
+                            message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
                             svg.timeout(() => {
                                 this.connexionButtonManipulator.ordonator.unset(3);
                             }, 5000);
