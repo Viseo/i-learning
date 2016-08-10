@@ -635,9 +635,9 @@ exports.Util = function (globalVariables) {
             let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
             this.redCrossManipulator = new Manipulator(this);
-            this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
-            this.redCross.mark('redCross');
-            this.redCrossManipulator.last.add(this.redCross);
+            let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
+            redCross.mark('redCross');
+            this.redCrossManipulator.last.add(redCross);
 
             this.redraw = () => {
                 let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
@@ -657,7 +657,7 @@ exports.Util = function (globalVariables) {
                 formation.selectedArrow = null;
             };
 
-            svg.addEvent(this.redCross, 'click', this.redCrossClickHandler);
+            svg.addEvent(redCross, 'click', this.redCrossClickHandler);
 
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             formation.arrowsManipulator.last.add(this.arrowPath);
@@ -779,15 +779,15 @@ exports.Util = function (globalVariables) {
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
-            this.icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-            this.icon.content.mark('level' + this.game.levelIndex + game.id);
+            let icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+            icon.content.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
             (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
-            this.icon.cadre.color(myColors.white, 1, myColors.black);
+            icon.cadre.color(myColors.white, 1, myColors.black);
             if (playerMode) {
                 this.drawProgressIcon(game, size);
             }
@@ -852,7 +852,7 @@ exports.Util = function (globalVariables) {
             if (this.selected) {
                 this.game.parentFormation.selectedGame = this;
                 !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
-                this.icon.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                this.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
             } else {
                 this.checkAndDrawValidity(this);
                 !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
@@ -870,10 +870,10 @@ exports.Util = function (globalVariables) {
                         })
                     }
                 });
-                result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
+                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black) : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
             };
             let displayWhenNotPublished = () => {
-                gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black);
+                gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
             };
 
             (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
@@ -881,11 +881,10 @@ exports.Util = function (globalVariables) {
 
         drawProgressIcon(object, size) {
             let iconsize = 20;
-            this.infosManipulator = new Manipulator(this);
-            this.infosManipulator.addOrdonator(4);
+            this.infosManipulator = new Manipulator(this).addOrdonator(4);
             switch (object.status) {
                 case "notAvailable":
-                    this.icon.cadre.color(myColors.grey, 1, myColors.black);
+                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
                     break;
                 case "done":
                     let check = drawCheck(size / 2, -size / 2, iconsize)
@@ -927,18 +926,16 @@ exports.Util = function (globalVariables) {
     class MiniatureFormation {
 
         constructor(formation) {
-            this.miniatureManipulator = new Manipulator();
-            this.miniatureManipulator.addOrdonator(2);
-            this.iconManipulator = new Manipulator();
-            this.iconManipulator.addOrdonator(4);
+            this.miniatureManipulator = new Manipulator().addOrdonator(2);
+            this.iconManipulator = new Manipulator().addOrdonator(4);
             this.formation = formation;
         }
 
         display(x, y, w, h) {
             this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first) === -1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
-            this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
-            this.miniature.cadre.corners(50, 50);
-            this.miniature.cadre.mark(this.formation.label);
+            let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
+            miniature.cadre.corners(50, 50);
+            miniature.cadre.mark(this.formation.label);
             let iconSize = this.formation.parent.iconeSize;
             if(!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
@@ -982,10 +979,11 @@ exports.Util = function (globalVariables) {
         }
 
         setHandler(handler) {
-            svg.addEvent(this.miniature.cadre, "click", () => {
+            let miniature = this.miniatureManipulator.ordonator.children;
+            svg.addEvent(miniature[0], "click", () => {
                 handler(this.formation);
             });
-            svg.addEvent(this.miniature.content, "click", () => {
+            svg.addEvent(miniature[1], "click", () => {
                 handler(this.formation);
             });
         }
@@ -1002,31 +1000,30 @@ exports.Util = function (globalVariables) {
             this.manipulator.last.add(this.chevronManipulator.first);
         }
 
-        setHandler(returnHandler) {
-            svg.addEvent(this.returnButton, "click", returnHandler);
-            svg.addEvent(this.returnText, "click", returnHandler);
-            svg.addEvent(this.background, "click", returnHandler);
-        }
-
         display(x, y, w, h) {
-            this.returnText = new svg.Text(this.label);
-            this.returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
-            this.returnButton.resize(w, h);
-            this.returnButton.color(myColors.black, 0, []);
-            this.returnText.font("Arial", 20).anchor("start").position(0, 0);
-            this.manipulator.ordonator.set(1, this.returnText);
-            this.textSize = this.returnText.boundingRect();
-            this.size = this.returnButton.boundingRect();
-            this.returnText.position(w + this.size.width/2, this.size.height/4);
-            const backgroundW = w + this.size.width + this.textSize.width;
-            this.background = new svg.Rect(backgroundW * 1.15, h * 1.1)
+            let returnText = new svg.Text(this.label);
+            let returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
+            returnButton.resize(w, h);
+            returnButton.color(myColors.black, 0, []);
+            returnText.font("Arial", 20).anchor("start").position(0, 0);
+            this.manipulator.ordonator.set(1, returnText);
+            let textSize = returnText.boundingRect();
+            let size = returnButton.boundingRect();
+            returnText.position(w + size.width/2, size.height/4);
+            const backgroundW = w + size.width + textSize.width;
+            let background = new svg.Rect(backgroundW * 1.15, h * 1.1)
                 .position(backgroundW/2, 0)
                 .color(myColors.white, 0, myColors.white);
-            this.manipulator.ordonator.set(0, this.background);
+            this.manipulator.ordonator.set(0, background);
             this.manipulator.translator.move(x + w, y);
-            this.returnText.parentObj = this;
-            this.returnButton.parentObj = this;
-            this.background.parentObj = this;
+            returnText.parentObj = this;
+            returnButton.parentObj = this;
+            background.parentObj = this;
+            this.setHandler = (returnHandler) => {
+                svg.addEvent(returnButton, "click", returnHandler);
+                svg.addEvent(returnText, "click", returnHandler);
+                svg.addEvent(background, "click", returnHandler);
+            }
         }
     }
 
@@ -1037,10 +1034,8 @@ exports.Util = function (globalVariables) {
             this.nbOfVisibleElements = this.rows * this.columns;
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(this.nbOfVisibleElements + 3); // Pour les chevrons
-            this.leftChevronManipulator = new Manipulator(this);
-            this.leftChevronManipulator.addOrdonator(3);
-            this.rightChevronManipulator = new Manipulator(this);
-            this.rightChevronManipulator.addOrdonator(1);
+            this.leftChevronManipulator = new Manipulator(this).addOrdonator(3);
+            this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
             this.elementsArray = elementsArray;
             this.visibleElementsArray = [];
             this.indexOfFirstVisibleElement = 0;

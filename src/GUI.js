@@ -741,8 +741,9 @@ exports.GUI = function (globalVariables) {
         };
         this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
         this.returnButton.display(0, -MARGIN/2, 20, 20);
-        this.returnButton.height = this.returnButton.returnButton.boundingRect().height;
-        this.returnButton.returnButton.mark('returnButtonToFormationsManager');
+        let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
+        this.returnButton.height = returnButtonChevron.boundingRect().height;
+        returnButtonChevron.mark('returnButtonToFormationsManager');
         this.returnButton.setHandler(returnHandler);
 
         let dblclickQuizzHandler = (event, target) => {
@@ -885,15 +886,16 @@ exports.GUI = function (globalVariables) {
             let manageMiniature = (tabElement) => {
 
                 let mouseDownAction = eventDown => {
+                    let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () =>{
-                        let point = tabElement.miniature.icon.cadre.globalPoint(0, 0);
+                        let point = miniatureElement[0].globalPoint(0, 0);
                         this.miniaturesManipulator.last.remove(tabElement.miniatureManipulator.first);
                         tabElement.movingManipulator = new Manipulator(tabElement);
                         tabElement.movingManipulator.last.add(tabElement.miniatureManipulator.first);
                         drawings.piste.last.add(tabElement.movingManipulator.first);
                         tabElement.miniatureManipulator.first.move(point.x, point.y);
-                        manageDnD(tabElement.miniature.icon.cadre, tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
-                        manageDnD(tabElement.miniature.icon.content,tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
+                        manageDnD(miniatureElement[0], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
+                        manageDnD(miniatureElement[1],tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                     };
                     let mouseupHandler = eventUp => {
 
@@ -901,8 +903,8 @@ exports.GUI = function (globalVariables) {
                             tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
                             this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                            svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
-                            svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
+                            svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
+                            svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
                             tabElement.miniature.miniatureClickHandler();
                         };
 
@@ -925,18 +927,19 @@ exports.GUI = function (globalVariables) {
                     putMiniatureInPiste();
 
                     svg.event(drawings.glass, "mousedown", eventDown);
-                    svg.addEvent(tabElement.miniature.icon.cadre, 'mouseup', mouseupHandler);
-                    svg.addEvent(tabElement.miniature.icon.content, 'mouseup', mouseupHandler);
+                    svg.addEvent(miniatureElement[0], 'mouseup', mouseupHandler);
+                    svg.addEvent(miniatureElement[1], 'mouseup', mouseupHandler);
                 };
-                !playerMode && svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
-                !playerMode && svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
+                tabElement.miniatureElement = tabElement.miniature.game.miniatureManipulator.ordonator.children;
+                !playerMode && svg.addEvent(tabElement.miniatureElement[0], 'mousedown', mouseDownAction);
+                !playerMode && svg.addEvent(tabElement.miniatureElement[1], 'mousedown', mouseDownAction);
 
                 (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
                     let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizzHandler(event, tabElement)];
-                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
-                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
+                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
+                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
                 } else if (tabElement instanceof Bd) {
                     let eventToUse = playerMode ? ["click",() => {}] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
@@ -944,8 +947,8 @@ exports.GUI = function (globalVariables) {
                         let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                         bdDisplay(targetBd);
                     };
-                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.cadre, ...eventToUse);
-                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniature.icon.content, ...eventToUse);
+                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
+                    tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
                     // Ouvrir le Bd creator du futur jeu Bd
                 }
             };
@@ -1151,7 +1154,7 @@ exports.GUI = function (globalVariables) {
                         }
                         allQuizzValid = allQuizzValid && checkQuizz.isValid;
                     });
-                    checkQuizz.isValid || game.miniature.icon.cadre.color(myColors.white, 3, myColors.red);
+                    checkQuizz.isValid || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
                 });
             });
             if (!allQuizzValid) {
@@ -2124,8 +2127,8 @@ exports.GUI = function (globalVariables) {
         this.questionHeightWithImage = heightPage * questionPercentageWithImage - MARGIN;
         this.answerHeightWithImage = heightPage * answerPercentageWithImage - MARGIN;
         this.manipulator.translator.move(this.questionArea.w / 2, this.headerHeight);
-
         this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
+        let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
         if (this.previewMode) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
@@ -2135,12 +2138,12 @@ exports.GUI = function (globalVariables) {
                     this.puzzleLines = 3;
                     this.puzzleRows = 3;
                     this.returnButton.label = "Retour à la formation";
-                    this.returnButton.returnButton.mark('returnButtonToFormation');
+                    returnButtonChevron.mark('returnButtonToFormation');
                     drawing.currentPageDisplayed = "QuizPreview";
                     (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
             } else {
-                this.returnButton.returnButton.mark('returnButtonPreview');
+                returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
                     this.manipulator.flush();
                     this.parentFormation.quizzManager.loadQuizz(this, this.currentQuestionIndex);
@@ -2148,7 +2151,7 @@ exports.GUI = function (globalVariables) {
                 });
             }
         } else {
-            this.returnButton.returnButton.mark('returnButtonToFormation');
+            returnButtonChevron.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
@@ -2256,7 +2259,8 @@ exports.GUI = function (globalVariables) {
         header.display(bd.title);
         (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
         bd.returnButton.display(0, drawing.height * header.size + 2 * MARGIN, 20, 20);
-        bd.returnButton.returnButton.mark('returnButtonFromBdToFormation');
+        let returnButtonChevron = bd.returnButton.chevronManipulator.ordonator.children[0];
+        returnButtonChevron.mark('returnButtonFromBdToFormation');
         bd.returnButton.setHandler(this.previewMode ? (event) => {
             let target = bd.returnButton;
             target.parent.manipulator.flush();
@@ -2428,7 +2432,8 @@ exports.GUI = function (globalVariables) {
 
         this.returnButton.display(-2 * MARGIN, 0, 20, 20);
         this.returnButton.setHandler(returnHandler);
-        this.returnButton.returnButton.mark('returnButtonToFormation');
+        let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
+        returnButtonChevron.mark('returnButtonToFormation');
 
         let quizzLabel = {};
 
