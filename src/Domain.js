@@ -315,13 +315,12 @@ exports.Domain = function (globalVariables) {
         constructor(parent, type) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
             type && (this.type = type);
+            this.validLabelInput = true;
             switch (type) {
                 case 'question':
                     this.label = "Double cliquer pour ajouter une question";
-                    this.validLabelInput = true;
                     break;
                 case 'answer':
-                    this.validLabelInput = true;
                     this.label = "Nouvelle réponse";
                     break;
             }
@@ -342,7 +341,6 @@ exports.Domain = function (globalVariables) {
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
             this.y = (this.index - 1) * this.parentFormation.levelHeight;
-            this.obj = null;
         }
 
         removeGame(index) {
@@ -437,7 +435,7 @@ exports.Domain = function (globalVariables) {
             this.graphElementSize = this.levelHeight * 0.65;
             this.miniature = new MiniatureFormation(this);
 
-            this.redim();
+            this.changeableDimensions();
             this.manipulator.last.add(this.saveFormationButtonManipulator.first);
             this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
             this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
@@ -723,7 +721,7 @@ exports.Domain = function (globalVariables) {
             return available;
         }
 
-        redim() {
+        changeableDimensions() {
             this.gamesLibraryManipulator = this.library.libraryManipulator;
             this.libraryWidth = drawing.width * this.libraryWidthRatio;
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
@@ -740,7 +738,6 @@ exports.Domain = function (globalVariables) {
                 width: this.marginRatio * drawing.width
             };
             this.clippingManipulator.flush();
-
         }
 
         checkInputTextArea(myObj) {
@@ -774,7 +771,7 @@ exports.Domain = function (globalVariables) {
             };
             if (this.library.gameSelected) {
                 svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-                svg.addEvent(this.messageDragDrop, "mouseup", this.mouseUpGraphBlock);
+                svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
             }
         }
 
@@ -1105,7 +1102,6 @@ exports.Domain = function (globalVariables) {
             this.returnButtonManipulator = new Manipulator(this);
             this.manipulator = new Manipulator(this);
         }
-
         isChildOf(parentGame){
             parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
         };
@@ -1122,10 +1118,8 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.expButtonManipulator.first);
 
             this.chevronManipulator = new Manipulator(this);
-            this.leftChevronManipulator = new Manipulator(this);
-            this.rightChevronManipulator = new Manipulator(this);
-            this.leftChevronManipulator.addOrdonator(1);
-            this.rightChevronManipulator.addOrdonator(1);
+            this.leftChevronManipulator = new Manipulator(this).addOrdonator(1);
+            this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
             this.manipulator.last.add(this.chevronManipulator.first);
             this.chevronManipulator.last.add(this.leftChevronManipulator.first);
             this.chevronManipulator.last.add(this.rightChevronManipulator.first);
@@ -1166,10 +1160,7 @@ exports.Domain = function (globalVariables) {
                 this.miniaturePosition = {x: 0, y: 0};
                 this.questionsAnswered = quizz.questionsAnswered ? quizz.questionsAnswered : [];
                 this.score = (quizz.score ? quizz.score : 0);
-                this.drawing = drawing;
                 this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
-                // this.finalMessage = "";
-
             }
 
         loadQuestions(quizz) {

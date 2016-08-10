@@ -793,14 +793,14 @@ exports.GUI = function (globalVariables) {
             this.panel.contentV.add(level.manipulator.first);
             var lineColor = playerMode ? myColors.grey : myColors.black;
             var levelText = playerMode ? "" : "Niveau " + level.index;
-            level.obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator);
-            level.obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
-            level.obj.line.component.setAttribute && level.obj.line.component.setAttribute('stroke-dasharray', '6');
-            level.obj.line.component.target && level.obj.line.component.target.setAttribute && level.obj.line.component.target.setAttribute('stroke-dasharray', '6');
+            let obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator);
+            obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
+            obj.line.component.setAttribute && obj.line.component.setAttribute('stroke-dasharray', '6');
+            obj.line.component.target && obj.line.component.target.setAttribute && obj.line.component.target.setAttribute('stroke-dasharray', '6');
 
-            level.manipulator.ordonator.set(2, level.obj.line);
-            level.obj.text.position(level.obj.text.boundingRect().width, level.obj.text.boundingRect().height);
-            level.obj.text._acceptDrop = true;
+            level.manipulator.ordonator.set(2, obj.line);
+            obj.text.position(obj.text.boundingRect().width, obj.text.boundingRect().height);
+            obj.text._acceptDrop = true;
             level.w = w;
             level.h = h;
             level.y = (level.index - 1) * level.parentFormation.levelHeight;
@@ -864,11 +864,11 @@ exports.GUI = function (globalVariables) {
 
         let displayMessageDragAndDrop = () => {
             this.messageDragDropMargin = this.graphCreaHeight / 8 - borderSize;
-            this.messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", this.graphW, this.graphH, 20, null, this.messageDragDropManipulator).text;
-            this.messageDragDrop._acceptDrop = true;
-            this.messageDragDrop.x = this.panel.width / 2;
-            this.messageDragDrop.y = this.messageDragDropMargin + (this.levelsTab.length) * this.levelHeight;
-            this.messageDragDrop.position(this.messageDragDrop.x, this.messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
+            let messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", this.graphW, this.graphH, 20, null, this.messageDragDropManipulator).text;
+            messageDragDrop._acceptDrop = true;
+            messageDragDrop.x = this.panel.width / 2;
+            messageDragDrop.y = this.messageDragDropMargin + (this.levelsTab.length) * this.levelHeight;
+            messageDragDrop.position(messageDragDrop.x, messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
             this.panel.back._acceptDrop = true;
         };
 
@@ -995,15 +995,16 @@ exports.GUI = function (globalVariables) {
             this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height).font("Arial", 20).anchor("start");
             this.manipulator.ordonator.set(0, this.titleSvg);
             this.formationWidth = this.titleSvg.boundingRect().width;
+            let formationLabel = {};
 
             let dblclickEditionFormationLabel = () => {
-                let bounds = this.formationLabel.cadre.boundingRect();
+                let bounds = formationLabel.cadre.boundingRect();
                 this.formationInfoManipulator.ordonator.unset(1);
-                let globalPointCenter = this.formationLabel.cadre.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
+                let globalPointCenter = formationLabel.cadre.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
                 var contentareaStyle = {
                     toppx: globalPointCenter.y + 4,
                     leftpx: globalPointCenter.x + 4,
-                    width: this.formationLabel.cadre.width - MARGIN,
+                    width: formationLabel.cadre.width - MARGIN,
                     height: (this.labelHeight)
                 };
                 drawing.notInTextArea = false;
@@ -1019,15 +1020,15 @@ exports.GUI = function (globalVariables) {
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.ordonator.unset(2);
-                    this.formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
+                    formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
                 };
 
                 var displayErrorMessage = ()=> {
                     removeErrorMessage();
-                    this.formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
+                    formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
                     var anchor = 'start';
                     this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
-                        .position(this.formationLabel.cadre.width + this.formationWidth + 2 * MARGIN, 0)
+                        .position(formationLabel.cadre.width + formationWidth + 2 * MARGIN, 0)
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.ordonator.set(2, this.errorMessage);
                     contentarea.focus();
@@ -1046,7 +1047,7 @@ exports.GUI = function (globalVariables) {
                     contentarea.enter();
                     this.checkInputTextArea({
                         textarea: contentarea,
-                        border: this.formationLabel.cadre,
+                        border: formationLabel.cadre,
                         onblur: onblur,
                         remove: removeErrorMessage,
                         display: displayErrorMessage
@@ -1056,7 +1057,7 @@ exports.GUI = function (globalVariables) {
                 svg.addEvent(contentarea, "input", oninput);
                 this.checkInputTextArea({
                     textarea: contentarea,
-                    border: this.formationLabel.cadre,
+                    border: formationLabel.cadre,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
@@ -1068,21 +1069,20 @@ exports.GUI = function (globalVariables) {
                 let color = this.label ? myColors.black : myColors.grey;
                 let bgcolor = myColors.lightgrey;
                 this.formationLabelWidth = 400;
-                this.formationLabel = {};
-                this.formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
-                this.formationLabel.content.mark('formationLabelContent');
-                this.labelHeight = this.formationLabel.content.boundingRect().height;
+                formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                formationLabel.content.mark('formationLabelContent');
+                this.labelHeight = formationLabel.content.boundingRect().height;
 
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
-                this.formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                this.validLabelInput ? this.formationLabel.cadre.color(bgcolor) : this.formationLabel.cadre.color(bgcolor, 2, myColors.red);
-                this.formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
+                formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
+                this.validLabelInput ? formationLabel.cadre.color(bgcolor) : formationLabel.cadre.color(bgcolor, 2, myColors.red);
+                formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
 
-                this.formationInfoManipulator.ordonator.set(0, this.formationLabel.cadre);
-                this.formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+                this.formationInfoManipulator.ordonator.set(0, formationLabel.cadre);
+                formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
                 this.formationInfoManipulator.translator.move(0, this.returnButton.height);
-                svg.addEvent(this.formationLabel.content, "dblclick", dblclickEditionFormationLabel);
-                svg.addEvent(this.formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(formationLabel.content, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
             };
             showTitle();
             this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
@@ -1287,17 +1287,17 @@ exports.GUI = function (globalVariables) {
             this.checkLegend = statusEnum.Published.icon(this.iconeSize);
             this.checkManipulator.ordonator.set(2, this.checkLegend.square);
             this.checkManipulator.ordonator.set(3, this.checkLegend.check);
-            this.published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
-            this.published.position(25, this.published.y);
+            let published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
+            published.position(25, published.y);
 
             this.exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
             this.exclamationManipulator.ordonator.set(0, this.exclamationLegend.circle);
             this.exclamationManipulator.ordonator.set(2, this.exclamationLegend.dot);
             this.exclamationManipulator.ordonator.set(3, this.exclamationLegend.exclamation);
-            this.toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
-            this.toPublish.position(25, this.toPublish.y);
-            this.legendItemLength = this.toPublish.boundingRect().width + this.exclamationLegend.circle.boundingRect().width + MARGIN;
-            this.checkManipulator.first.move(drawing.width - this.legendItemLength - this.published.boundingRect().width - this.checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
+            let toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
+            toPublish.position(25, toPublish.y);
+            this.legendItemLength = toPublish.boundingRect().width + this.exclamationLegend.circle.boundingRect().width + MARGIN;
+            this.checkManipulator.first.move(drawing.width - this.legendItemLength - published.boundingRect().width - this.checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
             this.exclamationManipulator.first.move(drawing.width - this.legendItemLength, 30);
 
             this.formations.sort((a, b) => {
@@ -1511,13 +1511,13 @@ exports.GUI = function (globalVariables) {
                 this.selectedAnswers.push(sourceElement);
                 sourceElement.colorBordure = sourceElement.bordure.strokeColor;
                 sourceElement.bordure.color(sourceElement.bgColor, 5, SELECTION_COLOR);
-                this.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
+                this.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
             } else {
                 sourceElement.selected = false;
                 this.selectedAnswers.splice(this.selectedAnswers.indexOf(sourceElement), 1);
                 sourceElement.bordure.color(sourceElement.bgColor, 1, sourceElement.colorBordure);
                 if (this.selectedAnswers.length === 0) {
-                    this.resetButton.cadre.color(myColors.grey, 1, myColors.grey);
+                    this.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
                 }
             }
         }
@@ -1674,11 +1674,11 @@ exports.GUI = function (globalVariables) {
             h = Math.min(this.tileHeight, 50);
             var resetX = -w / 2 - 0.08 * drawing.width;
             var resetY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
-            this.resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
-            this.resetButton.content.mark("resetButtonQuiz");
+            let resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
+            resetButton.content.mark("resetButtonQuiz");
             this.resetManipulator.translator.move(resetX + w / 2, resetY + h / 2);
             if (this.selectedAnswers.length !== 0) {
-                this.resetButton.cadre.color(myColors.yellow, 1, myColors.green);
+                resetButton.cadre.color(myColors.yellow, 1, myColors.green);
             }
             if (!this.parentQuizz.previewMode) {
                 this.reset = ()=> {
@@ -1688,11 +1688,11 @@ exports.GUI = function (globalVariables) {
                             e.bordure.color(e.bgColor, 1, e.colorBordure);
                         });
                         this.selectedAnswers.splice(0, this.selectedAnswers.length);
-                        this.resetButton.cadre.color(myColors.grey, 1, myColors.grey);
+                        resetButton.cadre.color(myColors.grey, 1, myColors.grey);
                     }
                 };
-                svg.addEvent(this.resetButton.content, 'click', this.reset);
-                svg.addEvent(this.resetButton.cadre, 'click', this.reset);
+                svg.addEvent(resetButton.content, 'click', this.reset);
+                svg.addEvent(resetButton.cadre, 'click', this.reset);
             }
         }
         else {

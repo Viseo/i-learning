@@ -809,7 +809,7 @@ exports.Util = function (globalVariables) {
             var levelsTab = this.game.parentFormation.levelsTab;
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
                 levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
-                levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
+                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(1);
                 this.game.parentFormation.levelsTab.pop();
             }
 
