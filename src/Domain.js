@@ -1287,6 +1287,8 @@ exports.Domain = function (globalVariables) {
             this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
             this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
                 this.questionArea.w, this.questionHeight);
+            this.rightChevron.update(this);
+            this.leftChevron.update(this);
             !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
             this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
                 this.questionArea.w, this.answerHeight);

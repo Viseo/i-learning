@@ -1612,6 +1612,12 @@ exports.GUI = function (globalVariables) {
             } else if(playerMode && this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.indexOf(i)!== -1)
                     this.tabAnswer[i].correct ? this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.red);
+            } else if(playerMode && !this.parentQuizz.previewMode){
+                if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
+                    this.tabAnswer[i].bordure.color(myColors.white, 1, this.tabAnswer[i].bordure.strokeColor);
+                }else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.indexOf(i)!== -1){
+                    this.tabAnswer[i].bordure.color(myColors.greyerBlue, 1, this.tabAnswer[i].bordure.strokeColor);
+                }
             }
         }
         if (playerMode && this.parentQuizz.previewMode) {
@@ -2050,25 +2056,9 @@ exports.GUI = function (globalVariables) {
         drawing.currentPageDisplayed = "Quizz";
         header.display(this.parentFormation.label + " - " + this.title);
         mainManipulator.ordonator.set(1, this.manipulator.first);
-
-        // let setSizes = ()=> {
-        //     // this.x = x || this.x || 0;
-        //     // if (x === 0)this.x = 0;
-        //     // this.y = y || this.y || 0;
-        //     // w && (this.questionArea.w = w);
-        //     (w && x) && (this.resultArea.w = w );
-        //     x && (this.resultArea.x = x);
-        //     w && (this.titleArea.w = w);
-        //     //x && (this.quizzMarginX = x);
-        //     this.headerPercentage = HEADER_SIZE;
-        //     this.questionPercentageWithImage = 0.3;
-        //     this.questionPercentage = 0.2;
-        //     this.answerPercentageWithImage = 0.6;
-        //     this.answerPercentage = 0.7;
-        // };
         let headerPercentage, questionPercentageWithImage, questionPercentage,
             answerPercentageWithImage;
-        let setSizes = ()=> {
+        let setSizes = (()=> {
             this.x = x + w * 0.15 || this.x || 0;
             this.y = y || this.y || 0;
             w && (this.questionArea.w = w * 0.7);
@@ -2081,8 +2071,7 @@ exports.GUI = function (globalVariables) {
             questionPercentage = 0.2;
             answerPercentageWithImage = 0.6;
             this.answerPercentage = 0.7;
-        };
-        setSizes();
+        })();
 
         let heightPage = drawing.height;
         this.headerHeight = heightPage * headerPercentage;
@@ -2128,11 +2117,33 @@ exports.GUI = function (globalVariables) {
         this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
         this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
 
-        this.leftChevron.parentObj = this;
-        this.rightChevron.parentObj = this;
-        let updateColorChevrons = (quiz) => {
-            quiz.rightChevron.color(quiz.currentQuestionIndex === quiz.tabQuestions.length - 1 ? myColors.grey : myColors.black);
-            quiz.leftChevron.color(quiz.currentQuestionIndex === 0 ? myColors.grey : myColors.black);
+        this.leftChevron.update = function (quizz) {
+            if(quizz.currentQuestionIndex === 0){
+                this.color(myColors.grey);
+                svg.removeEvent(this, "click");
+            }else{
+                this.color(myColors.black);
+                svg.addEvent(this, "click", ()=>{leftChevronHandler();});
+            }
+        };
+        this.rightChevron.update = function (quizz) {
+            if(quizz.previewMode){
+                if(quizz.currentQuestionIndex === quizz.tabQuestions.length - 1){
+                    this.color(myColors.grey);
+                    svg.removeEvent(this, "click");
+                }else{
+                    this.color(myColors.black);
+                    svg.addEvent(this, "click", ()=>{rightChevronHandler();});
+                }
+            }else{
+                if(quizz.currentQuestionIndex === quizz.questionsAnswered.length){
+                    this.color(myColors.grey);
+                    svg.removeEvent(this, "click");
+                }else{
+                    this.color(myColors.black);
+                    svg.addEvent(this, "click", ()=>{rightChevronHandler();});
+                }
+            }
         };
 
         const closePopIn = () => {
@@ -2143,31 +2154,28 @@ exports.GUI = function (globalVariables) {
             });
         };
 
-        let leftChevronHandler = (event) => {
+        let leftChevronHandler = () => {
             closePopIn();
-            let target = drawings.background.getTarget(event.pageX, event.pageY);
-            let puzzle = target.parentObj;
-            if (puzzle.currentQuestionIndex > 0) {
-                puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
-                puzzle.currentQuestionIndex--;
-                updateColorChevrons(puzzle);
-                puzzle.displayCurrentQuestion();
+            if (this.currentQuestionIndex > 0) {
+                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.currentQuestionIndex--;
+                this.leftChevron.update(this);
+                this.rightChevron.update(this);
+                this.displayCurrentQuestion();
             }
         };
-        let rightChevronHandler = (event) => {
+        let rightChevronHandler = () => {
             closePopIn();
-            let target = drawings.background.getTarget(event.pageX, event.pageY);
-            let puzzle = target.parentObj;
-            if (puzzle.currentQuestionIndex < puzzle.tabQuestions.length - 1) {
-                puzzle.manipulator.last.remove(puzzle.tabQuestions[puzzle.currentQuestionIndex].manipulator.first);
-                puzzle.currentQuestionIndex++;
-                updateColorChevrons(puzzle);
-                puzzle.displayCurrentQuestion();
+            if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
+                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.currentQuestionIndex++;
+                this.leftChevron.update(this);
+                this.rightChevron.update(this);
+                this.displayCurrentQuestion();
             }
         };
-        updateColorChevrons(this);
-        svg.addEvent(this.leftChevron, "click", leftChevronHandler);
-        svg.addEvent(this.rightChevron, "click", rightChevronHandler);
+        // this.leftChevron.update(this);
+        // this.rightChevron.update(this);
 
         if (this.currentQuestionIndex === -1) {// on passe à la première question
             this.nextQuestion();
