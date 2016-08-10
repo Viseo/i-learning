@@ -1058,7 +1058,7 @@ exports.GUI = function (globalVariables) {
 
         if (playerMode) {
             this.graphCreaHeightRatio = 0.97;
-            this.graphCreaHeight = (drawing.height - header.height - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
+            this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
             this.graphCreaWidth = drawing.width - 2 * MARGIN;
             displayFrame(this.graphCreaWidth, this.graphCreaHeight);
             this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
@@ -1066,7 +1066,7 @@ exports.GUI = function (globalVariables) {
         } else {
             this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
 
-            this.graphCreaHeight = (drawing.height - header.height - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
+            this.graphCreaHeight = (drawing.height - drawing.height*HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
             this.gamesLibraryManipulator = this.library.libraryManipulator;
@@ -1257,19 +1257,21 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.set(1, this.manipulator.first);
         this.manipulator.last.children.indexOf(this.headerManipulator.first) === -1 && this.manipulator.last.add(this.headerManipulator.first);
 
+        let toggleFormationsCheck;
+
         if (playerMode) {
             this.headerManipulator.last.add(this.toggleFormationsManipulator.first);
             let manip = this.toggleFormationsManipulator,
                 pos = -MARGIN,
                 toggleFormationsText = displayText('Formations en cours', drawing.width * 0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
                 textWidth = toggleFormationsText.content.boundingRect().width;
-            this.toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
+            toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
             pos -= textWidth / 2;
             toggleFormationsText.content.position(pos, 6);
             toggleFormationsText.cadre.position(pos, 0);
             pos -= textWidth / 2 + 2 * MARGIN;
-            this.toggleFormationsCheck.position(pos, 0);
-            manip.ordonator.set(2, this.toggleFormationsCheck);
+            toggleFormationsCheck.position(pos, 0);
+            manip.ordonator.set(2, toggleFormationsCheck);
             manip.translator.move(drawing.width, 10 + MARGIN);
 
             let toggleFormations = () => {
@@ -1285,7 +1287,7 @@ exports.GUI = function (globalVariables) {
                 this.formationsManipulator.flush();
                 this.displayFormations();
             };
-            svg.addEvent(this.toggleFormationsCheck, 'click', toggleFormations);
+            svg.addEvent(toggleFormationsCheck, 'click', toggleFormations);
             svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
             svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
         } else {
@@ -1295,19 +1297,19 @@ exports.GUI = function (globalVariables) {
             this.headerManipulator.last.add(this.exclamationManipulator.first);
         }
 
-        let addFormationButton;
+        let addFormationButton, spaceBetweenElements;
 
         let displayPanel = () => {
-            this.heightAllocatedToPanel = drawing.height - (playerMode ?
-                this.toggleFormationsCheck.globalPoint(0, 0).y + this.toggleFormationsCheck.height + MARGIN :
+            let heightAllocatedToPanel = drawing.height - (playerMode ?
+                toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN :
                 addFormationButton.cadre.globalPoint(0, 0).y + addFormationButton.cadre.height);
-            this.spaceBetweenElements = {
+            spaceBetweenElements = {
                 width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                 height: this.panel ? 0.030 * this.panel.height : 0.030 * drawing.height
             };
-            this.y = (!playerMode) ? this.addButtonHeight * 1.5 : this.toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
+            this.y = (!playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
 
-            this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + this.spaceBetweenElements.width));
+            this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
             if (this.rows === 0) this.rows = 1;
 
             drawing.notInTextArea = true;
@@ -1323,19 +1325,19 @@ exports.GUI = function (globalVariables) {
 
             this.manipulator.last.children.indexOf(this.clippingManipulator.first) === -1 && this.manipulator.last.add(this.clippingManipulator.first);
             this.clippingManipulator.translator.move(MARGIN / 2, this.y);
-            var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + this.spaceBetweenElements.width)));
-            var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + this.spaceBetweenElements.width)));
+            var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
+            var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
             if (typeof this.panel === "undefined") {
-                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, this.heightAllocatedToPanel, myColors.none);
+                this.panel = new gui.Panel(drawing.width - 2 * MARGIN, heightAllocatedToPanel, myColors.none);
             }
             else {
-                this.panel.resize(drawing.width - 2 * MARGIN, this.heightAllocatedToPanel);
+                this.panel.resize(drawing.width - 2 * MARGIN, heightAllocatedToPanel);
             }
-            this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, this.heightAllocatedToPanel / 2);
+            this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
             (this.clippingManipulator.last.children.indexOf(this.panel.component) === -1) && this.clippingManipulator.last.add(this.panel.component);
             this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-            this.formationsManipulator.translator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + this.spaceBetweenElements.height / 2);
+            this.formationsManipulator.translator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + spaceBetweenElements.height / 2);
         };
 
         let onClickFormation = formation => {
@@ -1371,21 +1373,21 @@ exports.GUI = function (globalVariables) {
             svg.addEvent(addFormationButton.content, "click", onClickNewFormation);
             svg.addEvent(addFormationButton.cadre, "click", onClickNewFormation);
 
-            this.checkLegend = statusEnum.Published.icon(this.iconeSize);
-            this.checkManipulator.ordonator.set(2, this.checkLegend.square);
-            this.checkManipulator.ordonator.set(3, this.checkLegend.check);
+            let checkLegend = statusEnum.Published.icon(this.iconeSize);
+            this.checkManipulator.ordonator.set(2, checkLegend.square);
+            this.checkManipulator.ordonator.set(3, checkLegend.check);
             let published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
             published.position(25, published.y);
 
-            this.exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
-            this.exclamationManipulator.ordonator.set(0, this.exclamationLegend.circle);
-            this.exclamationManipulator.ordonator.set(2, this.exclamationLegend.dot);
-            this.exclamationManipulator.ordonator.set(3, this.exclamationLegend.exclamation);
+            let exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
+            this.exclamationManipulator.ordonator.set(0, exclamationLegend.circle);
+            this.exclamationManipulator.ordonator.set(2, exclamationLegend.dot);
+            this.exclamationManipulator.ordonator.set(3, exclamationLegend.exclamation);
             let toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
             toPublish.position(25, toPublish.y);
-            this.legendItemLength = toPublish.boundingRect().width + this.exclamationLegend.circle.boundingRect().width + MARGIN;
-            this.checkManipulator.first.move(drawing.width - this.legendItemLength - published.boundingRect().width - this.checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
-            this.exclamationManipulator.first.move(drawing.width - this.legendItemLength, 30);
+            let legendItemLength = toPublish.boundingRect().width + exclamationLegend.circle.boundingRect().width + MARGIN;
+            this.checkManipulator.first.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
+            this.exclamationManipulator.first.move(drawing.width - legendItemLength, 30);
 
             this.formations.sort((a, b) => {
                 var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
@@ -1412,7 +1414,7 @@ exports.GUI = function (globalVariables) {
                 if (count > (this.rows - 1)) {
                     count = 0;
                     totalLines++;
-                    posy += (this.tileHeight + this.spaceBetweenElements.height);
+                    posy += (this.tileHeight + spaceBetweenElements.height);
                     posx = this.initialFormationsPosX;
                 }
                 formation.parent = this;
@@ -1422,21 +1424,21 @@ exports.GUI = function (globalVariables) {
 
                 formation.miniature.setHandler(onClickFormation);
                 count++;
-                posx += (this.tileWidth + this.spaceBetweenElements.width);
+                posx += (this.tileWidth + spaceBetweenElements.width);
             });
-            this.panel.resizeContent(this.panel.width, totalLines * (this.spaceBetweenElements.height + this.tileHeight) + this.spaceBetweenElements.height - MARGIN);
+            this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height - MARGIN);
         };
         (this.tileHeight > 0) && this.displayFormations();
     }
 
     function headerDisplay(message) {
-        this.width = drawing.width;
-        this.height = this.size * drawing.height;
+        let width = drawing.width;
+        let height = HEADER_SIZE * drawing.height;
 
         const manip = this.manipulator,
             userManip = this.userManipulator,
-            text = new svg.Text(this.label).position(MARGIN, this.height * 0.75).font('Arial', 20).anchor('start'),
-            line = new svg.Line(0, this.height, this.width, this.height).color(myColors.black, 3, myColors.black);
+            text = new svg.Text(this.label).position(MARGIN, height * 0.75).font('Arial', 20).anchor('start'),
+            line = new svg.Line(0, height, width, height).color(myColors.black, 3, myColors.black);
         manip.ordonator.set(1, text);
         manip.ordonator.set(0, line);
         mainManipulator.ordonator.set(0, manip.first);
@@ -1444,12 +1446,12 @@ exports.GUI = function (globalVariables) {
         const displayUser = () => {
 
             let pos = -MARGIN;
-            const deconnexion = displayText("Déconnexion", this.width * 0.15, this.height, myColors.none, myColors.none, 20, null, userManip, 4, 5),
+            const deconnexion = displayText("Déconnexion", width * 0.15, height, myColors.none, myColors.none, 20, null, userManip, 4, 5),
                 deconnexionWidth = deconnexion.content.boundingRect().width,
                 ratio = 0.65,
                 body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.black),
                 head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
-                userText = autoAdjustText(drawing.username, this.width * 0.23, this.height, 20, null, userManip, 3);
+                userText = autoAdjustText(drawing.username, width * 0.23, height, 20, null, userManip, 3);
 
             pos -= deconnexionWidth / 2;
             deconnexion.content.position(pos, 0);
@@ -1463,7 +1465,7 @@ exports.GUI = function (globalVariables) {
             pos -= body.boundingRect().width / 2 + MARGIN;
             body.position(pos, -5 * ratio);
             head.position(pos, -20 * ratio);
-            userManip.translator.move(this.width, this.height * 0.75);
+            userManip.translator.move(width, height * 0.75);
 
             const deconnexionHandler = () => {
                 svg.setCookie("token=; path=/; max-age=0;");
@@ -1476,8 +1478,8 @@ exports.GUI = function (globalVariables) {
         };
 
         if (message) {
-            const messageText = autoAdjustText(message, this.width * 0.3, this.height, 32, 'Arial', manip, 2);
-            messageText.text.position(this.width / 2, this.height / 2 + MARGIN)
+            const messageText = autoAdjustText(message, width * 0.3, height, 32, 'Arial', manip, 2);
+            messageText.text.position(width / 2, height / 2 + MARGIN)
                 .mark("headerMessage");
         } else {
             manip.ordonator.unset(2);
@@ -1493,7 +1495,7 @@ exports.GUI = function (globalVariables) {
             const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
             special.cadre.mark('inscriptionLink');
             special.content.anchor("end");
-            userManip.translator.move(this.width - MARGIN, this.height * 0.5);
+            userManip.translator.move(width - MARGIN, height * 0.5);
             userManip.scalor.scale(1);
             svg.addEvent(special.content, "click", clickHandler);
             svg.addEvent(special.cadre, "click", clickHandler);
@@ -1658,7 +1660,7 @@ exports.GUI = function (globalVariables) {
                 resetButton.cadre.color(myColors.yellow, 1, myColors.green);
             }
             if (!this.parentQuizz.previewMode) {
-                this.reset = ()=> {
+                let reset = ()=> {
                     if (this.selectedAnswers.length > 0) {
                         this.selectedAnswers.forEach((e)=> {
                             e.selected = false;
@@ -1668,8 +1670,8 @@ exports.GUI = function (globalVariables) {
                         resetButton.cadre.color(myColors.grey, 1, myColors.grey);
                     }
                 };
-                svg.addEvent(resetButton.content, 'click', this.reset);
-                svg.addEvent(resetButton.cadre, 'click', this.reset);
+                svg.addEvent(resetButton.content, 'click', reset);
+                svg.addEvent(resetButton.cadre, 'click', reset);
             }
         }
         else {
@@ -1735,16 +1737,16 @@ exports.GUI = function (globalVariables) {
         w && (this.previousW = w);
         h && (this.previousH = h);
         this.manipulator.translator.move(this.previousX, 0);
-        this.toggleButtonHeight = 40;
+        let toggleButtonHeight = 40;
         this.displayQuestionCreator(this.previousX, this.previousY, this.previousW, this.previousH);
-        var clickedButton = this.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
-        this.displayToggleButton(MARGIN + this.previousX, MARGIN / 2 + this.previousY, this.previousW, this.toggleButtonHeight - MARGIN, clickedButton);
+        let clickedButton = this.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
+        this.displayToggleButton(MARGIN + this.previousX, MARGIN / 2 + this.previousY, this.previousW, toggleButtonHeight - MARGIN, clickedButton);
     }
 
     function questionCreatorDisplayToggleButton(x, y, w, h, clicked) {
         var size = this.manipulator.ordonator.children[1].height * 0.05;
         this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
-        this.toggleButtonWidth = drawing.width / 5;
+        let toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
             let target = drawings.background.getTarget(event.pageX, event.pageY);
             var questionType = target.parent.children[1].messageText;
@@ -1775,9 +1777,9 @@ exports.GUI = function (globalVariables) {
         this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
 
         var length = this.questionType.length;
-        var lengthToUse = (length + 1) * MARGIN + length * this.toggleButtonWidth;
-        this.margin = (w - lengthToUse) / 2;
-        this.x = this.margin + this.toggleButtonWidth / 2 + MARGIN;
+        var lengthToUse = (length + 1) * MARGIN + length * toggleButtonWidth;
+        let margin = (w - lengthToUse) / 2;
+        this.x = margin + toggleButtonWidth / 2 + MARGIN;
         var i = 0;
         (!this.questionTypeSelectorManipulators) && (this.questionTypeSelectorManipulators = []);
         this.questionType.forEach((type)=> {
@@ -1787,11 +1789,11 @@ exports.GUI = function (globalVariables) {
             this.questionTypeSelectorManipulators[i] = new Manipulator(this).addOrdonator(2);
             this.toggleButtonManipulator.last.add(this.questionTypeSelectorManipulators[i].first);
             (type.label == clicked) ? (this.questionTypeSelectorManipulators[i].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[i].color = myColors.white);
-            let toggleButton = displayTextWithoutCorners(type.label, this.toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[i].color, 20, null, this.questionTypeSelectorManipulators[i]);
+            let toggleButton = displayTextWithoutCorners(type.label, toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[i].color, 20, null, this.questionTypeSelectorManipulators[i]);
             toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[i].color), 0, myColors.black);
             toggleButton.cadre.mark('toggleButtonCadre' + type.label.split(" ")[1]);
             this.questionTypeSelectorManipulators[i].translator.move(this.x - this.w / 2, h - this.h / 2);
-            this.x += this.toggleButtonWidth + MARGIN;
+            this.x += toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(toggleButton.content, "click", toggleHandler));
             (type.label != clicked) && (svg.addEvent(toggleButton.cadre, "click", toggleHandler));
             i++;
@@ -2232,7 +2234,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.ordonator.unset(1);
         header.display(bd.title);
         (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
-        bd.returnButton.display(0, drawing.height * header.size + 2 * MARGIN, 20, 20);
+        bd.returnButton.display(0, drawing.height * HEADER_SIZE + 2 * MARGIN, 20, 20);
         let returnButtonChevron = bd.returnButton.chevronManipulator.ordonator.children[0];
         returnButtonChevron.mark('returnButtonFromBdToFormation');
         bd.returnButton.setHandler(this.previewMode ? (event) => {

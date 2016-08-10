@@ -152,9 +152,9 @@ const replaceQuiz = (db, indexes, game, formation) => {
                 version.status = "Edited";
                 version._id = new ObjectID();
                 version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
-                collectionFormations.updateOne({"_id": new ObjectID(id)}, {$push: {versions:version}}, (err) => {
+                collectionFormations.updateOne({"_id": formation._id}, {$push: {versions:version}}, (err) => {
                     if (err) reject(err);
-                    resolve(docs.upsertedId);
+                    resolve(formation.upsertedId);
                 })
             } else {
                 resolve(null);
@@ -166,7 +166,7 @@ const replaceQuiz = (db, indexes, game, formation) => {
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
                 {$set: {versions:formation.versions}}, (err, docs) => {
                     if (err) reject(err);
-                    resolve(docs.upsertedId);
+                    resolve(version._id.toString());
             });
         }
     })

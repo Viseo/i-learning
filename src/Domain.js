@@ -1012,7 +1012,6 @@ exports.Domain = function (globalVariables) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
             this.label = "I-learning";
-            this.size = HEADER_SIZE;
         }
     }
 
