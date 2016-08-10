@@ -3008,6 +3008,7 @@ exports.GUI = function (globalVariables) {
 
     var AdminGUI = function () {
         globalVariables.playerMode = false;
+        util.setGlobalVariables();
         playerMode = false;
         AddEmptyElement.prototype.display = addEmptyElementDisplay;
         Answer.prototype.display = answerDisplay;
@@ -3047,6 +3048,7 @@ exports.GUI = function (globalVariables) {
 
     var LearningGUI = function () {
         globalVariables.playerMode = true;
+        util.setGlobalVariables();
         playerMode = true;
         Answer.prototype.display = answerDisplay;
         Bd.prototype.displayMiniature = gameDisplayMiniature;

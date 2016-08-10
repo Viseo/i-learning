@@ -925,7 +925,7 @@ exports.Domain = function (globalVariables) {
 
     class Library {
         constructor() {
-            this.libraryManipulator = new Manipulator(this).addOrdonator(3);
+            this.libraryManipulator = new Manipulator(this).addOrdonator(4);
             this.itemsTab = [];
             this.libraryManipulators = [];
         }
