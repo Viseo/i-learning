@@ -264,6 +264,23 @@ exports.GUI = function (globalVariables) {
                 explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));
             }
 
+        } else if(playerMode && !this.parentQuestion.parentQuizz.previewMode){
+                let clickAnswerHandler = () => {
+                    this.select();
+                    if (this.parentQuestion.multipleChoice && this.selected) {
+                        this.colorBordure = this.bordure.strokeColor;
+                        this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
+                        this.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
+                    }else if (this.parentQuestion.multipleChoice){
+                        this.bordure.color(this.bgColor, 1, this.colorBordure);
+                        if (this.parentQuestion.selectedAnswers.length === 0) {
+                            this.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
+                        }
+                    }
+                }
+                this.bordure && svg.addEvent(this.bordure, "click", () => {clickAnswerHandler()});
+                this.content && svg.addEvent(this.content, "click", () => {clickAnswerHandler()});
+                this.image && svg.addEvent(this.image, "click", () => {clickAnswerHandler()});
         }
 
         if (this.selected) { // image pré-selectionnée
@@ -1548,199 +1565,84 @@ exports.GUI = function (globalVariables) {
             //this.toggleInvalidQuestionPictogram(false);
         }
     }
-
-    function questionElementClicked(sourceElement) {
-        if (this.multipleChoice === false) {// question normale, une seule réponse possible
-            if (sourceElement.correct) {
-                this.parentQuizz.score++;
-                console.log("Bonne réponse!\n");
-            } else {
-                var reponseD = "";
-                this.rightAnswers.forEach(function (e) {
-                    if (e.label) {
-                        reponseD += e.label + "\n";
-                    }
-                    else if (e.imageSrc) {
-                        var tab = e.imageSrc.split('/');
-                        reponseD += tab[(tab.length - 1)] + "\n";
-                    }
-                });
-                console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
-            }
-            let selectedAnswerIndexTab = [this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(sourceElement)];
-            this.parentQuizz.questionsAnswered.push({
-                index: this.parentQuizz.currentQuestionIndex,
-                question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
-                selectedAnswers: selectedAnswerIndexTab
-            });
-            this.parentQuizz.nextQuestion();
-        } else {// question à choix multiples
-            if (sourceElement.selected === false) {
-                // on sélectionne une réponse
-                sourceElement.selected = true;
-                this.selectedAnswers.push(sourceElement);
-                sourceElement.colorBordure = sourceElement.bordure.strokeColor;
-                sourceElement.bordure.color(sourceElement.bgColor, 5, SELECTION_COLOR);
-                this.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
-            } else {
-                sourceElement.selected = false;
-                this.selectedAnswers.splice(this.selectedAnswers.indexOf(sourceElement), 1);
-                sourceElement.bordure.color(sourceElement.bgColor, 1, sourceElement.colorBordure);
-                if (this.selectedAnswers.length === 0) {
-                    this.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
-                }
-            }
-        }
-    }
-
+    
     function questionDisplayAnswers(x, y, w, h) {
-        this.tileWidth = (w - MARGIN * (this.columns - 1)) / this.columns;
-        this.tileHeight = 0;
-        h = h - 50;
-        this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
-        this.tileHeightMin = 2.50 * this.fontSize;
-        var tmpTileHeight;
 
-        this.tabAnswer.forEach(answer=>{
-            tmpTileHeight = answer.image ? this.tileHeightMax : this.tileHeightMin;
-            if (tmpTileHeight > this.tileHeightMax) {
-                this.tileHeight = this.tileHeightMax;
-            }
-            else if (tmpTileHeight > this.tileHeight) {
-                this.tileHeight = tmpTileHeight;
-            }
-        });
-        this.manipulator.ordonator.set(3, this.answersManipulator.first);
-        this.answersManipulator.translator.move(0, this.height / 2 + (this.tileHeight) / 2);
+        findTileDimension = ()=>{
+            width = (w - MARGIN * (this.columns - 1)) / this.columns;
+            height = 0;
+            h = h - 50;
+            this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
+            heightMin = 2.50 * this.fontSize;
+            let tmpHeight;
 
-        var posx = 0;
-        var posy = 0;
-        var count = 0;
-        for (var i = 0; i < this.tabAnswer.length; i++) {
-            if (i !== 0) {
-                posx += (this.tileWidth + MARGIN);
-            }
-            if (count > (this.columns - 1)) {
-                count = 0;
-                posy += (this.tileHeight + MARGIN);
-                posx = 0;
-            }
-
-            this.answersManipulator.last.children.indexOf(this.tabAnswer[i].manipulator.first) === -1 && this.answersManipulator.last.add(this.tabAnswer[i].manipulator.first);
-            this.tabAnswer[i].display(-this.tileWidth / 2, -this.tileHeight / 2, this.tileWidth, this.tileHeight);
-            this.tabAnswer[i].manipulator.translator.move(posx - (this.columns - 1) * this.tileWidth / 2 - (this.columns - 1) * MARGIN / 2, posy + MARGIN);
-
-            if (this.parentQuizz.previewMode) {
-                if (this.tabAnswer[i].correct) {
-                    this.tabAnswer[i].bordure.color(this.tabAnswer[i].bordure.component.fillColor || myColors.white, 5, myColors.primaryGreen);
+            this.tabAnswer.forEach(answer=>{
+                tmpHeight = answer.image ? this.tileHeightMax : heightMin;
+                if (tmpHeight > this.tileHeightMax) {
+                    height = this.tileHeightMax;
                 }
-            } else {
-                ((element)=> {
-                    if (element.bordure) {
-                        svg.addEvent(element.bordure, "click", ()=> {
-                            this.elementClicked(element);
-                        });
-                    }
-                    if (element.content) {
-                        svg.addEvent(element.content, "click", ()=> {
-                            this.elementClicked(element);
-                        });
-                    }
-                    if (element.image) {
-                        svg.addEvent(element.image, "click", ()=> {
-                            this.elementClicked(element);
-                        });
-                    }
-                })(this.tabAnswer[i]);
+                else if (tmpHeight > height) {
+                    height = tmpHeight;
+                }
+            });
+            return {width: width, height: height};
+        }
+        let tileDimension =  findTileDimension();
+        this.manipulator.ordonator.set(3, this.answersManipulator.first);
+        this.answersManipulator.translator.move(0, this.height / 2 + (tileDimension.height) / 2);
+        let posx = 0,
+            posy = 0,
+            findTilePosition = () => {
+            if (i % this.columns === 0 && i!==0) {
+                posy += (tileDimension.height + MARGIN);
+                posx = 0;
+
+            } else if (i!==0){
+                posx += (tileDimension.width + MARGIN);
             }
-            count++;
+            return {x: posx, y: posy};
+        };
+        for (var i = 0; i < this.tabAnswer.length; i++) {
+            let tilePosition = findTilePosition();
+            this.answersManipulator.last.add(this.tabAnswer[i].manipulator.first);
+            this.tabAnswer[i].display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
+            this.tabAnswer[i].manipulator.translator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
+            if (!playerMode && this.parentQuizz.previewMode){
+                    this.tabAnswer[i].correct && this.tabAnswer[i].bordure.color(myColors.white, 5, myColors.primaryGreen);
+            } else if(playerMode && this.parentQuizz.previewMode){
+                if(this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.indexOf(i)!== -1)
+                    this.tabAnswer[i].correct ? this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.red);
+            }
         }
         if (playerMode && this.parentQuizz.previewMode) {
-
-            (displayClickedAnswers =  () => {
-                if (this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.length > 0) {
-                    this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.forEach(selectedAnswer=> {
-                        this.tabAnswer[selectedAnswer].correct ? this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[selectedAnswer].bordure.color(myColors.greyerBlue, 5, myColors.red);
-                    });
-                } else {
-                    this.tabAnswer.forEach(answer => {
-                        if (answer.correct) {
-                            answer.bordure.color(myColors.white, 5, myColors.primaryGreen)
-                        }
-                    });
-                }
-            })();
-
             w = 0.5 * drawing.width;
-            h = Math.min(this.tileHeight, 50);
+            h = Math.min(tileDimension.height, 50);
             var buttonX = -w / 2;
-            var buttonY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
+            var buttonY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
             this.simpleChoiceMessageManipulator.translator.move(buttonX + w / 2, buttonY + h / 2);
             displayText("Cliquer sur une réponse pour afficher son explication", w, h, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
         }
         else if (this.multipleChoice) {
             //affichage d'un bouton "valider"
             w = 0.1 * drawing.width;
-            h = Math.min(this.tileHeight, 50);
+            h = Math.min(tileDimension.height, 50);
             var validateX, validateY;
             validateX = 0.08 * drawing.width - w / 2;
-            validateY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
+            validateY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
 
             var validateButton = displayText("Valider", w, h, myColors.green, myColors.yellow, 20, this.font, this.validateManipulator);
             validateButton.content.mark("validateButtonQuiz");
             this.validateManipulator.translator.move(validateX + w / 2, validateY + h / 2);
 
-            //button. onclick
             if (!this.parentQuizz.previewMode) {
-                var onClickValidateButton = ()=> {
-                    // test des valeurs, en gros si selectedAnswers === rigthAnswers
-                    var allRight = false;
-                    if (this.rightAnswers.length !== this.selectedAnswers.length) {
-                        allRight = false;
-                    } else {
-                        var subTotal = 0;
-                        this.selectedAnswers.forEach((e)=> {
-                            if (e.correct) {
-                                subTotal++;
-                            }
-                        });
-                        allRight = (subTotal === this.rightAnswers.length);
-                    }
-                    if (allRight) {
-                        this.parentQuizz.score++;
-                        console.log("Bonne réponse!\n");
-                    } else {
-
-                        var reponseD = "";
-                        this.rightAnswers.forEach((e)=> {
-                            if (e.label) {
-                                reponseD += e.label + "\n";
-                            }
-                            else if (e.imageSrc) {
-                                var tab = e.imageSrc.split('/');
-                                reponseD += tab[(tab.length - 1)] + "\n";
-                            }
-                        });
-                        console.log("Mauvaise réponse!\n  Bonnes réponses: " + reponseD);
-                    }
-                    let indexOfSelectedAnswers = [];
-                    this.selectedAnswers.forEach(aSelectedAnswer => {
-                        indexOfSelectedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
-                    });
-                    this.parentQuizz.questionsAnswered.push({
-                        index: this.parentQuizz.currentQuestionIndex,
-                        question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
-                        selectedAnswers: indexOfSelectedAnswers
-                    });
-                    this.parentQuizz.nextQuestion();
-                };
+                var onClickValidateButton = this.validateAnswers.bind(this);
                 svg.addEvent(validateButton.cadre, 'click', onClickValidateButton);
                 svg.addEvent(validateButton.content, 'click', onClickValidateButton);
             }
 
             //Button reset
             w = 0.1 * drawing.width;
-            h = Math.min(this.tileHeight, 50);
+            h = Math.min(tileDimension.height, 50);
             var resetX = -w / 2 - 0.08 * drawing.width;
             var resetY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
             let resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
@@ -1766,9 +1668,9 @@ exports.GUI = function (globalVariables) {
         }
         else {
             w = 0.5 * drawing.width;
-            h = Math.min(this.tileHeight, 50);
+            h = Math.min(tileDimension.height, 50);
             buttonX = -w / 2;
-            buttonY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
+            buttonY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
             this.simpleChoiceMessageManipulator.translator.move(buttonX + w / 2, buttonY + h / 2);
             displayText("Cliquer sur une réponse pour passer à la question suivante", w, h, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
         }
@@ -3115,7 +3017,6 @@ exports.GUI = function (globalVariables) {
         PopIn.prototype.display = popInDisplay;
         Question.prototype.display = questionDisplay;
         Question.prototype.displayAnswers = questionDisplayAnswers;
-        Question.prototype.elementClicked = questionElementClicked;
         Question.prototype.selectedQuestion = questionSelectedQuestion;
         QuestionCreator.prototype.display = questionCreatorDisplay;
         QuestionCreator.prototype.displayToggleButton = questionCreatorDisplayToggleButton;
@@ -3148,7 +3049,6 @@ exports.GUI = function (globalVariables) {
         PopIn.prototype.display = popInDisplay;
         Question.prototype.display = questionDisplay;
         Question.prototype.displayAnswers = questionDisplayAnswers;
-        Question.prototype.elementClicked = questionElementClicked;
         Question.prototype.selectedQuestion = questionSelectedQuestion;
         Quizz.prototype.display = quizzDisplay;
         Quizz.prototype.displayMiniature = gameDisplayMiniature;

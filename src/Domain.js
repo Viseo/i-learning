@@ -111,6 +111,44 @@ exports.Domain = function (globalVariables) {
                 }
             }) : null;
         }
+
+        select() {
+            let question = this.parentQuestion;
+            let quizz = question.parentQuizz;
+            if (!question.multipleChoice) {
+                if (this.correct) {
+                    quizz.score++;
+                    console.log("Bonne réponse!\n");
+                } else {
+                    let reponseD = "";
+                    question.rightAnswers.forEach(function (e) {
+                        if (e.label) {
+                            reponseD += e.label + "\n";
+                        } else if (e.imageSrc) {
+                            let tab = e.imageSrc.split('/');
+                            reponseD += tab[(tab.length - 1)] + "\n";
+                        }
+                    });
+                    console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
+                }
+                let selectedAnswer = [quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer.indexOf(this)];
+                quizz.questionsAnswered.push({
+                    index: quizz.currentQuestionIndex,
+                    question: quizz.tabQuestions[quizz.currentQuestionIndex],
+                    selectedAnswers: selectedAnswer
+                });
+                quizz.nextQuestion();
+            } else {// question à choix multiples
+                this.selected = !this.selected;
+                if (this.selected) {
+                    // on sélectionne une réponse
+                    question.selectedAnswers.push(this);
+                } else {
+                    question.selectedAnswers.splice(question.selectedAnswers.indexOf(this), 1);
+                }
+            }
+        }
+
     }
 
     class Question {
@@ -207,6 +245,51 @@ exports.Domain = function (globalVariables) {
                 validation = validation && result.isValid;
             });
             validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
+        }
+
+        validateAnswers(){
+            // test des valeurs, en gros si selectedAnswers === rigthAnswers
+            var allRight = false;
+
+            if (this.rightAnswers.length !== this.selectedAnswers.length) {
+                allRight = false;
+            } else {
+                var subTotal = 0;
+                this.selectedAnswers.forEach((e)=> {
+                    if (e.correct) {
+                        subTotal++;
+                    }
+                });
+                allRight = (subTotal === this.rightAnswers.length);
+            }
+
+            if (allRight) {
+                this.parentQuizz.score++;
+                console.log("Bonne réponse!\n");
+            } else {
+
+                var reponseD = "";
+                this.rightAnswers.forEach((e)=> {
+                    if (e.label) {
+                        reponseD += e.label + "\n";
+                    }
+                    else if (e.imageSrc) {
+                        var tab = e.imageSrc.split('/');
+                        reponseD += tab[(tab.length - 1)] + "\n";
+                    }
+                });
+                console.log("Mauvaise réponse!\n  Bonnes réponses: " + reponseD);
+            }
+            let indexOfSelectedAnswers = [];
+            this.selectedAnswers.forEach(aSelectedAnswer => {
+                indexOfSelectedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+            });
+            this.parentQuizz.questionsAnswered.push({
+                index: this.parentQuizz.currentQuestionIndex,
+                question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
+                selectedAnswers: indexOfSelectedAnswers
+            });
+            this.parentQuizz.nextQuestion();
         }
 
         toggleInvalidQuestionPictogram(active) {
@@ -428,7 +511,7 @@ exports.Domain = function (globalVariables) {
             this.marginRatio = 0.03;
             this.label = formation.label ? formation.label : "";
             this.status = formation.status ? formation.status : "NotPublished";
-            this.validLabelInput = true ;
+            this.validLabelInput = true;
 
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.levelHeight = 150;
@@ -441,7 +524,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
         }
 
-        dropAction(event,game){
+        dropAction(event, game) {
 
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
@@ -451,7 +534,7 @@ exports.Domain = function (globalVariables) {
             };
             let getLevel = (dropLocation) => {
                 let level = -1;
-                while(dropLocation.y > -this.panel.content.height/2) {
+                while (dropLocation.y > -this.panel.content.height / 2) {
                     dropLocation.y -= this.levelHeight;
                     level++;
                 }
@@ -461,10 +544,10 @@ exports.Domain = function (globalVariables) {
                 }
                 return level;
             };
-            let getColumn = (dropLocation, level)=>{
-                let column=this.levelsTab[level].gamesTab.length;
-                for(let i=0; i<this.levelsTab[level].gamesTab.length; i++){
-                    if(dropLocation.x<this.levelsTab[level].gamesTab[i].miniaturePosition.x){
+            let getColumn = (dropLocation, level)=> {
+                let column = this.levelsTab[level].gamesTab.length;
+                for (let i = 0; i < this.levelsTab[level].gamesTab.length; i++) {
+                    if (dropLocation.x < this.levelsTab[level].gamesTab[i].miniaturePosition.x) {
                         column = i;
                         break;
                     }
@@ -472,34 +555,34 @@ exports.Domain = function (globalVariables) {
                 return column;
             };
 
-            let dropLocation=getDropLocation(event);
-            let level =getLevel(dropLocation);
+            let dropLocation = getDropLocation(event);
+            let level = getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
-            if(game){
+            if (game) {
                 this.moveGame(game, level, column);
                 game.levelIndex === level || game.miniature.removeAllLinks();
-            }else{
+            } else {
                 this.addNewGame(level, column)
             }
             this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
             this.displayGraph();
         }
 
-        addNewGame (level, column) {
+        addNewGame(level, column) {
             let gameBuilder = this.library.draggedObject || this.library.gameSelected || null;
             gameBuilder.create(this, level, column);
         }
 
         moveGame(game, level, column) {
-            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex,1);
-            this.levelsTab[level].gamesTab.splice(column,0 ,game);
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
+            this.levelsTab[level].gamesTab.splice(column, 0, game);
         }
 
-        createLink (parentGame, childGame, arrow) {
-            this.link.push({parentGame : parentGame.id, childGame : childGame.id, arrow: arrow});
+        createLink(parentGame, childGame, arrow) {
+            this.link.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
         };
 
-        removeLink (parentGame, childGame){
+        removeLink(parentGame, childGame) {
             for (let i = this.link.length - 1; i >= 0; i--) {
                 if (this.link[i].childGame === childGame.id && this.link[i].parentGame === parentGame.id)
                     this.link.splice(i, 1);
@@ -519,11 +602,11 @@ exports.Domain = function (globalVariables) {
                 })
         }
 
-        saveFormation (displayQuizzManager, status = "Edited") {
+        saveFormation(displayQuizzManager, status = "Edited") {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
-                messageReplace =  "Les modifications ont bien été enregistrées.",
+                messageReplace = "Les modifications ont bien été enregistrées.",
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
 
@@ -571,17 +654,17 @@ exports.Domain = function (globalVariables) {
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
                     const levelsTab = [];
-                    const gamesCounter = {quizz: 0 , bd : 0};
+                    const gamesCounter = {quizz: 0, bd: 0};
                     this.levelsTab.forEach((level, i) => {
                         const gamesTab = [];
                         levelsTab.push({gamesTab: gamesTab});
                         level.gamesTab.forEach(game => {
                             if (game.tabQuestions) {
-                                game.id || (game.id = "quizz"  + gamesCounter.quizz);
-                                gamesCounter.quizz ++;
+                                game.id || (game.id = "quizz" + gamesCounter.quizz);
+                                gamesCounter.quizz++;
                             } else {
                                 game.id || (game.id = "bd" + gamesCounter.bd);
-                                gamesCounter.bd ++;
+                                gamesCounter.bd++;
                             }
                             levelsTab[i].gamesTab.push(game);
                         });
@@ -593,12 +676,12 @@ exports.Domain = function (globalVariables) {
                     Server.insertFormation(getObjectToSave(), status, ignoredData)
                         .then(data => {
                             let answer = JSON.parse(data);
-                            if(answer.saved) {
+                            if (answer.saved) {
                                 this._id = answer.idVersion;
                                 this.formationId = answer.id;
                                 status === "Edited" ? displayMessage(messageSave, displayQuizzManager) : returnToFormationList();
                             } else {
-                                if(answer.reason === "NameAlreadyUsed") {
+                                if (answer.reason === "NameAlreadyUsed") {
                                     displayMessage(messageUsedName, displayQuizzManager);
                                 }
                             }
@@ -609,7 +692,7 @@ exports.Domain = function (globalVariables) {
                     Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
                         .then((data) => {
                             let answer = JSON.parse(data);
-                            if(answer.saved) {
+                            if (answer.saved) {
                                 status === "Edited" ? displayMessage(messageReplace, displayQuizzManager) : returnToFormationList();
                             } else {
                                 switch (answer.reason) {
@@ -776,10 +859,10 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-        adjustGamesPositions (level) {
-            let computeIndexes =() => {
+        adjustGamesPositions(level) {
+            let computeIndexes = () => {
                 for (let i = 0; i < this.levelsTab.length; i++) {
-                    for(let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
+                    for (let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
                         this.levelsTab[i].gamesTab[j].levelIndex = i;
                         this.levelsTab[i].gamesTab[j].gameIndex = j;
                     }
@@ -795,7 +878,7 @@ exports.Domain = function (globalVariables) {
             });
         }
 
-        trackProgress (displayFunction) {
+        trackProgress(displayFunction) {
             this.levelsTab.forEach(level => {
                 level.gamesTab.forEach(game => {
                     delete game.miniature;
@@ -814,7 +897,7 @@ exports.Domain = function (globalVariables) {
                         }
                         theGame.currentQuestionIndex = game.index;
                         theGame.questionsAnswered = [];
-                        if(game.questionsAnswered) {
+                        if (game.questionsAnswered) {
                             game.questionsAnswered.forEach(wrongAnswer => {
                                 theGame.questionsAnswered.push({
                                     index: wrongAnswer.index - 1,
@@ -850,11 +933,11 @@ exports.Domain = function (globalVariables) {
 
     class GamesLibrary extends Library {
 
-        constructor (lib) {
+        constructor(lib) {
             super();
             this.title = lib.title;
-            this.font = lib.font ;
-            this.fontSize = lib.fontSize ;
+            this.font = lib.font;
+            this.fontSize = lib.fontSize;
             this.itemsTab = lib.tab;
             for (let i = 0; i < this.itemsTab.length; i++) {
                 this.libraryManipulators[i] = new Manipulator(this.itemsTab[i]).addOrdonator(2);
@@ -1233,34 +1316,34 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-            getQuestionsWithBadAnswers (){
-                let questionsWithBadAnswers =[];
-                let allRight = false;
-                this.questionsAnswered.forEach(questionAnswered => {
-                    let question = questionAnswered.question;
-                    if(question.multipleChoice){
-                        if (question.rightAnswers.length !== question.selectedAnswers.length) {
-                            questionsWithBadAnswers.push(question);
-                        } else {
-                            var subTotal = 0;
-                            question.selectedAnswers.forEach((e)=> {
-                                if (e.correct) {
-                                    subTotal++;
-                                }
-                            });
-                            allRight = (subTotal === question.rightAnswers.length);
-                            !allRight && questionsWithBadAnswers.push(question);
-                        }
-                    }else if(!question.multipleChoice && !question.tabAnswer[questionAnswered.selectedAnswers[0]].correct) {
-                            questionsWithBadAnswers.push(question);
+        getQuestionsWithBadAnswers() {
+            let questionsWithBadAnswers = [];
+            let allRight = false;
+            this.questionsAnswered.forEach(questionAnswered => {
+                let question = questionAnswered.question;
+                if (question.multipleChoice) {
+                    if (question.rightAnswers.length !== question.selectedAnswers.length) {
+                        questionsWithBadAnswers.push(question);
+                    } else {
+                        var subTotal = 0;
+                        question.selectedAnswers.forEach((e)=> {
+                            if (e.correct) {
+                                subTotal++;
+                            }
+                        });
+                        allRight = (subTotal === question.rightAnswers.length);
+                        !allRight && questionsWithBadAnswers.push(question);
                     }
+                } else if (!question.multipleChoice && !question.tabAnswer[questionAnswered.selectedAnswers[0]].correct) {
+                    questionsWithBadAnswers.push(question);
+                }
 
-                });
-                return questionsWithBadAnswers;
-            }
+            });
+            return questionsWithBadAnswers;
+        }
     }
 
-    class Bd extends Game{
+    class Bd extends Game {
         constructor(bd, parentFormation) {
             super(bd,parentFormation);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
