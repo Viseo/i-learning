@@ -132,11 +132,11 @@ exports.Domain = function (globalVariables) {
                     console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
                 }
                 let selectedAnswer = [quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer.indexOf(this)];
-                quizz.questionsAnswered.push({
+                quizz.questionsAnswered[quizz.currentQuestionIndex]={
                     index: quizz.currentQuestionIndex,
                     question: quizz.tabQuestions[quizz.currentQuestionIndex],
-                    selectedAnswers: selectedAnswer
-                });
+                    validatedAnswers: selectedAnswer
+                };
                 quizz.nextQuestion();
             } else {// question à choix multiples
                 this.selected = !this.selected;
@@ -184,6 +184,7 @@ exports.Domain = function (globalVariables) {
                 this.bgColor = myColors.white;
                 this.colorBordure = myColors.black;
                 this.selectedAnswers = [];
+                this.validatedAnswers = [];
 
             } else {
                 this.label = question.label;
@@ -192,6 +193,7 @@ exports.Domain = function (globalVariables) {
                 this.rightAnswers = [];
                 this.multipleChoice = question.multipleChoice;
                 this.selectedAnswers = question.selectedAnswers || [];
+                this.validatedAnswers = question.validatedAnswers || [];
 
                 question.colorBordure && (this.colorBordure = question.colorBordure);
                 question.bgColor && (this.bgColor = question.bgColor);
@@ -250,24 +252,23 @@ exports.Domain = function (globalVariables) {
         validateAnswers(){
             // test des valeurs, en gros si selectedAnswers === rigthAnswers
             var allRight = false;
-
-            if (this.rightAnswers.length !== this.selectedAnswers.length) {
+            this.validatedAnswers = this.selectedAnswers;
+            this.selectedAnswers = [];
+            if (this.rightAnswers.length !== this.validatedAnswers.length) {
                 allRight = false;
             } else {
                 var subTotal = 0;
-                this.selectedAnswers.forEach((e)=> {
+                this.validatedAnswers.forEach((e)=> {
                     if (e.correct) {
                         subTotal++;
                     }
                 });
                 allRight = (subTotal === this.rightAnswers.length);
             }
-
             if (allRight) {
                 this.parentQuizz.score++;
                 console.log("Bonne réponse!\n");
             } else {
-
                 var reponseD = "";
                 this.rightAnswers.forEach((e)=> {
                     if (e.label) {
@@ -280,15 +281,16 @@ exports.Domain = function (globalVariables) {
                 });
                 console.log("Mauvaise réponse!\n  Bonnes réponses: " + reponseD);
             }
-            let indexOfSelectedAnswers = [];
-            this.selectedAnswers.forEach(aSelectedAnswer => {
-                indexOfSelectedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+            let indexOfValidatedAnswers = [];
+            this.validatedAnswers.forEach(aSelectedAnswer => {
+                aSelectedAnswer.selected = false;
+                indexOfValidatedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
             });
-            this.parentQuizz.questionsAnswered.push({
+            this.parentQuizz.questionsAnswered[this.parentQuizz.currentQuestionIndex]={
                 index: this.parentQuizz.currentQuestionIndex,
                 question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
-                selectedAnswers: indexOfSelectedAnswers
-            });
+                validatedAnswers: indexOfValidatedAnswers
+            };
             this.parentQuizz.nextQuestion();
         }
 
@@ -902,7 +904,7 @@ exports.Domain = function (globalVariables) {
                                 theGame.questionsAnswered.push({
                                     index: wrongAnswer.index - 1,
                                     question: theGame.tabQuestions[wrongAnswer.index - 1],
-                                    selectedAnswers: wrongAnswer.selectedAnswers
+                                    validatedAnswers: wrongAnswer.validatedAnswers
                                 });
                             });
                             theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
@@ -1312,11 +1314,11 @@ exports.Domain = function (globalVariables) {
             this.questionsAnswered.forEach(questionAnswered => {
                 let question = questionAnswered.question;
                 if (question.multipleChoice) {
-                    if (question.rightAnswers.length !== question.selectedAnswers.length) {
+                    if (question.rightAnswers.length !== question.validatedAnswers.length) {
                         questionsWithBadAnswers.push(question);
                     } else {
                         var subTotal = 0;
-                        question.selectedAnswers.forEach((e)=> {
+                        question.validatedAnswers.forEach((e)=> {
                             if (e.correct) {
                                 subTotal++;
                             }
@@ -1324,7 +1326,7 @@ exports.Domain = function (globalVariables) {
                         allRight = (subTotal === question.rightAnswers.length);
                         !allRight && questionsWithBadAnswers.push(question);
                     }
-                } else if (!question.multipleChoice && !question.tabAnswer[questionAnswered.selectedAnswers[0]].correct) {
+                } else if (!question.multipleChoice && !question.tabAnswer[questionAnswered.validatedAnswers[0]].correct) {
                     questionsWithBadAnswers.push(question);
                 }
 

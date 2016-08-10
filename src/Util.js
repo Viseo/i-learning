@@ -1266,7 +1266,7 @@ exports.Util = function (globalVariables) {
                 version: quiz.parentFormation._id,
                 formation: quiz.parentFormation.formationId
             };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({index: x.question.questionNum, validatedAnswers: x.validatedAnswers}));
             return dbListener.httpPostAsync("/user/saveProgress", data)
         }
 
@@ -1473,7 +1473,7 @@ exports.Util = function (globalVariables) {
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizzManager",
             "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
-            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
+            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers","validatedAnswers", "linkedQuestion",
             "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
             "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",

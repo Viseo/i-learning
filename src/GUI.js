@@ -1612,12 +1612,12 @@ exports.GUI = function (globalVariables) {
             if (!playerMode && this.parentQuizz.previewMode){
                     this.tabAnswer[i].correct && this.tabAnswer[i].bordure.color(myColors.white, 5, myColors.primaryGreen);
             } else if(playerMode && this.parentQuizz.previewMode){
-                if(this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.indexOf(i)!== -1)
+                if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1)
                     this.tabAnswer[i].correct ? this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.red);
             } else if(playerMode && !this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
                     this.tabAnswer[i].bordure.color(myColors.white, 1, this.tabAnswer[i].bordure.strokeColor);
-                }else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].selectedAnswers.indexOf(i)!== -1){
+                }else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1){
                     this.tabAnswer[i].bordure.color(myColors.greyerBlue, 1, this.tabAnswer[i].bordure.strokeColor);
                 }
             }

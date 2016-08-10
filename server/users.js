@@ -56,7 +56,7 @@ const saveProgress = (db, body, user) => {
             if(formation !== -1 ){
                 let game = user.formationsTab[formation].gamesTab.findIndex(x => x.game === body.game);
                 if(game !== -1 ){
-                    newGame.index > user.formationsTab[formation].gamesTab[game].index && (user.formationsTab[formation].gamesTab[game] = newGame);
+                   user.formationsTab[formation].gamesTab[game] = newGame;
                 } else {
                     user.formationsTab[formation].gamesTab[user.formationsTab[formation].gamesTab.length] = newGame;
                 }
