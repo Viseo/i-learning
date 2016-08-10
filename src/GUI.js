@@ -1650,7 +1650,7 @@ exports.GUI = function (globalVariables) {
             w = 0.1 * drawing.width;
             h = Math.min(tileDimension.height, 50);
             var resetX = -w / 2 - 0.08 * drawing.width;
-            var resetY = this.tileHeight * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
+            var resetY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN;
             let resetButton = displayText("Réinitialiser", w, h, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
             resetButton.content.mark("resetButtonQuiz");
             this.resetManipulator.translator.move(resetX + w / 2, resetY + h / 2);
