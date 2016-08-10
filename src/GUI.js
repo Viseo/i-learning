@@ -486,17 +486,12 @@ exports.GUI = function (globalVariables) {
         assignEvents();
     }
 
-    function imagesLibraryDisplay(x, y, w, h, callback = () => {
-    }) {
-        // x && (this.x = x);
-        // y && (this.y = y);
-        // w && (this.w = w);
-        // h && (this.h = h);
+    function imagesLibraryDisplay(x, y, w, h, callback = () => {}) {
 
         let display = (x, y, w, h) => {
-            libraryDisplay.call(this, x, y, w, h, 3 / 4, 0.45 * h);
+            libraryDisplay.call(this, x, y, w, h, 0.6, 0.54*h);
 
-            let assignEvents = () => {
+            const assignEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
                     let mouseDownAction = event => {
                         this.arrowMode && this.toggleArrowMode();
@@ -542,7 +537,7 @@ exports.GUI = function (globalVariables) {
                 });
             };
 
-            let displayItems = () => {
+            const displayItems = () => {
                 let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
                     libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
                     tempY = (0.075 * h);
@@ -591,8 +586,8 @@ exports.GUI = function (globalVariables) {
                     });
             };
 
-            let displaySaveButton = () => {
-                let fileExplorer;
+            const displaySaveButton = () => {
+
                 let fileExplorerHandler = () => {
                     if (!fileExplorer) {
                         let globalPointCenter = this.bordure.globalPoint(0, 0);
@@ -629,7 +624,7 @@ exports.GUI = function (globalVariables) {
                     });
                 };
 
-                let addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
+                const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
                     addButtonLabel = "Ajouter une image",
                     addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
                     plus = drawPlus(0, 0, this.w / 7, this.w / 7);
@@ -645,6 +640,75 @@ exports.GUI = function (globalVariables) {
                 svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
 
             };
+
+            class Tab {
+                constructor (text, width, height, fontsize, font, manipulator, contentManipulator, displayManipulator) {
+                    this.button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
+                    this.button.content.position(0, 5);
+                    this.contentManipulator = contentManipulator;
+                    this.displayManipulator = displayManipulator;
+                }
+
+                select () {
+                    this.selected = true;
+                    this.button.cadre.color(SELECTION_COLOR, 1, myColors.black);
+                    this.button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black)
+                }
+
+                unselect () {
+                    this.selected = false;
+                    this.button.cadre.color(myColors.white, 1, myColors.black);
+                    this.button.content.color(myColors.black, 0, myColors.white)
+                }
+
+                setClickHandler (handler) {
+                    svg.addEvent(this.button.cadre, 'click', handler);
+                    svg.addEvent(this.button.content, 'click', handler);
+                }
+            }
+
+            class TabManager {
+                constructor (width, height, manipulator, ...tabNames) {
+                    this.tabs = [];
+                    const numTabs = tabNames.length;
+                    this.manipulator = new Manipulator().addOrdonator(numTabs);
+
+                    tabNames.forEach((name, i) => {
+                        const content = new Manipulator(),
+                            manip = new Manipulator().addOrdonator(2),
+                            display = new Manipulator(),
+                            tab = new Tab(name, width/numTabs, height, 20, null, manip, content, display);
+                        this.tabs.push(tab);
+                        tab.setClickHandler(() => this.selectTab(i));
+                        manip.translator.move(i*(MARGIN + width/numTabs), 0);
+                        this.manipulator.ordonator.set(i, manip.first);
+                    });
+                    manipulator.ordonator.set(0, this.manipulator.first);
+                }
+
+                selectTab (i) {
+                    this.tabs.forEach((tab, index) => {
+                        if (index === i) {
+                            tab.select()
+                        } else if (tab.selected) {
+                            tab.unselect();
+                        }
+                    });
+                }
+            }
+
+            const displayTabs = () => {
+                const
+                    width = w*0.8,
+                    height = h*0.06;
+                if (!this.tabManager) {
+                    this.tabManager = new TabManager(width, height, this.tabImagesManipulator, "Images", "Vidéos");
+                }
+                this.tabManager.manipulator.translator.move(w/4 + MARGIN, 0.15*h);
+                this.libraryManipulator.ordonator.set(3, this.tabManager.manipulator.first);
+            };
+
+            displayTabs();
 
             displayItems();
             displaySaveButton();
@@ -1504,7 +1568,7 @@ exports.GUI = function (globalVariables) {
             //this.toggleInvalidQuestionPictogram(false);
         }
     }
-    
+
     function questionDisplayAnswers(x, y, w, h) {
 
         findTileDimension = ()=>{
