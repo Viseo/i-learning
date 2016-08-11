@@ -957,8 +957,6 @@ exports.Domain = function (globalVariables) {
             this.imageWidth = 50;
             this.imageHeight = 50;
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
-            this.tabImagesManipulator = new Manipulator(this).addOrdonator(2);
-            this.tabVideosManipulator = new Manipulator(this).addOrdonator(2);
         }
 
         dropAction(element, event) {
