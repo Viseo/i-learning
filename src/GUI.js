@@ -1553,6 +1553,9 @@ exports.GUI = function (globalVariables) {
             } else if(playerMode && this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1)
                     this.tabAnswer[i].correct ? this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.red);
+                else {
+                    this.tabAnswer[i].correct && this.tabAnswer[i].bordure.color(myColors.white, 5, myColors.primaryGreen)
+                }
             } else if(playerMode && !this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
                     this.tabAnswer[i].bordure.color(myColors.white, 1, this.tabAnswer[i].bordure.strokeColor);
