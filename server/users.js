@@ -42,8 +42,7 @@ const saveProgress = (db, body, user) => {
     return new Promise((resolve, reject) => {
         let newGame = {
             game: body.game,
-            questionsAnswered: body.questionsAnswered,
-            index: body.indexQuestion,
+            questionsAnswered: body.questionsAnswered
         };
         let newFormation = {
             version: body.version,
@@ -90,7 +89,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                         const gamesTab = version.levelsTab[x].gamesTab;
                         for (let y = 0; y < gamesTab.length; y++) {
                             const game = gamesTab[y];
-                            if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].index < game.tabQuestions.length) {
+                            if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered < game.tabQuestions.length) {
                                 id = progressArray.version;
                                 return 'inProgress';
                             }

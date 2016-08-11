@@ -287,7 +287,6 @@ exports.Domain = function (globalVariables) {
                 indexOfValidatedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
             });
             this.parentQuizz.questionsAnswered[this.parentQuizz.currentQuestionIndex]={
-                index: this.parentQuizz.questionsAnswered.length,
                 question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
                 validatedAnswers: indexOfValidatedAnswers
             };
@@ -899,18 +898,17 @@ exports.Domain = function (globalVariables) {
                         if (!theGame) {
                             return;
                         }
-                        theGame.currentQuestionIndex = game.index;
+                        theGame.currentQuestionIndex = game.questionsAnswered.length;
                         theGame.questionsAnswered = [];
                         if (game.questionsAnswered) {
-                            game.questionsAnswered.forEach(wrongAnswer => {
+                            game.questionsAnswered.forEach((wrongAnswer,i) => {
                                 theGame.questionsAnswered.push({
-                                    index: wrongAnswer.index - 1,
-                                    question: theGame.tabQuestions[wrongAnswer.index - 1],
+                                    question: theGame.tabQuestions[i],
                                     validatedAnswers: wrongAnswer.validatedAnswers
                                 });
                             });
                             theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
-                            theGame.status = (game.index === theGame.tabQuestions.length) ? "done" : "inProgress";
+                            theGame.status = (game.questionsAnswered.length === theGame.tabQuestions.length) ? "done" : "inProgress";
                         }
                     });
                 }
@@ -1075,7 +1073,7 @@ exports.Domain = function (globalVariables) {
             this.quizzName = this.quizz.title;
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.forEach((question, index ) => {
+            this.quizz.tabQuestions.forEach(question => {
                 //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
             });

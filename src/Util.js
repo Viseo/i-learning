@@ -1285,7 +1285,7 @@ exports.Util = function (globalVariables) {
                 version: quiz.parentFormation._id,
                 formation: quiz.parentFormation.formationId
             };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({index: x.question.questionNum, validatedAnswers: x.validatedAnswers}));
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
             return dbListener.httpPostAsync("/user/saveProgress", data)
         }
 
