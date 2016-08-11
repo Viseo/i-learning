@@ -246,7 +246,7 @@ exports.GUI = function (globalVariables) {
                         popInY,
                         popInWidth = this.parentQuestion.width,
                         popInHeight = this.parentQuestion.tileHeightMax * this.parentQuestion.lines * 0.8;
-                    this.explanationPopIn = new PopIn(this, false);
+                    this.explanationPopIn = this.explanationPopIn || new PopIn(this, false);
                     if (this.parentQuestion.image) {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithImage / 2 + MARGIN;
                     } else {
