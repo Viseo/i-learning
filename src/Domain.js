@@ -952,8 +952,6 @@ exports.Domain = function (globalVariables) {
     class ImagesLibrary extends Library {
         constructor() {
             super();
-            this.title = "Bibliothèque";
-            this.font = "Courier New";
             this.imageWidth = 50;
             this.imageHeight = 50;
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);

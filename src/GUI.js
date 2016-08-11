@@ -301,8 +301,6 @@ exports.GUI = function (globalVariables) {
             .color(myColors.white, borderSize, myColors.black)
             .position(w / 2, h / 2);
         this.libraryManipulator.ordonator.set(0, this.bordure);
-        const titleSvg = autoAdjustText(this.title, 0.9 * w, (0.08) * h, null, this.font, this.libraryManipulator);
-        titleSvg.text.position(w / 2, (1 / 20) * h + titleSvg.finalHeight / 4);
         this.libraryManipulator.translator.move(this.x, this.y);
 
         this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white, 2).position(w / 2 + 0.5, yPanel);
@@ -321,7 +319,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function gamesLibraryDisplay(x, y, w, h) {
-        libraryDisplay.call(this, x + MARGIN, y, w, h, 8 / 10, h / 2);
+        libraryDisplay.call(this, x + MARGIN, y, w, h, 0.9, 0.9*h / 2);
 
         let displayArrowModeButton = () => {
             if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) !== -1) {
@@ -489,7 +487,7 @@ exports.GUI = function (globalVariables) {
     function imagesLibraryDisplay(x, y, w, h, callback = () => {}) {
 
         let display = (x, y, w, h) => {
-            libraryDisplay.call(this, x, y, w, h, 0.6, 0.54*h);
+            libraryDisplay.call(this, x, y, w, h, 0.8, h/2);
 
             const assignEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
@@ -587,8 +585,8 @@ exports.GUI = function (globalVariables) {
             };
 
             const displaySaveButton = () => {
-
-                let fileExplorerHandler = () => {
+                let fileExplorer;
+                const fileExplorerHandler = () => {
                     if (!fileExplorer) {
                         let globalPointCenter = this.bordure.globalPoint(0, 0);
                         var fileExplorerStyle = {
@@ -642,23 +640,25 @@ exports.GUI = function (globalVariables) {
             };
 
             class Tab {
-                constructor (text, width, height, fontsize, font, manipulator, contentManipulator, displayManipulator) {
+                constructor (text, width, height, fontsize, font, manipulator, setContent) {
                     this.button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
                     this.button.content.position(0, 5);
-                    this.contentManipulator = contentManipulator;
-                    this.displayManipulator = displayManipulator;
+                    this.setContent = setContent;
                 }
 
                 select () {
                     this.selected = true;
                     this.button.cadre.color(SELECTION_COLOR, 1, myColors.black);
-                    this.button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black)
+                    this.button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black);
+                    this.setContent();
                 }
 
                 unselect () {
-                    this.selected = false;
-                    this.button.cadre.color(myColors.white, 1, myColors.black);
-                    this.button.content.color(myColors.black, 0, myColors.white)
+                    if (this.selected) {
+                        this.selected = false;
+                        this.button.cadre.color(myColors.white, 1, myColors.black);
+                        this.button.content.color(myColors.black, 0, myColors.white);
+                    }
                 }
 
                 setClickHandler (handler) {
@@ -667,45 +667,45 @@ exports.GUI = function (globalVariables) {
                 }
             }
 
-            class TabManager {
-                constructor (width, height, manipulator, ...tabNames) {
-                    this.tabs = [];
-                    const numTabs = tabNames.length;
-                    this.manipulator = new Manipulator().addOrdonator(numTabs);
-
-                    tabNames.forEach((name, i) => {
-                        const content = new Manipulator(),
-                            manip = new Manipulator().addOrdonator(2),
-                            display = new Manipulator(),
-                            tab = new Tab(name, width/numTabs, height, 20, null, manip, content, display);
-                        this.tabs.push(tab);
-                        tab.setClickHandler(() => this.selectTab(i));
-                        manip.translator.move(i*(MARGIN + width/numTabs), 0);
-                        this.manipulator.ordonator.set(i, manip.first);
-                    });
-                    manipulator.ordonator.set(0, this.manipulator.first);
-                }
-
-                selectTab (i) {
-                    this.tabs.forEach((tab, index) => {
-                        if (index === i) {
-                            tab.select()
-                        } else if (tab.selected) {
-                            tab.unselect();
-                        }
-                    });
-                }
-            }
-
             const displayTabs = () => {
                 const
                     width = w*0.8,
                     height = h*0.06;
-                if (!this.tabManager) {
-                    this.tabManager = new TabManager(width, height, this.tabImagesManipulator, "Images", "Vidéos");
-                }
-                this.tabManager.manipulator.translator.move(w/4 + MARGIN, 0.15*h);
-                this.libraryManipulator.ordonator.set(3, this.tabManager.manipulator.first);
+
+                const videosPanel = new gui.Panel(w - 4, 0.8*h, myColors.white, 2).position(w / 2 + 0.5, h/2);
+                //temp
+                // const imagesPanel = new gui.Panel(w - 4, 0.8*h * h, myColors.white, 2).position(w / 2 + 0.5, h/2);
+                const imagesPanel = this.panel;
+
+                const tabManager = {
+                    tabs: [],
+                    manipulator: new Manipulator().addOrdonator(2),
+                    addTab(name, i, setContent) {
+                        const
+                            manip = new Manipulator().addOrdonator(2),
+                            tab = new Tab(name, width / 2, height, 20, null, manip, setContent);
+                        this.tabs.push(tab);
+                        tab.setClickHandler(() => this.tabs.forEach((tab, index) => {
+                            if (index === i) {
+                                tab.select();
+                            } else {
+                                tab.unselect();
+                            }
+                        }));
+                        manip.translator.move(i * (MARGIN + width / 2), 0);
+                        this.manipulator.ordonator.set(i, manip.first);
+                    }
+                };
+                tabManager.addTab("Images", 0, () => {
+                    this.libraryManipulator.ordonator.set(2, imagesPanel.component);
+                });
+                tabManager.addTab("Vidéos", 1, () => {
+                    this.libraryManipulator.ordonator.set(2, videosPanel.component);
+                });
+                tabManager.manipulator.translator.move(w/4 + MARGIN, h*0.05);
+                this.libraryManipulator.ordonator.set(1, tabManager.manipulator.first);
+
+                tabManager.tabs[0].select();
             };
 
             displayTabs();
