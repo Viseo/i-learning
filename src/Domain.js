@@ -133,7 +133,7 @@ exports.Domain = function (globalVariables) {
                 }
                 let selectedAnswer = [quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer.indexOf(this)];
                 quizz.questionsAnswered[quizz.currentQuestionIndex]={
-                    index: quizz.currentQuestionIndex,
+                    index: quizz.questionsAnswered.length,
                     question: quizz.tabQuestions[quizz.currentQuestionIndex],
                     validatedAnswers: selectedAnswer
                 };
@@ -287,7 +287,7 @@ exports.Domain = function (globalVariables) {
                 indexOfValidatedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
             });
             this.parentQuizz.questionsAnswered[this.parentQuizz.currentQuestionIndex]={
-                index: this.parentQuizz.currentQuestionIndex,
+                index: this.parentQuizz.questionsAnswered.length,
                 question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
                 validatedAnswers: indexOfValidatedAnswers
             };
@@ -578,6 +578,8 @@ exports.Domain = function (globalVariables) {
         moveGame(game, level, column) {
             this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
             this.levelsTab[level].gamesTab.splice(column, 0, game);
+            if(this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length-1)
+                this.levelsTab.splice(game.levelIndex,1);
         }
 
         createLink(parentGame, childGame, arrow) {
