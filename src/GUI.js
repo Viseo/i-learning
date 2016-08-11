@@ -201,6 +201,7 @@ exports.GUI = function (globalVariables) {
                 questionCreator.explanation = this.popIn;
             };
             displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this);
+            // drawVideoIcon(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this);
 
             if (typeof this.obj.checkbox === 'undefined') {
                 this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;

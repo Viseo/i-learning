@@ -231,6 +231,25 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
+        drawVideoIcon = function(x, y, size, object){
+            let bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
+                smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
+                whiteTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "S").color(myColors.white, 1, myColors.black).position(0, size / 2),
+                invisibleTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "N").color(myColors.white, 2, myColors.white).position(0, size / 2-Math.sqrt(4*size)/2-1),
+                blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
+            ;
+            object.manipulator.ordonator.set(6, bigSquare);
+            object.linesManipulator.translator.move(x, y);
+            object.linesManipulator.ordonator.set(1, smallSquare);
+            object.linesManipulator.ordonator.set(2, blackTriangle);
+            object.penManipulator.rotator.rotate(45);
+            object.penManipulator.translator.move(x + size-5*size/12, y - size+size/3);
+            object.penManipulator.ordonator.set(2, whiteTriangle);
+            object.penManipulator.ordonator.set(0, invisibleTriangle);
+
+
+        }
+
         displayPen = function (x, y, size, object) {
             let fontColor;
             fontColor = object.filled ? myColors.darkerGreen : myColors.black;
