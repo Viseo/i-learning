@@ -255,6 +255,7 @@ exports.GUI = function (globalVariables) {
                     }
                     this.explanationPopIn.display(popInParent, popInPreviousX, popInX, popInY, popInWidth, popInHeight);
                 };
+                if (this.explanationPopIn && this.explanationPopIn.displayed) openPopIn();
                 this.image && svg.addEvent(this.image, "click", openPopIn);
                 this.bordure && svg.addEvent(this.bordure, "click", openPopIn);
                 this.content && svg.addEvent(this.content, "click", openPopIn);
@@ -700,6 +701,12 @@ exports.GUI = function (globalVariables) {
                     quizzManager.quizz.tabQuestions.forEach(question=> {
                         question.redCrossManipulator && question.redCrossManipulator.flush();
                         question.selected = false
+                        question.tabAnswer.forEach(answer=> {
+                            if (answer.popIn) {
+                                quizzManager.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && quizzManager.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                                quizzManager.questionCreator.explanation = null;
+                            }
+                        })
                     });
                     let newQuestion = new Question(null, quizzManager.quizz);
 
@@ -1949,7 +1956,7 @@ exports.GUI = function (globalVariables) {
         if (typeof this.panel === "undefined") {
             this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
             this.panel.border.color([], 1, [0, 0, 0]);
-            this.panel.component.noFlush = true;
+            // this.panel.component.noFlush = true;
         } else {
             this.panel.resize(panelWidth, panelHeight);
         }
@@ -2031,6 +2038,7 @@ exports.GUI = function (globalVariables) {
         if (this.previewMode) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
+                    closePopIn();
                     this.previewMode = false;
                     this.currentQuestionIndex = this.tabQuestions.length;
                     this.manipulator.flush();
@@ -2044,6 +2052,7 @@ exports.GUI = function (globalVariables) {
             } else {
                 returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
+                    closePopIn();
                     this.manipulator.flush();
                     this.parentFormation.quizzManager.loadQuizz(this, this.currentQuestionIndex);
                     this.parentFormation.quizzManager.display();
@@ -2052,6 +2061,7 @@ exports.GUI = function (globalVariables) {
         } else {
             returnButtonChevron.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
+                closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
             });
