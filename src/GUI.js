@@ -938,8 +938,8 @@ exports.GUI = function (globalVariables) {
                             tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
                             this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                            svg.addEvent(tabElement.miniature.icon.cadre, 'mousedown', mouseDownAction);
-                            svg.addEvent(tabElement.miniature.icon.content, 'mousedown', mouseDownAction);
+                            svg.addEvent(tabElement.miniatureManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
+                            svg.addEvent(tabElement.miniatureManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
                         }
                     };
                     putMiniatureInPiste();
