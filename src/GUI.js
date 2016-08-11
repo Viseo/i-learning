@@ -2101,7 +2101,7 @@ exports.GUI = function (globalVariables) {
         };
 
         const closePopIn = () => {
-            this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
+            this.tabQuestions[this.currentQuestionIndex] && this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
                 if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
                     answer.explanationPopIn.cross.component.listeners["click"]();
                 }
