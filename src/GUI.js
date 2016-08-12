@@ -2150,9 +2150,10 @@ exports.GUI = function (globalVariables) {
 
         const
             buttonExpHeight = 50,
+            buttonExpWidth = drawing.width * 0.3,
             textExp = "Voir les réponses et explications",
-            expButton = displayText(textExp, drawing.width * 0.3, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
-        this.expButtonManipulator.translator.move(0, drawing.height - this.headerHeight - buttonExpHeight);
+            expButton = displayText(textExp, buttonExpWidth, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
+        this.expButtonManipulator.translator.move(buttonExpWidth/2, drawing.height - this.headerHeight - buttonExpHeight);
 
         const displayExplanation = () => {
             this.manipulator.flush();
