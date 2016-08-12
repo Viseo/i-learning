@@ -359,7 +359,7 @@ exports.GUI = function (globalVariables) {
                         e.miniature.cadre.color(myColors.white, 1, myColors.black)
                     });
 
-                    this.formation.selectedGame && this.formation.selectedGame.icon.cadre.component.listeners.click();
+                    this.formation.selectedGame && this.formation.selectedGame.miniatureClickHandler();
                     arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
                     arrowModeButton.arrow.color(myColors.blue, 2, myColors.black);
                     clip.add(glass);
