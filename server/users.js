@@ -42,8 +42,7 @@ const saveProgress = (db, body, user) => {
     return new Promise((resolve, reject) => {
         let newGame = {
             game: body.game,
-            tabWrongAnswers: body.tabWrongAnswers,
-            index: body.indexQuestion,
+            questionsAnswered: body.questionsAnswered
         };
         let newFormation = {
             version: body.version,
@@ -56,7 +55,7 @@ const saveProgress = (db, body, user) => {
             if(formation !== -1 ){
                 let game = user.formationsTab[formation].gamesTab.findIndex(x => x.game === body.game);
                 if(game !== -1 ){
-                    newGame.index > user.formationsTab[formation].gamesTab[game].index && (user.formationsTab[formation].gamesTab[game] = newGame);
+                   user.formationsTab[formation].gamesTab[game] = newGame;
                 } else {
                     user.formationsTab[formation].gamesTab[user.formationsTab[formation].gamesTab.length] = newGame;
                 }
@@ -90,7 +89,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                         const gamesTab = version.levelsTab[x].gamesTab;
                         for (let y = 0; y < gamesTab.length; y++) {
                             const game = gamesTab[y];
-                            if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].index < game.tabQuestions.length) {
+                            if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered < game.tabQuestions.length) {
                                 id = progressArray.version;
                                 return 'inProgress';
                             }

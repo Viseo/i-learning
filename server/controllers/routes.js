@@ -239,7 +239,7 @@ module.exports = function (app, fs) {
             });
     });
 
-    app.get('/getAllImages', function(req, res) {
+    app.post('/getAllImages', function(req, res) {
         var collection = db.get().collection('images');
         collection.find().toArray(function(err, docs) {
             res.send({images: docs});

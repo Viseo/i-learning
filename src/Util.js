@@ -28,15 +28,15 @@ exports.Util = function (globalVariables) {
 
     function SVGGlobalHandler() {
 
-        ImageController = function () {
-            return {
-                getImage: function (imgUrl, onloadHandler) {
-                    var image = new Image();
-                    image.src = imgUrl;
-                    image.onload = onloadHandler;
-                    return image;
-                }
-            };
+        ImageController = function (imageRuntime) {
+            return imageRuntime || {
+                    getImage: function (imgUrl, onloadHandler) {
+                        var image = new Image();
+                        image.src = imgUrl;
+                        image.onload = onloadHandler;
+                        return image;
+                    }
+                };
         };
 
     }
@@ -97,15 +97,17 @@ exports.Util = function (globalVariables) {
             this.drawing.manipulator.addOrdonator(3);
             this.piste = new Manipulator(this);
             this.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
+            this.glass.mark('bigGlass');
             this.drawing.add(this.drawing.manipulator.translator);
             this.background = this.drawing.manipulator.translator;
             this.drawing.manipulator.ordonator.set(2, this.piste.first);
             this.drawing.add(this.glass);
 
             const onmousedownHandler = event => {
-                !runtime && document.activeElement.blur();
+                svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
+                // console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
@@ -151,7 +153,7 @@ exports.Util = function (globalVariables) {
             };
             svg.addEvent(this.glass, "mouseup", onmouseupHandler);
 
-            const onmouseoutHandler = function (event) {
+            const onmouseoutHandler = event =>{
                 if (this.drag) {
                     svg.event(this.target, "mouseup", event);
                 }
@@ -229,6 +231,25 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
+        drawVideoIcon = function(x, y, size, object){
+            let bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
+                smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
+                whiteTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "S").color(myColors.white, 1, myColors.black).position(0, size / 2),
+                invisibleTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "N").color(myColors.white, 2, myColors.white).position(0, size / 2-Math.sqrt(4*size)/2-1),
+                blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
+            ;
+            object.manipulator.ordonator.set(6, bigSquare);
+            object.linesManipulator.translator.move(x, y);
+            object.linesManipulator.ordonator.set(1, smallSquare);
+            object.linesManipulator.ordonator.set(2, blackTriangle);
+            object.penManipulator.rotator.rotate(45);
+            object.penManipulator.translator.move(x + size-5*size/12, y - size+size/3);
+            object.penManipulator.ordonator.set(2, whiteTriangle);
+            object.penManipulator.ordonator.set(0, invisibleTriangle);
+
+
+        }
+
         displayPen = function (x, y, size, object) {
             let fontColor;
             fontColor = object.filled ? myColors.darkerGreen : myColors.black;
@@ -241,6 +262,7 @@ exports.Util = function (globalVariables) {
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey);
             let elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+            square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
             object.manipulator.ordonator.set(6, square);
             object.linesManipulator.translator.move(x, y);
             object.linesManipulator.ordonator.set(0, line1);
@@ -253,6 +275,21 @@ exports.Util = function (globalVariables) {
             object.penManipulator.translator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotator.rotate(40);
             elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
+        };
+
+        drawExplanationIcon = function (x, y, size, manipulator) {
+            let square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(0, 0),
+                line1 = new svg.Line(-size / 2 + size / 8, -size / 2 + size / 5, size / 2 - size / 8, -size / 2 + size / 5).color(myColors.black, 1, myColors.black),
+                line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.black, 1, myColors.black),
+                line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.black, 1, myColors.black),
+                line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.black, 1, myColors.black);
+            manipulator.ordonator.set(0, square);
+            manipulator.ordonator.set(1, line1);
+            manipulator.ordonator.set(2, line2);
+            manipulator.ordonator.set(3, line3);
+            manipulator.ordonator.set(4, line4);
+            manipulator.translator.move(x, y);
+            return [square, line1, line2, line3, line4];
         };
 
         /**
@@ -354,10 +391,6 @@ exports.Util = function (globalVariables) {
          * @returns {{content, cadre}} : SVG items for text & cadre
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
-            if ((w <= 0) || (h <= 0)) {
-                w = 1;
-                h = 1;
-            }
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.ordonator.set(layer1, cadre);
@@ -415,66 +448,55 @@ exports.Util = function (globalVariables) {
          * @param layer
          */
         autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer = 1) {
-            let words = content.split(' '),
-                text = '',
-                w = wi * 99 / 100,
+            let text = '',
+                w = wi*0.94,
                 t = new svg.Text('text');
             manipulator.ordonator.set(layer, t);
             (fontSize) || (fontSize = 20);
             t.font(font ? font : 'Arial', fontSize);
+            content = content.trim();
+            t.message(content.replace(/\r?\n|\r/g), " ");
+            let boundingRect = t.boundingRect(),
+                charSpace = boundingRect.width/content.length,
+                numCharsPerLine = Math.floor(w/charSpace*0.98),
+                lineHeight = boundingRect.height,
+                maxLines = Math.floor(h/lineHeight);
 
-            while (words.length > 0) {
-                let word = words.shift();
-                // set text to test the BBox.width
-                t.message(text + ' ' + word);
-                if (t.boundingRect() && t.boundingRect().width <= w) {
-                    text += ' ' + word;
+            if (maxLines === 0) maxLines = 1;
+
+            let lines = [];
+            for (let i = 0, charsLength = content.length; i < charsLength;) {
+                let line = content.substring(i, i + numCharsPerLine);
+                let pos = line.lastIndexOf("\n");
+                if (pos !== -1 && pos !== 0) {
+                    line = line.substring(0, pos);
+                    i += pos;
                 } else {
-                    let tmpStr = text + '\n' + word;
-                    t.message(tmpStr);
-                    if (svg.runtime.boundingRect(t.component).height <= (h - MARGIN)) {
-                        if (svg.runtime.boundingRect(t.component).width <= w) {
-                            text = tmpStr;
-                        } else {
-                            text += ' ';
-                            let longWord = word;
-                            for (let j = 0; j < longWord.length; j++) {
-                                t.message(text + " " + longWord.charAt(j));
-                                if (svg.runtime.boundingRect(t.component).width <= w) {
-                                    text += longWord.charAt(j);
-                                } else {
-                                    text = text.slice(0, -1);
-                                    j--;
-                                    text += '-\n';
-                                    words.unshift(longWord.slice(j));
-                                    break;
-                                }
-                            }
-                        }
-                    } else {
-                        text = text.slice(0, -2) + '…';
-                        break;
-                    }
+                    i += numCharsPerLine;
+                }
+                if (lines.length < maxLines && line !== "\n") {
+                    lines.push(line);
+                } else {
+                    lines[maxLines - 1] = lines[maxLines - 1].slice(0, -1) + "…";
                 }
             }
-            t.message(text.substring(1));
-            let finalHeight = svg.runtime.boundingRect(t.component).height;
-            (typeof finalHeight === 'undefined' && t.messageText !== '') && (finalHeight = runtime.boundingRect(t.component).height);
+
+            for (let i = 0; i < lines.length - 1; i++) {
+                if (" ?.,!;:\n".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:\n".indexOf(lines[i + 1][0]) === -1) {
+                    lines[i] += "-";
+                }
+            }
+
+            t.message(lines.join("\n"));
+
+
+            let finalHeight = t.boundingRect().height;
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
-            let finalWidth = svg.runtime.boundingRect(t.component).width;
-            (typeof finalWidth === 'undefined' && t.messageText !== '') && (finalWidth = runtime.boundingRect(t.component).width);
+            let finalWidth = t.boundingRect().width;
             (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
             t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
             return {finalHeight, finalWidth, text: t};
         };
-
-        /**
-         *
-         * @param x
-         * @param y
-         * @param w
-         * @param h
-         */
 
         drawPlus = function (x, y, w, h) {
             var baseWidth = w;
@@ -498,21 +520,18 @@ exports.Util = function (globalVariables) {
             return path;
         };
 
-        drawRedCross = function (x, y, size, manipulator) {
-            var redCross = drawPlus(0, 0, size, size);
-            redCross.size = size;
-            redCross.color(myColors.red, 1, myColors.black);
+        drawCross = function (x, y, size, innerColor, outerColor, manipulator) {
+            var cross = drawPlus(0, 0, size, size);
+            cross.size = size;
+            cross.color(innerColor, 1, outerColor);
             manipulator.rotator.rotate(45);
             manipulator.translator.move(x, y);
-            return redCross;
+            return cross;
         };
-        /**
-         *
-         * @param x
-         * @param y
-         * @param w
-         * @param h
-         */
+
+        drawRedCross = function (x, y, size, manipulator) {
+            return drawCross(x, y, size, myColors.red, myColors.black, manipulator);
+        };
 
         drawPlusWithCircle = function (x, y, w, h) {
             var circle = new svg.Circle(w / 2).color(myColors.black);
@@ -594,24 +613,26 @@ exports.Util = function (globalVariables) {
             return this.chevron;
         };
 
-        manageDnD = function (svgItem, manipulator) {
+        manageDnD = function (svgItem, manipulator, redraw) {
             var ref;
+            var mousemoveHandler = function (event) {
+                var mouse = svgItem.localPoint(event.pageX, event.pageY);
+                var dx = mouse.x - ref.x;
+                var dy = mouse.y - ref.y;
+                manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
+                redraw && redraw();
+                return true;
+            };
+            var mouseupHandler = function () {
+                svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
+            };
             var mousedownHandler = function (event) {
                 event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
                 ref = svgItem.localPoint(event.pageX, event.pageY);
                 svg.addEvent(svgItem, "mousemove", mousemoveHandler);
                 svg.addEvent(svgItem, "mouseup", mouseupHandler);
             };
-            var mousemoveHandler = function (event) {
-                var mouse = svgItem.localPoint(event.pageX, event.pageY);
-                var dx = mouse.x - ref.x;
-                var dy = mouse.y - ref.y;
-                manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy); //combinaison de translations
-                return true;
-            };
-            var mouseupHandler = function () {
-                svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
-            };
+
             svg.addEvent(svgItem, "mousedown", mousedownHandler);
         };
 
@@ -626,48 +647,55 @@ exports.Util = function (globalVariables) {
         };
 
         Arrow = function (parentGame, childGame) {
-            var parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, parentGame.parentFormation.graphElementSize / 2);
-            var parentLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-            var childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -childGame.parentFormation.graphElementSize / 2);
-            var childLocalPoint = parentGame.parentFormation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+            let formation = parentGame.parentFormation;
+            let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
+            let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+            let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
+            let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
             this.redCrossManipulator = new Manipulator(this);
-            this.redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
-            this.redCrossManipulator.last.add(this.redCross);
+            let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
+            redCross.mark('redCross');
+            this.redCrossManipulator.last.add(redCross);
 
-            let removeLink = () => {
-                for (let link = parentGame.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                    if (link[i].childGame === childGame.id && link[i].parentGame === parentGame.id)
-                        link.splice(i, 1);
-                }
+            this.redraw = () => {
+                let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
+                let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+                let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
+                let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+                formation.arrowsManipulator.last.remove(this.arrowPath);
+                this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+                formation.arrowsManipulator.last.add(this.arrowPath);
+
             };
 
             this.redCrossClickHandler = () => {
-                removeLink();
-                parentGame.parentFormation.arrowsManipulator.last.remove(this.arrowPath);
-                parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
-                parentGame.parentFormation.selectedArrow = null;
+                formation.removeLink(parentGame, childGame);
+                formation.arrowsManipulator.last.remove(this.arrowPath);
+                formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                formation.selectedArrow = null;
             };
 
-            svg.addEvent(this.redCross, 'click', this.redCrossClickHandler);
+            svg.addEvent(redCross, 'click', this.redCrossClickHandler);
 
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
+            formation.arrowsManipulator.last.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
-                parentGame.parentFormation.selectedGame && parentGame.parentFormation.selectedGame.icon.cadre.component.listeners.click();
+                formation.selectedGame && formation.selectedGame.icon.cadre.component.listeners.click();
                 if (!this.selected) {
-                    if (parentGame.parentFormation.selectedArrow) {
-                        parentGame.parentFormation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
-                        parentGame.parentFormation.selectedArrow.selected = false;
-                        parentGame.parentFormation.arrowsManipulator.last.remove(parentGame.parentFormation.selectedArrow.redCrossManipulator.first);
+                    if (formation.selectedArrow) {
+                        formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
+                        formation.selectedArrow.selected = false;
+                        formation.arrowsManipulator.last.remove(formation.selectedArrow.redCrossManipulator.first);
                     }
-                    parentGame.parentFormation.selectedArrow = this;
-                    parentGame.parentFormation.arrowsManipulator.last.add(this.redCrossManipulator.first);
+                    formation.selectedArrow = this;
+                    formation.arrowsManipulator.last.add(this.redCrossManipulator.first);
                     this.arrowPath.color(myColors.blue, 2, myColors.black);
                 } else {
                     this.arrowPath.color(myColors.black, 1, myColors.black);
-                    parentGame.parentFormation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
-                    parentGame.parentFormation.selectedArrow = null;
+                    formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                    formation.selectedArrow = null;
                 }
                 this.selected = !this.selected;
             };
@@ -712,7 +740,6 @@ exports.Util = function (globalVariables) {
                 this.imageSVG._acceptDrop = this.editable;
                 manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
             }
-
         }
 
         drawImageRedCross(x, y, w, h, parent, manipulator) {
@@ -732,7 +759,6 @@ exports.Util = function (globalVariables) {
                 }
                 if (this.parent.parentQuestion) {
                     let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-
                     let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
                     let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
                     this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
@@ -753,14 +779,14 @@ exports.Util = function (globalVariables) {
             };
             this.imageMouseoverHandler = ()=> {
                 if (typeof this.redCrossManipulator === 'undefined') {
-                    this.redCrossManipulator = new Manipulator(self);
+                    this.redCrossManipulator = new Manipulator(this);
                     this.redCrossManipulator.addOrdonator(2);
                     manipulator.last.add(this.redCrossManipulator.first);
                 }
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
-
+                redCross.mark('imageRedCross');
                 svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
                 this.redCrossManipulator.ordonator.set(1, redCross);
             };
@@ -772,42 +798,39 @@ exports.Util = function (globalVariables) {
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
-            this.icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+            let icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+            icon.content.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
+            this.redCross.mark('gameRedCross');
             (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
-
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
-
-            !globalVariables.playerMode && svg.addEvent(this.icon.cadre, 'click', () => this.miniatureClickHandler());
-            !globalVariables.playerMode && svg.addEvent(this.icon.content, 'click', () => this.miniatureClickHandler());
-            this.icon.cadre.color(myColors.white, 1, myColors.black);
-
+            icon.cadre.color(myColors.white, 1, myColors.black);
             if (playerMode) {
                 this.drawProgressIcon(game, size);
             }
         }
 
-    redCrossClickHandler () {
-        this.removeAllLinks();
-        this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
-        this.game.miniatureManipulator.ordonator.unset(0);
-        this.game.miniatureManipulator.ordonator.unset(1);
-        this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
-        var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
+        redCrossClickHandler () {
+            this.removeAllLinks();
+            this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
+            this.game.miniatureManipulator.ordonator.unset(0);
+            this.game.miniatureManipulator.ordonator.unset(1);
+            this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
-        if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
-            this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
-            this.game.parentFormation.movePanelContent();
-        }
-        this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
-        var levelsTab = this.game.parentFormation.levelsTab;
-        while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-            levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
-            levelsTab[levelsTab.length-1].manipulator.ordonator.remove(levelsTab[levelsTab.length-1].obj.text);
-            this.game.parentFormation.levelsTab.pop();
-        }
+            if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
+                this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
+                this.game.parentFormation.movePanelContent();
+            }
+            this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+            var levelsTab = this.game.parentFormation.levelsTab;
+            while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
+                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
+                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(1);
+                this.game.parentFormation.levelsTab.pop();
+            }
 
             this.game.parentFormation.selectedGame.selected = false;
             this.game.parentFormation.selectedGame = null;
@@ -818,6 +841,13 @@ exports.Util = function (globalVariables) {
             for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
                 if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
                     link.splice(i, 1);
+            }
+        }
+
+        moveAllLinks() {
+            for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
+                if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
+                    link[i].arrow.redraw();
             }
         }
 
@@ -841,7 +871,7 @@ exports.Util = function (globalVariables) {
             if (this.selected) {
                 this.game.parentFormation.selectedGame = this;
                 !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
-                this.icon.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                this.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
             } else {
                 this.checkAndDrawValidity(this);
                 !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
@@ -859,10 +889,10 @@ exports.Util = function (globalVariables) {
                         })
                     }
                 });
-                result ? gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black) : gameMiniature.icon.cadre.color(myColors.white, 3, myColors.red);
+                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black) : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
             };
             let displayWhenNotPublished = () => {
-                gameMiniature.icon.cadre.color(myColors.white, 1, myColors.black);
+                gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
             };
 
             (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
@@ -870,11 +900,10 @@ exports.Util = function (globalVariables) {
 
         drawProgressIcon(object, size) {
             let iconsize = 20;
-            this.infosManipulator = new Manipulator(this);
-            this.infosManipulator.addOrdonator(4);
+            this.infosManipulator = new Manipulator(this).addOrdonator(4);
             switch (object.status) {
                 case "notAvailable":
-                    this.icon.cadre.color(myColors.grey, 1, myColors.black);
+                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
                     break;
                 case "done":
                     let check = drawCheck(size / 2, -size / 2, iconsize)
@@ -884,7 +913,7 @@ exports.Util = function (globalVariables) {
                         .position(size / 2, -size / 2);
                     this.infosManipulator.ordonator.set(0, rect);
                     this.infosManipulator.ordonator.set(1, check);
-                    let resultString = object.tabQuestions.length - object.questionsWithBadAnswers.length + " / " + object.tabQuestions.length;
+                    let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
                     object.miniatureManipulator.last.add(this.infosManipulator.first);
                     let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                     result.text.position(0, size / 2 - MARGIN / 2);
@@ -916,29 +945,24 @@ exports.Util = function (globalVariables) {
     class MiniatureFormation {
 
         constructor(formation) {
-            this.miniatureManipulator = new Manipulator();
-            this.miniatureManipulator.addOrdonator(2);
-            this.iconManipulator = new Manipulator();
-            this.iconManipulator.addOrdonator(4);
+            this.miniatureManipulator = new Manipulator().addOrdonator(2);
+            this.iconManipulator = new Manipulator().addOrdonator(4);
             this.formation = formation;
         }
 
         display(x, y, w, h) {
             this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first) === -1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
-
-            this.miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
-            this.miniature.cadre.corners(50, 50);
-
-        let iconSize = this.formation.parent.iconeSize;
-
-        if(!playerMode && statusEnum[this.formation.status]) {
-            let icon = statusEnum[this.formation.status].icon(iconSize);
-            for (let i = 0; i < icon.elements.length; i++) {
-                this.iconManipulator.ordonator.set(i, icon.elements[i]);
+            let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
+            miniature.cadre.corners(50, 50);
+            miniature.cadre.mark(this.formation.label);
+            let iconSize = this.formation.parent.iconeSize;
+            if(!playerMode && statusEnum[this.formation.status]) {
+                let icon = statusEnum[this.formation.status].icon(iconSize);
+                for (let i = 0; i < icon.elements.length; i++) {
+                    this.iconManipulator.ordonator.set(i, icon.elements[i]);
+                }
             }
-        }
-        this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
-
+            this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
             this.miniatureManipulator.translator.move(x, y);
             this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
             this.drawIcon();
@@ -974,21 +998,13 @@ exports.Util = function (globalVariables) {
         }
 
         setHandler(handler) {
-            if (this.miniature.cadre) {
-                svg.addEvent(this.miniature.cadre, "click", () => {
-                    handler(this.formation);
-                });
-            }
-            if (this.miniature.content) {
-                svg.addEvent(this.miniature.content, "click", () => {
-                    handler(this.formation);
-                });
-            }
-            if (this.miniature.image) {
-                svg.addEvent(this.miniature.image, "click", () => {
-                    handler(this.formation);
-                });
-            }
+            let miniature = this.miniatureManipulator.ordonator.children;
+            svg.addEvent(miniature[0], "click", () => {
+                handler(this.formation);
+            });
+            svg.addEvent(miniature[1], "click", () => {
+                handler(this.formation);
+            });
         }
     }
 
@@ -998,31 +1014,35 @@ exports.Util = function (globalVariables) {
             this.labelDefault = "Retour";
             this.label = label ? label : this.labelDefault;
             this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
-            this.manipulator.addOrdonator(1);
+            this.manipulator.addOrdonator(2);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
             this.manipulator.last.add(this.chevronManipulator.first);
         }
 
-        setHandler(returnHandler) {
-            svg.addEvent(this.returnButton, "click", returnHandler);
-            svg.addEvent(this.returnText, "click", returnHandler);
-        }
-
         display(x, y, w, h) {
-            this.returnText = new svg.Text(this.label);
-            this.returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
-            this.returnButton.resize(w, h);
-            //this.returnButton.move(0, y);
-            this.returnButton.color(myColors.black, 0, []);
-            this.returnText.font("Arial", 20).anchor("start").position(0, 0);
-            this.textSize = svg.runtime.boundingRect(this.returnText.component);
-            this.size = svg.runtime.boundingRect(this.returnButton.component);
-            this.manipulator.ordonator.set(0, this.returnText);
-            this.returnText.position(w + this.size.width / 2, this.textSize.height / 2 + this.size.height / 4);
+            let returnText = new svg.Text(this.label);
+            let returnButton = Chevron(0, 0, 0, 0, this.chevronManipulator, "left");
+            returnButton.resize(w, h);
+            returnButton.color(myColors.black, 0, []);
+            returnText.font("Arial", 20).anchor("start").position(0, 0);
+            this.manipulator.ordonator.set(1, returnText);
+            let textSize = returnText.boundingRect();
+            let size = returnButton.boundingRect();
+            returnText.position(w + size.width/2, size.height/4);
+            const backgroundW = w + size.width + textSize.width;
+            let background = new svg.Rect(backgroundW * 1.15, h * 1.1)
+                .position(backgroundW/2, 0)
+                .color(myColors.white, 0, myColors.white);
+            this.manipulator.ordonator.set(0, background);
             this.manipulator.translator.move(x + w, y);
-
-            this.returnText.parentObj = this;
-            this.returnButton.parentObj = this;
+            returnText.parentObj = this;
+            returnButton.parentObj = this;
+            background.parentObj = this;
+            this.setHandler = (returnHandler) => {
+                svg.addEvent(returnButton, "click", returnHandler);
+                svg.addEvent(returnText, "click", returnHandler);
+                svg.addEvent(background, "click", returnHandler);
+            }
         }
     }
 
@@ -1033,10 +1053,8 @@ exports.Util = function (globalVariables) {
             this.nbOfVisibleElements = this.rows * this.columns;
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(this.nbOfVisibleElements + 3); // Pour les chevrons
-            this.leftChevronManipulator = new Manipulator(this);
-            this.leftChevronManipulator.addOrdonator(3);
-            this.rightChevronManipulator = new Manipulator(this);
-            this.rightChevronManipulator.addOrdonator(3);
+            this.leftChevronManipulator = new Manipulator(this).addOrdonator(3);
+            this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
             this.elementsArray = elementsArray;
             this.visibleElementsArray = [];
             this.indexOfFirstVisibleElement = 0;
@@ -1239,66 +1257,66 @@ exports.Util = function (globalVariables) {
         constructor() {
         }
 
-    static getAllFormations() {
-        return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
-    }
+        static getAllFormations() {
+            return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
+        }
 
         static connect(mail, password) {
             return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
         }
 
-    static inscription(user) {
-        return dbListener.httpPostAsync('/user/inscription/', user)
-    }
+        static inscription(user) {
+            return dbListener.httpPostAsync('/user/inscription/', user)
+        }
 
         static checkCookie() {
             return dbListener.httpGetAsync('/auth/verify/')
         }
 
-    static getVersionById(id) {
-        return dbListener.httpGetAsync("/formations/getVersionById/" + id)
-    }
+        static getVersionById(id) {
+            return dbListener.httpGetAsync("/formations/getVersionById/" + id)
+        }
 
-    static sendProgressToServer(quiz) {
-        var data = {
-            indexQuestion: quiz.currentQuestionIndex+1,
-            tabWrongAnswers: [],
-            game: quiz.id,
-            version: quiz.parentFormation._id,
-            formation: quiz.parentFormation.formationId
-        };
-        quiz.questionsWithBadAnswers.forEach(x => data.tabWrongAnswers.push({index: x.question.questionNum, selectedAnswers: x.selectedAnswers}));
-        return dbListener.httpPostAsync("/user/saveProgress", data)
-    }
+        static sendProgressToServer(quiz) {
+            var data = {
+                indexQuestion: quiz.currentQuestionIndex+1,
+                questionsAnswered: [],
+                game: quiz.id,
+                version: quiz.parentFormation._id,
+                formation: quiz.parentFormation.formationId
+            };
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
+            return dbListener.httpPostAsync("/user/saveProgress", data)
+        }
 
-    static getUser() {
-        return dbListener.httpGetAsync("/user/getUser")
-    }
+        static getUser() {
+            return dbListener.httpGetAsync("/user/getUser")
+        }
 
-    static replaceFormation(id, newFormation, status, ignoredData) {
-        newFormation.status = status;
-        return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
-    }
+        static replaceFormation(id, newFormation, status, ignoredData) {
+            newFormation.status = status;
+            return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
+        }
 
-    static insertFormation(newFormation, status, ignoredData) {
-        newFormation.status = status;
-        return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
-    }
+        static insertFormation(newFormation, status, ignoredData) {
+            newFormation.status = status;
+            return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
+        }
 
-    static deactivateFormation(id, ignoredData) {
-        return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
-    }
+        static deactivateFormation(id, ignoredData) {
+            return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
+        }
 
         static insertPicture(newPicture) {
             return dbListener.httpUpload("/insertPicture", newPicture);
         }
 
-    static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
-        return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
-    }
+        static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
+            return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+        }
 
         static getImages() {
-            return dbListener.httpGetAsync('/getAllImages')
+            return dbListener.httpPostAsync('/getAllImages')
         }
     }
 
@@ -1472,15 +1490,15 @@ exports.Util = function (globalVariables) {
         myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
             "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
-            "mainManipulator", "quizzManipulator", "resultManipulator", "scoreManipulator", "quizzManager",
+            "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizzManager",
             "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
-            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "linkedQuestion",
+            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers","validatedAnswers", "linkedQuestion",
             "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
             "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
             "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "answersExpButtonManipulator"];
+            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1502,37 +1520,38 @@ exports.Util = function (globalVariables) {
             brown: [128, 0, 0],
             primaryGreen: [0, 255, 0],
             darkerGreen: [34, 179, 78],
+            greyerBlue: [74, 113, 151],
             none: []
         };
 
         SELECTION_COLOR = myColors.darkBlue;
 
-    myLibraryGames = {
-        title: "Type de jeux",
-        tab: [
-            {
-                label: "Quiz",
-                create: function (formation, level, posX) {
-                    var newQuizz = new Quizz(defaultQuizz, false, formation);
-                    newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                    newQuizz.id = "quizz" + formation.gamesCounter.quizz;
-                    formation.gamesCounter.quizz++;
-                    newQuizz.title = "Quiz "  + formation.gamesCounter.quizz;
-                    formation.levelsTab[level].gamesTab.splice(posX,0 ,newQuizz);
-                }
-            },
-            {label: "Bd",
-                create: function (formation, level, posX) {
-                    var newBd = new Bd({}, formation);
-                    newBd.id = "bd" + formation.gamesCounter.bd;
-                    formation.gamesCounter.bd++;
-                    newBd.title = "Bd "  + formation.gamesCounter.bd;
-                    formation.levelsTab[level].gamesTab.splice(posX,0, newBd);
-                }
-            },
-        ],
-        font: "Courier New", fontSize: 20
-    };
+        myLibraryGames = {
+            title: "Type de jeux",
+            tab: [
+                {
+                    label: "Quiz",
+                    create: function (formation, level, posX) {
+                        var newQuizz = new Quizz(defaultQuizz, false, formation);
+                        newQuizz.tabQuestions[0].parentQuizz = newQuizz;
+                        newQuizz.id = "quizz" + formation.gamesCounter.quizz;
+                        formation.gamesCounter.quizz++;
+                        newQuizz.title = "Quiz "  + formation.gamesCounter.quizz;
+                        formation.levelsTab[level].gamesTab.splice(posX,0 ,newQuizz);
+                    }
+                },
+                {label: "Bd",
+                    create: function (formation, level, posX) {
+                        var newBd = new Bd({}, formation);
+                        newBd.id = "bd" + formation.gamesCounter.bd;
+                        formation.gamesCounter.bd++;
+                        newBd.title = "Bd "  + formation.gamesCounter.bd;
+                        formation.levelsTab[level].gamesTab.splice(posX,0, newBd);
+                    }
+                },
+            ],
+            font: "Courier New", fontSize: 20
+        };
 
         defaultQuestion = {
             label: "", imageSrc: "", multipleChoice: false,
@@ -1561,7 +1580,7 @@ exports.Util = function (globalVariables) {
             // Check 1 Correct Answer:
             question => ({
                 isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
-                message: "Votre question doit avoir une bonne réponse."
+                message: "Vous devez cocher au moins une bonne réponse."
             }),
             // Check answer's name:
             question => {
