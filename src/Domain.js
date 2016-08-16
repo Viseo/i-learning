@@ -952,8 +952,6 @@ exports.Domain = function (globalVariables) {
     class ImagesLibrary extends Library {
         constructor() {
             super();
-            this.title = "Bibliothèque";
-            this.font = "Courier New";
             this.imageWidth = 50;
             this.imageHeight = 50;
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
@@ -1074,7 +1072,6 @@ exports.Domain = function (globalVariables) {
             this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
             this.quizz.tabQuestions.forEach(question => {
-                //(question.questionType = myQuestionType.tab.find(type => type.label === quizz.tabQuestions[index].questionType.label));
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
             });
             this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
