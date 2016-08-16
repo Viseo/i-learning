@@ -3,13 +3,12 @@
  */
 
 function DbListener(isWriting, isMock) {
-    var self = this;
-    self.loadData = function (callback) {
+    this.loadData = callback => {
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 isWriting && register(JSON.parse(xmlHttp.responseText));
-                self.data = xmlHttp.responseText.split("\n");
+                this.data = xmlHttp.responseText.split("\n");
                 callback();
             }
         };
@@ -17,16 +16,14 @@ function DbListener(isWriting, isMock) {
         xmlHttp.send(null);
     };
 
-    self.runtime = HttpRequests(isWriting, isMock, this);
-    self.httpGetAsync = self.runtime.httpGetRequest;
-    self.httpPostAsync = self.runtime.httpPostRequest;
-    self.httpPutAsync = self.runtime.httpPutRequest;
-    self.httpUpload = self.runtime.httpUpload;
+    this.runtime = HttpRequests(isWriting, isMock, this);
+    this.httpGetAsync = this.runtime.httpGetRequest;
+    this.httpPostAsync = this.runtime.httpPostRequest;
+    this.httpPutAsync = this.runtime.httpPutRequest;
+    this.httpUpload = this.runtime.httpUpload;
 }
 
 function HttpRequests(isWriting, isMock, listener) {
-    this.parent = listener;
-
     function register(data) {
         var request = new XMLHttpRequest();
         request.open("POST", "/data", true); // true for asynchronous
@@ -64,7 +61,7 @@ function HttpRequests(isWriting, isMock, listener) {
         })
     }
 
-    function httpUpload(theUrl, file) {
+    function httpUpload(theUrl, file, onProgress) {
         return new Promise((resolve) => {
             const formData = new FormData();
             formData.append('file', file);
@@ -73,6 +70,9 @@ function HttpRequests(isWriting, isMock, listener) {
                 if (request.readyState == 4 && request.status == 200)
                     resolve(request.responseText);
             };
+            if (request.upload && file.type == "video/mp4") {
+                request.upload.addEventListener("progress", onProgress);
+            }
             request.open('POST', theUrl, true); // true for asynchronous
             //request.setRequestHeader('Content-Type', 'multipart/form-data');
 

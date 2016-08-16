@@ -592,7 +592,7 @@ exports.GUI = function (globalVariables) {
                     });
             };
 
-            let displaySaveButton = () => {
+            let displayAddButton = () => {
                 let fileExplorer;
                 let fileExplorerHandler = () => {
                     if (!fileExplorer) {
@@ -606,7 +606,7 @@ exports.GUI = function (globalVariables) {
                         fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
                         fileExplorer.type("file");
                         svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
-                        svg.runtime.attr(fileExplorer.component, "accept", "image/*");
+                        svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
                         svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
                         svg.runtime.attr(fileExplorer.component, "hidden", "true");
                         drawings.screen.add(fileExplorer);
@@ -621,7 +621,7 @@ exports.GUI = function (globalVariables) {
                 let onChangeFileExplorerHandler = () => {
 
                     let pictureObject = fileExplorer.component.files[0];
-                    Server.insertPicture(pictureObject).then((status)=> {
+                    Server.insertPicture(pictureObject, (e)=>console.log(e.loaded/e.total*100)).then((status)=> {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
                         } else {
@@ -648,7 +648,7 @@ exports.GUI = function (globalVariables) {
             };
 
             displayItems();
-            displaySaveButton();
+            displayAddButton();
         };
 
         display(x, y, w, h);

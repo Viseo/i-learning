@@ -16,27 +16,31 @@ module.exports = function (app, fs) {
     var ObjectID = require('mongodb').ObjectID;
     var id = new ObjectID();
 
-    app.post('/insertPicture', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
+    app.post('/upload', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
 
         function insertAsync() {
             return new Promise((resolve, reject) => {
-                const collection = db.get().collection('images');
-                collection.insert({imgSrc:"../resource/"+req.file.filename, name:req.file.originalname}, (err) => { // penser à utiliser InsertOne ?
-                    err ? reject() : resolve(err)
-                })
+                if (req.file.mimetype === 'video/mp4') {
+                    const collection = db.get().collection('videos');
+                    collection.insert({
+                        src: "../resource/" + req.file.filename,
+                        name: req.file.originalname
+                    }, (err) => { // TODO penser à utiliser InsertOne ?
+                        err ? reject() : resolve(err)
+                    })
+                } else if (req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg') {
+                    const collection = db.get().collection('images');
+                    collection.insert({
+                        imgSrc :"../resource/"+req.file.filename,
+                        name :req.file.originalname
+                    }, (err) => { // TODO penser à utiliser InsertOne ?
+                        err ? reject() : resolve(err)
+                    })
+                }
             })
         }
 
-        //function renameAsync() {
-        //    return new Promise((resolve, reject) => {
-        //        const newPath = __dirname + "/../../resource/";
-        //        fs.rename(newPath + req.file.filename, newPath + req.file.originalname, (err) => {
-        //            err ? reject() : resolve(err)
-        //        })
-        //    })
-        //}
-
-        Promise.all([/**renameAsync(),**/ insertAsync()])
+        insertAsync()
             .then(() => {
                 res.send('ok')
             })

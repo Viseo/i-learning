@@ -1307,8 +1307,8 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
         }
 
-        static insertPicture(newPicture) {
-            return dbListener.httpUpload("/insertPicture", newPicture);
+        static insertPicture(newPicture, onProgress) {
+            return dbListener.httpUpload("/upload", newPicture, onProgress);
         }
 
         static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
