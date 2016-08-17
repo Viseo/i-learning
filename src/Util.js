@@ -86,6 +86,22 @@ exports.Util = function (globalVariables) {
             clean(this.translator);
         }
 
+        move (x, y) {
+            this.translator.move(x, y)
+        }
+
+        rotate (angle) {
+            this.rotator.rotate(angle)
+        }
+
+        scale (scaleX, scaleY) {
+            this.scalor.scale(scaleX, scaleY)
+        }
+
+        set (layer, component) {
+            this.ordonator.set(layer, component)
+        }
+
     }
 
     class Drawings {
@@ -231,24 +247,26 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        drawVideoIcon = function(x, y, size, object){
-            let bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
+        drawVideoIcon = function(x, y, size, manipulator){
+            const
+                bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
                 smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
                 whiteTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "S").color(myColors.white, 1, myColors.black).position(0, size / 2),
                 invisibleTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "N").color(myColors.white, 2, myColors.white).position(0, size / 2-Math.sqrt(4*size)/2-1),
                 blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
-            ;
-            object.manipulator.ordonator.set(6, bigSquare);
-            object.linesManipulator.translator.move(x, y);
-            object.linesManipulator.ordonator.set(1, smallSquare);
-            object.linesManipulator.ordonator.set(2, blackTriangle);
-            object.penManipulator.rotator.rotate(45);
-            object.penManipulator.translator.move(x + size-5*size/12, y - size+size/3);
-            object.penManipulator.ordonator.set(2, whiteTriangle);
-            object.penManipulator.ordonator.set(0, invisibleTriangle);
 
-
-        }
+            manipulator.addOrdonator(3);
+            manipulator.ordonator.set(0, bigSquare);
+            const cameraManipulator = new Manipulator().addOrdonator(2);
+            cameraManipulator.translator.move(x, y);
+            cameraManipulator.ordonator.set(0, smallSquare);
+            cameraManipulator.ordonator.set(1, blackTriangle);
+            const trianglesManipulator = new Manipulator().addOrdonator(2);
+            trianglesManipulator.rotate(45);
+            trianglesManipulator.move(x + size - 5*size/12, y - size + size/3);
+            trianglesManipulator.set(0, whiteTriangle);
+            trianglesManipulator.set(1, invisibleTriangle);
+        };
 
         displayPen = function (x, y, size, object) {
             let fontColor;
@@ -1307,8 +1325,8 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/formations/deactivateFormation", {id:id}, ignoredData);
         }
 
-        static insertPicture(newPicture, onProgress) {
-            return dbListener.httpUpload("/upload", newPicture, onProgress);
+        static upload(file, onProgress) {
+            return dbListener.httpUpload("/upload", file, onProgress);
         }
 
         static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
@@ -1317,6 +1335,10 @@ exports.Util = function (globalVariables) {
 
         static getImages() {
             return dbListener.httpPostAsync('/getAllImages')
+        }
+
+        static getVideos() {
+            return dbListener.httpPostAsync('/getAllVideos')
         }
     }
 
