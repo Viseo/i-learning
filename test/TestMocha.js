@@ -568,23 +568,23 @@ describe('formationsManager', function () {
             assert(questionImage);
 
             let questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             let questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
             questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
             questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
             questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
             let questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
-            questionFromPuzzleBordure1.listeners['click']({pageX:185, pageY:223, preventDefault:()=>{}});
+            questionFromPuzzleBordure1.listeners['click']({pageX:166, pageY:237, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
 

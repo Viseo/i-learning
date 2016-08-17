@@ -996,13 +996,13 @@ exports.GUI = function (globalVariables) {
                             svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
                             tabElement.miniature.miniatureClickHandler();
                         };
-
-                        drawings.piste.last.remove(tabElement.movingManipulator.first);
+                        // drawings.piste.last.remove(tabElement.movingManipulator.first);
                         let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
                             clicAction();
                         }
                         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject instanceof Quizz)) {
+                            drawings.piste.flush();
                             this.dropAction(eventUp, tabElement);
                         }
                         else {
