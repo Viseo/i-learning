@@ -506,7 +506,6 @@ exports.Domain = function (globalVariables) {
             this.x = MARGIN;
             this.regex = FORMATION_TITLE_REGEX;
             this.levelsTab = [];
-            this.gamesTab = [];
             this.saveButtonHeightRatio = 0.07;
             this.publicationButtonHeightRatio = 0.07;
             this.marginRatio = 0.03;
@@ -954,6 +953,7 @@ exports.Domain = function (globalVariables) {
             super();
             this.imageWidth = 50;
             this.imageHeight = 50;
+            this.videosManipulators = [];
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
         }
 

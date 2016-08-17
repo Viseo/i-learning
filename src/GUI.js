@@ -292,6 +292,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
+        this.libraryManipulator.flush();
         this.x = x;
         this.y = y;
         this.w = w;
@@ -613,8 +614,8 @@ exports.GUI = function (globalVariables) {
 
                 let onChangeFileExplorerHandler = () => {
 
-                    let pictureObject = fileExplorer.component.files[0];
-                    Server.insertPicture(pictureObject, (e)=>console.log(e.loaded/e.total*100)).then((status)=> {
+                    let file = fileExplorer.component.files[0];
+                    Server.upload(file, (e)=>console.log(e.loaded/e.total*100)).then((status)=> {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
                         } else {
@@ -674,7 +675,31 @@ exports.GUI = function (globalVariables) {
                     height = h*0.06;
 
                 const videosPanel = new gui.Panel(w - 4, 0.8*h, myColors.white, 2).position(w / 2 + 0.5, h/2);
-                //temp
+
+                const displayVideo = function (video, manipulator) {
+                    this.video = video;
+                    manipulator.set(0, drawVideoIcon(0, -10, 20));
+                    const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
+                    title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
+                };
+
+                const loadVideos = () => {
+                    Server.getVideos().then(data => {
+                        const videos = JSON.parse(data);
+                        videos.forEach((video, i) => {
+                            if (!this.videosManipulators[i]) {
+                                this.videosManipulators[i] = new Manipulator().addOrdonator(2);
+                            }
+                            if (videosPanel.content.children.indexOf(this.videosManipulators[i].first) === -1) {
+                                videosPanel.content.add(this.videosManipulators[i].first);
+                            }
+                            displayVideo(video, this.videosManipulators[i]);
+                            this.videosManipulators[i].move(20, 30 + i*30 );
+                        });
+                    });
+                };
+
+                // temp
                 // const imagesPanel = new gui.Panel(w - 4, 0.8*h * h, myColors.white, 2).position(w / 2 + 0.5, h/2);
                 const imagesPanel = this.panel;
 
@@ -702,6 +727,7 @@ exports.GUI = function (globalVariables) {
                 });
                 tabManager.addTab("Vidéos", 1, () => {
                     this.libraryManipulator.ordonator.set(2, videosPanel.component);
+                    loadVideos();
                 });
                 tabManager.manipulator.translator.move(w/4 + MARGIN, h*0.05);
                 this.libraryManipulator.ordonator.set(1, tabManager.manipulator.first);

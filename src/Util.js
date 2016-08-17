@@ -99,6 +99,9 @@ exports.Util = function (globalVariables) {
         }
 
         set (layer, component) {
+            if (component instanceof Manipulator) {
+                component = component.first;
+            }
             this.ordonator.set(layer, component)
         }
 
@@ -247,7 +250,7 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        drawVideoIcon = function(x, y, size, manipulator){
+        drawVideoIcon = function(x, y, size){
             const
                 bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
                 smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
@@ -255,17 +258,20 @@ exports.Util = function (globalVariables) {
                 invisibleTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "N").color(myColors.white, 2, myColors.white).position(0, size / 2-Math.sqrt(4*size)/2-1),
                 blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
 
-            manipulator.addOrdonator(3);
+            const manipulator = new Manipulator().addOrdonator(3);
             manipulator.ordonator.set(0, bigSquare);
             const cameraManipulator = new Manipulator().addOrdonator(2);
             cameraManipulator.translator.move(x, y);
             cameraManipulator.ordonator.set(0, smallSquare);
             cameraManipulator.ordonator.set(1, blackTriangle);
+            manipulator.set(1, cameraManipulator);
             const trianglesManipulator = new Manipulator().addOrdonator(2);
             trianglesManipulator.rotate(45);
             trianglesManipulator.move(x + size - 5*size/12, y - size + size/3);
             trianglesManipulator.set(0, whiteTriangle);
             trianglesManipulator.set(1, invisibleTriangle);
+            manipulator.set(2, trianglesManipulator);
+            return manipulator;
         };
 
         displayPen = function (x, y, size, object) {
