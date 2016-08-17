@@ -954,6 +954,7 @@ exports.Domain = function (globalVariables) {
             this.imageWidth = 50;
             this.imageHeight = 50;
             this.videosManipulators = [];
+            this.videosUploadManipulators = [];
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
         }
 

@@ -615,9 +615,28 @@ exports.GUI = function (globalVariables) {
                 let onChangeFileExplorerHandler = () => {
 
                     let file = fileExplorer.component.files[0];
-                    Server.upload(file, (e)=>console.log(e.loaded/e.total*100)).then((status)=> {
+                    const progressDisplay = () => {
+                        const
+                            width = 0.8*w,
+                            manipulator = new Manipulator().addOrdonator(2),
+                            rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
+                        manipulator.set(0, rect);
+                        this.videosUploadManipulators.push(manipulator);
+                        return (e) => {
+                            const progwidth = width*e.loaded/e.total,
+                                bar = new svg.Rect(progwidth, 8)
+                                .color(myColors.green);
+                            manipulator.set(1, bar);
+                            if (e.loaded === e.total) {
+                                svg.timeout(this.videosUploadManipulators.remove(manipulator), 3000)
+                            }
+                        };
+                    };
+
+                    Server.upload(file, progressDisplay()).then((status)=> {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
+                            this.tabManager.tabs[1].select();
                         } else {
                             // TODO message d'erreur
                         }
@@ -696,12 +715,21 @@ exports.GUI = function (globalVariables) {
                             displayVideo(video, this.videosManipulators[i]);
                             this.videosManipulators[i].move(20, 30 + i*30 );
                         });
+                        this.videosUploadManipulators.forEach((manipulator, i) => {
+                            if (videosPanel.content.children.indexOf(manipulator.first) === -1) {
+                                videosPanel.content.add(manipulator.first);
+                            }
+                            manipulator.move(w/2, (this.videosManipulators.length + i)*30)
+                        });
+                        videosPanel.resizeContent(w, (this.videosManipulators.length + this.videosUploadManipulators.length + 1) * 30);
                     });
                 };
 
                 // temp
                 // const imagesPanel = new gui.Panel(w - 4, 0.8*h * h, myColors.white, 2).position(w / 2 + 0.5, h/2);
                 const imagesPanel = this.panel;
+
+
 
                 const tabManager = {
                     tabs: [],
@@ -722,6 +750,7 @@ exports.GUI = function (globalVariables) {
                         this.manipulator.ordonator.set(i, manip.first);
                     }
                 };
+
                 tabManager.addTab("Images", 0, () => {
                     this.libraryManipulator.ordonator.set(2, imagesPanel.component);
                 });
@@ -733,6 +762,7 @@ exports.GUI = function (globalVariables) {
                 this.libraryManipulator.ordonator.set(1, tabManager.manipulator.first);
 
                 tabManager.tabs[0].select();
+                this.tabManager = tabManager;
             };
 
             displayTabs();
