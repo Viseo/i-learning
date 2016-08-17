@@ -693,7 +693,9 @@ exports.GUI = function (globalVariables) {
                     width = w*0.8,
                     height = h*0.06;
 
-                const videosPanel = new gui.Panel(w - 4, 0.8*h, myColors.white, 2).position(w / 2 + 0.5, h/2);
+                const videosPanel = new gui.Panel(w - 4, 0.8*h, myColors.white, 2);
+                videosPanel.position(w / 2 + 0.5, h/2);
+                videosPanel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
 
                 const displayVideo = function (video, manipulator) {
                     this.video = video;
