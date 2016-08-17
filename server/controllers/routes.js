@@ -18,34 +18,37 @@ module.exports = function (app, fs) {
 
     app.post('/upload', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
 
-        function insertAsync() {
+        const insertInDB = function(file) {
             return new Promise((resolve, reject) => {
-                if (req.file.mimetype === 'video/mp4') {
-                    const collection = db.get().collection('videos');
-                    collection.insert({
-                        src: "../resource/" + req.file.filename,
-                        name: req.file.originalname
-                    }, (err) => { // TODO penser à utiliser InsertOne ?
-                        err ? reject() : resolve(err)
+                if (file.mimetype === 'video/mp4') {
+                    db.get().collection('videos').insertOne({
+                        src: "../resource/" + file.filename,
+                        name: file.originalname
+                    }, (err) => {
+                        err ? reject() : resolve()
                     })
-                } else if (req.file.mimetype === 'image/png' || req.file.mimetype === 'image/jpeg') {
-                    const collection = db.get().collection('images');
-                    collection.insert({
-                        imgSrc :"../resource/"+req.file.filename,
-                        name :req.file.originalname
-                    }, (err) => { // TODO penser à utiliser InsertOne ?
-                        err ? reject() : resolve(err)
+                } else if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+                    db.get().collection('images').insertOne({
+                        imgSrc: "../resource/" + file.filename,
+                        name: file.originalname
+                    }, (err) => {
+                        err ? reject() : resolve()
+                    })
+                } else { // delete unwanted file
+                    fs.unlink(file.path, () => {
+                        reject(new Error("Bad file type"))
                     })
                 }
             })
-        }
+        };
 
-        insertAsync()
+        insertInDB(req.file)
             .then(() => {
+                console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
                 res.send('ok')
             })
             .catch((err) => {
-                // TODO traiter l'erreur et envoyer un message clair
+                console.error(err);
                 res.send('err')
             });
     });
@@ -248,6 +251,12 @@ module.exports = function (app, fs) {
         collection.find().toArray(function(err, docs) {
             res.send({images: docs});
         });
+    });
+
+    app.post('/getAllVideos', function(req, res) {
+        db.get().collection('videos').find().toArray(function(err, videos) {
+            res.send(videos);
+        })
     });
 
     app.post('/data', function (req, res) {
