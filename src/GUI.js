@@ -767,7 +767,7 @@ exports.GUI = function (globalVariables) {
                 tabManager.manipulator.move(w/4 + MARGIN, h*0.05);
                 this.libraryManipulator.set(1, tabManager.manipulator);
 
-                tabManager.tabs[0].select();
+                tabManager.select(0);
                 this.tabManager = tabManager;
             };
 
