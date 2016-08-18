@@ -79,7 +79,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             case "QuizPreview":
                 quizz = formation.quizzManager.previewQuiz;
                 if (quizz.currentQuestionIndex !== -1) {
-                    quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator.first);
+                    quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
                 }
                 quizz.display(0, 0, drawing.width, drawing.height);
 
@@ -91,7 +91,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                 quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
                 if (formation.quizzManager.previewQuiz) {
                     if (quizz.currentQuestionIndex !== -1) {
-                        quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator.first);
+                        quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator);
                     }
                     quizz.display(0, 0, drawing.width, drawing.height);
                 }
@@ -100,8 +100,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                     if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                         quizz.displayCurrentQuestion();
                     } else {
-                        quizz.resultManipulator.remove(quizz.puzzle.manipulator.first);
-                        quizz.resultManipulator.remove(quizz.scoreManipulator.first);
+                        quizz.resultManipulator.remove(quizz.puzzle.manipulator);
+                        quizz.resultManipulator.remove(quizz.scoreManipulator);
                         quizz.displayResult();
                     }
                     break;

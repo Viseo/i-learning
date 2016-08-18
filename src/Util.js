@@ -110,13 +110,25 @@ exports.Util = function (globalVariables) {
         }
 
         add(svgObject){
-            if(this.scalor.children.indexOf(svgObject)===-1){
-                this.scalor.add(svgObject);
+            let component;
+            if(svgObject instanceof Manipulator) {
+                component = svgObject.first;
+            }else {
+                component=svgObject;
+            }
+            if(this.scalor.children.indexOf(component)===-1){
+                this.last.add(component);
             }
         }
         remove(svgObject){
-            if(this.scalor.children.indexOf(svgObject)!==-1){
-                this.scalor.remove(svgObject);
+            let component;
+            if(svgObject instanceof Manipulator) {
+                component = svgObject.first;
+            }else {
+                component=svgObject;
+            }
+            if(this.scalor.children.indexOf(component)!==-1){
+                this.last.remove(component);
             }
         }
 
@@ -134,7 +146,7 @@ exports.Util = function (globalVariables) {
             this.glass.mark('bigGlass');
             this.drawing.add(this.drawing.manipulator.translator);
             this.background = this.drawing.manipulator.translator;
-            this.drawing.manipulator.set(2, this.piste.first);
+            this.drawing.manipulator.set(2, this.piste);
             this.drawing.add(this.glass);
 
             const onmousedownHandler = event => {
@@ -711,7 +723,7 @@ exports.Util = function (globalVariables) {
             this.redCrossClickHandler = () => {
                 formation.removeLink(parentGame, childGame);
                 formation.arrowsManipulator.remove(this.arrowPath);
-                formation.arrowsManipulator.remove(this.redCrossManipulator.first);
+                formation.arrowsManipulator.remove(this.redCrossManipulator);
                 formation.selectedArrow = null;
             };
 
@@ -726,14 +738,14 @@ exports.Util = function (globalVariables) {
                     if (formation.selectedArrow) {
                         formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
                         formation.selectedArrow.selected = false;
-                        formation.arrowsManipulator.remove(formation.selectedArrow.redCrossManipulator.first);
+                        formation.arrowsManipulator.remove(formation.selectedArrow.redCrossManipulator);
                     }
                     formation.selectedArrow = this;
-                    formation.arrowsManipulator.add(this.redCrossManipulator.first);
+                    formation.arrowsManipulator.add(this.redCrossManipulator);
                     this.arrowPath.color(myColors.blue, 2, myColors.black);
                 } else {
                     this.arrowPath.color(myColors.black, 1, myColors.black);
-                    formation.arrowsManipulator.remove(this.redCrossManipulator.first);
+                    formation.arrowsManipulator.remove(this.redCrossManipulator);
                     formation.selectedArrow = null;
                 }
                 this.selected = !this.selected;
@@ -820,7 +832,7 @@ exports.Util = function (globalVariables) {
                 if (typeof this.redCrossManipulator === 'undefined') {
                     this.redCrossManipulator = new Manipulator(this);
                     this.redCrossManipulator.addOrdonator(2);
-                    manipulator.add(this.redCrossManipulator.first);
+                    manipulator.add(this.redCrossManipulator);
                 }
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
@@ -853,10 +865,10 @@ exports.Util = function (globalVariables) {
 
         redCrossClickHandler () {
             this.removeAllLinks();
-            this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator.first);
+            this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator);
             this.game.miniatureManipulator.unset(0);
             this.game.miniatureManipulator.unset(1);
-            this.game.miniatureManipulator.remove(this.redCrossManipulator.first);
+            this.game.miniatureManipulator.remove(this.redCrossManipulator);
             var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
             if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
@@ -896,10 +908,7 @@ exports.Util = function (globalVariables) {
                 if (this.game.parentFormation.selectedGame) {
                     this.checkAndDrawValidity(this.game.parentFormation.selectedGame);
                     this.game.parentFormation.selectedGame.selected = false;
-                    !playerMode && (this.game.parentFormation.selectedGame.game.miniatureManipulator.last.children
-                        .indexOf(this.game.parentFormation.selectedGame.redCrossManipulator.first) !== -1)
-                    && this.game.parentFormation.selectedGame.game.miniatureManipulator.last
-                        .remove(this.game.parentFormation.selectedGame.redCrossManipulator.first);
+                    !playerMode && this.game.parentFormation.selectedGame.game.miniatureManipulator.remove(this.game.parentFormation.selectedGame.redCrossManipulator);
                 }
             }
             this.selected = !this.selected;
@@ -909,11 +918,11 @@ exports.Util = function (globalVariables) {
         updateSelectionDesign() {
             if (this.selected) {
                 this.game.parentFormation.selectedGame = this;
-                !playerMode && this.game.miniatureManipulator.add(this.redCrossManipulator.first);
+                !playerMode && this.game.miniatureManipulator.add(this.redCrossManipulator);
                 this.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
             } else {
                 this.checkAndDrawValidity(this);
-                !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.remove(this.redCrossManipulator.first);
+                !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.remove(this.redCrossManipulator);
                 this.game.parentFormation.selectedGame = null;
             }
         }
@@ -953,7 +962,7 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(0, rect);
                     this.infosManipulator.set(1, check);
                     let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
-                    object.miniatureManipulator.add(this.infosManipulator.first);
+                    object.miniatureManipulator.add(this.infosManipulator);
                     let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                     result.text.position(0, size / 2 - MARGIN / 2);
                     break;
@@ -974,7 +983,7 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(1, iconInfosdot1);
                     this.infosManipulator.set(2, iconInfosdot2);
                     this.infosManipulator.set(3, iconInfosdot3);
-                    object.miniatureManipulator.add(this.infosManipulator.first);
+                    object.miniatureManipulator.add(this.infosManipulator);
                     break;
             }
         };
@@ -990,7 +999,7 @@ exports.Util = function (globalVariables) {
         }
 
         display(x, y, w, h) {
-            this.formation.parent.formationsManipulator.add(this.miniatureManipulator.first);
+            this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
             let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
             miniature.cadre.corners(50, 50);
             miniature.cadre.mark(this.formation.label);
@@ -1003,7 +1012,7 @@ exports.Util = function (globalVariables) {
             }
             this.iconManipulator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
             this.miniatureManipulator.move(x, y);
-            this.miniatureManipulator.add(this.iconManipulator.first);
+            this.miniatureManipulator.add(this.iconManipulator);
             this.drawIcon();
         }
 
@@ -1020,7 +1029,7 @@ exports.Util = function (globalVariables) {
                     rect.position(size / 2, -size / 2);
                     this.iconManipulator.set(0, rect);
                     this.iconManipulator.set(1, iconInfos);
-                    this.miniatureManipulator.add(this.iconManipulator.first);
+                    this.miniatureManipulator.add(this.iconManipulator);
                     break;
                 case "inProgress":
                     iconInfos = new svg.Circle(iconsize / 2).color(myColors.white, 1, myColors.orange).position(size / 2, -size / 2);
@@ -1031,7 +1040,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(1, iconInfosdot1);
                     this.iconManipulator.set(2, iconInfosdot2);
                     this.iconManipulator.set(3, iconInfosdot3);
-                    this.miniatureManipulator.add(this.iconManipulator.first);
+                    this.miniatureManipulator.add(this.iconManipulator);
                     break;
             }
         }
@@ -1055,7 +1064,7 @@ exports.Util = function (globalVariables) {
             this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
             this.manipulator.addOrdonator(2);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
-            this.manipulator.add(this.chevronManipulator.first);
+            this.manipulator.add(this.chevronManipulator);
         }
 
         display(x, y, w, h) {
@@ -1141,8 +1150,8 @@ exports.Util = function (globalVariables) {
             let updateRightChevron = this.rightChevron && this.rightChevron._activated;
             updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
             updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
-            this.manipulator.set(1, this.leftChevronManipulator.first);
-            this.manipulator.set(2, this.rightChevronManipulator.first);
+            this.manipulator.set(1, this.leftChevronManipulator);
+            this.manipulator.set(2, this.rightChevronManipulator);
         }
 
         hideChevrons() {
@@ -1283,7 +1292,7 @@ exports.Util = function (globalVariables) {
                 it.forEach(elem => {
                     if (elem) {
                         let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                        this.manipulator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                        this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 cadre
                         elem.display(elem.x, elem.y, elem.width, elem.height);
                     }
                 });
