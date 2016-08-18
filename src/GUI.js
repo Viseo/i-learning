@@ -716,7 +716,7 @@ exports.GUI = function (globalVariables) {
                             if (!this.videosManipulators[i]) {
                                 this.videosManipulators[i] = new Manipulator().addOrdonator(2);
                             }
-                            videosPanel.content.add(this.videosManipulators[i]);
+                            videosPanel.content.add(this.videosManipulators[i].first);
                             displayVideo(video, this.videosManipulators[i]);
                             this.videosManipulators[i].move(20, 30 + i*30 );
                         });
