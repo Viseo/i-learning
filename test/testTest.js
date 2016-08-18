@@ -23,7 +23,7 @@ function setUtil(_util){
 
 var test = function(){
     var rect = new svg.Rect(50, 50).color(myColors.blue, 3, myColors.black).position(200, 200);
-    mainManipulator.last.add(rect);
+    mainManipulator.add(rect);
     var handler = function (event) {
         if(event.keyCode === 27) { // echap
             console.log("ECHAP");

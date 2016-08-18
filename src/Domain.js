@@ -87,9 +87,9 @@ exports.Domain = function (globalVariables) {
 
         isEditable(editor, editable) {
             this.linesManipulator = new Manipulator(this).addOrdonator(4);
-            this.manipulator.last.add(this.linesManipulator.first);
+            this.manipulator.add(this.linesManipulator.first);
             this.penManipulator = new Manipulator(this).addOrdonator(4);
-            this.manipulator.last.add(this.penManipulator.first);
+            this.manipulator.add(this.penManipulator.first);
             this.editable = editable;
             this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
             this._acceptDrop = editable;
@@ -155,15 +155,15 @@ exports.Domain = function (globalVariables) {
         constructor(question, quizz) {
             this.manipulator = new Manipulator(this).addOrdonator(6);
             this.answersManipulator = new Manipulator(this);
-            this.manipulator.last.add(this.answersManipulator.first);
+            this.manipulator.add(this.answersManipulator.first);
             this.resetManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.last.add(this.resetManipulator.first);
+            this.answersManipulator.add(this.resetManipulator.first);
             this.validateManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.last.add(this.validateManipulator.first);
+            this.answersManipulator.add(this.validateManipulator.first);
             this.simpleChoiceMessageManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.last.add(this.simpleChoiceMessageManipulator.first);
+            this.answersManipulator.add(this.simpleChoiceMessageManipulator.first);
             this.invalidQuestionPictogramManipulator = new Manipulator(this).addOrdonator(5);
-            this.manipulator.last.add(this.invalidQuestionPictogramManipulator.first);
+            this.manipulator.add(this.invalidQuestionPictogramManipulator.first);
 
             this.validLabelInput = (question && question.validLabelInput !== undefined) ? question.validLabelInput : true;
 
@@ -319,9 +319,9 @@ exports.Domain = function (globalVariables) {
             this.questionManipulator = new Manipulator(this).addOrdonator(6);
             this.toggleButtonManipulator = new Manipulator(this);
             this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.last.add(this.previewButtonManipulator.first);
+            this.manipulator.add(this.previewButtonManipulator.first);
             this.saveQuizButtonManipulator = new Manipulator(this);
-            this.manipulator.last.add(this.saveQuizButtonManipulator.first);
+            this.manipulator.add(this.saveQuizButtonManipulator.first);
 
             this.labelDefault = "Cliquer deux fois pour ajouter la question";
             this.questionType = myQuestionType.tab;
@@ -334,7 +334,7 @@ exports.Domain = function (globalVariables) {
                 this.loadQuestion(question);
             }
             this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
-            this.manipulator.last.add(this.puzzle.manipulator.first);
+            this.manipulator.add(this.puzzle.manipulator.first);
             this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         }
 
@@ -378,7 +378,7 @@ exports.Domain = function (globalVariables) {
             this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.set(2, this.closeButtonManipulator.first);
             this.panelManipulator = new Manipulator(this).addOrdonator(2);;
-            this.manipulator.last.add(this.panelManipulator.first);
+            this.manipulator.add(this.panelManipulator.first);
             this.textManipulator = new Manipulator(this).addOrdonator(1);
             this.editable = editable;
             if (this.editable) {
@@ -486,8 +486,8 @@ exports.Domain = function (globalVariables) {
             this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
             this.miniaturesManipulator = new Manipulator(this);
-            this.graphManipulator.last.add(this.miniaturesManipulator.first);
-            this.graphManipulator.last.add(this.arrowsManipulator.first);
+            this.graphManipulator.add(this.miniaturesManipulator.first);
+            this.graphManipulator.add(this.arrowsManipulator.first);
             this.clippingManipulator = new Manipulator(this);
             this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
@@ -519,9 +519,9 @@ exports.Domain = function (globalVariables) {
             this.miniature = new MiniatureFormation(this);
 
             this.changeableDimensions();
-            this.manipulator.last.add(this.saveFormationButtonManipulator.first);
-            this.manipulator.last.add(this.publicationFormationButtonManipulator.first);
-            this.manipulator.last.add(this.deactivateFormationButtonManipulator.first);
+            this.manipulator.add(this.saveFormationButtonManipulator.first);
+            this.manipulator.add(this.publicationFormationButtonManipulator.first);
+            this.manipulator.add(this.deactivateFormationButtonManipulator.first);
         }
 
         dropAction(event, game) {
@@ -621,13 +621,11 @@ exports.Domain = function (globalVariables) {
                     default:
                         error = false;
                 }
-                if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
-                    this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                }
+                this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
                 if (displayQuizzManager && !error) {
                     displayQuizzManager();
                 } else {
-                    (this.manipulator.last.children.indexOf(this.message) !== -1) && this.manipulator.last.remove(this.message);
+                    this.manipulator.remove(this.message);
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
@@ -635,11 +633,9 @@ exports.Domain = function (globalVariables) {
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
-                    this.manipulator.last.add(this.message);
+                    this.manipulator.add(this.message);
                     svg.timeout(() => {
-                        if (this.manipulator.last.children.indexOf(this.message) !== -1) {
-                            this.manipulator.last.remove(this.message);
-                        }
+                        this.manipulator.remove(this.message);
                     }, 5000);
                 }
             };
@@ -729,22 +725,18 @@ exports.Domain = function (globalVariables) {
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
 
             this.displayPublicationMessage = (messagePublication) => {
-                if (this.saveFormationButtonManipulator.last.children.indexOf(this.message) !== -1) {
-                    this.saveFormationButtonManipulator.last.remove(this.message);
-                }
+                this.saveFormationButtonManipulator.remove(this.message);
                 this.formationInfoManipulator.unset(2);
-                (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+                this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
                 this.errorMessagePublication = new svg.Text(messagePublication);
-                this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
+                this.publicationFormationButtonManipulator.add(this.errorMessagePublication);
                 this.errorMessagePublication.position(-this.buttonWidth, -this.publicationButtonHeight / 2 - MARGIN)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red)
                     .mark("errorMessagePublication");
 
                 svg.timeout(() => {
-                    if (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) {
-                        this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
-                    }
+                    this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
                 }, 5000);
             };
 
@@ -1103,14 +1095,14 @@ exports.Domain = function (globalVariables) {
         }
 
         displayMessage(message, color) {
-            this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+            this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.remove(this.questionCreator.errorMessagePreview);
             this.questionCreator.errorMessagePreview = new svg.Text(message)
                 .position(this.buttonWidth, -this.saveQuizButtonManipulator.ordonator.children[0].height / 2 - MARGIN / 2)
                 .font("Arial", 20)
                 .anchor('middle').color(color);
-            this.previewButtonManipulator.last.add(this.questionCreator.errorMessagePreview);
+            this.previewButtonManipulator.add(this.questionCreator.errorMessagePreview);
             setTimeout(() => {
-                this.previewButtonManipulator.last.children.indexOf(this.questionCreator.errorMessagePreview) !== -1 && this.previewButtonManipulator.last.remove(this.questionCreator.errorMessagePreview);
+                this.previewButtonManipulator.remove(this.questionCreator.errorMessagePreview);
             }, 5000);
         }
 
@@ -1138,7 +1130,7 @@ exports.Domain = function (globalVariables) {
                         });
                         this.quizz.tabQuestions = this.tabQuestions;
                         let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-                        (this.parentFormation.miniaturesManipulator.last.children.indexOf(quizz.miniatureManipulator.first) !== -1) && this.parentFormation.miniaturesManipulator.last.remove(quizz.miniatureManipulator.first);
+                        this.parentFormation.miniaturesManipulator.remove(quizz.miniatureManipulator.first);
                         this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex] = this.quizz;
                         this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
                         this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
@@ -1187,16 +1179,16 @@ exports.Domain = function (globalVariables) {
             super(quizz, parentFormation);
             const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
             this.returnButton = new ReturnButton(this, returnText);
-            this.manipulator.last.add(this.returnButtonManipulator.first);
+            this.manipulator.add(this.returnButtonManipulator.first);
             this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.last.add(this.expButtonManipulator.first);
+            this.manipulator.add(this.expButtonManipulator.first);
 
             this.chevronManipulator = new Manipulator(this);
             this.leftChevronManipulator = new Manipulator(this).addOrdonator(1);
             this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
-            this.manipulator.last.add(this.chevronManipulator.first);
-            this.chevronManipulator.last.add(this.leftChevronManipulator.first);
-            this.chevronManipulator.last.add(this.rightChevronManipulator.first);
+            this.manipulator.add(this.chevronManipulator.first);
+            this.chevronManipulator.add(this.leftChevronManipulator.first);
+            this.chevronManipulator.add(this.rightChevronManipulator.first);
 
             this.loadQuestions(quizz);
             if (this.levelIndex === undefined) {
@@ -1269,13 +1261,13 @@ exports.Domain = function (globalVariables) {
                 this.questionHeight = this.questionHeightWithoutImage;
                 this.answerHeight = this.answerHeightWithoutImage;
             }
-            this.manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].manipulator.first) === -1 && this.manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+            this.manipulator.add(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
             this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
             this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
                 this.questionArea.w, this.questionHeight);
             this.rightChevron.update(this);
             this.leftChevron.update(this);
-            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.last.children.indexOf(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator) === -1 && this.tabQuestions[this.currentQuestionIndex].manipulator.last.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.translator);
+            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator.first);
             this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
                 this.questionArea.w, this.answerHeight);
         }
@@ -1283,7 +1275,7 @@ exports.Domain = function (globalVariables) {
         // !_! bof, y'a encore des display appelés ici
         nextQuestion() {
             if (this.currentQuestionIndex !== -1) {
-                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
             }
 
             if (this.previewMode) {
@@ -1335,7 +1327,7 @@ exports.Domain = function (globalVariables) {
         constructor(bd, parentFormation) {
             super(bd,parentFormation);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.manipulator.last.add(this.returnButtonManipulator.first);
+            this.manipulator.add(this.returnButtonManipulator.first);
         }
     }
 
@@ -1350,12 +1342,12 @@ exports.Domain = function (globalVariables) {
             this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(3);
             this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
 
-            this.manipulator.last.add(this.firstNameManipulator.first);
-            this.manipulator.last.add(this.lastNameManipulator.first);
-            this.manipulator.last.add(this.mailAddressManipulator.first);
-            this.manipulator.last.add(this.passwordManipulator.first);
-            this.manipulator.last.add(this.passwordConfirmationManipulator.first);
-            this.manipulator.last.add(this.saveButtonManipulator.first);
+            this.manipulator.add(this.firstNameManipulator.first);
+            this.manipulator.add(this.lastNameManipulator.first);
+            this.manipulator.add(this.mailAddressManipulator.first);
+            this.manipulator.add(this.passwordManipulator.first);
+            this.manipulator.add(this.passwordConfirmationManipulator.first);
+            this.manipulator.add(this.saveButtonManipulator.first);
 
             // HEIGHT
             this.saveButtonHeightRatio = 0.075;
@@ -1383,9 +1375,9 @@ exports.Domain = function (globalVariables) {
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(4);
 
-            this.manipulator.last.add(this.mailAddressManipulator.first);
-            this.manipulator.last.add(this.passwordManipulator.first);
-            this.manipulator.last.add(this.connexionButtonManipulator.first);
+            this.manipulator.add(this.mailAddressManipulator.first);
+            this.manipulator.add(this.passwordManipulator.first);
+            this.manipulator.add(this.connexionButtonManipulator.first);
 
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";

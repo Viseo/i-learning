@@ -109,6 +109,17 @@ exports.Util = function (globalVariables) {
             this.ordonator.unset(layer)
         }
 
+        add(svgObject){
+            if(this.scalor.children.indexOf(svgObject)===-1){
+                this.scalor.add(svgObject);
+            }
+        }
+        remove(svgObject){
+            if(this.scalor.children.indexOf(svgObject)!==-1){
+                this.scalor.remove(svgObject);
+            }
+        }
+
     }
 
     class Drawings {
@@ -684,30 +695,30 @@ exports.Util = function (globalVariables) {
             this.redCrossManipulator = new Manipulator(this);
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
             redCross.mark('redCross');
-            this.redCrossManipulator.last.add(redCross);
+            this.redCrossManipulator.add(redCross);
 
             this.redraw = () => {
                 let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
                 let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
                 let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
                 let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-                formation.arrowsManipulator.last.remove(this.arrowPath);
+                formation.arrowsManipulator.remove(this.arrowPath);
                 this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-                formation.arrowsManipulator.last.add(this.arrowPath);
+                formation.arrowsManipulator.add(this.arrowPath);
 
             };
 
             this.redCrossClickHandler = () => {
                 formation.removeLink(parentGame, childGame);
-                formation.arrowsManipulator.last.remove(this.arrowPath);
-                formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                formation.arrowsManipulator.remove(this.arrowPath);
+                formation.arrowsManipulator.remove(this.redCrossManipulator.first);
                 formation.selectedArrow = null;
             };
 
             svg.addEvent(redCross, 'click', this.redCrossClickHandler);
 
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
-            formation.arrowsManipulator.last.add(this.arrowPath);
+            formation.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
                 formation.selectedGame && formation.selectedGame.icon.cadre.component.listeners.click();
@@ -715,14 +726,14 @@ exports.Util = function (globalVariables) {
                     if (formation.selectedArrow) {
                         formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
                         formation.selectedArrow.selected = false;
-                        formation.arrowsManipulator.last.remove(formation.selectedArrow.redCrossManipulator.first);
+                        formation.arrowsManipulator.remove(formation.selectedArrow.redCrossManipulator.first);
                     }
                     formation.selectedArrow = this;
-                    formation.arrowsManipulator.last.add(this.redCrossManipulator.first);
+                    formation.arrowsManipulator.add(this.redCrossManipulator.first);
                     this.arrowPath.color(myColors.blue, 2, myColors.black);
                 } else {
                     this.arrowPath.color(myColors.black, 1, myColors.black);
-                    formation.arrowsManipulator.last.remove(this.redCrossManipulator.first);
+                    formation.arrowsManipulator.remove(this.redCrossManipulator.first);
                     formation.selectedArrow = null;
                 }
                 this.selected = !this.selected;
@@ -809,7 +820,7 @@ exports.Util = function (globalVariables) {
                 if (typeof this.redCrossManipulator === 'undefined') {
                     this.redCrossManipulator = new Manipulator(this);
                     this.redCrossManipulator.addOrdonator(2);
-                    manipulator.last.add(this.redCrossManipulator.first);
+                    manipulator.add(this.redCrossManipulator.first);
                 }
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
@@ -831,7 +842,7 @@ exports.Util = function (globalVariables) {
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
-            (this.redCrossManipulator.last.children.indexOf(this.redCross) === -1) && this.redCrossManipulator.last.add(this.redCross);
+            this.redCrossManipulator.add(this.redCross);
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
             icon.cadre.color(myColors.white, 1, myColors.black);
@@ -842,10 +853,10 @@ exports.Util = function (globalVariables) {
 
         redCrossClickHandler () {
             this.removeAllLinks();
-            this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
+            this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator.first);
             this.game.miniatureManipulator.unset(0);
             this.game.miniatureManipulator.unset(1);
-            this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+            this.game.miniatureManipulator.remove(this.redCrossManipulator.first);
             var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
             if(longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)){
@@ -898,11 +909,11 @@ exports.Util = function (globalVariables) {
         updateSelectionDesign() {
             if (this.selected) {
                 this.game.parentFormation.selectedGame = this;
-                !playerMode && this.game.miniatureManipulator.last.add(this.redCrossManipulator.first);
+                !playerMode && this.game.miniatureManipulator.add(this.redCrossManipulator.first);
                 this.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
             } else {
                 this.checkAndDrawValidity(this);
-                !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
+                !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.remove(this.redCrossManipulator.first);
                 this.game.parentFormation.selectedGame = null;
             }
         }
@@ -942,7 +953,7 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(0, rect);
                     this.infosManipulator.set(1, check);
                     let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
-                    object.miniatureManipulator.last.add(this.infosManipulator.first);
+                    object.miniatureManipulator.add(this.infosManipulator.first);
                     let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
                     result.text.position(0, size / 2 - MARGIN / 2);
                     break;
@@ -963,7 +974,7 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(1, iconInfosdot1);
                     this.infosManipulator.set(2, iconInfosdot2);
                     this.infosManipulator.set(3, iconInfosdot3);
-                    object.miniatureManipulator.last.add(this.infosManipulator.first);
+                    object.miniatureManipulator.add(this.infosManipulator.first);
                     break;
             }
         };
@@ -979,7 +990,7 @@ exports.Util = function (globalVariables) {
         }
 
         display(x, y, w, h) {
-            this.formation.parent.formationsManipulator.last.children.indexOf(this.miniatureManipulator.first) === -1 && this.formation.parent.formationsManipulator.last.add(this.miniatureManipulator.first);
+            this.formation.parent.formationsManipulator.add(this.miniatureManipulator.first);
             let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
             miniature.cadre.corners(50, 50);
             miniature.cadre.mark(this.formation.label);
@@ -992,7 +1003,7 @@ exports.Util = function (globalVariables) {
             }
             this.iconManipulator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
             this.miniatureManipulator.move(x, y);
-            this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
+            this.miniatureManipulator.add(this.iconManipulator.first);
             this.drawIcon();
         }
 
@@ -1009,7 +1020,7 @@ exports.Util = function (globalVariables) {
                     rect.position(size / 2, -size / 2);
                     this.iconManipulator.set(0, rect);
                     this.iconManipulator.set(1, iconInfos);
-                    this.miniatureManipulator.last.add(this.iconManipulator.first);
+                    this.miniatureManipulator.add(this.iconManipulator.first);
                     break;
                 case "inProgress":
                     iconInfos = new svg.Circle(iconsize / 2).color(myColors.white, 1, myColors.orange).position(size / 2, -size / 2);
@@ -1020,7 +1031,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(1, iconInfosdot1);
                     this.iconManipulator.set(2, iconInfosdot2);
                     this.iconManipulator.set(3, iconInfosdot3);
-                    this.miniatureManipulator.last.add(this.iconManipulator.first);
+                    this.miniatureManipulator.add(this.iconManipulator.first);
                     break;
             }
         }
@@ -1044,7 +1055,7 @@ exports.Util = function (globalVariables) {
             this.manipulator = this.parent.returnButtonManipulator || (this.parent.returnButtonManipulator = new Manipulator(this.parent));
             this.manipulator.addOrdonator(2);
             this.chevronManipulator = new Manipulator(this.parent).addOrdonator(1);
-            this.manipulator.last.add(this.chevronManipulator.first);
+            this.manipulator.add(this.chevronManipulator.first);
         }
 
         display(x, y, w, h) {

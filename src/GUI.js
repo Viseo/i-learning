@@ -78,7 +78,7 @@ exports.GUI = function (globalVariables) {
             let mouseoverHandler = ()=> {
                 if (typeof this.redCrossManipulator === 'undefined') {
                     this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
-                    this.manipulator && this.manipulator.last.add(this.redCrossManipulator.first);
+                    this.manipulator && this.manipulator.add(this.redCrossManipulator.first);
                 }
                 let redCrossSize = 15;
                 let redCross = drawRedCross(this.width / 2 - redCrossSize, -this.height / 2 + redCrossSize, redCrossSize, this.redCrossManipulator)
@@ -233,7 +233,7 @@ exports.GUI = function (globalVariables) {
             this.bordure = obj.cadre;
         } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
             this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
-            this.manipulator.last.children.indexOf(this.bordure) === -1 && this.manipulator.last.add(this.bordure);
+            this.manipulator.add(this.bordure);
         }
         let index = "answer" + this.parentQuestion.tabAnswer.indexOf(this);
         this.content && this.content.mark(index);
@@ -324,10 +324,8 @@ exports.GUI = function (globalVariables) {
         libraryDisplay.call(this, x + MARGIN, y, w, h, 0.9, 0.9*h / 2);
 
         let displayArrowModeButton = () => {
-            if (this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) !== -1) {
-                this.libraryManipulator.last.remove(this.arrowModeManipulator.first);
-            }
-            this.libraryManipulator.last.children.indexOf(this.arrowModeManipulator.first) === -1 && this.libraryManipulator.last.add(this.arrowModeManipulator.first);
+            this.libraryManipulator.remove(this.arrowModeManipulator.first);
+            this.libraryManipulator.add(this.arrowModeManipulator.first);
             this.arrowModeManipulator.first.move(w / 2, h - 0.05 * h);
 
             let createLink = (parentGame, childGame) => {
@@ -442,7 +440,7 @@ exports.GUI = function (globalVariables) {
                     };
 
                     let mouseupHandler = event => {
-                        drawings.piste.last.remove(this.draggedObject.manipulator.first);
+                        drawings.piste.remove(this.draggedObject.manipulator.first);
                         let target = drawings.background.getTarget(event.pageX, event.pageY);
                         let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                         if (parentObject !== item) {
@@ -456,7 +454,7 @@ exports.GUI = function (globalVariables) {
 
                     let createDraggableCopy = () =>{
                         let manipulator = new Manipulator(this).addOrdonator(2);
-                        drawings.piste.last.add(manipulator.first);
+                        drawings.piste.add(manipulator.first);
                         let point = item.miniature.cadre.globalPoint(0, 0);
                         manipulator.first.move(point.x, point.y);
                         this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
@@ -498,7 +496,7 @@ exports.GUI = function (globalVariables) {
 
                         libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
                         let manip = new Manipulator(this).addOrdonator(2);
-                        drawings.piste.last.add(manip.first);
+                        drawings.piste.add(manip.first);
                         this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
 
                         let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
@@ -653,7 +651,7 @@ exports.GUI = function (globalVariables) {
 
                 this.addButtonManipulator.set(0, addButton);
                 this.addButtonManipulator.set(2, plus);
-                this.libraryManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.libraryManipulator.last.add(this.addButtonManipulator.first);
+                this.libraryManipulator.add(this.addButtonManipulator.first);
                 this.addButtonManipulator.move(this.w / 2, 9 * this.h / 10);
                 svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
                 svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
@@ -712,16 +710,12 @@ exports.GUI = function (globalVariables) {
                             if (!this.videosManipulators[i]) {
                                 this.videosManipulators[i] = new Manipulator().addOrdonator(2);
                             }
-                            if (videosPanel.content.children.indexOf(this.videosManipulators[i].first) === -1) {
-                                videosPanel.content.add(this.videosManipulators[i].first);
-                            }
+                            videosPanel.content.add(this.videosManipulators[i].first);
                             displayVideo(video, this.videosManipulators[i]);
                             this.videosManipulators[i].move(20, 30 + i*30 );
                         });
                         this.videosUploadManipulators.forEach((manipulator, i) => {
-                            if (videosPanel.content.children.indexOf(manipulator.first) === -1) {
-                                videosPanel.content.add(manipulator.first);
-                            }
+                            videosPanel.content.add(manipulator.first);
                             manipulator.move(w/2, (this.videosManipulators.length + i)*30)
                         });
                         videosPanel.resizeContent(w, (this.videosManipulators.length + this.videosUploadManipulators.length + 1) * 30);
@@ -815,7 +809,7 @@ exports.GUI = function (globalVariables) {
                     }
                     questionCreator.puzzle.updateElementsArray(questionCreator.linkedQuestion.tabAnswer);
                     questionCreator.puzzle && questionCreator.puzzle.fillVisibleElementsArray("leftToRight");
-                    questionCreator.manipulator.last.children.indexOf(questionCreator.puzzle.manipulator.first) === -1 && questionCreator.manipulator.last.add(questionCreator.puzzle.manipulator.first);
+                    questionCreator.manipulator.add(questionCreator.puzzle.manipulator.first);
                     questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x,
                         questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
                         questionCreator.coordinatesAnswers.h, false);
@@ -832,7 +826,7 @@ exports.GUI = function (globalVariables) {
                         question.selected = false
                         question.tabAnswer.forEach(answer=> {
                             if (answer.popIn) {
-                                quizzManager.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && quizzManager.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                                quizzManager.questionCreator.manipulator.remove(answer.popIn.manipulator.first);
                                 quizzManager.questionCreator.explanation = null;
                             }
                         })
@@ -883,7 +877,7 @@ exports.GUI = function (globalVariables) {
         let borderSize = 3;
         this.manipulator.first.move(0, drawing.height * 0.075);
         mainManipulator.set(1, this.manipulator.first);
-        this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
+        this.manipulator.add(this.returnButtonManipulator.first);
 
         let returnHandler = () => {
             this.returnButton.manipulator.flush();
@@ -893,7 +887,7 @@ exports.GUI = function (globalVariables) {
                 formationsManager.display();
             });
         };
-        this.manipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.manipulator.last.add(this.returnButtonManipulator.first);
+        this.manipulator.add(this.returnButtonManipulator.first);
         this.returnButton.display(0, -MARGIN/2, 20, 20);
         let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
         this.returnButton.height = returnButtonChevron.boundingRect().height;
@@ -987,13 +981,13 @@ exports.GUI = function (globalVariables) {
             this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio - drawing.height * 0.1;//-15-this.saveButtonHeight;//15: Height Message Error
 
             if (typeof this.panel !== "undefined") {
-                this.clippingManipulator.last.remove(this.panel.component);
+                this.clippingManipulator.remove(this.panel.component);
             }
             this.panel = new gui.ScrollablePanel(w, h, myColors.white);
             this.panel.back.mark("panelBack");
             this.panel.contentV.add(this.messageDragDropManipulator.first);
             this.panel.component.move(w / 2, h / 2);
-            this.clippingManipulator.last.add(this.panel.component);
+            this.clippingManipulator.add(this.panel.component);
             this.panel.contentH.add(this.graphManipulator.first);
             this.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
@@ -1043,10 +1037,10 @@ exports.GUI = function (globalVariables) {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () =>{
                         let point = miniatureElement[0].globalPoint(0, 0);
-                        this.miniaturesManipulator.last.remove(tabElement.miniatureManipulator.first);
+                        this.miniaturesManipulator.remove(tabElement.miniatureManipulator.first);
                         tabElement.movingManipulator = new Manipulator(tabElement);
-                        tabElement.movingManipulator.last.add(tabElement.miniatureManipulator.first);
-                        drawings.piste.last.add(tabElement.movingManipulator.first);
+                        tabElement.movingManipulator.add(tabElement.miniatureManipulator.first);
+                        drawings.piste.add(tabElement.movingManipulator.first);
                         tabElement.miniatureManipulator.first.move(point.x, point.y);
                         manageDnD(miniatureElement[0], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                         manageDnD(miniatureElement[1],tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
@@ -1054,14 +1048,14 @@ exports.GUI = function (globalVariables) {
                     let mouseupHandler = eventUp => {
 
                         let clicAction = () => {
-                            tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
-                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
+                            tabElement.movingManipulator.remove(tabElement.miniatureManipulator.first);
+                            this.miniaturesManipulator.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                             svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
                             svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
                             tabElement.miniature.miniatureClickHandler();
                         };
-                        drawings.piste.last.remove(tabElement.movingManipulator.first);
+                        drawings.piste.remove(tabElement.movingManipulator.first);
                         let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
                             clicAction();
@@ -1071,8 +1065,8 @@ exports.GUI = function (globalVariables) {
                             this.dropAction(eventUp, tabElement);
                         }
                         else {
-                            tabElement.movingManipulator.last.remove(tabElement.miniatureManipulator.first);
-                            this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);
+                            tabElement.movingManipulator.remove(tabElement.miniatureManipulator.first);
+                            this.miniaturesManipulator.add(tabElement.miniatureManipulator.first);
                             tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                             this.displayGraph();
                             svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
@@ -1090,7 +1084,7 @@ exports.GUI = function (globalVariables) {
                 !playerMode && svg.addEvent(tabElement.miniatureElement[0], 'mousedown', mouseDownAction);
                 !playerMode && svg.addEvent(tabElement.miniatureElement[1], 'mousedown', mouseDownAction);
 
-                (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                this.miniaturesManipulator.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                 tabElement.miniatureManipulator.first.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                 if (tabElement instanceof Quizz) {
                     let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizzHandler(event, tabElement)];
@@ -1116,7 +1110,7 @@ exports.GUI = function (globalVariables) {
                 this.levelsTab[i].gamesTab.forEach((tabElement)=> {
                     this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
-                    (this.miniaturesManipulator.last.children.indexOf(tabElement.miniatureManipulator.first) === -1) && this.miniaturesManipulator.last.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                    this.miniaturesManipulator.add(tabElement.miniatureManipulator.first);// mettre un manipulateur par niveau !_! attention à bien les enlever
                     if (typeof tabElement.miniature === "undefined") {
                         (tabElement.miniature = tabElement.displayMiniature(this.graphElementSize));
                     }
@@ -1272,7 +1266,7 @@ exports.GUI = function (globalVariables) {
 
     function formationDisplaySaveButton(x, y, w, h) {
         let saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
-        this.message && this.message.parent && this.saveFormationButtonManipulator.last.remove(this.message);
+        this.message && this.message.parent && this.saveFormationButtonManipulator.remove(this.message);
         saveFormationButton.cadre.mark("saveFormationButtonCadre");
         svg.addEvent(saveFormationButton.cadre, "click", () => this.saveFormation());
         svg.addEvent(saveFormationButton.content, "click", () => this.saveFormation());
@@ -1289,7 +1283,7 @@ exports.GUI = function (globalVariables) {
     function formationDisplayPublicationButton(x, y, w, h) {
         let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
         let publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
-        this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
+        this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
         this.publicationFormationQuizzManager = () => {
             let message = [];
             let arrayOfUncorrectQuestions = [];
@@ -1330,12 +1324,12 @@ exports.GUI = function (globalVariables) {
         drawing.currentPageDisplayed = 'FormationsManager';
         this.manipulator.first.move(0, drawing.height * HEADER_SIZE);
         mainManipulator.set(1, this.manipulator.first);
-        this.manipulator.last.children.indexOf(this.headerManipulator.first) === -1 && this.manipulator.last.add(this.headerManipulator.first);
+        this.manipulator.add(this.headerManipulator.first);
 
         let toggleFormationsCheck;
 
         if (playerMode) {
-            this.headerManipulator.last.add(this.toggleFormationsManipulator.first);
+            this.headerManipulator.add(this.toggleFormationsManipulator.first);
             let manip = this.toggleFormationsManipulator,
                 pos = -MARGIN,
                 toggleFormationsText = displayText('Formations en cours', drawing.width * 0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
@@ -1366,10 +1360,10 @@ exports.GUI = function (globalVariables) {
             svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
             svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
         } else {
-            this.headerManipulator.last.children.indexOf(this.addButtonManipulator) === -1 && this.headerManipulator.last.add(this.addButtonManipulator.first);
+            this.headerManipulator.add(this.addButtonManipulator.first);
             this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
-            this.headerManipulator.last.add(this.checkManipulator.first);
-            this.headerManipulator.last.add(this.exclamationManipulator.first);
+            this.headerManipulator.add(this.checkManipulator.first);
+            this.headerManipulator.add(this.exclamationManipulator.first);
         }
 
         let addFormationButton, spaceBetweenElements;
@@ -1398,7 +1392,7 @@ exports.GUI = function (globalVariables) {
                 return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
             };
 
-            this.manipulator.last.children.indexOf(this.clippingManipulator.first) === -1 && this.manipulator.last.add(this.clippingManipulator.first);
+            this.manipulator.add(this.clippingManipulator.first);
             this.clippingManipulator.move(MARGIN / 2, this.y);
             var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
             var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
@@ -1409,7 +1403,7 @@ exports.GUI = function (globalVariables) {
                 this.panel.resize(drawing.width - 2 * MARGIN, heightAllocatedToPanel);
             }
             this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
-            (this.clippingManipulator.last.children.indexOf(this.panel.component) === -1) && this.clippingManipulator.last.add(this.panel.component);
+            this.clippingManipulator.add(this.panel.component);
             this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
             this.formationsManipulator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + spaceBetweenElements.height / 2);
@@ -1493,7 +1487,7 @@ exports.GUI = function (globalVariables) {
                     posx = this.initialFormationsPosX;
                 }
                 formation.parent = this;
-                this.formationsManipulator.last.children.indexOf(formation.miniature.miniatureManipulator.first) === -1 && this.formationsManipulator.last.add(formation.miniature.miniatureManipulator.first);
+                this.formationsManipulator.add(formation.miniature.miniatureManipulator.first);
 
                 formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
 
@@ -1560,7 +1554,7 @@ exports.GUI = function (globalVariables) {
             manip.unset(2);
         }
 
-        manip.last.children.indexOf(userManip.first) === -1 && manip.last.add(userManip.first);
+        manip.add(userManip.first);
         drawing.username && displayUser();
         if (message === "Inscription" || message === "Connexion") {
             const link = message === "Inscription" ? "Connexion" : "Inscription";
@@ -1681,7 +1675,7 @@ exports.GUI = function (globalVariables) {
         };
         for (var i = 0; i < this.tabAnswer.length; i++) {
             let tilePosition = findTilePosition();
-            this.answersManipulator.last.add(this.tabAnswer[i].manipulator.first);
+            this.answersManipulator.add(this.tabAnswer[i].manipulator.first);
             this.tabAnswer[i].display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
             this.tabAnswer[i].manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
             if (!playerMode && this.parentQuizz.previewMode){
@@ -1800,12 +1794,12 @@ exports.GUI = function (globalVariables) {
             this.redCross || (this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size / 2, size, this.redCrossManipulator));
             this.redCross.mark('questionRedCross');
             svg.addEvent(this.redCross, "click", redCrossClickHandler);
-            this.redCrossManipulator.last.children.indexOf(this.redCross) === -1 && this.redCrossManipulator.last.add(this.redCross);
-            this.manipulator.last.add(this.redCrossManipulator.first);
+            this.redCrossManipulator.add(this.redCross);
+            this.manipulator.add(this.redCrossManipulator.first);
         }
         else {
             this.redCrossManipulator.move(-this.questNum.x, this.questNum.y - this.redCross.size / 2);
-            this.redCrossManipulator.last.children.indexOf(this.redCross) === -1 && this.redCrossManipulator.last.add(this.redCross);
+            this.redCrossManipulator.add(this.redCross);
         }
     }
 
@@ -1823,7 +1817,7 @@ exports.GUI = function (globalVariables) {
 
     function questionCreatorDisplayToggleButton(x, y, w, h, clicked) {
         var size = this.manipulator.ordonator.children[1].height * 0.05;
-        this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
+        this.manipulator.add(this.toggleButtonManipulator.first);
         let toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
             let target = drawings.background.getTarget(event.pageX, event.pageY);
@@ -1836,7 +1830,7 @@ exports.GUI = function (globalVariables) {
             (questionType === "Réponses multiples") ? (this.linkedQuestion.multipleChoice = true) : (this.linkedQuestion.multipleChoice = false);
 
             this.linkedQuestion.questionType = (!this.multipleChoice) ? this.questionType[0] : this.questionType[1];
-            this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.last.remove(this.errorMessagePreview);
+            this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.remove(this.errorMessagePreview);
 
             this.linkedQuestion.tabAnswer.forEach((answer)=> {
                 var xCheckBox, yCheckBox = 0;
@@ -1852,7 +1846,7 @@ exports.GUI = function (globalVariables) {
             this.linkedQuestion.checkValidity();
         };
 
-        this.manipulator.last.children.indexOf(this.toggleButtonManipulator.first) === -1 && this.manipulator.last.add(this.toggleButtonManipulator.first);
+        this.manipulator.add(this.toggleButtonManipulator.first);
 
         var length = this.questionType.length;
         var lengthToUse = (length + 1) * MARGIN + length * toggleButtonWidth;
@@ -1862,10 +1856,10 @@ exports.GUI = function (globalVariables) {
         (!this.questionTypeSelectorManipulators) && (this.questionTypeSelectorManipulators = []);
         this.questionType.forEach((type)=> {
             if (this.questionTypeSelectorManipulators[i]) {
-                this.toggleButtonManipulator.last.remove(this.questionTypeSelectorManipulators[i].first);
+                this.toggleButtonManipulator.remove(this.questionTypeSelectorManipulators[i].first);
             }
             this.questionTypeSelectorManipulators[i] = new Manipulator(this).addOrdonator(2);
-            this.toggleButtonManipulator.last.add(this.questionTypeSelectorManipulators[i].first);
+            this.toggleButtonManipulator.add(this.questionTypeSelectorManipulators[i].first);
             (type.label == clicked) ? (this.questionTypeSelectorManipulators[i].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[i].color = myColors.white);
             let toggleButton = displayTextWithoutCorners(type.label, toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[i].color, 20, null, this.questionTypeSelectorManipulators[i]);
             toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[i].color), 0, myColors.black);
@@ -1887,8 +1881,7 @@ exports.GUI = function (globalVariables) {
         questionBlock.rect.position(0, 0);
         questionBlock.rect.fillOpacity(0.001);
         this.manipulator.set(1, questionBlock.rect);
-        // this.manipulator.last.children.indexOf(questionBlock.rect) === -1 && this.manipulator.last.add(questionBlock.rect);
-        this.manipulator.last.children.indexOf(this.questionManipulator.first) === -1 && this.manipulator.last.add(this.questionManipulator.first);
+        this.manipulator.add(this.questionManipulator.first);
 
         var removeErrorMessage = () => {
             this.linkedQuestion.validLabelInput = true;
@@ -2003,7 +1996,7 @@ exports.GUI = function (globalVariables) {
             this.linkedQuestion.tabAnswer.push(new AddEmptyElement(this, 'answer'));
         }
         this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
-        this.manipulator.last.children.indexOf(this.puzzle.manipulator.first) === -1 && this.manipulator.last.add(this.puzzle.manipulator.first);
+        this.manipulator.add(this.puzzle.manipulator.first);
         this.puzzle && this.puzzle.fillVisibleElementsArray("leftToRight");
 
         this.puzzle.leftChevron.mark('answerLeftChevron');
@@ -2019,9 +2012,7 @@ exports.GUI = function (globalVariables) {
         const rect = new svg.Rect(w + 2, h) //+2 border
             .color(myColors.white, 1, myColors.black);
         rect._acceptDrop = this.editable;
-        if (parent.manipulator.last.children.indexOf(this.manipulator.first) === -1) {
-            parent.manipulator.last.add(this.manipulator.first);
-        }
+        parent.manipulator.add(this.manipulator.first);
         this.manipulator.set(0, rect);
         this.manipulator.move(previousX, y);
 
@@ -2035,7 +2026,7 @@ exports.GUI = function (globalVariables) {
             this.closeButtonManipulator.set(1, cross);
             const crossHandler = () => {
                 this.editable && (parent.explanation = false);
-                parent.manipulator.last.remove(cross.parent.parentManip.parentObject.manipulator.first);
+                parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 this.displayed = false;
             };
@@ -2054,7 +2045,7 @@ exports.GUI = function (globalVariables) {
         var hasKeyDownEvent = (event) => {
             if (this.cross && event.keyCode === 27) { // suppr
                 this.editable && (parent.explanation = false);
-                parent.manipulator.last.remove(this.manipulator.first);
+                parent.manipulator.remove(this.manipulator.first);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 drawing.mousedOverTarget = false;
             }
@@ -2090,7 +2081,7 @@ exports.GUI = function (globalVariables) {
             this.panel.resize(panelWidth, panelHeight);
         }
         this.panel.back.mark('explanationPanel');
-        this.panelManipulator.last.children.indexOf(this.panel.component) === -1 && this.panelManipulator.last.add(this.panel.component);
+        this.panelManipulator.add(this.panel.component);
         this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
         this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
         let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
@@ -2240,7 +2231,7 @@ exports.GUI = function (globalVariables) {
         let leftChevronHandler = () => {
             closePopIn();
             if (this.currentQuestionIndex > 0) {
-                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
                 this.currentQuestionIndex--;
                 this.leftChevron.update(this);
                 this.rightChevron.update(this);
@@ -2250,7 +2241,7 @@ exports.GUI = function (globalVariables) {
         let rightChevronHandler = () => {
             closePopIn();
             if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
-                this.manipulator.last.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
+                this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator.first);
                 this.currentQuestionIndex++;
                 this.leftChevron.update(this);
                 this.rightChevron.update(this);
@@ -2315,7 +2306,7 @@ exports.GUI = function (globalVariables) {
     function bdDisplay(bd) {
         mainManipulator.unset(1);
         header.display(bd.title);
-        (mainManipulator.last.children.indexOf(bd.manipulator.first) === -1) && mainManipulator.last.add(bd.manipulator.first);
+        mainManipulator.add(bd.manipulator.first);
         bd.returnButton.display(0, drawing.height * HEADER_SIZE + 2 * MARGIN, 20, 20);
         let returnButtonChevron = bd.returnButton.chevronManipulator.ordonator.children[0];
         returnButtonChevron.mark('returnButtonFromBdToFormation');
@@ -2369,13 +2360,13 @@ exports.GUI = function (globalVariables) {
             usedColor = color;
         }
 
-        this.resultManipulator && (this.manipulator.last.children.indexOf(this.resultManipulator.first) !== -1) && this.manipulator.last.remove(this.resultManipulator.first);
+        this.resultManipulator && this.manipulator.remove(this.resultManipulator.first);
         this.resultManipulator = new Manipulator(this);
         this.scoreManipulator = new Manipulator(this).addOrdonator(2);
         this.resultManipulator.move(this.titleArea.w/2-this.questionArea.w / 2, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
-        this.resultManipulator.last.add(this.scoreManipulator.first);
-        this.resultManipulator.last.add(this.puzzle.manipulator.first);
-        this.manipulator.last.add(this.resultManipulator.first);
+        this.resultManipulator.add(this.scoreManipulator.first);
+        this.resultManipulator.add(this.puzzle.manipulator.first);
+        this.manipulator.add(this.resultManipulator.first);
         displayText(finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, usedColor, this.fontSize, this.font, this.scoreManipulator);
     }
 
@@ -2383,12 +2374,12 @@ exports.GUI = function (globalVariables) {
         let verticalPosition = drawing.height * HEADER_SIZE;
         this.height = drawing.height - drawing.height * HEADER_SIZE;
         this.quizzManagerManipulator.first.move(0, verticalPosition);
-        this.quizzManagerManipulator.last.children.indexOf(this.libraryIManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.libraryIManipulator.first);
-        this.quizzManagerManipulator.last.children.indexOf(this.quizzInfoManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.quizzInfoManipulator.first);
-        this.quizzManagerManipulator.last.children.indexOf(this.questionsPuzzleManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.questionsPuzzleManipulator.first);
-        this.quizzManagerManipulator.last.children.indexOf(this.questionCreator.manipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.questionCreator.manipulator.first);
-        this.quizzManagerManipulator.last.children.indexOf(this.previewButtonManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.previewButtonManipulator.first);
-        this.quizzManagerManipulator.last.children.indexOf(this.saveQuizButtonManipulator.first) === -1 && this.quizzManagerManipulator.last.add(this.saveQuizButtonManipulator.first);
+        this.quizzManagerManipulator.add(this.libraryIManipulator.first);
+        this.quizzManagerManipulator.add(this.quizzInfoManipulator.first);
+        this.quizzManagerManipulator.add(this.questionsPuzzleManipulator.first);
+        this.quizzManagerManipulator.add(this.questionCreator.manipulator.first);
+        this.quizzManagerManipulator.add(this.previewButtonManipulator.first);
+        this.quizzManagerManipulator.add(this.saveQuizButtonManipulator.first);
         let libraryWidthRatio = 0.15;
         let quizzInfoHeightRatio = 0.05;
         let questCreaWidthRatio = 1 - libraryWidthRatio;
@@ -2435,7 +2426,7 @@ exports.GUI = function (globalVariables) {
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=> {
                     if (answer.popIn) {
-                        this.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                        this.questionCreator.manipulator.remove(answer.popIn.manipulator.first);
                     }
                 })
             }
@@ -2449,7 +2440,7 @@ exports.GUI = function (globalVariables) {
             quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
             questionCreator.loadQuestion(question);
             questionCreator.display(questionCreator.previousX, questionCreator.previousY, questionCreator.previousW, questionCreator.previousH);
-            questionCreator.explanation && questionCreator.manipulator.last.remove(questionCreator.explanation.manipulator.first);
+            questionCreator.explanation && questionCreator.manipulator.remove(questionCreator.explanation.manipulator.first);
         };
 
         let displayFunctions = () => {
@@ -2472,16 +2463,16 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzManagerDisplayQuizzInfo(x, y, w, h) {
-        this.quizzInfoManipulator.last.children.indexOf(this.returnButtonManipulator.first) === -1 && this.quizzInfoManipulator.last.add(this.returnButtonManipulator.first);
+        this.quizzInfoManipulator.add(this.returnButtonManipulator.first);
 
-        let returnHandler = (event)=> {
-            let target = this.returnButton;//drawings.background.getTarget(event.pageX, event.pageY);
+        let returnHandler = ()=> {
+            let target = this.returnButton;
             target.parent.parentFormation.quizzManager.questionCreator.explanation = null;
             if (this.quizz.tabQuestions[this.indexOfEditedQuestion]) {
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quizz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                 this.quizz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer=> {
                     if (answer.popIn) {
-                        this.questionCreator.manipulator.last.children.indexOf(answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(answer.popIn.manipulator.first);
+                        this.questionCreator.manipulator.remove(answer.popIn.manipulator.first);
                     }
                 })
             }
@@ -2604,7 +2595,7 @@ exports.GUI = function (globalVariables) {
             let arrayOfUncorrectQuestions = [];
             if (this.questionCreator.explanation) {
                 if (this.questionCreator.explanation.answer.popIn) {
-                    this.questionCreator.manipulator.last.children.indexOf(this.questionCreator.explanation.answer.popIn.manipulator.first) !== -1 && this.questionCreator.manipulator.last.remove(this.questionCreator.explanation.answer.popIn.manipulator.first);
+                    this.questionCreator.manipulator.remove(this.questionCreator.explanation.answer.popIn.manipulator.first);
                     this.questionCreator.explanation = null;
                 }
             }
@@ -2678,7 +2669,7 @@ exports.GUI = function (globalVariables) {
             this.questionPuzzle.rightChevron.handler = this.questionPuzzle.rightChevronHandler;
             this.questionPuzzle.handlersSet = true;
         }
-        this.questionsPuzzleManipulator.last.children.indexOf(this.questionPuzzle.manipulator.first) === -1 && this.questionsPuzzleManipulator.last.add(this.questionPuzzle.manipulator.first);
+        this.questionsPuzzleManipulator.add(this.questionPuzzle.manipulator.first);
         this.questionPuzzle.display(this.coordinatesQuestion.x, this.coordinatesQuestion.y, this.qPuzzleW, this.qPuzzleH, true);
         this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
     }
