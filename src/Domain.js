@@ -297,14 +297,14 @@ exports.Domain = function (globalVariables) {
             let pictoSize = 20;
             if (active) {
                 this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
-                this.invalidQuestionPictogramManipulator.ordonator.set(0, this.invalidQuestionPictogram.circle);
-                this.invalidQuestionPictogramManipulator.ordonator.set(2, this.invalidQuestionPictogram.dot);
-                this.invalidQuestionPictogramManipulator.ordonator.set(3, this.invalidQuestionPictogram.exclamation);
-                this.invalidQuestionPictogramManipulator.translator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
+                this.invalidQuestionPictogramManipulator.set(0, this.invalidQuestionPictogram.circle);
+                this.invalidQuestionPictogramManipulator.set(2, this.invalidQuestionPictogram.dot);
+                this.invalidQuestionPictogramManipulator.set(3, this.invalidQuestionPictogram.exclamation);
+                this.invalidQuestionPictogramManipulator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
             } else {
-                this.invalidQuestionPictogramManipulator.ordonator.unset(0);
-                this.invalidQuestionPictogramManipulator.ordonator.unset(2);
-                this.invalidQuestionPictogramManipulator.ordonator.unset(3);
+                this.invalidQuestionPictogramManipulator.unset(0);
+                this.invalidQuestionPictogramManipulator.unset(2);
+                this.invalidQuestionPictogramManipulator.unset(3);
             }
         }
     }
@@ -376,7 +376,7 @@ exports.Domain = function (globalVariables) {
             this.answer = answer;
             this.manipulator = new Manipulator(this).addOrdonator(5);
             this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.ordonator.set(2, this.closeButtonManipulator.first);
+            this.manipulator.set(2, this.closeButtonManipulator.first);
             this.panelManipulator = new Manipulator(this).addOrdonator(2);;
             this.manipulator.last.add(this.panelManipulator.first);
             this.textManipulator = new Manipulator(this).addOrdonator(1);
@@ -732,7 +732,7 @@ exports.Domain = function (globalVariables) {
                 if (this.saveFormationButtonManipulator.last.children.indexOf(this.message) !== -1) {
                     this.saveFormationButtonManipulator.last.remove(this.message);
                 }
-                this.formationInfoManipulator.ordonator.unset(2);
+                this.formationInfoManipulator.unset(2);
                 (this.publicationFormationButtonManipulator.last.children.indexOf(this.errorMessagePublication) !== -1) && this.publicationFormationButtonManipulator.last.remove(this.errorMessagePublication);
                 this.errorMessagePublication = new svg.Text(messagePublication);
                 this.publicationFormationButtonManipulator.last.add(this.errorMessagePublication);
@@ -971,8 +971,8 @@ exports.Domain = function (globalVariables) {
                         cadre: target.parent.parentManip.ordonator.get(0),
                         content: target.parent.parentManip.ordonator.get(1)
                     };
-                    target.parent.parentManip.ordonator.unset(0);
-                    target.parent.parentManip.ordonator.unset(1);
+                    target.parent.parentManip.unset(0);
+                    target.parent.parentManip.unset(1);
                     var newElement = displayImageWithTitle(oldElement.content.messageText, element.src,
                         element.srcDimension,
                         oldElement.cadre.width, oldElement.cadre.height,
@@ -999,7 +999,7 @@ exports.Domain = function (globalVariables) {
                             answer.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.ordonator.set(0, oldElement.cadre);
+                    target.parent.parentManip.set(0, oldElement.cadre);
                 }
 
             }
@@ -1410,7 +1410,7 @@ exports.Domain = function (globalVariables) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
                     svg.timeout(()=> {
-                        this.connexionButtonManipulator.ordonator.unset(3);
+                        this.connexionButtonManipulator.unset(3);
                         emptyAreas.forEach(emptyArea => {
                             emptyArea.cadre.color(myColors.white, 1, myColors.black);
                         });
@@ -1426,7 +1426,7 @@ exports.Domain = function (globalVariables) {
                             let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                             message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
                             svg.timeout(() => {
-                                this.connexionButtonManipulator.ordonator.unset(3);
+                                this.connexionButtonManipulator.unset(3);
                             }, 5000);
                         }
                     });

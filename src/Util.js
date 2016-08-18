@@ -105,6 +105,10 @@ exports.Util = function (globalVariables) {
             this.ordonator.set(layer, component)
         }
 
+        unset (layer) {
+            this.ordonator.unset(layer)
+        }
+
     }
 
     class Drawings {
@@ -119,7 +123,7 @@ exports.Util = function (globalVariables) {
             this.glass.mark('bigGlass');
             this.drawing.add(this.drawing.manipulator.translator);
             this.background = this.drawing.manipulator.translator;
-            this.drawing.manipulator.ordonator.set(2, this.piste.first);
+            this.drawing.manipulator.set(2, this.piste.first);
             this.drawing.add(this.glass);
 
             const onmousedownHandler = event => {
@@ -216,7 +220,7 @@ exports.Util = function (globalVariables) {
             svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
             sender.obj.checked = drawCheck(x, y, size);
             svg.addEvent(sender.obj.checked, "click", onclickFunction);
-            sender.manipulator.ordonator.set(4, sender.obj.checked);
+            sender.manipulator.set(4, sender.obj.checked);
         };
 
         updateAllCheckBoxes = function (sender) {
@@ -224,7 +228,7 @@ exports.Util = function (globalVariables) {
             editor.linkedQuestion.tabAnswer.forEach(answer => {
                 if (answer.editable && answer.obj.checkbox) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                    !answer.correct && answer.manipulator.ordonator.unset(4);
+                    !answer.correct && answer.manipulator.unset(4);
                 }
             });
         };
@@ -244,8 +248,8 @@ exports.Util = function (globalVariables) {
             sender.size = size;
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);
             svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
-            sender.manipulator.ordonator.set(3, sender.obj.checkbox);
-            !sender.correct && sender.manipulator.ordonator.unset(4);
+            sender.manipulator.set(3, sender.obj.checkbox);
+            !sender.correct && sender.manipulator.unset(4);
             sender.correct && drawPathChecked(sender, x, y, size);
             return sender.obj;
         };
@@ -259,11 +263,11 @@ exports.Util = function (globalVariables) {
                 blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
 
             const manipulator = new Manipulator().addOrdonator(3);
-            manipulator.ordonator.set(0, bigSquare);
+            manipulator.set(0, bigSquare);
             const cameraManipulator = new Manipulator().addOrdonator(2);
-            cameraManipulator.translator.move(x, y);
-            cameraManipulator.ordonator.set(0, smallSquare);
-            cameraManipulator.ordonator.set(1, blackTriangle);
+            cameraManipulator.move(x, y);
+            cameraManipulator.set(0, smallSquare);
+            cameraManipulator.set(1, blackTriangle);
             manipulator.set(1, cameraManipulator);
             const trianglesManipulator = new Manipulator().addOrdonator(2);
             trianglesManipulator.rotate(45);
@@ -287,17 +291,17 @@ exports.Util = function (globalVariables) {
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey);
             let elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
             square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
-            object.manipulator.ordonator.set(6, square);
-            object.linesManipulator.translator.move(x, y);
-            object.linesManipulator.ordonator.set(0, line1);
-            object.linesManipulator.ordonator.set(1, line2);
-            object.linesManipulator.ordonator.set(2, line3);
-            object.linesManipulator.ordonator.set(3, line4);
-            object.penManipulator.ordonator.set(1, tipEnd);
-            object.penManipulator.ordonator.set(2, end);
-            object.penManipulator.ordonator.set(3, body);
-            object.penManipulator.translator.move(x + size / 8, y - size / 8);
-            object.penManipulator.rotator.rotate(40);
+            object.manipulator.set(6, square);
+            object.linesManipulator.move(x, y);
+            object.linesManipulator.set(0, line1);
+            object.linesManipulator.set(1, line2);
+            object.linesManipulator.set(2, line3);
+            object.linesManipulator.set(3, line4);
+            object.penManipulator.set(1, tipEnd);
+            object.penManipulator.set(2, end);
+            object.penManipulator.set(3, body);
+            object.penManipulator.move(x + size / 8, y - size / 8);
+            object.penManipulator.rotate(40);
             elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
         };
 
@@ -307,12 +311,12 @@ exports.Util = function (globalVariables) {
                 line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.black, 1, myColors.black),
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.black, 1, myColors.black),
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.black, 1, myColors.black);
-            manipulator.ordonator.set(0, square);
-            manipulator.ordonator.set(1, line1);
-            manipulator.ordonator.set(2, line2);
-            manipulator.ordonator.set(3, line3);
-            manipulator.ordonator.set(4, line4);
-            manipulator.translator.move(x, y);
+            manipulator.set(0, square);
+            manipulator.set(1, line1);
+            manipulator.set(2, line2);
+            manipulator.set(3, line3);
+            manipulator.set(4, line4);
+            manipulator.move(x, y);
             return [square, line1, line2, line3, line4];
         };
 
@@ -345,9 +349,9 @@ exports.Util = function (globalVariables) {
             var image = displayImage(imageSrc, imageObj, newWidth, newHeight);//
             image.image.position(0, -textHeight / 2);
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.ordonator.set(0, cadre);
-            manipulator.ordonator.set(1, text);
-            manipulator.ordonator.set(2, image.image);
+            manipulator.set(0, cadre);
+            manipulator.set(1, text);
+            manipulator.set(2, image.image);
             return {cadre: cadre, image: image.image, content: text};
         };
 
@@ -363,8 +367,8 @@ exports.Util = function (globalVariables) {
         displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
             var image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN
             var cadre = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
-            manipulator.ordonator.set(0, cadre);
-            manipulator.ordonator.set(2, image.image);
+            manipulator.set(0, cadre);
+            manipulator.set(2, image.image);
             return {image: image.image, height: image.height, cadre: cadre};
         };
 
@@ -417,7 +421,7 @@ exports.Util = function (globalVariables) {
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.ordonator.set(layer1, cadre);
+            manipulator.set(layer1, cadre);
             return {content: content, cadre: cadre};
         };
 
@@ -436,7 +440,7 @@ exports.Util = function (globalVariables) {
         displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
-            manipulator.ordonator.set(0, cadre);
+            manipulator.set(0, cadre);
             return {content: content, cadre: cadre};
         };
 
@@ -455,7 +459,7 @@ exports.Util = function (globalVariables) {
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-            manipulator.ordonator.set(0, cadre);
+            manipulator.set(0, cadre);
             return {content: content, cadre: cadre};
         };
 
@@ -475,7 +479,7 @@ exports.Util = function (globalVariables) {
             let text = '',
                 w = wi*0.94,
                 t = new svg.Text('text');
-            manipulator.ordonator.set(layer, t);
+            manipulator.set(layer, t);
             (fontSize) || (fontSize = 20);
             t.font(font ? font : 'Arial', fontSize);
             content = content.trim();
@@ -548,8 +552,8 @@ exports.Util = function (globalVariables) {
             var cross = drawPlus(0, 0, size, size);
             cross.size = size;
             cross.color(innerColor, 1, outerColor);
-            manipulator.rotator.rotate(45);
-            manipulator.translator.move(x, y);
+            manipulator.rotate(45);
+            manipulator.move(x, y);
             return cross;
         };
 
@@ -597,7 +601,7 @@ exports.Util = function (globalVariables) {
             this.chevron.resize = (w, h) => {
                 this.chevron.tempWidth = baseWidth;
                 this.chevron.tempHeight = baseHeight;
-                chevronManipulator.ordonator.set(0, this.chevron);
+                chevronManipulator.set(0, this.chevron);
                 if (this.chevron.tempWidth > w) {
                     this.chevron.tempHeight *= w / this.chevron.tempWidth;
                     this.chevron.tempWidth = w;
@@ -606,11 +610,11 @@ exports.Util = function (globalVariables) {
                     this.chevron.tempWidth *= h / this.chevron.tempHeight;
                     this.chevron.tempHeight = h;
                 }
-                chevronManipulator.scalor.scale(this.chevron.tempHeight / baseHeight);
+                chevronManipulator.scale(this.chevron.tempHeight / baseHeight);
             };
 
             this.chevron.move = (x, y) => {
-                chevronManipulator.translator.move(x, y);
+                chevronManipulator.move(x, y);
             };
 
             if (w && h) {
@@ -643,7 +647,7 @@ exports.Util = function (globalVariables) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
-                manipulator.first.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
+                manipulator.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
                 redraw && redraw();
                 return true;
             };
@@ -762,14 +766,14 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this.editable;
-                manipulator.ordonator.set(this.parent.imageLayer, this.imageSVG);
+                manipulator.set(this.parent.imageLayer, this.imageSVG);
             }
         }
 
         drawImageRedCross(x, y, w, h, parent, manipulator) {
             this.imageRedCrossClickHandler = ()=> {
                 this.redCrossManipulator.flush();
-                parent.imageLayer && manipulator.ordonator.unset(parent.imageLayer);//image
+                parent.imageLayer && manipulator.unset(parent.imageLayer);//image
                 if (parent.linkedQuestion) {
                     parent.linkedQuestion.image = null;
                     parent.linkedQuestion.imageSrc = null;
@@ -812,7 +816,7 @@ exports.Util = function (globalVariables) {
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
                 redCross.mark('imageRedCross');
                 svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
-                this.redCrossManipulator.ordonator.set(1, redCross);
+                this.redCrossManipulator.set(1, redCross);
             };
         }
     }
@@ -839,8 +843,8 @@ exports.Util = function (globalVariables) {
         redCrossClickHandler () {
             this.removeAllLinks();
             this.game.parentFormation.miniaturesManipulator.last.remove(this.game.miniatureManipulator.first);
-            this.game.miniatureManipulator.ordonator.unset(0);
-            this.game.miniatureManipulator.ordonator.unset(1);
+            this.game.miniatureManipulator.unset(0);
+            this.game.miniatureManipulator.unset(1);
             this.game.miniatureManipulator.last.remove(this.redCrossManipulator.first);
             var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
 
@@ -851,8 +855,8 @@ exports.Util = function (globalVariables) {
             this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
             var levelsTab = this.game.parentFormation.levelsTab;
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
-                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(2);
-                levelsTab[levelsTab.length-1].manipulator.ordonator.unset(1);
+                levelsTab[levelsTab.length-1].manipulator.unset(2);
+                levelsTab[levelsTab.length-1].manipulator.unset(1);
                 this.game.parentFormation.levelsTab.pop();
             }
 
@@ -935,8 +939,8 @@ exports.Util = function (globalVariables) {
                     let rect = new svg.Rect(iconsize, iconsize)
                         .color(myColors.white, 1, myColors.green)
                         .position(size / 2, -size / 2);
-                    this.infosManipulator.ordonator.set(0, rect);
-                    this.infosManipulator.ordonator.set(1, check);
+                    this.infosManipulator.set(0, rect);
+                    this.infosManipulator.set(1, check);
                     let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
                     object.miniatureManipulator.last.add(this.infosManipulator.first);
                     let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.miniatureManipulator, 2);
@@ -955,10 +959,10 @@ exports.Util = function (globalVariables) {
                     let iconInfosdot3 = new svg.Circle(iconsize / 12)
                         .color(myColors.orange)
                         .position(size / 2 + iconsize / 4, -size / 2);
-                    this.infosManipulator.ordonator.set(0, circle);
-                    this.infosManipulator.ordonator.set(1, iconInfosdot1);
-                    this.infosManipulator.ordonator.set(2, iconInfosdot2);
-                    this.infosManipulator.ordonator.set(3, iconInfosdot3);
+                    this.infosManipulator.set(0, circle);
+                    this.infosManipulator.set(1, iconInfosdot1);
+                    this.infosManipulator.set(2, iconInfosdot2);
+                    this.infosManipulator.set(3, iconInfosdot3);
                     object.miniatureManipulator.last.add(this.infosManipulator.first);
                     break;
             }
@@ -983,11 +987,11 @@ exports.Util = function (globalVariables) {
             if(!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
                 for (let i = 0; i < icon.elements.length; i++) {
-                    this.iconManipulator.ordonator.set(i, icon.elements[i]);
+                    this.iconManipulator.set(i, icon.elements[i]);
                 }
             }
-            this.iconManipulator.translator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
-            this.miniatureManipulator.translator.move(x, y);
+            this.iconManipulator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
+            this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.last.children.indexOf(this.iconManipulator.first) === -1 && this.miniatureManipulator.last.add(this.iconManipulator.first);
             this.drawIcon();
         }
@@ -1003,8 +1007,8 @@ exports.Util = function (globalVariables) {
                     let rect = new svg.Rect(iconsize, iconsize);
                     rect.color(myColors.white, 1, myColors.green);
                     rect.position(size / 2, -size / 2);
-                    this.iconManipulator.ordonator.set(0, rect);
-                    this.iconManipulator.ordonator.set(1, iconInfos);
+                    this.iconManipulator.set(0, rect);
+                    this.iconManipulator.set(1, iconInfos);
                     this.miniatureManipulator.last.add(this.iconManipulator.first);
                     break;
                 case "inProgress":
@@ -1012,10 +1016,10 @@ exports.Util = function (globalVariables) {
                     let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 - iconsize / 4, -size / 2);
                     let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2, -size / 2);
                     let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 + iconsize / 4, -size / 2);
-                    this.iconManipulator.ordonator.set(0, iconInfos);
-                    this.iconManipulator.ordonator.set(1, iconInfosdot1);
-                    this.iconManipulator.ordonator.set(2, iconInfosdot2);
-                    this.iconManipulator.ordonator.set(3, iconInfosdot3);
+                    this.iconManipulator.set(0, iconInfos);
+                    this.iconManipulator.set(1, iconInfosdot1);
+                    this.iconManipulator.set(2, iconInfosdot2);
+                    this.iconManipulator.set(3, iconInfosdot3);
                     this.miniatureManipulator.last.add(this.iconManipulator.first);
                     break;
             }
@@ -1049,7 +1053,7 @@ exports.Util = function (globalVariables) {
             returnButton.resize(w, h);
             returnButton.color(myColors.black, 0, []);
             returnText.font("Arial", 20).anchor("start").position(0, 0);
-            this.manipulator.ordonator.set(1, returnText);
+            this.manipulator.set(1, returnText);
             let textSize = returnText.boundingRect();
             let size = returnButton.boundingRect();
             returnText.position(w + size.width/2, size.height/4);
@@ -1057,8 +1061,8 @@ exports.Util = function (globalVariables) {
             let background = new svg.Rect(backgroundW * 1.15, h * 1.1)
                 .position(backgroundW/2, 0)
                 .color(myColors.white, 0, myColors.white);
-            this.manipulator.ordonator.set(0, background);
-            this.manipulator.translator.move(x + w, y);
+            this.manipulator.set(0, background);
+            this.manipulator.move(x + w, y);
             returnText.parentObj = this;
             returnButton.parentObj = this;
             background.parentObj = this;
@@ -1126,13 +1130,13 @@ exports.Util = function (globalVariables) {
             let updateRightChevron = this.rightChevron && this.rightChevron._activated;
             updateLeftChevron ? this.leftChevron.activate(this.leftChevron.handler, "click") : this.leftChevron.desactivate();
             updateRightChevron ? this.rightChevron.activate(this.rightChevron.handler, "click") : this.rightChevron.desactivate();
-            this.manipulator.ordonator.set(1, this.leftChevronManipulator.first);
-            this.manipulator.ordonator.set(2, this.rightChevronManipulator.first);
+            this.manipulator.set(1, this.leftChevronManipulator.first);
+            this.manipulator.set(2, this.rightChevronManipulator.first);
         }
 
         hideChevrons() {
-            this.manipulator.ordonator.unset(1);
-            this.manipulator.ordonator.unset(2);
+            this.manipulator.unset(1);
+            this.manipulator.unset(2);
         }
 
         updateChevrons() {
@@ -1250,7 +1254,7 @@ exports.Util = function (globalVariables) {
             (typeof y !== "undefined") && (this.y = y);
             (typeof w !== "undefined") && (this.width = w);
             (typeof h !== "undefined") && (this.height = h);
-            this.manipulator.translator.move(this.x, this.y);
+            this.manipulator.move(this.x, this.y);
             this.chevronSize = Math.max(Math.min(this.height * 0.15, this.width * 0.1, this.chevronMaxSize), this.chevronMinSize);
             this.visibleArea = {
                 width: needChevrons ? (this.width - 2 * this.chevronSize) : (this.width),
@@ -1262,13 +1266,13 @@ exports.Util = function (globalVariables) {
             this.adjustElementsPositions();
             let itNumber = 0;
             for (var i = 3; i < this.nbOfVisibleElements + 3; i++) {
-                this.manipulator.ordonator.unset(i);
+                this.manipulator.unset(i);
             }
             this.visibleElementsArray.forEach(it => {
                 it.forEach(elem => {
                     if (elem) {
                         let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                        this.manipulator.ordonator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
+                        this.manipulator.set(layer, elem.manipulator.first); // +2 pour les chevrons + 1 cadre
                         elem.display(elem.x, elem.y, elem.width, elem.height);
                     }
                 });
