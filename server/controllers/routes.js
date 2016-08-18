@@ -63,34 +63,23 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', (req, res) => {
-        const hasCookie = cookies.verify(req, (err, decode) => {
-            if (!err) {
-                const collection = db.get().collection('users');
-                collection.find().toArray((err, docs) => {
-                    const user = docs.find(user => user.mailAddress === decode.user.mailAddress);
-                    if (user) {
-                        cookies.send(user)
-                            .then(data => {
-                                res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
-                                res.send({
-                                    ack: 'OK',
-                                    user: {
-                                        lastName: user.lastName,
-                                        firstName: user.firstName,
-                                        admin: user.admin
-                                    }
-                                });
-                            })
-                            .catch(err => console.log(err));
-                    } else {
-                        res.send({status: 'error'});
+        cookies.verify(req)
+            .then(cookies.send(user))
+            .then(data => {
+                res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
+                res.send({
+                    ack: 'OK',
+                    user: {
+                        lastName: user.lastName,
+                        firstName: user.firstName,
+                        admin: user.admin
                     }
                 });
-            }
-        });
-        if (!hasCookie) {
-            res.send({status: 'no cookie'});
-        }
+            })
+            .catch(err => {
+                console.error(err);
+                res.send({status: 'error', err});
+            })
     });
 
     app.post('/auth/connect', (req, res) => {
@@ -192,19 +181,19 @@ module.exports = function (app, fs) {
     });
 
     app.get('/formations/getPlayerFormations', (req, res) => {
-        cookies.verify(req, (err, decode) => {
-            users.getUserById(db, decode.user._id)
-                .then(user => {
-                    formations.getLastVersions(db)
-                        .then(versions => {
-                            formations.getAllFormations(db)
-                                .then(formations => {
-                                    return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, formations.myCollection);
-                                })
-                                .then(data => res.send(data))
-                                .catch(err => console.log(err));
-                        })
-                });
+        cookies.verify(req)
+            .then(user => {
+                formations.getLastVersions(db)
+
+            })
+            .then(versions => {
+                formations.getAllFormations(db)
+            })
+            .then(formations => {
+                return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, formations.myCollection);
+            })
+            .then(data => res.send(data))
+            .catch(err => console.log(err));
         });
 
     });
