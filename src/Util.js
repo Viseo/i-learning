@@ -302,17 +302,16 @@ exports.Util = function (globalVariables) {
         };
 
         displayPen = function (x, y, size, object) {
-            let fontColor;
-            fontColor = object.filled ? myColors.darkerGreen : myColors.black;
-            let square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
+            const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
+                square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
                 tipEnd = new svg.Triangle(size / 5, size / 5, "S").color(myColors.white, 1, fontColor).position(0, size / 2),
                 end = new svg.Rect(size / 5, size / 10).color(myColors.fontColor, 1, fontColor).position(0, size / 5 - size / 4 - size / 10),
                 body = new svg.Rect(size / 5, size / 2).color(fontColor).position(0, size / 5),
                 line1 = new svg.Line(-size / 2 + size / 8, -size / 2 + size / 5, size / 2 - size / 8, -size / 2 + size / 5).color(myColors.grey, 1, myColors.grey),
                 line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.grey, 1, myColors.grey),
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
-                line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey);
-            let elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
+                line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey),
+                elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
             square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
             object.manipulator.set(6, square);
             object.linesManipulator.move(x, y);
@@ -329,7 +328,7 @@ exports.Util = function (globalVariables) {
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
-            let square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(0, 0),
+            const square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(0, 0),
                 line1 = new svg.Line(-size / 2 + size / 8, -size / 2 + size / 5, size / 2 - size / 8, -size / 2 + size / 5).color(myColors.black, 1, myColors.black),
                 line2 = new svg.Line(-size / 2 + size / 8, -size / 2 + 2 * size / 5, size / 2 - size / 8, -size / 2 + 2 * size / 5).color(myColors.black, 1, myColors.black),
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.black, 1, myColors.black),
@@ -480,10 +479,9 @@ exports.Util = function (globalVariables) {
          * @returns {{content, cadre}} : SVG items for text & cadre
          */
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-            var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre);
-            manipulator.set(0, cadre);
-            return {content: content, cadre: cadre};
+            const result = displayText(label, w, h, rgbCadre, bgColor, textHeight, font, manipulator);
+            result.cadre.corners(0,0);
+            return {content: result.content, cadre: result.cadre};
         };
 
         /**
@@ -549,9 +547,7 @@ exports.Util = function (globalVariables) {
             return {finalHeight, finalWidth, text: t};
         };
 
-        drawPlus = function (x, y, w, h) {
-            var baseWidth = w;
-            var baseHeight = h;
+        drawPlus = function (x, y, baseWidth, baseHeight) {
             var thickness = (((baseHeight + baseWidth) / 2) * 0.3);
             var path = new svg.Path(x, y).move(x - (thickness / 2), y + (thickness / 2))
                 .line(x - (baseWidth / 2), y + (thickness / 2))
@@ -572,9 +568,8 @@ exports.Util = function (globalVariables) {
         };
 
         drawCross = function (x, y, size, innerColor, outerColor, manipulator) {
-            var cross = drawPlus(0, 0, size, size);
+            var cross = drawPlus(0, 0, size, size).color(innerColor, 1, outerColor);
             cross.size = size;
-            cross.color(innerColor, 1, outerColor);
             manipulator.rotate(45);
             manipulator.move(x, y);
             return cross;
@@ -698,11 +693,11 @@ exports.Util = function (globalVariables) {
         };
 
         Arrow = function (parentGame, childGame) {
-            let formation = parentGame.parentFormation;
-            let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
-            let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
-            let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
-            let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
+            let formation = parentGame.parentFormation,
+                parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2),
+                parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
+                childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2),
+                childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
 
             this.redCrossManipulator = new Manipulator(this);
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
@@ -710,10 +705,10 @@ exports.Util = function (globalVariables) {
             this.redCrossManipulator.add(redCross);
 
             this.redraw = () => {
-                let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2);
-                let childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-                let parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2);
-                let parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
+                let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2),
+                    childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y),
+                    parentGlobalPoint = parentGame.miniatureManipulator.last.globalPoint(0, formation.graphElementSize / 2),
+                    parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y);
                 formation.arrowsManipulator.remove(this.arrowPath);
                 this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
                 formation.arrowsManipulator.add(this.arrowPath);
