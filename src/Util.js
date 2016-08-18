@@ -74,13 +74,13 @@ exports.Util = function (globalVariables) {
                         }
                     })
                 } else {
-                    handler.children.forEach(function (child) {
-                        if (child instanceof svg.Handler) {
-                            clean(child);
+                    for (let j = handler.children.length-1; j >= 0; j--) {
+                        if (handler.children[j] instanceof svg.Handler) {
+                            clean(handler.children[j]);
                         } else {
-                            handler.remove(child);
+                            handler.remove(handler.children[j]);
                         }
-                    })
+                    }
                 }
             };
             clean(this.translator);
