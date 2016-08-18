@@ -64,7 +64,7 @@ exports.GUI = function (globalVariables) {
                 this.parentQuestion.tabAnswer.splice(index, 1);
                 let questionCreator = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                 if (this.parentQuestion.tabAnswer.length < 3) {
-                    svg.event(this.parentQuestion.tabAnswer[this.parentQuestion.tabAnswer.length - 1].plus, 'dblclick', {});
+                    svg.event(this.parentQuestion.tabAnswer[this.parentQuestion.tabAnswer.length - 1].manipulator.ordonator.children[2], 'dblclick', {});
                     if (index === 0) {
                         [this.parentQuestion.tabAnswer[0], this.parentQuestion.tabAnswer[1]] = [this.parentQuestion.tabAnswer[1], this.parentQuestion.tabAnswer[0]];
                     }
@@ -241,7 +241,6 @@ exports.GUI = function (globalVariables) {
             if (this.explanation && (this.explanation.image || this.explanation.label)) {
                 const openPopIn = () => {
                     let popInParent = this.parentQuestion,
-                        popInPreviousX = 0,
                         popInX = this.parentQuestion.parentQuizz.x,
                         popInY,
                         popInWidth = this.parentQuestion.width,
@@ -783,20 +782,14 @@ exports.GUI = function (globalVariables) {
     }
 
     function addEmptyElementDisplay(x, y, w, h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
-
-        let obj = displayText(this.label, this.width, this.height, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
-        this.plus = drawPlus(0, 0, this.height * 0.3, this.height * 0.3);
+        let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
+        let plus = drawPlus(0, 0, h * 0.3, h * 0.3);
         this.manipulator.move(x, y);
-        this.manipulator.set(2, this.plus);
-        obj.content.position(0, this.height * 0.35);
+        this.manipulator.set(2, plus);
+        obj.content.position(0, h * 0.35);
         obj.cadre.color(myColors.white, 3, myColors.black)
             .mark('emptyAnswerAddCadre' + this.type);
         obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
-        obj.cadre.component.target && obj.cadre.component.target.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
             this.manipulator.flush();
@@ -864,7 +857,7 @@ exports.GUI = function (globalVariables) {
                         quizzManager.questionCreator.previousH);
             }
         };
-        svg.addEvent(this.plus, "dblclick", dblclickAdd);
+        svg.addEvent(plus, "dblclick", dblclickAdd);
         svg.addEvent(obj.content, "dblclick", dblclickAdd);
         svg.addEvent(obj.cadre, "dblclick", dblclickAdd);
     }
@@ -1635,7 +1628,7 @@ exports.GUI = function (globalVariables) {
         }
     }
 
-    function questionDisplayAnswers(x, y, w, h) {
+    function questionDisplayAnswers(w, h) {
 
         findTileDimension = ()=>{
             const width = (w - MARGIN * (this.columns - 1)) / this.columns,

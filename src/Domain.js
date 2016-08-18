@@ -1268,8 +1268,7 @@ exports.Domain = function (globalVariables) {
             this.rightChevron.update(this);
             this.leftChevron.update(this);
             !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
-            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.x, this.headerHeight + MARGIN + this.questionHeight,
-                this.questionArea.w, this.answerHeight);
+            this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.questionArea.w, this.answerHeight);
         }
 
         // !_! bof, y'a encore des display appelés ici
