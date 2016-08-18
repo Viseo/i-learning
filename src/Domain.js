@@ -956,7 +956,7 @@ exports.Domain = function (globalVariables) {
                 if (target.parent.parentManip.parentObject.answer) {
                     target.parent.parentManip.parentObject.image = element.src;
                     let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                    target.parent.parentManip.parentObject.display(questionCreator, 0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
                     var oldElement = {

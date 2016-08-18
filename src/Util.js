@@ -817,7 +817,7 @@ exports.Util = function (globalVariables) {
                 }
                 else if (this.parent.answer) {
                     let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                    this.parent.display(questionCreator, 0, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     this.parent.answer.parentQuestion.checkValidity();
                 }
                 else {

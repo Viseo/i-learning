@@ -125,7 +125,7 @@ module.exports = function (app, fs) {
                     res.send(false);
                 } else {
                     return users.inscription(db, req.body)
-                        .then(() => res.send(true));
+                        .then(() => res.send({data:true}));
                 }
             })
             .catch(err => console.log(err));
