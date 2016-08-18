@@ -634,6 +634,10 @@ exports.GUI = function (globalVariables) {
                         };
                     })();
 
+                    if (file.mimetype === 'video/mp4') {
+                        this.tabManager.select(1);
+                    }
+
                     Server.upload(file, progressDisplay).then((status) => {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
