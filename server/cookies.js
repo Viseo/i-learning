@@ -14,14 +14,28 @@ const sendCookie = (user) => {
     })
 };
 
-const verify = (req, callback) => {
+const verify = (req) => {
     const token = req.headers && req.headers.cookie && req.headers.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-    if(token) {
-        jwt.decode('VISEO', token, callback);
-        return true;
-    } else {
-        return false;
-    }
+
+    return new Promise((resolve, reject) => {
+        if (!token) {
+            reject(err)
+        }
+        jwt.decode('VISEO', (token, err) => {
+            if (err) {
+                reject(err)
+            }
+            const collection = db.get().collection('users');
+            collection.find().toArray((err, docs) => {
+                const user = docs.find(user => user.mailAddress === decode.user.mailAddress);
+                if (user) {
+                    resolve(user)
+                } else {
+                    reject(new Error("Bad token"))
+                }
+            })
+        })
+    })
 };
 
 exports.send = sendCookie;
