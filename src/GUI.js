@@ -649,7 +649,7 @@ exports.GUI = function (globalVariables) {
                 };
 
                 const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
-                    addButtonLabel = "Ajouter une image",
+                    addButtonLabel = "Ajouter image/vidéo",
                     addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
                     plus = drawPlus(0, 0, this.w / 7, this.w / 7);
                 addButton.mark('addImageButton').corners(10, 10);
