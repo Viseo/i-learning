@@ -1,10 +1,14 @@
 module.exports = function (app, fs) {
-    const db = require('../db'),
+    const
         TwinBcrypt = require('twin-bcrypt'),
+        ObjectID = require('mongodb').ObjectID,
+        multer = require('multer');
+
+    const
         cookies = require('../cookies'),
         formations = require('../formations'),
-        users = require('../users'),
-        multer = require('multer');
+        db = require('../db'),
+        users = require('../users');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -13,8 +17,8 @@ module.exports = function (app, fs) {
         console.log("Can't access to db.json");
         // It isn't accessible
     }
-    var ObjectID = require('mongodb').ObjectID;
-    var id = new ObjectID();
+
+    const id = new ObjectID();
 
     app.post('/upload', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
 
@@ -25,18 +29,24 @@ module.exports = function (app, fs) {
                         src: "../resource/" + file.filename,
                         name: file.originalname
                     }, (err) => {
-                        err ? reject() : resolve()
+                        if (err) {
+                            reject(err)
+                        }
+                        resolve()
                     })
                 } else if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
                     db.get().collection('images').insertOne({
                         imgSrc: "../resource/" + file.filename,
                         name: file.originalname
                     }, (err) => {
-                        err ? reject() : resolve()
+                        if (err) {
+                            reject(err)
+                        }
+                        resolve()
                     })
                 } else { // delete unwanted file
                     fs.unlink(file.path, () => {
-                        reject(new Error("Bad file type"))
+                        reject(new Error("Bad file type, deleted."))
                     })
                 }
             })
@@ -63,32 +73,35 @@ module.exports = function (app, fs) {
     });
 
     app.get('/auth/verify', (req, res) => {
-        cookies.verify(req)
-            .then(cookies.send(user))
-            .then(data => {
-                res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
-                res.send({
-                    ack: 'OK',
-                    user: {
-                        lastName: user.lastName,
-                        firstName: user.firstName,
-                        admin: user.admin
-                    }
-                });
-            })
-            .catch(err => {
-                console.error(err);
-                res.send({status: 'error', err});
-            })
+        const token = cookies.get(req);
+        if (!token) {
+            res.send({status: 'error'})
+        }
+        cookies.verify(token).then(user => {
+            res.set('Set-cookie', `token=${token}; path=/; max-age=${60 * 60 * 24 * 30}`);
+            res.send({
+                ack: 'OK',
+                user: {
+                    lastName: user.lastName,
+                    firstName: user.firstName,
+                    admin: user.admin
+                }
+            });
+        })
+        .catch(() => {
+            res.send({status: 'error'});
+        });
     });
 
     app.post('/auth/connect', (req, res) => {
         const collection = db.get().collection('users');
         collection.find().toArray((err, docs) => {
-            if (err) return console.error(err.name, err.message);
+            if (err) {
+                return console.error(err.name, err.message);
+            }
             const user = docs.find(user => user.mailAddress === req.body.mailAddress);
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
-                cookies.send(user)
+                cookies.generate(user)
                     .then(data => {
                         res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
                         res.send({
@@ -108,12 +121,12 @@ module.exports = function (app, fs) {
     });
 
     app.post('/user/inscription/', function(req, res) {
-        users.getUserByEmailAddress(db, req.body.mailAddress)
+        users.getUserByEmailAddress(req.body.mailAddress)
             .then(data => {
                 if(data) {
                     res.send(false);
                 } else {
-                    return users.inscription(db, req.body)
+                    return users.inscription(req.body)
                         .then(() => res.send(true));
                 }
             })
@@ -121,95 +134,87 @@ module.exports = function (app, fs) {
     });
 
     app.get('/user/getUser', function(req, res) {
-        cookies.verify(req, (err, decode) => {
-            users.getUserById(db, decode.user._id)
-                .then(data => res.send(data))
-                .catch(err => console.log(err));
-        });
+        const token = cookies.get(req);
+        cookies.verify(token)
+            .then((user) => {res.send(user)})
+            .catch(console.error)
     });
 
     app.post('/user/saveProgress', (req, res) => {
-        cookies.verify(req, (err, decode) => {
-            users.getUserById(db, decode.user._id)
-                .then(user => {
-                    return users.saveProgress(db, req.body, user);
-                })
-                .then(data => res.send(data));
-        });
+        cookies.verify(cookies.get(req))
+            .then((user) => {
+                return users.saveProgress(req.body, user);
+            })
+            .then((data) => {res.send(data)})
+            .catch(console.error)
     });
 
-    app.post('/formations/insert', function(req, res) {
-        formations.getFormationsByName(db, req.body.label)
+    app.post('/formations/insert', function (req, res) {
+        formations.getFormationsByName(req.body.label)
             .then(data => {
                 if (data.formation) {
                     res.send({saved: false, reason: "NameAlreadyUsed"});
                 } else {
-                    formations.insertFormation(db, req.body)
+                    formations.insertFormation(req.body)
                         .then((data) => res.send({saved: true, id: data.formation, idVersion: data.version}))
-                        .catch((err) => console.log(err));
+                        .catch(console.error)
                 }
             })
     });
 
     app.post('/formations/deactivateFormation', function (req, res) {
-        formations.getFormationById(db, req.body.id)
-            .then(data => {
-                formations.deactivateFormation(db, data.formation)
-                    .then(data => {
-                        res.send(data);
-                    })
-                    .catch(err => console.log(err));
-            });
+        formations.getFormationById(req.body.id)
+            .then(data => formations.deactivateFormation(data.formation))
+            .then((data) => {res.send(data)})
+            .catch(console.error)
     });
 
     app.get('/formations/getFormationByName/:name', function(req, res) {
-        formations.getFormationsByName(db, req.params.name)
-            .then((data) => res.send(data))
-            .catch((err) => console.log(err));
+        formations.getFormationsByName(req.params.name)
+            .then((data) => {res.send(data)})
+            .catch(console.error)
     });
 
     app.get('/formations/getVersionById/:id', (req, res) => {
-        formations.getVersionById(db, req.params.id)
-            .then((data) => res.send(data))
-            .catch((err) => console.log(err));
+        formations.getVersionById(req.params.id)
+            .then((data) => {res.send(data)})
+            .catch(console.error)
     });
 
     app.get('/formations/getAdminFormations', (req, res) => {
-        formations.getLastVersions(db)
-            .then(data => res.send(data))
-            .catch(err => console.log(err));
+        formations.getLastVersions()
+            .then((data) => {res.send(data)})
+            .catch(console.error)
     });
 
     app.get('/formations/getPlayerFormations', (req, res) => {
-        cookies.verify(req)
-            .then(user => {
-                formations.getLastVersions(db)
+        const
+            user = cookies.verify(cookies.get(req)),
+            lastVersions = formations.getLastVersions(),
+            allFormations = formations.getAllFormations();
 
+        Promise.all([user, allFormations, lastVersions])
+            .then((values) => {
+                const [user, allFormations, versions] = values;
+                return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection);
             })
-            .then(versions => {
-                formations.getAllFormations(db)
-            })
-            .then(formations => {
-                return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, formations.myCollection);
-            })
-            .then(data => res.send(data))
-            .catch(err => console.log(err));
-        });
+            .then((data) => {res.send(data)})
+            .catch(console.error)
 
     });
 
     app.post('/formations/replaceFormation/:id', function (req, res) {
-        formations.getFormationByVersionId(db, req.params.id)
+        formations.getFormationByVersionId(req.params.id)
             .then(formation => {
                 if(formation) {
-                    formations.getFormationsByName(db, req.body.label)
+                    formations.getFormationsByName(req.body.label)
                         .then(data => {
                             if (data.formation) {
                                 if (formation._id.toString() === data.formation._id.toString()) {
                                     if (formations.compareVersions(data.formation.versions[data.formation.versions.length - 1], req.body, req.body.status !== "Published")) {
                                         res.send({saved: false, reason: "NoModif"})
                                     } else {
-                                        formations.newVersion(db, formation, req.body)
+                                        formations.newVersion(formation, req.body)
                                             .then(data => res.send({saved: true, id: data}))
                                             .catch(err => console.log(err));
                                     }
@@ -217,7 +222,7 @@ module.exports = function (app, fs) {
                                     res.send({saved: false, reason: "NameAlreadformationyUsed"});
                                 }
                             } else {
-                                formations.newVersion(db, formation, req.body)
+                                formations.newVersion(formation, req.body)
                                     .then(data => res.send({saved: true, id: data}))
                                     .catch(err => console.log(err));
                             }
@@ -227,9 +232,9 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
-        formations.getFormationByVersionId(db, req.params.id)
+        formations.getFormationByVersionId(req.params.id)
             .then(formation => {
-                formations.replaceQuiz(db, {level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body, formation)
+                formations.replaceQuiz({level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body, formation)
                     .then(data => res.send({ack:'ok'}))
                     .catch(err => console.log(err));
             });

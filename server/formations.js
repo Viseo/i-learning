@@ -6,50 +6,64 @@
  * Functions to manage Formations
  */
 
-let ObjectID = require('mongodb').ObjectID;
+const
+    ObjectID = require('mongodb').ObjectID;
+
+const
+    db = require('./db');
 
 const compareVersions = (version1, version2, checkStatus = false) => {
     let myVersion1 = Object.assign({}, version1);
     let myVersion2 = Object.assign({}, version2);
-    if(myVersion1._id) delete myVersion1._id;
-    if(myVersion2._id) delete myVersion2._id;
+    if(myVersion1._id) {
+        delete myVersion1._id;
+    }
+    if(myVersion2._id) {
+        delete myVersion2._id;
+    }
     if(checkStatus) {
-        if(myVersion1.status) delete myVersion1.status;
-        if(myVersion2.status) delete myVersion2.status;
+        if(myVersion1.status) {
+            delete myVersion1.status;
+        }
+        if(myVersion2.status) {
+            delete myVersion2.status;
+        }
     }
     return JSON.stringify(myVersion1) === JSON.stringify(myVersion2);
 };
 
-const getFormationsByName = (db, name) => {
-    return new Promise((resolve, fail) => {
+const getFormationsByName = (name) => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
-            if(err) fail(err);
+            if(err) {
+                reject(err);
+            }
             let result = docs.find(formation => formation.versions[formation.versions.length-1].label === name);
             resolve({formation: result});
         })
     });
 };
 
-const getFormationById = (db, id) => {
-    return new Promise((resolve, fail) => {
+const getFormationById = (id) => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations
             .find({"_id": new ObjectID(id)})
             .toArray((err, docs) => {
-                if(err) fail(err);
+                if(err) reject(err);
                 resolve({formation: docs[0]});
             })
     });
 };
 
-const getVersionById = (db, id) => {
-    return new Promise((resolve, fail) => {
+const getVersionById = (id) => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations
             .find()
             .toArray((err, docs) => {
-                if(err) fail(err);
+                if(err) reject(err);
                 let version = null;
                 docs.forEach(formation => {
                     version = formation.versions.find(version => version._id.toString() === id) || version;
@@ -59,8 +73,8 @@ const getVersionById = (db, id) => {
     });
 };
 
-const insertFormation = (db, object) => {
-    return new Promise((resolve, fail) => {
+const insertFormation = (object) => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         object._id = new ObjectID();
         object.status = "NotPublished";
@@ -68,30 +82,34 @@ const insertFormation = (db, object) => {
             versions: [object],
         };
         collectionFormations.insertOne(formation, (err, docs) => {
-            if(err) fail(err);
+            if(err) {
+                reject(err);
+            }
             resolve({formation:docs.insertedId, version: object._id});
         })
     });
 };
 
-const deactivateFormation = (db, formation) => {
+const deactivateFormation = (formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         let version = formation.versions[formation.versions.length-1];
         version.status = "NotPublished";
         version._id = new ObjectID();
-        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err, docs) => {
-            if (err) reject(err);
+        collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err) => {
+            if (err) {
+                reject(err);
+            }
             resolve({version:version._id.toString()});
         });
     });
 };
 
-const getLastVersions = (db) => {
-    return new Promise((resolve, fail) => {
+const getLastVersions = () => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
-            if(err) fail(err);
+            if(err) reject(err);
             let formations = [];
             docs.forEach(formation => {
                 formation.versions[formation.versions.length-1].formationId = formation._id;
@@ -102,18 +120,20 @@ const getLastVersions = (db) => {
     })
 };
 
-const getAllFormations = (db) => {
-    return new Promise((resolve, fail) => {
+const getAllFormations = () => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find().toArray((err, docs) => {
-            if(err) fail(err);
+            if(err) {
+                reject(err);
+            }
             resolve({myCollection:docs});
         })
     })
 };
 
-const newVersion = (db, formation, version) => {
-    return new Promise((resolve, fail) => {
+const newVersion = (formation, version) => {
+    return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
 
         if(formation.versions[formation.versions.length-1].status === "Published") {
@@ -121,7 +141,9 @@ const newVersion = (db, formation, version) => {
                 // new version
                 version._id = new ObjectID();
                 collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err) => {
-                    if (err) reject(err);
+                    if (err) {
+                        reject(err);
+                    }
                     resolve(version._id);
                 })
             } else {
@@ -133,15 +155,17 @@ const newVersion = (db, formation, version) => {
             if(formation.versions[formation.versions.length - 1].status === "NotPublished" && version.status === "Edited") version.status = "NotPublished";
             formation.versions[formation.versions.length - 1] = version;
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
-                {$set: {versions:formation.versions}}, (err, docs) => {
-                    if (err) reject(err);
+                {$set: {versions:formation.versions}}, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
                     resolve(version._id);
                 });
         }
     })
 };
 
-const replaceQuiz = (db, indexes, game, formation) => {
+const replaceQuiz = (indexes, game, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         let version = {};
@@ -153,7 +177,9 @@ const replaceQuiz = (db, indexes, game, formation) => {
                 version._id = new ObjectID();
                 version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
                 collectionFormations.updateOne({"_id": formation._id}, {$push: {versions:version}}, (err) => {
-                    if (err) reject(err);
+                    if (err) {
+                        reject(err);
+                    }
                     resolve(formation.upsertedId);
                 })
             } else {
@@ -164,25 +190,29 @@ const replaceQuiz = (db, indexes, game, formation) => {
             version = formation.versions[formation.versions.length - 1];
             version.levelsTab[indexes.level].gamesTab[indexes.game] = game;
             collectionFormations.updateOne({"_id": new ObjectID(formation._id)},
-                {$set: {versions:formation.versions}}, (err, docs) => {
-                    if (err) reject(err);
+                {$set: {versions:formation.versions}}, (err) => {
+                    if (err) {
+                        reject(err);
+                    }
                     resolve(version._id.toString());
             });
         }
     })
 };
 
-const getFormationByVersionId = (db, versionId) => {
+const getFormationByVersionId = (versionId) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
         collectionFormations.find()
             .toArray((err, docs) => {
                 let object = null;
-                if(err) reject(err);
+                if (err) {
+                    reject(err)
+                }
                 docs.forEach(formation => {
                     formation.versions.forEach(version => {
-                        if(version._id.toString() === versionId){
-                            object = formation;
+                        if (version._id.toString() === versionId) {
+                            object = formation
                         }
                     })
                 });
