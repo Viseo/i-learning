@@ -612,10 +612,10 @@ exports.GUI = function (globalVariables) {
                     fileExplorer.fileClick();
                 };
 
-                let onChangeFileExplorerHandler = () => {
+                const onChangeFileExplorerHandler = () => {
 
-                    let file = fileExplorer.component.files[0];
-                    const progressDisplay = () => {
+                    const file = fileExplorer.component.files[0];
+                    const progressDisplay = (() => {
                         const
                             width = 0.8*w,
                             manipulator = new Manipulator().addOrdonator(2),
@@ -623,20 +623,21 @@ exports.GUI = function (globalVariables) {
                         manipulator.set(0, rect);
                         this.videosUploadManipulators.push(manipulator);
                         return (e) => {
-                            const progwidth = width*e.loaded/e.total,
-                                bar = new svg.Rect(progwidth, 8)
-                                .color(myColors.green);
+                            const
+                                progwidth = width*e.loaded/e.total,
+                                bar = new svg.Rect(progwidth, 8).color(myColors.green);
+                            console.log(e.loaded/e.total);
                             manipulator.set(1, bar);
                             if (e.loaded === e.total) {
                                 svg.timeout(this.videosUploadManipulators.remove(manipulator), 3000)
                             }
                         };
-                    };
+                    })();
 
-                    Server.upload(file, progressDisplay()).then((status)=> {
+                    Server.upload(file, progressDisplay).then((status)=> {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
-                            this.tabManager.tabs[1].select();
+                            this.tabManager.select(1)
                         } else {
                             // TODO message d'erreur
                         }
@@ -736,20 +737,26 @@ exports.GUI = function (globalVariables) {
                 const tabManager = {
                     tabs: [],
                     manipulator: new Manipulator().addOrdonator(2),
-                    addTab(name, i, setContent) {
+                    addTab (name, i, setContent) {
                         const
                             manip = new Manipulator().addOrdonator(2),
                             tab = new Tab(name, width / 2, height, 20, null, manip, setContent);
                         this.tabs.push(tab);
                         tab.setClickHandler(() => this.tabs.forEach((tab, index) => {
                             if (index === i) {
-                                tab.select();
+                                tab.select()
                             } else {
-                                tab.unselect();
+                                tab.unselect()
                             }
                         }));
                         manip.move(i * (MARGIN + width / 2), 0);
-                        this.manipulator.set(i, manip.first);
+                        this.manipulator.set(i, manip.first)
+                    },
+                    select (numTab = 0) {
+                        if (numTab >= this.tabs.length || numTab < 0) {
+                            numTab = 0
+                        }
+                        svg.event(this.tabs[numTab].button.cadre, "click")
                     }
                 };
 
