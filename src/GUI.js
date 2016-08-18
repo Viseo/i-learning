@@ -161,7 +161,7 @@ exports.GUI = function (globalVariables) {
                 this.manipulator.unset(1);
                 contentarea.focus();
 
-                let onblur = ()=> {
+                let onblur = () => {
                     contentarea.enter();
                     this.label = contentarea.messageText;
                     drawings.screen.remove(contentarea);
@@ -170,7 +170,7 @@ exports.GUI = function (globalVariables) {
                     let quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager;
                     quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
                 };
-                svg.addEvent(contentarea, 'input', ()=> {
+                svg.addEvent(contentarea, 'input', () => {
                     contentarea.enter();
                     this.checkInputContentArea({
                         contentarea: contentarea,
@@ -623,7 +623,9 @@ exports.GUI = function (globalVariables) {
                         return (e) => {
                             const
                                 progwidth = width*e.loaded/e.total,
-                                bar = new svg.Rect(progwidth, 8).color(myColors.green);
+                                bar = new svg.Rect(progwidth, 8)
+                                    .color(myColors.green)
+                                    .position(-(width - progwidth)/2, 0);
                             console.log(e.loaded/e.total);
                             manipulator.set(1, bar);
                             if (e.loaded === e.total) {
@@ -632,7 +634,7 @@ exports.GUI = function (globalVariables) {
                         };
                     })();
 
-                    Server.upload(file, progressDisplay).then((status)=> {
+                    Server.upload(file, progressDisplay).then((status) => {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
                             this.tabManager.select(1)
@@ -716,7 +718,7 @@ exports.GUI = function (globalVariables) {
                         });
                         this.videosUploadManipulators.forEach((manipulator, i) => {
                             videosPanel.content.add(manipulator.first);
-                            manipulator.move(w/2, (this.videosManipulators.length + i)*30)
+                            manipulator.move(w/2, 30 + (this.videosManipulators.length + i)*30)
                         });
                         videosPanel.resizeContent(w, (this.videosManipulators.length + this.videosUploadManipulators.length + 1) * 30);
                     });
