@@ -93,7 +93,7 @@ exports.GUI = function (globalVariables) {
                 this.border.color(myColors.white, 1, myColors.black);
             };
 
-            let displayErrorMessage = (contentarea) => {
+            let displayErrorMessage = () => {
                 removeErrorMessage();
                 this.border.color(myColors.white, 2, myColors.red);
                 let quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
@@ -103,7 +103,6 @@ exports.GUI = function (globalVariables) {
                 this.errorMessage.position(0, quizzManager.questionCreator.h / 2 - MARGIN / 2)
                     .font('Arial', 15).color(myColors.red).anchor(anchor)
                     .mark('answerErrorMessage');
-                contentarea && contentarea.focus();
                 this.validLabelInput = false;
             };
 
@@ -170,26 +169,19 @@ exports.GUI = function (globalVariables) {
                     let quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager;
                     quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
                 };
-                svg.addEvent(contentarea, 'input', () => {
-                    contentarea.enter();
-                    this.checkInputContentArea({
-                        contentarea: contentarea,
-                        border: this.border,
-                        onblur: onblur,
-                        remove: removeErrorMessage,
-                        display: () => {
-                            displayErrorMessage(contentarea)
-                        }
-                    });
-                });
-                svg.addEvent(contentarea, 'blur', onblur);
-                this.checkInputContentArea({
+                let objectToBeCheck = {
                     contentarea: contentarea,
                     border: this.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
+                };
+                svg.addEvent(contentarea, 'input', () => {
+                    contentarea.enter();
+                    this.checkInputContentArea(objectToBeCheck);
                 });
+                svg.addEvent(contentarea, 'blur', onblur);
+                this.checkInputContentArea(objectToBeCheck);
             };
             this.manipulator.flush();
             this.manipulator.move(x, y);
@@ -954,18 +946,18 @@ exports.GUI = function (globalVariables) {
 
         let resizePanel = () => {
             var height = (this.levelHeight * (this.levelsTab.length + 1) > this.graphH) ? (this.levelHeight * (this.levelsTab.length + 1)) : this.graphH;
-            let spaceOccupiedByAGame = (this.graphElementSize + this.minimalMarginBetweenGraphElements);
-            let longestLevel = this.findLongestLevel()[0];
-            let trueWidth = longestLevel && longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame;
-            let widthMAX = Math.max(this.panel.width, trueWidth);
+            let spaceOccupiedByAGame = (this.graphElementSize + this.minimalMarginBetweenGraphElements),
+                longestLevel = this.findLongestLevel()[0],
+                trueWidth = longestLevel && longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame,
+                widthMAX = Math.max(this.panel.width, trueWidth);
             this.panel.resizeContent(widthMAX - 1, height - MARGIN);
         };
 
         this.movePanelContent = () => {
-            let spaceOccupiedByAGame = (this.graphElementSize + this.minimalMarginBetweenGraphElements);
-            let longestLevel = this.findLongestLevel()[0];
-            let trueWidth = longestLevel ? longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame : 0;
-            let widthMAX = Math.max(this.panel.width, trueWidth);
+            let spaceOccupiedByAGame = (this.graphElementSize + this.minimalMarginBetweenGraphElements),
+                longestLevel = this.findLongestLevel()[0],
+                trueWidth = longestLevel ? longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame : 0,
+                widthMAX = Math.max(this.panel.width, trueWidth);
             this.miniaturesManipulator.move((widthMAX - this.panel.width) / 2, 0);
         };
 
@@ -1064,7 +1056,6 @@ exports.GUI = function (globalVariables) {
             }
 
             let manageMiniature = (tabElement) => {
-
                 let mouseDownAction = eventDown => {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () =>{
@@ -1078,7 +1069,6 @@ exports.GUI = function (globalVariables) {
                         manageDnD(miniatureElement[1], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                     };
                     let mouseupHandler = eventUp => {
-
                         let clicAction = () => {
                             tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
                             this.miniaturesManipulator.add(tabElement.miniatureManipulator);
@@ -1135,10 +1125,10 @@ exports.GUI = function (globalVariables) {
                 }
             };
 
-            for (let i = 0; i < this.levelsTab.length; i++) {
-                displayLevel(this.graphCreaWidth, this.graphCreaHeight, this.levelsTab[i]);
-                this.adjustGamesPositions(this.levelsTab[i]);
-                this.levelsTab[i].gamesTab.forEach((tabElement)=> {
+            this.levelsTab.forEach((level)=>{
+                displayLevel(this.graphCreaWidth, this.graphCreaHeight, level);
+                this.adjustGamesPositions(level);
+                level.gamesTab.forEach((tabElement)=> {
                     this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
                     this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
@@ -1148,7 +1138,8 @@ exports.GUI = function (globalVariables) {
                     manageMiniature(tabElement);
 
                 });
-            }
+            });
+
             !playerMode && displayMessageDragAndDrop();
             this.graphManipulator.move(this.graphW / 2, this.graphH / 2);
             resizePanel();
@@ -1228,25 +1219,20 @@ exports.GUI = function (globalVariables) {
                     this.validLabelInput && header.display(this.label);
                 };
                 svg.addEvent(contentarea, "blur", onblur);
-                var oninput = ()=> {
-                    contentarea.enter();
-                    this.checkInputTextArea({
-                        textarea: contentarea,
-                        border: formationLabel.cadre,
-                        onblur: onblur,
-                        remove: removeErrorMessage,
-                        display: displayErrorMessage
-                    });
-                    formationLabelDisplay();
-                };
-                svg.addEvent(contentarea, "input", oninput);
-                this.checkInputTextArea({
+                let objectToBeChecked = {
                     textarea: contentarea,
                     border: formationLabel.cadre,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
-                });
+                };
+                var oninput = ()=> {
+                    contentarea.enter();
+                    this.checkInputTextArea(objectToBeChecked);
+                    formationLabelDisplay();
+                };
+                svg.addEvent(contentarea, "input", oninput);
+                this.checkInputTextArea(objectToBeChecked);
             };
 
             let formationLabelDisplay = () => {
@@ -1688,37 +1674,37 @@ exports.GUI = function (globalVariables) {
         this.answersManipulator.move(0, this.height / 2 + (tileDimension.height) / 2);
         let posx = 0,
             posy = 0,
-            findTilePosition = () => {
-            if (i % this.columns === 0 && i!==0) {
+            findTilePosition = (index) => {
+            if (index % this.columns === 0 && index!==0) {
                 posy += (tileDimension.height + MARGIN);
                 posx = 0;
 
-            } else if (i!==0){
+            } else if (index!==0){
                 posx += (tileDimension.width + MARGIN);
             }
             return {x: posx, y: posy};
         };
-        for (var i = 0; i < this.tabAnswer.length; i++) {
-            let tilePosition = findTilePosition();
-            this.answersManipulator.add(this.tabAnswer[i].manipulator);
-            this.tabAnswer[i].display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
-            this.tabAnswer[i].manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
+        this.tabAnswer.forEach((answerElement, index)=> {
+            let tilePosition = findTilePosition(index);
+            this.answersManipulator.add(answerElement.manipulator);
+            answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
+            answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
             if (!playerMode && this.parentQuizz.previewMode){
-                    this.tabAnswer[i].correct && this.tabAnswer[i].bordure.color(myColors.white, 5, myColors.primaryGreen);
+                answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen);
             } else if(playerMode && this.parentQuizz.previewMode){
-                if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1)
-                    this.tabAnswer[i].correct ? this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : this.tabAnswer[i].bordure.color(myColors.greyerBlue, 5, myColors.red);
+                if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index)!== -1)
+                    answerElement.correct ? answerElement.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.bordure.color(myColors.greyerBlue, 5, myColors.red);
                 else {
-                    this.tabAnswer[i].correct && this.tabAnswer[i].bordure.color(myColors.white, 5, myColors.primaryGreen)
+                    answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen)
                 }
             } else if(playerMode && !this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
-                    this.tabAnswer[i].bordure.color(myColors.white, 1, this.tabAnswer[i].bordure.strokeColor);
+                    answerElement.bordure.color(myColors.white, 1, answerElement.bordure.strokeColor);
                 } else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1){
-                    this.tabAnswer[i].bordure.color(myColors.greyerBlue, 1, this.tabAnswer[i].bordure.strokeColor);
+                    answerElement.bordure.color(myColors.greyerBlue, 1, answerElement.bordure.strokeColor);
                 }
             }
-        }
+        });
         let buttonY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN,
             buttonH = Math.min(tileDimension.height, 50),
             buttonW = 0.5 * drawing.width,
@@ -1899,7 +1885,7 @@ exports.GUI = function (globalVariables) {
             questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
         };
 
-        var displayErrorMessage = (textarea)=> {
+        var displayErrorMessage = ()=> {
             removeErrorMessage();
             questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
             var anchor = 'middle';
@@ -1908,7 +1894,6 @@ exports.GUI = function (globalVariables) {
             this.manipulator.set(1, this.errorMessage);
             this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.cadre.height + this.errorMessage.boundingRect().height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            textarea && textarea.focus();
             this.linkedQuestion.validLabelInput = false;
         };
 
@@ -1980,9 +1965,7 @@ exports.GUI = function (globalVariables) {
                     border: questionBlock.title.cadre,
                     onblur: onblur,
                     remove: removeErrorMessage,
-                    display: () => {
-                        displayErrorMessage(textarea)
-                    }
+                    display: displayErrorMessage
                 });
             };
             svg.addEvent(textarea, "blur", onblur);
@@ -2571,25 +2554,20 @@ exports.GUI = function (globalVariables) {
                 drawing.notInTextArea = true;
                 quizzLabelDisplay();
             };
-            var oninput = ()=> {
-                textarea.enter();
-                this.checkInputTextArea({
-                    textarea: textarea,
-                    border: quizzLabel.cadre,
-                    onblur: onblur,
-                    remove: removeErrorMessage,
-                    display: displayErrorMessage
-                });
-            };
-            svg.addEvent(textarea, "input", oninput);
-            svg.addEvent(textarea, "blur", onblur);
-            this.checkInputTextArea({
+            let objectToBeChecked = {
                 textarea: textarea,
                 border: quizzLabel.cadre,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
-            });
+            };
+            var oninput = ()=> {
+                textarea.enter();
+                this.checkInputTextArea(objectToBeChecked);
+            };
+            svg.addEvent(textarea, "input", oninput);
+            svg.addEvent(textarea, "blur", onblur);
+            this.checkInputTextArea(objectToBeChecked);
         };
         quizzLabelDisplay();
     }

@@ -685,9 +685,9 @@ exports.Util = function (globalVariables) {
         drawStraightArrow = function (x1, y1, x2, y2) {
             var arrow = new svg.Arrow(3, 9, 15).position(x1, y1, x2, y2);
             var arrowPath = new svg.Path(x1, y1);
-            for (let i = 0; i < arrow.points.length; i++) {
-                arrowPath.line(arrow.points[i].x, arrow.points[i].y);
-            }
+            arrow.points.forEach((point)=>{
+                arrowPath.line(point.x, point.y);
+            });
             arrowPath.line(x1, y1);
             return arrowPath;
         };
@@ -751,9 +751,9 @@ exports.Util = function (globalVariables) {
         };
 
         resetQuestionsIndex = function (quizz) {
-            for (let i = 0; i < quizz.tabQuestions.length - 1; i++) {
-                quizz.tabQuestions[i].questionNum = i + 1;
-            }
+            quizz.tabQuestions.forEach((question, index)=>{
+                question.questionNum = index + 1;
+            });
         };
     }
 
@@ -1001,9 +1001,9 @@ exports.Util = function (globalVariables) {
             let iconSize = this.formation.parent.iconeSize;
             if(!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
-                for (let i = 0; i < icon.elements.length; i++) {
-                    this.iconManipulator.set(i, icon.elements[i]);
-                }
+                icon.elements.forEach((element, index)=>{
+                    this.iconManipulator.set(index, element);
+                });
             }
             this.iconManipulator.move(w/2-iconSize+MARGIN+2, -h/2+iconSize-MARGIN-2);//2Pxl pour la largeur de cadre
             this.miniatureManipulator.move(x, y);

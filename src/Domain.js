@@ -855,12 +855,12 @@ exports.Domain = function (globalVariables) {
 
         adjustGamesPositions(level) {
             let computeIndexes = () => {
-                for (let i = 0; i < this.levelsTab.length; i++) {
-                    for (let j = 0; j < this.levelsTab[i].gamesTab.length; j++) {
-                        this.levelsTab[i].gamesTab[j].levelIndex = i;
-                        this.levelsTab[i].gamesTab[j].gameIndex = j;
-                    }
-                }
+                this.levelsTab.forEach((level, lIndex)=>{
+                    level.gamesTab.forEach((game, gIndex)=>{
+                        game.levelIndex = lIndex;
+                        game.gameIndex = gIndex;
+                    })
+                });
             };
 
             computeIndexes();
@@ -932,9 +932,9 @@ exports.Domain = function (globalVariables) {
             this.font = lib.font;
             this.fontSize = lib.fontSize;
             this.itemsTab = lib.tab;
-            for (let i = 0; i < this.itemsTab.length; i++) {
-                this.libraryManipulators[i] = new Manipulator(this.itemsTab[i]).addOrdonator(2);
-            }
+            this.itemsTab.forEach((item, index)=>{
+                this.libraryManipulators[index] = new Manipulator(item).addOrdonator(2);
+            });
             this.arrowModeManipulator = new Manipulator(this).addOrdonator(3);
         }
 
