@@ -672,10 +672,43 @@ exports.GUI = function (globalVariables) {
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
                 };
 
+                const sort = function mergeSort(array, isSmaller) {
+                    "use strict";
+                    if (array.length < 2) {
+                        return array;
+                    }
+
+                    const center = Math.floor(array.length / 2);
+                    const left = mergeSort(array.slice(0, center), isSmaller);
+                    const right = mergeSort(array.slice(center), isSmaller);
+
+                    const mergeFunc = function merge(arr1, arr2, isSmaller) {
+                        if (arr1.length === 0) {
+                            return arr2;
+                        }
+
+                        if (arr2.length === 0) {
+                            return arr1;
+                        }
+
+                        if (isSmaller(arr1[0], arr2[0])) {
+                            return [arr1[0]].concat(merge(arr1.slice(1), arr2, isSmaller));
+                        } else {
+                            return [arr2[0]].concat(merge(arr1, arr2.slice(1), isSmaller));
+                        }
+                    };
+
+                    return mergeFunc(left, right, isSmaller);
+                };
+
+                const sortAlphabetical = function (array) {
+                    return sort(array, (a, b) => a.name.toUpperCase() < b.name.toUpperCase());
+                };
+
                 const loadVideos = () => {
                     Server.getVideos().then(data => {
                         const videos = JSON.parse(data);
-                        videos.forEach((video, i) => {
+                        sortAlphabetical(videos).forEach((video, i) => {
                             if (!this.videosManipulators[i]) {
                                 this.videosManipulators[i] = new Manipulator().addOrdonator(2);
                             }
