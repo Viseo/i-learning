@@ -623,7 +623,6 @@ exports.GUI = function (globalVariables) {
                                 bar = new svg.Rect(progwidth, 8)
                                     .color(myColors.green)
                                     .position(-(width - progwidth)/2, 0);
-                            console.log(e.loaded/e.total);
                             manipulator.set(1, bar);
                             if (e.loaded === e.total) {
                                 svg.timeout(this.videosUploadManipulators.remove(manipulator), 3000)
@@ -631,14 +630,9 @@ exports.GUI = function (globalVariables) {
                         };
                     })();
 
-                    if (file.mimetype === 'video/mp4') {
-                        this.tabManager.select(1);
-                    }
-
                     Server.upload(file, progressDisplay).then((status) => {
                         if (status === 'ok') {
                             this.display(x, y, w, h);
-                            this.tabManager.select(1)
                         } else {
                             // TODO message d'erreur
                         }
@@ -661,34 +655,6 @@ exports.GUI = function (globalVariables) {
                 svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
 
             };
-
-            class Tab {
-                constructor (text, width, height, fontsize, font, manipulator, setContent) {
-                    this.button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
-                    this.button.content.position(0, 5);
-                    this.setContent = setContent;
-                }
-
-                select () {
-                    this.selected = true;
-                    this.button.cadre.color(SELECTION_COLOR, 1, myColors.black);
-                    this.button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black);
-                    this.setContent();
-                }
-
-                unselect () {
-                    if (this.selected) {
-                        this.selected = false;
-                        this.button.cadre.color(myColors.white, 1, myColors.black);
-                        this.button.content.color(myColors.black, 0, myColors.white);
-                    }
-                }
-
-                setClickHandler (handler) {
-                    svg.addEvent(this.button.cadre, 'click', handler);
-                    svg.addEvent(this.button.content, 'click', handler);
-                }
-            }
 
             const displayTabs = () => {
                 const
@@ -729,33 +695,73 @@ exports.GUI = function (globalVariables) {
                 // const imagesPanel = new gui.Panel(w - 4, 0.8*h * h, myColors.white, 2).position(w / 2 + 0.5, h/2);
                 const imagesPanel = this.panel;
 
+                const createTab = function (text, width, height, fontsize, font, manipulator, setContent) {
+                    let button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
+                    button.content.position(0, 5);
+                    let selected = false;
 
+                    const select = function () {
+                        selected = true;
+                        button.cadre.color(SELECTION_COLOR, 1, myColors.black);
+                        button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black);
+                        setContent();
+                    };
 
-                const tabManager = {
-                    tabs: [],
-                    manipulator: new Manipulator().addOrdonator(2),
-                    addTab (name, i, setContent) {
-                        const
-                            manip = new Manipulator().addOrdonator(2),
-                            tab = new Tab(name, width / 2, height, 20, null, manip, setContent);
-                        this.tabs.push(tab);
-                        tab.setClickHandler(() => this.tabs.forEach((tab, index) => {
-                            if (index === i) {
-                                tab.select()
-                            } else {
-                                tab.unselect()
-                            }
-                        }));
-                        manip.move(i * (MARGIN + width / 2), 0);
-                        this.manipulator.set(i, manip)
-                    },
-                    select (numTab = 0) {
-                        if (numTab >= this.tabs.length || numTab < 0) {
-                            numTab = 0
+                    const unselect = function () {
+                        if (selected) {
+                            selected = false;
+                            button.cadre.color(myColors.white, 1, myColors.black);
+                            button.content.color(myColors.black, 0, myColors.white);
                         }
-                        svg.event(this.tabs[numTab].button.cadre, "click")
-                    }
+                    };
+
+                    const setClickHandler = function (handler) {
+                        svg.addEvent(button.cadre, 'click', handler);
+                        svg.addEvent(button.content, 'click', handler);
+                    };
+
+                    return {
+                        select,
+                        unselect,
+                        setClickHandler
+                    };
                 };
+
+                const createTabManager = function (library) {
+                    const tabs = [],
+                        manipulator = new Manipulator().addOrdonator(2);
+
+                    const addTab = function (name, i, setContent) {
+                        const manip = new Manipulator().addOrdonator(2),
+                            tab = createTab(name, width / 2, height, 20, null, manip, setContent);
+                        tabs.push(tab);
+                        tab.setClickHandler(() => select(i));
+                        manip.move(i * (MARGIN + width / 2), 0);
+                        manipulator.set(i, manip);
+                    };
+
+                    const select = function (numTab = 0) {
+                        if (numTab >= tabs.length || numTab < 0) {
+                            numTab = 0;
+                        }
+                        tabs.forEach((tab, index) => {
+                            if (index === numTab) {
+                                tab.select();
+                                library.selectedTab = numTab;
+                            } else {
+                                tab.unselect();
+                            }
+                        });
+                    };
+
+                    return {
+                        manipulator,
+                        addTab,
+                        select
+                    };
+                };
+
+                const tabManager = createTabManager(this);
 
                 tabManager.addTab("Images", 0, () => {
                     this.libraryManipulator.set(2, imagesPanel.component);
@@ -765,10 +771,8 @@ exports.GUI = function (globalVariables) {
                     loadVideos();
                 });
                 tabManager.manipulator.move(w/4 + MARGIN, h*0.05);
+                tabManager.select (this.selectedTab);
                 this.libraryManipulator.set(1, tabManager.manipulator);
-
-                tabManager.select(0);
-                this.tabManager = tabManager;
             };
 
             displayTabs();
