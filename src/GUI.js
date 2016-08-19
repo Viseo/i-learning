@@ -1038,7 +1038,7 @@ exports.GUI = function (globalVariables) {
                         drawings.piste.add(tabElement.movingManipulator);
                         tabElement.miniatureManipulator.move(point.x, point.y);
                         manageDnD(miniatureElement[0], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
-                        manageDnD(miniatureElement[1],tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
+                        manageDnD(miniatureElement[1], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                     };
                     let mouseupHandler = eventUp => {
 
@@ -1088,7 +1088,7 @@ exports.GUI = function (globalVariables) {
                     let eventToUse = playerMode ? ["click", () => {
                     }] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
                     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    var dblclickBdHandler = (event)=> {
+                    var dblclickBdHandler = ()=> {
                         let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                         bdDisplay(targetBd);
                     };
@@ -1473,7 +1473,6 @@ exports.GUI = function (globalVariables) {
                 totalLines = 1;
             this.formations.forEach(formation => {
                 if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
-
                 if (count > (this.rows - 1)) {
                     count = 0;
                     totalLines++;
@@ -1482,9 +1481,7 @@ exports.GUI = function (globalVariables) {
                 }
                 formation.parent = this;
                 this.formationsManipulator.add(formation.miniature.miniatureManipulator);
-
                 formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-
                 formation.miniature.setHandler(onClickFormation);
                 count++;
                 posx += (this.tileWidth + spaceBetweenElements.width);
@@ -1796,25 +1793,27 @@ exports.GUI = function (globalVariables) {
     }
 
     function questionCreatorDisplayToggleButton(x, y, w, h, clicked) {
-        var size = this.manipulator.ordonator.children[1].height * 0.05;
+        var size = this.manipulator.ordonator.children[0].height * 0.05;
         this.manipulator.add(this.toggleButtonManipulator);
         let toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
             let target = drawings.background.getTarget(event.pageX, event.pageY);
             var questionType = target.parent.children[1].messageText;
-            this.linkedQuestion.tabAnswer.forEach(function (answer) {
-                answer.correct = false;
-            });
 
-            (questionType === "Réponses multiples") ? (this.multipleChoice = true) : (this.multipleChoice = false);
-            (questionType === "Réponses multiples") ? (this.linkedQuestion.multipleChoice = true) : (this.linkedQuestion.multipleChoice = false);
+            if (questionType === "Réponses multiples"){
+                this.multipleChoice = true;
+                this.linkedQuestion.multipleChoice = true;
+            } else {
+                this.multipleChoice = false;
+                this.linkedQuestion.multipleChoice = false;
+            }
 
             this.linkedQuestion.questionType = (!this.multipleChoice) ? this.questionType[0] : this.questionType[1];
             this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.remove(this.errorMessagePreview);
 
             this.linkedQuestion.tabAnswer.forEach((answer)=> {
-                if (answer.obj && answer.obj.checkbox) {
-                    answer.correct = false;
+                answer.correct = false;
+                if (answer.obj) {
                     answer.obj.checkbox = displayCheckbox(answer.obj.checkbox.x, answer.obj.checkbox.y, size, answer).checkbox;
                     answer.obj.checkbox.answerParent = answer;
                 }
@@ -2025,43 +2024,54 @@ exports.GUI = function (globalVariables) {
             }
             return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
         };
+
         let panelWidth = (w - 2 * MARGIN) * 0.7,
             panelHeight = h - 2 * MARGIN;
-        const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
-            imageX = (-w + imageW) / 2 + MARGIN;
-        this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
-        if (this.image) {
-            this.imageLayer = 3;
-            const imageSize = Math.min(imageW, panelHeight);
-            new Picture(this.image, this.editable, this)
-                .draw(imageX, 0, imageSize, imageSize);
-            this.answer.filled = true;
-        } else if (this.editable) {
-            const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
-            autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
-                .position(imageX, 0).color(myColors.grey)
-                ._acceptDrop = this.editable;
-            this.label ? this.answer.filled = true : this.answer.filled = false;
-        } else {
-            panelWidth = w - 2 * MARGIN;
-            this.panelManipulator.move(0, 0);
-        }
 
-        if (typeof this.panel === "undefined") {
-            this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-            this.panel.border.color([], 1, [0, 0, 0]);
-        } else {
-            this.panel.resize(panelWidth, panelHeight);
-        }
-        this.panel.back.mark('explanationPanel');
-        this.panelManipulator.add(this.panel.component);
-        this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
-        this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-        let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
-        let text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
-        text.position(panelWidth / 2, text.boundingRect().height)
-            .mark('textExplanation');
-        this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
+        let createImageAndText = ()=>{
+            const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
+                imageX = (-w + imageW) / 2 + MARGIN;
+            this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
+            if (this.image) {
+                this.imageLayer = 3;
+                const imageSize = Math.min(imageW, panelHeight);
+                new Picture(this.image, this.editable, this)
+                    .draw(imageX, 0, imageSize, imageSize);
+                this.answer.filled = true;
+            } else if (this.editable) {
+                const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
+                autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
+                    .position(imageX, 0).color(myColors.grey)
+                    ._acceptDrop = this.editable;
+                this.label ? this.answer.filled = true : this.answer.filled = false;
+            } else {
+                panelWidth = w - 2 * MARGIN;
+                this.panelManipulator.move(0, 0);
+            }
+        };
+
+        createImageAndText();
+        let textToDisplay, text;
+
+        let drawTextPanel = ()=>{
+            if (typeof this.panel === "undefined") {
+                this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
+                this.panel.border.color([], 1, [0, 0, 0]);
+            } else {
+                this.panel.resize(panelWidth, panelHeight);
+            }
+            this.panel.back.mark('explanationPanel');
+            this.panelManipulator.add(this.panel.component);
+            this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
+            this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+            let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
+            text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
+            text.position(panelWidth / 2, text.boundingRect().height)
+                .mark('textExplanation');
+            this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
+        };
+
+        drawTextPanel();
 
         const clickEdition = () => {
             let contentArea = {};
