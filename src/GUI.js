@@ -479,10 +479,10 @@ exports.GUI = function (globalVariables) {
         let display = (x, y, w, h) => {
             libraryDisplay.call(this, x, y, w, h, 0.8, h/2);
 
-            const assignEvents = () => {
+            const assignImageEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
                     let mouseDownAction = event => {
-                    let draggableImage = (() => {
+                        let draggableImage = (() => {
                             let imgToCopy = libraryManipulator.ordonator.children[0];
                             img = displayImage(imgToCopy.src, imgToCopy.srcDimension, imgToCopy.width, imgToCopy.height, imgToCopy.name).image;
                             img.mark('imgDraged');
@@ -499,12 +499,8 @@ exports.GUI = function (globalVariables) {
                             let svgObj = draggableImage.manipulator.ordonator.children.shift();
                             drawings.piste.remove(draggableImage.manipulator);
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
-                            if (target && target.parent && target.parent.parentManip) {
-                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                    this.dropAction(svgObj, event);
-                                }
-                            }
-                            this.draggedObject = null;
+                            this.dropImage(svgObj, target);
+                               
                         };
 
                         svg.event(drawings.glass, "mousedown", event);
@@ -512,6 +508,33 @@ exports.GUI = function (globalVariables) {
                     };
                     svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
                     svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
+                });
+            };
+            const assignVideoEvents = () => {
+                this.videosManipulators.forEach((videoManipulator,i) => {
+                    let mouseDownAction = event => {
+                        let draggableVideo = (() => {
+                            let video = drawVideoIcon(0, -10, 20);
+                            // video.mark('videoDragged');
+                            drawings.piste.add(video);
+                            let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
+                            video.move(point.x, point.y);
+                            manageDnD(video.ordonator.children[0], video);
+                            return video;
+                        })();
+                        let mouseupHandler = event => {
+                            let svgObj = draggableVideo.ordonator.children.shift();
+                            drawings.piste.remove(draggableVideo);
+                            let target = drawings.background.getTarget(event.pageX, event.pageY);
+                            this.dropVideo(this.videosTab[i], target);
+                        };
+
+                        svg.event(drawings.glass, "mousedown", event);
+                        svg.addEvent(draggableVideo.ordonator.children[0], 'mouseup', mouseupHandler);
+                    };
+                    videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
+                    svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
+
                 });
             };
 
@@ -538,7 +561,7 @@ exports.GUI = function (globalVariables) {
 
                     });
                     this.panel.resizeContent(w, tempY += this.imageHeight);
-                    assignEvents();
+                    assignImageEvents();
                 };
 
                 //this.itemsTab.length === 0) {
@@ -689,8 +712,8 @@ exports.GUI = function (globalVariables) {
 
                 const loadVideos = () => {
                     Server.getVideos().then(data => {
-                        const videos = JSON.parse(data);
-                        sortAlphabetical(videos).forEach((video, i) => {
+                        this.videosTab = sortAlphabetical(JSON.parse(data));
+                        this.videosTab.forEach((video, i) => {
                             if (!this.videosManipulators[i]) {
                                 this.videosManipulators[i] = new Manipulator().addOrdonator(2);
                             }
@@ -703,6 +726,7 @@ exports.GUI = function (globalVariables) {
                             manipulator.move(w/2, 30 + (this.videosManipulators.length + i)*30)
                         });
                         videosPanel.resizeContent(w, (this.videosManipulators.length + this.videosUploadManipulators.length + 1) * 30);
+                        assignVideoEvents();
                     });
                 };
 
@@ -784,10 +808,13 @@ exports.GUI = function (globalVariables) {
                 tabManager.addTab("Vidéos", 1, () => {
                     this.libraryManipulator.set(2, videosPanel.component);
                     loadVideos();
+
                 });
                 tabManager.manipulator.move(w/4 + MARGIN, h*0.05);
                 tabManager.select (this.selectedTab);
                 this.libraryManipulator.set(1, tabManager.manipulator);
+                assignVideoEvents();
+
             };
 
             displayTabs();
@@ -2038,7 +2065,7 @@ exports.GUI = function (globalVariables) {
 
         let panelWidth = (w - 2 * MARGIN) * 0.7,
             panelHeight = h - 2 * MARGIN;
-
+        const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
         let createImageAndText = ()=>{
             const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
                 imageX = (-w + imageW) / 2 + MARGIN;
@@ -2050,8 +2077,13 @@ exports.GUI = function (globalVariables) {
                 picture.draw(imageX, 0, imageSize, imageSize);
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
-            } else if (this.editable) {
-                const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
+            }else if(this.video){
+                let icon = drawVideoIcon(0,0,50);
+                let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3).text.position(imageX,0);
+                icon.move(imageX,0);
+                this.manipulator.set(5, icon);
+                this.answer.filled = true;
+            }else if (this.editable) {
                 autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
                     .position(imageX, 0).color(myColors.grey)
                     ._acceptDrop = this.editable;

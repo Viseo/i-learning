@@ -277,7 +277,7 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        drawVideoIcon = function(x, y, size, textPosition){
+        drawVideoIcon = function(x, y, size){
             const
                 bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
                 smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
@@ -298,6 +298,15 @@ exports.Util = function (globalVariables) {
             trianglesManipulator.set(0, whiteTriangle);
             trianglesManipulator.set(1, invisibleTriangle);
             manipulator.set(2, trianglesManipulator);
+
+            manipulator.setHandler = (event, handler) => {
+                svg.addEvent(bigSquare, event, handler);
+                svg.addEvent(smallSquare, event, handler);
+                svg.addEvent(whiteTriangle, event, handler);
+                svg.addEvent(invisibleTriangle, event, handler);
+                svg.addEvent(blackTriangle, event, handler);
+            };
+
             return manipulator;
         };
 
