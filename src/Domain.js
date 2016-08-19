@@ -892,7 +892,7 @@ exports.Domain = function (globalVariables) {
                         theGame.currentQuestionIndex = game.questionsAnswered.length;
                         theGame.questionsAnswered = [];
                         if (game.questionsAnswered) {
-                            game.questionsAnswered.forEach((wrongAnswer,i) => {
+                            game.questionsAnswered.forEach((wrongAnswer, i) => {
                                 theGame.questionsAnswered.push({
                                     question: theGame.tabQuestions[i],
                                     validatedAnswers: wrongAnswer.validatedAnswers
