@@ -277,7 +277,7 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        drawVideoIcon = function(x, y, size){
+        drawVideoIcon = function(x, y, size, textPosition){
             const
                 bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
                 smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),

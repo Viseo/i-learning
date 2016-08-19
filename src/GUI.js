@@ -430,7 +430,7 @@ exports.GUI = function (globalVariables) {
                     };
 
                     let mouseupHandler = event => {
-                        drawings.piste.last.remove(this.draggedObject.manipulator.first);
+                        drawings.piste.remove(this.draggedObject.manipulator);
                         let target = drawings.background.getTarget(event.pageX, event.pageY);
                         let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                         if (parentObject !== item) {
@@ -482,43 +482,33 @@ exports.GUI = function (globalVariables) {
             const assignEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
                     let mouseDownAction = event => {
-                        this.arrowMode && this.toggleArrowMode();
-
-                        libraryManipulator.parentObject.formation && libraryManipulator.parentObject.formation.removeErrorMessage(libraryManipulator.parentObject.formation.errorMessageDisplayed);
-                        let manip = new Manipulator(this).addOrdonator(2);
-                        drawings.piste.add(manip);
-                        this.formation && this.formation.removeErrorMessage(this.formation.errorMessageDisplayed);
-
-                        let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y),
-                            point2 = manip.first.globalPoint(0, 0);
-                        manip.move(point.x - point2.x, point.y - point2.y);
-
-                        if (this.itemsTab && this.itemsTab.length !== 0) {
-
-                            let elementCopy = libraryManipulator.ordonator.children[0],
-                                img = displayImage(elementCopy.src, elementCopy.srcDimension, elementCopy.width, elementCopy.height, elementCopy.name).image;
+                    let draggableImage = (() => {
+                            let imgToCopy = libraryManipulator.ordonator.children[0];
+                            img = displayImage(imgToCopy.src, imgToCopy.srcDimension, imgToCopy.width, imgToCopy.height, imgToCopy.name).image;
                             img.mark('imgDraged');
-                            img.srcDimension = elementCopy.srcDimension;
-                            manip.set(0, img);
-                            manageDnD(img, manip);
-                            img.component.listeners && svg.removeEvent(img, 'mouseup');
-                            img.component.target && img.component.target.listeners && img.component.target.listeners.mouseup && svg.removeEvent(img.image, 'mouseup');
-
-                            let mouseupHandler = event => {
-                                let svgObj = manip.ordonator.children.shift();
-                                manip.first.parent.remove(manip.first);
-                                let target = drawings.background.getTarget(event.pageX, event.pageY);
-                                if (target && target.parent && target.parent.parentManip) {
-                                    if (!(target.parent.parentManip.parentObject instanceof Library)) {
-                                        this.dropAction(svgObj, event);
-                                    }
+                            img.manipulator = new Manipulator(this).addOrdonator(2);
+                            img.manipulator.set(0, img);
+                            drawings.piste.add(img.manipulator);
+                            let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y);
+                            img.manipulator.move(point.x, point.y);
+                            img.srcDimension = imgToCopy.srcDimension;
+                            manageDnD(img, img.manipulator);
+                            return img;
+                        })();
+                        let mouseupHandler = event => {
+                            let svgObj = draggableImage.manipulator.ordonator.children.shift();
+                            drawings.piste.remove(draggableImage.manipulator);
+                            let target = drawings.background.getTarget(event.pageX, event.pageY);
+                            if (target && target.parent && target.parent.parentManip) {
+                                if (!(target.parent.parentManip.parentObject instanceof Library)) {
+                                    this.dropAction(svgObj, event);
                                 }
-                                this.draggedObject = null;
-                            };
+                            }
+                            this.draggedObject = null;
+                        };
 
-                            svg.event(drawings.glass, "mousedown", event);
-                            svg.addEvent(img, 'mouseup', mouseupHandler);
-                        }
+                        svg.event(drawings.glass, "mousedown", event);
+                        svg.addEvent(draggableImage, 'mouseup', mouseupHandler);
                     };
                     svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
                     svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
