@@ -118,7 +118,13 @@ exports.GUI = function (globalVariables) {
                     this.obj.image = picture.imageSVG.image;
                     this.obj.content = picture.imageSVG.content;
                     this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
-                } else {
+                }else if (this.video) {
+                    let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator);
+                    this.obj.content=obj.content;
+                    this.border = obj.cadre;
+                    this.obj.video = obj.video;
+                }
+                else {
                     var tempObj = displayText(text, w, h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, w - 2 * checkboxSize);
                     this.border = tempObj.cadre;
                     this.obj.content = tempObj.content;
@@ -1621,7 +1627,7 @@ exports.GUI = function (globalVariables) {
             this.image = obj.image;
         }
         else if (this.video) {//&& this.label !== ""
-            let obj = displayCameraWithTitle(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
+            let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
             this.bordure = obj.cadre;
             this.content = obj.content;
             this.miniatureVideo = obj.video;
@@ -1935,7 +1941,7 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
             }else if(this.linkedQuestion.video){
-                questionBlock.title = displayCameraWithTitle(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator);
+                questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator);
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }

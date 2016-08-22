@@ -47,6 +47,7 @@ exports.Domain = function (globalVariables) {
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
+            this.video = answer.video;
             this.correct = answer.correct;
             this.selected = false;
             this.validLabelInput = answer.validLabelInput !== undefined ? answer.validLabelInput : true;
@@ -988,6 +989,7 @@ exports.Domain = function (globalVariables) {
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
+                            answer.obj.video && drawings.screen.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
                             answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
@@ -1015,12 +1017,6 @@ exports.Domain = function (globalVariables) {
                     };
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
-                    // var newElement = displayCameraWithTitle(oldElement.content.messageText, element.name,
-                    //     oldElement.cadre.width, oldElement.cadre.height,
-                    //     oldElement.cadre.strokeColor, oldElement.cadre.fillColor, null, null, target.parent.parentManip
-                    // );
-                    // oldElement.cadre.position(newElement.cadre.x, newElement.cadre.y);
-                    // oldElement.content.position(newElement.content.x, newElement.content.y);
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             target.parent.parentManip.unset(2);
@@ -1035,7 +1031,10 @@ exports.Domain = function (globalVariables) {
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
-                            answer.video = element.video;
+                            answer.obj.video && drawings.screen.remove(answer.obj.video);
+                            answer.video = element;
+                            answer.image = null;
+                            answer.imageSrc = null;
                             answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;

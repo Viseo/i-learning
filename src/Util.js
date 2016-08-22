@@ -10,7 +10,9 @@ exports.Util = function (globalVariables) {
         playerMode = globalVariables.playerMode,
         AddEmptyElement,
         Quizz,
-        Bd;
+        Bd,
+        Answer,
+        QuestionCreator;
 
     setGlobalVariables = () => {
         runtime = globalVariables.runtime;
@@ -385,29 +387,81 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        displayCameraWithTitle = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
+        drawVideo = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
             }
            ;
             if(!label) label = "";
-            var text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
-            var textHeight = (label !== "") ? h * 0.25 : 0;
+            let text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
+            let textHeight = (label !== "") ? h * 0.25 : 0;
             text.position(0, (h - textHeight) / 2);//w*1/6
             manipulator.set(1, text);
+            let cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            manipulator.set(0, cadre);
+            let points = cadre.globalPoint(-50, -50);
+            let video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
+            drawings.screen.add(video);
+
+            const drawVideoRedCross = (function (parent, manipulator) {
+                const redCrossClickHandler = ()=> {
+                    redCrossManipulator.flush();
+                    let parent = manipulator.parentObj;
+                    parent.obj.video && drawings.screen.remove(video);//image
+                    if (parent instanceof QuestionCreator) {
+                        parent.linkedQuestion.video = null;
+                    }
+                    else {
+                        parent.video = null;
+                    }
+                    if (this.parent instanceof Answer) {
+                        let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                        let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+                        let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                        this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+                        this.parent.parentQuestion.checkValidity();
+                    }
+                    else if (this.parent.answer) {
+                        let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                        this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                        this.parent.answer.parentQuestion.checkValidity();
+                    }
+                    else {
+                        this.parent.display();
+                        this.parent.linkedQuestion.checkValidity();
+                    }
+                };
+                this.mouseleaveHandler = ()=> {
+                    redCrossManipulator.flush();
+                };
+                this.mouseoverHandler = ()=> {
+                    if (typeof redCrossManipulator === 'undefined') {
+                        let redCrossManipulator = new Manipulator(this);
+                        redCrossManipulator.addOrdonator(2);
+                        manipulator.add(redCrossManipulator);
+                    }
+                    let redCrossSize = 15;
+                    let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
+                        : drawRedCross(0, 0, redCrossSize, redCrossManipulator);
+                    redCross.mark('imageRedCross');
+                    svg.addEvent(redCross, 'click', redCrossClickHandler);
+                    redCrossManipulator.set(1, redCross);
+                };
+            })();
+
+            svg.addEvent(cadre, "mouseover", this.mouseoverHandler);
+            svg.addEvent(cadre, "mouseout", this.mouseleaveHandler);
+
+
             // var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             // video._acceptDrop();
             // let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 15, null, manipulator,3);
             // videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
-            manipulator.set(0, cadre);
-            let points = cadre.globalPoint(-w/4, -h/4);
-            var video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
-            drawings.screen.add(video);
             // video.move(-50-(videoTitle.finalWidth)/4, 0);
             // videoTitle.text._acceptDrop=true;
             // manipulator.set(2, video);
+
             return {cadre: cadre, video: video, content: text};
         };
 
@@ -795,7 +849,7 @@ exports.Util = function (globalVariables) {
             this.width = w;
             this.height = h;
             if (this.editable) {
-                this.drawImageRedCross(x, y, w, h, this.parent, manipulator);
+                this.drawImageRedCross(this.parent, manipulator);
             }
             if (this.textToDisplay) {
                 this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
@@ -813,7 +867,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        drawImageRedCross(x, y, w, h, parent, manipulator) {
+        drawImageRedCross(parent, manipulator) {
             this.imageRedCrossClickHandler = ()=> {
                 this.redCrossManipulator.flush();
                 parent.imageLayer && manipulator.unset(parent.imageLayer);//image
@@ -825,9 +879,9 @@ exports.Util = function (globalVariables) {
                     parent.image = null;
                     parent.imageSrc = null;
                 }
-                if (parent.parent && parent.parent.questionPuzzle) {
-                    parent.parent.questionPuzzle.display();
-                }
+                // if (parent.parent && parent.parent.questionPuzzle) {
+                //     parent.parent.questionPuzzle.display();
+                // }
                 if (this.parent.parentQuestion) {
                     let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
                     let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
@@ -1658,7 +1712,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check answer's name:
             question => {
-                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc));
+                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc || el.video));
                 let message = "Vous devez remplir correctement toutes les réponses.";
 
                 return {
@@ -1668,7 +1722,7 @@ exports.Util = function (globalVariables) {
             },
             // Check Question Name:
             question => {
-                let isValid = !!((question.label && question.validLabelInput) || question.imageSrc);
+                let isValid = !!((question.label && question.validLabelInput) || question.imageSrc || question.video);
                 let message = "Vous devez remplir correctement le nom de la question.";
 
                 return {
@@ -1690,12 +1744,12 @@ exports.Util = function (globalVariables) {
         multipleAnswerValidationTab = [
             // Check answer's name:
             question => ({
-                isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc)),
+                isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc || el.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
             // Check Question Name:
             question => ({
-                isValid: !!((question.label && question.validLabelInput) || question.imageSrc), // Checker si le champ saisi de la question est valide
+                isValid: !!((question.label && question.validLabelInput) || question.imageSrc || question.video), // Checker si le champ saisi de la question est valide
                 message: "Vous devez remplir correctement le nom de la question."
             }),
             // Check Quiz Name:
