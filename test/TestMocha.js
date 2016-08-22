@@ -572,14 +572,21 @@ describe('formationsManager', function () {
             textExplanation = retrieve(root, '[textExplanation]');
             assert(textExplanation.text, "Ceci est la première explication");
 
+            let image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            let imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:397, pageY:677, preventDefault:()=>{}});
+            let explanationImage = retrieve(root, '[imageExplanation]');
+            assert(explanationImage);
+
             let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
             circleCloseExplanation.listeners['click']();
             textExplanation = retrieve(root, '[textExplanation]');
             assert(!textExplanation);
 
-            let image = retrieve(root, '[imageAlba]');
+            image = retrieve(root, '[imageAlba]');
             image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            let imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged = retrieve(root, '[imgDraged]');
             imgDraged.listeners['mouseup']({pageX:425, pageY:438, preventDefault:()=>{}});
             let questionImage = retrieve(root, '[questionImage6]');
             assert(questionImage);

@@ -1987,7 +1987,7 @@ exports.GUI = function (globalVariables) {
 
         this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h, false);
         if (this.explanation) {
-            this.explanation.display(this, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
+            this.explanation.display(this, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
         }
     }
 
@@ -2045,8 +2045,9 @@ exports.GUI = function (globalVariables) {
             if (this.image) {
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
-                new Picture(this.image, this.editable, this)
-                    .draw(imageX, 0, imageSize, imageSize);
+                let picture = new Picture(this.image, this.editable, this);
+                picture.draw(imageX, 0, imageSize, imageSize);
+                picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             } else if (this.editable) {
                 const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
