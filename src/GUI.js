@@ -2066,14 +2066,10 @@ exports.GUI = function (globalVariables) {
         let textToDisplay, text;
 
         let drawTextPanel = ()=>{
-            if (typeof this.panel === "undefined") {
-                this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-                this.panel.border.color([], 1, [0, 0, 0]);
-            } else {
-                this.panel.resize(panelWidth, panelHeight);
-            }
+            this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
+            this.panel.border.color([], 1, [0, 0, 0]);
             this.panel.back.mark('explanationPanel');
-            this.panelManipulator.add(this.panel.component);
+            this.panelManipulator.set(0, this.panel.component);
             this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
             let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
