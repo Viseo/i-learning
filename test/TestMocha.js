@@ -658,6 +658,11 @@ describe('formationsManager', function () {
             answerImage = retrieve(root, '[answerImage1]');
             assert(answerImage);
 
+            let libraryVideos = retrieve(root, '[libraryVidéos]');
+            libraryVideos.listeners['click']();
+            let libraryImages = retrieve(root, '[libraryImages]');
+            libraryImages.listeners['click']();
+
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
 

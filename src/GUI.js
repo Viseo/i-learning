@@ -712,7 +712,7 @@ exports.GUI = function (globalVariables) {
 
                 const createTab = function (text, width, height, fontsize, font, manipulator, setContent) {
                     let button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
-                    button.content.position(0, 5);
+                    button.content.position(0, 5).mark('library' + text);
                     let selected = false;
 
                     const select = function () {
