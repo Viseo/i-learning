@@ -1679,6 +1679,7 @@ exports.GUI = function (globalVariables) {
             this.answersManipulator.add(answerElement.manipulator);
             answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
             answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
+            answerElement.bordure.mark('answerElement' + index);
             if (!playerMode && this.parentQuizz.previewMode){
                 answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen);
             } else if(playerMode && this.parentQuizz.previewMode){
@@ -2148,6 +2149,7 @@ exports.GUI = function (globalVariables) {
         this.answerHeightWithImage = heightPage * answerPercentageWithImage - MARGIN;
         this.manipulator.move(this.questionArea.w / 2, this.headerHeight);
         this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
+        this.returnButtonManipulator.ordonator.children[0].mark('returnButtonToResults');
         let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
         if (this.previewMode) {
             if (playerMode) {
@@ -2181,7 +2183,9 @@ exports.GUI = function (globalVariables) {
             });
         }
         this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
+        this.leftChevron.mark('leftChevron');
         this.rightChevron = new Chevron(x + w * 0.6, y + h * 0.45, w * 0.1, h * 0.15, this.rightChevronManipulator, "right");
+        this.rightChevron.mark('rightChevron');
 
         this.leftChevron.update = function (quizz) {
             if(quizz.currentQuestionIndex === 0){
@@ -2264,6 +2268,7 @@ exports.GUI = function (globalVariables) {
             textExp = "Voir les réponses et explications",
             expButton = displayText(textExp, buttonExpWidth, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
         this.expButtonManipulator.move(buttonExpWidth/2, drawing.height - this.headerHeight - buttonExpHeight);
+        expButton.cadre.mark('expButton');
 
         const displayExplanation = () => {
             this.manipulator.flush();

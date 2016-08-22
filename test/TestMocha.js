@@ -972,6 +972,14 @@ describe('Player mode', function () {
             assert.equal(seventhAnswer.text, "Les Hecatonchires");
             seventhAnswer.listeners["click"]();
 
+            seventhAnswer = retrieve(root, "[answer6]");
+            assert.equal(seventhAnswer.text, "Les Hecatonchires");
+            seventhAnswer.listeners["click"]();
+
+            seventhAnswer = retrieve(root, "[answer6]");
+            assert.equal(seventhAnswer.text, "Les Hecatonchires");
+            seventhAnswer.listeners["click"]();
+
             let validateButtonQuiz = retrieve(root, "[validateButtonQuiz]");
             assert.equal(validateButtonQuiz.text, "Valider");
             validateButtonQuiz.listeners["click"]();
@@ -1001,6 +1009,42 @@ describe('Player mode', function () {
             fourthAnswer.listeners["click"]();
 
             runtime.listeners['resize']({w:1500, h:1500});
+
+            let expButton = retrieve(root, '[expButton]');
+            expButton.listeners['click']();
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advance();
+
+            let leftChevron = retrieve(root, '[leftChevron]');
+            assert(!leftChevron.listeners['click']);
+
+            let answerElement0 = retrieve(root, '[answerElement0]');
+            answerElement0.listeners['click']();
+
+            let rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+
+            leftChevron = retrieve(root, '[leftChevron]');
+            assert(leftChevron.listeners['click']);
+            rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+            rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+            rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+            rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+            rightChevron = retrieve(root, '[rightChevron]');
+            rightChevron.listeners['click']();
+            rightChevron = retrieve(root, '[rightChevron]');
+            assert(!rightChevron.listeners['click']);
+            leftChevron = retrieve(root, '[leftChevron]');
+            leftChevron.listeners['click']();
+
+            let returnButtonToResults = retrieve(root, '[returnButtonToResults]');
+            returnButtonToResults.listeners['click']();
 
             let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
             returnButtonToFormation.listeners['click']();
