@@ -189,6 +189,7 @@ exports.Domain = function (globalVariables) {
             } else {
                 this.label = question.label;
                 this.imageSrc = question.imageSrc;
+                this.video=question.video;
                 this.columns = question.columns ? question.columns : 4;
                 this.rightAnswers = [];
                 this.multipleChoice = question.multipleChoice;
@@ -1023,7 +1024,7 @@ exports.Domain = function (globalVariables) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = element;
-                            // questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                                questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;

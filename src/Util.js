@@ -379,25 +379,28 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        displayCameraWithTitle = function (label, videoName, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
+        displayCameraWithTitle = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
             }
+           ;
+            if(!label) label = "";
             var text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
             var textHeight = (label !== "") ? h * 0.25 : 0;
             text.position(0, (h - textHeight) / 2);//w*1/6
-            var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
-
+            manipulator.set(1, text);
+            var video = new svg.Video(100,100, 100, 100, videoObject.src, true);
+            drawings.screen.add(video);
+            // var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            video._acceptDrop();
-            let videoTitle = autoAdjustText(videoName, textWidth, h-50, 15, null, manipulator,3);
+            // video._acceptDrop();
+            let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 15, null, manipulator,3);
             videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
-            video.move(-50-(videoTitle.finalWidth)/4, 0);
+            // video.move(-50-(videoTitle.finalWidth)/4, 0);
             videoTitle.text._acceptDrop=true;
             manipulator.set(0, cadre);
-            manipulator.set(1, text);
-            manipulator.set(2, video);
+            // manipulator.set(2, video);
             return {cadre: cadre, video: video, content: text};
         };
 

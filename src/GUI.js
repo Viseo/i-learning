@@ -1620,7 +1620,7 @@ exports.GUI = function (globalVariables) {
             this.image = obj.image;
         }
         else if (this.video) {//&& this.label !== ""
-            let obj = displayCameraWithTitle(this.label, this.video.name, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+            let obj = displayCameraWithTitle(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
             this.bordure = obj.cadre;
             this.content = obj.content;
         }
@@ -1931,7 +1931,7 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
             }else if(this.linkedQuestion.video){
-                questionBlock.title = displayCameraWithTitle(this.label, this.linkedQuestion.video.name, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, this.image);
+                questionBlock.title = displayCameraWithTitle(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, this.image);
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
