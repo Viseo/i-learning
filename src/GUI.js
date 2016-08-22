@@ -838,6 +838,7 @@ exports.GUI = function (globalVariables) {
         obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
+            drawings.screen.empty();
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
@@ -1620,9 +1621,10 @@ exports.GUI = function (globalVariables) {
             this.image = obj.image;
         }
         else if (this.video) {//&& this.label !== ""
-            let obj = displayCameraWithTitle(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+            let obj = displayCameraWithTitle(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
             this.bordure = obj.cadre;
             this.content = obj.content;
+            this.miniatureVideo = obj.video;
         }
         // Question avec Texte uniquement
         else if (typeof this.label !== "undefined" && !this.imageSrc) {
@@ -1665,6 +1667,8 @@ exports.GUI = function (globalVariables) {
         this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
         this.manipulator.set(4, this.questNum);
         this.manipulator.move(this.x, this.y);
+        let globalPoints = this.manipulator.first.globalPoint(-50, -50);
+        this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
         if (this.selected) {
             this.selectedQuestion();
         }
@@ -1931,7 +1935,7 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
             }else if(this.linkedQuestion.video){
-                questionBlock.title = displayCameraWithTitle(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, this.image);
+                questionBlock.title = displayCameraWithTitle(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator);
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
@@ -1946,14 +1950,17 @@ exports.GUI = function (globalVariables) {
                 questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
             this.linkedQuestion.validLabelInput || displayErrorMessage();
             questionBlock.title.cadre._acceptDrop = true;
-            svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
-            svg.addEvent(questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
+
             this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.cadre.height / 2 + this.toggleButtonHeight + MARGIN);
             this.manipulator.move(x + w / 2, y + h / 2);
+            let globalPoints = questionBlock.title.cadre.globalPoint(-50, -50);
+            questionBlock.title.video && questionBlock.title.video.position(globalPoints.x, globalPoints.y);
+            svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
+            svg.addEvent(questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
         };
 
         var dblclickEditionQuestionBlock = () => {
-            var globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
+            var globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
             var contentareaStyle = {
                 height: (this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
                 toppx: globalPointCenter.y,
@@ -2193,6 +2200,7 @@ exports.GUI = function (globalVariables) {
         if (this.previewMode) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
+                    drawings.screen.empty();
                     closePopIn();
                     this.previewMode = false;
                     this.currentQuestionIndex = this.tabQuestions.length;
@@ -2205,8 +2213,10 @@ exports.GUI = function (globalVariables) {
                     (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
             } else {
+                drawings.screen.empty();
                 returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
+                    drawings.screen.empty();
                     closePopIn();
                     this.manipulator.flush();
                     this.parentFormation.quizzManager.loadQuizz(this, this.currentQuestionIndex);
@@ -2214,6 +2224,7 @@ exports.GUI = function (globalVariables) {
                 });
             }
         } else {
+            drawings.screen.empty();
             returnButtonChevron.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
                 closePopIn();
@@ -2264,6 +2275,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let leftChevronHandler = () => {
+            drawings.screen.empty();
             closePopIn();
             if (this.currentQuestionIndex > 0) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2274,6 +2286,7 @@ exports.GUI = function (globalVariables) {
             }
         };
         let rightChevronHandler = () => {
+            drawings.screen.empty();
             closePopIn();
             if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2440,6 +2453,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.set(1, this.quizzManagerManipulator);
 
         this.questionClickHandler = event => {
+            drawings.screen.empty();
             let question;
             if (typeof event.pageX == "undefined" || typeof event.pageY == "undefined") {
                 question = event.question;
@@ -2493,6 +2507,7 @@ exports.GUI = function (globalVariables) {
         this.quizzInfoManipulator.add(this.returnButtonManipulator);
 
         let returnHandler = ()=> {
+            drawings.screen.empty();
             let target = this.returnButton;
             target.parent.parentFormation.quizzManager.questionCreator.explanation = null;
             if (this.quizz.tabQuestions[this.indexOfEditedQuestion]) {

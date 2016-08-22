@@ -978,6 +978,7 @@ exports.Domain = function (globalVariables) {
                     newElement.image.name = element.name;
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                            drawings.screen.empty();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.image = newElement.image;
                             questionCreator.linkedQuestion.imageSrc = newElement.image.src;
@@ -1022,9 +1023,13 @@ exports.Domain = function (globalVariables) {
                     // oldElement.content.position(newElement.content.x, newElement.content.y);
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
+                            target.parent.parentManip.unset(2);
+                            drawings.screen.empty();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = element;
-                                questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                            questionCreator.linkedQuestion.image = null;
+                            questionCreator.linkedQuestion.imageSrc = null;
+                            questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;

@@ -149,6 +149,12 @@ exports.Util = function (globalVariables) {
             this.drawing.manipulator.set(2, this.piste);
             this.drawing.add(this.glass);
 
+            this.screen.empty = ()=>{
+                for (let i = drawings.screen.children.length; i>=0 ; i--){
+                    drawings.screen.children[i] !== drawing && drawings.screen.remove(drawings.screen.children[i]);
+                }
+            };
+
             const onmousedownHandler = event => {
                 svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
@@ -390,16 +396,17 @@ exports.Util = function (globalVariables) {
             var textHeight = (label !== "") ? h * 0.25 : 0;
             text.position(0, (h - textHeight) / 2);//w*1/6
             manipulator.set(1, text);
-            var video = new svg.Video(100,100, 100, 100, videoObject.src, true);
-            drawings.screen.add(video);
             // var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
             var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             // video._acceptDrop();
-            let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 15, null, manipulator,3);
-            videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
-            // video.move(-50-(videoTitle.finalWidth)/4, 0);
-            videoTitle.text._acceptDrop=true;
+            // let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 15, null, manipulator,3);
+            // videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
             manipulator.set(0, cadre);
+            let points = cadre.globalPoint(-w/4, -h/4);
+            var video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
+            drawings.screen.add(video);
+            // video.move(-50-(videoTitle.finalWidth)/4, 0);
+            // videoTitle.text._acceptDrop=true;
             // manipulator.set(2, video);
             return {cadre: cadre, video: video, content: text};
         };
@@ -1127,11 +1134,13 @@ exports.Util = function (globalVariables) {
             this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
             this.rightChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
             this.leftChevron.handler = () => {
+                drawings.screen.empty();
                 this.updateStartPosition("left");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();
             };
             this.rightChevron.handler = () => {
+                drawings.screen.empty();
                 this.updateStartPosition("right");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();

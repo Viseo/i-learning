@@ -38,6 +38,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     Gui.setGlobalVariables();
 
     let resizePaper = function (event) {
+        drawings.screen.empty();
         // document.activeElement.blur();
         let newWidth, newHeight;
         if (event.w && event.h){
