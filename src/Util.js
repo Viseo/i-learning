@@ -277,7 +277,7 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        drawVideoIcon = function(x, y, size){
+        drawVideoIcon = function (x, y, size, parentObject) {
             const
                 bigSquare = new svg.Rect(9*size/10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
                 smallSquare = new svg.Rect(4*size/9, 4*size/9).color(myColors.black).corners(2, 2).position(-size/10, size/10),
@@ -285,14 +285,14 @@ exports.Util = function (globalVariables) {
                 invisibleTriangle = new svg.Triangle(Math.sqrt(4*size), Math.sqrt(4*size)/2, "N").color(myColors.white, 2, myColors.white).position(0, size / 2-Math.sqrt(4*size)/2-1),
                 blackTriangle = new svg.Triangle(Math.sqrt(4*size)/2, Math.sqrt(4*size), "W").color(myColors.black, 1, myColors.black).position(size/4, size/10);
 
-            const manipulator = new Manipulator().addOrdonator(3);
+            const manipulator = new Manipulator(parentObject).addOrdonator(3);
             manipulator.set(0, bigSquare);
-            const cameraManipulator = new Manipulator().addOrdonator(2);
+            const cameraManipulator = new Manipulator(parentObject).addOrdonator(2);
             cameraManipulator.move(x, y);
             cameraManipulator.set(0, smallSquare);
             cameraManipulator.set(1, blackTriangle);
             manipulator.set(1, cameraManipulator);
-            const trianglesManipulator = new Manipulator().addOrdonator(2);
+            const trianglesManipulator = new Manipulator(parentObject).addOrdonator(2);
             trianglesManipulator.rotate(45);
             trianglesManipulator.move(x + size - 5*size/12, y - size + size/3);
             trianglesManipulator.set(0, whiteTriangle);
@@ -305,6 +305,14 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(whiteTriangle, event, handler);
                 svg.addEvent(invisibleTriangle, event, handler);
                 svg.addEvent(blackTriangle, event, handler);
+            };
+
+            manipulator._acceptDrop = () => {
+                bigSquare._acceptDrop=true;
+                smallSquare._acceptDrop=true;
+                whiteTriangle._acceptDrop=true;
+                invisibleTriangle._acceptDrop=true;
+                blackTriangle._acceptDrop=true;
             };
 
             return manipulator;
@@ -351,21 +359,6 @@ exports.Util = function (globalVariables) {
             return [square, line1, line2, line3, line4];
         };
 
-        /**
-         *
-         * @param label
-         * @param imageSrc
-         * @param imageObj
-         * @param w
-         * @param h
-         * @param rgbCadre
-         * @param bgColor
-         * @param fontSize
-         * @param font
-         * @param manipulator
-         * @param previousImage
-         * @returns {{cadre: *, image, text}}
-         */
         displayImageWithTitle = function (label, imageSrc, imageObj, w, h, rgbCadre, bgColor, fontSize, font, manipulator, previousImage, textWidth = w) {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
@@ -386,18 +379,31 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        /**
-         *
-         * @param imageSrc
-         * @param imageObj
-         * @param w
-         * @param h
-         * @param manipulator
-         * @returns {{image: *, height: *, cadre}}
-         */
+        displayCameraWithTitle = function (label, videoName, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
+            if ((w <= 0) || (h <= 0)) {
+                w = 1;
+                h = 1;
+            }
+            var text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
+            var textHeight = (label !== "") ? h * 0.25 : 0;
+            text.position(0, (h - textHeight) / 2);//w*1/6
+            var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
+
+            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            video._acceptDrop();
+            let videoTitle = autoAdjustText(videoName, textWidth, h-50, 15, null, manipulator,3);
+            videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
+            video.move(-50-(videoTitle.finalWidth)/4, 0);
+            videoTitle.text._acceptDrop=true;
+            manipulator.set(0, cadre);
+            manipulator.set(1, text);
+            manipulator.set(2, video);
+            return {cadre: cadre, video: video, content: text};
+        };
+
         displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
-            var image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN
-            var cadre = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
+            let image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN
+            let cadre = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
             manipulator.set(0, cadre);
             manipulator.set(2, image.image);
             return {image: image.image, height: image.height, cadre: cadre};

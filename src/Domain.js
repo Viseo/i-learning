@@ -953,7 +953,9 @@ exports.Domain = function (globalVariables) {
         dropImage(element, target) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject instanceof PopIn) {
-                    target.parent.parentManip.parentObject.image = element.src;
+                    let popIn =target.parent.parentManip.parentObject;
+                    popIn.image = element.src;
+                    popIn.video = null;
                     let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                     target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
@@ -1011,28 +1013,23 @@ exports.Domain = function (globalVariables) {
                     };
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
-                    var newElement = displayImageWithTitle(oldElement.content.messageText, element.src,
-                        element.srcDimension,
-                        oldElement.cadre.width, oldElement.cadre.height,
-                        oldElement.cadre.strokeColor, oldElement.cadre.fillColor, null, null, target.parent.parentManip
-                    );
-                    oldElement.cadre.position(newElement.cadre.x, newElement.cadre.y);
-                    oldElement.content.position(newElement.content.x, newElement.content.y);
-                    newElement.image._acceptDrop = true;
-                    newElement.image.name = element.name;
+                    // var newElement = displayCameraWithTitle(oldElement.content.messageText, element.name,
+                    //     oldElement.cadre.width, oldElement.cadre.height,
+                    //     oldElement.cadre.strokeColor, oldElement.cadre.fillColor, null, null, target.parent.parentManip
+                    // );
+                    // oldElement.cadre.position(newElement.cadre.x, newElement.cadre.y);
+                    // oldElement.content.position(newElement.content.x, newElement.content.y);
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             let questionCreator = target.parent.parentManip.parentObject;
-                            questionCreator.linkedQuestion.image = newElement.image;
-                            questionCreator.linkedQuestion.imageSrc = newElement.image.src;
-                            questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
+                            questionCreator.linkedQuestion.video = element;
+                            // questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
-                            answer.image = newElement.image;
-                            answer.imageSrc = newElement.image.src;
+                            answer.video = element.video;
                             answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;

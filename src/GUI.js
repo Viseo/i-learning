@@ -514,7 +514,7 @@ exports.GUI = function (globalVariables) {
                 this.videosManipulators.forEach((videoManipulator,i) => {
                     let mouseDownAction = event => {
                         let draggableVideo = (() => {
-                            let video = drawVideoIcon(0, -10, 20);
+                            let video = drawVideoIcon(0, -10, 20, this);
                             // video.mark('videoDragged');
                             drawings.piste.add(video);
                             let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
@@ -672,7 +672,7 @@ exports.GUI = function (globalVariables) {
 
                 const displayVideo = function (video, manipulator) {
                     this.video = video;
-                    manipulator.set(0, drawVideoIcon(0, -10, 20));
+                    manipulator.set(0, drawVideoIcon(0, -10, 20,this));
                     const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
                 };
@@ -1619,6 +1619,11 @@ exports.GUI = function (globalVariables) {
             this.content = obj.content;
             this.image = obj.image;
         }
+        else if (this.video) {//&& this.label !== ""
+            let obj = displayCameraWithTitle(this.label, this.video.name, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+            this.bordure = obj.cadre;
+            this.content = obj.content;
+        }
         // Question avec Texte uniquement
         else if (typeof this.label !== "undefined" && !this.imageSrc) {
             var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
@@ -1925,6 +1930,8 @@ exports.GUI = function (globalVariables) {
                 picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
+            }else if(this.linkedQuestion.video){
+                questionBlock.title = displayCameraWithTitle(this.label, this.linkedQuestion.video.name, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, this.image);
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
@@ -1948,7 +1955,7 @@ exports.GUI = function (globalVariables) {
         var dblclickEditionQuestionBlock = () => {
             var globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2);
             var contentareaStyle = {
-                height: (this.linkedQuestion.image) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
+                height: (this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
                 toppx: globalPointCenter.y,
                 leftpx: (globalPointCenter.x + 1 / 12 * this.w),
                 width: (this.w * 5 / 6)
@@ -2074,13 +2081,16 @@ exports.GUI = function (globalVariables) {
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
                 let picture = new Picture(this.image, this.editable, this);
+                this.manipulator.unset(5);
                 picture.draw(imageX, 0, imageSize, imageSize);
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             }else if(this.video){
-                let icon = drawVideoIcon(0,0,50);
+                let icon = drawVideoIcon(0,0,50, this);
                 let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
-                    videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
+                videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
+                videoTitle.text._acceptDrop=true;
+                icon._acceptDrop();
                 icon.move(imageX,-(25+videoTitle.finalHeight)/2);
                 this.manipulator.set(5, icon);
                 this.answer.filled = true;
