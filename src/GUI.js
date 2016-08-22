@@ -2079,8 +2079,9 @@ exports.GUI = function (globalVariables) {
                 this.answer.filled = true;
             }else if(this.video){
                 let icon = drawVideoIcon(0,0,50);
-                let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3).text.position(imageX,0);
-                icon.move(imageX,0);
+                let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
+                    videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
+                icon.move(imageX,-(25+videoTitle.finalHeight)/2);
                 this.manipulator.set(5, icon);
                 this.answer.filled = true;
             }else if (this.editable) {
