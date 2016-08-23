@@ -43,7 +43,7 @@ exports.Domain = function (globalVariables) {
                 correct: false
             };
             answerParameters && (answer = answerParameters);
-            this.manipulator = new Manipulator(this).addOrdonator(9);
+            this.manipulator = new Manipulator(this).addOrdonator(10);
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
@@ -154,7 +154,7 @@ exports.Domain = function (globalVariables) {
 
     class Question {
         constructor(question, quizz) {
-            this.manipulator = new Manipulator(this).addOrdonator(6);
+            this.manipulator = new Manipulator(this).addOrdonator(7);
             this.answersManipulator = new Manipulator(this);
             this.manipulator.add(this.answersManipulator);
             this.resetManipulator = new Manipulator(this).addOrdonator(2);
@@ -318,7 +318,7 @@ exports.Domain = function (globalVariables) {
 
             this.manipulator = new Manipulator(this).addOrdonator(2);
             this.manipulatorQuizzInfo = new Manipulator(this);
-            this.questionManipulator = new Manipulator(this).addOrdonator(6);
+            this.questionManipulator = new Manipulator(this).addOrdonator(7);
             this.toggleButtonManipulator = new Manipulator(this);
             this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.add(this.previewButtonManipulator);
@@ -367,7 +367,7 @@ exports.Domain = function (globalVariables) {
     class PopIn {
         constructor(answer, editable) {
             this.answer = answer;
-            this.manipulator = new Manipulator(this).addOrdonator(6);
+            this.manipulator = new Manipulator(this).addOrdonator(7);
             this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.set(2, this.closeButtonManipulator);
             this.panelManipulator = new Manipulator(this).addOrdonator(2);
@@ -384,7 +384,10 @@ exports.Domain = function (globalVariables) {
             if (answer.explanation && answer.explanation.image) {
                 this.image = answer.explanation.image;
             }
-            answer.filled = this.image || this.label;
+            if (answer.explanation && answer.explanation.video) {
+                this.video = answer.explanation.video;
+            }
+            answer.filled = this.image || this.video || this.label;
         }
     }
 

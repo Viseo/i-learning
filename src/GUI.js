@@ -2081,6 +2081,7 @@ exports.GUI = function (globalVariables) {
                 parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 this.displayed = false;
+                this.miniature && drawings.screen.remove(this.miniature.video);
             };
             svg.addEvent(cross, "click", crossHandler);
             svg.addEvent(circle, "click", crossHandler);
@@ -2120,13 +2121,18 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             }else if(this.video){
-                let icon = drawVideoIcon(0,0,50, this);
-                let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
-                videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
-                videoTitle.text._acceptDrop=true;
-                icon._acceptDrop();
-                icon.move(imageX,-(25+videoTitle.finalHeight)/2);
-                this.manipulator.set(5, icon);
+                this.manipulator.unset(3);
+                this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, true, 5);
+                // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
+                // videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
+                // videoTitle.text._acceptDrop=true;
+                this.miniature.video._acceptDrop = true;
+                let globalPoints = this.miniature.cadre.globalPoint(imageX -50, -50);
+                this.miniature.video.position(globalPoints.x, globalPoints.y);
+                this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(imageX, 25);
+                // icon.cadre._acceptDrop = true;
+                // icon.move(imageX,-(25+videoTitle.finalHeight)/2);
+                // this.manipulator.set(5, icon.video);
                 this.answer.filled = true;
             }else if (this.editable) {
                 autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text

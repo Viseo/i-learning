@@ -64,9 +64,17 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        // addOneLayerToOrdonator(){
-        //     this.ordonator.children.
-        // }
+        addOneLayerToOrdonator(){
+            this.scalor.remove(this.ordonator);
+            this.ordonator.children.push(this.ordonator._dummy());
+            runtime.add(this.ordonator.component, this.ordonator.children[this.ordonator.children.length-1].component);
+            this.scalor.add(this.ordonator);
+            return this;
+        }
+
+        lastLayerOrdonator(){
+            return this.ordonator.children.length-1;
+        }
 
 
         flush() {
@@ -420,20 +428,28 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        drawVideo = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, layer = 3, textWidth = w) {
+        drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, layer = 3, textWidth = w)=> {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
             }
-           ;
+            let text, points, cadre;
             if(!label) label = "";
-            let text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
-            let textHeight = (label !== "") ? h * 0.25 : 0;
-            text.position(0, (h - textHeight) / 2);//w*1/6
-            manipulator.set(1, text);
-            let cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.set(0, cadre);
-            let points = cadre.globalPoint(-50, -50);
+            if (label !== "NOT_TO_BE_DISPLAYED"){
+                text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
+                let textHeight = (label !== "") ? h * 0.25 : 0;
+                text.position(0, (h - textHeight) / 2);//w*1/6
+                manipulator.set(1, text);
+                cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+                manipulator.set(0, cadre);
+                points = cadre.globalPoint(-50, -50);
+            }
+            else {
+                cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+                manipulator.set(0, cadre);
+                points = cadre.globalPoint(-50, -50);
+                // points = {x:0, y:0};
+            }
             let video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
             let videoGlass = new svg.Rect(130,80).color(myColors.pink).position(0,-25).opacity(0.001);
             manipulator.set(layer, videoGlass);
@@ -499,14 +515,13 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(video, "mouseout", this.mouseleaveHandler);
             }
 
-
-
             // var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//
             // video._acceptDrop();
-            // let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 15, null, manipulator,3);
-            // videoTitle.text.position(25+(videoTitle.finalWidth)/4,0);
+            // manipulator.addOneLayerToOrdonator();
+            let videoTitle = autoAdjustText(videoObject.name, textWidth, h-50, 10, null, manipulator, manipulator.lastLayerOrdonator());
+            videoTitle.text.position(0,25).color(myColors.black);
             // video.move(-50-(videoTitle.finalWidth)/4, 0);
-            // videoTitle.text._acceptDrop=true;
+            videoTitle.text._acceptDrop=true;
             // manipulator.set(2, video);
 
             return {cadre: cadre, video: video, content: text};
