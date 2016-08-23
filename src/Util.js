@@ -161,7 +161,7 @@ exports.Util = function (globalVariables) {
                 svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
-                // console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
+                console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
@@ -306,6 +306,14 @@ exports.Util = function (globalVariables) {
             trianglesManipulator.set(0, whiteTriangle);
             trianglesManipulator.set(1, invisibleTriangle);
             manipulator.set(2, trianglesManipulator);
+
+            manipulator.mark = (id) => {
+                bigSquare.mark(id);
+                smallSquare.mark(id);
+                whiteTriangle.mark(id);
+                invisibleTriangle.mark(id);
+                blackTriangle.mark(id);
+            };
 
             manipulator.setHandler = (event, handler) => {
                 svg.addEvent(bigSquare, event, handler);

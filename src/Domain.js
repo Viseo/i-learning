@@ -329,12 +329,7 @@ exports.Domain = function (globalVariables) {
             this.questionType = myQuestionType.tab;
             this.toggleButtonHeight = 40;
 
-            if (!question) {
-                // init default : 2 empty answers
-                this.linkedQuestion = new Question(defaultQuestion, this.parent.quizz);
-            } else {
-                this.loadQuestion(question);
-            }
+            this.loadQuestion(question);
             this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
             this.manipulator.add(this.puzzle.manipulator);
             this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
@@ -354,11 +349,7 @@ exports.Domain = function (globalVariables) {
         loadQuestion(quest) {
             this.linkedQuestion = quest;
             quest.label && (this.label = quest.label);
-            if (typeof quest.multipleChoice !== 'undefined') {
-                this.multipleChoice = quest.multipleChoice;
-            } else {
-                this.multipleChoice = false;
-            }
+            this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
                 if (answer instanceof Answer) {
                     answer.isEditable(this, true);
@@ -384,7 +375,7 @@ exports.Domain = function (globalVariables) {
             this.textManipulator = new Manipulator(this).addOrdonator(1);
             this.editable = editable;
             if (this.editable) {
-                this.draganddropText = "Glisser-déposer une image de la bibliothèque vers le champ";
+                this.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
                 this.defaultLabel = "Cliquer ici pour ajouter du texte";
             }
             if (answer.explanation && answer.explanation.label) {
@@ -430,11 +421,7 @@ exports.Domain = function (globalVariables) {
         }
 
         removeGame(index) {
-            if (typeof index === 'undefined') {
-                this.gamesTab.pop();
-            } else {
-                this.gamesTab.splice(index, 1);
-            }
+            this.gamesTab.splice(index, 1);
         }
 
     }
@@ -571,7 +558,7 @@ exports.Domain = function (globalVariables) {
         }
 
         addNewGame(level, column) {
-            let gameBuilder = this.library.draggedObject || this.library.gameSelected || null;
+            let gameBuilder = this.library.draggedObject || this.library.gameSelected;
             gameBuilder.create(this, level, column);
         }
 
@@ -653,23 +640,23 @@ exports.Domain = function (globalVariables) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    const levelsTab = [];
-                    const gamesCounter = {quizz: 0, bd: 0};
-                    this.levelsTab.forEach((level, i) => {
-                        const gamesTab = [];
-                        levelsTab.push({gamesTab: gamesTab});
-                        level.gamesTab.forEach(game => {
-                            if (game.tabQuestions) {
-                                game.id || (game.id = "quizz" + gamesCounter.quizz);
-                                gamesCounter.quizz++;
-                            } else {
-                                game.id || (game.id = "bd" + gamesCounter.bd);
-                                gamesCounter.bd++;
-                            }
-                            levelsTab[i].gamesTab.push(game);
-                        });
-                    });
-                    return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: levelsTab};
+                    // const levelsTab = [];
+                    // const gamesCounter = {quizz: 0, bd: 0};
+                    // this.levelsTab.forEach((level, i) => {
+                    //     const gamesTab = [];
+                    //     levelsTab.push({gamesTab: gamesTab});
+                    //     level.gamesTab.forEach(game => {
+                    //         if (game.tabQuestions) {
+                    //             game.id || (game.id = "quizz" + gamesCounter.quizz);
+                    //             gamesCounter.quizz++;
+                    //         } else {
+                    //             game.id || (game.id = "bd" + gamesCounter.bd);
+                    //             gamesCounter.bd++;
+                    //         }
+                    //         levelsTab[i].gamesTab.push(game);
+                    //     });
+                    // });
+                    return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: this.levelsTab};
                 };
 
                 let addNewFormation = () => {
@@ -754,7 +741,7 @@ exports.Domain = function (globalVariables) {
         loadFormation(formation) {
             this.levelsTab = [];
             this.gamesCounter = formation.gamesCounter;
-            formation.link ? this.link = formation.link : this.link = [];
+            this.link = formation.link;
             formation.levelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
@@ -849,10 +836,8 @@ exports.Domain = function (globalVariables) {
                 this.library.gameSelected = null;
                 svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
             };
-            if (this.library.gameSelected) {
-                svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-                svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
-            }
+            svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
+            svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
         }
 
         adjustGamesPositions(level) {
@@ -1239,12 +1224,8 @@ exports.Domain = function (globalVariables) {
             this.chevronManipulator.add(this.rightChevronManipulator);
 
             this.loadQuestions(quizz);
-            if (this.levelIndex === undefined) {
-                this.levelIndex = quizz.levelIndex || 0;
-            }
-            if (this.gameIndex === undefined) {
-                this.gameIndex = quizz.gameIndex || 0;
-            }
+            this.levelIndex = quizz.levelIndex || 0;
+            this.gameIndex = quizz.gameIndex || 0;
             (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
             quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
             quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);

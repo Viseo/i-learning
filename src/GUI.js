@@ -521,7 +521,7 @@ exports.GUI = function (globalVariables) {
                     let mouseDownAction = event => {
                         let draggableVideo = (() => {
                             let video = drawVideoIcon(0, -10, 20, this);
-                            // video.mark('videoDragged');
+                            video.mark('videoDragged');
                             drawings.piste.add(video);
                             let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
                             video.move(point.x, point.y);
@@ -529,7 +529,6 @@ exports.GUI = function (globalVariables) {
                             return video;
                         })();
                         let mouseupHandler = event => {
-                            // let svgObj = draggableVideo.ordonator.children.shift();
                             drawings.piste.remove(draggableVideo);
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
                             this.dropVideo(this.videosTab[i], target);
@@ -537,10 +536,9 @@ exports.GUI = function (globalVariables) {
 
                         svg.event(drawings.glass, "mousedown", event);
                         draggableVideo.setHandler('mouseup', mouseupHandler);
-                        // svg.addEvent(draggableVideo.ordonator.children[0], 'mouseup', mouseupHandler);
                     };
                     videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
-                    svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
+                    // svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
 
                 });
             };
@@ -684,7 +682,9 @@ exports.GUI = function (globalVariables) {
 
                 const displayVideo = function (video, manipulator) {
                     this.video = video;
-                    manipulator.set(0, drawVideoIcon(0, -10, 20, this));
+                    let iconVideo = drawVideoIcon(0, -10, 20, this);
+                    iconVideo.mark(video.name.split('.')[0]);
+                    manipulator.set(0, iconVideo);
                     const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
                     manipulator.video = video;

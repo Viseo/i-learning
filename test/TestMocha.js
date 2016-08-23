@@ -243,13 +243,15 @@ describe('formationsManager', function () {
             let glass = retrieve(root, '[theGlass]');
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
             glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
+            glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
+            glass.listeners['mouseup']({pageX:949, pageY:360, preventDefault:()=>{}});
             let arrow01 = retrieve(root, '[quizz0quizz1]');
             let arrow02 = retrieve(root, '[quizz0quizz2]');
             let arrow03 = retrieve(root, '[quizz0quizz3]');
             let arrow20 = retrieve(root, '[quizz2quizz0]');
             assert(arrow02);
             assert(!arrow01);
-            assert(!arrow03);
+            assert(arrow03);
             assert(!arrow20);
 
             arrow02.listeners['click']();
@@ -296,7 +298,7 @@ describe('formationsManager', function () {
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            panelBack.listeners['mouseup']({pageX:1885, pageY:300, preventDefault:()=>{}});
             let game5 = retrieve(root, "[level1quizz5]");
             assert.equal(game5.text, "Quiz 6");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
@@ -368,15 +370,15 @@ describe('formationsManager', function () {
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
-            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            panelBack.listeners['mouseup']({pageX:1885, pageY:791, preventDefault:()=>{}});
             let game15 = retrieve(root, "[level3quizz15]");
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
-            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            let game16 = retrieve(root, "[level4quizz16]");
+            // gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            // draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            // draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            // draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            // panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            // let game16 = retrieve(root, "[level4quizz16]");
 
             let bdQuiz = retrieve(root, "[gameBd]");
             bdQuiz.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
@@ -386,6 +388,9 @@ describe('formationsManager', function () {
 
             bd1.listeners['mousedown']({pageX:500, pageY:791, preventDefault:()=>{}});
             bd1.listeners['mouseup']({pageX:500, pageY:500, preventDefault:()=>{}});
+
+            bd1.listeners['mousedown']({pageX:500, pageY:500, preventDefault:()=>{}});
+            bd1.listeners['mouseup']({pageX:500, pageY:791, preventDefault:()=>{}});
 
             bd1.listeners['dblclick']();
             let returnButtonFromBdToFormation = retrieve(root, '[returnButtonFromBdToFormation]');
@@ -579,10 +584,25 @@ describe('formationsManager', function () {
             let explanationImage = retrieve(root, '[imageExplanation]');
             assert(explanationImage);
 
+            let libraryVideos = retrieve(root, '[libraryVidéos]');
+            libraryVideos.listeners['click']();
+            let video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            let videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:540, pageY:677, preventDefault:()=>{}});
+
+            let libraryImages = retrieve(root, '[libraryImages]');
+            libraryImages.listeners['click']();
+
             let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
             circleCloseExplanation.listeners['click']();
             textExplanation = retrieve(root, '[textExplanation]');
             assert(!textExplanation);
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:830, pageY:87, preventDefault:()=>{}});
 
             image = retrieve(root, '[imageAlba]');
             image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
@@ -665,9 +685,26 @@ describe('formationsManager', function () {
             answerImage = retrieve(root, '[answerImage1]');
             assert(answerImage);
 
-            let libraryVideos = retrieve(root, '[libraryVidéos]');
+            libraryVideos = retrieve(root, '[libraryVidéos]');
             libraryVideos.listeners['click']();
-            let libraryImages = retrieve(root, '[libraryImages]');
+            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:574, pageY:470, preventDefault:()=>{}});
+
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:1074, pageY:94, preventDefault:()=>{}});
+
+            libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
 
             let checkbox = retrieve(root, '[checkbox0]');
@@ -740,7 +777,7 @@ describe('connection check textarea', function(){
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            runtime.listeners['resize']({w:1500, h:1500});
+            runtime.listeners['resize']({w: 1500, h: 1500});
 
             let mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
@@ -781,8 +818,47 @@ describe('connection check textarea', function(){
             connectionContentArea.value = 'aaaaaa';
             connectionContentArea.listeners['blur']();
 
-            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
+            runtime.listeners['keydown']({
+                keyCode: 9, preventDefault: ()=> {
+                }
+            });
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: ()=> {
+                }
+            });
+
+            done();
+        });
+    });
+
+    it("should connect an admin", function (done) {
+        testutils.retrieveDB("./log/dbAdminConnection.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let mailAddressField = retrieve(root, '[mailAddressField]');
+            mailAddressField.listeners['click']();
+            let connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'a@d.m';
+            connectionContentArea.listeners['blur']();
+            let passwordField = retrieve(root, '[passwordField]');
+            passwordField.listeners['click']();
+            connectionContentArea = retrieve(root, '[connectionContentArea]');
+            connectionContentArea.value = 'aaaaaa';
+            connectionContentArea.listeners['blur']();
+            let connexionButton = retrieve(root, '[connexionButton]');
+            connexionButton.listeners['click']();
+            runtime.advance();
+
+            runtime.listeners['keydown']({
+                keyCode: 9, preventDefault: ()=> {
+                }
+            });
+            runtime.listeners['keydown']({
+                keyCode: 13, preventDefault: ()=> {
+                }
+            });
 
             done();
         });
