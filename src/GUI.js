@@ -642,6 +642,8 @@ exports.GUI = function (globalVariables) {
                         };
                     })();
 
+                    this.display(x, y, w, h);
+
                     if (file !== undefined) {
                         Server.upload(file, progressDisplay).then((status) => {
                             if (status === 'ok') {
