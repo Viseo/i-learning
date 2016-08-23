@@ -336,12 +336,12 @@ exports.Util = function (globalVariables) {
                 blackTriangle._acceptDrop=true;
             };
 
-            manipulator.manageDnD = () => {
-                manageDnD(bigSquare, manipulator);
-                manageDnD(smallSquare, manipulator);
-                manageDnD(whiteTriangle, manipulator);
-                manageDnD(invisibleTriangle, manipulator);
-                manageDnD(blackTriangle, manipulator);
+            manipulator.manageDnD = (draggableManipulator) => {
+                manageDnD(bigSquare, draggableManipulator);
+                manageDnD(smallSquare, draggableManipulator);
+                manageDnD(whiteTriangle, draggableManipulator);
+                manageDnD(invisibleTriangle, draggableManipulator);
+                manageDnD(blackTriangle, draggableManipulator);
             };
 
             return manipulator;

@@ -520,13 +520,19 @@ exports.GUI = function (globalVariables) {
                 this.videosManipulators.forEach((videoManipulator,i) => {
                     let mouseDownAction = event => {
                         let draggableVideo = (() => {
+                            let draggableManipulator = new Manipulator(this).addOrdonator(2);
                             let video = drawVideoIcon(0, -10, 20, this);
                             video.mark('videoDragged');
-                            drawings.piste.add(video);
+                            draggableManipulator.set(0, video);
+                            drawings.piste.add(draggableManipulator);
+                            let videoTitle = autoAdjustText(videoManipulator.ordonator.children[1].fullTitle, 500, 50, 16, null, draggableManipulator, 1);
+                            videoTitle.text.position(videoTitle.finalWidth/2 + 15, -videoTitle.finalHeight/4);
+                            videoTitle.text._acceptDrop=true;
                             let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
-                            video.move(point.x, point.y);
-                            video.manageDnD();
-                            return video;
+                            draggableManipulator.move(point.x, point.y);
+                            video.manageDnD(draggableManipulator);
+                            manageDnD(videoTitle.text, draggableManipulator);
+                            return draggableManipulator;
                         })();
                         let mouseupHandler = event => {
                             drawings.piste.remove(draggableVideo);
@@ -535,10 +541,12 @@ exports.GUI = function (globalVariables) {
                         };
 
                         svg.event(drawings.glass, "mousedown", event);
-                        draggableVideo.setHandler('mouseup', mouseupHandler);
+                        draggableVideo.ordonator.children[0].parentManip.setHandler('mouseup', mouseupHandler);
+                        svg.addEvent(draggableVideo.ordonator.children[1], 'mouseup', mouseupHandler);
+
                     };
                     videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
-                    // svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
+                    svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
 
                 });
             };
@@ -688,6 +696,7 @@ exports.GUI = function (globalVariables) {
                     iconVideo.mark(video.name.split('.')[0]);
                     manipulator.set(0, iconVideo);
                     const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
+                    title.text.fullTitle = video.name;
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
                     manipulator.video = video;
                 };
