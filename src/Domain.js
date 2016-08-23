@@ -1020,6 +1020,9 @@ exports.Domain = function (globalVariables) {
                             answer.video = element;
                             answer.image = null;
                             answer.imageSrc = null;
+                            answer.parentQuestion.tabAnswer.forEach(otherAnswer => {
+                                otherAnswer.obj && otherAnswer.obj.video && drawings.screen.remove(otherAnswer.obj.video);
+                            });
                             answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;
