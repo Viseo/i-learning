@@ -525,18 +525,19 @@ exports.GUI = function (globalVariables) {
                             drawings.piste.add(video);
                             let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
                             video.move(point.x, point.y);
-                            manageDnD(video.ordonator.children[0], video);
+                            video.manageDnD();
                             return video;
                         })();
                         let mouseupHandler = event => {
-                            let svgObj = draggableVideo.ordonator.children.shift();
+                            // let svgObj = draggableVideo.ordonator.children.shift();
                             drawings.piste.remove(draggableVideo);
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
                             this.dropVideo(this.videosTab[i], target);
                         };
 
                         svg.event(drawings.glass, "mousedown", event);
-                        svg.addEvent(draggableVideo.ordonator.children[0], 'mouseup', mouseupHandler);
+                        draggableVideo.setHandler('mouseup', mouseupHandler);
+                        // svg.addEvent(draggableVideo.ordonator.children[0], 'mouseup', mouseupHandler);
                     };
                     videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
                     svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
@@ -2049,6 +2050,9 @@ exports.GUI = function (globalVariables) {
         parent.manipulator.add(this.manipulator);
         this.manipulator.set(0, rect);
         this.manipulator.move(0, y);
+        this.answer.parentQuestion.tabAnswer.forEach(answer => {
+            answer.obj && answer.obj.video && drawings.screen.remove(answer.obj.video);
+        });
 
         let crossSize = 12;
         let drawGreyCross = () => {

@@ -323,6 +323,14 @@ exports.Util = function (globalVariables) {
                 blackTriangle._acceptDrop=true;
             };
 
+            manipulator.manageDnD = () => {
+                manageDnD(bigSquare, manipulator);
+                manageDnD(smallSquare, manipulator);
+                manageDnD(whiteTriangle, manipulator);
+                manageDnD(invisibleTriangle, manipulator);
+                manageDnD(blackTriangle, manipulator);
+            };
+
             return manipulator;
         };
 
@@ -425,13 +433,19 @@ exports.Util = function (globalVariables) {
                         redCrossManipulator.flush();
                         manipulator.unset(layer);
                         let parent = manipulator.parentObject;
-                        parent.obj && parent.obj.video && drawings.screen.remove(video);
+                        parent.obj && parent.obj.video && drawings.screen.remove(parent.obj.video);
                         if (parent.linkedQuestion && parent.linkedQuestion.video) {
-                            drawings.screen.remove(video);
-                            drawings.screen.remove(parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].miniatureVideo);
-                        }
-                        if (parent.linkedQuestion) {
+                            drawings.screen.empty();
+                            // drawings.screen.remove(video);
                             parent.linkedQuestion.video = null;
+                            parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].video = null;
+                            // drawings.screen.remove(parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].miniatureVideo);
+                            parent.display();
+                            parent.linkedQuestion.checkValidity();
+                            // parent.parent.questionPuzzle.elementsArray.forEach(element => {
+                            //     element.miniatureVideo && drawings.screen.remove(element.miniatureVideo);
+                            // });
+                            parent.parent.questionPuzzle.display();
                         }
                         else {
                             parent.video = null;
@@ -447,10 +461,6 @@ exports.Util = function (globalVariables) {
                             let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                             parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                             parent.answer.parentQuestion.checkValidity();
-                        }
-                        else {
-                            parent.display();
-                            parent.linkedQuestion.checkValidity();
                         }
                     };
                     this.mouseleaveHandler = ()=> {
