@@ -161,7 +161,7 @@ exports.Util = function (globalVariables) {
                 svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
-                console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
+                // console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
                 // Rajouter des lignes pour target.bordure et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
@@ -387,7 +387,7 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        drawVideo = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, textWidth = w) {
+        drawVideo = function (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, layer = 3, textWidth = w) {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
@@ -402,56 +402,68 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, cadre);
             let points = cadre.globalPoint(-50, -50);
             let video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
+            let videoGlass = new svg.Rect(130,80).color(myColors.pink).position(0,-25).opacity(0.001);
+            manipulator.set(layer, videoGlass);
             drawings.screen.add(video);
 
-            const drawVideoRedCross = (function (parent, manipulator) {
-                const redCrossClickHandler = ()=> {
-                    redCrossManipulator.flush();
-                    let parent = manipulator.parentObj;
-                    parent.obj.video && drawings.screen.remove(video);//image
-                    if (parent instanceof QuestionCreator) {
-                        parent.linkedQuestion.video = null;
-                    }
-                    else {
-                        parent.video = null;
-                    }
-                    if (this.parent instanceof Answer) {
-                        let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-                        let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                        let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                        this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
-                        this.parent.parentQuestion.checkValidity();
-                    }
-                    else if (this.parent.answer) {
-                        let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                        this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                        this.parent.answer.parentQuestion.checkValidity();
-                    }
-                    else {
-                        this.parent.display();
-                        this.parent.linkedQuestion.checkValidity();
-                    }
-                };
-                this.mouseleaveHandler = ()=> {
-                    redCrossManipulator.flush();
-                };
-                this.mouseoverHandler = ()=> {
-                    if (typeof redCrossManipulator === 'undefined') {
-                        let redCrossManipulator = new Manipulator(this);
-                        redCrossManipulator.addOrdonator(2);
-                        manipulator.add(redCrossManipulator);
-                    }
-                    let redCrossSize = 15;
-                    let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
-                        : drawRedCross(0, 0, redCrossSize, redCrossManipulator);
-                    redCross.mark('imageRedCross');
-                    svg.addEvent(redCross, 'click', redCrossClickHandler);
-                    redCrossManipulator.set(1, redCross);
-                };
-            })();
+            if (editable){
+                const drawVideoRedCross = (function (manipulator) {
+                    let redCrossManipulator;
+                    const redCrossClickHandler = ()=> {
+                        redCrossManipulator.flush();
+                        manipulator.unset(layer);
+                        let parent = manipulator.parentObject;
+                        parent.obj && parent.obj.video && drawings.screen.remove(video);
+                        if (parent.linkedQuestion && parent.linkedQuestion.video) {
+                            drawings.screen.remove(video);
+                            drawings.screen.remove(parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].miniatureVideo);
+                        }
+                        if (parent.linkedQuestion) {
+                            parent.linkedQuestion.video = null;
+                        }
+                        else {
+                            parent.video = null;
+                        }
+                        if (parent.parentQuestion) {
+                            let puzzle = parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                            let x = -(puzzle.visibleArea.width - parent.width) / 2 + parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+                            let y = -(puzzle.visibleArea.height - parent.height) / 2 + parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                            parent.display(x, y, parent.width, parent.height);
+                            parent.parentQuestion.checkValidity();
+                        }
+                        else if (parent.answer) {
+                            let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                            parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                            parent.answer.parentQuestion.checkValidity();
+                        }
+                        else {
+                            parent.display();
+                            parent.linkedQuestion.checkValidity();
+                        }
+                    };
+                    this.mouseleaveHandler = ()=> {
+                        redCrossManipulator.flush();
+                    };
+                    this.mouseoverHandler = ()=> {
+                        if (typeof redCrossManipulator === 'undefined') {
+                            redCrossManipulator = new Manipulator(this);
+                            redCrossManipulator.addOrdonator(2);
+                            manipulator.add(redCrossManipulator);
+                        }
+                        let redCrossSize = 15;
+                        let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
+                            : drawRedCross(60, -60, redCrossSize, redCrossManipulator);
+                        redCross.mark('imageRedCross');
+                        svg.addEvent(redCross, 'click', redCrossClickHandler);
+                        redCrossManipulator.set(1, redCross);
+                    };
+                })(manipulator);
+                svg.addEvent(videoGlass, "mouseover", this.mouseoverHandler);
+                svg.addEvent(videoGlass, "mouseout", this.mouseleaveHandler);
+                svg.addEvent(video, "mouseover", this.mouseoverHandler);
+                svg.addEvent(video, "mouseout", this.mouseleaveHandler);
+            }
 
-            svg.addEvent(cadre, "mouseover", this.mouseoverHandler);
-            svg.addEvent(cadre, "mouseout", this.mouseleaveHandler);
 
 
             // var video = drawVideoIcon(0, 0, 50, manipulator.parentObj);//

@@ -43,7 +43,7 @@ exports.Domain = function (globalVariables) {
                 correct: false
             };
             answerParameters && (answer = answerParameters);
-            this.manipulator = new Manipulator(this).addOrdonator(8);
+            this.manipulator = new Manipulator(this).addOrdonator(9);
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
