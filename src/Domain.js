@@ -1202,7 +1202,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator = new Manipulator(this);
         }
         isChildOf(parentGame){
-            parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
+            return parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
         };
 
     }

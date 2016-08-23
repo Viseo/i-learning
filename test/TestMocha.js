@@ -235,6 +235,25 @@ describe('formationsManager', function () {
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"]();
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"]();
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"]();
+            let bdGame = retrieve(root, "[gameBd]");
+            bdGame.listeners['mousedown']({pageX:165, pageY:460, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:460, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"]();
+
             let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
             arrowModeButtonCadre.listeners['click']();
             let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
@@ -245,6 +264,10 @@ describe('formationsManager', function () {
             glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
             glass.listeners['mouseup']({pageX:949, pageY:360, preventDefault:()=>{}});
+            glass.listeners['mousedown']({pageX:1108, pageY:360, preventDefault:()=>{}});
+            glass.listeners['mouseup']({pageX:1108, pageY:211, preventDefault:()=>{}});
+            glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
+            glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
             let arrow01 = retrieve(root, '[quizz0quizz1]');
             let arrow02 = retrieve(root, '[quizz0quizz2]');
             let arrow03 = retrieve(root, '[quizz0quizz3]');
@@ -380,8 +403,8 @@ describe('formationsManager', function () {
             // panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
             // let game16 = retrieve(root, "[level4quizz16]");
 
-            let bdQuiz = retrieve(root, "[gameBd]");
-            bdQuiz.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
+            bdGame = retrieve(root, "[gameBd]");
+            bdGame.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:500, pageY:791, preventDefault:()=>{}}); //{pageX:165, pageY:300, preventDefault:()=>{}}
             let bd1 = retrieve(root, "[level4bd0]");
