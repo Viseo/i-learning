@@ -506,7 +506,7 @@ exports.GUI = function (globalVariables) {
                             drawings.piste.remove(draggableImage.manipulator);
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
                             this.dropImage(svgObj, target);
-                               
+
                         };
 
                         svg.event(drawings.glass, "mousedown", event);
@@ -622,11 +622,13 @@ exports.GUI = function (globalVariables) {
 
                     const file = fileExplorer.component.files[0];
                     const progressDisplay = (() => {
-                        const
-                            width = 0.8*w,
-                            manipulator = new Manipulator().addOrdonator(2),
-                            rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
-                        manipulator.set(0, rect);
+                        const width = 0.8*w;
+                        const manipulator = new Manipulator().addOrdonator(3);
+                        const icon = drawUploadIcon({x:-0.56 * width, y: 5, size: 20});
+                        manipulator.set(0, icon);
+                        const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
+                        manipulator.set(1, rect);
+
                         this.videosUploadManipulators.push(manipulator);
                         return (e) => {
                             const
@@ -634,9 +636,9 @@ exports.GUI = function (globalVariables) {
                                 bar = new svg.Rect(progwidth, 8)
                                     .color(myColors.green)
                                     .position(-(width - progwidth)/2, 0);
-                            manipulator.set(1, bar);
+                            manipulator.set(2, bar);
                             if (e.loaded === e.total) {
-                                svg.timeout(this.videosUploadManipulators.remove(manipulator), 3000)
+                                this.videosUploadManipulators.remove(manipulator);
                             }
                         };
                     })();
@@ -678,13 +680,14 @@ exports.GUI = function (globalVariables) {
 
                 const displayVideo = function (video, manipulator) {
                     this.video = video;
-                    manipulator.set(0, drawVideoIcon(0, -10, 20,this));
+                    manipulator.set(0, drawVideoIcon(0, -10, 20, this));
                     const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
+                    manipulator.video = video;
                 };
 
                 const sort = function mergeSort(array, isSmaller) {
-                    "use strict";
+                    'use strict';
                     if (array.length < 2) {
                         return array;
                     }
@@ -713,7 +716,7 @@ exports.GUI = function (globalVariables) {
                 };
 
                 const sortAlphabetical = function (array) {
-                    return sort(array, (a, b) => a.name.toUpperCase() < b.name.toUpperCase());
+                    return sort(array, (a, b) => (a.name.toUpperCase() < b.name.toUpperCase()));
                 };
 
                 const loadVideos = () => {

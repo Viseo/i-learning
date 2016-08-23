@@ -326,6 +326,18 @@ exports.Util = function (globalVariables) {
             return manipulator;
         };
 
+        drawUploadIcon = function (spec) {
+            const {size, x, y} = spec;
+            const manipulator = new Manipulator().addOrdonator(2);
+            const arrow = new svg.Arrow(0.2 * size, 0.4 * size, 0.4 * size).position(0, 0, 0, -0.8 * size);
+            const line = new svg.Line(-0.4 * size, 0.2 * size, 0.4 * size, 0.2 * size);
+            line.color(myColors.black, 3, myColors.black);
+            manipulator.set(0, arrow);
+            manipulator.set(1, line);
+            manipulator.move(x, y);
+            return manipulator;
+        };
+
         displayPen = function (x, y, size, object) {
             const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
                 square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
