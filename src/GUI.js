@@ -644,13 +644,16 @@ exports.GUI = function (globalVariables) {
                         };
                     })();
 
-                    Server.upload(file, progressDisplay).then((status) => {
-                        if (status === 'ok') {
-                            this.display(x, y, w, h);
-                        } else {
-                            // TODO message d'erreur
-                        }
-                    });
+                    if (file !== undefined) {
+                        Server.upload(file, progressDisplay).then((status) => {
+                            if (status === 'ok') {
+                                this.display(x, y, w, h);
+                            } else {
+                                // TODO message d'erreur
+                            }
+                        });
+                    }
+
                 };
 
                 const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),

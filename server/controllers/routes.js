@@ -34,7 +34,7 @@ module.exports = function (app, fs) {
                         }
                         resolve()
                     })
-                } else if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+                } else if (['image/png', 'image/jpeg'].includes(file.mimetype)) {
                     db.get().collection('images').insertOne({
                         imgSrc: "../resource/" + file.filename,
                         name: file.originalname
