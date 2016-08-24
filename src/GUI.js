@@ -618,6 +618,7 @@ exports.GUI = function (globalVariables) {
                         svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
                         svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
                         svg.runtime.attr(fileExplorer.component, "hidden", "true");
+                        svg.runtime.attr(fileExplorer.component, "multiple", "true");
                         drawings.screen.add(fileExplorer);
                         fileExplorer.fileClick = function(){
                             svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
@@ -628,32 +629,35 @@ exports.GUI = function (globalVariables) {
 
                 const onChangeFileExplorerHandler = () => {
 
-                    const file = fileExplorer.component.files[0];
-                    const progressDisplay = (() => {
-                        const width = 0.8*w;
-                        const manipulator = new Manipulator().addOrdonator(3);
-                        const icon = drawUploadIcon({x:-0.56 * width, y: 5, size: 20});
-                        manipulator.set(0, icon);
-                        const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
-                        manipulator.set(1, rect);
+                    const files = fileExplorer.component.files;
+                    for (let file of files) {
+                        let progressDisplay;
+                        if (file.mimetype === 'video/mp4') {
+                            progressDisplay = (() => {
+                                const width = 0.8 * w;
+                                const manipulator = new Manipulator().addOrdonator(3);
+                                const icon = drawUploadIcon({x:-0.56 * width, y: 5, size: 20});
+                                manipulator.set(0, icon);
+                                const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
+                                manipulator.set(1, rect);
 
-                        this.videosUploadManipulators.push(manipulator);
-                        return (e) => {
-                            const
-                                progwidth = width*e.loaded/e.total,
-                                bar = new svg.Rect(progwidth, 8)
-                                    .color(myColors.green)
-                                    .position(-(width - progwidth)/2, 0);
-                            manipulator.set(2, bar);
-                            if (e.loaded === e.total) {
-                                this.videosUploadManipulators.remove(manipulator);
-                            }
-                        };
-                    })();
+                                this.videosUploadManipulators.push(manipulator);
+                                return (e) => {
+                                    const
+                                        progwidth = width*e.loaded/e.total,
+                                        bar = new svg.Rect(progwidth, 8)
+                                            .color(myColors.green)
+                                            .position(-(width - progwidth) / 2, 0);
+                                    manipulator.set(2, bar);
+                                    if (e.loaded === e.total) {
+                                        this.videosUploadManipulators.remove(manipulator);
+                                    }
+                                };
+                            })();
+                        }
 
-                    this.display(x, y, w, h);
+                        this.display(x, y, w, h);
 
-                    if (file !== undefined) {
                         Server.upload(file, progressDisplay).then((status) => {
                             if (status === 'ok') {
                                 this.display(x, y, w, h);
