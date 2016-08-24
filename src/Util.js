@@ -460,59 +460,57 @@ exports.Util = function (globalVariables) {
                 video._acceptDrop = true;
                 videoGlass._acceptDrop = true;
                 text && (text._acceptDrop = true);
-                const drawVideoRedCross = (function (manipulator) {
-                    let redCrossManipulator;
-                    const redCrossClickHandler = ()=> {
-                        redCrossManipulator.flush();
-                        manipulator.unset(layer);
-                        let parent = manipulator.parentObject;
-                        parent.obj && parent.obj.video && drawings.screen.remove(parent.obj.video);
-                        if (parent.linkedQuestion && parent.linkedQuestion.video) {
-                            drawings.screen.empty();
-                            // drawings.screen.remove(video);
-                            parent.linkedQuestion.video = null;
-                            parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].video = null;
-                            // drawings.screen.remove(parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].miniatureVideo);
-                            parent.display();
-                            parent.linkedQuestion.checkValidity();
-                            // parent.parent.questionPuzzle.elementsArray.forEach(element => {
-                            //     element.miniatureVideo && drawings.screen.remove(element.miniatureVideo);
-                            // });
-                            parent.parent.questionPuzzle.display();
-                        }
-                        else {
-                            parent.video = null;
-                        }
-                        if (parent.parentQuestion) {
-                            let puzzle = parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-                            let x = -(puzzle.visibleArea.width - parent.width) / 2 + parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                            let y = -(puzzle.visibleArea.height - parent.height) / 2 + parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                            parent.display(x, y, parent.width, parent.height);
-                            parent.parentQuestion.checkValidity();
-                        }
-                        else if (parent.answer) {
-                            let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                            parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                            parent.answer.parentQuestion.checkValidity();
-                        }
-                    };
-                    this.mouseleaveHandler = ()=> {
-                        redCrossManipulator.flush();
-                    };
-                    this.mouseoverHandler = ()=> {
-                        if (typeof redCrossManipulator === 'undefined') {
-                            redCrossManipulator = new Manipulator(this);
-                            redCrossManipulator.addOrdonator(2);
-                            manipulator.add(redCrossManipulator);
-                        }
-                        let redCrossSize = 15;
-                        let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
-                            : drawRedCross(60, -60, redCrossSize, redCrossManipulator);
-                        redCross.mark('imageRedCross');
-                        svg.addEvent(redCross, 'click', redCrossClickHandler);
-                        redCrossManipulator.set(1, redCross);
-                    };
-                })(manipulator);
+                let redCrossManipulator;
+                const redCrossClickHandler = ()=> {
+                    redCrossManipulator.flush();
+                    manipulator.unset(layer);
+                    let parent = manipulator.parentObject;
+                    parent.obj && parent.obj.video && drawings.screen.remove(parent.obj.video);
+                    if (parent.linkedQuestion && parent.linkedQuestion.video) {
+                        drawings.screen.empty();
+                        // drawings.screen.remove(video);
+                        parent.linkedQuestion.video = null;
+                        parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].video = null;
+                        // drawings.screen.remove(parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum-1].miniatureVideo);
+                        parent.display();
+                        parent.linkedQuestion.checkValidity();
+                        // parent.parent.questionPuzzle.elementsArray.forEach(element => {
+                        //     element.miniatureVideo && drawings.screen.remove(element.miniatureVideo);
+                        // });
+                        parent.parent.questionPuzzle.display();
+                    }
+                    else {
+                        parent.video = null;
+                    }
+                    if (parent.parentQuestion) {
+                        let puzzle = parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                        let x = -(puzzle.visibleArea.width - parent.width) / 2 + parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+                        let y = -(puzzle.visibleArea.height - parent.height) / 2 + parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                        parent.display(x, y, parent.width, parent.height);
+                        parent.parentQuestion.checkValidity();
+                    }
+                    else if (parent.answer) {
+                        let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                        parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                        parent.answer.parentQuestion.checkValidity();
+                    }
+                };
+                this.mouseleaveHandler = ()=> {
+                    redCrossManipulator.flush();
+                };
+                this.mouseoverHandler = ()=> {
+                    if (typeof redCrossManipulator === 'undefined') {
+                        redCrossManipulator = new Manipulator(this);
+                        redCrossManipulator.addOrdonator(2);
+                        manipulator.add(redCrossManipulator);
+                    }
+                    let redCrossSize = 15;
+                    let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
+                        : drawRedCross(60, -60, redCrossSize, redCrossManipulator);
+                    redCross.mark('imageRedCross');
+                    svg.addEvent(redCross, 'click', redCrossClickHandler);
+                    redCrossManipulator.set(1, redCross);
+                };
                 svg.addEvent(videoGlass, "mouseover", this.mouseoverHandler);
                 svg.addEvent(videoGlass, "mouseout", this.mouseleaveHandler);
                 svg.addEvent(video, "mouseover", this.mouseoverHandler);
