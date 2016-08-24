@@ -2121,7 +2121,7 @@ exports.GUI = function (globalVariables) {
                 imageX = (-w + imageW) / 2 + MARGIN;
             this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
             if (this.image) {
-                drawings.screen.remove(this.miniature.video);
+                this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(6);
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
