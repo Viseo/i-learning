@@ -61,6 +61,7 @@ exports.GUI = function (globalVariables) {
                 this.redCrossManipulator.flush();
                 let index = this.parentQuestion.tabAnswer.indexOf(this);
                 drawing.mousedOverTarget = null;
+                drawings.screen.remove(this.parentQuestion.tabAnswer[index].obj.video);
                 this.parentQuestion.tabAnswer.splice(index, 1);
                 let questionCreator = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                 if (this.parentQuestion.tabAnswer.length < 3) {
