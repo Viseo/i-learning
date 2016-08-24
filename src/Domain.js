@@ -969,6 +969,7 @@ exports.Domain = function (globalVariables) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             drawings.screen.empty();
                             let questionCreator = target.parent.parentManip.parentObject;
+                            questionCreator.linkedQuestion.video = null;
                             questionCreator.linkedQuestion.image = newElement.image;
                             questionCreator.linkedQuestion.imageSrc = newElement.image.src;
                             questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
@@ -977,6 +978,7 @@ exports.Domain = function (globalVariables) {
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
+                            answer.video = null;
                             answer.obj.video && drawings.screen.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
