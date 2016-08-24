@@ -2065,7 +2065,7 @@ exports.GUI = function (globalVariables) {
         parent.manipulator.add(this.manipulator);
         this.manipulator.set(0, rect);
         this.manipulator.move(0, y);
-        this.answer.editor.puzzle.elementsArray.forEach(answerElement => {
+        this.answer.editor && this.answer.editor.puzzle && this.answer.editor.puzzle.elementsArray.forEach(answerElement => {
             answerElement.obj && answerElement.obj.video && drawings.screen.remove(answerElement.obj.video);
         });
         this.answer.parentQuestion.tabAnswer.forEach(answer => {
@@ -2133,6 +2133,7 @@ exports.GUI = function (globalVariables) {
                 // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
                 // videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
                 // videoTitle.text._acceptDrop=true;
+                this.miniature.cadre.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
                 let globalPoints = this.miniature.cadre.globalPoint(imageX -50, -50);
                 this.miniature.video.position(globalPoints.x, globalPoints.y);
