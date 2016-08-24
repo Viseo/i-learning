@@ -165,6 +165,12 @@ describe('formationsManager', function () {
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
+            runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+            runtime.advance();
+
             let addFormationCadre = retrieve(root, "[addFormationCadre]");
             addFormationCadre.listeners["click"]();
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
@@ -200,10 +206,27 @@ describe('formationsManager', function () {
 
             formationLabelContent.listeners["dblclick"]();
             let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
-            formationLabelContentArea.value = "La première formation";
+            formationLabelContentArea.value = "La première formation ==";
+            formationLabelContentArea.listeners["input"]();
+            formationLabelContentArea.value = "La première formation ==";
             formationLabelContentArea.listeners["blur"]();
             formationLabelContent = retrieve(root, "[formationLabelContent]");
+            assert.equal(formationLabelContent.text, "La première formation ==");
+
+            formationLabelContent.listeners["dblclick"]();
+            formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
+            formationLabelContentArea.value = "La première formation";
+            formationLabelContentArea.listeners["input"]();
+            formationLabelContentArea.value = "La première formation";
+            formationLabelContentArea.listeners["blur"]()
+            formationLabelContent = retrieve(root, "[formationLabelContent]");
             assert.equal(formationLabelContent.text, "La première formation");
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"]();
+            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
@@ -276,6 +299,12 @@ describe('formationsManager', function () {
             assert(!arrow01);
             assert(arrow03);
             assert(!arrow20);
+
+            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
+
+            arrow03.listeners['click']();
+            runtime.listeners['keydown']({keyCode:46, preventDefault:()=>{}});
+
 
             arrow02.listeners['click']();
             assert.equal(arrow02.fill, 'rgb(25,122,230)');
@@ -396,12 +425,25 @@ describe('formationsManager', function () {
             panelBack.listeners['mouseup']({pageX:1885, pageY:791, preventDefault:()=>{}});
             let game15 = retrieve(root, "[level3quizz15]");
 
-            // gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            // draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            // draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            // draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
-            // panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            // let game16 = retrieve(root, "[level4quizz16]");
+            game15.listeners['mousedown']({pageX:500, pageY:674, preventDefault:()=>{}});
+            game15.listeners['mouseup']({pageX:1640, pageY:80, preventDefault:()=>{}});
+
+            game15.listeners['mousedown']({pageX:500, pageY:674, preventDefault:()=>{}});
+            game15.listeners['mouseup']({pageX:1176, pageY:349, preventDefault:()=>{}});
+
+            game15.listeners['mousedown']({pageX:1176, pageY:349, preventDefault:()=>{}});
+            game15.listeners['mouseup']({pageX:500, pageY:674, preventDefault:()=>{}});
+
+            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
+            let game16 = retrieve(root, "[level4quizz16]");
+
+            game16.listeners['mousedown']({pageX:500, pageY:791, preventDefault:()=>{}});
+            game16.listeners['mouseup']({pageX:500, pageY:791, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:46, preventDefault:()=>{}});
 
             bdGame = retrieve(root, "[gameBd]");
             bdGame.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
@@ -423,8 +465,8 @@ describe('formationsManager', function () {
             runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
             runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
             runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
-            runtime.advanceTo(6);
-            runtime.advanceTo(7);
+            runtime.advance();
+            runtime.advance();
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
@@ -558,6 +600,11 @@ describe('formationsManager', function () {
             answerLabelCadre7 = retrieve(root, '[answerLabelCadre7]');
             assert(!answerLabelCadre7);
 
+            let questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
+            questionFromPuzzleBordure1.listeners['click']({pageX:326, pageY:156, preventDefault:()=>{}});
+            let questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+
             let emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
             emptyAnswerAddCadrequestion.listeners['dblclick']();
             emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
@@ -585,6 +632,9 @@ describe('formationsManager', function () {
             toggleButtonCadreMultiple.listeners['click']({pageX:1306, pageY:365, preventDefault:()=>{}});
             assert(toggleButtonCadreUnique.fill, 'rgb(0,0,0)');
             assert(toggleButtonCadreMultiple.fill, 'rgb(25,25,112)');
+            toggleButtonCadreUnique = retrieve(root, '[toggleButtonCadreunique]');
+            toggleButtonCadreUnique.listeners['click']({pageX:1022, pageY:365, preventDefault:()=>{}});
+
 
             let explanationCadre0 = retrieve(root, '[explanationSquare0]');
             explanationCadre0.listeners['click']();
@@ -617,6 +667,11 @@ describe('formationsManager', function () {
             let libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
 
+            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
+
+            explanationCadre0 = retrieve(root, '[explanationSquare0]');
+            explanationCadre0.listeners['click']();
+
             let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
             circleCloseExplanation.listeners['click']();
             textExplanation = retrieve(root, '[textExplanation]');
@@ -636,10 +691,6 @@ describe('formationsManager', function () {
 
             let questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
             questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
-            let questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
-            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
             questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
@@ -650,7 +701,11 @@ describe('formationsManager', function () {
             questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
-            let questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
+            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
+            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
+            questionRedCross = retrieve(root, '[questionRedCross]');
+            questionRedCross.listeners['click']();
+            questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
             questionFromPuzzleBordure1.listeners['click']({pageX:166, pageY:237, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
@@ -1000,6 +1055,8 @@ describe('inscription', function(){
             let inscriptionButton = retrieve(root, '[inscriptionButton]');
             inscriptionButton.listeners['click']();
 
+            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
+
             passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
             passwordConfirmationField.listeners['click']();
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
@@ -1009,9 +1066,16 @@ describe('inscription', function(){
             assert(!inscriptionErrorMessagepasswordField);
 
             inscriptionButton = retrieve(root, '[inscriptionButton]');
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
+            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
+
+
             // inscriptionButton.listeners['click'](); //DO NOT CLICK TwinBcrypt NOT DEFINED
             // runtime.advance();
 
+            let connectionLink = retrieve(root, '[inscriptionLink]');
+            connectionLink.listeners['click']();
 
             done();
         });
@@ -1034,6 +1098,10 @@ describe('Player mode', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
+
+            let toggleFormationsText = retrieve(root, '[toggleFormationsText]');
+            toggleFormationsText.listeners['click']();
+            toggleFormationsText.listeners['click']();
 
             let greekMythFormationCadre = retrieve(root, "[Mythologie grecque]");
             greekMythFormationCadre.listeners["click"]();

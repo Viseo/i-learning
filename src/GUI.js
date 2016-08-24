@@ -1013,9 +1013,6 @@ exports.GUI = function (globalVariables) {
         };
 
         let displayLevel = (w, h, level) => {
-            if (this.levelsTab.length >= this.graphManipulator.ordonator.children.length - 1) {
-                this.graphManipulator.ordonator.order(this.graphManipulator.ordonator.children.length + 1);
-            }
             this.panel.contentV.add(level.manipulator.first);
             var lineColor = playerMode ? myColors.grey : myColors.black;
             var levelText = playerMode ? "" : "Niveau " + level.index;
@@ -1040,7 +1037,7 @@ exports.GUI = function (globalVariables) {
                 } else if (event.keyCode === 27 && this.library && this.library.arrowMode) { // échap
                     this.library.toggleArrowMode();
                 } else if (event.keyCode === 27 && this.library && this.library.gameSelected) {
-                    this.library.gameSelected.cadre.color(myColors.white, 1, myColors.black);
+                    this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
                     this.library.gameSelected = null;
                 }
                 return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
@@ -1410,6 +1407,7 @@ exports.GUI = function (globalVariables) {
             toggleFormationsCheck.position(pos, 0);
             manip.set(2, toggleFormationsCheck);
             manip.move(drawing.width, 10 + MARGIN);
+            toggleFormationsText.cadre.mark('toggleFormationsText');
 
             let toggleFormations = () => {
                 this.progressOnly = !this.progressOnly;
@@ -3041,7 +3039,8 @@ exports.GUI = function (globalVariables) {
                 nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                document.activeElement && document.activeElement.blur();
+                // document.activeElement && document.activeElement.blur();
+                svg.activeElement() && svg.activeElement().blur();
                 this.saveButtonHandler();
             }
         });
@@ -3129,10 +3128,10 @@ exports.GUI = function (globalVariables) {
 
         this.mailAddressField = {label: "", title: this.mailAddressLabel, line: -1};
         this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-        this.mailAddressField.checkInput = ()=> {
-            let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-            return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
-        };
+        // this.mailAddressField.checkInput = ()=> {
+        //     let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+        //     return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
+        // };
         displayField("mailAddressField", this.mailAddressManipulator);
         this.passwordField = {
             label: '',

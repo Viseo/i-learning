@@ -64,13 +64,13 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        addOneLayerToOrdonator(){
-            this.scalor.remove(this.ordonator);
-            this.ordonator.children.push(this.ordonator._dummy());
-            runtime.add(this.ordonator.component, this.ordonator.children[this.ordonator.children.length-1].component);
-            this.scalor.add(this.ordonator);
-            return this;
-        }
+        // addOneLayerToOrdonator(){
+        //     this.scalor.remove(this.ordonator);
+        //     this.ordonator.children.push(this.ordonator._dummy());
+        //     runtime.add(this.ordonator.component, this.ordonator.children[this.ordonator.children.length-1].component);
+        //     this.scalor.add(this.ordonator);
+        //     return this;
+        // }
 
         lastLayerOrdonator(){
             return this.ordonator.children.length-1;
