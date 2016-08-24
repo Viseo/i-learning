@@ -221,6 +221,11 @@ exports.GUI = function (globalVariables) {
             this.bordure = obj.cadre;
             this.content = obj.text;
             this.image = obj.image;
+        } else if (this.video) { // Reponse avec Texte uniquement
+            let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false);
+            this.bordure = obj.cadre;
+            this.content = obj.content;
+            this.video.miniature = obj.video;
         } else if (this.label && !this.imageSrc) { // Reponse avec Texte uniquement
             let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
             this.bordure = obj.cadre;
@@ -250,6 +255,7 @@ exports.GUI = function (globalVariables) {
                     } else {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
                     }
+                    drawings.screen.empty(drawing);
                     this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                 };
                 if (this.explanationPopIn && this.explanationPopIn.displayed) openPopIn();
@@ -286,6 +292,7 @@ exports.GUI = function (globalVariables) {
             this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
         }
         this.manipulator.move(this.x, this.y);
+
     }
 
     function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
@@ -626,7 +633,7 @@ exports.GUI = function (globalVariables) {
                     }
                     fileExplorer.fileClick();
                 };
-
+                
                 const onChangeFileExplorerHandler = () => {
 
                     const files = fileExplorer.component.files;
@@ -1716,7 +1723,7 @@ exports.GUI = function (globalVariables) {
             let tmpHeight;
 
             this.tabAnswer.forEach(answer=>{
-                tmpHeight = answer.image ? this.tileHeightMax : heightMin;
+                tmpHeight = (answer.image || answer.video)? this.tileHeightMax : heightMin;
                 if (tmpHeight > this.tileHeightMax) {
                     height = this.tileHeightMax;
                 }
@@ -1746,6 +1753,8 @@ exports.GUI = function (globalVariables) {
             this.answersManipulator.add(answerElement.manipulator);
             answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
             answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
+            let point = answerElement.bordure.globalPoint(-50,-50);
+            answerElement.video && answerElement.video.miniature.position(point.x, point.y);
             answerElement.bordure.mark('answerElement' + index);
             if (!playerMode && this.parentQuizz.previewMode){
                 answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen);
@@ -2135,7 +2144,7 @@ exports.GUI = function (globalVariables) {
             }else if(this.video){
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
-                this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, true, 5);
+                this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5);
                 // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
                 // videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
                 // videoTitle.text._acceptDrop=true;
