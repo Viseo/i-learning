@@ -30,6 +30,7 @@ exports.Util = function (globalVariables) {
 
     function SVGGlobalHandler() {
 
+        /* istanbul ignore next */
         ImageController = function (imageRuntime) {
             return imageRuntime || {
                     getImage: function (imgUrl, onloadHandler) {
@@ -336,13 +337,13 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(blackTriangle, event, handler);
             };
 
-            manipulator._acceptDrop = () => {
-                bigSquare._acceptDrop=true;
-                smallSquare._acceptDrop=true;
-                whiteTriangle._acceptDrop=true;
-                invisibleTriangle._acceptDrop=true;
-                blackTriangle._acceptDrop=true;
-            };
+            // manipulator._acceptDrop = () => {
+            //     bigSquare._acceptDrop=true;
+            //     smallSquare._acceptDrop=true;
+            //     whiteTriangle._acceptDrop=true;
+            //     invisibleTriangle._acceptDrop=true;
+            //     blackTriangle._acceptDrop=true;
+            // };
 
             manipulator.manageDnD = (draggableManipulator) => {
                 manageDnD(bigSquare, draggableManipulator);
@@ -452,10 +453,12 @@ exports.Util = function (globalVariables) {
             }
             let video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
             let videoGlass = new svg.Rect(130,80).color(myColors.pink).position(0,-25).opacity(0.001);
+            // videoGlass.mark('glass'+videoObject.name.split('.')[0]);
             manipulator.set(layer, videoGlass);
             drawings.screen.add(video);
 
             if (editable){
+                videoGlass.mark('glass'+videoObject.name.split('.')[0]);
                 cadre._acceptDrop = true;
                 video._acceptDrop = true;
                 videoGlass._acceptDrop = true;
@@ -507,7 +510,7 @@ exports.Util = function (globalVariables) {
                     let redCrossSize = 15;
                     let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
                         : drawRedCross(60, -60, redCrossSize, redCrossManipulator);
-                    redCross.mark('imageRedCross');
+                    redCross.mark('videoRedCross');
                     svg.addEvent(redCross, 'click', redCrossClickHandler);
                     redCrossManipulator.set(1, redCross);
                 };
@@ -871,7 +874,7 @@ exports.Util = function (globalVariables) {
             formation.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
-                formation.selectedGame && formation.selectedGame.icon.cadre.component.listeners.click();
+                formation.selectedGame && formation.clicAction();//selectedGame.game.miniatureManipulator.ordonator.children[0].component.listeners.mouseup();
                 if (!this.selected) {
                     if (formation.selectedArrow) {
                         formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);

@@ -45,6 +45,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             newWidth = event.w;
             newHeight = event.h;
         }
+        /* istanbul ignore next */
         else if (document.documentElement.clientWidth > 0 && document.documentElement.clientHeight > 0){
             newWidth = document.documentElement.clientWidth;
             newHeight = document.documentElement.clientHeight;

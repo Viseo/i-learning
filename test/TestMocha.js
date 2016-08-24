@@ -302,11 +302,18 @@ describe('formationsManager', function () {
 
             runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
 
+
+            game3.listeners['mousedown']({pageX:949, pageY:360, preventDefault:()=>{}});
+            game3.listeners['mouseup']({pageX:949, pageY:360, preventDefault:()=>{}});
+            arrow02.listeners['click']();
             arrow03.listeners['click']();
             runtime.listeners['keydown']({keyCode:46, preventDefault:()=>{}});
 
-
             arrow02.listeners['click']();
+            arrow02.listeners['click']();
+            arrow02.listeners['click']();
+
+
             assert.equal(arrow02.fill, 'rgb(25,122,230)');
             let redCross = retrieve(root, '[redCross]');
             redCross.listeners['click']();
@@ -663,6 +670,12 @@ describe('formationsManager', function () {
             video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
             let videoDragged = retrieve(root, '[videoDragged]');
             videoDragged.listeners['mouseup']({pageX:540, pageY:677, preventDefault:()=>{}});
+            let glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            glassVideo.listeners['mouseover']();
+            glassVideo.listeners['mouseout']();
+            glassVideo.listeners['mouseover']();
+            let videoRedCross = retrieve(root, '[videoRedCross]');
+            videoRedCross.listeners['click']();
 
             let libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
@@ -676,6 +689,29 @@ describe('formationsManager', function () {
             circleCloseExplanation.listeners['click']();
             textExplanation = retrieve(root, '[textExplanation]');
             assert(!textExplanation);
+
+            libraryVideos = retrieve(root, '[libraryVidéos]');
+            libraryVideos.listeners['click']();
+            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:417, pageY:594, preventDefault:()=>{}});
+            glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            glassVideo.listeners['mouseover']();
+            videoRedCross = retrieve(root, '[videoRedCross]');
+            videoRedCross.listeners['click']();
+
+            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+            videoDragged = retrieve(root, '[videoDragged]');
+            videoDragged.listeners['mouseup']({pageX:450, pageY:450, preventDefault:()=>{}});
+            glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            glassVideo.listeners['mouseover']();
+            videoRedCross = retrieve(root, '[videoRedCross]');
+            videoRedCross.listeners['click']();
+
+            libraryImages = retrieve(root, '[libraryImages]');
+            libraryImages.listeners['click']();
 
             image = retrieve(root, '[imageAlba]');
             image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
@@ -825,6 +861,9 @@ describe('formationsManager', function () {
             bigGlass.listeners['mousedown']({pageX:0, pageY:0, preventDefault:()=>{}});
             bigGlass.listeners['mouseup']({pageX:0, pageY:0, preventDefault:()=>{}});
             bigGlass.listeners['dblclick']({pageX:0, pageY:0, preventDefault:()=>{}});
+            bigGlass.listeners['mousemove']({pageX:1, pageY:1, preventDefault:()=>{}});
+            bigGlass.listeners['mousemove']({pageX:31, pageY:71, preventDefault:()=>{}});
+
 
             runtime.listeners['resize']({w:1500, h:1500});
 

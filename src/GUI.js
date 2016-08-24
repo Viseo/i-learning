@@ -1117,7 +1117,7 @@ exports.GUI = function (globalVariables) {
                         manageDnD(miniatureElement[1], tabElement.movingManipulator, () => {tabElement.miniature.moveAllLinks();});
                     };
                     let mouseupHandler = eventUp => {
-                        let clicAction = () => {
+                        this.clicAction = () => {
                             tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
                             this.miniaturesManipulator.add(tabElement.miniatureManipulator);
                             tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
@@ -1128,7 +1128,7 @@ exports.GUI = function (globalVariables) {
                         drawings.piste.remove(tabElement.movingManipulator);
                         let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
-                            clicAction();
+                            this.clicAction();
                         }
                         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject instanceof Quizz)) {
                             this.dropAction(eventUp, tabElement);
