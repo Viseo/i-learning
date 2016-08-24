@@ -863,13 +863,16 @@ exports.GUI = function (globalVariables) {
         obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
-            drawings.screen.empty();
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
+
                     let newAnswer = new Answer(null, this.parent.linkedQuestion);
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
+                    questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
+                        answer.obj && answer.obj.video && drawings.screen.remove(answer.obj.video);
+                    });
                     questionCreator.linkedQuestion.tabAnswer.pop();
                     questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
 
@@ -886,6 +889,7 @@ exports.GUI = function (globalVariables) {
 
                     break;
                 case 'question':
+                    drawings.screen.empty();
                     let quizzManager = this.parent;
                     quizzManager.quizz.tabQuestions.pop();
                     (quizzManager.quizz.tabQuestions.length > 0) && (quizzManager.quizz.tabQuestions[quizzManager.indexOfEditedQuestion].selected = false);
