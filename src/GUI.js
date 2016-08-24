@@ -633,7 +633,7 @@ exports.GUI = function (globalVariables) {
                     }
                     fileExplorer.fileClick();
                 };
-                
+
                 const onChangeFileExplorerHandler = () => {
 
                     const files = fileExplorer.component.files;

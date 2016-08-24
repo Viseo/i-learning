@@ -454,7 +454,7 @@ exports.Util = function (globalVariables) {
                 points = cadre.globalPoint(-50, -50);
                 // points = {x:0, y:0};
             }
-            let video = new svg.Video(points.x, points.y, 100, videoObject.src, false);
+            let video = new svg.Video(points.x, points.y, 100, videoObject.src, !editable);
             let videoGlass = new svg.Rect(130,80).color(myColors.pink).position(0,-25).opacity(0.001);
             // videoGlass.mark('glass'+videoObject.name.split('.')[0]);
             manipulator.set(layer, videoGlass);
