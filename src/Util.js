@@ -456,6 +456,10 @@ exports.Util = function (globalVariables) {
             drawings.screen.add(video);
 
             if (editable){
+                cadre._acceptDrop = true;
+                video._acceptDrop = true;
+                videoGlass._acceptDrop = true;
+                text && (text._acceptDrop = true);
                 const drawVideoRedCross = (function (manipulator) {
                     let redCrossManipulator;
                     const redCrossClickHandler = ()=> {

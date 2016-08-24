@@ -1120,6 +1120,7 @@ exports.Domain = function (globalVariables) {
                         answer.explanation = {};
                         answer.popIn.image && (answer.explanation.image = answer.popIn.image);
                         answer.popIn.label && (answer.explanation.label = answer.popIn.label);
+                        answer.popIn.video && (answer.explanation.video = answer.popIn.video);
                         answer.popIn = null;
                     }
                 });

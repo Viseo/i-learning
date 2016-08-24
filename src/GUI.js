@@ -2064,6 +2064,9 @@ exports.GUI = function (globalVariables) {
         parent.manipulator.add(this.manipulator);
         this.manipulator.set(0, rect);
         this.manipulator.move(0, y);
+        this.answer.editor.puzzle.elementsArray.forEach(answerElement => {
+            answerElement.obj && answerElement.obj.video && drawings.screen.remove(answerElement.obj.video);
+        });
         this.answer.parentQuestion.tabAnswer.forEach(answer => {
             answer.obj && answer.obj.video && drawings.screen.remove(answer.obj.video);
         });
@@ -2113,6 +2116,8 @@ exports.GUI = function (globalVariables) {
                 imageX = (-w + imageW) / 2 + MARGIN;
             this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
             if (this.image) {
+                drawings.screen.remove(this.miniature.video);
+                this.manipulator.unset(6);
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
                 let picture = new Picture(this.image, this.editable, this);
@@ -2121,6 +2126,7 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             }else if(this.video){
+                this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
                 this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, true, 5);
                 // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
@@ -2444,6 +2450,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzManagerDisplay() {
+        drawings.screen.empty();
         let verticalPosition = drawing.height * HEADER_SIZE;
         this.height = drawing.height - drawing.height * HEADER_SIZE;
         this.quizzManagerManipulator.move(0, verticalPosition);
