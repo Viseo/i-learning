@@ -9,6 +9,7 @@
     "express": "^4.13.4",
     "json-web-token": "^2.0.2",
     "method-override": "^2.3.5",
+    "mmmagic": "^0.4.5",
     "mocha": "^2.5.3",
     "mocha-istanbul": "^0.2.0",
     "mongodb": "^2.1.19",

@@ -2,7 +2,8 @@ module.exports = function (app, fs) {
     const
         TwinBcrypt = require('twin-bcrypt'),
         ObjectID = require('mongodb').ObjectID,
-        multer = require('multer');
+        multer = require('multer'),
+        mmm = require('mmmagic');
 
     const
         cookies = require('../cookies'),
@@ -24,31 +25,34 @@ module.exports = function (app, fs) {
 
         const insertInDB = function(file) {
             return new Promise((resolve, reject) => {
-                if (file.mimetype === 'video/mp4') {
-                    db.get().collection('videos').insertOne({
-                        src: "../resource/" + file.filename,
-                        name: file.originalname
-                    }, (err) => {
-                        if (err) {
-                            reject(err)
-                        }
-                        resolve()
-                    })
-                } else if (['image/png', 'image/jpeg'].includes(file.mimetype)) {
-                    db.get().collection('images').insertOne({
-                        imgSrc: "../resource/" + file.filename,
-                        name: file.originalname
-                    }, (err) => {
-                        if (err) {
-                            reject(err)
-                        }
-                        resolve()
-                    })
-                } else { // delete unwanted file
-                    fs.unlink(file.path, () => {
-                        reject(new Error("Bad file type, deleted."))
-                    })
-                }
+                const magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
+                magic.detectFile(file.path, function(err, result) {
+                    if (result === 'video/mp4') {
+                        db.get().collection('videos').insertOne({
+                            src: "../resource/" + file.filename,
+                            name: file.originalname
+                        }, (err) => {
+                            if (err) {
+                                reject(err)
+                            }
+                            resolve()
+                        })
+                    } else if (['image/png', 'image/jpeg'].includes(result)) {
+                        db.get().collection('images').insertOne({
+                            imgSrc: "../resource/" + file.filename,
+                            name: file.originalname
+                        }, (err) => {
+                            if (err) {
+                                reject(err)
+                            }
+                            resolve()
+                        })
+                    } else { // delete unwanted file
+                        fs.unlink(file.path, () => {
+                            reject(new Error(`Bad file type ${result}, deleted.`))
+                        })
+                    }
+                });
             })
         };
 
@@ -58,7 +62,7 @@ module.exports = function (app, fs) {
                 res.send('ok')
             })
             .catch((err) => {
-                console.error(err);
+                console.error(err.message);
                 res.send('err')
             });
     });
