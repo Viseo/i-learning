@@ -525,40 +525,32 @@ exports.Util = function (globalVariables) {
             if (!editable) {
                 video.component.onplay = function () {
                     drawings.screen.empty(video);
-                    video.position(drawing.width * 0.15, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
-                    video.dimension(drawing.width * 0.7);
+                    video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
+                    video.dimension(drawing.width * 0.8);
 
                     let drawGreyCross = () => {
                         const
                             crossSize = 12,
                             circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
                             closeButtonManipulator = new Manipulator(),
-                            cross = drawCross(drawing.width * 0.85, (drawing.height - 9 * 7 / 160 * drawing.width) / 2, crossSize, myColors.lightgrey, myColors.lightgrey, closeButtonManipulator);
+                            cross = drawCross(drawing.width * 0.9+ MARGIN , (drawing.height - 9 * 7 / 160 * drawing.width) / 2 - MARGIN, crossSize, myColors.lightgrey, myColors.lightgrey, closeButtonManipulator);
                         closeButtonManipulator.addOrdonator(2);
                         closeButtonManipulator.set(0, circle);
                         closeButtonManipulator.set(1, cross);
                         drawing.manipulator.set(3, closeButtonManipulator);
                         const crossHandler = () => {
                             drawing.manipulator.unset(3);
-
-                            if (manipulator.parentObject instanceof Answer || manipulator.parentObject instanceof Question) {
-                                drawings.screen.empty();
-                                let quizz = manipulator.parentObject.parentQuizz || manipulator.parentObject.parentQuestion.parentQuizz;
-                                if (quizz.currentQuestionIndex !== -1) {
-                                    quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
-                                }
-                                quizz.display(0, 0, drawing.width, drawing.height);
-
-                                if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                                    quizz.displayCurrentQuestion();
-                                }
+                            drawings.screen.empty();
+                            let quizz = manipulator.parentObject.parentQuizz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuizz) ||manipulator.parentObject.answer.parentQuestion.parentQuizz;
+                            if (quizz.currentQuestionIndex !== -1) {
+                                quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
                             }
-                            else{
-                                let globalPoints = manipulator.parentObject.miniature.cadre.globalPoint( -50, -50);
-                                video.position(globalPoints.x, globalPoints.y);
-                                video.dimension(100);
+                            quizz.display(0, 0, drawing.width, drawing.height);
 
+                            if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                                quizz.displayCurrentQuestion();
                             }
+
                         };
                         svg.addEvent(cross, "click", crossHandler);
                         svg.addEvent(circle, "click", crossHandler);

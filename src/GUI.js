@@ -244,6 +244,7 @@ exports.GUI = function (globalVariables) {
         if (this.parentQuestion.parentQuizz.previewMode) {
             if (this.explanation && (this.explanation.image || this.explanation.label)) {
                 const openPopIn = () => {
+                    this.parentQuestion.parentQuizz.closePopIn();
                     let popInParent = this.parentQuestion,
                         popInX = this.parentQuestion.parentQuizz.x,
                         popInY,
@@ -255,10 +256,9 @@ exports.GUI = function (globalVariables) {
                     } else {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
                     }
-                    drawings.screen.empty(drawing);
                     this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                 };
-                if (this.explanationPopIn && this.explanationPopIn.displayed) openPopIn();
+                if (this.explanationPopIn && this.explanationPopIn.displayed) this.parentQuestion.openPopIn = openPopIn;
                 this.image && svg.addEvent(this.image, "click", openPopIn);
                 this.bordure && svg.addEvent(this.bordure, "click", openPopIn);
                 this.content && svg.addEvent(this.content, "click", openPopIn);
@@ -1829,6 +1829,8 @@ exports.GUI = function (globalVariables) {
                 }
             }
         });
+        this.openPopIn && this.openPopIn();
+        this.openPopIn = null;
         let buttonY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN,
             buttonH = Math.min(tileDimension.height, 50),
             buttonW = 0.5 * drawing.width,
@@ -2141,7 +2143,7 @@ exports.GUI = function (globalVariables) {
             answerElement.obj && answerElement.obj.video && drawings.screen.remove(answerElement.obj.video);
         });
         this.answer.parentQuestion.tabAnswer.forEach(answer => {
-            answer.obj && answer.obj.video && drawings.screen.remove(answer.obj.video);
+            answer.video && drawings.screen.remove(answer.video.miniature);
         });
 
         let crossSize = 12;
@@ -2158,6 +2160,14 @@ exports.GUI = function (globalVariables) {
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 this.displayed = false;
                 this.miniature && drawings.screen.remove(this.miniature.video);
+                if(parent instanceof Question){
+                    parent.tabAnswer.forEach(answer => {
+                        answer.video && drawings.screen.add(answer.video.miniature);
+                    });
+
+                }
+
+
             };
             svg.addEvent(cross, "click", crossHandler);
             svg.addEvent(circle, "click", crossHandler);
@@ -2185,8 +2195,8 @@ exports.GUI = function (globalVariables) {
             panelHeight = h - 2 * MARGIN;
         const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
         let createImageAndText = ()=>{
-            const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
-                imageX = (-w + imageW) / 2 + MARGIN;
+            const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN;
+            this.imageX = (-w + imageW) / 2 + MARGIN;
             this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
             if (this.image) {
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
@@ -2195,7 +2205,7 @@ exports.GUI = function (globalVariables) {
                 const imageSize = Math.min(imageW, panelHeight);
                 let picture = new Picture(this.image, this.editable, this);
                 this.manipulator.unset(5);
-                picture.draw(imageX, 0, imageSize, imageSize);
+                picture.draw(this.imageX, 0, imageSize, imageSize);
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             }else if(this.video){
@@ -2207,16 +2217,16 @@ exports.GUI = function (globalVariables) {
                 // videoTitle.text._acceptDrop=true;
                 this.miniature.cadre.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
-                let globalPoints = this.miniature.cadre.globalPoint(imageX -50, -50);
+                let globalPoints = this.miniature.cadre.globalPoint(this.imageX -50, -50);
                 this.miniature.video.position(globalPoints.x, globalPoints.y);
-                this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(imageX, 25);
+                this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(this.imageX, 25);
                 // icon.cadre._acceptDrop = true;
                 // icon.move(imageX,-(25+videoTitle.finalHeight)/2);
                 // this.manipulator.set(5, icon.video);
                 this.answer.filled = true;
             }else if (this.editable) {
                 autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
-                    .position(imageX, 0).color(myColors.grey)
+                    .position(this.imageX, 0).color(myColors.grey)
                     ._acceptDrop = this.editable;
                 this.label ? this.answer.filled = true : this.answer.filled = false;
             } else {
@@ -2314,7 +2324,7 @@ exports.GUI = function (globalVariables) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
                     drawings.screen.empty();
-                    closePopIn();
+                    this.closePopIn();
                     this.previewMode = false;
                     this.currentQuestionIndex = this.tabQuestions.length;
                     this.manipulator.flush();
@@ -2330,7 +2340,7 @@ exports.GUI = function (globalVariables) {
                 returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
                     drawings.screen.empty();
-                    closePopIn();
+                    this.closePopIn();
                     this.manipulator.flush();
                     this.parentFormation.quizzManager.loadQuizz(this, this.currentQuestionIndex);
                     this.parentFormation.quizzManager.display();
@@ -2340,7 +2350,7 @@ exports.GUI = function (globalVariables) {
             drawings.screen.empty();
             returnButtonChevron.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
-                closePopIn();
+                this.closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
             });
@@ -2379,17 +2389,18 @@ exports.GUI = function (globalVariables) {
             }
         };
 
-        const closePopIn = () => {
+        this.closePopIn = () => {
             this.tabQuestions[this.currentQuestionIndex] && this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
                 if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
                     answer.explanationPopIn.cross.component.listeners["click"]();
+
                 }
             });
         };
 
         let leftChevronHandler = () => {
             drawings.screen.empty();
-            closePopIn();
+            this.closePopIn();
             if (this.currentQuestionIndex > 0) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
                 this.currentQuestionIndex--;
@@ -2400,7 +2411,7 @@ exports.GUI = function (globalVariables) {
         };
         let rightChevronHandler = () => {
             drawings.screen.empty();
-            closePopIn();
+            this.closePopIn();
             if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
                 this.currentQuestionIndex++;
