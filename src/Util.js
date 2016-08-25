@@ -527,7 +527,6 @@ exports.Util = function (globalVariables) {
                     drawings.screen.empty(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
-
                     let drawGreyCross = () => {
                         const
                             crossSize = 12,
@@ -550,8 +549,22 @@ exports.Util = function (globalVariables) {
                             if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                                 quizz.displayCurrentQuestion();
                             }
-
+                            svg.removeEvent(drawings.glass, "click");
                         };
+
+                        const hasKeyDownEvent = function(event) {
+                            if (event.keyCode === 27) {
+                                crossHandler();
+                            }
+                        }
+
+                        svg.addGlobalEvent("keydown", (event) => {
+                            if (drawing.notInTextArea && hasKeyDownEvent(event)) {
+                                event.preventDefault();
+                            }
+                        });
+
+                        svg.addEvent(drawings.glass, "click", crossHandler);
                         svg.addEvent(cross, "click", crossHandler);
                         svg.addEvent(circle, "click", crossHandler);
                         return cross;
@@ -559,6 +572,7 @@ exports.Util = function (globalVariables) {
                     this.cross = drawGreyCross();
                 };
             }
+
 
         return {cadre: cadre, video: video, content: text};
     };
