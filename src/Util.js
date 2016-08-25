@@ -1057,9 +1057,15 @@ class MiniatureGame {
         }
         this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
         var levelsTab = this.game.parentFormation.levelsTab;
+
+        if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
+            levelsTab[this.game.levelIndex].redCrossClickHandler();
+        }
+
         while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
             levelsTab[levelsTab.length - 1].manipulator.unset(2);
             levelsTab[levelsTab.length - 1].manipulator.unset(1);
+            levelsTab[levelsTab.length - 1].manipulator.unset(0);
             this.game.parentFormation.levelsTab.pop();
         }
 
