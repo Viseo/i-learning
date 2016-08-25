@@ -417,6 +417,7 @@ exports.Domain = function (globalVariables) {
         constructor(formation, gamesTab) {
             this.parentFormation = formation;
             this.manipulator = new Manipulator(this).addOrdonator(3);
+            this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
             this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr

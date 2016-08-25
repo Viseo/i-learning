@@ -1023,11 +1023,68 @@ exports.GUI = function (globalVariables) {
             this.panel.contentV.add(level.manipulator.first);
             var lineColor = playerMode ? myColors.grey : myColors.black;
             var levelText = playerMode ? "" : "Niveau " + level.index;
-            let obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator);
+            let obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator, 0);
             obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
             obj.line.component.setAttribute && obj.line.component.setAttribute('stroke-dasharray', '6');
 
-            level.manipulator.set(2, obj.line);
+            this.redCrossManipulator;
+            let overLevelHandler = (event) => {
+                let levelIndex = -1;
+                let mouseY;
+                mouseY = this.panel.back.localPoint(event.pageX, event.pageY).y;
+                mouseY -= this.panel.contentV.y;
+                while (mouseY > -this.panel.content.height / 2) {
+                    mouseY -= this.levelHeight;
+                    levelIndex++;
+                }
+                this.levelsTab.forEach(levelElement => {
+                    levelElement.redCrossManipulator.flush();
+                });
+                let levelObject = this.levelsTab[levelIndex];
+                if (levelIndex>=0 && levelIndex < this.levelsTab.length){
+                    if (typeof levelObject.redCrossManipulator === 'undefined') {
+                        levelObject.redCrossManipulator = new Manipulator(levelObject).addOrdonator(2);
+                    }
+                    levelObject.manipulator.set(2, levelObject.redCrossManipulator);
+                    let redCrossSize = 15;
+                    let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, levelObject.redCrossManipulator)
+                        : drawRedCross(60, -60, redCrossSize, levelObject.redCrossManipulator);
+                    redCross.mark('levelRedCross');
+                    levelObject.redCrossManipulator.move(obj.text.boundingRect().width/2 + levelObject.x/2, 15);
+                    svg.addEvent(redCross, 'click', levelObject.redCrossClickHandler);
+                    levelObject.redCrossManipulator.set(1, redCross);
+                }
+
+            };
+            let mouseleaveHandler = ()=> {
+                this.levelsTab.forEach(levelElement => {
+                    levelElement.redCrossManipulator.flush();
+                });
+            };
+
+            svg.addEvent(this.panel.back, 'mouseover', overLevelHandler);
+            svg.addEvent(this.panel.back, 'mouseout', mouseleaveHandler);
+
+            level.redCrossClickHandler = () => {
+                level.redCrossManipulator.flush();
+                this.levelsTab.splice(level.index-1, 1);
+                level.manipulator.flush();
+                level.gamesTab.forEach(game => {
+                    game.miniatureManipulator.flush();
+                    for (let j=this.link.length-1; j>=0; j--){
+                        if (this.link[j].childGame === game.id || this.link[j].parentGame === game.id){
+                            this.link.splice(j, 1);
+                        }
+                    }
+                });
+                for (let i=level.index-1; i<this.levelsTab.length; i++){
+                    this.levelsTab[i].index --;
+                    this.levelsTab[i].manipulator.flush();
+                }
+                this.displayGraph(this.graphW, this.graphH);
+            };
+
+            level.manipulator.set(1, obj.line);
             obj.text.position(obj.text.boundingRect().width, obj.text.boundingRect().height);
             obj.text._acceptDrop = true;
             level.w = w;
