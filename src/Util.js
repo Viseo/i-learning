@@ -26,8 +26,8 @@ exports.Util = function (globalVariables) {
         AddEmptyElement = globalVariables.domain.AddEmptyElement;
         Quizz = globalVariables.domain.Quizz;
         Bd = globalVariables.domain.Bd;
-        Answer = globalVariables.domain.Answer,
-            Question = globalVariables.domain.Question;
+        Answer = globalVariables.domain.Answer;
+        Question = globalVariables.domain.Question;
 
     };
 
@@ -675,59 +675,38 @@ exports.Util = function (globalVariables) {
         return {content: result.content, cadre: result.cadre};
     };
 
-    /**
-     * Introduit des \n dans une chaine pour éviter qu'elle dépasse une certaine largeur.
-     * @param content: text to print
-     * @param x : position
-     * @param y : position
-     * @param wi : width
-     * @param h : height
-     * @param fontSize
-     * @param font
-     * @param manipulator
-     * @param layer
-     */
-    autoAdjustText = function (content, wi, h, fontSize, font, manipulator, layer = 1) {
-        let text = '',
-            w = wi * 0.94,
-            t = new svg.Text('text');
-        manipulator.set(layer, t);
-        (fontSize) || (fontSize = 20);
-        t.font(font ? font : 'Arial', fontSize);
-        content = content.trim();
-        t.message(content.replace(/\r?\n|\r/g), " ");
-        let boundingRect = t.boundingRect(),
-            charSpace = boundingRect.width / content.length,
-            numCharsPerLine = Math.floor(w / charSpace * 0.98),
-            lineHeight = boundingRect.height,
-            maxLines = Math.floor(h / lineHeight);
+        autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
+            let words = content.split(' '),
+                text = '',
+                w = wi*0.94,
+                t = new svg.Text('text');
+            manipulator.set(layer, t);
+            (fontSize) || (fontSize = 20);
+            t.font(font ? font : 'Arial', fontSize);
 
-        if (maxLines === 0) maxLines = 1;
-
-        let lines = [];
-        for (let i = 0, charsLength = content.length; i < charsLength;) {
-            let line = content.substring(i, i + numCharsPerLine);
-            let pos = line.lastIndexOf("\n");
-            if (pos !== -1 && pos !== 0) {
-                line = line.substring(0, pos);
-                i += pos;
-            } else {
-                i += numCharsPerLine;
+            while (words.length > 0) {
+                const word = words.shift();
+                t.message(text + ' ' + word);
+                if (t.boundingRect().width <= w) {
+                    text += ' ' + word;
+                } else {
+                    let tmpStr = text + '\n' + word;
+                    t.message(tmpStr);
+                    if (t.boundingRect().height <= (h - MARGIN)) {
+                        if (t.boundingRect().width <= w) {
+                            text = tmpStr;
+                        }
+                    } else {
+                        const letters = word.split('');
+                        while(t.boundingRect().width <= (h - MARGIN)) {
+                            text += letters.shift();
+                        }
+                        text = text.slice(0, -2) + '…';
+                        break;
+                    }
+                }
             }
-            if (lines.length < maxLines && line !== "\n") {
-                lines.push(line);
-            } else {
-                lines[maxLines - 1] = lines[maxLines - 1].slice(0, -1) + "…";
-            }
-        }
-
-        for (let i = 0; i < lines.length - 1; i++) {
-            if (" ?.,!;:\n".indexOf(lines[i][lines[i].length - 1]) === -1 && " ?.,!;:\n".indexOf(lines[i + 1][0]) === -1) {
-                lines[i] += "-";
-            }
-        }
-
-        t.message(lines.join("\n"));
+            t.message(text.substring(1));
 
 
         let finalHeight = t.boundingRect().height;
