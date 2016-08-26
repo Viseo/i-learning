@@ -475,6 +475,13 @@ describe('formationsManager', function () {
             runtime.advance();
             runtime.advance();
 
+            let bigGlass = retrieve(root, '[bigGlass]');
+            bigGlass.listeners['mousemove']({pageX:455, pageY:486, preventDefault:()=>{}});
+            bigGlass.listeners['mouseup']({pageX:455, pageY:486, preventDefault:()=>{}});
+            bigGlass.listeners['dblclick']({pageX:455, pageY:486, preventDefault:()=>{}});
+            // bigGlass.listeners['mousemove']({pageX:514, pageY:486, preventDefault:()=>{}});
+            bigGlass.listeners['mouseout']();
+
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
@@ -707,6 +714,12 @@ describe('formationsManager', function () {
             videoDragged.listeners['mouseup']({pageX:450, pageY:450, preventDefault:()=>{}});
             glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
             glassVideo.listeners['mouseover']();
+            // let questionVideoToPlay = retrieve(root, '[questionVideoToPlay]');
+            // questionVideoToPlay.listeners['play']();
+            // let crossToClose = retrieve(root, '[crossToClose]');
+            // crossToClose.listeners['click']({pageX:1738, pageY:86, preventDefault:()=>{}});
+            // glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            // glassVideo.listeners['mouseover']();
             videoRedCross = retrieve(root, '[videoRedCross]');
             videoRedCross.listeners['click']();
 
@@ -749,6 +762,15 @@ describe('formationsManager', function () {
             image = retrieve(root, '[imageAlba]');
             image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
             imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:541, pageY:453, preventDefault:()=>{}});
+            questionImage = retrieve(root, '[questionImage1]');
+            questionImage.listeners['mouseover']({pageX:541, pageY:453, preventDefault:()=>{}});
+            let imageRedCross = retrieve(root, '[imageRedCross]');
+            imageRedCross.listeners['click']();
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
             imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
             let answerImage = retrieve(root, '[answerImage0]');
             assert(answerImage);
@@ -759,7 +781,7 @@ describe('formationsManager', function () {
             imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
             answerImage = retrieve(root, '[answerImage1]');
             answerImage.listeners['mouseover']();
-            let imageRedCross = retrieve(root, '[imageRedCross]');
+            imageRedCross = retrieve(root, '[imageRedCross]');
             imageRedCross.listeners['click']();
             answerImage = retrieve(root, '[answerImage1]');
             assert(!answerImage);
@@ -857,7 +879,7 @@ describe('formationsManager', function () {
             let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
             returnButtonToFormationsManager.listeners['click']();
 
-            let bigGlass = retrieve(root, '[bigGlass]');
+            bigGlass = retrieve(root, '[bigGlass]');
             bigGlass.listeners['mousedown']({pageX:0, pageY:0, preventDefault:()=>{}});
             bigGlass.listeners['mouseup']({pageX:0, pageY:0, preventDefault:()=>{}});
             bigGlass.listeners['dblclick']({pageX:0, pageY:0, preventDefault:()=>{}});

@@ -83,7 +83,7 @@ exports.Util = function (globalVariables) {
 
         flush() {
             const clean = (handler) => {
-                if (handler.noFlush) return;
+                // if (handler.noFlush) return;
                 if ((handler instanceof svg.Ordered)) {
                     handler.children.forEach(function (child, index) {
                         if ((child instanceof svg.Handler)) {
@@ -523,7 +523,7 @@ exports.Util = function (globalVariables) {
             videoTitle.text.position(0, 25).color(myColors.black);
             videoTitle.text._acceptDrop = true;
             if (!editable) {
-                video.component.onplay = function () {
+                let playFunction = function () {
                     drawings.screen.empty(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
@@ -533,6 +533,7 @@ exports.Util = function (globalVariables) {
                             circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
                             closeButtonManipulator = new Manipulator(),
                             cross = drawCross(drawing.width * 0.9+ MARGIN , (drawing.height - 9 * 7 / 160 * drawing.width) / 2 - MARGIN, crossSize, myColors.lightgrey, myColors.lightgrey, closeButtonManipulator);
+                        cross.mark('crossToClose');
                         closeButtonManipulator.addOrdonator(2);
                         closeButtonManipulator.set(0, circle);
                         closeButtonManipulator.set(1, cross);
@@ -571,6 +572,7 @@ exports.Util = function (globalVariables) {
                     };
                     this.cross = drawGreyCross();
                 };
+                video.setPlayHandler(playFunction);
             }
 
 
@@ -777,7 +779,7 @@ exports.Util = function (globalVariables) {
                 .cubic(-85, -190, -145, -140, -100, -100)
                 .line(0, 0);
         }
-        else if (side === "left") {
+        else {
             this.chevron = new svg.Path(0, 0).line(100, -100)
                 .cubic(140, -140, 85, -185, 50, -150)
                 .line(-60, -40)
@@ -1463,11 +1465,9 @@ class Puzzle {
         }
         this.visibleElementsArray.forEach(it => {
             it.forEach(elem => {
-                if (elem) {
-                    let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                    this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 cadre
-                    elem.display(elem.x, elem.y, elem.width, elem.height);
-                }
+                let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
+                this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 cadre
+                elem.display(elem.x, elem.y, elem.width, elem.height);
             });
             itNumber++;
         });

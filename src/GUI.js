@@ -1724,6 +1724,7 @@ exports.GUI = function (globalVariables) {
             this.bordure = obj.cadre;
             this.content = obj.content;
             this.miniatureVideo = obj.video;
+            obj.video.mark('questionVideoToPlay');
         }
         // Question avec Texte uniquement
         else if (typeof this.label !== "undefined" && !this.imageSrc) {
