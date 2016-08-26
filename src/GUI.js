@@ -967,8 +967,8 @@ exports.GUI = function (globalVariables) {
             this.returnButton.manipulator.flush();
             Server.getAllFormations().then(data => {
                 let myFormations = JSON.parse(data).myCollection;
-                formationsManager = new FormationsManager(myFormations);
-                formationsManager.display();
+                globalVariables.formationsManager = new FormationsManager(myFormations);
+                globalVariables.formationsManager.display();
             });
         };
         this.manipulator.add(this.returnButtonManipulator);
@@ -1242,8 +1242,8 @@ exports.GUI = function (globalVariables) {
             this.levelsTab.forEach((level)=>{
                 displayLevel(this.graphCreaWidth, this.graphCreaHeight, level);
                 this.adjustGamesPositions(level);
+                this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                 level.gamesTab.forEach((tabElement)=> {
-                    this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
                     this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
                     if (typeof tabElement.miniature === "undefined") {
@@ -1270,6 +1270,7 @@ exports.GUI = function (globalVariables) {
             this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
         } else {
             this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+            this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
 
             this.graphCreaHeight = (drawing.height - drawing.height*HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
@@ -1282,7 +1283,7 @@ exports.GUI = function (globalVariables) {
 
             this.y = drawing.height * HEADER_SIZE;
 
-            this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height).font("Arial", 20).anchor("start");
+            this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height*1.3).font("Arial", 20).anchor("start");
             this.manipulator.set(0, this.titleSvg);
             let formationWidth = this.titleSvg.boundingRect().width;
             let formationLabel = {};
@@ -1365,7 +1366,7 @@ exports.GUI = function (globalVariables) {
 
                 this.formationInfoManipulator.set(0, formationLabel.cadre);
                 formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
-                this.formationInfoManipulator.move(0, this.returnButton.height);
+                this.formationInfoManipulator.move(0, this.returnButton.height*1.3);
                 svg.addEvent(formationLabel.content, "dblclick", dblclickEditionFormationLabel);
                 svg.addEvent(formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
             };
@@ -1374,8 +1375,8 @@ exports.GUI = function (globalVariables) {
 
             if (this.status !== "NotPublished") {
                 this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                this.displayFormationPublicationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
-                this.displayFormationDeactivationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                this.displayFormationPublicationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+                this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
             } else {
                 this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
                 this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
@@ -1412,7 +1413,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function formationDisplayPublicationButton(x, y, w, h) {
-        let label = this.status === "NotPublished" ? "Publier" : "Publier une nouvelle version";
+        let label = "Publier";
         let publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
         this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
         this.publicationFormationQuizzManager = () => {
@@ -3097,6 +3098,7 @@ exports.GUI = function (globalVariables) {
             }
         };
         let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+        this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
         let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
         let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
         this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);

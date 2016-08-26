@@ -52,6 +52,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         }
         drawing.dimension(newWidth, newHeight);
         drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
+        drawing.mousedOverTarget = null;
         const
             formationsManager = globalVariables.formationsManager,
             formation = formationsManager && formationsManager.formationDisplayed,

@@ -473,7 +473,7 @@ exports.Domain = function (globalVariables) {
             this.formationId = (formation.formationId || null);
             this.progress = formation.progress;
             this.formationsManager = formationsManager;
-            this.manipulator = new Manipulator(this).addOrdonator(5);
+            this.manipulator = new Manipulator(this).addOrdonator(6);
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             this.graphManipulator = new Manipulator(this);
             this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
@@ -488,7 +488,7 @@ exports.Domain = function (globalVariables) {
             this.library = new GamesLibrary(myLibraryGames);
             this.library.formation = this;
             this.quizzManager = new QuizzManager(null, this);
-            this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
+            this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
             // WIDTH
@@ -591,8 +591,8 @@ exports.Domain = function (globalVariables) {
                     this.manipulator.flush();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        let formationsManager = new FormationsManager(myFormations);
-                        formationsManager.display();
+                        globalVariables.formationsManager = new FormationsManager(myFormations);
+                        globalVariables.formationsManager.display();
                     });
                 })
         }
@@ -618,7 +618,6 @@ exports.Domain = function (globalVariables) {
                 if (displayQuizzManager && !error) {
                     displayQuizzManager();
                 } else {
-                    this.manipulator.remove(this.message);
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
@@ -626,9 +625,9 @@ exports.Domain = function (globalVariables) {
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
-                    this.manipulator.add(this.message);
+                    this.manipulator.set(5, this.message);
                     svg.timeout(() => {
-                        this.manipulator.remove(this.message);
+                        this.manipulator.unset(5);
                     }, 5000);
                 }
             };
@@ -637,8 +636,8 @@ exports.Domain = function (globalVariables) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    let formationsManager = new FormationsManager(myFormations);
-                    formationsManager.display();
+                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager.display();
                 });
             };
 
@@ -718,18 +717,17 @@ exports.Domain = function (globalVariables) {
                 messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
 
             this.displayPublicationMessage = (messagePublication) => {
-                this.saveFormationButtonManipulator.remove(this.message);
                 this.formationInfoManipulator.unset(2);
-                this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
                 this.errorMessagePublication = new svg.Text(messagePublication);
-                this.publicationFormationButtonManipulator.add(this.errorMessagePublication);
-                this.errorMessagePublication.position(-this.buttonWidth, -this.publicationButtonHeight / 2 - MARGIN)
+                this.manipulator.set(5, this.errorMessagePublication);
+                const messageY = this.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
+                this.errorMessagePublication.position(drawing.width/2, messageY - this.publicationButtonHeight*1.5 - MARGIN)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red)
                     .mark("errorMessagePublication");
 
                 svg.timeout(() => {
-                    this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
+                    this.manipulator.unset(5, this.errorMessagePublication);
                 }, 5000);
             };
 
