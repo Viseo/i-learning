@@ -865,13 +865,13 @@ exports.GUI = function (globalVariables) {
 
     function addEmptyElementDisplay(x, y, w, h) {
         let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
-        let plus = drawPlus(0, 0, h * 0.3, h * 0.3);
+        let plus = drawPlus(0, 0, 2*this.fontSize, 2*this.fontSize);
         this.manipulator.move(x, y);
         this.manipulator.set(2, plus);
-        obj.content.position(0, h * 0.35);
+        obj.content.position(0, 2*this.fontSize + obj.content.boundingRect().height/2);
         obj.cadre.color(myColors.white, 3, myColors.black)
             .mark('emptyAnswerAddCadre' + this.type);
-        obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
+        obj.cadre.component.setAttributeg && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
             this.manipulator.flush();
@@ -1713,7 +1713,7 @@ exports.GUI = function (globalVariables) {
             let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
                     width: this.image.width,
                     height: this.image.height
-                }, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+                }, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image, this.width*0.8);
             this.bordure = obj.cadre;
             this.content = obj.content;
             this.image = obj.image;
@@ -1726,7 +1726,7 @@ exports.GUI = function (globalVariables) {
         }
         // Question avec Texte uniquement
         else if (typeof this.label !== "undefined" && !this.imageSrc) {
-            var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
+            var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, this.width*0.8);
             this.bordure = object.cadre;
             this.content = object.content;
         }
