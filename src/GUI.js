@@ -667,11 +667,7 @@ exports.GUI = function (globalVariables) {
                         this.display(x, y, w, h);
 
                         Server.upload(file, progressDisplay).then((status) => {
-                            if (status === 'ok') {
-                                this.display(x, y, w, h);
-                            } else {
-                                // TODO message d'erreur
-                            }
+                            this.display(x, y, w, h);
                         });
                     }
 
