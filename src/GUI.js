@@ -872,7 +872,7 @@ exports.GUI = function (globalVariables) {
         obj.content.position(0, 2*this.fontSize + obj.content.boundingRect().height/2);
         obj.cadre.color(myColors.white, 3, myColors.black)
             .mark('emptyAnswerAddCadre' + this.type);
-        obj.cadre.component.setAttributeg && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
+        obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
             this.manipulator.flush();
@@ -2440,6 +2440,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzDisplayResult(color) {
+        drawings.screen.empty();
         this.displayScore(color);
         this.leftChevronManipulator.unset(0);
         this.rightChevronManipulator.unset(0);
