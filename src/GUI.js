@@ -2456,6 +2456,7 @@ exports.GUI = function (globalVariables) {
         expButton.cadre.mark('expButton');
 
         const displayExplanation = () => {
+            drawings.screen.empty();
             this.manipulator.flush();
             let quizzExplanation = new Quizz(this, true);
             quizzExplanation.currentQuestionIndex = 0;
