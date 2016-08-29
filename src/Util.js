@@ -539,15 +539,15 @@ exports.Util = function (globalVariables) {
                         const crossHandler = () => {
                             drawing.manipulator.unset(3);
                             drawings.screen.empty();
-                            let quizz = manipulator.parentObject.parentQuizz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuizz) || manipulator.parentObject.answer.parentQuestion.parentQuizz;
-                            if (quizz.currentQuestionIndex !== -1) {
+                            let quizz = manipulator.parentObject.parentQuizz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuizz) ||manipulator.parentObject.answer.parentQuestion.parentQuizz;
+                            if (quizz.currentQuestionIndex !== -1 && quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                                 quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
                             }
                             quizz.display(0, 0, drawing.width, drawing.height);
 
-                            if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                                quizz.displayCurrentQuestion();
-                            }
+                            // if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                            //     quizz.displayCurrentQuestion();
+                            // }
                             svg.removeEvent(drawings.glass, "click");
                         };
 
@@ -1811,7 +1811,7 @@ exports.Util = function (globalVariables) {
             title: "",
             bgColor: myColors.white,
             puzzleLines: 3,
-            puzzleRows: 1,
+            puzzleRows: 3,
             tabQuestions: [defaultQuestion]
         };
 

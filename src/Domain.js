@@ -1238,8 +1238,8 @@ exports.Domain = function (globalVariables) {
             this.levelIndex = quizz.levelIndex || 0;
             this.gameIndex = quizz.gameIndex || 0;
             (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
-            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 2);
-            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 2);
+            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 3);
+            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 3);
             quizz.font && (this.font = quizz.font);
             quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
             quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
