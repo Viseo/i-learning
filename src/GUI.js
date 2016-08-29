@@ -640,7 +640,7 @@ exports.GUI = function (globalVariables) {
                     const files = fileExplorer.component.files;
                     for (let file of files) {
                         let progressDisplay;
-                        if (file.mimetype === 'video/mp4') {
+                        if (file.type === 'video/mp4') {
                             progressDisplay = (() => {
                                 const width = 0.8 * w;
                                 const manipulator = new Manipulator().addOrdonator(3);
