@@ -1746,6 +1746,7 @@ exports.GUI = function (globalVariables) {
         if (playerMode) {
             if (this.parentQuizz.currentQuestionIndex >= this.parentQuizz.tabQuestions.length) {
                 let event = () => {
+                    drawings.screen.empty();
                     let tempFinishedQuizz = Object.assign({}, this.parentQuizz);
                     this.finishedQuizz = new Quizz(tempFinishedQuizz, true);
                     this.finishedQuizz.currentQuestionIndex = this.questionNum - 1;
@@ -2356,6 +2357,7 @@ exports.GUI = function (globalVariables) {
             drawings.screen.empty();
             returnButtonChevron.mark('returnButtonToFormation');
             this.returnButton.setHandler(() => {
+                drawings.screen.empty();
                 this.closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
