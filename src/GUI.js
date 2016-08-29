@@ -120,8 +120,9 @@ exports.GUI = function (globalVariables) {
                     this.obj.content = picture.imageSVG.content;
                     this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
                 }else if (this.video) {
+                    this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
                     let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, 8);
-                    this.obj.content=obj.content;
+                    this.obj.content = obj.content;
                     this.border = obj.cadre;
                     this.obj.video = obj.video;
                 }

@@ -981,6 +981,9 @@ exports.Domain = function (globalVariables) {
                             answer.obj.video && drawings.screen.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
+                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.elementsArray.forEach(element=>{
+                               element.obj && element.obj.video && drawings.screen.remove(element.obj.video);
+                            });
                             answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;
