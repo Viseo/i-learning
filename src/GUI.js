@@ -494,6 +494,51 @@ exports.GUI = function (globalVariables) {
         let display = (x, y, w, h) => {
             libraryDisplay.call(this, x, y, w, h, 0.8, h/2);
 
+            const uploadFiles = (files) => {
+                for (let file of files) {
+                    let progressDisplay;
+                    if (file.type === 'video/mp4') {
+                        progressDisplay = (() => {
+                            const width = 0.8 * w;
+                            const manipulator = new Manipulator().addOrdonator(3);
+                            const icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
+                            manipulator.set(0, icon);
+                            const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
+                            manipulator.set(1, rect);
+
+                            this.videosUploadManipulators.push(manipulator);
+                            return (e) => {
+                                const progwidth = width * e.loaded / e.total;
+                                const bar = new svg.Rect(progwidth, 8)
+                                        .color(myColors.green)
+                                        .position(-(width - progwidth) / 2, 0);
+                                manipulator.set(2, bar);
+                                if (e.loaded === e.total) {
+                                    this.videosUploadManipulators.remove(manipulator);
+                                }
+                            };
+                        })();
+                    }
+
+                    this.display(x, y, w, h);
+
+                    Server.upload(file, progressDisplay).then(() => {
+                        this.display(x, y, w, h);
+                    });
+                }
+
+            };
+
+            const drop = (event) => {
+                event.preventDefault();
+                if (this.bordure.inside(event.pageX, event.pageY)) {
+                    uploadFiles(event.dataTransfer.files)
+                }
+
+            };
+            svg.addEvent(drawings.glass, 'dragover', (e) => {e.preventDefault()});
+            svg.addEvent(drawings.glass, 'drop', drop);
+
             const assignImageEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
                     let mouseDownAction = event => {
@@ -636,41 +681,7 @@ exports.GUI = function (globalVariables) {
                 };
 
                 const onChangeFileExplorerHandler = () => {
-
-                    const files = fileExplorer.component.files;
-                    for (let file of files) {
-                        let progressDisplay;
-                        if (file.type === 'video/mp4') {
-                            progressDisplay = (() => {
-                                const width = 0.8 * w;
-                                const manipulator = new Manipulator().addOrdonator(3);
-                                const icon = drawUploadIcon({x:-0.56 * width, y: 5, size: 20});
-                                manipulator.set(0, icon);
-                                const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
-                                manipulator.set(1, rect);
-
-                                this.videosUploadManipulators.push(manipulator);
-                                return (e) => {
-                                    const
-                                        progwidth = width*e.loaded/e.total,
-                                        bar = new svg.Rect(progwidth, 8)
-                                            .color(myColors.green)
-                                            .position(-(width - progwidth) / 2, 0);
-                                    manipulator.set(2, bar);
-                                    if (e.loaded === e.total) {
-                                        this.videosUploadManipulators.remove(manipulator);
-                                    }
-                                };
-                            })();
-                        }
-
-                        this.display(x, y, w, h);
-
-                        Server.upload(file, progressDisplay).then((status) => {
-                            this.display(x, y, w, h);
-                        });
-                    }
-
+                    uploadFiles(fileExplorer.component.files)
                 };
 
                 const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
