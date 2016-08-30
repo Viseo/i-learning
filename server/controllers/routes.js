@@ -35,7 +35,7 @@ module.exports = function (app, fs) {
                             if (err) {
                                 reject(err)
                             }
-                            resolve()
+                            resolve({src:"../resource/" + file.filename, name:file.originalname})
                         })
                     } else if (['image/png', 'image/jpeg'].includes(result)) {
                         db.get().collection('images').insertOne({
@@ -65,6 +65,21 @@ module.exports = function (app, fs) {
                 console.error(err.message);
                 res.send('err')
             });
+    });
+
+    app.post('/deleteImage', function (req, res){
+        var collection = db.get().collection('images');
+        var result;
+        collection.deleteOne({"_id": new ObjectID(req.body._id)});
+        fs.unlink('./resource' + req.body.imgSrc.split('/')[2], () => {});
+        res.send({ack: "ok"});
+    });
+
+    app.post('/deleteVideo', function (req, res){
+        var collection = db.get().collection('videos');
+        collection.deleteOne({"_id": new ObjectID(req.body._id)});
+        fs.unlink('./resource' + req.body.src.split('/')[2], () => {});
+        res.send({ack: "ok"});
     });
 
     app.get('/getUserByMailAddress/:mailAddress', function(req, res) {

@@ -61,17 +61,19 @@ function HttpRequests(isWriting, isMock, listener) {
         })
     }
 
-    function httpUpload(theUrl, file, onProgress) {
+    function httpUpload(theUrl, file, onProgress, onAbort) {
         return new Promise((resolve) => {
             const formData = new FormData();
             formData.append('file', file);
             var request = new XMLHttpRequest();
+            this.uploadRequest = request;
             request.onreadystatechange = function () {
                 if (request.readyState == 4 && request.status == 200)
                     resolve(request.responseText);
             };
             if (request.upload && file.type == "video/mp4") {
                 request.upload.addEventListener("progress", onProgress);
+                // request.upload.addEventListener("abort", ()=>onAbort(request.responseText));
             }
             request.open('POST', theUrl, true); // true for asynchronous
             //request.setRequestHeader('Content-Type', 'multipart/form-data');

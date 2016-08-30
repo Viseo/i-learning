@@ -505,6 +505,19 @@ exports.GUI = function (globalVariables) {
                             manipulator.set(0, icon);
                             const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
                             manipulator.set(1, rect);
+                            manipulator.redCrossManipulator = new Manipulator(this);
+                            manipulator.add(manipulator.redCrossManipulator);
+
+                            let redCross = drawRedCross(0, 0, 15, manipulator.redCrossManipulator);
+                            manipulator.redCrossManipulator.add(redCross);
+                            let redCrossClickHandler = ()=> {
+                                dbListener.uploadRequest && dbListener.uploadRequest.abort();
+                                // svg.event(file, 'abort', ()=>{console.log('abort')});
+                                // console.log(e);
+                                // Server.deleteVideo(video);
+                                // this.display(this.x, this.y, this.w, this.h);
+                            };
+                            svg.addEvent(redCross, 'click', redCrossClickHandler);
 
                             this.videosUploadManipulators.push(manipulator);
                             return (e) => {
@@ -617,11 +630,14 @@ exports.GUI = function (globalVariables) {
                         }
 
                         this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
-                        let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                        this.imageLayer = 0;
+                        // let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
+                        let image = new Picture(item.imgSrc, true, this);
+                        image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i]);
                         image.name = item.name;
                         image.srcDimension = {width: item.width, height: item.height};
-                        this.libraryManipulators[i].set(0, image);
-                        image.mark('image' + image.src.split('/')[2].split('.')[0]);
+                        // this.libraryManipulators[i].set(0, image.imageSVG);
+                        image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
 
                         let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
                         this.libraryManipulators[i].move(X, tempY);
@@ -710,7 +726,7 @@ exports.GUI = function (globalVariables) {
                 videosPanel.position(w / 2 + 0.5, h/2);
                 videosPanel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
 
-                const displayVideo = function (video, manipulator) {
+                const displayVideo = (video, manipulator)=> {
                     this.video = video;
                     let iconVideo = drawVideoIcon(0, -10, 20, this);
                     iconVideo.mark(video.name.split('.')[0]);
@@ -719,6 +735,29 @@ exports.GUI = function (globalVariables) {
                     title.text.fullTitle = video.name;
                     title.text.position(title.finalWidth/2 + 15, -title.finalHeight/4);
                     manipulator.video = video;
+
+                    let overVideoIconHandler = ()=> {
+                        let redCross = drawRedCross(0, -title.finalHeight/2, 15, manipulator.redCrossManipulator);
+                        svg.addEvent(redCross, 'mouseout', mouseleaveHandler);
+                        manipulator.redCrossManipulator.add(redCross);
+                        let redCrossClickHandler = ()=> {
+                            console.log('oui');
+                            Server.deleteVideo(video);
+                            this.display(this.x, this.y, this.w, this.h);
+                        };
+                        svg.addEvent(redCross, 'click', redCrossClickHandler);
+                    };
+
+                    let mouseleaveHandler = ()=> {
+                        manipulator.redCrossManipulator.flush();
+                    };
+
+                    iconVideo.setHandler('mouseover', overVideoIconHandler);
+                    iconVideo.setHandler('mouseout', mouseleaveHandler);
+
+                    svg.addEvent(title.text, 'mouseover', overVideoIconHandler);
+                    svg.addEvent(title.text, 'mouseout', mouseleaveHandler);
+
                 };
 
                 const sort = function mergeSort(array, isSmaller) {
@@ -762,6 +801,8 @@ exports.GUI = function (globalVariables) {
                                 this.videosManipulators[i] = new Manipulator().addOrdonator(2);
                             }
                             videosPanel.content.add(this.videosManipulators[i].first);
+                            this.videosManipulators[i].redCrossManipulator = new Manipulator(this);
+                            this.videosManipulators[i].add(this.videosManipulators[i].redCrossManipulator);
                             displayVideo(video, this.videosManipulators[i]);
                             this.videosManipulators[i].move(20, 30 + i*30 );
                         });

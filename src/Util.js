@@ -368,6 +368,12 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, arrow);
             manipulator.set(1, line);
             manipulator.move(x, y);
+
+            manipulator.setHandler = (event, handler) => {
+                svg.addEvent(arrow, event, handler);
+                svg.addEvent(line, event, handler);
+            };
+
             return manipulator;
         };
 
@@ -1541,8 +1547,16 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/formations/deactivateFormation", {id: id}, ignoredData);
         }
 
-        static upload(file, onProgress) {
-            return dbListener.httpUpload("/upload", file, onProgress);
+        static upload(file, onProgress, onAbort) {
+            return dbListener.httpUpload("/upload", file, onProgress, this.deleteVideo);
+        }
+
+        static deleteImage(image) {
+            return dbListener.httpPostAsync("/deleteImage", image);
+        }
+
+        static deleteVideo(video) {
+            return dbListener.httpPostAsync("/deleteVideo", video);
         }
 
         static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
