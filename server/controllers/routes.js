@@ -21,11 +21,14 @@ module.exports = function (app, fs) {
 
     const id = new ObjectID();
 
-    app.post('/upload', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
-        const insertInDB = function(file) {
+    const upload = multer({dest: __dirname + '/../../resource/'}).single('file');
+
+    app.post('/upload', (req, res) => {
+
+        const insertInDB = function (file) {
             return new Promise((resolve, reject) => {
                 const magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
-                magic.detectFile(file.path, function(err, result) {
+                magic.detectFile(file.path, function (err, result) {
                     if (result === 'video/mp4') {
                         db.get().collection('videos').insertOne({
                             src: "../resource/" + file.filename,
@@ -34,7 +37,7 @@ module.exports = function (app, fs) {
                             if (err) {
                                 reject(err)
                             }
-                            resolve({src:"../resource/" + file.filename, name:file.originalname})
+                            resolve({src: "../resource/" + file.filename, name: file.originalname})
                         })
                     } else if (['image/png', 'image/jpeg'].includes(result)) {
                         db.get().collection('images').insertOne({
@@ -55,34 +58,42 @@ module.exports = function (app, fs) {
             })
         };
 
-        insertInDB(req.file)
-            .then(() => {
-                console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
-                res.send('ok')
-            })
-            .catch((err) => {
-                console.error(err.message);
-                res.send('err')
-            });
+        upload(req, res, (err) => {
+            console.log(err);
+            insertInDB(req.file)
+                .then(() => {
+                    console.log(`${new Date().toLocaleTimeString('fr-FR')} : File ${req.file.originalname} inserted in MongoDB.`);
+                    res.send('ok')
+                })
+                .catch((err) => {
+                    console.error(err.message);
+                    res.send('err')
+                });
+        })
     });
 
-    app.post('/deleteImage', function (req, res){
+    app.post('/deleteImage', function (req, res) {
         var collection = db.get().collection('images');
         collection.deleteOne({"_id": new ObjectID(req.body._id)});
-        fs.unlink('./resource/' + req.body.imgSrc.split('/')[2], (error) => {console.error(error); res.send({ack: "ok"});});
+        fs.unlink('./resource/' + req.body.imgSrc.split('/')[2], (error) => {
+            console.error(error);
+            res.send({ack: "ok"});
+        });
     });
 
-    app.post('/deleteVideo', function (req, res){
+    app.post('/deleteVideo', function (req, res) {
         var collection = db.get().collection('videos');
         collection.deleteOne({"_id": new ObjectID(req.body._id)});
-        fs.unlink('./resource/' + req.body.src.split('/')[2], () => {res.send({ack: "ok"});});
+        fs.unlink('./resource/' + req.body.src.split('/')[2], () => {
+            res.send({ack: "ok"});
+        });
     });
 
-    app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
+    app.get('/getUserByMailAddress/:mailAddress', function (req, res) {
         var collection = db.get().collection('users');
         var result;
-        collection.find().toArray(function(err, docs) {
-            result = docs.find(user => user.mailAddress===req.params.mailAddress);
+        collection.find().toArray(function (err, docs) {
+            result = docs.find(user => user.mailAddress === req.params.mailAddress);
             res.send({user: result});
         });
     });
@@ -103,9 +114,9 @@ module.exports = function (app, fs) {
                 }
             });
         })
-        .catch(() => {
-            res.send({status: 'error'});
-        });
+            .catch(() => {
+                res.send({status: 'error'});
+            });
     });
 
     app.post('/auth/connect', (req, res) => {
@@ -118,7 +129,7 @@ module.exports = function (app, fs) {
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
                 cookies.generate(user)
                     .then(data => {
-                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60*60*24*30}`);
+                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30}`);
                         res.send({
                             ack: 'OK',
                             user: {
@@ -135,10 +146,10 @@ module.exports = function (app, fs) {
         });
     });
 
-    app.post('/user/inscription/', function(req, res) {
+    app.post('/user/inscription/', function (req, res) {
         users.getUserByEmailAddress(req.body.mailAddress)
             .then(data => {
-                if(data) {
+                if (data) {
                     res.send(false);
                 } else {
                     return users.inscription(req.body)
@@ -148,10 +159,12 @@ module.exports = function (app, fs) {
             .catch(err => console.log(err));
     });
 
-    app.get('/user/getUser', function(req, res) {
+    app.get('/user/getUser', function (req, res) {
         const token = cookies.get(req);
         cookies.verify(token)
-            .then((user) => {res.send(user)})
+            .then((user) => {
+                res.send(user)
+            })
             .catch(console.error)
     });
 
@@ -160,7 +173,9 @@ module.exports = function (app, fs) {
             .then((user) => {
                 return users.saveProgress(req.body, user);
             })
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
     });
 
@@ -180,25 +195,33 @@ module.exports = function (app, fs) {
     app.post('/formations/deactivateFormation', function (req, res) {
         formations.getFormationById(req.body.id)
             .then(data => formations.deactivateFormation(data.formation))
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
     });
 
-    app.get('/formations/getFormationByName/:name', function(req, res) {
+    app.get('/formations/getFormationByName/:name', function (req, res) {
         formations.getFormationsByName(req.params.name)
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
     });
 
     app.get('/formations/getVersionById/:id', (req, res) => {
         formations.getVersionById(req.params.id)
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
     });
 
     app.get('/formations/getAdminFormations', (req, res) => {
         formations.getLastVersions()
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
     });
 
@@ -213,7 +236,9 @@ module.exports = function (app, fs) {
                 const [user, allFormations, versions] = values;
                 return users.getFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection);
             })
-            .then((data) => {res.send(data)})
+            .then((data) => {
+                res.send(data)
+            })
             .catch(console.error)
 
     });
@@ -221,7 +246,7 @@ module.exports = function (app, fs) {
     app.post('/formations/replaceFormation/:id', function (req, res) {
         formations.getFormationByVersionId(req.params.id)
             .then(formation => {
-                if(formation) {
+                if (formation) {
                     formations.getFormationsByName(req.body.label)
                         .then(data => {
                             if (data.formation) {
@@ -249,21 +274,25 @@ module.exports = function (app, fs) {
     app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
         formations.getFormationByVersionId(req.params.id)
             .then(formation => {
-                formations.replaceQuiz({level: req.params.levelIndex, game: req.params.gameIndex, id: req.params.id}, req.body, formation)
-                    .then(data => res.send({ack:'ok'}))
+                formations.replaceQuiz({
+                    level: req.params.levelIndex,
+                    game: req.params.gameIndex,
+                    id: req.params.id
+                }, req.body, formation)
+                    .then(data => res.send({ack: 'ok'}))
                     .catch(err => console.log(err));
             });
     });
 
-    app.post('/getAllImages', function(req, res) {
+    app.post('/getAllImages', function (req, res) {
         var collection = db.get().collection('images');
-        collection.find().toArray(function(err, docs) {
+        collection.find().toArray(function (err, docs) {
             res.send({images: docs});
         });
     });
 
-    app.post('/getAllVideos', function(req, res) {
-        db.get().collection('videos').find().toArray(function(err, videos) {
+    app.post('/getAllVideos', function (req, res) {
+        db.get().collection('videos').find().toArray(function (err, videos) {
             res.send(videos);
         })
     });
@@ -272,12 +301,12 @@ module.exports = function (app, fs) {
         try {
             fs.accessSync("./log/db.json", fs.F_OK);
             // Do something
-            fs.appendFileSync("./log/db.json", JSON.stringify(req.body)+"\n");
-            res.send({ack:'ok'});
+            fs.appendFileSync("./log/db.json", JSON.stringify(req.body) + "\n");
+            res.send({ack: 'ok'});
         } catch (e) {
             // It isn't accessible
             console.log("Can't access to db.json");
-            res.send({ack:'ok'});
+            res.send({ack: 'ok'});
         }
     });
 };
