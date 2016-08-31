@@ -949,18 +949,24 @@ exports.Util = function (globalVariables) {
     }
 
     class Picture {
-        constructor(src, editable, parent, textToDisplay) {
+        constructor(src, editable, parent, textToDisplay, imageRedCrossClickHandler) {
             this.editable = editable;
             this.src = src;
             this.editable && (this._acceptDrop = true);
             this.parent = parent;
             this.textToDisplay = textToDisplay;
+            this.imageRedCrossClickHandler = imageRedCrossClickHandler;
+            if (typeof this.redCrossManipulator === 'undefined') {
+                this.redCrossManipulator = new Manipulator(this);
+                this.redCrossManipulator.addOrdonator(2);
+            }
         }
 
         draw(x, y, w, h, manipulator = this.parent.manipulator, textWidth) {
             this.width = w;
             this.height = h;
             if (this.editable) {
+                manipulator.add(this.redCrossManipulator);
                 this.drawImageRedCross(this.parent, manipulator);
             }
             if (this.textToDisplay) {
@@ -974,52 +980,48 @@ exports.Util = function (globalVariables) {
                 this.imageSVG.position(x, y);
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
-                this.imageSVG._acceptDrop = this.editable;
+                this.imageSVG._acceptDrop = this._acceptDrop;
                 manipulator.set(this.parent.imageLayer, this.imageSVG);
             }
         }
 
+        setImageRedCrossClickHandler(imageRedCrossClickHandler) {
+            this.imageRedCrossClickHandler = imageRedCrossClickHandler;
+        }
+
         drawImageRedCross(parent, manipulator) {
-            this.imageRedCrossClickHandler = ()=> {
-                this.redCrossManipulator.flush();
-                parent.imageLayer && manipulator.unset(parent.imageLayer);//image
-                if (parent.linkedQuestion) {
-                    parent.linkedQuestion.image = null;
-                    parent.linkedQuestion.imageSrc = null;
-                }
-                else {
-                    parent.image = null;
-                    parent.imageSrc = null;
-                }
-                // if (parent.parent && parent.parent.questionPuzzle) {
-                //     parent.parent.questionPuzzle.display();
-                // }
-                if (this.parent.parentQuestion) {
-                    let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-                    let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                    let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                    this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
-                    this.parent.parentQuestion.checkValidity();
-                }
-                else if (this.parent.answer) {
-                    let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                    this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                    this.parent.answer.parentQuestion.checkValidity();
-                }
-                else {
-                    this.parent.display();
-                    this.parent.linkedQuestion.checkValidity();
-                }
-            };
+            // this.imageRedCrossClickHandler = ()=> {
+            //     this.redCrossManipulator.flush();
+            //     parent.imageLayer && manipulator.unset(parent.imageLayer);//image
+            //     if (parent.linkedQuestion) {
+            //         parent.linkedQuestion.image = null;
+            //         parent.linkedQuestion.imageSrc = null;
+            //     }
+            //     else {
+            //         parent.image = null;
+            //         parent.imageSrc = null;
+            //     }
+            //     if (this.parent.parentQuestion) {
+            //         let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+            //         let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+            //         let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+            //         this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
+            //         this.parent.parentQuestion.checkValidity();
+            //     }
+            //     else if (this.parent.answer) {
+            //         let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+            //         this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+            //         this.parent.answer.parentQuestion.checkValidity();
+            //     }
+            //     else {
+            //         this.parent.display();
+            //         this.parent.linkedQuestion.checkValidity();
+            //     }
+            // };
             this.mouseleaveHandler = ()=> {
                 this.redCrossManipulator.flush();
             };
             this.imageMouseoverHandler = ()=> {
-                if (typeof this.redCrossManipulator === 'undefined') {
-                    this.redCrossManipulator = new Manipulator(this);
-                    this.redCrossManipulator.addOrdonator(2);
-                    manipulator.add(this.redCrossManipulator);
-                }
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);

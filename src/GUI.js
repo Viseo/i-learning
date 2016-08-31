@@ -113,7 +113,18 @@ exports.GUI = function (globalVariables) {
 
                 if (this.image) {
                     this.imageLayer = 2;
-                    let picture = new Picture(this.image.src, true, this, text);
+                    let pictureRedCrossClickHandler = ()=>{
+                        this.redCrossManipulator.flush();
+                        this.imageLayer && this.manipulator.unset(this.imageLayer);//image
+                        this.image = null;
+                        this.imageSrc = null;
+                        let puzzle = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                        let x = -(puzzle.visibleArea.width - this.width) / 2 + this.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+                        let y = -(puzzle.visibleArea.height - this.height) / 2 + this.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                        this.display(x, y, this.width, this.height);
+                        this.parentQuestion.checkValidity();
+                    };
+                    let picture = new Picture(this.image.src, true, this, text, pictureRedCrossClickHandler);
                     picture.draw(0, 0, w, h, this.manipulator, w - 2 * checkboxSize);
                     this.border = picture.imageSVG.cadre;
                     this.obj.image = picture.imageSVG.image;
@@ -511,7 +522,9 @@ exports.GUI = function (globalVariables) {
                             let redCross = drawRedCross(0, 0, 15, manipulator.redCrossManipulator);
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
+                                dbListener.uploadRequest && dbListener.uploadRequest.status;
                                 dbListener.uploadRequest && dbListener.uploadRequest.abort();
+                                dbListener.uploadRequest && dbListener.uploadRequest.status;
                                 // svg.event(file, 'abort', ()=>{console.log('abort')});
                                 // console.log(e);
                                 // Server.deleteVideo(video);
@@ -632,10 +645,16 @@ exports.GUI = function (globalVariables) {
                         this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                         this.imageLayer = 0;
                         // let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
-                        let image = new Picture(item.imgSrc, true, this);
+                        let imageRedCrossClickHandler = ()=>{
+                            this.itemsTab.splice(i, 1);
+                            Server.deleteImage(item);
+                            this.display(x, y, w, h);
+                        };
+                        let image = new Picture(item.imgSrc, true, this, null, imageRedCrossClickHandler);
+                        image._acceptDrop = false;
                         image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i]);
                         image.name = item.name;
-                        image.srcDimension = {width: item.width, height: item.height};
+                        image.imageSVG.srcDimension = {width: item.width, height: item.height};
                         // this.libraryManipulators[i].set(0, image.imageSVG);
                         image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
 
@@ -656,6 +675,7 @@ exports.GUI = function (globalVariables) {
                             this.itemsTab[i] = imageController.getImage(url.imgSrc, function () {
                                 this.imageLoaded = true; //this != library
                             });
+                            this.itemsTab[i]._id = url._id;
                             this.itemsTab[i].name = url.name;
                             this.itemsTab[i].imgSrc = url.imgSrc;
                         });
@@ -741,7 +761,6 @@ exports.GUI = function (globalVariables) {
                         svg.addEvent(redCross, 'mouseout', mouseleaveHandler);
                         manipulator.redCrossManipulator.add(redCross);
                         let redCrossClickHandler = ()=> {
-                            console.log('oui');
                             Server.deleteVideo(video);
                             this.display(this.x, this.y, this.w, this.h);
                         };
@@ -2084,7 +2103,17 @@ exports.GUI = function (globalVariables) {
             if (this.linkedQuestion.image) {
                 this.image = this.linkedQuestion.image;
                 this.imageLayer = 2;
-                var picture = new Picture(this.image.src, true, this, text);
+                let pictureRedCrossClickHandler = ()=> {
+                    // this.redCrossManipulator.flush();
+                    this.imageLayer && this.questionManipulator.unset(this.imageLayer);//image
+                    this.linkedQuestion.image = null;
+                    this.linkedQuestion.imageSrc = null;
+                    this.display();
+                    this.linkedQuestion.checkValidity();
+                    this.parent.questionPuzzle.display();
+                };
+
+                var picture = new Picture(this.image.src, true, this, text, pictureRedCrossClickHandler);
                 picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
@@ -2258,7 +2287,16 @@ exports.GUI = function (globalVariables) {
                 this.manipulator.unset(6);
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
-                let picture = new Picture(this.image, this.editable, this);
+                let pictureRedCrossClickHandler = ()=> {
+                    // this.redCrossManipulator.flush();
+                    this.manipulator.flush();
+                    // this.imageLayer && this.manipulator.unset(this.imageLayer);//image
+                    this.image = null;
+                    this.imageSrc = null;
+                    let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                };
+                let picture = new Picture(this.image, this.editable, this, null, pictureRedCrossClickHandler);
                 this.manipulator.unset(5);
                 picture.draw(this.imageX, 0, imageSize, imageSize);
                 picture.imageSVG.mark('imageExplanation');

@@ -22,7 +22,6 @@ module.exports = function (app, fs) {
     const id = new ObjectID();
 
     app.post('/upload', multer({dest: __dirname+ '/../../resource/'}).single("file"), (req, res) => {
-
         const insertInDB = function(file) {
             return new Promise((resolve, reject) => {
                 const magic = new mmm.Magic(mmm.MAGIC_MIME_TYPE);
@@ -69,17 +68,14 @@ module.exports = function (app, fs) {
 
     app.post('/deleteImage', function (req, res){
         var collection = db.get().collection('images');
-        var result;
         collection.deleteOne({"_id": new ObjectID(req.body._id)});
-        fs.unlink('./resource' + req.body.imgSrc.split('/')[2], () => {});
-        res.send({ack: "ok"});
+        fs.unlink('./resource/' + req.body.imgSrc.split('/')[2], (error) => {console.error(error); res.send({ack: "ok"});});
     });
 
     app.post('/deleteVideo', function (req, res){
         var collection = db.get().collection('videos');
         collection.deleteOne({"_id": new ObjectID(req.body._id)});
-        fs.unlink('./resource' + req.body.src.split('/')[2], () => {});
-        res.send({ack: "ok"});
+        fs.unlink('./resource/' + req.body.src.split('/')[2], () => {res.send({ack: "ok"});});
     });
 
     app.get('/getUserByMailAddress/:mailAddress', function(req, res) {
