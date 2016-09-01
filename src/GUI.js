@@ -508,7 +508,9 @@ exports.GUI = function (globalVariables) {
             const uploadFiles = (files) => {
                 for (let file of files) {
                     let progressDisplay;
+                    this.selectedTab = 0;
                     if (file.type === 'video/mp4') {
+                        this.selectedTab = 1;
                         progressDisplay = (() => {
                             const width = 0.8 * w;
                             const manipulator = new Manipulator().addOrdonator(3);
@@ -560,8 +562,8 @@ exports.GUI = function (globalVariables) {
                 if (this.bordure.inside(event.pageX, event.pageY)) {
                     uploadFiles(event.dataTransfer.files)
                 }
-
             };
+
             svg.addEvent(drawings.glass, 'dragover', (e) => {e.preventDefault()});
             svg.addEvent(drawings.glass, 'drop', drop);
 
@@ -915,7 +917,7 @@ exports.GUI = function (globalVariables) {
 
                 });
                 tabManager.manipulator.move(w/4 + MARGIN, h*0.05);
-                tabManager.select (this.selectedTab);
+                tabManager.select(this.selectedTab);
                 this.libraryManipulator.set(1, tabManager.manipulator);
                 assignVideoEvents();
 
@@ -1910,6 +1912,14 @@ exports.GUI = function (globalVariables) {
             buttonW = 0.5 * drawing.width,
             buttonX = -buttonW / 2;
         if (playerMode && this.parentQuizz.previewMode) {
+            const textToSpeechMode = () => {
+                globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
+                // TODO change icon color
+                console.log('text-to-speech mode ' + (globalVariables.textToSpeechMode?'ON':'OFF'));
+            };
+            const icon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, size: 30})
+                .setHandler('click', textToSpeechMode);
+            this.manipulator.add(icon.manipulator);
             this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
             displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
         }
@@ -2230,11 +2240,10 @@ exports.GUI = function (globalVariables) {
             answer.video && drawings.screen.remove(answer.video.miniature);
         });
 
-        let crossSize = 12;
-        let drawGreyCross = () => {
+        const drawGreyCross = (size) => {
             const
-                circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
-                cross = drawCross(w / 2, -h / 2, crossSize, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
+                circle = new svg.Circle(size).color(myColors.black, 2, myColors.white),
+                cross = drawCross(w / 2, -h / 2, size, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
             circle.mark('circleCloseExplanation');
             this.closeButtonManipulator.set(0, circle);
             this.closeButtonManipulator.set(1, cross);
@@ -2257,7 +2266,7 @@ exports.GUI = function (globalVariables) {
             svg.addEvent(circle, "click", crossHandler);
             return cross;
         };
-        this.cross = drawGreyCross();
+        this.cross = drawGreyCross(12);
 
         drawing.notInTextArea = true;
         svg.addGlobalEvent("keydown", (event) => {
@@ -2278,7 +2287,8 @@ exports.GUI = function (globalVariables) {
         let panelWidth = (w - 2 * MARGIN) * 0.7,
             panelHeight = h - 2 * MARGIN;
         const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
-        let createImageAndText = ()=>{
+        
+        const createWithText = () => {
             const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN;
             this.imageX = (-w + imageW) / 2 + MARGIN;
             this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
@@ -2327,11 +2337,37 @@ exports.GUI = function (globalVariables) {
                 this.panelManipulator.move(0, 0);
             }
         };
+        const createWithoutText = () => {
+            const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
+                imageX = 0;
+            this.panelManipulator.unset(0);
+            this.miniature && drawings.screen.remove(this.miniature.video);
+            if (this.image) {
+                this.manipulator.unset(6);
+                this.imageLayer = 3;
+                const imageSize = Math.min(imageW, panelHeight);
+                this.manipulator.unset(5);
+                let picture = new Picture(this.image, this.editable, this);
+                picture.draw(imageX, 0, imageSize, imageSize);
+                picture.imageSVG.mark('imageExplanation');
+                this.answer.filled = true;
+            } else if (this.video) {
+                this.manipulator.unset(3);
+                this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5);
+                this.miniature.video.width = imageW;
+                this.answer.filled = true;
+            }
+        };
+        
+        if (globalVariables.textToSpeechMode) {
+            createWithoutText();
+        } else {
+            createWithText();
+        }
 
-        createImageAndText();
         let textToDisplay, text;
 
-        let drawTextPanel = ()=>{
+        let drawTextPanel = () => {
             this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
             this.panel.border.color([], 1, [0, 0, 0]);
             this.panel.back.mark('explanationPanel');
@@ -2345,7 +2381,11 @@ exports.GUI = function (globalVariables) {
             this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
         };
 
-        drawTextPanel();
+        if (globalVariables.textToSpeechMode) {
+            // TODO read text
+        } else {
+            drawTextPanel();
+        }
 
         const clickEdition = () => {
             let contentArea = {};

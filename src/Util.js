@@ -377,6 +377,25 @@ exports.Util = function (globalVariables) {
             return manipulator;
         };
 
+        drawTextToSpeechIcon = function (spec) {
+            const {size, x, y} = spec;
+            const manipulator = new Manipulator();
+            const image = new svg.Image('../images/volume.svg')
+                .dimension(size, size);
+            manipulator.add(image);
+            manipulator.move(x, y);
+
+            return {
+                setHandler (event, handler) {
+                    svg.addEvent(image, event, handler);
+                    return this
+                },
+                get manipulator () {
+                    return manipulator
+                }
+            }
+        };
+
         displayPen = function (x, y, size, object) {
             const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
                 square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
