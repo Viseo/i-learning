@@ -461,25 +461,21 @@ exports.Util = function (globalVariables) {
                 w = 1;
                 h = 1;
             }
-            let text, points, cadre;
+            let text;
             if (!label) label = "";
             if (label !== "NOT_TO_BE_DISPLAYED") {
                 text = autoAdjustText(label, textWidth, null, fontSize, font, manipulator).text;
                 let textHeight = (label !== "") ? h * 0.25 : 0;
                 text.position(0, (h - textHeight) / 2);//w*1/6
                 manipulator.set(1, text);
-                cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-                manipulator.set(0, cadre);
-                points = cadre.globalPoint(-50, -50);
             }
-            else {
-                cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-                manipulator.set(0, cadre);
-                points = cadre.globalPoint(-50, -50);
-                // points = {x:0, y:0};
-            }
-            let video = new svg.Video(points.x, points.y, 100, videoObject.src, !editable);
-            let videoGlass = new svg.Rect(130, 80).color(myColors.pink).position(0, -25).opacity(0.001);
+
+            let cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            manipulator.set(0, cadre);
+            let {x, y} = cadre.globalPoint(-50, -50);
+
+            let video = new svg.Video(x, y, 100, videoObject.src, !editable),
+                videoGlass = new svg.Rect(130, 80).color(myColors.pink).position(0, -25).opacity(0.5);
             // videoGlass.mark('glass'+videoObject.name.split('.')[0]);
             manipulator.set(layer, videoGlass);
             drawings.screen.add(video);
@@ -598,7 +594,18 @@ exports.Util = function (globalVariables) {
                 video.setPlayHandler(playFunction);
             }
 
-            return {cadre: cadre, video: video, content: text};
+            return {
+                cadre,
+                video,
+                content: text,
+                resize (width) {
+                    let {x, y} = cadre.globalPoint(-width / 2, -width / 2);
+                    video.dimension(width)
+                        .position(x, y);
+                    videoGlass.dimension(1.3 * width, 0.8 * width);
+                    return this;
+                }
+            };
         };
 
         displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
