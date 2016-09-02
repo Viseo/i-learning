@@ -474,10 +474,7 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, cadre);
             let {x, y} = cadre.globalPoint(-50, -50);
 
-            let video = new svg.Video(x, y, 100, videoObject.src, !editable),
-                videoGlass = new svg.Rect(130, 80).color(myColors.pink).position(0, -25).opacity(0.5);
-            // videoGlass.mark('glass'+videoObject.name.split('.')[0]);
-            manipulator.set(layer, videoGlass);
+            const video = new svg.Video(x, y, 100, videoObject.src, !editable);
             drawings.screen.add(video);
 
             if (editable) {
@@ -487,7 +484,7 @@ exports.Util = function (globalVariables) {
                 videoGlass._acceptDrop = true;
                 text && (text._acceptDrop = true);
                 let redCrossManipulator;
-                const redCrossClickHandler = ()=> {
+                const redCrossClickHandler = () => {
                     redCrossManipulator.flush();
                     manipulator.unset(layer);
                     let parent = manipulator.parentObject;
@@ -516,10 +513,10 @@ exports.Util = function (globalVariables) {
                         parent.answer.parentQuestion.checkValidity();
                     }
                 };
-                this.mouseleaveHandler = ()=> {
+                this.mouseleaveHandler = () => {
                     redCrossManipulator.flush();
                 };
-                this.mouseoverHandler = ()=> {
+                this.mouseoverHandler = () => {
                     if (typeof redCrossManipulator === 'undefined') {
                         redCrossManipulator = new Manipulator(this);
                         redCrossManipulator.addOrdonator(2);
@@ -599,10 +596,11 @@ exports.Util = function (globalVariables) {
                 video,
                 content: text,
                 resize (width) {
-                    let {x, y} = cadre.globalPoint(-width / 2, -width / 2);
-                    video.dimension(width)
-                        .position(x, y);
-                    videoGlass.dimension(1.3 * width, 0.8 * width);
+                    let {x, y} = cadre.globalPoint(0, 0);
+                    video.dimension(width);
+                    let bounds = video.component.getBoundingClientRect();
+                    video.position(x - bounds.width / 2, y - (bounds.height / 2 + 50) );
+                    videoTitle.text.position(0, bounds.height/2);
                     return this;
                 }
             };
