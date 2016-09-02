@@ -2353,7 +2353,8 @@ exports.GUI = function (globalVariables) {
                 this.answer.filled = true;
             } else if (this.video) {
                 this.manipulator.unset(3);
-                this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5);
+                this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5)
+                    .resize(imageW);
                 this.miniature.video.width = imageW;
                 this.answer.filled = true;
             }
