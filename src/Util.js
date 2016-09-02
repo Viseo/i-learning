@@ -239,6 +239,35 @@ exports.Util = function (globalVariables) {
          * Created by qde3485 on 29/02/16.
          */
 
+        sort = function mergeSort(array, isSmaller) {
+            'use strict';
+            if (array.length < 2) {
+                return array;
+            }
+
+            const center = Math.floor(array.length / 2);
+            const left = mergeSort(array.slice(0, center), isSmaller);
+            const right = mergeSort(array.slice(center), isSmaller);
+
+            const mergeFunc = function merge(arr1, arr2, isSmaller) {
+                if (arr1.length === 0) {
+                    return arr2;
+                }
+
+                if (arr2.length === 0) {
+                    return arr1;
+                }
+
+                if (isSmaller(arr1[0], arr2[0])) {
+                    return [arr1[0]].concat(merge(arr1.slice(1), arr2, isSmaller));
+                } else {
+                    return [arr2[0]].concat(merge(arr1, arr2.slice(1), isSmaller));
+                }
+            };
+
+            return mergeFunc(left, right, isSmaller);
+        };
+
         getComplementary = function (tab) {
             return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
         };
