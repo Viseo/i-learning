@@ -114,7 +114,6 @@ exports.GUI = function (globalVariables) {
                 if (this.image) {
                     this.imageLayer = 2;
                     let pictureRedCrossClickHandler = ()=>{
-                        this.redCrossManipulator.flush();
                         this.imageLayer && this.manipulator.unset(this.imageLayer);//image
                         this.image = null;
                         this.imageSrc = null;
