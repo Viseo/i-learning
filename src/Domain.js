@@ -1341,12 +1341,12 @@ exports.Domain = function (globalVariables) {
             this.questionsAnswered.forEach(questionAnswered => {
                 let question = questionAnswered.question;
                 if (question.multipleChoice) {
-                    if (question.rightAnswers.length !== question.validatedAnswers.length) {
+                    if (question.rightAnswers.length !== questionAnswered.validatedAnswers.length) {
                         questionsWithBadAnswers.push(question);
                     } else {
                         var subTotal = 0;
-                        question.validatedAnswers.forEach((e)=> {
-                            if (e.correct) {
+                        questionAnswered.validatedAnswers.forEach((e)=> {
+                            if (question.tabAnswer[e].correct) {
                                 subTotal++;
                             }
                         });

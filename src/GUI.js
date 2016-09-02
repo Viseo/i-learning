@@ -1660,16 +1660,15 @@ exports.GUI = function (globalVariables) {
             let legendItemLength = toPublish.boundingRect().width + exclamationLegend.circle.boundingRect().width + MARGIN;
             this.checkManipulator.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
             this.exclamationManipulator.move(drawing.width - legendItemLength, 30);
-
-            this.formations.sort((a, b) => {
-                var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
-                if (nameA < nameB)
-                    return -1;
-                if (nameA > nameB)
-                    return 1;
-                return 0
-            });
         };
+        this.formations.sort((a, b) => {
+            var nameA = a.label.toLowerCase(), nameB = b.label.toLowerCase();
+            if (nameA < nameB)
+                return -1;
+            if (nameA > nameB)
+                return 1;
+            return 0
+        });
         header.display("Liste des formations");
         !playerMode && this.displayHeaderFormations();
         (this.tileHeight < 0) && (this.tileHeight = undefined);
@@ -1885,7 +1884,7 @@ exports.GUI = function (globalVariables) {
             let tilePosition = findTilePosition(index);
             this.answersManipulator.add(answerElement.manipulator);
             answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
-            answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width - MARGIN) / 2, tilePosition.y + MARGIN);
+            answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width) / 2 -MARGIN, tilePosition.y + MARGIN);
             let point = answerElement.bordure.globalPoint(-50,-50);
             answerElement.video && answerElement.video.miniature.position(point.x, point.y);
             answerElement.bordure.mark('answerElement' + index);
@@ -1900,7 +1899,7 @@ exports.GUI = function (globalVariables) {
             } else if(playerMode && !this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
                     answerElement.bordure.color(myColors.white, 1, answerElement.bordure.strokeColor);
-                } else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(i)!== -1){
+                } else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index)!== -1){
                     answerElement.bordure.color(myColors.greyerBlue, 1, answerElement.bordure.strokeColor);
                 }
             }

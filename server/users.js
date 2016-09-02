@@ -119,7 +119,7 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                 let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
                 if(myFormation.versions.length > 1) {
                     version = myFormation.versions[myFormation.versions.length-2];
-                    if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+                    if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: myFormation._id, label: version.label, status: version.status, progress});
                 }
             }
         }
