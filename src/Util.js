@@ -478,6 +478,11 @@ exports.Util = function (globalVariables) {
             drawings.screen.add(video);
 
             if (editable) {
+                const videoGlass = new svg.Rect(130, 80)
+                    .color(myColors.pink)
+                    .position(0, -25)
+                    .opacity(0.001);
+                manipulator.set(layer, videoGlass);
                 videoGlass.mark('glass' + videoObject.name.split('.')[0]);
                 cadre._acceptDrop = true;
                 video._acceptDrop = true;
