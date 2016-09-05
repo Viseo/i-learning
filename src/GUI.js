@@ -520,15 +520,15 @@ exports.GUI = function (globalVariables) {
                         this.selectedTab = 1;
                         progressDisplay = (() => {
                             const width = 0.8 * w;
-                            const manipulator = new Manipulator().addOrdonator(3);
+                            const manipulator = new Manipulator().addOrdonator(4);
                             const icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
                             manipulator.set(0, icon);
-                            const rect = new svg.Rect(width, 10).color(myColors.none, 1, myColors.darkerGreen);
+                            const rect = new svg.Rect(width -15, 16).color(myColors.none, 1, myColors.darkerGreen);
                             manipulator.set(1, rect);
                             manipulator.redCrossManipulator = new Manipulator(this);
                             manipulator.add(manipulator.redCrossManipulator);
 
-                            let redCross = drawRedCross(0, 0, 15, manipulator.redCrossManipulator);
+                            let redCross = drawRedCross(width/2+MARGIN, 0, 15, manipulator.redCrossManipulator);
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
                                 dbListener.uploadRequest && dbListener.uploadRequest.status;
@@ -544,9 +544,12 @@ exports.GUI = function (globalVariables) {
                             this.videosUploadManipulators.push(manipulator);
                             return (e) => {
                                 const progwidth = width * e.loaded / e.total;
-                                const bar = new svg.Rect(progwidth, 8)
+                                const bar = new svg.Rect(progwidth-15, 14)
                                         .color(myColors.green)
                                         .position(-(width - progwidth) / 2, 0);
+                                const percentage = new svg.Text(Math.round(e.loaded / e.total*100) + "%");
+                                manipulator.set(3, percentage);
+                                percentage.position(0, percentage.boundingRect().height/4);
                                 manipulator.set(2, bar);
                                 if (e.loaded === e.total) {
                                     this.videosUploadManipulators.remove(manipulator);
