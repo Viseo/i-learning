@@ -839,9 +839,18 @@ describe('formationsManager', function () {
             video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
             videoDragged = retrieve(root, '[videoDragged]');
             videoDragged.listeners['mouseup']({pageX:1074, pageY:94, preventDefault:()=>{}});
+            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+            // video.listeners['mouseover']();
+            // videoRedCross = retrieve(root, '[videoRedCross]');
+            // videoRedCross.listeners['click']();
 
             libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mouseover']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imageRedCross = retrieve(root, '[imageRedCross]');
+            imageRedCross.listeners['click']();
 
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});

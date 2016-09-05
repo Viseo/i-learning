@@ -759,6 +759,7 @@ exports.GUI = function (globalVariables) {
 
                     let overVideoIconHandler = ()=> {
                         let redCross = drawRedCross(0, -title.finalHeight/2, 15, manipulator.redCrossManipulator);
+                        redCross.mark('videoRedCross');
                         svg.addEvent(redCross, 'mouseout', mouseleaveHandler);
                         manipulator.redCrossManipulator.add(redCross);
                         let redCrossClickHandler = ()=> {
