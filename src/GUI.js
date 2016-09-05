@@ -131,7 +131,7 @@ exports.GUI = function (globalVariables) {
                     this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
                 }else if (this.video) {
                     this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
-                    let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, 8);
+                    let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, false, 8);
                     this.obj.content = obj.content;
                     this.border = obj.cadre;
                     this.obj.video = obj.video;
@@ -233,7 +233,7 @@ exports.GUI = function (globalVariables) {
             this.content = obj.text;
             this.image = obj.image;
         } else if (this.video) { // Reponse avec Texte uniquement
-            let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false);
+            let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
             this.bordure = obj.cadre;
             this.content = obj.content;
             this.video.miniature = obj.video;
@@ -253,8 +253,9 @@ exports.GUI = function (globalVariables) {
         this.content && this.content.mark(index);
 
         if (this.parentQuestion.parentQuizz.previewMode) {
-            if (this.explanation && (this.explanation.image || this.explanation.label)) {
+            if (this.explanation && (this.explanation.image || this.explanation.video || this.explanation.label)) {
                 const openPopIn = () => {
+                    speechSynthesis.cancel();
                     this.parentQuestion.parentQuizz.closePopIn();
                     let popInParent = this.parentQuestion,
                         popInX = this.parentQuestion.parentQuizz.x,
@@ -267,8 +268,15 @@ exports.GUI = function (globalVariables) {
                     } else {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
                     }
-                    this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
-                };
+                    if (globalVariables.textToSpeechMode && this.explanationPopIn.label && (!this.explanationPopIn.video || !this.explanationPopIn.said)) {
+                        setTimeout(()=>{speechSynthesis.speak(new SpeechSynthesisUtterance(this.explanationPopIn.label))}, 200);
+                        this.explanationPopIn.said = true;
+                        (this.explanationPopIn.image || this.explanationPopIn.video) && this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
+                    }
+                    else {
+                        this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
+                    }
+                }
                 if (this.explanationPopIn && this.explanationPopIn.displayed) this.parentQuestion.openPopIn = openPopIn;
                 this.image && svg.addEvent(this.image, "click", openPopIn);
                 this.bordure && svg.addEvent(this.bordure, "click", openPopIn);
@@ -1756,7 +1764,13 @@ exports.GUI = function (globalVariables) {
             this.image = obj.image;
         }
         else if (this.video) {//&& this.label !== ""
-            let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false);
+            let obj;
+            if (this.parentQuizz.previewMode || playerMode) {
+                obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+            }
+            else {
+                obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
+            }
             this.bordure = obj.cadre;
             this.content = obj.content;
             this.miniatureVideo = obj.video;
@@ -2094,7 +2108,7 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
                 questionBlock.title = picture.imageSVG;
             }else if(this.linkedQuestion.video){
-                questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, true);
+                questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, true, false);
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
@@ -2214,6 +2228,8 @@ exports.GUI = function (globalVariables) {
             this.closeButtonManipulator.set(0, circle);
             this.closeButtonManipulator.set(1, cross);
             const crossHandler = () => {
+                this.said = false;
+                speechSynthesis.cancel();
                 this.editable && (parent.explanation = false);
                 parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
@@ -2223,10 +2239,7 @@ exports.GUI = function (globalVariables) {
                     parent.tabAnswer.forEach(answer => {
                         answer.video && drawings.screen.add(answer.video.miniature);
                     });
-
                 }
-
-
             };
             svg.addEvent(cross, "click", crossHandler);
             svg.addEvent(circle, "click", crossHandler);
@@ -2280,7 +2293,7 @@ exports.GUI = function (globalVariables) {
             }else if(this.video){
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
-                this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5);
+                this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5);
                 // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
                 // videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
                 // videoTitle.text._acceptDrop=true;
@@ -2319,7 +2332,7 @@ exports.GUI = function (globalVariables) {
                 this.answer.filled = true;
             } else if (this.video) {
                 this.manipulator.unset(3);
-                this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, 5)
+                this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5)
                     .resize(imageW);
                 this.miniature.video.width = imageW;
                 this.answer.filled = true;
@@ -2493,8 +2506,9 @@ exports.GUI = function (globalVariables) {
         this.closePopIn = () => {
             this.tabQuestions[this.currentQuestionIndex] && this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
                 if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
+                    let said = answer.explanationPopIn.said;
                     answer.explanationPopIn.cross.component.listeners["click"]();
-
+                    answer.explanationPopIn.said = said;
                 }
             });
         };

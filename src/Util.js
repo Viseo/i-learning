@@ -485,7 +485,7 @@ exports.Util = function (globalVariables) {
             return {cadre: cadre, image: image.image, content: text};
         };
 
-        drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, layer = 3, textWidth = w)=> {
+        drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, controls, layer = 3, textWidth = w)=> {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
@@ -503,7 +503,7 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, cadre);
             let {x, y} = cadre.globalPoint(-50, -50);
 
-            const video = new svg.Video(x, y, 100, videoObject.src, !editable);
+            const video = new svg.Video(x, y, 100, videoObject.src, controls);
             drawings.screen.add(video);
 
             if (editable) {
@@ -572,8 +572,9 @@ exports.Util = function (globalVariables) {
             let videoTitle = autoAdjustText(videoObject.name, textWidth, h - 50, 10, null, manipulator, manipulator.lastLayerOrdonator());
             videoTitle.text.position(0, 25).color(myColors.black);
             videoTitle.text._acceptDrop = true;
-            if (!editable) {
+            if (controls) {
                 let playFunction = function () {
+                    speechSynthesis.cancel();
                     drawings.screen.empty(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
@@ -596,7 +597,6 @@ exports.Util = function (globalVariables) {
                                 quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
                             }
                             quizz.display(0, 0, drawing.width, drawing.height);
-
                             // if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                             //     quizz.displayCurrentQuestion();
                             // }
