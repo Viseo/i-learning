@@ -1733,7 +1733,17 @@ exports.GUI = function (globalVariables) {
         }
 
         manip.add(userManip);
-        drawing.username && displayUser();
+        if (drawing.username){
+            displayUser();
+            returnToListFormation = ()=> {
+                Server.getAllFormations().then(data => {
+                    let myFormations = JSON.parse(data).myCollection;
+                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager.display();
+                });
+            };
+            svg.addEvent(text, 'click', returnToListFormation);
+        }
         if (message === "Inscription" || message === "Connexion") {
             const link = message === "Inscription" ? "Connexion" : "Inscription";
             const clickHandler = () => {
