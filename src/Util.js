@@ -102,18 +102,22 @@ exports.Util = function (globalVariables) {
                 }
             };
             clean(this.translator);
+            return this;
         }
 
         move(x, y) {
             this.translator.move(x, y)
+            return this;
         }
 
         rotate(angle) {
             this.rotator.rotate(angle)
+            return this;
         }
 
         scale(scaleX, scaleY) {
             this.scalor.scale(scaleX, scaleY)
+            return this;
         }
 
         set(layer, component) {
@@ -121,10 +125,12 @@ exports.Util = function (globalVariables) {
                 component = component.first;
             }
             this.ordonator.set(layer, component)
+            return this;
         }
 
         unset(layer) {
             this.ordonator.unset(layer)
+            return this;
         }
 
         add(svgObject) {
@@ -137,6 +143,7 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
             }
+            return this;
         }
 
         remove(svgObject) {
@@ -149,6 +156,7 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) !== -1) {
                 this.last.remove(component);
             }
+            return this;
         }
 
     }
@@ -407,20 +415,29 @@ exports.Util = function (globalVariables) {
         };
 
         drawTextToSpeechIcon = function (spec) {
-            const {size, x, y} = spec;
-            const manipulator = new Manipulator();
-            const image = new svg.Image('../images/volume.svg')
-                .dimension(size, size);
-            manipulator.add(image);
-            manipulator.move(x, y);
+            const {width, x, y} = spec;
+            const path = new svg.SVGString('M 334.69355,623.49051 C 289.8995,584.06483 248.64559,540.68207 205.63637,499.28248 c -11.29726,-10.37856 -10.34004,-9.35409 -21.46833,-9.35409 -21.37924,-0.36847 -40.84236,-0.66609 -62.90561,-0.81372 -6.71529,0 -13.09488,-7.05327 -12.97672,-16.43594 0.30858,-39.21368 0.1216,-88.23843 0.0472,-127.38544 0.008,-7.36723 6.40498,-12.47496 12.53245,-12.47496 0,0 51.83247,-0.91194 67.26972,-0.91194 8.20775,0 8.10731,-0.0314 11.9649,-3.85201 44.09448,-43.67136 85.36979,-83.44781 130.31375,-126.29015 27.76352,-21.34674 33.20262,17.92379 33.20262,40.21802 0.14911,121.70107 0.12799,256.91578 0.12799,341.88567 0,34.54676 -18.06754,50.60585 -29.05079,39.62259 z M 483.7857,604.26844 c -26.06709,-16.21452 -0.71421,-35.38663 20.30056,-47.51951 57.9631,-38.74482 87.63413,-113.44922 72.96179,-181.43218 -10.1866,-53.48573 -47.56072,-99.25712 -95.45291,-124.11172 -25.8737,-21.24761 1.21708,-44.34707 28.40619,-28.64943 79.75061,45.78138 126.92102,147.52399 104.53353,236.98153 -13.99473,62.66459 -57.88505,118.359 -116.06635,145.6409 -4.79695,1.26648 -10.06603,0.88706 -14.68281,-0.90959 z m -39.72591,-53.51016 c -26.12618,-10.43626 -8.88813,-32.36239 10.70265,-45.49524 46.33069,-33.3171 61.15848,-101.84273 32.57039,-151.25663 -11.45475,-22.37064 -32.08392,-37.45577 -52.08511,-51.52849 -15.94935,-15.39173 2.64798,-42.10512 25.17228,-29.10071 52.50401,28.44677 85.67401,88.83257 80.18147,148.4859 -2.71184,53.39603 -36.13943,105.54705 -84.78504,128.36167 -3.75952,1.28587 -7.90447,1.63913 -11.75664,0.5335 z m -49.49904,-63.77407 c -25.36949,-11.58757 -12.09457,-32.37377 11.95285,-44.47184 26.64175,-16.19972 18.94154,-60.22903 -10.17716,-68.6405 -32.74214,-7.70475 -16.26996,-44.88808 17.63448,-35.80341 38.92798,16.06253 60.30833,65.09542 41.97643,103.9273 -10.07423,23.03243 -35.0042,46.07083 -61.3866,44.98845 z');
+            const glass = new svg.Rect(600, 500)
+                .color(myColors.pink)
+                .position(350, 400)
+                .opacity(0.001);
+            const manipulator = new Manipulator()
+                .scale(0.0025 * width, 0.0025 * width)
+                .move(x, y)
+                .add(path)
+                .add(glass);
 
             return {
                 setHandler (event, handler) {
-                    svg.addEvent(image, event, handler);
-                    return this
+                    svg.addEvent(glass, event, handler);
+                    return this;
+                },
+                color (fillColor, strokeWidth, strokeColor) {
+                    path.color(fillColor, strokeWidth * 40, strokeColor);
+                    return this;
                 },
                 get manipulator () {
-                    return manipulator
+                    return manipulator;
                 }
             }
         };

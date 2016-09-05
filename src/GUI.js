@@ -1905,13 +1905,16 @@ exports.GUI = function (globalVariables) {
             buttonW = 0.5 * drawing.width,
             buttonX = -buttonW / 2;
         if (playerMode && this.parentQuizz.previewMode) {
-            const textToSpeechMode = () => {
-                globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
-                // TODO change icon color
-                console.log('text-to-speech mode ' + (globalVariables.textToSpeechMode?'ON':'OFF'));
-            };
-            const icon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, size: 30})
-                .setHandler('click', textToSpeechMode);
+            const icon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, width: 35})
+                .setHandler('click', () => {
+                    globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
+                    if (globalVariables.textToSpeechMode) {
+                        icon.color(SELECTION_COLOR);
+                    } else {
+                        icon.color(myColors.white, 0.5, SELECTION_COLOR);
+                    }
+
+                });
             this.manipulator.add(icon.manipulator);
             this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
             displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
