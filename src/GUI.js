@@ -2312,8 +2312,8 @@ exports.GUI = function (globalVariables) {
                 // videoTitle.text._acceptDrop=true;
                 this.miniature.cadre.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
-                let globalPoints = this.miniature.cadre.globalPoint(this.imageX -50, -50);
-                this.miniature.video.position(globalPoints.x, globalPoints.y);
+                this.globalPoints = this.miniature.cadre.globalPoint(this.imageX -50, -50);
+                this.miniature.video.position(this.globalPoints.x, this.globalPoints.y);
                 this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(this.imageX, 25);
                 // icon.cadre._acceptDrop = true;
                 // icon.move(imageX,-(25+videoTitle.finalHeight)/2);

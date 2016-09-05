@@ -507,9 +507,11 @@ exports.Util = function (globalVariables) {
             drawings.screen.add(video);
 
             if (editable) {
-                const videoGlass = new svg.Rect(130, 80)
+                let parent = manipulator.parentObject;
+                const position = parent.imageX ? {x:parent.imageX, y:-0} : {x:0, y:0},
+                    videoGlass = new svg.Rect(130, 80)
                     .color(myColors.pink)
-                    .position(0, -25)
+                    .position(position.x, position.y -25)
                     .opacity(0.001);
                 manipulator.set(layer, videoGlass);
                 videoGlass.mark('glass' + videoObject.name.split('.')[0]);
@@ -521,7 +523,6 @@ exports.Util = function (globalVariables) {
                 const redCrossClickHandler = () => {
                     redCrossManipulator.flush();
                     manipulator.unset(layer);
-                    let parent = manipulator.parentObject;
                     parent.obj && parent.obj.video && drawings.screen.remove(parent.obj.video);
                     if (parent.linkedQuestion && parent.linkedQuestion.video) {
                         drawings.screen.empty();
@@ -542,31 +543,32 @@ exports.Util = function (globalVariables) {
                         parent.parentQuestion.checkValidity();
                     }
                     else if (parent.answer) {
+                        drawings.screen.remove(video);
+                        manipulator.unset(manipulator.lastLayerOrdonator());
                         let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
                         parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                         parent.answer.parentQuestion.checkValidity();
                     }
                 };
-                this.mouseleaveHandler = () => {
+                let mouseleaveHandler = () => {
                     redCrossManipulator.flush();
                 };
-                this.mouseoverHandler = () => {
+                let mouseoverHandler = () => {
                     if (typeof redCrossManipulator === 'undefined') {
                         redCrossManipulator = new Manipulator(this);
                         redCrossManipulator.addOrdonator(2);
                         manipulator.add(redCrossManipulator);
                     }
                     let redCrossSize = 15;
-                    let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, redCrossManipulator)
-                        : drawRedCross(60, -60, redCrossSize, redCrossManipulator);
+                    let redCross = drawRedCross(position.x + 60, position.y -45, redCrossSize, redCrossManipulator);
                     redCross.mark('videoRedCross');
                     svg.addEvent(redCross, 'click', redCrossClickHandler);
                     redCrossManipulator.set(1, redCross);
                 };
-                svg.addEvent(videoGlass, "mouseover", this.mouseoverHandler);
-                svg.addEvent(videoGlass, "mouseout", this.mouseleaveHandler);
-                svg.addEvent(video, "mouseover", this.mouseoverHandler);
-                svg.addEvent(video, "mouseout", this.mouseleaveHandler);
+                svg.addEvent(videoGlass, "mouseover", mouseoverHandler);
+                svg.addEvent(videoGlass, "mouseout", mouseleaveHandler);
+                svg.addEvent(video, "mouseover", mouseoverHandler);
+                svg.addEvent(video, "mouseout", mouseleaveHandler);
             }
 
             let videoTitle = autoAdjustText(videoObject.name, textWidth, h - 50, 10, null, manipulator, manipulator.lastLayerOrdonator());
