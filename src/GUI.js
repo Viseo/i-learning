@@ -255,7 +255,7 @@ exports.GUI = function (globalVariables) {
         if (this.parentQuestion.parentQuizz.previewMode) {
             if (this.explanation && (this.explanation.image || this.explanation.video || this.explanation.label)) {
                 const openPopIn = () => {
-                    speechSynthesis.cancel();
+                    svg.speechSynthesisCancel();
                     this.parentQuestion.parentQuizz.closePopIn();
                     let popInParent = this.parentQuestion,
                         popInX = this.parentQuestion.parentQuizz.x,
@@ -269,7 +269,7 @@ exports.GUI = function (globalVariables) {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuizz.questionHeightWithoutImage / 2 + MARGIN;
                     }
                     if (globalVariables.textToSpeechMode && this.explanationPopIn.label && (!this.explanationPopIn.video || !this.explanationPopIn.said)) {
-                        setTimeout(()=>{speechSynthesis.speak(new SpeechSynthesisUtterance(this.explanationPopIn.label))}, 200);
+                        setTimeout(()=>{svg.speechSynthesisSpeak(this.explanationPopIn.label)}, 200);
                         this.explanationPopIn.said = true;
                         (this.explanationPopIn.image || this.explanationPopIn.video) && this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                     }
@@ -2229,7 +2229,7 @@ exports.GUI = function (globalVariables) {
             this.closeButtonManipulator.set(1, cross);
             const crossHandler = () => {
                 this.said = false;
-                speechSynthesis.cancel();
+                svg.speechSynthesisCancel();
                 this.editable && (parent.explanation = false);
                 parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator);
                 this.editable && parent.puzzle.display(x, y, w, h, false);

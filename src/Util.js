@@ -574,7 +574,7 @@ exports.Util = function (globalVariables) {
             videoTitle.text._acceptDrop = true;
             if (controls) {
                 let playFunction = function () {
-                    speechSynthesis.cancel();
+                    svg.speechSynthesisCancel();
                     drawings.screen.empty(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
