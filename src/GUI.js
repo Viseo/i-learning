@@ -1906,6 +1906,7 @@ exports.GUI = function (globalVariables) {
             buttonX = -buttonW / 2;
         if (playerMode && this.parentQuizz.previewMode) {
             const icon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, width: 35})
+                .color(myColors.white, 0.5, SELECTION_COLOR)
                 .setHandler('click', () => {
                     globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
                     if (globalVariables.textToSpeechMode) {
