@@ -68,14 +68,6 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        // addOneLayerToOrdonator(){
-        //     this.scalor.remove(this.ordonator);
-        //     this.ordonator.children.push(this.ordonator._dummy());
-        //     runtime.add(this.ordonator.component, this.ordonator.children[this.ordonator.children.length-1].component);
-        //     this.scalor.add(this.ordonator);
-        //     return this;
-        // }
-
         lastLayerOrdonator() {
             return this.ordonator.children.length - 1;
         }
@@ -175,7 +167,6 @@ exports.Util = function (globalVariables) {
             this.background = this.drawing.manipulator.translator;
             this.drawing.manipulator.set(2, this.piste);
             this.drawing.add(this.glass);
-
             this.screen.empty = (survival)=> {
                 for (let i = drawings.screen.children.length; i >= 0; i--) {
                     drawings.screen.children[i] !== drawing && drawings.screen.children[i] !== survival && drawings.screen.remove(drawings.screen.children[i]);
@@ -204,7 +195,6 @@ exports.Util = function (globalVariables) {
                             this.drawing.mousedOverTarget = null;
                         }
                     }
-
                     svg.event(this.target, "mousemove", event);
                     if (this.target.component.listeners && this.target.component.listeners.mouseover) {
                         this.drawing.mousedOverTarget = {target: this.target};
@@ -261,18 +251,15 @@ exports.Util = function (globalVariables) {
                 if (arr1.length === 0) {
                     return arr2;
                 }
-
                 if (arr2.length === 0) {
                     return arr1;
                 }
-
                 if (isSmaller(arr1[0], arr2[0])) {
                     return [arr1[0]].concat(merge(arr1.slice(1), arr2, isSmaller));
                 } else {
                     return [arr2[0]].concat(merge(arr1, arr2.slice(1), isSmaller));
                 }
             };
-
             return mergeFunc(left, right, isSmaller);
         };
 
@@ -523,7 +510,6 @@ exports.Util = function (globalVariables) {
             let cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.set(0, cadre);
             let {x, y} = cadre.globalPoint(-50, -50);
-
             const video = new svg.Video(x, y, 100, videoObject.src, controls);
             drawings.screen.add(video);
 
@@ -620,9 +606,6 @@ exports.Util = function (globalVariables) {
                                 quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
                             }
                             quizz.display(0, 0, drawing.width, drawing.height);
-                            // if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                            //     quizz.displayCurrentQuestion();
-                            // }
                             svg.removeEvent(drawings.glass, "click");
                         };
 
@@ -630,7 +613,7 @@ exports.Util = function (globalVariables) {
                             if (event.keyCode === 27) {
                                 crossHandler();
                             }
-                        }
+                        };
 
                         svg.addGlobalEvent("keydown", (event) => {
                             if (drawing.notInTextArea && hasKeyDownEvent(event)) {
@@ -902,19 +885,15 @@ exports.Util = function (globalVariables) {
                 }
                 chevronManipulator.scale(this.chevron.tempHeight / baseHeight);
             };
-
             this.chevron.move = (x, y) => {
                 chevronManipulator.move(x, y);
             };
-
             if (w && h) {
                 this.chevron.resize(w, h);
             }
-
             if (x && y) {
                 this.chevron.move(x, y);
             }
-
             this.chevron.activate = function (handler, eventType) {
                 this._activated = true;
                 this.color(myColors.black, 1, myColors.black);
@@ -950,7 +929,6 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(svgItem, "mousemove", mousemoveHandler);
                 svg.addEvent(svgItem, "mouseup", mouseupHandler);
             };
-
             svg.addEvent(svgItem, "mousedown", mousedownHandler);
         };
 
@@ -970,12 +948,10 @@ exports.Util = function (globalVariables) {
                 parentLocalPoint = formation.graphManipulator.last.localPoint(parentGlobalPoint.x, parentGlobalPoint.y),
                 childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2),
                 childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y);
-
             this.redCrossManipulator = new Manipulator(this);
             let redCross = drawRedCross((parentLocalPoint.x + childLocalPoint.x) / 2, (parentLocalPoint.y + childLocalPoint.y) / 2, 20, this.redCrossManipulator);
             redCross.mark('redCross');
             this.redCrossManipulator.add(redCross);
-
             this.redraw = () => {
                 let childGlobalPoint = childGame.miniatureManipulator.last.globalPoint(0, -formation.graphElementSize / 2),
                     childLocalPoint = formation.graphManipulator.last.localPoint(childGlobalPoint.x, childGlobalPoint.y),
@@ -984,18 +960,14 @@ exports.Util = function (globalVariables) {
                 formation.arrowsManipulator.remove(this.arrowPath);
                 this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
                 formation.arrowsManipulator.add(this.arrowPath);
-
             };
-
             this.redCrossClickHandler = () => {
                 formation.removeLink(parentGame, childGame);
                 formation.arrowsManipulator.remove(this.arrowPath);
                 formation.arrowsManipulator.remove(this.redCrossManipulator);
                 formation.selectedArrow = null;
             };
-
             svg.addEvent(redCross, 'click', this.redCrossClickHandler);
-
             this.arrowPath = drawStraightArrow(parentLocalPoint.x, parentLocalPoint.y, childLocalPoint.x, childLocalPoint.y);
             formation.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
@@ -1048,7 +1020,7 @@ exports.Util = function (globalVariables) {
             this.height = h;
             if (this.editable) {
                 manipulator.add(this.redCrossManipulator);
-                this.drawImageRedCross(this.parent, manipulator);
+                this.drawImageRedCross();
             }
             if (this.textToDisplay) {
                 this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
@@ -1070,35 +1042,7 @@ exports.Util = function (globalVariables) {
             this.imageRedCrossClickHandler = imageRedCrossClickHandler;
         }
 
-        drawImageRedCross(parent, manipulator) {
-            // this.imageRedCrossClickHandler = ()=> {
-            //     this.redCrossManipulator.flush();
-            //     parent.imageLayer && manipulator.unset(parent.imageLayer);//image
-            //     if (parent.linkedQuestion) {
-            //         parent.linkedQuestion.image = null;
-            //         parent.linkedQuestion.imageSrc = null;
-            //     }
-            //     else {
-            //         parent.image = null;
-            //         parent.imageSrc = null;
-            //     }
-            //     if (this.parent.parentQuestion) {
-            //         let puzzle = this.parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-            //         let x = -(puzzle.visibleArea.width - this.parent.width) / 2 + this.parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-            //         let y = -(puzzle.visibleArea.height - this.parent.height) / 2 + this.parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-            //         this.textToDisplay && this.parent.display(x, y, this.parent.width, this.parent.height);
-            //         this.parent.parentQuestion.checkValidity();
-            //     }
-            //     else if (this.parent.answer) {
-            //         let questionCreator = this.parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-            //         this.parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-            //         this.parent.answer.parentQuestion.checkValidity();
-            //     }
-            //     else {
-            //         this.parent.display();
-            //         this.parent.linkedQuestion.checkValidity();
-            //     }
-            // };
+        drawImageRedCross() {
             this.mouseleaveHandler = ()=> {
                 this.redCrossManipulator.flush();
             };
@@ -1139,25 +1083,21 @@ exports.Util = function (globalVariables) {
             this.game.miniatureManipulator.unset(1);
             this.game.miniatureManipulator.remove(this.redCrossManipulator);
             var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
-
             if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)) {
                 this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
                 this.game.parentFormation.movePanelContent();
             }
             this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
             var levelsTab = this.game.parentFormation.levelsTab;
-
             if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
                 levelsTab[this.game.levelIndex].redCrossClickHandler();
             }
-
             while (levelsTab.length > 0 && levelsTab[levelsTab.length - 1].gamesTab.length === 0) {
                 levelsTab[levelsTab.length - 1].manipulator.unset(2);
                 levelsTab[levelsTab.length - 1].manipulator.unset(1);
                 levelsTab[levelsTab.length - 1].manipulator.unset(0);
                 this.game.parentFormation.levelsTab.pop();
             }
-
             this.game.parentFormation.selectedGame.selected = false;
             this.game.parentFormation.selectedGame = null;
             this.game.parentFormation.displayGraph();
@@ -1262,11 +1202,9 @@ exports.Util = function (globalVariables) {
                     break;
             }
         };
-
     }
 
     class MiniatureFormation {
-
         constructor(formation) {
             this.miniatureManipulator = new Manipulator().addOrdonator(2);
             this.iconManipulator = new Manipulator().addOrdonator(4);
@@ -1375,7 +1313,7 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(returnButton, "click", returnHandler);
                 svg.addEvent(returnText, "click", returnHandler);
                 svg.addEvent(background, "click", returnHandler);
-            }
+            };
             this.removeHandler = (returnHandler) => {
                 svg.removeEvent(returnButton, "click", returnHandler);
                 svg.removeEvent(returnText, "click", returnHandler);
@@ -1488,7 +1426,6 @@ exports.Util = function (globalVariables) {
                 }
                 else {
                     temporaryIndex = 0;
-
                 }
                 this.indexOfFirstVisibleElement = temporaryIndex;
             }
@@ -1682,7 +1619,6 @@ exports.Util = function (globalVariables) {
                 var y = this.content.y;
                 this.contentH.move(x, y);
             };
-
             this.width = width;
             this.height = height;
             this.component = new svg.Translation();

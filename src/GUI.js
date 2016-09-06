@@ -531,13 +531,7 @@ exports.GUI = function (globalVariables) {
                             let redCross = drawRedCross(width/2+MARGIN, 0, 15, manipulator.redCrossManipulator);
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
-                                dbListener.uploadRequest && dbListener.uploadRequest.status;
                                 dbListener.uploadRequest && dbListener.uploadRequest.abort();
-                                dbListener.uploadRequest && dbListener.uploadRequest.status;
-                                // svg.event(file, 'abort', ()=>{console.log('abort')});
-                                // console.log(e);
-                                // Server.deleteVideo(video);
-                                // this.display(this.x, this.y, this.w, this.h);
                             };
                             svg.addEvent(redCross, 'click', redCrossClickHandler);
 
@@ -656,7 +650,6 @@ exports.GUI = function (globalVariables) {
 
                         this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                         this.imageLayer = 0;
-                        // let image = displayImage(item.imgSrc, item, this.imageWidth, this.imageHeight, this.libraryManipulators[i]).image;
                         let imageRedCrossClickHandler = ()=>{
                             this.itemsTab.splice(i, 1);
                             Server.deleteImage(item);
@@ -667,7 +660,6 @@ exports.GUI = function (globalVariables) {
                         image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i]);
                         image.name = item.name;
                         image.imageSVG.srcDimension = {width: item.width, height: item.height};
-                        // this.libraryManipulators[i].set(0, image.imageSVG);
                         image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
 
                         let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
@@ -677,8 +669,6 @@ exports.GUI = function (globalVariables) {
                     this.panel.resizeContent(w, tempY += this.imageHeight);
                     assignImageEvents();
                 };
-
-                //this.itemsTab.length === 0) {
                 Server.getImages().then(data => {
                         let myLibraryImage = JSON.parse(data).images;
                         myLibraryImage.forEach((url, i) => {
@@ -818,8 +808,6 @@ exports.GUI = function (globalVariables) {
                     });
                 };
 
-                // temp
-                // const imagesPanel = new gui.Panel(w - 4, 0.8*h * h, myColors.white, 2).position(w / 2 + 0.5, h/2);
                 const imagesPanel = this.panel;
 
                 const createTab = function (text, width, height, fontsize, font, manipulator, setContent) {
@@ -880,37 +868,29 @@ exports.GUI = function (globalVariables) {
                             }
                         });
                     };
-
                     return {
                         manipulator,
                         addTab,
                         select
                     };
                 };
-
                 const tabManager = createTabManager(this);
-
                 tabManager.addTab("Images", 0, () => {
                     this.libraryManipulator.set(2, imagesPanel.component);
                 });
                 tabManager.addTab("Vidéos", 1, () => {
                     this.libraryManipulator.set(2, videosPanel.component);
                     loadVideos();
-
                 });
                 tabManager.manipulator.move(w/4 + MARGIN, h*0.05);
                 tabManager.select(this.selectedTab);
                 this.libraryManipulator.set(1, tabManager.manipulator);
                 assignVideoEvents();
-
             };
-
             displayTabs();
-
             displayItems();
             displayAddButton();
         };
-
         display(x, y, w, h);
         callback();
     }
@@ -929,7 +909,6 @@ exports.GUI = function (globalVariables) {
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
-
                     let newAnswer = new Answer(null, this.parent.linkedQuestion);
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
@@ -949,7 +928,6 @@ exports.GUI = function (globalVariables) {
                         questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
                         questionCreator.coordinatesAnswers.h, false);
                     questionCreator.linkedQuestion.checkValidity();
-
                     break;
                 case 'question':
                     drawings.screen.empty();
@@ -968,13 +946,11 @@ exports.GUI = function (globalVariables) {
                         })
                     });
                     let newQuestion = new Question(null, quizzManager.quizz);
-
                     newQuestion.selected = true;
                     quizzManager.quizz.tabQuestions.push(newQuestion);
                     let AddNewEmptyQuestion = new AddEmptyElement(quizzManager, 'question');
                     quizzManager.quizz.tabQuestions.push(AddNewEmptyQuestion);
                     quizzManager.questionPuzzle.visibleElementsArray[0].length === 6 && quizzManager.questionPuzzle.updateStartPosition('right');
-
                     if (quizzManager.questionPuzzle.elementsArray.length > quizzManager.questionPuzzle.columns) {
                         quizzManager.displayQuestionsPuzzle(quizzManager.questionPuzzleCoordinates.x,
                             quizzManager.questionPuzzleCoordinates.y,
@@ -988,7 +964,6 @@ exports.GUI = function (globalVariables) {
                             quizzManager.questionPuzzleCoordinates.h,
                             quizzManager.questionPuzzle.indexOfFirstVisibleElement);
                     }
-
                     quizzManager.questionCreator.loadQuestion(newQuestion);
                     quizzManager.questionCreator.display(quizzManager.questionCreator.previousX,
                         quizzManager.questionCreator.previousY,
@@ -1108,7 +1083,6 @@ exports.GUI = function (globalVariables) {
                         svg.addEvent(redCross, 'click', levelObject.redCrossClickHandler);
                         levelObject.redCrossManipulator.set(1, redCross);
                     }
-
                 };
                 let mouseleaveHandler = ()=> {
                     this.levelsTab.forEach(levelElement => {
@@ -1138,7 +1112,6 @@ exports.GUI = function (globalVariables) {
                     this.displayGraph(this.graphW, this.graphH);
                 };
             }
-
             level.manipulator.set(1, obj.line);
             obj.text.position(obj.text.boundingRect().width, obj.text.boundingRect().height);
             obj.text._acceptDrop = true;
@@ -1183,7 +1156,6 @@ exports.GUI = function (globalVariables) {
             this.panel.contentH.add(this.graphManipulator.first);
             this.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-
             resizePanel();
             this.movePanelContent();
         };
@@ -1411,12 +1383,10 @@ exports.GUI = function (globalVariables) {
                 formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
-
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
                 this.validLabelInput ? formationLabel.cadre.color(bgcolor) : formationLabel.cadre.color(bgcolor, 2, myColors.red);
                 formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
-
                 this.formationInfoManipulator.set(0, formationLabel.cadre);
                 formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
                 this.formationInfoManipulator.move(0, this.returnButton.height*1.3);
@@ -2043,7 +2013,6 @@ exports.GUI = function (globalVariables) {
 
             this.linkedQuestion.questionType = (!this.multipleChoice) ? this.questionType[0] : this.questionType[1];
             this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.remove(this.errorMessagePreview);
-
             this.linkedQuestion.tabAnswer.forEach((answer)=> {
                 answer.correct = false;
                 if (answer.obj) {
@@ -2054,9 +2023,7 @@ exports.GUI = function (globalVariables) {
             this.displayToggleButton(x, y, w, h, questionType);
             this.linkedQuestion.checkValidity();
         };
-
         this.manipulator.add(this.toggleButtonManipulator);
-
         const length = this.questionType.length,
             lengthToUse = (length + 1) * MARGIN + length * toggleButtonWidth,
             margin = (w - lengthToUse) / 2;
@@ -2297,9 +2264,7 @@ exports.GUI = function (globalVariables) {
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
                 let pictureRedCrossClickHandler = ()=> {
-                    // this.redCrossManipulator.flush();
                     this.manipulator.flush();
-                    // this.imageLayer && this.manipulator.unset(this.imageLayer);//image
                     this.image = null;
                     this.imageSrc = null;
                     let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
@@ -2314,17 +2279,11 @@ exports.GUI = function (globalVariables) {
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
                 this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5);
-                // let videoTitle = autoAdjustText(this.video.name, textW, panelHeight-50, 20, null, this.manipulator,3)
-                // videoTitle.text.position(imageX,(25+videoTitle.finalHeight)/2);
-                // videoTitle.text._acceptDrop=true;
                 this.miniature.cadre.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
                 this.globalPoints = this.miniature.cadre.globalPoint(this.imageX -50, -50);
                 this.miniature.video.position(this.globalPoints.x, this.globalPoints.y);
                 this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(this.imageX, 25);
-                // icon.cadre._acceptDrop = true;
-                // icon.move(imageX,-(25+videoTitle.finalHeight)/2);
-                // this.manipulator.set(5, icon.video);
                 this.answer.filled = true;
             }else if (this.editable) {
                 autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
@@ -2433,7 +2392,6 @@ exports.GUI = function (globalVariables) {
             (w && x) && (this.resultArea.w = w );
             x && (this.resultArea.x = x );
             w && (this.titleArea.w = w );
-            //x && (this.quizzMarginX = x+w*0.15);
             headerPercentage = HEADER_SIZE;
             questionPercentageWithImage = 0.3;
             questionPercentage = 0.2;
@@ -2656,14 +2614,12 @@ exports.GUI = function (globalVariables) {
                 break;
         }
         var str1, str2;
-
         let finalMessage = `${str1} Vous avez répondu à ${this.tabQuestions.length} questions, ${str2}`;
         if (!color) {
             var usedColor = autoColor;
         } else {
             usedColor = color;
         }
-
         this.resultManipulator && this.manipulator.remove(this.resultManipulator);
         this.resultManipulator = new Manipulator(this);
         this.scoreManipulator = new Manipulator(this).addOrdonator(2);
@@ -2693,7 +2649,6 @@ exports.GUI = function (globalVariables) {
             previewButtonHeightRatio = 0.1,
             saveButtonHeightRatio = 0.1,
             marginRatio = 0.02;
-
         this.libraryWidth = drawing.width * libraryWidthRatio;
         this.questCreaWidth = drawing.width * questCreaWidthRatio;
         this.quizzInfoHeight = this.height * quizzInfoHeightRatio;
@@ -2807,12 +2762,10 @@ exports.GUI = function (globalVariables) {
             var text = (this.quizzName) ? this.quizzName : this.quizzNameDefault;
             var color = (this.quizzName) ? myColors.black : myColors.grey;
             var bgcolor = myColors.lightgrey;
-
             var width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
             quizzLabel.content = autoAdjustText(text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
             quizzLabel.content.mark("quizzLabelContent");
             this.quizzNameHeight = quizzLabel.content.boundingRect().height;
-
             quizzLabel.cadre = new svg.Rect(width, 0.5 * h).mark("quizzLabelCadre");
             this.quizzNameValidInput ? quizzLabel.cadre.color(bgcolor) : quizzLabel.cadre.color(bgcolor, 2, myColors.red);
             quizzLabel.cadre.position(width / 2, h / 2 + quizzLabel.cadre.height / 2);
@@ -2844,13 +2797,11 @@ exports.GUI = function (globalVariables) {
             drawings.screen.add(textarea);
             textarea.focus();
             textarea.value = this.quizzName;
-
             var removeErrorMessage = ()=> {
                 this.questionCreator.quizzNameValidInput = true;
                 this.errorMessage && this.quizzInfoManipulator.unset(5);
                 quizzLabel.cadre.color(myColors.lightgrey);
             };
-
             var displayErrorMessage = ()=> {
                 removeErrorMessage();
                 quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
@@ -2917,7 +2868,6 @@ exports.GUI = function (globalVariables) {
             if (!this.quizz.isValid) {
                 drawings.screen.empty();
                 this.displayMessage(message, myColors.red);
-                //this.selectFirstInvalidQuestion(arrayOfUncorrectQuestions[0]);
             }
             this.displayEditedQuestion = ()=> {
                 drawing.currentPageDisplayed = "QuizPreview";
@@ -2926,7 +2876,6 @@ exports.GUI = function (globalVariables) {
                 this.quizz.tabQuestions.forEach((it) => {
                     (it.tabAnswer[it.tabAnswer.length - 1] instanceof AddEmptyElement) && it.tabAnswer.pop();
                 });
-
                 this.previewQuiz = new Quizz(this.quizz, true);
                 this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
                 this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
@@ -2949,7 +2898,6 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizzManagerDisplayQuestionPuzzle(x, y, w, h) {
-        //var index = ind ? ind : 0;
         x && (this.qPuzzleX = x);
         y && (this.qPuzzleY = y);
         w && (this.qPuzzleW = w);
@@ -3148,10 +3096,6 @@ exports.GUI = function (globalVariables) {
                 this.passwordManipulator.unset(3);
                 cleanIfEgality();
             }
-            // else {
-            //     cleanIfEgality();
-            //     this.passwordManipulator.unset(3);
-            // }
             return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
         };
 
@@ -3270,14 +3214,11 @@ exports.GUI = function (globalVariables) {
     function connexionManagerDisplay() {
         drawing.currentPageDisplayed = "ConnexionManager";
         header.display("Connexion");
-
         mainManipulator.set(1, this.manipulator);
         this.manipulator.move(drawing.width / 2, drawing.height / 2);
         let w = drawing.width / 6;
         let x = drawing.width / 10;
-
         let focusedField;
-
         var clickEditionField = (field, manipulator)=> {
             return ()=> {
                 var width = w;
@@ -3348,10 +3289,6 @@ exports.GUI = function (globalVariables) {
 
         this.mailAddressField = {label: "", title: this.mailAddressLabel, line: -1};
         this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-        // this.mailAddressField.checkInput = ()=> {
-        //     let regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-        //     return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
-        // };
         displayField("mailAddressField", this.mailAddressManipulator);
         this.passwordField = {
             label: '',
