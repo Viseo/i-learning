@@ -1022,6 +1022,7 @@ exports.GUI = function (globalVariables) {
                 globalVariables.formationsManager = new FormationsManager(myFormations);
                 globalVariables.formationsManager.display();
             });
+            this.returnButton.removeHandler(returnHandler);
         };
         this.manipulator.add(this.returnButtonManipulator);
         this.returnButton.display(0, -MARGIN/2, 20, 20);
@@ -2612,6 +2613,7 @@ exports.GUI = function (globalVariables) {
         let returnButtonChevron = bd.returnButton.chevronManipulator.ordonator.children[0];
         returnButtonChevron.mark('returnButtonFromBdToFormation');
         bd.returnButton.setHandler(this.previewMode ? (event) => {
+            bd.returnButton.removeHandler(returnHandler);
             let target = bd.returnButton;
             target.parent.manipulator.flush();
             target.parent.parentFormation.quizzManager.loadQuizz(target.parent, target.parent.currentQuestionIndex);
@@ -2790,6 +2792,7 @@ exports.GUI = function (globalVariables) {
                     game.miniature.selected = false;
                     game.miniature.updateSelectionDesign();
                 });
+            this.returnButton.removeHandler(returnHandler);
         };
 
         this.returnButton.display(-2 * MARGIN, 0, 20, 20);
@@ -2911,6 +2914,7 @@ exports.GUI = function (globalVariables) {
                 }
             });
             if (!this.quizz.isValid) {
+                drawings.screen.empty();
                 this.displayMessage(message, myColors.red);
                 //this.selectFirstInvalidQuestion(arrayOfUncorrectQuestions[0]);
             }
