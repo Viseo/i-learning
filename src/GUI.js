@@ -2480,12 +2480,14 @@ exports.GUI = function (globalVariables) {
         } else {
             drawings.screen.empty();
             returnButtonChevron.mark('returnButtonToFormation');
-            this.returnButton.setHandler(() => {
+            let returnHandler = () => {
                 drawings.screen.empty();
                 this.closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
-            });
+                this.returnButton.removeHandler(returnHandler);
+            };
+            this.returnButton.setHandler(returnHandler);
         }
         this.leftChevron = new Chevron(x - w * 0.3, y + h * 0.45, w * 0.1, h * 0.15, this.leftChevronManipulator, "left");
         this.leftChevron.mark('leftChevron');

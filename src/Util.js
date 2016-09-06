@@ -1372,6 +1372,11 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(returnText, "click", returnHandler);
                 svg.addEvent(background, "click", returnHandler);
             }
+            this.removeHandler = (returnHandler) => {
+                svg.removeEvent(returnButton, "click", returnHandler);
+                svg.removeEvent(returnText, "click", returnHandler);
+                svg.removeEvent(background, "click", returnHandler);
+            }
         }
     }
 
