@@ -428,6 +428,10 @@ exports.Util = function (globalVariables) {
                 .add(glass);
 
             return {
+                mark(label){
+                    glass.mark(label);
+                    return this;
+                },
                 setHandler (event, handler) {
                     svg.addEvent(glass, event, handler);
                     return this;

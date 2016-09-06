@@ -1254,6 +1254,10 @@ describe('Player mode', function () {
             }
             runtime.advance();
 
+            let iconTextToSpeech = retrieve(root, '[iconTextToSpeech]');
+            iconTextToSpeech.listeners['click']();
+            iconTextToSpeech.listeners['click']();
+
             let leftChevron = retrieve(root, '[leftChevron]');
             assert(!leftChevron.listeners['click']);
 
