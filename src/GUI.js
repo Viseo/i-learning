@@ -1328,15 +1328,15 @@ exports.GUI = function (globalVariables) {
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
 
             this.gamesLibraryManipulator = this.library.libraryManipulator;
-            this.manipulator.set(2, this.gamesLibraryManipulator);
-            this.manipulator.set(4, this.formationInfoManipulator);
+            this.manipulator.set(4, this.gamesLibraryManipulator);
+            this.manipulator.set(0, this.formationInfoManipulator);
 
             this.libraryWidth = drawing.width * this.libraryWidthRatio;
 
             this.y = drawing.height * HEADER_SIZE;
 
             this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height*1.3).font("Arial", 20).anchor("start");
-            this.manipulator.set(0, this.titleSvg);
+            this.manipulator.set(2, this.titleSvg);
             let formationWidth = this.titleSvg.boundingRect().width;
             let formationLabel = {};
 
