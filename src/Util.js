@@ -1325,6 +1325,16 @@ exports.Util = function (globalVariables) {
                 handler(this.formation);
             });
         }
+
+        removeHandler(handler) {
+            let miniature = this.miniatureManipulator.ordonator.children;
+            svg.removeEvent(miniature[0], "click", () => {
+                handler(this.formation);
+            });
+            svg.removeEvent(miniature[1], "click", () => {
+                handler(this.formation);
+            });
+        }
     }
 
     class ReturnButton {

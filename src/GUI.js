@@ -1595,6 +1595,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let onClickFormation = formation => {
+            formation.miniature.removeHandler(onClickFormation);
             Server.getVersionById(formation._id).then(data => {
                 var myFormation = JSON.parse(data).formation;
                 formation.loadFormation(myFormation);
