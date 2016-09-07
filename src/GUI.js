@@ -125,7 +125,7 @@ exports.GUI = function (globalVariables) {
                     };
                     let picture = new Picture(this.image.src, true, this, text, pictureRedCrossClickHandler);
                     picture.draw(0, 0, w, h, this.manipulator, w - 2 * checkboxSize);
-                    this.border = picture.imageSVG.cadre;
+                    this.border = picture.imageSVG.border;
                     this.obj.image = picture.imageSVG.image;
                     this.obj.content = picture.imageSVG.content;
                     this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
@@ -133,12 +133,12 @@ exports.GUI = function (globalVariables) {
                     this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
                     let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, false, 8);
                     this.obj.content = obj.content;
-                    this.border = obj.cadre;
+                    this.border = obj.border;
                     this.obj.video = obj.video;
                 }
                 else {
                     var tempObj = displayText(text, w, h, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, w - 2 * checkboxSize);
-                    this.border = tempObj.cadre;
+                    this.border = tempObj.border;
                     this.obj.content = tempObj.content;
                     this.obj.content.position(0, this.obj.content.y);
                 }
@@ -229,25 +229,25 @@ exports.GUI = function (globalVariables) {
 
         if (this.label && this.imageSrc) { // Reponse avec Texte ET image
             let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
-            this.bordure = obj.cadre;
+            this.border = obj.border;
             this.content = obj.text;
             this.image = obj.image;
         } else if (this.video) { // Reponse avec Texte uniquement
             let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
-            this.bordure = obj.cadre;
+            this.border = obj.border;
             this.content = obj.content;
             this.video.miniature = obj.video;
         } else if (this.label && !this.imageSrc) { // Reponse avec Texte uniquement
             let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
-            this.bordure = obj.cadre;
+            this.border = obj.border;
             this.content = obj.content;
         } else if (this.imageSrc && !this.label) { // Reponse avec Image uniquement
             let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.width, this.height, this.manipulator);
             this.image = obj.image;
-            this.bordure = obj.cadre;
-        } else { // Cas pour test uniquement : si rien, n'affiche qu'une bordure
-            this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
-            this.manipulator.add(this.bordure);
+            this.border = obj.border;
+        } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
+            this.border = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
+            this.manipulator.add(this.border);
         }
         let index = "answer" + this.parentQuestion.tabAnswer.indexOf(this);
         this.content && this.content.mark(index);
@@ -279,11 +279,11 @@ exports.GUI = function (globalVariables) {
                 }
                 if (this.explanationPopIn && this.explanationPopIn.displayed) this.parentQuestion.openPopIn = openPopIn;
                 this.image && svg.addEvent(this.image, "click", openPopIn);
-                this.bordure && svg.addEvent(this.bordure, "click", openPopIn);
+                this.border && svg.addEvent(this.border, "click", openPopIn);
                 this.content && svg.addEvent(this.content, "click", openPopIn);
 
                 const pictoSize = 20,
-                    explanationIconArray = drawExplanationIcon(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
+                    explanationIconArray = drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
                 this.manipulator.set(7, this.explanationIconManipulator);
                 explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));
             }
@@ -292,23 +292,23 @@ exports.GUI = function (globalVariables) {
                 let clickAnswerHandler = () => {
                     this.select();
                     if (this.parentQuestion.multipleChoice && this.selected) {
-                        this.colorBordure = this.bordure.strokeColor;
-                        this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
+                        this.colorBordure = this.border.strokeColor;
+                        this.border.color(this.bgColor, 5, SELECTION_COLOR);
                         this.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
                     }else if (this.parentQuestion.multipleChoice){
-                        this.bordure.color(this.bgColor, 1, this.colorBordure);
+                        this.border.color(this.bgColor, 1, this.colorBordure);
                         if (this.parentQuestion.selectedAnswers.length === 0) {
                             this.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
                         }
                     }
                 };
-                this.bordure && svg.addEvent(this.bordure, "click", () => {clickAnswerHandler()});
+                this.border && svg.addEvent(this.border, "click", () => {clickAnswerHandler()});
                 this.content && svg.addEvent(this.content, "click", () => {clickAnswerHandler()});
                 this.image && svg.addEvent(this.image, "click", () => {clickAnswerHandler()});
         }
 
         if (this.selected) { // image pré-selectionnée
-            this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
+            this.border.color(this.bgColor, 5, SELECTION_COLOR);
         }
         this.manipulator.move(this.x, this.y);
 
@@ -322,10 +322,10 @@ exports.GUI = function (globalVariables) {
         this.h = h;
         let borderSize = 3;
 
-        this.bordure = new svg.Rect(w - borderSize, h, this.libraryManipulator)
+        this.border = new svg.Rect(w - borderSize, h, this.libraryManipulator)
             .color(myColors.white, borderSize, myColors.black)
             .position(w / 2, h / 2);
-        this.libraryManipulator.set(0, this.bordure);
+        this.libraryManipulator.set(0, this.border);
         this.libraryManipulator.move(this.x, this.y);
 
         this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white, 2).position(w / 2 + 0.5, yPanel);
@@ -363,7 +363,7 @@ exports.GUI = function (globalVariables) {
             arrowModeButton.arrow = drawStraightArrow(-0.3 * w, 0, 0.3 * w, 0);
             arrowModeButton.arrow.color(myColors.black, 1, myColors.black).mark("arrowModeArrow");
             this.arrowModeManipulator.set(2, arrowModeButton.arrow);
-            arrowModeButton.cadre.mark('arrowModeButtonCadre');
+            arrowModeButton.border.mark('arrowModeButtonCadre');
 
             this.toggleArrowMode = () => {
                 this.arrowMode = !this.arrowMode;
@@ -376,11 +376,11 @@ exports.GUI = function (globalVariables) {
                 if (this.arrowMode) {
                     this.gameSelected = null;
                     this.itemsTab.forEach(e => {
-                        e.miniature.cadre.color(myColors.white, 1, myColors.black)
+                        e.miniature.border.color(myColors.white, 1, myColors.black)
                     });
 
                     this.formation.selectedGame && this.formation.selectedGame.miniatureClickHandler();
-                    arrowModeButton.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                    arrowModeButton.border.color(myColors.white, 3, SELECTION_COLOR);
                     arrowModeButton.arrow.color(myColors.blue, 2, myColors.black);
                     clip.add(glass);
                     glass.position(glass.width / 2, glass.height / 2);
@@ -411,12 +411,12 @@ exports.GUI = function (globalVariables) {
                     svg.addEvent(glass, 'mousedown', mouseDownAction);
                     svg.addEvent(glass, 'click', clickAction);
                 } else {
-                    arrowModeButton.cadre.color(myColors.white, 1, myColors.black);
+                    arrowModeButton.border.color(myColors.white, 1, myColors.black);
                     arrowModeButton.arrow.color(myColors.black, 1, myColors.black);
                     clip.remove(clip.children[clip.children.length - 1]);
                 }
             };
-            svg.addEvent(arrowModeButton.cadre, 'click', this.toggleArrowMode);
+            svg.addEvent(arrowModeButton.border, 'click', this.toggleArrowMode);
             svg.addEvent(arrowModeButton.arrow, 'click', this.toggleArrowMode);
         };
 
@@ -434,8 +434,8 @@ exports.GUI = function (globalVariables) {
 
                 let label = myLibraryGames.tab[i].label,
                     obj = displayTextWithCircle(label, Math.min(w / 2, h / 4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
-                obj.cadre.mark("game" + label);
-                obj.cadre.clicked = false;
+                obj.border.mark("game" + label);
+                obj.border.clicked = false;
                 this.itemsTab[i].miniature = obj;
 
                 let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
@@ -451,11 +451,11 @@ exports.GUI = function (globalVariables) {
                     this.arrowMode && this.toggleArrowMode();
                     let mouseClickHandler = () => {
                         if (item !== this.gameSelected) {
-                            this.gameSelected && this.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
-                            item.miniature.cadre.color(myColors.white, 3, SELECTION_COLOR);
+                            this.gameSelected && this.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                            item.miniature.border.color(myColors.white, 3, SELECTION_COLOR);
                             this.gameSelected = item;
                         } else {
-                            item.miniature.cadre.color(myColors.white, 1, myColors.black);
+                            item.miniature.border.color(myColors.white, 1, myColors.black);
                             this.gameSelected = null;
                         }
                         this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
@@ -467,7 +467,7 @@ exports.GUI = function (globalVariables) {
                         let target = drawings.background.getTarget(event.pageX, event.pageY);
                         let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                         if (parentObject !== item) {
-                            svg.removeEvent(this.draggedObject.cadre, 'click');
+                            svg.removeEvent(this.draggedObject.border, 'click');
                             if (parentObject instanceof Formation) {
                                 this.formation.dropAction(event);
                             }
@@ -478,26 +478,26 @@ exports.GUI = function (globalVariables) {
                     let createDraggableCopy = () =>{
                         let manipulator = new Manipulator(this).addOrdonator(2);
                         drawings.piste.add(manipulator);
-                        let point = item.miniature.cadre.globalPoint(0, 0);
+                        let point = item.miniature.border.globalPoint(0, 0);
                         manipulator.move(point.x, point.y);
                         this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
                         this.draggedObject.manipulator = manipulator;
-                        this.draggedObject.cadre.mark("draggedGameCadre");
+                        this.draggedObject.border.mark("draggedGameCadre");
                         this.draggedObject.create = this.itemsTab[i].create;
-                        manipulator.set(0, this.draggedObject.cadre);
-                        manageDnD(this.draggedObject.cadre, manipulator);
+                        manipulator.set(0, this.draggedObject.border);
+                        manageDnD(this.draggedObject.border, manipulator);
                         manageDnD(this.draggedObject.content, manipulator);
                     };
 
                     createDraggableCopy();
 
                     svg.event(drawings.glass, "mousedown", event);
-                    svg.addEvent(this.draggedObject.cadre, 'click', mouseClickHandler);
-                    svg.addEvent(this.draggedObject.cadre, 'mouseup', mouseupHandler);
+                    svg.addEvent(this.draggedObject.border, 'click', mouseClickHandler);
+                    svg.addEvent(this.draggedObject.border, 'mouseup', mouseupHandler);
                     svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
                 };
 
-                svg.addEvent(item.miniature.cadre, 'mousedown', mouseDownAction);
+                svg.addEvent(item.miniature.border, 'mousedown', mouseDownAction);
                 svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
             });
         };
@@ -564,7 +564,7 @@ exports.GUI = function (globalVariables) {
 
             const drop = (event) => {
                 event.preventDefault();
-                if (this.bordure.inside(event.pageX, event.pageY)) {
+                if (this.border.inside(event.pageX, event.pageY)) {
                     uploadFiles(event.dataTransfer.files)
                 }
             };
@@ -697,7 +697,7 @@ exports.GUI = function (globalVariables) {
                 let fileExplorer;
                 const fileExplorerHandler = () => {
                     if (!fileExplorer) {
-                        let globalPointCenter = this.bordure.globalPoint(0, 0);
+                        let globalPointCenter = this.border.globalPoint(0, 0);
                         var fileExplorerStyle = {
                             leftpx: globalPointCenter.x,
                             toppx: globalPointCenter.y,
@@ -818,7 +818,7 @@ exports.GUI = function (globalVariables) {
 
                     const select = function () {
                         selected = true;
-                        button.cadre.color(SELECTION_COLOR, 1, myColors.black);
+                        button.border.color(SELECTION_COLOR, 1, myColors.black);
                         button.content.color(getComplementary(SELECTION_COLOR), 0, myColors.black);
                         setContent();
                     };
@@ -826,13 +826,13 @@ exports.GUI = function (globalVariables) {
                     const unselect = function () {
                         if (selected) {
                             selected = false;
-                            button.cadre.color(myColors.white, 1, myColors.black);
+                            button.border.color(myColors.white, 1, myColors.black);
                             button.content.color(myColors.black, 0, myColors.white);
                         }
                     };
 
                     const setClickHandler = function (handler) {
-                        svg.addEvent(button.cadre, 'click', handler);
+                        svg.addEvent(button.border, 'click', handler);
                         svg.addEvent(button.content, 'click', handler);
                     };
 
@@ -902,9 +902,9 @@ exports.GUI = function (globalVariables) {
         this.manipulator.move(x, y);
         this.manipulator.set(2, plus);
         obj.content.position(0, 2*this.fontSize + obj.content.boundingRect().height/2);
-        obj.cadre.color(myColors.white, 3, myColors.black)
+        obj.border.color(myColors.white, 3, myColors.black)
             .mark('emptyAnswerAddCadre' + this.type);
-        obj.cadre.component.setAttribute && obj.cadre.component.setAttribute('stroke-dasharray', '10, 5');
+        obj.border.component.setAttribute && obj.border.component.setAttribute('stroke-dasharray', '10, 5');
 
         var dblclickAdd = ()=> {
             this.manipulator.flush();
@@ -974,7 +974,7 @@ exports.GUI = function (globalVariables) {
         };
         svg.addEvent(plus, "dblclick", dblclickAdd);
         svg.addEvent(obj.content, "dblclick", dblclickAdd);
-        svg.addEvent(obj.cadre, "dblclick", dblclickAdd);
+        svg.addEvent(obj.border, "dblclick", dblclickAdd);
     }
 
     function formationDisplayFormation() {
@@ -1130,7 +1130,7 @@ exports.GUI = function (globalVariables) {
                 } else if (event.keyCode === 27 && this.library && this.library.arrowMode) { // échap
                     this.library.toggleArrowMode();
                 } else if (event.keyCode === 27 && this.library && this.library.gameSelected) {
-                    this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                    this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
                     this.library.gameSelected = null;
                 }
                 return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
@@ -1315,13 +1315,13 @@ exports.GUI = function (globalVariables) {
             let formationLabel = {};
 
             let dblclickEditionFormationLabel = () => {
-                let bounds = formationLabel.cadre.boundingRect();
+                let bounds = formationLabel.border.boundingRect();
                 this.formationInfoManipulator.unset(1);
-                let globalPointCenter = formationLabel.cadre.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
+                let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
                 var contentareaStyle = {
                     toppx: globalPointCenter.y + 4,
                     leftpx: globalPointCenter.x + 4,
-                    width: formationLabel.cadre.width - MARGIN,
+                    width: formationLabel.border.width - MARGIN,
                     height: this.labelHeight
                 };
                 drawing.notInTextArea = false;
@@ -1337,15 +1337,15 @@ exports.GUI = function (globalVariables) {
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
-                    formationLabel.cadre.color(myColors.lightgrey, 1, myColors.none);
+                    formationLabel.border.color(myColors.lightgrey, 1, myColors.none);
                 };
 
                 var displayErrorMessage = ()=> {
                     removeErrorMessage();
-                    formationLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
+                    formationLabel.border.color(myColors.lightgrey, 2, myColors.red);
                     var anchor = 'start';
                     this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
-                        .position(formationLabel.cadre.width + formationWidth + 2 * MARGIN, 0)
+                        .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.set(2, this.errorMessage);
                     contentarea.focus();
@@ -1362,7 +1362,7 @@ exports.GUI = function (globalVariables) {
                 svg.addEvent(contentarea, "blur", onblur);
                 let objectToBeChecked = {
                     textarea: contentarea,
-                    border: formationLabel.cadre,
+                    border: formationLabel.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
@@ -1385,14 +1385,14 @@ exports.GUI = function (globalVariables) {
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
-                formationLabel.cadre = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                this.validLabelInput ? formationLabel.cadre.color(bgcolor) : formationLabel.cadre.color(bgcolor, 2, myColors.red);
-                formationLabel.cadre.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
-                this.formationInfoManipulator.set(0, formationLabel.cadre);
+                formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
+                this.validLabelInput ? formationLabel.border.color(bgcolor) : formationLabel.border.color(bgcolor, 2, myColors.red);
+                formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
+                this.formationInfoManipulator.set(0, formationLabel.border);
                 formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
                 this.formationInfoManipulator.move(0, this.returnButton.height*1.3);
                 svg.addEvent(formationLabel.content, "dblclick", dblclickEditionFormationLabel);
-                svg.addEvent(formationLabel.cadre, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(formationLabel.border, "dblclick", dblclickEditionFormationLabel);
             };
             formationLabelDisplay();
             this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
@@ -1423,15 +1423,15 @@ exports.GUI = function (globalVariables) {
     function formationDisplaySaveButton(x, y, w, h) {
         let saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
         this.message && this.message.parent && this.saveFormationButtonManipulator.remove(this.message);
-        saveFormationButton.cadre.mark("saveFormationButtonCadre");
-        svg.addEvent(saveFormationButton.cadre, "click", () => this.saveFormation());
+        saveFormationButton.border.mark("saveFormationButtonCadre");
+        svg.addEvent(saveFormationButton.border, "click", () => this.saveFormation());
         svg.addEvent(saveFormationButton.content, "click", () => this.saveFormation());
         this.saveFormationButtonManipulator.move(x, y);
     }
 
     function formationDisplayDeactivateButton(x, y, w, h) {
         let deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
-        svg.addEvent(deactivateFormationButton.cadre, "click", () => this.deactivateFormation());
+        svg.addEvent(deactivateFormationButton.border, "click", () => this.deactivateFormation());
         svg.addEvent(deactivateFormationButton.content, "click", () => this.deactivateFormation());
         this.deactivateFormationButtonManipulator.move(x, y);
     }
@@ -1470,8 +1470,8 @@ exports.GUI = function (globalVariables) {
                 this.saveFormation(null, "Published");
             }
         };
-        publicationFormationButton.cadre.mark("publicationFormationButtonCadre");
-        svg.addEvent(publicationFormationButton.cadre, "click", () => this.publicationFormation());
+        publicationFormationButton.border.mark("publicationFormationButtonCadre");
+        svg.addEvent(publicationFormationButton.border, "click", () => this.publicationFormation());
         svg.addEvent(publicationFormationButton.content, "click", () => this.publicationFormation());
         this.publicationFormationButtonManipulator.move(x, y);
     }
@@ -1493,12 +1493,12 @@ exports.GUI = function (globalVariables) {
             toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
             pos -= textWidth / 2;
             toggleFormationsText.content.position(pos, 6);
-            toggleFormationsText.cadre.position(pos, 0);
+            toggleFormationsText.border.position(pos, 0);
             pos -= textWidth / 2 + 2 * MARGIN;
             toggleFormationsCheck.position(pos, 0);
             manip.set(2, toggleFormationsCheck);
             manip.move(drawing.width, 10 + MARGIN);
-            toggleFormationsText.cadre.mark('toggleFormationsText');
+            toggleFormationsText.border.mark('toggleFormationsText');
 
             let toggleFormations = () => {
                 this.progressOnly = !this.progressOnly;
@@ -1515,7 +1515,7 @@ exports.GUI = function (globalVariables) {
             };
             svg.addEvent(toggleFormationsCheck, 'click', toggleFormations);
             svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
-            svg.addEvent(toggleFormationsText.cadre, 'click', toggleFormations);
+            svg.addEvent(toggleFormationsText.border, 'click', toggleFormations);
         } else {
             this.headerManipulator.add(this.addButtonManipulator);
             this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
@@ -1528,7 +1528,7 @@ exports.GUI = function (globalVariables) {
         let displayPanel = () => {
             let heightAllocatedToPanel = drawing.height - (playerMode ?
                 toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN :
-                addFormationButton.cadre.globalPoint(0, 0).y + addFormationButton.cadre.height);
+                addFormationButton.border.globalPoint(0, 0).y + addFormationButton.border.height);
             spaceBetweenElements = {
                 width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                 height: this.panel ? 0.030 * this.panel.height : 0.030 * drawing.height
@@ -1586,9 +1586,9 @@ exports.GUI = function (globalVariables) {
         this.displayHeaderFormations = () => {
             this.headerManipulator.move(0, 0);
             addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
-            addFormationButton.cadre.mark("addFormationCadre");
+            addFormationButton.border.mark("addFormationCadre");
             var addFormationButtonTextBr = addFormationButton.content.boundingRect();
-            addFormationButton.cadre.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
+            addFormationButton.border.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
             addFormationButton.content.position(this.plusDim + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 8);
             let addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height / 2, this.addButtonHeight, this.addButtonHeight);
             this.addButtonManipulator.set(2, addFormationObject.circle);
@@ -1598,7 +1598,7 @@ exports.GUI = function (globalVariables) {
             svg.addEvent(addFormationObject.circle, "click", onClickNewFormation);
             svg.addEvent(addFormationObject.plus, "click", onClickNewFormation);
             svg.addEvent(addFormationButton.content, "click", onClickNewFormation);
-            svg.addEvent(addFormationButton.cadre, "click", onClickNewFormation);
+            svg.addEvent(addFormationButton.border, "click", onClickNewFormation);
 
             let checkLegend = statusEnum.Published.icon(this.iconeSize);
             this.checkManipulator.set(2, checkLegend.square);
@@ -1674,7 +1674,7 @@ exports.GUI = function (globalVariables) {
 
             pos -= deconnexionWidth / 2;
             deconnexion.content.position(pos, 0);
-            deconnexion.cadre.position(pos, -30 / 2).mark('deconnection');
+            deconnexion.border.position(pos, -30 / 2).mark('deconnection');
             pos -= deconnexionWidth / 2 + 40;
             userText.text.anchor('end').position(pos, 0);
             pos -= userText.finalWidth;
@@ -1694,7 +1694,7 @@ exports.GUI = function (globalVariables) {
                 main(svg, runtime, dbListener);
             };
             svg.addEvent(deconnexion.content, "click", deconnexionHandler);
-            svg.addEvent(deconnexion.cadre, "click", deconnexionHandler);
+            svg.addEvent(deconnexion.border, "click", deconnexionHandler);
         };
 
         if (message) {
@@ -1723,12 +1723,12 @@ exports.GUI = function (globalVariables) {
                 (link === "Inscription") ? globalVariables.inscriptionManager.display() : globalVariables.connexionManager.display();
             };
             const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
-            special.cadre.mark('inscriptionLink');
+            special.border.mark('inscriptionLink');
             special.content.anchor("end");
             userManip.move(width - MARGIN, height * 0.5);
             userManip.scale(1);
             svg.addEvent(special.content, "click", clickHandler);
-            svg.addEvent(special.cadre, "click", clickHandler);
+            svg.addEvent(special.border, "click", clickHandler);
         }
     }
 
@@ -1745,7 +1745,7 @@ exports.GUI = function (globalVariables) {
                     width: this.image.width,
                     height: this.image.height
                 }, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image, this.width*0.8);
-            this.bordure = obj.cadre;
+            this.border = obj.border;
             this.content = obj.content;
             this.image = obj.image;
         }
@@ -1757,7 +1757,7 @@ exports.GUI = function (globalVariables) {
             else {
                 obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
             }
-            this.bordure = obj.cadre;
+            this.border = obj.border;
             this.content = obj.content;
             this.miniatureVideo = obj.video;
             obj.video.mark('questionVideoToPlay');
@@ -1765,7 +1765,7 @@ exports.GUI = function (globalVariables) {
         // Question avec Texte uniquement
         else if (typeof this.label !== "undefined" && !this.imageSrc) {
             var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, this.width*0.8);
-            this.bordure = object.cadre;
+            this.border = object.border;
             this.content = object.content;
         }
         // Question avec Image uniquement
@@ -1774,8 +1774,8 @@ exports.GUI = function (globalVariables) {
             this.manipulator.set(2, this.image);
         }
         else {
-            this.bordure = new svg.Rect(this.width, this.height).color(this.bgColor, 1, this.colorBordure);
-            this.manipulator.set(0, this.bordure);
+            this.border = new svg.Rect(this.width, this.height).color(this.bgColor, 1, this.colorBordure);
+            this.manipulator.set(0, this.border);
         }
 
         if (playerMode) {
@@ -1788,17 +1788,17 @@ exports.GUI = function (globalVariables) {
                     this.finishedQuizz.parentFormation.quizzDisplayed = this.finishedQuizz;
                     this.finishedQuizz.run(1, 1, drawing.width, drawing.height);
                 };
-                this.bordure && svg.addEvent(this.bordure, "click", event);
+                this.border && svg.addEvent(this.border, "click", event);
                 this.content && svg.addEvent(this.content, "click", event);
                 this.image && svg.addEvent(this.image, "click", event);
             }
         } else if (!this.parentQuizz.previewMode) {
-            this.bordure && svg.addEvent(this.bordure, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
+            this.border && svg.addEvent(this.border, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
             this.content && svg.addEvent(this.content, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
             this.image && svg.addEvent(this.image, "click", this.parentQuizz.parentFormation.quizzManager.questionClickHandler);
         }
 
-        this.bordure.mark('questionFromPuzzleBordure' + this.questionNum);
+        this.border.mark('questionFromPuzzleBordure' + this.questionNum);
 
         var fontSize = Math.min(20, this.height * 0.1);
         this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
@@ -1852,22 +1852,22 @@ exports.GUI = function (globalVariables) {
             this.answersManipulator.add(answerElement.manipulator);
             answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
             answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width) / 2 -MARGIN, tilePosition.y + MARGIN);
-            let point = answerElement.bordure.globalPoint(-50,-50);
+            let point = answerElement.border.globalPoint(-50,-50);
             answerElement.video && answerElement.video.miniature.position(point.x, point.y);
-            answerElement.bordure.mark('answerElement' + index);
+            answerElement.border.mark('answerElement' + index);
             if (!playerMode && this.parentQuizz.previewMode){
-                answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen);
+                answerElement.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
             } else if(playerMode && this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index)!== -1)
-                    answerElement.correct ? answerElement.bordure.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.bordure.color(myColors.greyerBlue, 5, myColors.red);
+                    answerElement.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
                 else {
-                    answerElement.correct && answerElement.bordure.color(myColors.white, 5, myColors.primaryGreen)
+                    answerElement.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen)
                 }
             } else if(playerMode && !this.parentQuizz.previewMode){
                 if(this.parentQuizz.questionsAnswered.length <this.questionNum) {
-                    answerElement.bordure.color(myColors.white, 1, answerElement.bordure.strokeColor);
+                    answerElement.border.color(myColors.white, 1, answerElement.border.strokeColor);
                 } else if(this.parentQuizz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index)!== -1){
-                    answerElement.bordure.color(myColors.greyerBlue, 1, answerElement.bordure.strokeColor);
+                    answerElement.border.color(myColors.greyerBlue, 1, answerElement.border.strokeColor);
                 }
             }
         });
@@ -1908,7 +1908,7 @@ exports.GUI = function (globalVariables) {
 
             if (!this.parentQuizz.previewMode) {
                 var onClickValidateButton = this.validateAnswers.bind(this);
-                svg.addEvent(validateButton.cadre, 'click', onClickValidateButton);
+                svg.addEvent(validateButton.border, 'click', onClickValidateButton);
                 svg.addEvent(validateButton.content, 'click', onClickValidateButton);
             }
 
@@ -1918,27 +1918,27 @@ exports.GUI = function (globalVariables) {
             resetButton.content.mark("resetButtonQuiz");
             this.resetManipulator.move(resetX + buttonW / 2, buttonY + buttonH / 2);
             if (this.selectedAnswers.length !== 0) {
-                resetButton.cadre.color(myColors.yellow, 1, myColors.green);
+                resetButton.border.color(myColors.yellow, 1, myColors.green);
             }
             if (!this.parentQuizz.previewMode) {
                 let reset = ()=> {
                     if (this.selectedAnswers.length > 0) {
                         this.selectedAnswers.forEach((e)=> {
                             e.selected = false;
-                            e.bordure.color(e.bgColor, 1, e.colorBordure);
+                            e.border.color(e.bgColor, 1, e.colorBordure);
                         });
                         this.selectedAnswers.splice(0, this.selectedAnswers.length);
-                        resetButton.cadre.color(myColors.grey, 1, myColors.grey);
+                        resetButton.border.color(myColors.grey, 1, myColors.grey);
                     }
                 };
                 svg.addEvent(resetButton.content, 'click', reset);
-                svg.addEvent(resetButton.cadre, 'click', reset);
+                svg.addEvent(resetButton.border, 'click', reset);
             }
         }
     }
 
     function questionSelectedQuestion() {
-        this.bordure.color(this.bgColor, 5, SELECTION_COLOR);
+        this.border.color(this.bgColor, 5, SELECTION_COLOR);
         if (!this.redCrossManipulator) {
             let redCrossClickHandler = () => {
                 let quizzManager = this.parentQuizz.parentFormation.quizzManager;
@@ -1967,7 +1967,7 @@ exports.GUI = function (globalVariables) {
                     this.parentQuizz.tabQuestions[0].selected = true;
                     questionPuzzle.display();
 
-                    svg.event(questionsArray[0].bordure, "click", {question: questionsArray[0]}); // dernier élément du tableau (AddEmptyElement)
+                    svg.event(questionsArray[0].border, "click", {question: questionsArray[0]}); // dernier élément du tableau (AddEmptyElement)
                 }
             };
             this.redCrossManipulator = new Manipulator(this);
@@ -2039,11 +2039,11 @@ exports.GUI = function (globalVariables) {
             (type.label == clicked) ? (this.questionTypeSelectorManipulators[index].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[index].color = myColors.white);
             let toggleButton = displayTextWithoutCorners(type.label, toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[index].color, 20, null, this.questionTypeSelectorManipulators[index]);
             toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[index].color), 0, myColors.black);
-            toggleButton.cadre.mark('toggleButtonCadre' + type.label.split(" ")[1]);
+            toggleButton.border.mark('toggleButtonCadre' + type.label.split(" ")[1]);
             this.questionTypeSelectorManipulators[index].move(this.x - this.w / 2, h - this.h / 2);
             this.x += toggleButtonWidth + MARGIN;
             (type.label != clicked) && (svg.addEvent(toggleButton.content, "click", toggleHandler));
-            (type.label != clicked) && (svg.addEvent(toggleButton.cadre, "click", toggleHandler));
+            (type.label != clicked) && (svg.addEvent(toggleButton.border, "click", toggleHandler));
         });
         this.linkedQuestion.questionType = (this.multipleChoice) ? this.questionType[1] : this.questionType[0];
     }
@@ -2060,17 +2060,17 @@ exports.GUI = function (globalVariables) {
         var removeErrorMessage = () => {
             this.linkedQuestion.validLabelInput = true;
             this.errorMessage && this.manipulator.unset(1);
-            questionBlock.title.cadre.color(myColors.white, 1, myColors.black);
+            questionBlock.title.border.color(myColors.white, 1, myColors.black);
         };
 
         var displayErrorMessage = ()=> {
             removeErrorMessage();
-            questionBlock.title.cadre.color(myColors.white, 2, myColors.red);
+            questionBlock.title.border.color(myColors.white, 2, myColors.red);
             var anchor = 'middle';
             this.errorMessage = new svg.Text(REGEX_ERROR);
             this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.set(1, this.errorMessage);
-            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.cadre.height + this.errorMessage.boundingRect().height + MARGIN)
+            this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.border.height + this.errorMessage.boundingRect().height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
             this.linkedQuestion.validLabelInput = false;
         };
@@ -2101,23 +2101,23 @@ exports.GUI = function (globalVariables) {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
             questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
-            questionBlock.title.cadre.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
+            questionBlock.title.border.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
             var fontSize = Math.min(20, this.h * 0.1);
             this.questNum = new svg.Text(this.linkedQuestion.questionNum).position(-this.w / 2 + 2 * MARGIN + (fontSize * (this.linkedQuestion.questionNum.toString.length) / 2), -this.h * 0.25 / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
             this.questionManipulator.set(4, this.questNum);
             questionBlock.title.content.color(color);
             questionBlock.title.content._acceptDrop = true;
-            this.linkedQuestion.validLabelInput ? questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
-                questionBlock.title.cadre.color(this.linkedQuestion.bgColor, 2, myColors.red);
+            this.linkedQuestion.validLabelInput ? questionBlock.title.border.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
+                questionBlock.title.border.color(this.linkedQuestion.bgColor, 2, myColors.red);
             this.linkedQuestion.validLabelInput || displayErrorMessage();
-            questionBlock.title.cadre._acceptDrop = true;
+            questionBlock.title.border._acceptDrop = true;
 
-            this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.cadre.height / 2 + this.toggleButtonHeight + MARGIN);
+            this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.border.height / 2 + this.toggleButtonHeight + MARGIN);
             this.manipulator.move(x + w / 2, y + h / 2);
-            let globalPoints = questionBlock.title.cadre.globalPoint(-50, -50);
+            let globalPoints = questionBlock.title.border.globalPoint(-50, -50);
             questionBlock.title.video && questionBlock.title.video.position(globalPoints.x, globalPoints.y);
             svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
-            svg.addEvent(questionBlock.title.cadre, "dblclick", dblclickEditionQuestionBlock);
+            svg.addEvent(questionBlock.title.border, "dblclick", dblclickEditionQuestionBlock);
         };
 
         var dblclickEditionQuestionBlock = () => {
@@ -2155,7 +2155,7 @@ exports.GUI = function (globalVariables) {
                 textarea.enter();
                 this.parent.questionCreator.checkInputTextArea({
                     textarea: textarea,
-                    border: questionBlock.title.cadre,
+                    border: questionBlock.title.border,
                     onblur: onblur,
                     remove: removeErrorMessage,
                     display: displayErrorMessage
@@ -2170,7 +2170,7 @@ exports.GUI = function (globalVariables) {
         (typeof w !== "undefined") && (this.w = w);
         (typeof h !== "undefined") && (this.h = h);
         questionBlockDisplay();
-        var height = this.h - this.toggleButtonHeight - questionBlock.title.cadre.height - 3 * MARGIN;
+        var height = this.h - this.toggleButtonHeight - questionBlock.title.border.height - 3 * MARGIN;
         this.coordinatesAnswers = {
             x: 0,
             y: (this.h - height) / 2 - MARGIN, //this.y + 3 * MARGIN ,
@@ -2280,9 +2280,9 @@ exports.GUI = function (globalVariables) {
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
                 this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5);
-                this.miniature.cadre.corners(0, 0);
+                this.miniature.border.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
-                this.globalPoints = this.miniature.cadre.globalPoint(this.imageX -50, -50);
+                this.globalPoints = this.miniature.border.globalPoint(this.imageX -50, -50);
                 this.miniature.video.position(this.globalPoints.x, this.globalPoints.y);
                 this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(this.imageX, 25);
                 this.answer.filled = true;
@@ -2541,7 +2541,7 @@ exports.GUI = function (globalVariables) {
             textExp = "Voir les réponses et explications",
             expButton = displayText(textExp, buttonExpWidth, buttonExpHeight, myColors.black, myColors.white, 20, null, this.expButtonManipulator);
         this.expButtonManipulator.move(buttonExpWidth/2, drawing.height - this.headerHeight - buttonExpHeight);
-        expButton.cadre.mark('expButton');
+        expButton.border.mark('expButton');
 
         const displayExplanation = () => {
             drawings.screen.empty();
@@ -2552,7 +2552,7 @@ exports.GUI = function (globalVariables) {
             quizzExplanation.run(1, 1, drawing.width, drawing.height);
         };
 
-        svg.addEvent(expButton.cadre, "click", displayExplanation);
+        svg.addEvent(expButton.border, "click", displayExplanation);
         svg.addEvent(expButton.content, "click", displayExplanation);
 
         this.puzzle.fillVisibleElementsArray("upToDown");
@@ -2767,14 +2767,14 @@ exports.GUI = function (globalVariables) {
             quizzLabel.content = autoAdjustText(text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
             quizzLabel.content.mark("quizzLabelContent");
             this.quizzNameHeight = quizzLabel.content.boundingRect().height;
-            quizzLabel.cadre = new svg.Rect(width, 0.5 * h).mark("quizzLabelCadre");
-            this.quizzNameValidInput ? quizzLabel.cadre.color(bgcolor) : quizzLabel.cadre.color(bgcolor, 2, myColors.red);
-            quizzLabel.cadre.position(width / 2, h / 2 + quizzLabel.cadre.height / 2);
-            this.quizzInfoManipulator.set(0, quizzLabel.cadre);
-            quizzLabel.content.position(0, h / 2 + quizzLabel.cadre.height * 9 / 12).color(color).anchor("start");
+            quizzLabel.border = new svg.Rect(width, 0.5 * h).mark("quizzLabelCadre");
+            this.quizzNameValidInput ? quizzLabel.border.color(bgcolor) : quizzLabel.border.color(bgcolor, 2, myColors.red);
+            quizzLabel.border.position(width / 2, h / 2 + quizzLabel.border.height / 2);
+            this.quizzInfoManipulator.set(0, quizzLabel.border);
+            quizzLabel.content.position(0, h / 2 + quizzLabel.border.height * 9 / 12).color(color).anchor("start");
             this.quizzInfoManipulator.move(x, y);
             svg.addEvent(quizzLabel.content, "dblclick", dblclickEditionQuizz);
-            svg.addEvent(quizzLabel.cadre, "dblclick", dblclickEditionQuizz);
+            svg.addEvent(quizzLabel.border, "dblclick", dblclickEditionQuizz);
         };
 
         var dblclickEditionQuizz = ()=> {
@@ -2801,16 +2801,16 @@ exports.GUI = function (globalVariables) {
             var removeErrorMessage = ()=> {
                 this.questionCreator.quizzNameValidInput = true;
                 this.errorMessage && this.quizzInfoManipulator.unset(5);
-                quizzLabel.cadre.color(myColors.lightgrey);
+                quizzLabel.border.color(myColors.lightgrey);
             };
             var displayErrorMessage = ()=> {
                 removeErrorMessage();
-                quizzLabel.cadre.color(myColors.lightgrey, 2, myColors.red);
+                quizzLabel.border.color(myColors.lightgrey, 2, myColors.red);
                 var anchor = 'start';
                 this.errorMessage = new svg.Text(REGEX_ERROR);
                 this.errorMessage.mark("quizErrorMessage");
                 this.quizzInfoManipulator.set(5, this.errorMessage);
-                this.errorMessage.position(quizzLabel.cadre.width + MARGIN, bounds.height + 3 + quizzLabel.cadre.height / 2 + this.errorMessage.boundingRect().height / 2)
+                this.errorMessage.position(quizzLabel.border.width + MARGIN, bounds.height + 3 + quizzLabel.border.height / 2 + this.errorMessage.boundingRect().height / 2)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
                 textarea.focus();
             };
@@ -2824,7 +2824,7 @@ exports.GUI = function (globalVariables) {
             };
             let objectToBeChecked = {
                 textarea: textarea,
-                border: quizzLabel.cadre,
+                border: quizzLabel.border,
                 onblur: onblur,
                 remove: removeErrorMessage,
                 display: displayErrorMessage
@@ -2842,7 +2842,7 @@ exports.GUI = function (globalVariables) {
 
     function quizzManagerDisplayPreviewButton(x, y, w, h) {
         let previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, this.previewButtonManipulator);
-        previewButton.cadre.mark('previewButton');
+        previewButton.border.mark('previewButton');
         this.previewFunction = () => {
             this.toggleButtonHeight = 40;
             this.quizz.isValid = true;
@@ -2885,15 +2885,15 @@ exports.GUI = function (globalVariables) {
                 this.displayEditedQuestion();
             }
         };
-        svg.addEvent(previewButton.cadre, "click", this.previewFunction);
+        svg.addEvent(previewButton.border, "click", this.previewFunction);
         svg.addEvent(previewButton.content, "click", this.previewFunction);
         this.previewButtonManipulator.move(x, y);
     }
 
     function quizzManagerDisplaySaveButton(x, y, w, h) {
         let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
-        saveButton.cadre.mark('saveButtonQuiz');
-        svg.addEvent(saveButton.cadre, "click", () => this.saveQuizz());
+        saveButton.border.mark('saveButtonQuiz');
+        svg.addEvent(saveButton.border, "click", () => this.saveQuizz());
         svg.addEvent(saveButton.content, "click", () => this.saveQuizz());
         this.saveQuizButtonManipulator.move(x, y);
     }
@@ -2940,7 +2940,7 @@ exports.GUI = function (globalVariables) {
             return ()=> {
                 let width = w,
                     height = this.h,
-                    globalPointCenter = this[field].cadre.globalPoint(-(width) / 2, -(height) / 2),
+                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
                     contentareaStyle = {
                     toppx: globalPointCenter.y,
                     leftpx: globalPointCenter.x,
@@ -2960,7 +2960,7 @@ exports.GUI = function (globalVariables) {
                     emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
                         var message = autoAdjustText(this[field].errorMessage, drawing.width, this.h, 20, null, trueManipulator, 3);
-                        message.text.color(myColors.red).position(this[field].cadre.width / 2 + MARGIN, this[field].cadre.height + MARGIN);
+                        message.text.color(myColors.red).position(this[field].border.width / 2 + MARGIN, this[field].border.height + MARGIN);
                         message.text.mark('inscriptionErrorMessage' + field);
                     }
                 };
@@ -2970,11 +2970,11 @@ exports.GUI = function (globalVariables) {
                     this[field].labelSecret !== "undefined" && (this[field].labelSecret = contentarea.messageText);
                     if ((field === "lastNameField" || field === 'firstNameField' ) && !this[field].checkInput()) {
                         displayErrorMessage();
-                        this[field].cadre.color(myColors.white, 3, myColors.red);
+                        this[field].border.color(myColors.white, 3, myColors.red);
                     }
                     else {
                         field !== "passwordConfirmationField" && manipulator.unset(3);
-                        this[field].cadre.color(myColors.white, 1, myColors.black);
+                        this[field].border.color(myColors.white, 1, myColors.black);
                     }
                 };
                 svg.addEvent(contentarea, "input", oninput);
@@ -2995,12 +2995,12 @@ exports.GUI = function (globalVariables) {
                         }
                         contentarea.messageText && displayField(field, manipulator);
                         if (this[field].checkInput()) {
-                            this[field].cadre.color(myColors.white, 1, myColors.black);
+                            this[field].border.color(myColors.white, 1, myColors.black);
                             field !== "passwordConfirmationField" && manipulator.unset(3);
                         }
                         else {
                             this[field].secret || displayErrorMessage();
-                            this[field].secret || this[field].cadre.color(myColors.white, 3, myColors.red);
+                            this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
                         }
                         drawings.screen.remove(contentarea);
                         drawing.notInTextArea = true;
@@ -3018,14 +3018,14 @@ exports.GUI = function (globalVariables) {
             this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
-            this[field].cadre = displayText.cadre;
-            this[field].cadre.mark(field);
+            this[field].border = displayText.border;
+            this[field].border.mark(field);
             var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(x, 0);
-            this[field].cadre.position(x, y);
+            this[field].border.position(x, y);
             var clickEdition = clickEditionField(field, manipulator);
             svg.addEvent(this[field].content, "click", clickEdition);
-            svg.addEvent(this[field].cadre, "click", clickEdition);
+            svg.addEvent(this[field].border, "click", clickEdition);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
@@ -3066,34 +3066,34 @@ exports.GUI = function (globalVariables) {
             var confTooShort = this.passwordConfirmationField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordConfirmationField.labelSecret.length < 6;
             var cleanIfEgality = ()=> {
                 if (this.passwordField.labelSecret === this.passwordConfirmationField.labelSecret) {
-                    this.passwordField.cadre.color(myColors.white, 1, myColors.black);
-                    this.passwordConfirmationField.cadre.color(myColors.white, 1, myColors.black);
+                    this.passwordField.border.color(myColors.white, 1, myColors.black);
+                    this.passwordConfirmationField.border.color(myColors.white, 1, myColors.black);
                 }
             };
             if (passTooShort || confTooShort) {
                 if (passTooShort) {
-                    this.passwordField.cadre.color(myColors.white, 3, myColors.red);
+                    this.passwordField.border.color(myColors.white, 3, myColors.red);
                     var message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                    message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                    message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
                     message.text.mark('inscriptionErrorMessagepasswordField');
                 }
                 if (confTooShort) {
-                    this.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
+                    this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
                     message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                    message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                    message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
                     message.text.mark('inscriptionErrorMessagepasswordField');
                 }
             }
             else if (this.passwordConfirmationField.labelSecret !== "" && this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret) {
-                this.passwordField.cadre.color(myColors.white, 3, myColors.red);
-                this.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
-                this.passwordConfirmationField.cadre.color(myColors.white, 3, myColors.red);
+                this.passwordField.border.color(myColors.white, 3, myColors.red);
+                this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
+                this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
                 message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                message.text.color(myColors.red).position(this.passwordField.cadre.width / 2 + MARGIN, this.passwordField.cadre.height + MARGIN);
+                message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
                 message.text.mark('inscriptionErrorMessagepasswordField');
             }
             else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
-                this.passwordField.cadre.color(myColors.white, 1, myColors.black);
+                this.passwordField.border.color(myColors.white, 1, myColors.black);
                 this.passwordManipulator.unset(3);
                 cleanIfEgality();
             }
@@ -3134,7 +3134,7 @@ exports.GUI = function (globalVariables) {
         var emptyAreasHandler = (save)=> {
             var emptyAreas = this.tabForm.filter(field=> field.label === "");
             emptyAreas.forEach(function (emptyArea) {
-                save && emptyArea.cadre.color(myColors.white, 3, myColors.red);
+                save && emptyArea.border.color(myColors.white, 3, myColors.red);
             });
             if (emptyAreas.length > 0 && save) {
                 var message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
@@ -3177,7 +3177,7 @@ exports.GUI = function (globalVariables) {
             } else if (!AllOk()) {
                 const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
                     message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                message.text.color(myColors.red).position(0, -saveButton.cadre.height + MARGIN);
+                message.text.color(myColors.red).position(0, -saveButton.border.height + MARGIN);
             }
         };
         let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
@@ -3185,9 +3185,9 @@ exports.GUI = function (globalVariables) {
         let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
         let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
         this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
-        saveButton.cadre.mark('inscriptionButton');
+        saveButton.border.mark('inscriptionButton');
         svg.addEvent(saveButton.content, "click", this.saveButtonHandler);
-        svg.addEvent(saveButton.cadre, "click", this.saveButtonHandler);
+        svg.addEvent(saveButton.border, "click", this.saveButtonHandler);
 
         let nextField = (backwards = false)=> {
             let index = this.tabForm.indexOf(focusedField);
@@ -3195,7 +3195,7 @@ exports.GUI = function (globalVariables) {
                 backwards ? index-- : index++;
                 if (index === this.tabForm.length) index = 0;
                 if (index === -1) index = this.tabForm.length - 1;
-                clickEditionField(this.tabForm[index].field, this.tabForm[index].cadre.parent.parentManip)();
+                clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parent.parentManip)();
             }
         };
         svg.addGlobalEvent("keydown", (event)=> {
@@ -3224,12 +3224,12 @@ exports.GUI = function (globalVariables) {
             return ()=> {
                 var width = w;
                 var height = this.h;
-                var globalPointCenter = this[field].cadre.globalPoint(-(width) / 2, -(height) / 2);
+                var globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2);
                 var contentareaStyle = {
                     toppx: globalPointCenter.y,
                     leftpx: globalPointCenter.x,
                     height: height,
-                    width: this[field].cadre.width
+                    width: this[field].border.width
                 };
                 drawing.notInTextArea = false;
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
@@ -3275,14 +3275,14 @@ exports.GUI = function (globalVariables) {
             this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
-            this[field].cadre = displayText.cadre;
-            this[field].cadre.mark(field);
+            this[field].border = displayText.border;
+            this[field].border.mark(field);
             var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(x, 0);
-            this[field].cadre.position(x, y);
+            this[field].border.position(x, y);
             var clickEdition = clickEditionField(field, manipulator);
             svg.addEvent(this[field].content, "click", clickEdition);
-            svg.addEvent(this[field].cadre, "click", clickEdition);
+            svg.addEvent(this[field].border, "click", clickEdition);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
@@ -3305,10 +3305,10 @@ exports.GUI = function (globalVariables) {
         let connexionButtonHeight = drawing.height * connexionButtonHeightRatio;
         let connexionButtonWidth = 200;
         let connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
-        connexionButton.cadre.mark('connexionButton');
+        connexionButton.border.mark('connexionButton');
         this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
         svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
-        svg.addEvent(connexionButton.cadre, "click", this.connexionButtonHandler);
+        svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
 
         let nextField = (backwards = false)=> {
             let index = this.tabForm.indexOf(focusedField);
@@ -3316,8 +3316,8 @@ exports.GUI = function (globalVariables) {
                 backwards ? index-- : index++;
                 if (index === this.tabForm.length) index = 0;
                 if (index === -1) index = this.tabForm.length - 1;
-                clickEditionField(this.tabForm[index].field, this.tabForm[index].cadre.parentManip);
-                svg.event(this.tabForm[index].cadre, "click", this.connexionButtonHandler);
+                clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parentManip);
+                svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler);
             }
         };
 

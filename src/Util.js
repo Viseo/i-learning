@@ -178,7 +178,7 @@ exports.Util = function (globalVariables) {
                 this.target = this.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
                 // console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
-                // Rajouter des lignes pour target.bordure et target.image si existe ?
+                // Rajouter des lignes pour target.border et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
                 }
@@ -486,11 +486,11 @@ exports.Util = function (globalVariables) {
             var newHeight = previousImage && h === previousImage.height ? h : (h - textHeight) * 0.8;
             var image = displayImage(imageSrc, imageObj, newWidth, newHeight);//
             image.image.position(0, -textHeight / 2);
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.set(0, cadre);
+            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            manipulator.set(0, border);
             manipulator.set(1, text);
             manipulator.set(2, image.image);
-            return {cadre: cadre, image: image.image, content: text};
+            return {border: border, image: image.image, content: text};
         };
 
         drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, controls, layer = 3, textWidth = w)=> {
@@ -507,9 +507,9 @@ exports.Util = function (globalVariables) {
                 manipulator.set(1, text);
             }
 
-            let cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.set(0, cadre);
-            let {x, y} = cadre.globalPoint(-50, -50);
+            let border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            manipulator.set(0, border);
+            let {x, y} = border.globalPoint(-50, -50);
             const video = new svg.Video(x, y, 100, videoObject.src, controls);
             drawings.screen.add(video);
 
@@ -522,7 +522,7 @@ exports.Util = function (globalVariables) {
                     .opacity(0.001);
                 manipulator.set(layer, videoGlass);
                 videoGlass.mark('glass' + videoObject.name.split('.')[0]);
-                cadre._acceptDrop = true;
+                border._acceptDrop = true;
                 video._acceptDrop = true;
                 videoGlass._acceptDrop = true;
                 text && (text._acceptDrop = true);
@@ -632,11 +632,11 @@ exports.Util = function (globalVariables) {
             }
 
             return {
-                cadre,
+                border,
                 video,
                 content: text,
                 resize (width) {
-                    let {x, y} = cadre.globalPoint(0, 0);
+                    let {x, y} = border.globalPoint(0, 0);
                     video.dimension(width);
                     let bounds = video.component.getBoundingClientRect();
                     video.position(x - bounds.width / 2, y - (bounds.height / 2 + 50) );
@@ -648,10 +648,10 @@ exports.Util = function (globalVariables) {
 
         displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
             let image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN
-            let cadre = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
-            manipulator.set(0, cadre);
+            let border = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
+            manipulator.set(0, border);
             manipulator.set(2, image.image);
-            return {image: image.image, height: image.height, cadre: cadre};
+            return {image: image.image, height: image.height, border: border};
         };
 
         /**
@@ -698,13 +698,13 @@ exports.Util = function (globalVariables) {
          * @param manipulator
          * @param layer1
          * @param layer2
-         * @returns {{content, cadre}} : SVG items for text & cadre
+         * @returns {{content, border}} : SVG items for text & border
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
-            var cadre = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
-            manipulator.set(layer1, cadre);
-            return {content: content, cadre: cadre};
+            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            manipulator.set(layer1, border);
+            return {content: content, border: border};
         };
 
         /**
@@ -717,13 +717,13 @@ exports.Util = function (globalVariables) {
          * @param textHeight : number, taille de la police
          * @param font
          * @param manipulator
-         * @returns {{content, cadre}} : SVG items for text & cadre
+         * @returns {{content, border}} : SVG items for text & border
          */
         displayTextWithCircle = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
-            var cadre = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
-            manipulator.set(0, cadre);
-            return {content: content, cadre: cadre};
+            var border = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
+            manipulator.set(0, border);
+            return {content: content, border: border};
         };
 
         /**
@@ -736,12 +736,12 @@ exports.Util = function (globalVariables) {
          * @param textHeight : number, taille de la police
          * @param font
          * @param manipulator
-         * @returns {{content, cadre}} : SVG items for text & cadre
+         * @returns {{content, border}} : SVG items for text & border
          */
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             const result = displayText(label, w, h, rgbCadre, bgColor, textHeight, font, manipulator);
-            result.cadre.corners(0, 0);
-            return {content: result.content, cadre: result.cadre};
+            result.border.corners(0, 0);
+            return {content: result.content, border: result.border};
         };
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
@@ -1070,7 +1070,7 @@ exports.Util = function (globalVariables) {
             this.redCrossManipulator.add(this.redCross);
             svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             this.selected = false;
-            icon.cadre.color(myColors.white, 1, myColors.black);
+            icon.border.color(myColors.white, 1, myColors.black);
             if (playerMode) {
                 this.drawProgressIcon(game, size);
             }
@@ -1214,8 +1214,8 @@ exports.Util = function (globalVariables) {
         display(x, y, w, h) {
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
             let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
-            miniature.cadre.corners(50, 50);
-            miniature.cadre.mark(this.formation.label);
+            miniature.border.corners(50, 50);
+            miniature.border.mark(this.formation.label);
             let iconSize = this.formation.parent.iconeSize;
             if (!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
@@ -1223,7 +1223,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(index, element);
                 });
             }
-            this.iconManipulator.move(w / 2 - iconSize + MARGIN + 2, -h / 2 + iconSize - MARGIN - 2);//2Pxl pour la largeur de cadre
+            this.iconManipulator.move(w / 2 - iconSize + MARGIN + 2, -h / 2 + iconSize - MARGIN - 2);//2Pxl pour la largeur de border
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             this.drawIcon();
@@ -1520,7 +1520,7 @@ exports.Util = function (globalVariables) {
             this.visibleElementsArray.forEach(it => {
                 it.forEach(elem => {
                     let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                    this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 cadre
+                    this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
                     elem.display(elem.x, elem.y, elem.width, elem.height);
                 });
                 itNumber++;
@@ -1782,7 +1782,7 @@ exports.Util = function (globalVariables) {
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizzManager",
             "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
-            "answerParent", "obj", "checkbox", "cadre", "content", "parentQuizz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
+            "answerParent", "obj", "checkbox", "border", "content", "parentQuizz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
             "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
             "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",

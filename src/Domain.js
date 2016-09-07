@@ -70,7 +70,7 @@ exports.Domain = function (globalVariables) {
             }
             this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
             this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
-            this.bordure = null;
+            this.border = null;
             this.content = null;
         }
 
@@ -222,7 +222,7 @@ exports.Domain = function (globalVariables) {
             if (this.tabAnswer.length % this.columns !== 0) {
                 this.lines += 1;
             }
-            this.bordure = null;
+            this.border = null;
             this.content = null;
         }
 
@@ -297,7 +297,7 @@ exports.Domain = function (globalVariables) {
                 this.invalidQuestionPictogramManipulator.set(0, this.invalidQuestionPictogram.circle);
                 this.invalidQuestionPictogramManipulator.set(2, this.invalidQuestionPictogram.dot);
                 this.invalidQuestionPictogramManipulator.set(3, this.invalidQuestionPictogram.exclamation);
-                this.invalidQuestionPictogramManipulator.move(this.bordure.width / 2 - pictoSize, this.bordure.height / 2 - pictoSize);
+                this.invalidQuestionPictogramManipulator.move(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize);
             } else {
                 this.invalidQuestionPictogramManipulator.unset(0);
                 this.invalidQuestionPictogramManipulator.unset(2);
@@ -545,7 +545,7 @@ exports.Domain = function (globalVariables) {
             } else {
                 this.addNewGame(level, column)
             }
-            this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+            this.library.gameSelected && this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
             this.displayGraph();
         }
 
@@ -804,7 +804,7 @@ exports.Domain = function (globalVariables) {
         clickToAdd() {
             this.mouseUpGraphBlock = event => {
                 this.library.gameSelected && this.dropAction(event);
-                this.library.gameSelected && this.library.gameSelected.miniature.cadre.color(myColors.white, 1, myColors.black);
+                this.library.gameSelected && this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
                 this.library.gameSelected = null;
                 svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
             };
@@ -917,17 +917,17 @@ exports.Domain = function (globalVariables) {
                 }
                 else {
                     var oldElement = {
-                        cadre: target.parent.parentManip.ordonator.get(0),
+                        border: target.parent.parentManip.ordonator.get(0),
                         content: target.parent.parentManip.ordonator.get(1)
                     };
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
                     var newElement = displayImageWithTitle(oldElement.content.messageText, element.src,
                         element.srcDimension,
-                        oldElement.cadre.width, oldElement.cadre.height,
-                        oldElement.cadre.strokeColor, oldElement.cadre.fillColor, null, null, target.parent.parentManip
+                        oldElement.border.width, oldElement.border.height,
+                        oldElement.border.strokeColor, oldElement.border.fillColor, null, null, target.parent.parentManip
                     );
-                    oldElement.cadre.position(newElement.cadre.x, newElement.cadre.y);
+                    oldElement.border.position(newElement.border.x, newElement.border.y);
                     oldElement.content.position(newElement.content.x, newElement.content.y);
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
@@ -955,7 +955,7 @@ exports.Domain = function (globalVariables) {
                             answer.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.set(0, oldElement.cadre);
+                    target.parent.parentManip.set(0, oldElement.border);
                 }
 
             }
@@ -971,7 +971,7 @@ exports.Domain = function (globalVariables) {
                 }
                 else {
                     var oldElement = {
-                        cadre: target.parent.parentManip.ordonator.get(0),
+                        border: target.parent.parentManip.ordonator.get(0),
                         content: target.parent.parentManip.ordonator.get(1)
                     };
                     target.parent.parentManip.unset(0);
@@ -1001,7 +1001,7 @@ exports.Domain = function (globalVariables) {
                             answer.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.set(0, oldElement.cadre);
+                    target.parent.parentManip.set(0, oldElement.border);
                 }
             }
         }
@@ -1386,7 +1386,7 @@ exports.Domain = function (globalVariables) {
             this.connexionButtonHandler = () => {
                 let emptyAreas = this.tabForm.filter(field => field.label === '');
                 emptyAreas.forEach(emptyArea => {
-                    emptyArea.cadre.color(myColors.white, 3, myColors.red);
+                    emptyArea.border.color(myColors.white, 3, myColors.red);
                 });
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
@@ -1394,7 +1394,7 @@ exports.Domain = function (globalVariables) {
                     svg.timeout(()=> {
                         this.connexionButtonManipulator.unset(3);
                         emptyAreas.forEach(emptyArea => {
-                            emptyArea.cadre.color(myColors.white, 1, myColors.black);
+                            emptyArea.border.color(myColors.white, 1, myColors.black);
                         });
                     }, 5000);
                 } else {
