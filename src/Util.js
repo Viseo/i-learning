@@ -1103,16 +1103,16 @@ exports.Util = function (globalVariables) {
         }
 
         removeAllLinks() {
-            for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
-                    link.splice(i, 1);
+            for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
+                if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
+                    links.splice(i, 1);
             }
         }
 
         moveAllLinks() {
-            for (let link = this.game.parentFormation.link, i = link.length - 1; i >= 0; i--) {
-                if (link[i].childGame === this.game.id || link[i].parentGame === this.game.id)
-                    link[i].arrow.redraw();
+            for (let links = this.game.parentFormation.links, i = links.length - 1; i >= 0; i--) {
+                if (links[i].childGame === this.game.id || links[i].parentGame === this.game.id)
+                    links[i].arrow.redraw();
             }
         }
 

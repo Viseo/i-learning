@@ -111,8 +111,8 @@ exports.Domain = function (globalVariables) {
         }
 
         select() {
-            let question = this.parentQuestion;
-            let quizz = question.parentQuizz;
+            let question = this.parentQuestion,
+                quizz = question.parentQuizz;
             if (!question.multipleChoice) {
                 if (this.correct) {
                     quizz.score++;
@@ -459,7 +459,7 @@ exports.Domain = function (globalVariables) {
                 quizz: 0,
                 bd: 0
             };
-            this.link = [];
+            this.links = [];
             this._id = (formation._id || null);
             this.formationId = (formation.formationId || null);
             this.progress = formation.progress;
@@ -562,13 +562,13 @@ exports.Domain = function (globalVariables) {
         }
 
         createLink(parentGame, childGame, arrow) {
-            this.link.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
+            this.links.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
         };
 
         removeLink(parentGame, childGame) {
-            for (let i = this.link.length - 1; i >= 0; i--) {
-                if (this.link[i].childGame === childGame.id && this.link[i].parentGame === parentGame.id)
-                    this.link.splice(i, 1);
+            for (let i = this.links.length - 1; i >= 0; i--) {
+                if (this.links[i].childGame === childGame.id && this.links[i].parentGame === parentGame.id)
+                    this.links.splice(i, 1);
             }
         };
 
@@ -631,7 +631,7 @@ exports.Domain = function (globalVariables) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    return {label: this.label, gamesCounter: this.gamesCounter, link: this.link, levelsTab: this.levelsTab};
+                    return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
                 };
 
                 let addNewFormation = () => {
@@ -714,7 +714,7 @@ exports.Domain = function (globalVariables) {
         loadFormation(formation) {
             this.levelsTab = [];
             this.gamesCounter = formation.gamesCounter;
-            this.link = formation.link;
+            this.links = formation.links;
             formation.levelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
@@ -749,9 +749,9 @@ exports.Domain = function (globalVariables) {
 
         isGameAvailable(game) {
             let available = true;
-            this.link.forEach(linkElement => {
-                if (linkElement.childGame === game.id) {
-                    const parentGame = this.findGameById(linkElement.parentGame);
+            this.links.forEach(link => {
+                if (link.childGame === game.id) {
+                    const parentGame = this.findGameById(link.parentGame);
                     if (parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
                         available = false;
                         return available;
@@ -1174,7 +1174,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator = new Manipulator(this);
         }
         isChildOf(parentGame){
-            return parentGame.parentFormation.link.some((links) => links.parentGame === parentGame.id && links.childGame === this.id);
+            return parentGame.parentFormation.links.some((link) => link.parentGame === parentGame.id && link.childGame === this.id);
         };
 
     }

@@ -1100,9 +1100,9 @@ exports.GUI = function (globalVariables) {
                     level.manipulator.flush();
                     level.gamesTab.forEach(game => {
                         game.miniatureManipulator.flush();
-                        for (let j=this.link.length-1; j>=0; j--){
-                            if (this.link[j].childGame === game.id || this.link[j].parentGame === game.id){
-                                this.link.splice(j, 1);
+                        for (let j=this.links.length-1; j>=0; j--){
+                            if (this.links[j].childGame === game.id || this.links[j].parentGame === game.id){
+                                this.links.splice(j, 1);
                             }
                         }
                     });
@@ -1164,7 +1164,7 @@ exports.GUI = function (globalVariables) {
         let updateAllLinks = () => {
             this.arrowsManipulator.flush();
             var childElement, parentElement;
-            this.link.forEach((link)=> {
+            this.links.forEach((link)=> {
                 this.levelsTab.forEach((level)=> {
                     level.gamesTab.forEach((game)=> {
                         game.id === link.childGame && (childElement = game);
