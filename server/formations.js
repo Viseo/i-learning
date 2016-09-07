@@ -13,8 +13,8 @@ const
     db = require('./db');
 
 const compareVersions = (version1, version2, checkStatus = false) => {
-    let myVersion1 = Object.assign({}, version1);
-    let myVersion2 = Object.assign({}, version2);
+    let myVersion1 = Object.assign({}, version1),
+        myVersion2 = Object.assign({}, version2);
     if(myVersion1._id) {
         delete myVersion1._id;
     }
@@ -92,8 +92,8 @@ const insertFormation = (object) => {
 
 const deactivateFormation = (formation) => {
     return new Promise((resolve, reject) => {
-        let collectionFormations = db.get().collection('formations');
-        let version = formation.versions[formation.versions.length-1];
+        let collectionFormations = db.get().collection('formations'),
+            version = formation.versions[formation.versions.length-1];
         version.status = "NotPublished";
         version._id = new ObjectID();
         collectionFormations.updateOne({"_id": new ObjectID(formation._id)}, {$push: {versions:version}}, (err) => {
@@ -135,7 +135,6 @@ const getAllFormations = () => {
 const newVersion = (formation, version) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
-
         if(formation.versions[formation.versions.length-1].status === "Published") {
             if(JSON.stringify(version) !== JSON.stringify(formation.versions[formation.versions.length-1])) {
                 // new version

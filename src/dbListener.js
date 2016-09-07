@@ -73,10 +73,8 @@ function HttpRequests(isWriting, isMock, listener) {
             };
             if (request.upload && file.type == "video/mp4") {
                 request.upload.addEventListener("progress", onProgress);
-                // request.upload.addEventListener("abort", ()=>onAbort(request.responseText));
             }
             request.open('POST', theUrl, true); // true for asynchronous
-            //request.setRequestHeader('Content-Type', 'multipart/form-data');
             request.timeout = 60*1000;
             request.send(formData);
         })

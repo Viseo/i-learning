@@ -1114,9 +1114,9 @@ exports.Domain = function (globalVariables) {
         }
 
         saveQuizz() {
-            let completeQuizzMessage = "Les modifications ont bien été enregistrées";
-            let imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide";
-            let errorMessage = "Entrer un nom valide pour enregistrer";
+            let completeQuizzMessage = "Les modifications ont bien été enregistrées",
+                imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
+                errorMessage = "Entrer un nom valide pour enregistrer";
             if (this.quizzName !== "" && this.quizzName.match(REGEX)) {
                 let quiz = this.getObjectToSave();
                 this.quizz.isValid = true;
@@ -1140,7 +1140,6 @@ exports.Domain = function (globalVariables) {
                         this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
                         this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
                         this.display();
-
                     });
             }
             else {
@@ -1160,7 +1159,6 @@ exports.Domain = function (globalVariables) {
                 this.quizzNameValidInput = false;
             }
         }
-
     }
 
     class Game {
@@ -1176,7 +1174,6 @@ exports.Domain = function (globalVariables) {
         isChildOf(parentGame){
             return parentGame.parentFormation.links.some((link) => link.parentGame === parentGame.id && link.childGame === this.id);
         };
-
     }
 
     class Quizz extends Game{
@@ -1232,7 +1229,7 @@ exports.Domain = function (globalVariables) {
                 this.tabQuestions = [];
                 quizz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    var tmp = new Question(it, this);
+                    let tmp = new Question(it, this);
                     tmp.parentQuizz = this;
                     this.tabQuestions.push(tmp);
                 });
@@ -1243,7 +1240,7 @@ exports.Domain = function (globalVariables) {
         }
 
         run(x, y, w, h) {
-            var intervalToken = svg.interval(() => {
+            let intervalToken = svg.interval(() => {
                 if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
                     svg.clearInterval(intervalToken);
                     this.display(x, y, w, h);
@@ -1294,15 +1291,15 @@ exports.Domain = function (globalVariables) {
         }
 
         getQuestionsWithBadAnswers() {
-            let questionsWithBadAnswers = [];
-            let allRight = false;
+            let questionsWithBadAnswers = [],
+                allRight = false;
             this.questionsAnswered.forEach(questionAnswered => {
                 let question = questionAnswered.question;
                 if (question.multipleChoice) {
                     if (question.rightAnswers.length !== questionAnswered.validatedAnswers.length) {
                         questionsWithBadAnswers.push(question);
                     } else {
-                        var subTotal = 0;
+                        let subTotal = 0;
                         questionAnswered.validatedAnswers.forEach((e)=> {
                             if (question.tabAnswer[e].correct) {
                                 subTotal++;
