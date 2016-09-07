@@ -1709,6 +1709,7 @@ exports.GUI = function (globalVariables) {
         if (drawing.username){
             displayUser();
             returnToListFormation = ()=> {
+                drawings.screen.empty();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
                     globalVariables.formationsManager = new FormationsManager(myFormations);
