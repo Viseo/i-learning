@@ -1058,7 +1058,6 @@ exports.Util = function (globalVariables) {
     }
 
     class MiniatureGame {
-
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
