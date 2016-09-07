@@ -77,7 +77,7 @@ function HttpRequests(isWriting, isMock, listener) {
             }
             request.open('POST', theUrl, true); // true for asynchronous
             //request.setRequestHeader('Content-Type', 'multipart/form-data');
-
+            request.timeout = 60*1000;
             request.send(formData);
         })
     }
