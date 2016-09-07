@@ -1594,6 +1594,10 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/deleteVideo", video);
         }
 
+        static deleteAbortedVideos(){
+            return dbListener.httpPostAsync("/deleteAbortedVideos");
+        }
+
         static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
             return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
         }
@@ -1767,7 +1771,7 @@ exports.Util = function (globalVariables) {
      */
     function Bdd() {
         HEADER_SIZE = 0.05;
-        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,150}$/g;
+        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,200}$/g;
         FORMATION_TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
         REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
         REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";

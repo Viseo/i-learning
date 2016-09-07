@@ -89,6 +89,38 @@ module.exports = function (app, fs) {
         });
     });
 
+    app.post('/deleteAbortedVideos', function (req, res) {
+        let videosList;
+        db.get().collection('videos').find().toArray(function (err, videosList) {
+            fs.readdir('./resource/', function(err, list) {
+                if (err) return done(err);
+                let i = 0,
+                    toSuppress = [];
+                while (i<list.length && videosList.length !== list.length){
+                    let j = 0;
+                    if (videosList.length>0) {
+                        while (j<videosList.length && videosList[j] !== list[i]){
+                            j++;
+                        }
+                    }
+                    toSuppress.push(list[i]);
+                    fs.exists('./resource/' + list[i], function(exists) {
+                        if (exists) {
+                            console.log('File exists. Deleting now ...' + toSuppress[0]);
+                            fs.unlink('./resource/' + toSuppress.shift(), ()=>{
+                                console.log('Deleted');
+                            });
+                        } else {
+                            console.log('File not found, so not deleting.');
+                        }
+                    });
+                    i++;
+                }
+                res.send({ack: "ok"});
+            });
+        });
+    });
+
     app.get('/getUserByMailAddress/:mailAddress', function (req, res) {
         var collection = db.get().collection('users');
         var result;

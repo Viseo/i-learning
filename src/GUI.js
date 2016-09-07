@@ -532,6 +532,7 @@ exports.GUI = function (globalVariables) {
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
                                 dbListener.uploadRequest && dbListener.uploadRequest.abort();
+                                Server.deleteAbortedVideos();
                             };
                             svg.addEvent(redCross, 'click', redCrossClickHandler);
 
