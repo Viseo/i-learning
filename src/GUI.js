@@ -532,6 +532,7 @@ exports.GUI = function (globalVariables) {
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
                                 dbListener.uploadRequest && dbListener.uploadRequest.abort();
+                                manipulator.flush();
                             };
                             svg.addEvent(redCross, 'click', redCrossClickHandler);
 
