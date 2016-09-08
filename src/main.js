@@ -72,6 +72,15 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             case "Formation":
                 formation.gamesLibraryManipulator.flush();
                 formation.displayFormation();
+                if (formation.message){
+                    let saveFormationButtonCadre = formation.saveFormationButtonManipulator.ordonator.children[0];
+                    let messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
+                    formation.message.position(drawing.width/2, messageY - saveFormationButtonCadre.height*1.5 - MARGIN);
+                }
+                if (formation.errorMessagePublication){
+                    const messageY = formation.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
+                    formation.errorMessagePublication.position(drawing.width/2, messageY - formation.publicationButtonHeight*1.5 - MARGIN)
+                }
                 break;
             case "QuizManager":
                 formation.library.libraryManipulator.flush();
