@@ -176,7 +176,8 @@ exports.GUI = function (globalVariables) {
                 drawings.screen.add(contentarea);
                 contentarea.height = this.obj.content.boundingRect().height;
                 this.manipulator.unset(1);
-                contentarea.focus();
+                contentarea.setCaretPosition(this.label.length);
+                // contentarea.focus();
 
                 let onblur = () => {
                     contentarea.enter();
@@ -1325,7 +1326,8 @@ exports.GUI = function (globalVariables) {
                     .anchor("start");
                 (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
                 drawings.screen.add(contentarea);
-                contentarea.focus();
+                contentarea.setCaretPosition(this.label.length);
+                // contentarea.focus();
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
@@ -1340,7 +1342,8 @@ exports.GUI = function (globalVariables) {
                         .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.set(2, this.errorMessage);
-                    contentarea.focus();
+                    contentarea.setCaretPosition(this.label.length);
+                    // contentarea.focus();
                     this.invalidLabelInput = REGEX_ERROR_FORMATION;
                 };
                 var onblur = ()=> {
@@ -2130,7 +2133,8 @@ exports.GUI = function (globalVariables) {
                 .mark('questionBlockTextArea')
                 .font("Arial", 20);
             drawings.screen.add(textarea);
-            textarea.focus();
+            textarea.setCaretPosition(this.linkedQuestion.label.length);
+            // textarea.focus();
 
             let onblur = () => {
                 textarea.enter();
@@ -2326,7 +2330,7 @@ exports.GUI = function (globalVariables) {
             this.panelManipulator.set(0, this.panel.component);
             this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-            let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
+            textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
             text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
             text.position(panelWidth / 2, text.boundingRect().height)
                 .mark('textExplanation');
@@ -2352,7 +2356,8 @@ exports.GUI = function (globalVariables) {
             contentArea.scroll(svg.TextArea.SCROLL);
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             drawings.screen.add(contentArea);
-            contentArea.focus();
+            contentArea.setCaretPosition(textToDisplay.length);
+            // contentArea.focus();
             const onblur = () => {
                 contentArea.enter();
                 this.label = contentArea.messageText;
@@ -2792,7 +2797,8 @@ exports.GUI = function (globalVariables) {
                 .anchor("start");
             (this.quizzNameDefault || this.quizzName === "") && textarea.placeHolder(this.quizzNameDefault);
             drawings.screen.add(textarea);
-            textarea.focus();
+            textarea.setCaretPosition(this.quizzName.length);
+            // textarea.focus();
             textarea.value = this.quizzName;
             var removeErrorMessage = ()=> {
                 this.questionCreator.quizzNameValidInput = true;
@@ -2808,7 +2814,8 @@ exports.GUI = function (globalVariables) {
                 this.quizzInfoManipulator.set(5, this.errorMessage);
                 this.errorMessage.position(quizzLabel.border.width + MARGIN, bounds.height + 3 + quizzLabel.border.height / 2 + this.errorMessage.boundingRect().height / 2)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
-                textarea.focus();
+                textarea.setCaretPosition(this.quizzName.length);
+                // textarea.focus();
             };
             var onblur = ()=> {
                 textarea.enter();
@@ -2952,7 +2959,8 @@ exports.GUI = function (globalVariables) {
                 this[field].secret ? contentarea.type('password') : contentarea.type("text");
                 manipulator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
-                contentarea.focus();
+                contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                // contentarea.focus();
                 var displayErrorMessage = (trueManipulator = manipulator)=> {
                     emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -3234,7 +3242,8 @@ exports.GUI = function (globalVariables) {
                 this[field].secret && contentarea.type('password');
                 manipulator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
-                contentarea.focus();
+                contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                // contentarea.focus();
 
                 let alreadyDeleted = false,
                     onblur = ()=> {
