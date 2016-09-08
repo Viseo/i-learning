@@ -2707,7 +2707,7 @@ exports.GUI = function (globalVariables) {
             this.displayQuizSaveButton(drawing.width / 2 + this.buttonWidth, this.height - this.saveButtonHeight / 2,
                 this.buttonWidth, this.saveButtonHeight - this.globalMargin.height);
             mainManipulator.unset(0);
-            header.display("Formation : " + this.parentFormation.label);
+            header.display(this.parentFormation.label + " - " + this.quizz.title);
         };
 
         this.library.display(this.globalMargin.width / 2, this.quizzInfoHeight + this.questionsPuzzleHeight + this.globalMargin.height / 2,
@@ -2813,6 +2813,7 @@ exports.GUI = function (globalVariables) {
                 drawings.screen.remove(textarea);
                 drawing.notInTextArea = true;
                 quizzLabelDisplay();
+                header.display(this.parentFormation.label + " - " + this.quizz.title);
             };
             let objectToBeChecked = {
                 textarea: textarea,
