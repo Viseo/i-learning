@@ -627,6 +627,13 @@ exports.Util = function (globalVariables) {
                         return cross;
                     };
                     this.cross = drawGreyCross();
+                    // if (video.requestFullscreen) {
+                    //     video.requestFullscreen();
+                    // } else if (video.mozRequestFullScreen) {
+                    //     video.mozRequestFullScreen();
+                    // } else if (video.webkitRequestFullscreen) {
+                    //     video.webkitRequestFullscreen();
+                    // }
                 };
                 video.setPlayHandler(playFunction);
             }

@@ -38,86 +38,87 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     Gui.setGlobalVariables();
 
     let resizePaper = function (event) {
-        drawings.screen.empty();
-        // document.activeElement.blur();
-        let newWidth, newHeight;
-        if (event.w && event.h){
-            newWidth = event.w;
-            newHeight = event.h;
-        }
-        /* istanbul ignore next */
-        else if (document.documentElement.clientWidth > 0 && document.documentElement.clientHeight > 0){
-            newWidth = document.documentElement.clientWidth;
-            newHeight = document.documentElement.clientHeight;
-        }
-        drawing.dimension(newWidth, newHeight);
-        drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
-        drawing.mousedOverTarget = null;
-        const
-            formationsManager = globalVariables.formationsManager,
-            formation = formationsManager && formationsManager.formationDisplayed,
-            quizzManager = formation && formation.quizzManager;
-        let quizz;
-        switch (drawing.currentPageDisplayed) {
-            case "ConnexionManager":
-                connexionManager.display();
-                break;
-            case "InscriptionManager":
-                inscriptionManager.display();
-                break;
-            case "FormationsManager":
-                formationsManager.clippingManipulator.remove(formationsManager.panel.component);
-                formationsManager.display();
-                break;
-            case "Formation":
-                formation.gamesLibraryManipulator.flush();
-                formation.displayFormation();
-                if (formation.message){
-                    let saveFormationButtonCadre = formation.saveFormationButtonManipulator.ordonator.children[0];
-                    let messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
-                    formation.message.position(drawing.width/2, messageY - saveFormationButtonCadre.height*1.5 - MARGIN);
-                }
-                if (formation.errorMessagePublication){
-                    const messageY = formation.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
-                    formation.errorMessagePublication.position(drawing.width/2, messageY - formation.publicationButtonHeight*1.5 - MARGIN)
-                }
-                break;
-            case "QuizManager":
-                formation.library.libraryManipulator.flush();
-                quizzManager.library.libraryManipulator.flush();
-                quizzManager.resizing = true;
-                quizzManager.display();
-                break;
-            case "QuizPreview":
-                quizz = formation.quizzManager.previewQuiz;
-                if (quizz.currentQuestionIndex !== -1) {
-                    quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
-                }
-                quizz.display(0, 0, drawing.width, drawing.height);
-
-                if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                    quizz.displayCurrentQuestion();
-                }
-                break;
-            case "Quizz":
-                quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
-                if (formation.quizzManager.previewQuiz) {
-                    if (quizz.currentQuestionIndex !== -1) {
-                        quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator);
+        if (!svg.fullScreen()) {
+            drawings.screen.empty();
+            let newWidth, newHeight;
+            if (event.w && event.h) {
+                newWidth = event.w;
+                newHeight = event.h;
+            }
+            /* istanbul ignore next */
+            else if (document.documentElement.clientWidth > 0 && document.documentElement.clientHeight > 0) {
+                newWidth = document.documentElement.clientWidth;
+                newHeight = document.documentElement.clientHeight;
+            }
+            drawing.dimension(newWidth, newHeight);
+            drawings.glass.dimension(drawing.width, drawing.height).position(drawing.width / 2, drawing.height / 2);
+            drawing.mousedOverTarget = null;
+            const
+                formationsManager = globalVariables.formationsManager,
+                formation = formationsManager && formationsManager.formationDisplayed,
+                quizzManager = formation && formation.quizzManager;
+            let quizz;
+            switch (drawing.currentPageDisplayed) {
+                case "ConnexionManager":
+                    connexionManager.display();
+                    break;
+                case "InscriptionManager":
+                    inscriptionManager.display();
+                    break;
+                case "FormationsManager":
+                    formationsManager.clippingManipulator.remove(formationsManager.panel.component);
+                    formationsManager.display();
+                    break;
+                case "Formation":
+                    formation.gamesLibraryManipulator.flush();
+                    formation.displayFormation();
+                    if (formation.message) {
+                        let saveFormationButtonCadre = formation.saveFormationButtonManipulator.ordonator.children[0];
+                        let messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
+                        formation.message.position(drawing.width / 2, messageY - saveFormationButtonCadre.height * 1.5 - MARGIN);
                     }
-                    quizz.display(0, 0, drawing.width, drawing.height);
-                }
-                else {
-                    quizz.display(0, 0, drawing.width, drawing.height);
-                    if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                        quizz.displayCurrentQuestion();
-                    } else {
-                        quizz.resultManipulator.remove(quizz.puzzle.manipulator);
-                        quizz.resultManipulator.remove(quizz.scoreManipulator);
-                        quizz.displayResult();
+                    if (formation.errorMessagePublication) {
+                        const messageY = formation.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
+                        formation.errorMessagePublication.position(drawing.width / 2, messageY - formation.publicationButtonHeight * 1.5 - MARGIN)
                     }
                     break;
-                }
+                case "QuizManager":
+                    formation.library.libraryManipulator.flush();
+                    quizzManager.library.libraryManipulator.flush();
+                    quizzManager.resizing = true;
+                    quizzManager.display();
+                    break;
+                case "QuizPreview":
+                    quizz = formation.quizzManager.previewQuiz;
+                    if (quizz.currentQuestionIndex !== -1) {
+                        quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
+                    }
+                    quizz.display(0, 0, drawing.width, drawing.height);
+
+                    if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                        quizz.displayCurrentQuestion();
+                    }
+                    break;
+                case "Quizz":
+                    quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
+                    if (formation.quizzManager.previewQuiz) {
+                        if (quizz.currentQuestionIndex !== -1) {
+                            quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator);
+                        }
+                        quizz.display(0, 0, drawing.width, drawing.height);
+                    }
+                    else {
+                        quizz.display(0, 0, drawing.width, drawing.height);
+                        if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
+                            quizz.displayCurrentQuestion();
+                        } else {
+                            quizz.resultManipulator.remove(quizz.puzzle.manipulator);
+                            quizz.resultManipulator.remove(quizz.scoreManipulator);
+                            quizz.displayResult();
+                        }
+                        break;
+                    }
+            }
         }
     };
 
