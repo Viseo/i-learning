@@ -1373,7 +1373,11 @@ exports.GUI = function (globalVariables) {
                 let color = this.label ? myColors.black : myColors.grey;
                 let bgcolor = myColors.lightgrey;
                 this.formationLabelWidth = 400;
-                formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                let textToDisplay;
+                if (text.length > MAX_CARACTER_FORMATION_TITLE){
+                    textToDisplay = text.substr(0, MAX_CARACTER_FORMATION_TITLE) + "...";
+                }
+                formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
