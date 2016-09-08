@@ -9,7 +9,7 @@ const
     SVG = require('../lib/svghandler').SVG,
     inspect = testutils.inspect,
     checkScenario = testutils.checkScenario,
-    ERROR_MESSAGE_INPUT = 'Seuls les caractères alphanumériques, avec accent et "-,\',.;?!°© sont permis.';
+    ERROR_MESSAGE_INPUT = 'Seuls les caractères alphanumériques, avec accent et "-,\',.;?!°© sont permis';
 
 
 const ImageRuntime = {
