@@ -1374,8 +1374,8 @@ exports.GUI = function (globalVariables) {
                 let bgcolor = myColors.lightgrey;
                 this.formationLabelWidth = 400;
                 let textToDisplay;
-                if (text.length > MAX_CHARACTER_FORMATION_TITLE){
-                    textToDisplay = text.substr(0, MAX_CHARACTER_FORMATION_TITLE) + "...";
+                if (text.length > MAX_CHARACTER_TITLE){
+                    textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
                 }
                 formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
@@ -2756,7 +2756,11 @@ exports.GUI = function (globalVariables) {
                 color = (this.quizzName) ? myColors.black : myColors.grey,
                 bgcolor = myColors.lightgrey,
                 width = 700; // FontSize : 15px / Arial / 50*W  //self.quizzLabel.content.component.getBoundingClientRect().width;
-            quizzLabel.content = autoAdjustText(text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
+            let textToDisplay;
+            if (text.length > MAX_CHARACTER_TITLE){
+                textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
+            }
+            quizzLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, w, h / 2, 15, "Arial", this.quizzInfoManipulator).text;
             quizzLabel.content.mark("quizzLabelContent");
             this.quizzNameHeight = quizzLabel.content.boundingRect().height;
             quizzLabel.border = new svg.Rect(width, 0.5 * h).mark("quizzLabelCadre");

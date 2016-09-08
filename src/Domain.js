@@ -492,7 +492,7 @@ exports.Domain = function (globalVariables) {
             // HEIGHT
             this.graphCreaHeightRatio = 0.85;
             this.x = MARGIN;
-            this.regex = FORMATION_TITLE_REGEX;
+            this.regex = TITLE_REGEX;
             this.levelsTab = [];
             this.saveButtonHeightRatio = 0.07;
             this.publicationButtonHeightRatio = 0.07;
@@ -1123,7 +1123,7 @@ exports.Domain = function (globalVariables) {
             let completeQuizzMessage = "Les modifications ont bien été enregistrées",
                 imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorMessage = "Entrer un nom valide pour enregistrer";
-            if (this.quizzName !== "" && this.quizzName.match(REGEX)) {
+            if (this.quizzName !== "" && this.quizzName.match(TITLE_REGEX)) {
                 let quiz = this.getObjectToSave();
                 this.quizz.isValid = true;
                 quiz.tabQuestions.forEach(question => {
@@ -1154,7 +1154,7 @@ exports.Domain = function (globalVariables) {
         }
 
         checkInputTextArea(myObj) {
-            if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
+            if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(TITLE_REGEX)) || myObj.textarea.messageText === "") {
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
                 myObj.textarea.border = "none";
