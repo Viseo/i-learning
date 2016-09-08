@@ -89,22 +89,22 @@ exports.GUI = function (globalVariables) {
             };
 
             let removeErrorMessage = () => {
-                this.validLabelInput = true;
+                this.invalidLabelInput = false;
                 this.errorMessage && this.editor.parent.questionCreator.manipulator.unset(1);
                 this.border.color(myColors.white, 1, myColors.black);
             };
 
-            let displayErrorMessage = () => {
+            let displayErrorMessage = (message) => {
                 removeErrorMessage();
                 this.border.color(myColors.white, 2, myColors.red);
                 let quizzManager = this.parentQuestion.parentQuizz.parentFormation.quizzManager,
                     anchor = 'middle';
-                this.errorMessage = new svg.Text(REGEX_ERROR);
+                this.errorMessage = new svg.Text(message);
                 quizzManager.questionCreator.manipulator.set(1, this.errorMessage);
                 this.errorMessage.position(0, quizzManager.questionCreator.h / 2 - MARGIN / 2)
                     .font('Arial', 15).color(myColors.red).anchor(anchor)
                     .mark('answerErrorMessage');
-                this.validLabelInput = false;
+                this.invalidLabelInput = message;
             };
 
             let answerBlockDisplay = ()=> {
@@ -143,8 +143,8 @@ exports.GUI = function (globalVariables) {
                     this.obj.content.position(0, this.obj.content.y);
                 }
 
-                (this.validLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
-                (this.validLabelInput && text !== "") || displayErrorMessage();
+                (!this.invalidLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
+                (!this.invalidLabelInput && text !== "") || displayErrorMessage(this.invalidLabelInput);
                 this.obj.content.color(color).mark('answerLabelContent' + this.parentQuestion.tabAnswer.indexOf(this));
                 this.border._acceptDrop = true;
                 this.obj.content._acceptDrop = true;
@@ -1341,7 +1341,7 @@ exports.GUI = function (globalVariables) {
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.set(2, this.errorMessage);
                     contentarea.focus();
-                    this.validLabelInput = false;
+                    this.invalidLabelInput = REGEX_ERROR_FORMATION;
                 };
                 var onblur = ()=> {
                     contentarea.enter();
@@ -1349,7 +1349,7 @@ exports.GUI = function (globalVariables) {
                     drawings.screen.remove(contentarea);
                     drawing.notInTextArea = true;
                     formationLabelDisplay();
-                    this.validLabelInput && header.display(this.label);
+                    this.invalidLabelInput || header.display(this.label);
                 };
                 svg.addEvent(contentarea, "blur", onblur);
                 let objectToBeChecked = {
@@ -1374,15 +1374,15 @@ exports.GUI = function (globalVariables) {
                 let bgcolor = myColors.lightgrey;
                 this.formationLabelWidth = 400;
                 let textToDisplay;
-                if (text.length > MAX_CARACTER_FORMATION_TITLE){
-                    textToDisplay = text.substr(0, MAX_CARACTER_FORMATION_TITLE) + "...";
+                if (text.length > MAX_CHARACTER_FORMATION_TITLE){
+                    textToDisplay = text.substr(0, MAX_CHARACTER_FORMATION_TITLE) + "...";
                 }
                 formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                this.validLabelInput ? formationLabel.border.color(bgcolor) : formationLabel.border.color(bgcolor, 2, myColors.red);
+                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor);
                 formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
                 this.formationInfoManipulator.set(0, formationLabel.border);
                 formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
@@ -2054,21 +2054,21 @@ exports.GUI = function (globalVariables) {
         this.manipulator.add(this.questionManipulator);
 
         var removeErrorMessage = () => {
-            this.linkedQuestion.validLabelInput = true;
+            this.linkedQuestion.invalidLabelInput = false;
             this.errorMessage && this.manipulator.unset(1);
             questionBlock.title.border.color(myColors.white, 1, myColors.black);
         };
 
-        var displayErrorMessage = ()=> {
+        var displayErrorMessage = (message)=> {
             removeErrorMessage();
             questionBlock.title.border.color(myColors.white, 2, myColors.red);
             const anchor = 'middle';
-            this.errorMessage = new svg.Text(REGEX_ERROR);
+            this.errorMessage = new svg.Text(message);
             this.errorMessage.mark("questionBlockErrorMessage");
             this.manipulator.set(1, this.errorMessage);
             this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.border.height + this.errorMessage.boundingRect().height + MARGIN)
                 .font("Arial", 15).color(myColors.red).anchor(anchor);
-            this.linkedQuestion.validLabelInput = false;
+            this.linkedQuestion.invalidLabelInput = message;
         };
 
         var questionBlockDisplay = () => {
@@ -2101,9 +2101,9 @@ exports.GUI = function (globalVariables) {
             this.questionManipulator.set(4, this.questNum);
             questionBlock.title.content.color(color);
             questionBlock.title.content._acceptDrop = true;
-            this.linkedQuestion.validLabelInput ? questionBlock.title.border.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure) :
-                questionBlock.title.border.color(this.linkedQuestion.bgColor, 2, myColors.red);
-            this.linkedQuestion.validLabelInput || displayErrorMessage();
+            this.linkedQuestion.invalidLabelInput ? questionBlock.title.border.color(this.linkedQuestion.bgColor, 2, myColors.red)
+                :questionBlock.title.border.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure);
+            this.linkedQuestion.invalidLabelInput && displayErrorMessage(this.linkedQuestion.invalidLabelInput);
             questionBlock.title.border._acceptDrop = true;
 
             this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.border.height / 2 + this.toggleButtonHeight + MARGIN);

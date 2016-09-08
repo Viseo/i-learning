@@ -1771,9 +1771,12 @@ exports.Util = function (globalVariables) {
     function Bdd() {
         HEADER_SIZE = 0.05;
         REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,200}$/g;
-        MAX_CARACTER_FORMATION_TITLE = 50;
+        REGEX_NO_CHARACTER_LIMIT = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,}$/g;
+        MAX_CHARACTER_REGEX = 200;
+        REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 200 caractères";
+        MAX_CHARACTER_FORMATION_TITLE = 50;
         FORMATION_TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ '-]){0,50}$/g;
-        REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis.";
+        REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis";
         REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
@@ -1875,7 +1878,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check answer's name:
             question => {
-                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && el.validLabelInput) || el.imageSrc || el.video));
+                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video));
                 let message = "Vous devez remplir correctement toutes les réponses.";
 
                 return {
@@ -1885,7 +1888,7 @@ exports.Util = function (globalVariables) {
             },
             // Check Question Name:
             question => {
-                let isValid = !!((question.label && question.validLabelInput) || question.imageSrc || question.video);
+                let isValid = !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video);
                 let message = "Vous devez remplir correctement le nom de la question.";
 
                 return {
@@ -1907,12 +1910,12 @@ exports.Util = function (globalVariables) {
         multipleAnswerValidationTab = [
             // Check answer's name:
             question => ({
-                isValid: question.tabAnswer.every(el => ((el.label && el.validLabelInput) || el.imageSrc || el.video)),
+                isValid: question.tabAnswer.every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
             // Check Question Name:
             question => ({
-                isValid: !!((question.label && question.validLabelInput) || question.imageSrc || question.video), // Checker si le champ saisi de la question est valide
+                isValid: !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video), // Checker si le champ saisi de la question est valide
                 message: "Vous devez remplir correctement le nom de la question."
             }),
             // Check Quiz Name:

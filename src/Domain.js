@@ -50,7 +50,7 @@ exports.Domain = function (globalVariables) {
             this.video = answer.video;
             this.correct = answer.correct;
             this.selected = false;
-            this.validLabelInput = answer.validLabelInput !== undefined ? answer.validLabelInput : true;
+            this.invalidLabelInput = answer.invalidLabelInput !== undefined ? answer.invalidLabelInput : false;
             this.fontSize = answer.fontSize ? answer.fontSize : 20;
             this.explanation = answer.explanation;
             answer.explanation && (this.filled = true);
@@ -96,13 +96,15 @@ exports.Domain = function (globalVariables) {
             this.checkInputContentArea = editable ? ((objCont) => {
                 if (typeof objCont.contentarea.messageText !== "undefined") {
                     if (objCont.contentarea.messageText.match(REGEX)) {
-                        this.validLabelInput = true;
+                        this.invalidLabelInput = false;
                         this.label = objCont.contentarea.messageText;
                         objCont.remove();
                     } else {
-                        this.validLabelInput = false;
+                        this.invalidLabelInput = objCont.contentarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                            ? REGEX_ERROR_NUMBER_CHARACTER
+                            : REGEX_ERROR;
                         this.label = objCont.contentarea.messageText;
-                        objCont.display();
+                        objCont.display(this.invalidLabelInput);
                     }
                 } else {
                     this.label = "";
@@ -163,7 +165,7 @@ exports.Domain = function (globalVariables) {
             this.invalidQuestionPictogramManipulator = new Manipulator(this).addOrdonator(5);
             this.manipulator.add(this.invalidQuestionPictogramManipulator);
 
-            this.validLabelInput = (question && question.validLabelInput !== undefined) ? question.validLabelInput : true;
+            this.invalidLabelInput = (question && question.invalidLabelInput !== undefined) ? question.invalidLabelInput : false;
             this.selected = false;
             this.parentQuizz = quizz;
             this.tabAnswer = [];
@@ -334,7 +336,9 @@ exports.Domain = function (globalVariables) {
                 myObj.textarea.border = "none";
                 myObj.textarea.outline = "none";
             } else {
-                myObj.display();
+                myObj.textarea.messageText.match(REGEX_NO_CHARACTER_LIMIT) ?
+                    myObj.display(REGEX_ERROR_NUMBER_CHARACTER) :
+                    myObj.display(REGEX_ERROR);
             }
         }
 
@@ -387,7 +391,7 @@ exports.Domain = function (globalVariables) {
         constructor(parent, type) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
             type && (this.type = type);
-            this.validLabelInput = true;
+            this.invalidLabelInput = false;
             switch (type) {
                 case 'question':
                     this.label = "Double cliquer pour ajouter une question";
@@ -495,7 +499,7 @@ exports.Domain = function (globalVariables) {
             this.marginRatio = 0.03;
             this.label = formation.label ? formation.label : "";
             this.status = formation.status ? formation.status : "NotPublished";
-            this.validLabelInput = true;
+            this.invalidLabelInput = false;
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.levelHeight = 150;
             this.graphElementSize = this.levelHeight * 0.65;
@@ -781,14 +785,16 @@ exports.Domain = function (globalVariables) {
 
         checkInputTextArea(myObj) {
             if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
-                this.validLabelInput = true;
+                this.invalidLabelInput = false;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
                 myObj.textarea.border = "none";
                 myObj.textarea.outline = "none";
             } else {
                 myObj.display();
-                this.validLabelInput = false;
+                this.invalidLabelInput = myObj.textarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                    ? REGEX_ERROR_NUMBER_CHARACTER
+                    : REGEX_ERROR;
             }
         }
 
