@@ -2583,6 +2583,7 @@ exports.GUI = function (globalVariables) {
             let quizzExplanation = new Quizz(this, true);
             quizzExplanation.currentQuestionIndex = 0;
             quizzExplanation.oldQuiz = this;
+            globalVariables.formationsManager.formationDisplayed.quizzDisplayed = quizzExplanation;
             quizzExplanation.run(1, 1, drawing.width, drawing.height);
         };
 
