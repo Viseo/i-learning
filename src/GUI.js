@@ -1400,6 +1400,10 @@ exports.GUI = function (globalVariables) {
                 this.formationInfoManipulator.move(0, this.returnButton.height*1.3);
                 svg.addEvent(formationLabel.content, "dblclick", dblclickEditionFormationLabel);
                 svg.addEvent(formationLabel.border, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(formationLabel.content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+                svg.addEvent(formationLabel.content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+                svg.addEvent(formationLabel.border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+                svg.addEvent(formationLabel.border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             };
             formationLabelDisplay();
             this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
@@ -2802,6 +2806,10 @@ exports.GUI = function (globalVariables) {
             quizzLabel.content.mark("quizzLabelContent");
             this.quizzNameHeight = quizzLabel.content.boundingRect().height;
             quizzLabel.border = new svg.Rect(width, 0.5 * h).mark("quizzLabelCadre");
+            svg.addEvent(quizzLabel.content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(quizzLabel.content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+            svg.addEvent(quizzLabel.border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(quizzLabel.border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             this.quizzNameValidInput ? quizzLabel.border.color(bgcolor) : quizzLabel.border.color(bgcolor, 2, myColors.red);
             quizzLabel.border.position(width / 2, h / 2 + quizzLabel.border.height / 2);
             this.quizzInfoManipulator.set(0, quizzLabel.border);
