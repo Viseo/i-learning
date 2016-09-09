@@ -37,6 +37,20 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     domain.setGlobalVariables();
     Gui.setGlobalVariables();
 
+    let findVideo = function(){
+        let video;
+        if (globalVariables.videoDisplayed.miniature && globalVariables.videoDisplayed.miniature.video){
+            video = globalVariables.videoDisplayed.miniature.video;
+        }
+        else if (globalVariables.videoDisplayed.miniatureVideo){
+            video = globalVariables.videoDisplayed.miniatureVideo;
+        }
+        else if (globalVariables.videoDisplayed.video.miniature){
+            video = globalVariables.videoDisplayed.video.miniature;
+        }
+        return video;
+    };
+
     let resizePaper = function (event) {
         if (!svg.fullScreen()) {
             drawings.screen.empty();
@@ -98,6 +112,9 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                     if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                         quizz.displayCurrentQuestion();
                     }
+                    if (globalVariables.videoDisplayed){
+                        findVideo().playFunction();
+                    }
                     break;
                 case "Quizz":
                     quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
@@ -106,15 +123,24 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                             quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator);
                         }
                         quizz.display(0, 0, drawing.width, drawing.height);
+                        if (globalVariables.videoDisplayed){
+                            findVideo().playFunction();
+                        }
                     }
                     else {
                         quizz.display(0, 0, drawing.width, drawing.height);
                         if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
                             quizz.displayCurrentQuestion();
+                            if (globalVariables.videoDisplayed){
+                                findVideo().playFunction();
+                            }
                         } else {
                             quizz.resultManipulator.remove(quizz.puzzle.manipulator);
                             quizz.resultManipulator.remove(quizz.scoreManipulator);
                             quizz.displayResult();
+                            if (globalVariables.videoDisplayed){
+                                findVideo().playFunction();
+                            }
                         }
                         break;
                     }

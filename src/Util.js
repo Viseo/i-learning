@@ -582,7 +582,8 @@ exports.Util = function (globalVariables) {
             videoTitle.text.position(0, 25).color(myColors.black);
             videoTitle.text._acceptDrop = true;
             if (controls) {
-                let playFunction = function () {
+                video.playFunction = function () {
+                    globalVariables.videoDisplayed = manipulator.parentObject;
                     svg.speechSynthesisCancel();
                     drawings.screen.empty(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
@@ -599,6 +600,7 @@ exports.Util = function (globalVariables) {
                         closeButtonManipulator.set(1, cross);
                         drawing.manipulator.set(3, closeButtonManipulator);
                         const crossHandler = () => {
+                            globalVariables.videoDisplayed = null;
                             drawing.manipulator.unset(3);
                             drawings.screen.empty();
                             let quizz = manipulator.parentObject.parentQuizz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuizz) ||manipulator.parentObject.answer.parentQuestion.parentQuizz;
@@ -627,15 +629,8 @@ exports.Util = function (globalVariables) {
                         return cross;
                     };
                     this.cross = drawGreyCross();
-                    // if (video.requestFullscreen) {
-                    //     video.requestFullscreen();
-                    // } else if (video.mozRequestFullScreen) {
-                    //     video.mozRequestFullScreen();
-                    // } else if (video.webkitRequestFullscreen) {
-                    //     video.webkitRequestFullscreen();
-                    // }
                 };
-                video.setPlayHandler(playFunction);
+                video.setPlayHandler(video.playFunction);
             }
 
             return {
