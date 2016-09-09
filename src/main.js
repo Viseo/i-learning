@@ -48,6 +48,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         else if (globalVariables.videoDisplayed.video.miniature){
             video = globalVariables.videoDisplayed.video.miniature;
         }
+        console.log(video);
         return video;
     };
 
