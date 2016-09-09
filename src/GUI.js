@@ -177,7 +177,6 @@ exports.GUI = function (globalVariables) {
                 contentarea.height = this.obj.content.boundingRect().height;
                 this.manipulator.unset(1);
                 contentarea.setCaretPosition(this.label.length);
-                // contentarea.focus();
 
                 let onblur = () => {
                     contentarea.enter();
@@ -277,7 +276,7 @@ exports.GUI = function (globalVariables) {
                     else {
                         this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                     }
-                }
+                };
                 if (this.explanationPopIn && this.explanationPopIn.displayed) this.parentQuestion.openPopIn = openPopIn;
                 this.image && svg.addEvent(this.image, "click", openPopIn);
                 this.border && svg.addEvent(this.border, "click", openPopIn);
@@ -307,12 +306,10 @@ exports.GUI = function (globalVariables) {
                 this.content && svg.addEvent(this.content, "click", () => {clickAnswerHandler()});
                 this.image && svg.addEvent(this.image, "click", () => {clickAnswerHandler()});
         }
-
         if (this.selected) { // image pré-selectionnée
             this.border.color(this.bgColor, 5, SELECTION_COLOR);
         }
         this.manipulator.move(this.x, this.y);
-
     }
 
     function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
@@ -524,9 +521,9 @@ exports.GUI = function (globalVariables) {
                     if (file.type === 'video/mp4') {
                         this.selectedTab = 1;
                         progressDisplay = (() => {
-                            const width = 0.8 * w;
-                            const manipulator = new Manipulator().addOrdonator(4);
-                            const icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
+                            const width = 0.8 * w,
+                                manipulator = new Manipulator().addOrdonator(4),
+                                icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
                             manipulator.set(0, icon);
                             const rect = new svg.Rect(width -15, 16).color(myColors.none, 1, myColors.darkerGreen);
                             manipulator.set(1, rect);
@@ -560,14 +557,11 @@ exports.GUI = function (globalVariables) {
                             };
                         })();
                     }
-
                     this.display(x, y, w, h);
-
                     Server.upload(file, progressDisplay).then(() => {
                         this.display(x, y, w, h);
                     });
                 }
-
             };
 
             const drop = (event) => {
@@ -601,9 +595,7 @@ exports.GUI = function (globalVariables) {
                             drawings.piste.remove(draggableImage.manipulator);
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
                             this.dropImage(svgObj, target);
-
                         };
-
                         svg.event(drawings.glass, "mousedown", event);
                         svg.addEvent(draggableImage, 'mouseup', mouseupHandler);
                     };
@@ -634,15 +626,12 @@ exports.GUI = function (globalVariables) {
                             let target = drawings.background.getTarget(event.pageX, event.pageY);
                             this.dropVideo(this.videosTab[i], target);
                         };
-
                         svg.event(drawings.glass, "mousedown", event);
                         draggableVideo.ordonator.children[0].parentManip.setHandler('mouseup', mouseupHandler);
                         svg.addEvent(draggableVideo.ordonator.children[1], 'mouseup', mouseupHandler);
-
                     };
                     videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
                     svg.addEvent(videoManipulator.ordonator.children[1],"mousedown", mouseDownAction);
-
                 });
             };
 
@@ -656,7 +645,6 @@ exports.GUI = function (globalVariables) {
                         if (i % maxImagesPerLine === 0 && i !== 0) {
                             tempY += this.imageHeight + libMargin;
                         }
-
                         this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                         this.imageLayer = 0;
                         let imageRedCrossClickHandler = ()=>{
@@ -670,7 +658,6 @@ exports.GUI = function (globalVariables) {
                         image.name = item.name;
                         image.imageSVG.srcDimension = {width: item.width, height: item.height};
                         image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
-
                         let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
                         this.libraryManipulators[i].move(X, tempY);
 
@@ -1335,7 +1322,6 @@ exports.GUI = function (globalVariables) {
                 (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
                 drawings.screen.add(contentarea);
                 contentarea.setCaretPosition(this.label.length);
-                // contentarea.focus();
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
@@ -1351,7 +1337,6 @@ exports.GUI = function (globalVariables) {
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.set(2, this.errorMessage);
                     contentarea.setCaretPosition(this.label.length);
-                    // contentarea.focus();
                     this.invalidLabelInput = REGEX_ERROR_FORMATION;
                 };
                 var onblur = ()=> {
@@ -1419,8 +1404,6 @@ exports.GUI = function (globalVariables) {
             displayFrame(this.graphCreaWidth, this.graphCreaHeight);
             this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
         }
-
-        ////15: Height Message Error
     }
 
     function playerModeDisplayFormation() {
@@ -1535,7 +1518,6 @@ exports.GUI = function (globalVariables) {
         }
 
         let addFormationButton, spaceBetweenElements;
-
         let displayPanel = () => {
             let heightAllocatedToPanel = drawing.height - (playerMode ?
                 toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN :
@@ -2150,7 +2132,6 @@ exports.GUI = function (globalVariables) {
                 .font("Arial", 20);
             drawings.screen.add(textarea);
             textarea.setCaretPosition(this.linkedQuestion.label.length);
-            // textarea.focus();
 
             let onblur = () => {
                 textarea.enter();
@@ -2211,11 +2192,11 @@ exports.GUI = function (globalVariables) {
         let clickBanned, mouseLeaveHandler;
         if (textToSpeechIcon) {
             textToSpeechIcon.removeHandler('click');
-            clickBanned = (event)=> {
+            clickBanned = ()=> {
                 drawings.screen.mouseCursor('not-allowed');
                 textToSpeechIcon.removeHandler('mouseover', clickBanned);
             };
-            mouseLeaveHandler = (event)=> {
+            mouseLeaveHandler = ()=> {
                 drawings.screen.mouseCursor('default');
                 textToSpeechIcon.setHandler('mouseover', clickBanned);
                 textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
@@ -2375,7 +2356,6 @@ exports.GUI = function (globalVariables) {
         };
 
         if (globalVariables.textToSpeechMode) {
-            // TODO read text
         } else {
             drawTextPanel();
         }
@@ -2394,7 +2374,6 @@ exports.GUI = function (globalVariables) {
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             drawings.screen.add(contentArea);
             contentArea.setCaretPosition(textToDisplay.length);
-            // contentArea.focus();
             const onblur = () => {
                 contentArea.enter();
                 this.label = contentArea.messageText;
@@ -3002,7 +2981,6 @@ exports.GUI = function (globalVariables) {
                 manipulator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
                 contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-                // contentarea.focus();
                 var displayErrorMessage = (trueManipulator = manipulator)=> {
                     emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -3289,7 +3267,6 @@ exports.GUI = function (globalVariables) {
                 manipulator.unset(1, this[field].content.text);
                 drawings.screen.add(contentarea);
                 contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-                // contentarea.focus();
 
                 let alreadyDeleted = false,
                     onblur = ()=> {
