@@ -3061,6 +3061,10 @@ exports.GUI = function (globalVariables) {
             var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(x, 0);
             this[field].border.position(x, y);
+            svg.addEvent(this[field].content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(this[field].content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+            svg.addEvent(this[field].border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(this[field].border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             var clickEdition = clickEditionField(field, manipulator);
             svg.addEvent(this[field].content, "click", clickEdition);
             svg.addEvent(this[field].border, "click", clickEdition);
@@ -3318,6 +3322,10 @@ exports.GUI = function (globalVariables) {
             this[field].content.position(x, 0);
             this[field].border.position(x, y);
             var clickEdition = clickEditionField(field, manipulator);
+            svg.addEvent(this[field].content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(this[field].content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+            svg.addEvent(this[field].border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+            svg.addEvent(this[field].border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             svg.addEvent(this[field].content, "click", clickEdition);
             svg.addEvent(this[field].border, "click", clickEdition);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);

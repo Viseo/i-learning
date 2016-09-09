@@ -196,7 +196,7 @@ exports.Util = function (globalVariables) {
                 }
                 if (this.target) {
                     svg.event(this.target, "mousemove", event);
-                    if (this.target.component.listeners && this.target.component.listeners.click){
+                    if (this.target.component.listeners && !this.target.component.listeners.mouseover && this.target.component.listeners.click){
                         svg.addEvent(this.target, 'mouseover', ()=>{drawings.screen.mouseCursor('pointer');});
                         svg.addEvent(this.target, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
                     }
