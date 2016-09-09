@@ -438,6 +438,10 @@ exports.GUI = function (globalVariables) {
                 obj.border.mark("game" + label);
                 obj.border.clicked = false;
                 this.itemsTab[i].miniature = obj;
+                svg.addEvent(obj.border, 'mouseover', ()=>{drawings.screen.mouseCursor('pointer');});
+                svg.addEvent(obj.border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+                svg.addEvent(obj.content, 'mouseover', ()=>{drawings.screen.mouseCursor('pointer');});
+                svg.addEvent(obj.content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
 
                 let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
                 this.libraryManipulators[i].move(X, tempY);
@@ -532,6 +536,8 @@ exports.GUI = function (globalVariables) {
                             let redCross = drawRedCross(width/2+MARGIN, 0, 15, manipulator.redCrossManipulator);
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = ()=> {
+                                drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+                                drawings.screen.mouseCursor('default');
                                 dbListener.uploadRequest && dbListener.uploadRequest.abort();
                                 this.videosUploadManipulators.remove(manipulator);
                                 manipulator.flush();
@@ -1153,6 +1159,8 @@ exports.GUI = function (globalVariables) {
             }
             this.panel = new gui.ScrollablePanel(w, h, myColors.white);
             this.panel.back.mark("panelBack");
+            svg.addEvent(this.panel.back, 'mouseover', ()=>{drawings.screen.mouseCursor('default');});
+            svg.addEvent(this.panel.back, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             this.panel.contentV.add(this.messageDragDropManipulator.first);
             this.panel.component.move(w / 2, h / 2);
             this.clippingManipulator.add(this.panel.component);
@@ -1572,7 +1580,8 @@ exports.GUI = function (globalVariables) {
                 formation.loadFormation(myFormation);
                 this.formationDisplayed = formation;
                 this.formationDisplayed.displayFormation();
-            })
+                drawings.screen.mouseCursor('default');
+            });
         };
 
         var onClickNewFormation = () => {
@@ -1580,6 +1589,7 @@ exports.GUI = function (globalVariables) {
             this.formationDisplayed = formation;
             formation.parent = this;
             formation.displayFormation();
+            drawings.screen.mouseCursor('default');
         };
 
         this.displayHeaderFormations = () => {
@@ -2000,6 +2010,8 @@ exports.GUI = function (globalVariables) {
         this.manipulator.add(this.toggleButtonManipulator);
         let toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
+            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+            drawings.screen.mouseCursor('default');
             const target = drawings.background.getTarget(event.pageX, event.pageY),
                 questionType = target.parent.children[1].messageText;
 
@@ -2229,6 +2241,8 @@ exports.GUI = function (globalVariables) {
             this.closeButtonManipulator.set(0, circle);
             this.closeButtonManipulator.set(1, cross);
             crossHandler = () => {
+                drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+                drawings.screen.mouseCursor('default');
                 if (textToSpeechIcon){
                     textToSpeechIcon.setHandler('click', textToSpeechIcon.clickHandler);
                     textToSpeechIcon.removeHandler('mouseover', clickBanned);

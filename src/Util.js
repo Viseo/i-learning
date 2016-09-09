@@ -188,8 +188,8 @@ exports.Util = function (globalVariables) {
             const onmousemoveHandler = event => {
                 this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
                 if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
-                    // const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
-                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout) {
+                    const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
+                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
                         svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
                         this.drawing.mousedOverTarget = null;
                     }
@@ -1086,6 +1086,8 @@ exports.Util = function (globalVariables) {
         }
 
         redCrossClickHandler() {
+            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+            drawings.screen.mouseCursor('default');
             this.removeAllLinks();
             this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator);
             this.game.miniatureManipulator.unset(0);

@@ -511,6 +511,8 @@ exports.Domain = function (globalVariables) {
         }
 
         dropAction(event, game) {
+            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+            drawings.screen.mouseCursor('default');
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
                 dropLocation.y -= this.panel.contentV.y;
