@@ -187,14 +187,14 @@ exports.Util = function (globalVariables) {
 
             const onmousemoveHandler = event => {
                 this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
-                if (this.target) {
-                    if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
-                        const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
-                        if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
-                            svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
-                            this.drawing.mousedOverTarget = null;
-                        }
+                if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
+                    const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
+                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
+                        svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
+                        this.drawing.mousedOverTarget = null;
                     }
+                }
+                if (this.target) {
                     svg.event(this.target, "mousemove", event);
                     if (this.target.component.listeners && this.target.component.listeners.mouseover) {
                         this.drawing.mousedOverTarget = {target: this.target};
@@ -421,6 +421,10 @@ exports.Util = function (globalVariables) {
                 },
                 setHandler (event, handler) {
                     svg.addEvent(glass, event, handler);
+                    return this;
+                },
+                removeHandler (event, handler) {
+                    svg.removeEvent(glass, event, handler);
                     return this;
                 },
                 color (fillColor, strokeWidth, strokeColor) {

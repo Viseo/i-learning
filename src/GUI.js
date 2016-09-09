@@ -1877,19 +1877,19 @@ exports.GUI = function (globalVariables) {
             buttonW = 0.5 * drawing.width,
             buttonX = -buttonW / 2;
         if (playerMode && this.parentQuizz.previewMode) {
-            const icon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, width: 35})
+            this.parentQuizz.textToSpeechIcon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, width: 35})
                 .color(myColors.white, 0.5, SELECTION_COLOR)
-                .mark('iconTextToSpeech')
-                .setHandler('click', () => {
-                    globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
-                    if (globalVariables.textToSpeechMode) {
-                        icon.color(SELECTION_COLOR);
-                    } else {
-                        icon.color(myColors.white, 0.5, SELECTION_COLOR);
-                    }
-
-                });
-            this.manipulator.add(icon.manipulator);
+                .mark('iconTextToSpeech');
+            this.parentQuizz.textToSpeechIcon.clickHandler = () => {
+                globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
+                if (globalVariables.textToSpeechMode) {
+                    this.parentQuizz.textToSpeechIcon.color(SELECTION_COLOR);
+                } else {
+                    this.parentQuizz.textToSpeechIcon.color(myColors.white, 0.5, SELECTION_COLOR);
+                }
+            };
+            this.parentQuizz.textToSpeechIcon.setHandler('click', this.parentQuizz.textToSpeechIcon.clickHandler);
+            this.manipulator.add(this.parentQuizz.textToSpeechIcon.manipulator);
             this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
             displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
         }
@@ -2191,6 +2191,20 @@ exports.GUI = function (globalVariables) {
     }
 
     function popInDisplay(parent, x, y, w, h) {
+        let textToSpeechIcon = this.answer.parentQuestion.parentQuizz.textToSpeechIcon;
+        textToSpeechIcon.removeHandler('click');
+        let clickBanned = (event)=> {
+            drawings.screen.mouseCursor('not-allowed');
+            textToSpeechIcon.removeHandler('mouseover', clickBanned);
+        };
+        let mouseLeaveHandler = (event)=> {
+            drawings.screen.mouseCursor('default');
+            textToSpeechIcon.setHandler('mouseover', clickBanned);
+            textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
+        };
+        textToSpeechIcon.setHandler('mouseover', clickBanned);
+        textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
+
         const rect = new svg.Rect(w + 2, h) //+2 border
             .color(myColors.white, 1, myColors.black);
         rect._acceptDrop = this.editable;
@@ -2203,7 +2217,7 @@ exports.GUI = function (globalVariables) {
         this.answer.parentQuestion.tabAnswer.forEach(answer => {
             answer.video && drawings.screen.remove(answer.video.miniature);
         });
-
+        let crossHandler;
         const drawGreyCross = (size) => {
             const
                 circle = new svg.Circle(size).color(myColors.black, 2, myColors.white),
@@ -2211,7 +2225,10 @@ exports.GUI = function (globalVariables) {
             circle.mark('circleCloseExplanation');
             this.closeButtonManipulator.set(0, circle);
             this.closeButtonManipulator.set(1, cross);
-            const crossHandler = () => {
+            crossHandler = () => {
+                textToSpeechIcon.setHandler('click', textToSpeechIcon.clickHandler);
+                textToSpeechIcon.removeHandler('mouseover', clickBanned);
+                textToSpeechIcon.removeHandler('mouseout', mouseLeaveHandler);
                 this.said = false;
                 svg.speechSynthesisCancel();
                 this.editable && (parent.explanation = false);
@@ -2239,10 +2256,7 @@ exports.GUI = function (globalVariables) {
         });
         var hasKeyDownEvent = (event) => {
             if (this.cross && event.keyCode === 27) { // suppr
-                this.editable && (parent.explanation = false);
-                parent.manipulator.remove(this.manipulator);
-                this.editable && parent.puzzle.display(x, y, w, h, false);
-                drawing.mousedOverTarget = false;
+                crossHandler();
             }
             return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
         };
