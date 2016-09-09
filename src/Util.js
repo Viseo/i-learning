@@ -188,14 +188,18 @@ exports.Util = function (globalVariables) {
             const onmousemoveHandler = event => {
                 this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
                 if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
-                    const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
-                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
+                    // const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
+                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout) {
                         svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
                         this.drawing.mousedOverTarget = null;
                     }
                 }
                 if (this.target) {
                     svg.event(this.target, "mousemove", event);
+                    if (this.target.component.listeners && this.target.component.listeners.click){
+                        svg.addEvent(this.target, 'mouseover', ()=>{drawings.screen.mouseCursor('pointer');});
+                        svg.addEvent(this.target, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+                    }
                     if (this.target.component.listeners && this.target.component.listeners.mouseover) {
                         this.drawing.mousedOverTarget = {target: this.target};
                         svg.event(this.target, "mouseover", event);

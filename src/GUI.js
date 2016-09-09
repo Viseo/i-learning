@@ -2192,18 +2192,21 @@ exports.GUI = function (globalVariables) {
 
     function popInDisplay(parent, x, y, w, h) {
         let textToSpeechIcon = this.answer.parentQuestion.parentQuizz.textToSpeechIcon;
-        textToSpeechIcon.removeHandler('click');
-        let clickBanned = (event)=> {
-            drawings.screen.mouseCursor('not-allowed');
-            textToSpeechIcon.removeHandler('mouseover', clickBanned);
-        };
-        let mouseLeaveHandler = (event)=> {
-            drawings.screen.mouseCursor('default');
+        let clickBanned, mouseLeaveHandler;
+        if (textToSpeechIcon) {
+            textToSpeechIcon.removeHandler('click');
+            clickBanned = (event)=> {
+                drawings.screen.mouseCursor('not-allowed');
+                textToSpeechIcon.removeHandler('mouseover', clickBanned);
+            };
+            mouseLeaveHandler = (event)=> {
+                drawings.screen.mouseCursor('default');
+                textToSpeechIcon.setHandler('mouseover', clickBanned);
+                textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
+            };
             textToSpeechIcon.setHandler('mouseover', clickBanned);
             textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
-        };
-        textToSpeechIcon.setHandler('mouseover', clickBanned);
-        textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
+        }
 
         const rect = new svg.Rect(w + 2, h) //+2 border
             .color(myColors.white, 1, myColors.black);
@@ -2226,9 +2229,11 @@ exports.GUI = function (globalVariables) {
             this.closeButtonManipulator.set(0, circle);
             this.closeButtonManipulator.set(1, cross);
             crossHandler = () => {
-                textToSpeechIcon.setHandler('click', textToSpeechIcon.clickHandler);
-                textToSpeechIcon.removeHandler('mouseover', clickBanned);
-                textToSpeechIcon.removeHandler('mouseout', mouseLeaveHandler);
+                if (textToSpeechIcon){
+                    textToSpeechIcon.setHandler('click', textToSpeechIcon.clickHandler);
+                    textToSpeechIcon.removeHandler('mouseover', clickBanned);
+                    textToSpeechIcon.removeHandler('mouseout', mouseLeaveHandler);
+                }
                 this.said = false;
                 svg.speechSynthesisCancel();
                 this.editable && (parent.explanation = false);
