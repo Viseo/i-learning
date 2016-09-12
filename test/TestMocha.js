@@ -193,55 +193,43 @@ describe('formationsManager', function () {
             formationLabelContent = retrieve(root, "[formationLabelContent]");
             assert.equal(formationLabelContent.text, "La première formation");
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
+            const dragQuiz = (pointX, pointY) => {
+                gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+                draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+                draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+                draggedGameCadre.listeners["click"]();
+                pointX && pointY && panelBack.listeners['mouseup']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
+
+            };
+
+            dragQuiz();
             runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            dragQuiz(300, 300);
             let game1 = retrieve(root, "[level1quizz1]");
             assert.equal(game1.text, "Quiz 2");
             let miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 2);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            dragQuiz(300, 300);
             let game2 = retrieve(root, "[level1quizz2]");
             assert.equal(game2.text, "Quiz 3");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 3);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
+            dragQuiz(300, 300);
             let game3 = retrieve(root, "[level1quizz3]");
             assert.equal(game3.text, "Quiz 4");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
+            dragQuiz();
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre.listeners["click"]();
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
+            dragQuiz();
             let bdGame = retrieve(root, "[gameBd]");
             bdGame.listeners['mousedown']({pageX:165, pageY:460, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
@@ -305,10 +293,7 @@ describe('formationsManager', function () {
             arrow03 = retrieve(root, '[quizz0quizz3]');
             assert(!arrow03);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            dragQuiz();
             panelBack.listeners['mouseup']({pageX:300, pageY:500, preventDefault:()=>{}});
             let game4 = retrieve(root, "[level2quizz4]");
             assert.equal(game4.text, "Quiz 5");
@@ -324,83 +309,15 @@ describe('formationsManager', function () {
             game4 = retrieve(root, "[level1quizz3]");
             assert(!game4);
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:1885, pageY:300, preventDefault:()=>{}});
+            dragQuiz(1885, 300);
             let game5 = retrieve(root, "[level1quizz5]");
             assert.equal(game5.text, "Quiz 6");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game6 = retrieve(root, "[level1quizz6]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game7 = retrieve(root, "[level1quizz7]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game8 = retrieve(root, "[level1quizz8]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game9 = retrieve(root, "[level1quizz9]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game10 = retrieve(root, "[level1quizz10]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game11 = retrieve(root, "[level1quizz11]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game12 = retrieve(root, "[level1quizz12]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
-            let game13 = retrieve(root, "[level1quizz13]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
-            let game14 = retrieve(root, "[level2quizz14]");
-
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
-            panelBack.listeners['mouseup']({pageX:1885, pageY:791, preventDefault:()=>{}});
+            for (let i = 0 ; i < 8 ; i++){
+                dragQuiz(300, 300);
+            }
+            dragQuiz(1142, 791);
+            dragQuiz(1885, 791);
             let game15 = retrieve(root, "[level3quizz15]");
 
             game15.listeners['mousedown']({pageX:500, pageY:674, preventDefault:()=>{}});
@@ -412,10 +329,7 @@ describe('formationsManager', function () {
             game15.listeners['mousedown']({pageX:1176, pageY:349, preventDefault:()=>{}});
             game15.listeners['mouseup']({pageX:500, pageY:674, preventDefault:()=>{}});
 
-            gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
+            dragQuiz();
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
             let game16 = retrieve(root, "[level4quizz16]");
 
