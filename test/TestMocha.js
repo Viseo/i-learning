@@ -1090,47 +1090,29 @@ describe('Player mode', function () {
             let header = retrieve(root, "[headerMessage]");
             assert.equal(header.text, "Mythologie grecque - Le Chaos");
 
-            let firstAnswer = retrieve(root, "[answer0]");
-            assert.equal(firstAnswer.text, "Zeus");
-            firstAnswer.listeners["click"]();
+            let answer;
+            const playerAnswers = (index, label) => {
+                answer = retrieve(root, "[answer" + index + "]");
+                assert.equal(answer.text, label);
+                answer.listeners["click"]();
+            };
 
+            playerAnswers(0, "Zeus");
             runtime.listeners['resize']({w:1500, h:1500});
 
-            firstAnswer = retrieve(root, "[answer0]");
-            assert.equal(firstAnswer.text, "Nyx, la Nuit");
-            firstAnswer.listeners["click"]();
-
-            firstAnswer = retrieve(root, "[answer0]");
-            assert.equal(firstAnswer.text, "Les Titans");
-            firstAnswer.listeners["click"]();
-
-            let fourthAnswer = retrieve(root, "[answer3]");
-            assert.equal(fourthAnswer.text, "Les Cyclopes");
-            fourthAnswer.listeners["click"]();
-
-            let seventhAnswer = retrieve(root, "[answer6]");
-            assert.equal(seventhAnswer.text, "Les Hecatonchires");
-            seventhAnswer.listeners["click"]();
-
-            seventhAnswer = retrieve(root, "[answer6]");
-            assert.equal(seventhAnswer.text, "Les Hecatonchires");
-            seventhAnswer.listeners["click"]();
-
-            seventhAnswer = retrieve(root, "[answer6]");
-            assert.equal(seventhAnswer.text, "Les Hecatonchires");
-            seventhAnswer.listeners["click"]();
+            playerAnswers(0, "Nyx, la Nuit");
+            playerAnswers(0, "Les Titans");
+            playerAnswers(3, "Les Cyclopes");
+            playerAnswers(6, "Les Hecatonchires");
+            playerAnswers(6, "Les Hecatonchires");
+            playerAnswers(6, "Les Hecatonchires");
 
             let validateButtonQuiz = retrieve(root, "[validateButtonQuiz]");
             assert.equal(validateButtonQuiz.text, "Valider");
             validateButtonQuiz.listeners["click"]();
 
-            fourthAnswer = retrieve(root, "[answer3]");
-            assert.equal(fourthAnswer.text, "12");
-            fourthAnswer.listeners["click"]();
-
-            fourthAnswer = retrieve(root, "[answer3]");
-            assert.equal(fourthAnswer.text, "Stéropès");
-            fourthAnswer.listeners["click"]();
+            playerAnswers(3, "12");
+            playerAnswers(3, "Stéropès");
 
             let resetButtonQuiz = retrieve(root, "[resetButtonQuiz]");
             assert.equal(resetButtonQuiz.text, "Réinitialiser");
@@ -1140,13 +1122,8 @@ describe('Player mode', function () {
             assert.equal(validateButtonQuiz.text, "Valider");
             validateButtonQuiz.listeners["click"]();
 
-            fourthAnswer = retrieve(root, "[answer3]");
-            assert.equal(fourthAnswer.text, "Cronos et Rhéa");
-            fourthAnswer.listeners["click"]();
-
-            fourthAnswer = retrieve(root, "[answer3]");
-            assert.equal(fourthAnswer.text, "Il les abandonna dans la nature.");
-            fourthAnswer.listeners["click"]();
+            playerAnswers(3, "Cronos et Rhéa");
+            playerAnswers(3, "Il les abandonna dans la nature.");
 
             runtime.listeners['resize']({w:1500, h:1500});
 
