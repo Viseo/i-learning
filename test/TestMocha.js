@@ -572,15 +572,10 @@ describe('formationsManager', function () {
             questionRedCross.listeners['click']();
 
             let emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            emptyAnswerAddCadrequestion.listeners['dblclick']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            emptyAnswerAddCadrequestion.listeners['dblclick']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            emptyAnswerAddCadrequestion.listeners['dblclick']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            emptyAnswerAddCadrequestion.listeners['dblclick']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            emptyAnswerAddCadrequestion.listeners['dblclick']();
+            for (let i =0; i<5; i++){
+                emptyAnswerAddCadrequestion.listeners['dblclick']();
+                emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            }
 
             let questionLeftChevron = retrieve(root, '[questionLeftChevron]');
             questionLeftChevron.listeners['click']();
@@ -681,22 +676,13 @@ describe('formationsManager', function () {
             let questionImage = retrieve(root, '[questionImage6]');
             assert(questionImage);
 
-            let questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
-            questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
-            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
-            questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
-            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
-            questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
-            questionFromPuzzleBordure2 = retrieve(root, '[questionFromPuzzleBordure2]');
-            questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
-            questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
+            let questionFromPuzzleBordure2;
+            for (let i = 0 ; i < 4 ; i++){
+                questionFromPuzzleBordure2= retrieve(root, '[questionFromPuzzleBordure2]');
+                questionFromPuzzleBordure2.listeners['click']({pageX:522, pageY:223, preventDefault:()=>{}});
+                questionRedCross = retrieve(root, '[questionRedCross]');
+                questionRedCross.listeners['click']();
+            }
             questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
             questionFromPuzzleBordure1.listeners['click']({pageX:166, pageY:237, preventDefault:()=>{}});
             questionRedCross = retrieve(root, '[questionRedCross]');
