@@ -34,6 +34,13 @@ const ImageRuntime = {
     }
 };
 
+const testKeyDownArrow = (runtime) => {
+    runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
+    runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
+    runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
+    runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+};
+
 const runTest = function (file, exec) {
     const lineReader = require('readline').createInterface({
         input: require('fs').createReadStream(file)
@@ -165,10 +172,8 @@ describe('formationsManager', function () {
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+            testKeyDownArrow(runtime);
+
             runtime.advance();
 
             let addFormationCadre = retrieve(root, "[addFormationCadre]");
@@ -193,7 +198,7 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             let draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); //{pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             assert.equal(gameQuiz.stroke, 'rgb(25,25,112)');
 
             let panelBack = retrieve(root, "[panelBack]");
@@ -231,7 +236,7 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game1 = retrieve(root, "[level1quizz1]");
             assert.equal(game1.text, "Quiz 2");
@@ -241,7 +246,7 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game2 = retrieve(root, "[level1quizz2]");
             assert.equal(game2.text, "Quiz 3");
@@ -251,7 +256,7 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game3 = retrieve(root, "[level1quizz3]");
             assert.equal(game3.text, "Quiz 4");
@@ -365,70 +370,70 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game6 = retrieve(root, "[level1quizz6]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game7 = retrieve(root, "[level1quizz7]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game8 = retrieve(root, "[level1quizz8]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game9 = retrieve(root, "[level1quizz9]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game10 = retrieve(root, "[level1quizz10]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game11 = retrieve(root, "[level1quizz11]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game12 = retrieve(root, "[level1quizz12]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game13 = retrieve(root, "[level1quizz13]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
             let game14 = retrieve(root, "[level2quizz14]");
 
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:1885, pageY:791, preventDefault:()=>{}});
             let game15 = retrieve(root, "[level3quizz15]");
 
@@ -444,7 +449,7 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"](); // {pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["click"]();
             panelBack.listeners['mouseup']({pageX:1142, pageY:791, preventDefault:()=>{}});
             let game16 = retrieve(root, "[level4quizz16]");
 
@@ -455,7 +460,7 @@ describe('formationsManager', function () {
             bdGame = retrieve(root, "[gameBd]");
             bdGame.listeners["mousedown"]({pageX:165, pageY:488, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:500, pageY:791, preventDefault:()=>{}}); //{pageX:165, pageY:300, preventDefault:()=>{}}
+            draggedGameCadre.listeners["mouseup"]({pageX:500, pageY:791, preventDefault:()=>{}});
             let bd1 = retrieve(root, "[level4bd0]");
 
             bd1.listeners['mousedown']({pageX:500, pageY:791, preventDefault:()=>{}});
@@ -468,10 +473,8 @@ describe('formationsManager', function () {
             let returnButtonFromBdToFormation = retrieve(root, '[returnButtonFromBdToFormation]');
             returnButtonFromBdToFormation.listeners['click']();
 
-            runtime.listeners['keydown']({keyCode:39, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:40, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:37, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:38, preventDefault:()=>{}});
+            testKeyDownArrow(runtime);
+
             runtime.advance();
             runtime.advance();
 
@@ -840,17 +843,18 @@ describe('formationsManager', function () {
             videoDragged = retrieve(root, '[videoDragged]');
             videoDragged.listeners['mouseup']({pageX:1074, pageY:94, preventDefault:()=>{}});
             video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
-            // video.listeners['mouseover']();
-            // videoRedCross = retrieve(root, '[videoRedCross]');
-            // videoRedCross.listeners['click']();
+            video.listeners['mouseover']();
+            videoRedCross = retrieve(root, '[videoRedCross]');
+            videoRedCross.listeners['click']();
 
             libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
+            runtime.advance();
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mouseover']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imageRedCross = retrieve(root, '[imageRedCross]');
-            imageRedCross.listeners['click']();
+            // image = retrieve(root, '[littleCat]');
+            // image.listeners['mouseover']({pageX:53, pageY:411, preventDefault:()=>{}});
+            // imageRedCross = retrieve(root, '[imageRedCross]');
+            // imageRedCross.listeners['click']();
 
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
@@ -895,15 +899,12 @@ describe('formationsManager', function () {
             bigGlass.listeners['mousemove']({pageX:1, pageY:1, preventDefault:()=>{}});
             bigGlass.listeners['mousemove']({pageX:31, pageY:71, preventDefault:()=>{}});
 
-
             runtime.listeners['resize']({w:1500, h:1500});
-
 
             let deconnection = retrieve(root, '[deconnection]');
             deconnection.listeners['click']();
 
             done();
-
 
         });
     });
@@ -1269,16 +1270,13 @@ describe('Player mode', function () {
 
             leftChevron = retrieve(root, '[leftChevron]');
             assert(leftChevron.listeners['click']);
-            rightChevron = retrieve(root, '[rightChevron]');
-            rightChevron.listeners['click']();
-            rightChevron = retrieve(root, '[rightChevron]');
-            rightChevron.listeners['click']();
-            rightChevron = retrieve(root, '[rightChevron]');
-            rightChevron.listeners['click']();
-            rightChevron = retrieve(root, '[rightChevron]');
-            rightChevron.listeners['click']();
-            rightChevron = retrieve(root, '[rightChevron]');
-            rightChevron.listeners['click']();
+            let retrieveClickChevron = () => {
+                rightChevron = retrieve(root, '[rightChevron]');
+                rightChevron.listeners['click']();
+            };
+            for (let i = 0; i<5; i++){
+                retrieveClickChevron();
+            }
             rightChevron = retrieve(root, '[rightChevron]');
             assert(!rightChevron.listeners['click']);
             leftChevron = retrieve(root, '[leftChevron]');
@@ -1297,340 +1295,3 @@ describe('Player mode', function () {
         });
     })
 });
-
-/*describe('Quiz game', function () {
-
- beforeEach(function () {
- runtime = mockRuntime();
- svg = SVG(runtime);
- runtime.declareAnchor('content');
- main = require("../src/main").main;
- dbListenerModule = require("../src/dbListener").dbListener;
- dbListener = new dbListenerModule(true, false);
- });
-
- it("plays a complete quiz game with 2 Answers correct", function (done) {
- this.timeout(100000);
- const jsonFile = "./log/testQuizTwoRightAnswers.json";
- const execute = () => {
- checkScenario(() => {main(svg, runtime, dbListener)}, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("plays a complete quiz game with all wrong", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testQuizAllWrong.json";
- var execute = function () {
- checkScenario(
- function () {
- main(svg, runtime);
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("plays a complete quiz game with all correct but one", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testQuizAllCorrectButOne.json";
- var execute = function () {
- checkScenario(
- function () {
- main(svg, runtime);
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("plays a complete quiz game with all correct", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testQuizAllCorrect.json";
- var execute = function () {
- checkScenario(
- function () {
- main(svg, runtime);
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("plays a complete quiz game with only one right answer", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testQuizAllWrongButOne.json";
- var execute = function () {
- checkScenario(
- function () {
- main(svg, runtime);
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- });
-
- describe('Inscription/Connexion', function () {
-
- beforeEach(function () {
- runtime = mockRuntime();
- svg = SVG(runtime);
- runtime.declareAnchor('content');
- main = require("../src/main").main;
- dbListenerModule = require("../src/dbListener").dbListener;
- dbListener = new dbListenerModule(true, false);
- });
- it("Inscription page", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testInscription.json";
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- inscriptionModule.inscription();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("Inscription Ok", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testInscriptionOK.json";
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- inscriptionModule.inscription();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("Inscription Errors", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testInscriptionErrors.json";
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- inscriptionModule.inscription();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("Connection page", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testConnection.json";
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- connexionModule.connexion();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- it("Connection texfield filled but no click on the connection button", function (done) {
- this.timeout(100000);
- var jsonFile = "./log/testConnectionSansClick.json";
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- connexionModule.connexion();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- });
- describe('Admin use', function () {
- beforeEach(function () {
- runtime = mockRuntime();
- svg = SVG(runtime);
- guiSvgModule = require("../lib/svggui").Gui(svg, {speed: 5, step:100});
- util = require("../src/Util");
- gui = require("../src/GUI");
- domain = require("../src/Domain");
- mainModule = require("../src/main");
- adminModule = require("../src/admin");
- testModule = require("../test/testTest");
- dbListenerModule = require("../src/dbListener");
- runtime.declareAnchor('content');
- util.SVGUtil();
- util.Bdd();
- util.setSvg(svg);
- util.setGui(guiSvgModule);
- util.setRuntime(runtime);
- mainModule.setSvg(svg);
- mainModule.setUtil(util);
- adminModule.setSvg(svg);
- adminModule.setUtil(util);
- testModule.setUtil(util);
- testModule.setSvg(svg);
- //quizManagerModule.setSvg(svg);
- //quizManagerModule.setUtil(util);
- domain.setUtil(util);
- domain.Domain();
- domain.setRuntime(runtime);
- domain.setSvg(svg);
- gui.setDomain(domain);
- gui.AdminGUI();
- gui.setSVG(svg);
- gui.setGui(guiSvgModule);
- gui.setRuntime(runtime);
- dbListener = new dbListenerModule.DbListener(false, true);
- Server = util.Server;
- ReturnButton = util.ReturnButton;
- Answer = domain.Answer;
- Question = domain.Question;
- QuestionCreator = domain.QuestionCreator;
- AddEmptyElement = domain.AddEmptyElement;
- Level = domain.Level;
- FormationsManager = domain.FormationsManager;
- Formation = domain.Formation;
- Library = domain.Library;
- Header = domain.Header;
- Puzzle = domain.Puzzle;
- QuizManager = domain.QuizManager;
- Quiz = domain.Quiz;
- Bd = domain.Bd;
- });
-
- it("a short admin use (to Formation)", function (done) {
- var jsonFile = "./log/testAdminShortUse.json";
- testutils.retrieveDB("./log/dbtestAdminShortUse.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
- it("an admin use formationLabel correct and not", function (done) {
- var jsonFile = "./log/testAdminFormationLabel.json";
- testutils.retrieveDB("./log/dbtestAdminFormationLabel.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
- it("an admin quiz textareas Ok and not", function (done) {
- var jsonFile = "./log/testAdminQuizTextAreas.json";
- testutils.retrieveDB("./log/dbtestAdminQuizTextAreas.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
- it("an admin goes to formation and creates games and save", function (done) {
- var jsonFile = "./log/testAdminCreatesGamesAndSave.json";
- testutils.retrieveDB("./log/dbtestAdminCreatesGamesAndSave.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
-
- it("an admin creates a new game and fill it with pictures", function (done) {
- var jsonFile = "./log/testAdminNewGame.json";
- testutils.retrieveDB("./log/dbtestAdminNewGame.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
-
- // Mock AppendChild
- // it("an admin creates a new game and fill it with data", function (done) {
- //     var jsonFile = "./log/testAdminNewGameData.json";
- //     testutils.retrieveDB("./log/dbtestAdminNewGameData.json", dbListener, function () {
- //         var execute = function () {
- //             var globalVariables = mainModule.setGlobalVariable();
- //             domain.setGlobalVariables(globalVariables);
- //             checkScenario(
- //                 function () {
- //                     adminModule.admin();
- //                 }, jsonFile, 'content', runtime, done);
- //         };
- //         runTest(jsonFile, execute);
- //     });
- //     this.timeout(100000);
- // });
-
- it("an admin use with add/delete arrows game and level", function (done) {
- var jsonFile = "./log/testAdminArrows.json";
- testutils.retrieveDB("./log/dbtestAdminArrows.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
-
- it("an admin use with quiz preview and its validation tests", function (done) {
- var jsonFile = "./log/testAdminPreview.json";
- testutils.retrieveDB("./log/dbtestAdminPreview.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
-
- it("an admin use (quiz) with creation of new answer and new question", function (done) {
- var jsonFile = "./log/testAdminCreateQuestionAnswer.json";
- testutils.retrieveDB("./log/dbtestAdminCreateQuestionAnswer.json", dbListener, function () {
- var execute = function () {
- var globalVariables = mainModule.setGlobalVariable();
- domain.setGlobalVariables(globalVariables);
- checkScenario(
- function () {
- adminModule.admin();
- }, jsonFile, 'content', runtime, done);
- };
- runTest(jsonFile, execute);
- });
- this.timeout(100000);
- });
- });*/

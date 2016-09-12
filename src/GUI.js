@@ -511,12 +511,10 @@ exports.GUI = function (globalVariables) {
                     svg.addEvent(this.draggedObject.border, 'mouseup', mouseupHandler);
                     svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
                 };
-
                 svg.addEvent(item.miniature.border, 'mousedown', mouseDownAction);
                 svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
             });
         };
-
         displayItems();
         displayArrowModeButton();
         assignEvents();
@@ -745,7 +743,6 @@ exports.GUI = function (globalVariables) {
                 svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
                 svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
                 svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
-
             };
 
             const displayTabs = () => {
@@ -885,6 +882,7 @@ exports.GUI = function (globalVariables) {
                 };
                 const tabManager = createTabManager(this);
                 tabManager.addTab("Images", 0, () => {
+                    displayItems();
                     this.libraryManipulator.set(2, imagesPanel.component);
                 });
                 tabManager.addTab("Vidéos", 1, () => {

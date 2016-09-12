@@ -113,9 +113,6 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                     if (quiz.currentQuestionIndex < quiz.tabQuestions.length) {
                         quiz.displayCurrentQuestion();
                     }
-                    // if (globalVariables.videoDisplayed){
-                    //     findVideo().playFunction();
-                    // }
                     break;
                 case "Quiz":
                     quiz = formation.quizManager.previewQuiz ? formation.quizManager.previewQuiz : formation.quizDisplayed;
