@@ -608,10 +608,14 @@ describe('formationsManager', function () {
             textExplanation = retrieve(root, '[textExplanation]');
             assert(textExplanation.text, "Ceci est la première explication");
 
-            let image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            let imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:397, pageY:677, preventDefault:()=>{}});
+            let image;
+            const dragImage = (pointX, pointY) => {
+                image = retrieve(root, '[imageAlba]');
+                image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+                let imgDraged = retrieve(root, '[imgDraged]');
+                imgDraged.listeners['mouseup']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
+            };
+            dragImage(397, 677);
             let explanationImage = retrieve(root, '[imageExplanation]');
             assert(explanationImage);
 
@@ -641,22 +645,24 @@ describe('formationsManager', function () {
             textExplanation = retrieve(root, '[textExplanation]');
             assert(!textExplanation);
 
+            const dragVideo = (pointX, pointY) => {
+                video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+                video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+                videoDragged = retrieve(root, '[videoDragged]');
+                video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
+                video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
+                videoDragged.listeners['mouseup']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
+                return retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            };
+
             libraryVideos = retrieve(root, '[libraryVidéos]');
             libraryVideos.listeners['click']();
-            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
-            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
-            videoDragged = retrieve(root, '[videoDragged]');
-            videoDragged.listeners['mouseup']({pageX:417, pageY:594, preventDefault:()=>{}});
-            glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            glassVideo = dragVideo(417, 594);
             glassVideo.listeners['mouseover']();
             videoRedCross = retrieve(root, '[videoRedCross]');
             videoRedCross.listeners['click']();
 
-            video = retrieve(root, '[WIN_20160817_09_17_16_Pro]');
-            video.listeners['mousedown']({pageX:39, pageY:409, preventDefault:()=>{}});
-            videoDragged = retrieve(root, '[videoDragged]');
-            videoDragged.listeners['mouseup']({pageX:450, pageY:450, preventDefault:()=>{}});
-            glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
+            glassVideo = dragVideo(450, 450);
             glassVideo.listeners['mouseover']();
             videoRedCross = retrieve(root, '[videoRedCross]');
             videoRedCross.listeners['click']();
@@ -664,15 +670,8 @@ describe('formationsManager', function () {
             libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:830, pageY:87, preventDefault:()=>{}});
-
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:425, pageY:438, preventDefault:()=>{}});
+            dragImage(830, 87);
+            dragImage(425, 438);
             let questionImage = retrieve(root, '[questionImage6]');
             assert(questionImage);
 
@@ -688,26 +687,17 @@ describe('formationsManager', function () {
             questionRedCross = retrieve(root, '[questionRedCross]');
             questionRedCross.listeners['click']();
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:541, pageY:453, preventDefault:()=>{}});
+            dragImage(541, 453);
             questionImage = retrieve(root, '[questionImage1]');
             questionImage.listeners['mouseover']({pageX:541, pageY:453, preventDefault:()=>{}});
             let imageRedCross = retrieve(root, '[imageRedCross]');
             imageRedCross.listeners['click']();
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
+            dragImage(522, 632);
             let answerImage = retrieve(root, '[answerImage0]');
             assert(answerImage);
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            dragImage(884, 644);
             answerImage = retrieve(root, '[answerImage1]');
             answerImage.listeners['mouseover']();
             imageRedCross = retrieve(root, '[imageRedCross]');
@@ -715,10 +705,7 @@ describe('formationsManager', function () {
             answerImage = retrieve(root, '[answerImage1]');
             assert(!answerImage);
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            dragImage(884, 644);
             answerImage = retrieve(root, '[answerImage1]');
             assert(answerImage);
 
@@ -736,10 +723,7 @@ describe('formationsManager', function () {
             answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
             assert(answerLabelCadre0);
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
+            dragImage(522, 632);
             answerImage = retrieve(root, '[answerImage0]');
             assert(answerImage);
 
@@ -752,10 +736,7 @@ describe('formationsManager', function () {
             circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
             circleCloseExplanation.listeners['click']();
 
-            image = retrieve(root, '[imageAlba]');
-            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            imgDraged = retrieve(root, '[imgDraged]');
-            imgDraged.listeners['mouseup']({pageX:884, pageY:644, preventDefault:()=>{}});
+            dragImage(884, 644);
             answerImage = retrieve(root, '[answerImage1]');
             assert(answerImage);
 
