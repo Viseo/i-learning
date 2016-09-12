@@ -98,17 +98,17 @@ exports.Util = function (globalVariables) {
         }
 
         move(x, y) {
-            this.translator.move(x, y)
+            this.translator.move(x, y);
             return this;
         }
 
         rotate(angle) {
-            this.rotator.rotate(angle)
+            this.rotator.rotate(angle);
             return this;
         }
 
         scale(scaleX, scaleY) {
-            this.scalor.scale(scaleX, scaleY)
+            this.scalor.scale(scaleX, scaleY);
             return this;
         }
 
@@ -370,14 +370,6 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(invisibleTriangle, event, handler);
                 svg.addEvent(blackTriangle, event, handler);
             };
-
-            // manipulator._acceptDrop = () => {
-            //     bigSquare._acceptDrop=true;
-            //     smallSquare._acceptDrop=true;
-            //     whiteTriangle._acceptDrop=true;
-            //     invisibleTriangle._acceptDrop=true;
-            //     blackTriangle._acceptDrop=true;
-            // };
 
             manipulator.manageDnD = (draggableManipulator) => {
                 manageDnD(bigSquare, draggableManipulator);
