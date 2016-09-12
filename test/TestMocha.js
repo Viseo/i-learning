@@ -482,7 +482,8 @@ describe('formationsManager', function () {
             bigGlass.listeners['mousemove']({pageX:455, pageY:486, preventDefault:()=>{}});
             bigGlass.listeners['mouseup']({pageX:455, pageY:486, preventDefault:()=>{}});
             bigGlass.listeners['dblclick']({pageX:455, pageY:486, preventDefault:()=>{}});
-            // bigGlass.listeners['mousemove']({pageX:514, pageY:486, preventDefault:()=>{}});
+            bigGlass.listeners['mouseout']();
+            bigGlass.listeners['mousemove']({pageX:514, pageY:486, preventDefault:()=>{}});
             bigGlass.listeners['mouseout']();
 
             game0.listeners['dblclick']({pageX:1104, pageY:212, preventDefault:()=>{}});
@@ -717,12 +718,6 @@ describe('formationsManager', function () {
             videoDragged.listeners['mouseup']({pageX:450, pageY:450, preventDefault:()=>{}});
             glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
             glassVideo.listeners['mouseover']();
-            // let questionVideoToPlay = retrieve(root, '[questionVideoToPlay]');
-            // questionVideoToPlay.listeners['play']();
-            // let crossToClose = retrieve(root, '[crossToClose]');
-            // crossToClose.listeners['click']({pageX:1738, pageY:86, preventDefault:()=>{}});
-            // glassVideo = retrieve(root, '[glassWIN_20160817_09_17_16_Pro]');
-            // glassVideo.listeners['mouseover']();
             videoRedCross = retrieve(root, '[videoRedCross]');
             videoRedCross.listeners['click']();
 
@@ -803,19 +798,31 @@ describe('formationsManager', function () {
             answerLabelCadre1 = retrieve(root, '[answerLabelCadre1]');
             assert(answerLabelCadre1);
 
-            // answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
-            // answerLabelCadre0.listeners['mouseover']();
-            // redCross = retrieve(root, '[redCross]');
-            // redCross.listeners['click']();
-            // answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
-            // assert(answerLabelCadre0);
-            //
-            // image = retrieve(root, '[imageAlba]');
-            // image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
-            // imgDraged = retrieve(root, '[imgDraged]');
-            // imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
-            // answerImage = retrieve(root, '[answerImage0]');
-            // assert(answerImage);
+            answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            answerLabelCadre0.listeners['mouseover']();
+            redCross = retrieve(root, '[redCross]');
+            redCross.listeners['click']();
+            answerLabelCadre0 = retrieve(root, '[answerLabelCadre0]');
+            assert(answerLabelCadre0);
+
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imgDraged = retrieve(root, '[imgDraged]');
+            imgDraged.listeners['mouseup']({pageX:522, pageY:632, preventDefault:()=>{}});
+            answerImage = retrieve(root, '[answerImage0]');
+            assert(answerImage);
+
+            explanationCadre0 = retrieve(root, '[explanationSquare0]');
+            explanationCadre0.listeners['click']();
+            explanationPanel = retrieve(root, '[explanationPanel]');
+            explanationPanel.listeners['click']();
+            explanationContentArea = retrieve(root, '[explanationContentArea]');
+            explanationContentArea.value = "Ceci est la première explication";
+            explanationContentArea.listeners['input']();
+            explanationContentArea.value = "Ceci est la première explication";
+            explanationContentArea.listeners['blur']();
+            circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
+            circleCloseExplanation.listeners['click']();
 
             image = retrieve(root, '[imageAlba]');
             image.listeners['mousedown']({pageX:53, pageY:411, preventDefault:()=>{}});
@@ -849,12 +856,15 @@ describe('formationsManager', function () {
 
             libraryImages = retrieve(root, '[libraryImages]');
             libraryImages.listeners['click']();
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
             runtime.advance();
 
-            // image = retrieve(root, '[littleCat]');
-            // image.listeners['mouseover']({pageX:53, pageY:411, preventDefault:()=>{}});
-            // imageRedCross = retrieve(root, '[imageRedCross]');
-            // imageRedCross.listeners['click']();
+            image = retrieve(root, '[imageAlba]');
+            image.listeners['mouseover']({pageX:53, pageY:411, preventDefault:()=>{}});
+            imageRedCross = retrieve(root, '[imageRedCross]');
+            imageRedCross.listeners['click']();
 
             let checkbox = retrieve(root, '[checkbox0]');
             checkbox.listeners['click']({pageX:339, pageY:647, preventDefault:()=>{}});
@@ -1142,7 +1152,7 @@ describe('inscription', function(){
             runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
 
 
-            // inscriptionButton.listeners['click'](); //DO NOT CLICK TwinBcrypt NOT DEFINED
+            inscriptionButton.listeners['click'](); //DO NOT CLICK TwinBcrypt NOT DEFINED
             // runtime.advance();
 
             let connectionLink = retrieve(root, '[inscriptionLink]');

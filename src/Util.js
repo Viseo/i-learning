@@ -230,6 +230,9 @@ exports.Util = function (globalVariables) {
                 if (this.drag) {
                     svg.event(this.target, "mouseup", event);
                 }
+                if (this.drawing.mousedOverTarget){
+                    this.drawing.mousedOverTarget.target = null;
+                }
                 this.drag = null;
             };
             svg.addEvent(this.glass, "mouseout", onmouseoutHandler);

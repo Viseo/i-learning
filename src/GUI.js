@@ -3217,7 +3217,8 @@ exports.GUI = function (globalVariables) {
 
         this.saveButtonHandler = () => {
             if (!emptyAreasHandler(true) && AllOk()) {
-                this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
+                this.passwordField.hash = svg.twinBcrypt();
+                // this.passwordField.hash = TwinBcrypt.hashSync(this.passwordField.labelSecret);
                 let tempObject = {
                     lastName: this.lastNameField.label,
                     firstName: this.firstNameField.label,
