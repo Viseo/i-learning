@@ -474,6 +474,7 @@ exports.Util = function (globalVariables) {
             manipulator.set(3, line3);
             manipulator.set(4, line4);
             manipulator.move(x, y);
+            square.mark('explanationIconSquare');
             return [square, line1, line2, line3, line4];
         };
 

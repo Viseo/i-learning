@@ -691,6 +691,8 @@ describe('formationsManager', function () {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
             runtime.advance();
+            let explanationIconSquare = retrieve(root, '[explanationIconSquare]');
+            explanationIconSquare.listeners['click']();
             runtime.listeners['resize']({w:1500, h:1500});
 
             let returnButtonPreview = retrieve(root, '[returnButtonPreview]');
@@ -1004,9 +1006,15 @@ describe('Player mode', function () {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
             runtime.advance();
+            let explanationIconSquare = retrieve(root, '[explanationIconSquare]');
+            explanationIconSquare.listeners['click']();
+            let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
+            circleCloseExplanation.listeners['click']();
 
             let iconTextToSpeech = retrieve(root, '[iconTextToSpeech]');
             iconTextToSpeech.listeners['click']();
+            explanationIconSquare = retrieve(root, '[explanationIconSquare]');
+            explanationIconSquare.listeners['click']();
             iconTextToSpeech.listeners['click']();
 
             let leftChevron = retrieve(root, '[leftChevron]');
