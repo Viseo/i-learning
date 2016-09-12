@@ -153,7 +153,7 @@ module.exports = function (app, fs) {
                     res.send(false);
                 } else {
                     return users.inscription(req.body)
-                        .then(() => res.send(true));
+                        .then(() => res.send({"ack":"ok"}));
                 }
             })
             .catch(err => console.log(err));
