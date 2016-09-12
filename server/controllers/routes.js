@@ -271,7 +271,7 @@ module.exports = function (app, fs) {
             });
     });
 
-    app.post('/formations/replaceQuizz/:id/:levelIndex/:gameIndex', function (req, res) {
+    app.post('/formations/replaceQuiz/:id/:levelIndex/:gameIndex', function (req, res) {
         formations.getFormationByVersionId(req.params.id)
             .then(formation => {
                 formations.replaceQuiz({

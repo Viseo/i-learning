@@ -9,7 +9,7 @@ exports.Util = function (globalVariables) {
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
         AddEmptyElement,
-        Quizz,
+        Quiz,
         Bd,
         Answer,
         Question,
@@ -24,7 +24,7 @@ exports.Util = function (globalVariables) {
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
         AddEmptyElement = globalVariables.domain.AddEmptyElement;
-        Quizz = globalVariables.domain.Quizz;
+        Quiz = globalVariables.domain.Quiz;
         Bd = globalVariables.domain.Bd;
         Answer = globalVariables.domain.Answer;
         Question = globalVariables.domain.Question;
@@ -282,8 +282,8 @@ exports.Util = function (globalVariables) {
             sender.correct = !sender.correct;
             sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
             updateAllCheckBoxes(sender);
-            let quizzManager = sender.parentQuestion.parentQuizz.parentFormation.quizzManager;
-            quizzManager.displayQuestionsPuzzle(null, null, null, null, quizzManager.questionPuzzle.indexOfFirstVisibleElement);
+            let quizManager = sender.parentQuestion.parentQuiz.parentFormation.quizManager;
+            quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
         drawCheck = function (x, y, size) {
@@ -583,11 +583,11 @@ exports.Util = function (globalVariables) {
                             globalVariables.videoDisplayed = null;
                             drawing.manipulator.unset(3);
                             drawings.screen.empty();
-                            let quizz = manipulator.parentObject.parentQuizz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuizz) ||manipulator.parentObject.answer.parentQuestion.parentQuizz;
-                            if (quizz.currentQuestionIndex !== -1 && quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                                quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
+                            let quiz = manipulator.parentObject.parentQuiz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuiz) ||manipulator.parentObject.answer.parentQuestion.parentQuiz;
+                            if (quiz.currentQuestionIndex !== -1 && quiz.currentQuestionIndex < quiz.tabQuestions.length) {
+                                quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
                             }
-                            quizz.display(0, 0, drawing.width, drawing.height);
+                            quiz.display(0, 0, drawing.width, drawing.height);
                             svg.removeEvent(drawings.glass, "click");
                         };
 
@@ -976,8 +976,8 @@ exports.Util = function (globalVariables) {
             return this;
         };
 
-        resetQuestionsIndex = function (quizz) {
-            quizz.tabQuestions.forEach((question, index)=> {
+        resetQuestionsIndex = function (quiz) {
+            quiz.tabQuestions.forEach((question, index)=> {
                 question.questionNum = index + 1;
             });
         };
@@ -1581,8 +1581,8 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/deleteAbortedVideos");
         }
 
-        static replaceQuizz(newQuizz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/replaceQuizz/' + id + "/" + levelIndex + "/" + gameIndex, newQuizz, ignoredData)
+        static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
+            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData)
         }
 
         static getImages() {
@@ -1765,11 +1765,11 @@ exports.Util = function (globalVariables) {
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
         myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
-            "resetManipulator", "manipulator", "manipulatorQuizzInfo", "questionCreatorManipulator",
+            "resetManipulator", "manipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
-            "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizzManager",
-            "quizzInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
-            "answerParent", "obj", "checkbox", "border", "content", "parentQuizz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
+            "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizManager",
+            "quizInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
+            "answerParent", "obj", "checkbox", "border", "content", "parentQuiz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
             "leftArrowManipulator", "rightArrowManipulator", "virtualTab", "questionWithBadAnswersManipulator",
             "editor", "miniatureManipulator", "parentFormation", "formationInfoManipulator", "parentGames", "returnButton",
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
@@ -1809,12 +1809,12 @@ exports.Util = function (globalVariables) {
                 {
                     label: "Quiz",
                     create: function (formation, level, posX) {
-                        var newQuizz = new Quizz(defaultQuizz, false, formation);
-                        newQuizz.tabQuestions[0].parentQuizz = newQuizz;
-                        newQuizz.id = "quizz" + formation.gamesCounter.quizz;
+                        var newQuiz = new Quiz(defaultQuiz, false, formation);
+                        newQuiz.tabQuestions[0].parentQuiz = newQuiz;
+                        newQuiz.id = "quizz" + formation.gamesCounter.quizz;
                         formation.gamesCounter.quizz++;
-                        newQuizz.title = "Quiz " + formation.gamesCounter.quizz;
-                        formation.levelsTab[level].gamesTab.splice(posX, 0, newQuizz);
+                        newQuiz.title = "Quiz " + formation.gamesCounter.quizz;
+                        formation.levelsTab[level].gamesTab.splice(posX, 0, newQuiz);
                     }
                 },
                 {
@@ -1846,7 +1846,7 @@ exports.Util = function (globalVariables) {
             rows: 4, colorBordure: myColors.black, bgColor: myColors.white
         };
 
-        defaultQuizz = {
+        defaultQuiz = {
             title: "",
             bgColor: myColors.white,
             puzzleLines: 3,
@@ -1882,7 +1882,7 @@ exports.Util = function (globalVariables) {
             },
             // Check Quiz Name:
             question => {
-                let isValid = (question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && !!question.parentQuizz.title.match(REGEX));
+                let isValid = (question.parentQuiz.title !== "" && question.parentQuiz.title !== undefined && !!question.parentQuiz.title.match(REGEX));
                 let message = "Vous devez remplir correctement le nom du quiz.";
                 return {
                     isValid: isValid,
@@ -1904,7 +1904,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check Quiz Name:
             question => ({
-                isValid: ( question.parentQuizz.title !== "" && question.parentQuizz.title !== undefined && question.parentQuizz.title.match(REGEX)),
+                isValid: ( question.parentQuiz.title !== "" && question.parentQuiz.title !== undefined && question.parentQuiz.title.match(REGEX)),
                 message: "Vous devez remplir correctement le nom du quiz."
             })
         ];

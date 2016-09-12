@@ -71,8 +71,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             const
                 formationsManager = globalVariables.formationsManager,
                 formation = formationsManager && formationsManager.formationDisplayed,
-                quizzManager = formation && formation.quizzManager;
-            let quizz;
+                quizManager = formation && formation.quizManager;
+            let quiz;
             switch (drawing.currentPageDisplayed) {
                 case "ConnexionManager":
                     connexionManager.display();
@@ -99,46 +99,46 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                     break;
                 case "QuizManager":
                     formation.library.libraryManipulator.flush();
-                    quizzManager.library.libraryManipulator.flush();
-                    quizzManager.resizing = true;
-                    quizzManager.display();
+                    quizManager.library.libraryManipulator.flush();
+                    quizManager.resizing = true;
+                    quizManager.display();
                     break;
                 case "QuizPreview":
-                    quizz = formation.quizzManager.previewQuiz;
-                    if (quizz.currentQuestionIndex !== -1) {
-                        quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].questionManipulator);
+                    quiz = formation.quizManager.previewQuiz;
+                    if (quiz.currentQuestionIndex !== -1) {
+                        quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
                     }
-                    quizz.display(0, 0, drawing.width, drawing.height);
+                    quiz.display(0, 0, drawing.width, drawing.height);
 
-                    if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                        quizz.displayCurrentQuestion();
+                    if (quiz.currentQuestionIndex < quiz.tabQuestions.length) {
+                        quiz.displayCurrentQuestion();
                     }
                     // if (globalVariables.videoDisplayed){
                     //     findVideo().playFunction();
                     // }
                     break;
-                case "Quizz":
-                    quizz = formation.quizzManager.previewQuiz ? formation.quizzManager.previewQuiz : formation.quizzDisplayed;
-                    if (formation.quizzManager.previewQuiz) {
-                        if (quizz.currentQuestionIndex !== -1) {
-                            quizz.manipulator.remove(quizz.tabQuestions[quizz.currentQuestionIndex].manipulator);
+                case "Quiz":
+                    quiz = formation.quizManager.previewQuiz ? formation.quizManager.previewQuiz : formation.quizDisplayed;
+                    if (formation.quizManager.previewQuiz) {
+                        if (quiz.currentQuestionIndex !== -1) {
+                            quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].manipulator);
                         }
-                        quizz.display(0, 0, drawing.width, drawing.height);
+                        quiz.display(0, 0, drawing.width, drawing.height);
                         if (globalVariables.videoDisplayed){
                             findVideo().playFunction();
                         }
                     }
                     else {
-                        quizz.display(0, 0, drawing.width, drawing.height);
-                        if (quizz.currentQuestionIndex < quizz.tabQuestions.length) {
-                            quizz.displayCurrentQuestion();
+                        quiz.display(0, 0, drawing.width, drawing.height);
+                        if (quiz.currentQuestionIndex < quiz.tabQuestions.length) {
+                            quiz.displayCurrentQuestion();
                             if (globalVariables.videoDisplayed){
                                 findVideo().playFunction();
                             }
                         } else {
-                            quizz.resultManipulator.remove(quizz.puzzle.manipulator);
-                            quizz.resultManipulator.remove(quizz.scoreManipulator);
-                            quizz.displayResult();
+                            quiz.resultManipulator.remove(quiz.puzzle.manipulator);
+                            quiz.resultManipulator.remove(quiz.scoreManipulator);
+                            quiz.displayResult();
                             if (globalVariables.videoDisplayed){
                                 findVideo().playFunction();
                             }

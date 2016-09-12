@@ -160,7 +160,7 @@ describe('formationsManager', function () {
     });
 
     it("should add a formation", function(done){
-        testutils.retrieveDB("./log/dbNewQuizz.json", dbListener, function () {
+        testutils.retrieveDB("./log/dbNewQuiz.json", dbListener, function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
@@ -487,34 +487,34 @@ describe('formationsManager', function () {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
             runtime.advance();
-            let quizzLabelContent = retrieve(root, '[quizzLabelContent]');
-            assert(quizzLabelContent.text, "Quiz 1");
+            let quizLabelContent = retrieve(root, '[quizLabelContent]');
+            assert(quizLabelContent.text, "Quiz 1");
 
-            quizzLabelContent.listeners["dblclick"]();
+            quizLabelContent.listeners["dblclick"]();
             let quizEditionTextArea = retrieve(root, "[quizEditionTextArea]");
             quizEditionTextArea.value = "Quiz n°1==";
             quizEditionTextArea.listeners["input"]();
             quizEditionTextArea.value = "Quiz n°1==";
             quizEditionTextArea.listeners["blur"]();
-            quizzLabelContent = retrieve(root, "[quizzLabelContent]");
-            let quizzLabelCadre = retrieve(root, "[quizzLabelCadre]");
+            quizLabelContent = retrieve(root, "[quizLabelContent]");
+            let quizLabelCadre = retrieve(root, "[quizLabelCadre]");
             let quizErrorMessage = retrieve(root, "[quizErrorMessage]");
-            assert.equal(quizzLabelCadre.stroke, 'rgb(255,0,0)');
+            assert.equal(quizLabelCadre.stroke, 'rgb(255,0,0)');
             assert.equal(quizErrorMessage.text, ERROR_MESSAGE_INPUT);
-            assert.equal(quizzLabelContent.text, "Quiz n°1==");
+            assert.equal(quizLabelContent.text, "Quiz n°1==");
 
-            quizzLabelContent.listeners["dblclick"]();
+            quizLabelContent.listeners["dblclick"]();
             quizEditionTextArea = retrieve(root, "[quizEditionTextArea]");
             quizEditionTextArea.value = "Quiz n°1";
             quizEditionTextArea.listeners["input"]();
             quizEditionTextArea.value = "Quiz n°1";
             quizEditionTextArea.listeners["blur"]();
-            quizzLabelContent = retrieve(root, "[quizzLabelContent]");
-            quizzLabelCadre = retrieve(root, "[quizzLabelCadre]");
+            quizLabelContent = retrieve(root, "[quizLabelContent]");
+            quizLabelCadre = retrieve(root, "[quizLabelCadre]");
             quizErrorMessage = retrieve(root, "[quizErrorMessage]");
-            assert.equal(quizzLabelCadre.stroke, 'none');
+            assert.equal(quizLabelCadre.stroke, 'none');
             assert.equal(quizErrorMessage, null);
-            assert.equal(quizzLabelContent.text, "Quiz n°1");
+            assert.equal(quizLabelContent.text, "Quiz n°1");
 
             let questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
             questionBlockTitle1.listeners['dblclick']();
@@ -1298,7 +1298,7 @@ describe('Player mode', function () {
     })
 });
 
-/*describe('Quizz game', function () {
+/*describe('Quiz game', function () {
 
  beforeEach(function () {
  runtime = mockRuntime();
@@ -1309,17 +1309,17 @@ describe('Player mode', function () {
  dbListener = new dbListenerModule(true, false);
  });
 
- it("plays a complete quizz game with 2 Answers correct", function (done) {
+ it("plays a complete quiz game with 2 Answers correct", function (done) {
  this.timeout(100000);
- const jsonFile = "./log/testQuizzTwoRightAnswers.json";
+ const jsonFile = "./log/testQuizTwoRightAnswers.json";
  const execute = () => {
  checkScenario(() => {main(svg, runtime, dbListener)}, jsonFile, 'content', runtime, done);
  };
  runTest(jsonFile, execute);
  });
- it("plays a complete quizz game with all wrong", function (done) {
+ it("plays a complete quiz game with all wrong", function (done) {
  this.timeout(100000);
- var jsonFile = "./log/testQuizzAllWrong.json";
+ var jsonFile = "./log/testQuizAllWrong.json";
  var execute = function () {
  checkScenario(
  function () {
@@ -1328,9 +1328,9 @@ describe('Player mode', function () {
  };
  runTest(jsonFile, execute);
  });
- it("plays a complete quizz game with all correct but one", function (done) {
+ it("plays a complete quiz game with all correct but one", function (done) {
  this.timeout(100000);
- var jsonFile = "./log/testQuizzAllCorrectButOne.json";
+ var jsonFile = "./log/testQuizAllCorrectButOne.json";
  var execute = function () {
  checkScenario(
  function () {
@@ -1339,9 +1339,9 @@ describe('Player mode', function () {
  };
  runTest(jsonFile, execute);
  });
- it("plays a complete quizz game with all correct", function (done) {
+ it("plays a complete quiz game with all correct", function (done) {
  this.timeout(100000);
- var jsonFile = "./log/testQuizzAllCorrect.json";
+ var jsonFile = "./log/testQuizAllCorrect.json";
  var execute = function () {
  checkScenario(
  function () {
@@ -1350,9 +1350,9 @@ describe('Player mode', function () {
  };
  runTest(jsonFile, execute);
  });
- it("plays a complete quizz game with only one right answer", function (done) {
+ it("plays a complete quiz game with only one right answer", function (done) {
  this.timeout(100000);
- var jsonFile = "./log/testQuizzAllWrongButOne.json";
+ var jsonFile = "./log/testQuizAllWrongButOne.json";
  var execute = function () {
  checkScenario(
  function () {
@@ -1463,8 +1463,8 @@ describe('Player mode', function () {
  adminModule.setUtil(util);
  testModule.setUtil(util);
  testModule.setSvg(svg);
- //quizzManagerModule.setSvg(svg);
- //quizzManagerModule.setUtil(util);
+ //quizManagerModule.setSvg(svg);
+ //quizManagerModule.setUtil(util);
  domain.setUtil(util);
  domain.Domain();
  domain.setRuntime(runtime);
@@ -1487,8 +1487,8 @@ describe('Player mode', function () {
  Library = domain.Library;
  Header = domain.Header;
  Puzzle = domain.Puzzle;
- QuizzManager = domain.QuizzManager;
- Quizz = domain.Quizz;
+ QuizManager = domain.QuizManager;
+ Quiz = domain.Quiz;
  Bd = domain.Bd;
  });
 
@@ -1522,9 +1522,9 @@ describe('Player mode', function () {
  });
  this.timeout(100000);
  });
- it("an admin quizz textareas Ok and not", function (done) {
- var jsonFile = "./log/testAdminQuizzTextAreas.json";
- testutils.retrieveDB("./log/dbtestAdminQuizzTextAreas.json", dbListener, function () {
+ it("an admin quiz textareas Ok and not", function (done) {
+ var jsonFile = "./log/testAdminQuizTextAreas.json";
+ testutils.retrieveDB("./log/dbtestAdminQuizTextAreas.json", dbListener, function () {
  var execute = function () {
  var globalVariables = mainModule.setGlobalVariable();
  domain.setGlobalVariables(globalVariables);

@@ -114,10 +114,10 @@ exports.Domain = function (globalVariables) {
 
         select() {
             let question = this.parentQuestion,
-                quizz = question.parentQuizz;
+                quiz = question.parentQuiz;
             if (!question.multipleChoice) {
                 if (this.correct) {
-                    quizz.score++;
+                    quiz.score++;
                     console.log("Bonne réponse!\n");
                 } else {
                     let reponseD = "";
@@ -131,13 +131,13 @@ exports.Domain = function (globalVariables) {
                     });
                     console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
                 }
-                let selectedAnswer = [quizz.tabQuestions[quizz.currentQuestionIndex].tabAnswer.indexOf(this)];
-                quizz.questionsAnswered[quizz.currentQuestionIndex]={
-                    index: quizz.questionsAnswered.length,
-                    question: quizz.tabQuestions[quizz.currentQuestionIndex],
+                let selectedAnswer = [quiz.tabQuestions[quiz.currentQuestionIndex].tabAnswer.indexOf(this)];
+                quiz.questionsAnswered[quiz.currentQuestionIndex]={
+                    index: quiz.questionsAnswered.length,
+                    question: quiz.tabQuestions[quiz.currentQuestionIndex],
                     validatedAnswers: selectedAnswer
                 };
-                quizz.nextQuestion();
+                quiz.nextQuestion();
             } else {// question à choix multiples
                 this.selected = !this.selected;
                 if (this.selected) {
@@ -152,7 +152,7 @@ exports.Domain = function (globalVariables) {
     }
 
     class Question {
-        constructor(question, quizz) {
+        constructor(question, quiz) {
             this.manipulator = new Manipulator(this).addOrdonator(7);
             this.answersManipulator = new Manipulator(this);
             this.manipulator.add(this.answersManipulator);
@@ -167,10 +167,10 @@ exports.Domain = function (globalVariables) {
 
             this.invalidLabelInput = (question && question.invalidLabelInput !== undefined) ? question.invalidLabelInput : false;
             this.selected = false;
-            this.parentQuizz = quizz;
+            this.parentQuiz = quiz;
             this.tabAnswer = [];
             this.fontSize = 20;
-            this.questionNum = question && question.questionNum || this.parentQuizz.tabQuestions.length + 1;
+            this.questionNum = question && question.questionNum || this.parentQuiz.tabQuestions.length + 1;
 
             if (!question) {
                 this.label = "";
@@ -229,9 +229,9 @@ exports.Domain = function (globalVariables) {
         }
 
         remove() {
-            let index = this.parentQuizz.tabQuestions.indexOf(this);
+            let index = this.parentQuiz.tabQuestions.indexOf(this);
             if (index !== -1) {
-                this.parentQuizz.tabQuestions.splice(index, 1);
+                this.parentQuiz.tabQuestions.splice(index, 1);
                 return true;
             }
             else {
@@ -265,7 +265,7 @@ exports.Domain = function (globalVariables) {
                 allRight = (subTotal === this.rightAnswers.length);
             }
             if (allRight) {
-                this.parentQuizz.score++;
+                this.parentQuiz.score++;
                 console.log("Bonne réponse!\n");
             } else {
                 var reponseD = "";
@@ -283,13 +283,13 @@ exports.Domain = function (globalVariables) {
             let indexOfValidatedAnswers = [];
             this.validatedAnswers.forEach(aSelectedAnswer => {
                 aSelectedAnswer.selected = false;
-                indexOfValidatedAnswers.push(this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+                indexOfValidatedAnswers.push(this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
             });
-            this.parentQuizz.questionsAnswered[this.parentQuizz.currentQuestionIndex]={
-                question: this.parentQuizz.tabQuestions[this.parentQuizz.currentQuestionIndex],
+            this.parentQuiz.questionsAnswered[this.parentQuiz.currentQuestionIndex]={
+                question: this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex],
                 validatedAnswers: indexOfValidatedAnswers
             };
-            this.parentQuizz.nextQuestion();
+            this.parentQuiz.nextQuestion();
         }
 
         toggleInvalidQuestionPictogram(active) {
@@ -313,7 +313,7 @@ exports.Domain = function (globalVariables) {
             this.MAX_ANSWERS = 8;
             this.parent = parent;
             this.manipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulatorQuizzInfo = new Manipulator(this);
+            this.manipulatorQuizInfo = new Manipulator(this);
             this.questionManipulator = new Manipulator(this).addOrdonator(7);
             this.toggleButtonManipulator = new Manipulator(this);
             this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
@@ -482,7 +482,7 @@ exports.Domain = function (globalVariables) {
             this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.library = new GamesLibrary(myLibraryGames);
             this.library.formation = this;
-            this.quizzManager = new QuizzManager(null, this);
+            this.quizManager = new QuizManager(null, this);
             this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
@@ -591,7 +591,7 @@ exports.Domain = function (globalVariables) {
                 })
         }
 
-        saveFormation(displayQuizzManager, status = "Edited") {
+        saveFormation(displayQuizManager, status = "Edited") {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -599,7 +599,7 @@ exports.Domain = function (globalVariables) {
                 messageUsedName = "Le nom de cette formation est déjà utilisé !",
                 messageNoModification = "Les modifications ont déjà été enregistrées.";
 
-            const displayMessage = (message, displayQuizzManager, error = false) => {
+            const displayMessage = (message, displayQuizManager, error = false) => {
                 switch (message) {
                     case messageError:
                     case messageUsedName:
@@ -609,8 +609,8 @@ exports.Domain = function (globalVariables) {
                         error = false;
                 }
                 this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
-                if (displayQuizzManager && !error) {
-                    displayQuizzManager();
+                if (displayQuizManager && !error) {
+                    displayQuizManager();
                 } else {
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
@@ -647,10 +647,10 @@ exports.Domain = function (globalVariables) {
                             if (answer.saved) {
                                 this._id = answer.idVersion;
                                 this.formationId = answer.id;
-                                status === "Edited" ? displayMessage(messageSave, displayQuizzManager) : returnToFormationList();
+                                status === "Edited" ? displayMessage(messageSave, displayQuizManager) : returnToFormationList();
                             } else {
                                 if (answer.reason === "NameAlreadyUsed") {
-                                    displayMessage(messageUsedName, displayQuizzManager);
+                                    displayMessage(messageUsedName, displayQuizManager);
                                 }
                             }
                         })
@@ -661,14 +661,14 @@ exports.Domain = function (globalVariables) {
                         .then((data) => {
                             let answer = JSON.parse(data);
                             if (answer.saved) {
-                                status === "Edited" ? displayMessage(messageReplace, displayQuizzManager) : returnToFormationList();
+                                status === "Edited" ? displayMessage(messageReplace, displayQuizManager) : returnToFormationList();
                             } else {
                                 switch (answer.reason) {
                                     case "NoModif" :
-                                        displayMessage(messageNoModification, displayQuizzManager);
+                                        displayMessage(messageNoModification, displayQuizManager);
                                         break;
                                     case "NameAlreadyUsed" :
-                                        displayMessage(messageUsedName, displayQuizzManager);
+                                        displayMessage(messageUsedName, displayQuizManager);
                                         break;
                                 }
                             }
@@ -677,7 +677,7 @@ exports.Domain = function (globalVariables) {
 
                 this._id ? replaceFormation() : addNewFormation();
             } else {
-                displayMessage(messageError, displayQuizzManager);
+                displayMessage(messageError, displayQuizManager);
             }
         }
 
@@ -708,7 +708,7 @@ exports.Domain = function (globalVariables) {
                 }, 5000);
             };
 
-            this.publicationFormationQuizzManager();
+            this.publicationFormationQuizManager();
             if (this.levelsTab.length === 0) {
                 this.displayPublicationMessage(messageErrorNoGame);
             }
@@ -724,7 +724,7 @@ exports.Domain = function (globalVariables) {
             formation.levelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
-                    game.tabQuestions && gamesTab.push(new Quizz(game, false, this));
+                    game.tabQuestions && gamesTab.push(new Quiz(game, false, this));
                     game.tabQuestions || gamesTab.push(new Bd(game, this));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
@@ -921,7 +921,7 @@ exports.Domain = function (globalVariables) {
                     popIn.image = element.src;
                     popIn.video = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
-                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
@@ -957,10 +957,10 @@ exports.Domain = function (globalVariables) {
                             answer.obj.video && drawings.screen.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
-                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.elementsArray.forEach(element=>{
+                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element=>{
                                element.obj && element.obj.video && drawings.screen.remove(element.obj.video);
                             });
-                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;
                     }
@@ -976,7 +976,7 @@ exports.Domain = function (globalVariables) {
                     popIn.video = element;
                     popIn.image = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
-                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
@@ -1007,7 +1007,7 @@ exports.Domain = function (globalVariables) {
                             answer.parentQuestion.tabAnswer.forEach(otherAnswer => {
                                 otherAnswer.obj && otherAnswer.obj.video && drawings.screen.remove(otherAnswer.obj.video);
                             });
-                            answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
                             break;
                     }
@@ -1025,41 +1025,41 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    class QuizzManager {
-        constructor(quizz, formation) {
-            this.quizzName = "";
-            this.quizzNameDefault = "Ecrire ici le nom du quiz";
+    class QuizManager {
+        constructor(quiz, formation) {
+            this.quizName = "";
+            this.quizNameDefault = "Ecrire ici le nom du quiz";
             this.tabQuestions = [defaultQuestion];
             this.parentFormation = formation;
-            this.quizzNameValidInput = true;
-            if (!quizz) {
-                var initialQuizzObject = {
-                    title: defaultQuizz.title,
+            this.quizNameValidInput = true;
+            if (!quiz) {
+                var initialQuizObject = {
+                    title: defaultQuiz.title,
                     bgColor: myColors.white,
                     tabQuestions: this.tabQuestions,
                     puzzleLines: 3,
                     puzzleRows: 3
                 };
-                this.quizz = new Quizz(initialQuizzObject, false, this.parentFormation);
+                this.quiz = new Quiz(initialQuizObject, false, this.parentFormation);
                 this.indexOfEditedQuestion = 0;
-                this.quizzName = this.quizz.title;
+                this.quizName = this.quiz.title;
             } else {
-                this.loadQuizz(quizz);
+                this.loadQuiz(quiz);
             }
-            this.questionCreator = new QuestionCreator(this, this.quizz.tabQuestions[this.indexOfEditedQuestion]);
+            this.questionCreator = new QuestionCreator(this, this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             this.library = new ImagesLibrary();
-            this.quizz.tabQuestions[0].selected = true;
-            this.questionCreator.loadQuestion(this.quizz.tabQuestions[0]);
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
-            this.quizzManagerManipulator = new Manipulator(this);
+            this.quiz.tabQuestions[0].selected = true;
+            this.questionCreator.loadQuestion(this.quiz.tabQuestions[0]);
+            this.quiz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+            this.quizManagerManipulator = new Manipulator(this);
             this.questionsPuzzleManipulator = new Manipulator(this).addOrdonator(1);
-            this.quizzInfoManipulator = new Manipulator(this).addOrdonator(6);
+            this.quizInfoManipulator = new Manipulator(this).addOrdonator(6);
             this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.libraryIManipulator = this.library.libraryManipulator;
-            this.questionPuzzle = new Puzzle(1, 6, this.quizz.tabQuestions, "leftToRight", this);
+            this.questionPuzzle = new Puzzle(1, 6, this.quiz.tabQuestions, "leftToRight", this);
             this.questionPuzzle.leftChevronHandler = () => {
                 this.questionPuzzle.updateStartPosition("left");
                 this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
@@ -1074,22 +1074,22 @@ exports.Domain = function (globalVariables) {
             };
         }
 
-        loadQuizz (quizz, indexOfEditedQuestion) {
+        loadQuiz (quiz, indexOfEditedQuestion) {
             this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
-            this.quizz = new Quizz(quizz, false, this.parentFormation);
-            this.quizzName = this.quizz.title;
-            this.quizz.tabQuestions[this.indexOfEditedQuestion].selected = true;
-            this.questionCreator.loadQuestion(this.quizz.tabQuestions[this.indexOfEditedQuestion]);
-            this.quizz.tabQuestions.forEach(question => {
+            this.quiz = new Quiz(quiz, false, this.parentFormation);
+            this.quizName = this.quiz.title;
+            this.quiz.tabQuestions[this.indexOfEditedQuestion].selected = true;
+            this.questionCreator.loadQuestion(this.quiz.tabQuestions[this.indexOfEditedQuestion]);
+            this.quiz.tabQuestions.forEach(question => {
                 (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
             });
-            this.quizz.tabQuestions.push(new AddEmptyElement(this, 'question'));
+            this.quiz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
         };
 
         getObjectToSave() {
-            this.tabQuestions = this.quizz.tabQuestions;
-            (this.tabQuestions[this.quizz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
+            this.tabQuestions = this.quiz.tabQuestions;
+            (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
                 (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) && question.tabAnswer.pop();
                 question.tabAnswer.forEach(answer => {
@@ -1103,11 +1103,11 @@ exports.Domain = function (globalVariables) {
                 });
             });
             return {
-                id: this.quizz.id,
-                title: this.quizz.title,
-                tabQuestions: this.quizz.tabQuestions,
-                levelIndex: this.quizz.levelIndex,
-                gameIndex: this.quizz.gameIndex
+                id: this.quiz.id,
+                title: this.quiz.title,
+                tabQuestions: this.quiz.tabQuestions,
+                levelIndex: this.quiz.levelIndex,
+                gameIndex: this.quiz.gameIndex
             };
         }
 
@@ -1123,31 +1123,31 @@ exports.Domain = function (globalVariables) {
             }, 5000);
         }
 
-        saveQuizz() {
-            let completeQuizzMessage = "Les modifications ont bien été enregistrées",
-                imcompleteQuizzMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
+        saveQuiz() {
+            let completeQuizMessage = "Les modifications ont bien été enregistrées",
+                imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorMessage = "Entrer un nom valide pour enregistrer";
-            if (this.quizzName !== "" && this.quizzName.match(TITLE_REGEX)) {
+            if (this.quizName !== "" && this.quizName.match(TITLE_REGEX)) {
                 let quiz = this.getObjectToSave();
-                this.quizz.isValid = true;
+                this.quiz.isValid = true;
                 quiz.tabQuestions.forEach(question => {
                     question.questionType && question.questionType.validationTab.forEach((funcEl) => {
                         var result = funcEl(question);
-                        this.quizz.isValid = this.quizz.isValid && result.isValid;
+                        this.quiz.isValid = this.quiz.isValid && result.isValid;
                     });
                 });
-                this.quizz.isValid ? this.displayMessage(completeQuizzMessage, myColors.green) : this.displayMessage(imcompleteQuizzMessage, myColors.orange);
-                Server.replaceQuizz(quiz, this.parentFormation._id, this.quizz.levelIndex, this.quizz.gameIndex, ignoredData)
+                this.quiz.isValid ? this.displayMessage(completeQuizMessage, myColors.green) : this.displayMessage(imcompleteQuizMessage, myColors.orange);
+                Server.replaceQuiz(quiz, this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
                     .then(() => {
                         svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", ()=> {
                         });
                         svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[1], "click", ()=> {
                         });
-                        this.quizz.tabQuestions = this.tabQuestions;
-                        let quizz = this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex];
-                        this.parentFormation.miniaturesManipulator.remove(quizz.miniatureManipulator);
-                        this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex] = this.quizz;
-                        this.loadQuizz(this.parentFormation.levelsTab[this.quizz.levelIndex].gamesTab[this.quizz.gameIndex], this.quizz.parentFormation.quizzManager.indexOfEditedQuestion);
+                        this.quiz.tabQuestions = this.tabQuestions;
+                        let quiz = this.parentFormation.levelsTab[this.quiz.levelIndex].gamesTab[this.quiz.gameIndex];
+                        this.parentFormation.miniaturesManipulator.remove(quiz.miniatureManipulator);
+                        this.parentFormation.levelsTab[this.quiz.levelIndex].gamesTab[this.quiz.gameIndex] = this.quiz;
+                        this.loadQuiz(this.parentFormation.levelsTab[this.quiz.levelIndex].gamesTab[this.quiz.gameIndex], this.quiz.parentFormation.quizManager.indexOfEditedQuestion);
                         this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
                         this.display();
                     });
@@ -1163,10 +1163,10 @@ exports.Domain = function (globalVariables) {
                 myObj.textarea.onblur = myObj.onblur;
                 myObj.textarea.border = "none";
                 myObj.textarea.outline = "none";
-                this.quizzNameValidInput = true;
+                this.quizNameValidInput = true;
             } else {
                 myObj.display();
-                this.quizzNameValidInput = false;
+                this.quizNameValidInput = false;
             }
         }
     }
@@ -1186,9 +1186,9 @@ exports.Domain = function (globalVariables) {
         };
     }
 
-    class Quizz extends Game{
-        constructor(quizz, previewMode, parentFormation) {
-            super(quizz, parentFormation);
+    class Quiz extends Game{
+        constructor(quiz, previewMode, parentFormation) {
+            super(quiz, parentFormation);
             const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
             this.returnButton = new ReturnButton(this, returnText);
             this.manipulator.add(this.returnButtonManipulator);
@@ -1200,16 +1200,16 @@ exports.Domain = function (globalVariables) {
             this.manipulator.add(this.chevronManipulator);
             this.chevronManipulator.add(this.leftChevronManipulator);
             this.chevronManipulator.add(this.rightChevronManipulator);
-            this.loadQuestions(quizz);
-            this.levelIndex = quizz.levelIndex || 0;
-            this.gameIndex = quizz.gameIndex || 0;
+            this.loadQuestions(quiz);
+            this.levelIndex = quiz.levelIndex || 0;
+            this.gameIndex = quiz.gameIndex || 0;
             (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
-            quizz.puzzleRows ? (this.puzzleRows = quizz.puzzleRows) : (this.puzzleRows = 3);
-            quizz.puzzleLines ? (this.puzzleLines = quizz.puzzleLines) : (this.puzzleLines = 3);
-            quizz.font && (this.font = quizz.font);
-            quizz.fontSize ? (this.fontSize = quizz.fontSize) : (this.fontSize = 20);
-            quizz.colorBordure ? (this.colorBordure = quizz.colorBordure) : (this.colorBordure = myColors.black);
-            quizz.bgColor ? (this.bgColor = quizz.bgColor) : (this.bgColor = myColors.none);
+            quiz.puzzleRows ? (this.puzzleRows = quiz.puzzleRows) : (this.puzzleRows = 3);
+            quiz.puzzleLines ? (this.puzzleLines = quiz.puzzleLines) : (this.puzzleLines = 3);
+            quiz.font && (this.font = quiz.font);
+            quiz.fontSize ? (this.fontSize = quiz.fontSize) : (this.fontSize = 20);
+            quiz.colorBordure ? (this.colorBordure = quiz.colorBordure) : (this.colorBordure = myColors.black);
+            quiz.bgColor ? (this.bgColor = quiz.bgColor) : (this.bgColor = myColors.none);
             this.resultArea = {
                 x: drawing.width / 2,
                 y: 220,
@@ -1229,18 +1229,18 @@ exports.Domain = function (globalVariables) {
                 h: 200
             };
             this.miniaturePosition = {x: 0, y: 0};
-            this.questionsAnswered = quizz.questionsAnswered ? quizz.questionsAnswered : [];
-            this.score = (quizz.score ? quizz.score : 0);
-            this.currentQuestionIndex = quizz.currentQuestionIndex ? quizz.currentQuestionIndex : -1;
+            this.questionsAnswered = quiz.questionsAnswered ? quiz.questionsAnswered : [];
+            this.score = (quiz.score ? quiz.score : 0);
+            this.currentQuestionIndex = quiz.currentQuestionIndex ? quiz.currentQuestionIndex : -1;
         }
 
-        loadQuestions(quizz) {
-            if (quizz && typeof quizz.tabQuestions !== 'undefined') {
+        loadQuestions(quiz) {
+            if (quiz && typeof quiz.tabQuestions !== 'undefined') {
                 this.tabQuestions = [];
-                quizz.tabQuestions.forEach(it => {
+                quiz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
                     let tmp = new Question(it, this);
-                    tmp.parentQuizz = this;
+                    tmp.parentQuiz = this;
                     this.tabQuestions.push(tmp);
                 });
             } else {
@@ -1442,7 +1442,7 @@ exports.Domain = function (globalVariables) {
         PopIn,
         Question,
         QuestionCreator,
-        Quizz,
-        QuizzManager
+        Quiz,
+        QuizManager
     }
 };
