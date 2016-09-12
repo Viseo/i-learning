@@ -439,35 +439,17 @@ describe('formationsManager', function () {
             assert.equal(answerErrorMessage, null);
             assert.equal(answerLabelContent0.text, "La première réponse ?");
 
-            let emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent2 = retrieve(root, '[answerLabelContent2]');
-            assert.equal(answerLabelContent2.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+            let emptyAnswerAddCadreanswer;
+            addEmptyAnswer = (index) => {
+                emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
+                emptyAnswerAddCadreanswer.listeners['dblclick']();
+                let answerLabelContent = retrieve(root, '[answerLabelContent' + index + ']');
+                assert.equal(answerLabelContent.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+            };
 
-            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent3 = retrieve(root, '[answerLabelContent3]');
-            assert.equal(answerLabelContent3.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
-
-            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent4 = retrieve(root, '[answerLabelContent4]');
-            assert.equal(answerLabelContent4.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
-
-            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent5 = retrieve(root, '[answerLabelContent5]');
-            assert.equal(answerLabelContent5.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
-
-            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent6 = retrieve(root, '[answerLabelContent6]');
-            assert.equal(answerLabelContent6.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
-
-            emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
-            emptyAnswerAddCadreanswer.listeners['dblclick']();
-            let answerLabelContent7 = retrieve(root, '[answerLabelContent7]');
-            assert.equal(answerLabelContent6.text, 'Double cliquer pour modifier et cocher si bonne réponse.');
+            for (let i = 1 ; i<7 ; i++){
+                addEmptyAnswer(i);
+            }
 
             let emptyAnswerAddCadreanswerDoesNotExistAnymore = retrieve(root, '[emptyAnswerAddCadreanswer]');
             assert(!emptyAnswerAddCadreanswerDoesNotExistAnymore);
@@ -758,19 +740,15 @@ describe('connection check textarea', function(){
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
-
             runtime.listeners['resize']({w: 1500, h: 1500});
-
             let mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = '';
-            connectionContentArea.listeners['blur']();
+            enter(connectionContentArea, '');
             let passwordField = retrieve(root, '[passwordField]');
             passwordField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'aaaaaa';
-            connectionContentArea.listeners['blur']();
+            enter(connectionContentArea, 'aaaaaa');
             let connexionButton = retrieve(root, '[connexionButton]');
             connexionButton.listeners['click']();
             runtime.advance();
@@ -778,13 +756,11 @@ describe('connection check textarea', function(){
             mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'a@';
-            connectionContentArea.listeners['blur']();
+            enter(connectionContentArea, 'a@');
             passwordField = retrieve(root, '[passwordField]');
             passwordField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'aaaaaa';
-            connectionContentArea.listeners['blur']();
+            enter(connectionContentArea, 'aaaaaa');
             connexionButton = retrieve(root, '[connexionButton]');
             connexionButton.listeners['click']();
             runtime.advance();
@@ -792,23 +768,13 @@ describe('connection check textarea', function(){
             mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'a@a.a';
-            connectionContentArea.listeners['blur']();
+            enter(connectionContentArea, 'a@a.a');
             passwordField = retrieve(root, '[passwordField]');
             passwordField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'aaaaaa';
-            connectionContentArea.listeners['blur']();
-
-            runtime.listeners['keydown']({
-                keyCode: 9, preventDefault: ()=> {
-                }
-            });
-            runtime.listeners['keydown']({
-                keyCode: 13, preventDefault: ()=> {
-                }
-            });
-
+            enter(connectionContentArea, 'aaaaaa');
+            runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
             done();
         });
     });
@@ -818,7 +784,6 @@ describe('connection check textarea', function(){
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
-
             let mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             let connectionContentArea = retrieve(root, '[connectionContentArea]');
@@ -832,16 +797,8 @@ describe('connection check textarea', function(){
             let connexionButton = retrieve(root, '[connexionButton]');
             connexionButton.listeners['click']();
             runtime.advance();
-
-            runtime.listeners['keydown']({
-                keyCode: 9, preventDefault: ()=> {
-                }
-            });
-            runtime.listeners['keydown']({
-                keyCode: 13, preventDefault: ()=> {
-                }
-            });
-
+            runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
             done();
         });
     });
