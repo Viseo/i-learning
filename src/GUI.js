@@ -132,6 +132,19 @@ exports.GUI = function (globalVariables) {
                 }else if (this.video) {
                     this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
                     let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, false, 8);
+                    obj.video.setRedCrossClickHandler(() => {
+                        obj.video.redCrossManipulator.flush();
+                        this.manipulator.unset(8);
+                        this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
+                        this.video = null;
+                        if (this.parentQuestion) {
+                            let puzzle = this.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
+                            let x = -(puzzle.visibleArea.width - this.width) / 2 + this.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
+                            let y = -(puzzle.visibleArea.height - this.height) / 2 + this.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
+                            this.display(x, y, this.width, this.height);
+                            this.parentQuestion.checkValidity();
+                        }
+                    });
                     this.obj.content = obj.content;
                     this.border = obj.border;
                     this.obj.video = obj.video;
@@ -2092,6 +2105,16 @@ exports.GUI = function (globalVariables) {
                 questionBlock.title = picture.imageSVG;
             }else if(this.linkedQuestion.video){
                 questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, true, false);
+                questionBlock.title.video.setRedCrossClickHandler(() => {
+                    questionBlock.title.video.redCrossManipulator.flush();
+                    this.questionManipulator.unset(3);
+                    drawings.screen.empty();
+                    this.linkedQuestion.video = null;
+                    this.parent.questionPuzzle.elementsArray[this.linkedQuestion.questionNum - 1].video = null;
+                    this.display();
+                    this.linkedQuestion.checkValidity();
+                    this.parent.questionPuzzle.display();
+                });
             } else {
                 questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
             }
@@ -2294,6 +2317,16 @@ exports.GUI = function (globalVariables) {
                 this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
                 this.manipulator.unset(3);
                 this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5);
+                this.answer.parentQuestion.parentQuizz.previewMode || this.miniature.video.setRedCrossClickHandler(() => {
+                    this.miniature.video.redCrossManipulator.flush();
+                    this.manipulator.unset(5);
+                    this.video = null;
+                    drawings.screen.remove(this.miniature.video);
+                    this.manipulator.unset(this.manipulator.lastLayerOrdonator());
+                    let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    this.answer.parentQuestion.checkValidity();
+                });
                 this.miniature.border.corners(0, 0);
                 this.miniature.video._acceptDrop = true;
                 this.globalPoints = this.miniature.border.globalPoint(this.imageX -50, -50);
@@ -2328,6 +2361,16 @@ exports.GUI = function (globalVariables) {
                 this.manipulator.unset(3);
                 this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuizz.previewMode, this.answer.parentQuestion.parentQuizz.previewMode, 5)
                     .resize(imageW);
+                this.answer.parentQuestion.parentQuizz.previewMode || this.miniature.video.setRedCrossClickHandler(() => {
+                    this.miniature.video.redCrossManipulator.flush();
+                    this.manipulator.unset(5);
+                    this.video = null;
+                    drawings.screen.remove(this.video);
+                    this.manipulator.unset(this.manipulator.lastLayerOrdonator());
+                    let questionCreator = this.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
+                    this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    this.answer.parentQuestion.checkValidity();
+                });
                 this.miniature.video.width = imageW;
                 this.answer.filled = true;
             }

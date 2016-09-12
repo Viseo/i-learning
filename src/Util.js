@@ -534,51 +534,23 @@ exports.Util = function (globalVariables) {
                 video._acceptDrop = true;
                 videoGlass._acceptDrop = true;
                 text && (text._acceptDrop = true);
-                let redCrossManipulator;
-                const redCrossClickHandler = () => {
-                    redCrossManipulator.flush();
-                    manipulator.unset(layer);
-                    parent.obj && parent.obj.video && drawings.screen.remove(parent.obj.video);
-                    if (parent.linkedQuestion && parent.linkedQuestion.video) {
-                        drawings.screen.empty();
-                        parent.linkedQuestion.video = null;
-                        parent.parent.questionPuzzle.elementsArray[parent.linkedQuestion.questionNum - 1].video = null;
-                        parent.display();
-                        parent.linkedQuestion.checkValidity();
-                        parent.parent.questionPuzzle.display();
-                    }
-                    else {
-                        parent.video = null;
-                    }
-                    if (parent.parentQuestion) {
-                        let puzzle = parent.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator.puzzle;
-                        let x = -(puzzle.visibleArea.width - parent.width) / 2 + parent.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                        let y = -(puzzle.visibleArea.height - parent.height) / 2 + parent.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                        parent.display(x, y, parent.width, parent.height);
-                        parent.parentQuestion.checkValidity();
-                    }
-                    else if (parent.answer) {
-                        drawings.screen.remove(video);
-                        manipulator.unset(manipulator.lastLayerOrdonator());
-                        let questionCreator = parent.answer.parentQuestion.parentQuizz.parentFormation.quizzManager.questionCreator;
-                        parent.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                        parent.answer.parentQuestion.checkValidity();
-                    }
+                video.setRedCrossClickHandler = (handler) => {
+                    video.redCrossClickHandler = handler;
                 };
                 let mouseleaveHandler = () => {
-                    redCrossManipulator.flush();
+                    this.redCrossManipulator && this.redCrossManipulator.flush();
                 };
                 let mouseoverHandler = () => {
-                    if (typeof redCrossManipulator === 'undefined') {
-                        redCrossManipulator = new Manipulator(this);
-                        redCrossManipulator.addOrdonator(2);
-                        manipulator.add(redCrossManipulator);
+                    if (typeof video.redCrossManipulator === 'undefined') {
+                        video.redCrossManipulator = new Manipulator(this);
+                        video.redCrossManipulator.addOrdonator(2);
+                        manipulator.add(video.redCrossManipulator);
                     }
                     let redCrossSize = 15;
-                    let redCross = drawRedCross(position.x + 60, position.y -45, redCrossSize, redCrossManipulator);
+                    let redCross = drawRedCross(position.x + 60, position.y -45, redCrossSize, video.redCrossManipulator);
                     redCross.mark('videoRedCross');
-                    svg.addEvent(redCross, 'click', redCrossClickHandler);
-                    redCrossManipulator.set(1, redCross);
+                    svg.addEvent(redCross, 'click', video.redCrossClickHandler);
+                    video.redCrossManipulator.set(1, redCross);
                 };
                 svg.addEvent(videoGlass, "mouseover", mouseoverHandler);
                 svg.addEvent(videoGlass, "mouseout", mouseleaveHandler);
