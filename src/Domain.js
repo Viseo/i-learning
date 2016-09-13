@@ -720,7 +720,7 @@ exports.Domain = function (globalVariables) {
         loadFormation(formation) {
             this.levelsTab = [];
             this.gamesCounter = formation.gamesCounter;
-            this.links = formation.links;
+            this.links = formation.links || formation.link;
             formation.levelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
