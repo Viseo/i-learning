@@ -773,6 +773,11 @@ exports.GUI = function (globalVariables) {
                         let redCrossClickHandler = ()=> {
                             Server.deleteVideo(video);
                             this.display(this.x, this.y, this.w, this.h);
+                            this.videosManipulators.remove(manipulator);
+                            this.videosUploadManipulators.forEach((manipulator, i) => {
+                                videosPanel.content.add(manipulator.first);
+                                manipulator.move(w/2, 30 + (this.videosManipulators.length + i)*30)
+                            });
                         };
                         svg.addEvent(redCross, 'click', redCrossClickHandler);
                     };
