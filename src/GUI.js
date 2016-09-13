@@ -1887,6 +1887,7 @@ exports.GUI = function (globalVariables) {
             this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({x: 0.4 * drawing.width, y: -100, width: 35})
                 .color(myColors.white, 0.5, SELECTION_COLOR)
                 .mark('iconTextToSpeech');
+            globalVariables.textToSpeechMode = false;
             this.parentQuiz.textToSpeechIcon.clickHandler = () => {
                 globalVariables.textToSpeechMode = !globalVariables.textToSpeechMode;
                 if (globalVariables.textToSpeechMode) {
