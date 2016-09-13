@@ -659,6 +659,7 @@ exports.GUI = function (globalVariables) {
                         this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
                         this.imageLayer = 0;
                         let imageRedCrossClickHandler = ()=>{
+                            this.libraryManipulators[i].flush();
                             this.itemsTab.splice(i, 1);
                             Server.deleteImage(item);
                             this.display(x, y, w, h);
