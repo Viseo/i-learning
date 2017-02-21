@@ -591,7 +591,7 @@ exports.Domain = function (globalVariables) {
                 })
         }
 
-        saveFormation(displayQuizManager, status = "Edited") {
+        saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -637,7 +637,11 @@ exports.Domain = function (globalVariables) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                    if(onlyName){
+                        return {label: this.label};
+                    } else {
+                        return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                    }
                 };
 
                 let addNewFormation = () => {

@@ -8,6 +8,7 @@
 <div id="content"></div>
 <script src="node_modules/twin-bcrypt/twin-bcrypt.min.js"></script>
 <script src="lib/module.js"></script>
+<script src="lib/enhancer.js"></script>
 <script src="lib/targetruntime.js"></script>
 <script src="lib/runtimemock.js"></script>
 <script src="lib/svghandler.js"></script>
@@ -23,6 +24,7 @@
         SVG = exports.SVG,
         dbListener = new DbListener(true, false);
     main(SVG(targetRuntime), targetRuntime, dbListener);
+    exports.Enhance();
 </script>
 </body>
 
