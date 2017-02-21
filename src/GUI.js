@@ -1693,7 +1693,7 @@ exports.GUI = function (globalVariables) {
             userManip.move(width, height * 0.75);
 
             const deconnexionHandler = () => {
-                svg.setCookie("token=; path=/; max-age=0;");
+                util.setCookie("token=; path=/; max-age=0;");
                 drawings.screen.empty();
                 drawing.username = null;
                 mainManipulator.flush();
