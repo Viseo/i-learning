@@ -1,6 +1,7 @@
 exports.Domain = function (globalVariables) {
 
     let imageController;
+    let myFormations;
 
     let
         runtime = globalVariables.runtime,
@@ -428,10 +429,11 @@ exports.Domain = function (globalVariables) {
     class FormationsManager {
         constructor(formations) {
             this.x = MARGIN;
-            this.tileHeight = 150;
-            this.tileWidth = this.tileHeight * (16 / 9);
+            this.tileHeight = 180;
+            this.tileWidth = this.tileHeight * (14 / 9);
             this.addButtonWidth = 330;
             this.addButtonHeight = 40;
+            this.addButtonSmall = 30;
             this.fontSize = 20;
             this.plusDim = this.fontSize * 2;
             this.iconeSize = this.plusDim / 1.5;
@@ -441,6 +443,9 @@ exports.Domain = function (globalVariables) {
             this.lines = 4;
             this.formations = [];
             this.count = 0;
+            this.label = this.label ? this.label : "";
+            this.labelDefault = "Ajouter une formation";
+            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             for (let formation of formations) {
                 this.formations.push(new Formation(formation, this));
             }
@@ -451,11 +456,32 @@ exports.Domain = function (globalVariables) {
             this.exclamationManipulator = new Manipulator().addOrdonator(4);
             this.formationsManipulator = new Manipulator();
             this.clippingManipulator = new Manipulator(this);
-
+            this.errorMessageNewFormation = new Manipulator().addOrdonator(4);
+            this.errorMessageManipulator = new Manipulator().addOrdonator(4);
+            this.errorMessage = new Manipulator(this).addOrdonator(3);
+            this.message = new Manipulator(this).addOrdonator(3);
+            this.messageManipulator = new Manipulator().addOrdonator(4);
+            this.regex = TITLE_FORMATION_REGEX;
             /* for Player */
             this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
         }
+
+checkInputTextArea(myObj) {
+            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
+                this.invalidLabelInput = false;
+                myObj.remove();
+                myObj.textarea.onblur = myObj.onblur;
+                myObj.textarea.border = "none";
+                myObj.textarea.outline = "none";
+            } else {
+                myObj.display();
+                this.invalidLabelInput = myObj.textarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                    ? REGEX_ERROR_NUMBER_CHARACTER
+                    : REGEX_ERROR;
+            }
+        }
     }
+
 
     class Formation {
         constructor(formation, formationsManager) {
@@ -591,6 +617,48 @@ exports.Domain = function (globalVariables) {
                 })
         }
 
+    saveNewFormation(callback) {
+            const
+                messageError = "Vous devez remplir correctement le nom de la formation.",
+                messageUsedName = "Le nom de cette formation est déjà utilisé !",
+                messageTooShort = "Le nom de la formation doit contenir au moins 2 caractères."
+
+            const returnToFormationList = () => {
+                this.manipulator.flush();
+                Server.getAllFormations().then(data => {
+                    myFormations = JSON.parse(data).myCollection;
+                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager.display();
+                });
+            };
+
+            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+                const getObjectToSave = () => {
+                    return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                };
+
+                let addNewFormation = () => {
+                    Server.insertFormation(getObjectToSave(), status, ignoredData)
+                        .then(data => {
+                            let answer = JSON.parse(data);
+                            if (answer.saved) {
+                                this._id = answer.idVersion;
+                                this.formationId = answer.id;
+                                returnToFormationList();
+                            } else {
+                                if (answer.reason === "NameAlreadyUsed") {
+                                    callback(messageUsedName, true);
+                                }
+                            }
+                        })
+                };
+                addNewFormation()         
+            } else {
+                callback(errorMessage, true);
+            }
+         }
+
+
         saveFormation(displayQuizManager, status = "Edited") {
             const
                 messageSave = "Votre travail a bien été enregistré.",
@@ -626,6 +694,7 @@ exports.Domain = function (globalVariables) {
                 }
             };
 
+
             const returnToFormationList = () => {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
@@ -637,7 +706,8 @@ exports.Domain = function (globalVariables) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                        return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                    
                 };
 
                 let addNewFormation = () => {

@@ -109,7 +109,7 @@ describe('Connection check headerMessage', function () {
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
             let headerMessage = retrieve(root, "[headerMessage]");
-            assert.equal(headerMessage.text, "Liste des formations");
+            assert.equal(headerMessage.text, "Formations");
             done();
         });
     });
@@ -120,7 +120,7 @@ describe('Connection check headerMessage', function () {
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
             let headerMessage = retrieve(root, "[headerMessage]");
-            assert.equal(headerMessage.text, "Liste des formations");
+            assert.equal(headerMessage.text, "Formations");
             done();
         });
     });
@@ -151,8 +151,7 @@ describe('formationsManager', function () {
             let addFormationCadre = retrieve(root, "[addFormationCadre]");
             addFormationCadre.listeners["click"]();
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text, "Entrer le nom de la formation");
-
+            assert.equal(formationLabelContent.text, "Ajouter une formation");
             let saveFormationButtonCadre = retrieve(root, "[saveFormationButtonCadre]");
             saveFormationButtonCadre.listeners["click"]();
             let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
@@ -164,7 +163,7 @@ describe('formationsManager', function () {
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
             let errorMessagePublication = retrieve(root, "[errorMessagePublication]");
-            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");
+            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");*/
 
             let gameQuiz = retrieve(root, "[gameQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
