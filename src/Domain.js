@@ -1395,10 +1395,14 @@ exports.Domain = function (globalVariables) {
             };
 
             this.connexionButtonHandler = () => {
+                // ** DMA3622 debug
+                //console.log(this.tabForm);
                 let emptyAreas = this.tabForm.filter(field => field.label === '');
                 emptyAreas.forEach(emptyArea => {
                     emptyArea.border.color(myColors.white, 3, myColors.red);
                 });
+                // ** DMA3622 debug
+                //console.log(emptyAreas);
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);

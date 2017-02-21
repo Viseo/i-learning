@@ -3296,7 +3296,7 @@ exports.GUI = function (globalVariables) {
                     .color(null, 0, myColors.black).font("Arial", 20);
                 this[field].secret && contentarea.type('password');
                 manipulator.unset(1, this[field].content.text);
-                drawings.screen.add(contentarea);
+                drawings.component.add(contentarea);
                 contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
 
                 let alreadyDeleted = false,
@@ -3366,6 +3366,8 @@ exports.GUI = function (globalVariables) {
         connexionButton.border.mark('connexionButton');
         this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
         svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
+        // ** DMA3622 debug
+        console.log(this.connexionButtonHandler);
         svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
 
         let nextField = (backwards = false)=> {
@@ -3385,7 +3387,8 @@ exports.GUI = function (globalVariables) {
                 nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                svg.activeElement() && svg.activeElement().blur();
+                // ** DMA3622 : no mandatory 
+                /*svg.activeElement() && svg.activeElement().blur();*/
                 this.connexionButtonHandler();
             }
         });
