@@ -921,6 +921,12 @@ exports.Util = function (globalVariables) {
         twinBcrypt = function (label) {
             return TwinBcrypt.hashSync(label);
         }
+        speechSynthesisSpeak = function(textToSay){
+            speechSynthesis.speak(new SpeechSynthesisUtterance(textToSay));
+        }
+        speechSynthesisCancel = function(){
+            speechSynthesis.cancel();
+        }
     }
 
     class Picture {

@@ -514,8 +514,8 @@ exports.Domain = function (globalVariables) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
-                dropLocation.y -= this.panel.contentV.y;
-                dropLocation.x -= this.panel.contentV.x;
+                dropLocation.y -= this.panel.content.y;
+                dropLocation.x -= this.panel.content.x;
                 return dropLocation;
             };
             let getLevel = (dropLocation) => {

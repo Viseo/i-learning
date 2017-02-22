@@ -475,7 +475,7 @@ exports.GUI = function (globalVariables) {
 
                     let mouseupHandler = event => {
                         drawings.piste.remove(this.draggedObject.manipulator);
-                        let target = drawings.background.getTarget(event.pageX, event.pageY);
+                        let target = drawings.component.background.getTarget(event.pageX, event.pageY);
                         let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                         if (parentObject !== item) {
                             svg.removeEvent(this.draggedObject.border, 'click');
@@ -577,8 +577,8 @@ exports.GUI = function (globalVariables) {
                 }
             };
 
-            svg.addEvent(drawings.glass, 'dragover', (e) => {e.preventDefault()});
-            svg.addEvent(drawings.glass, 'drop', drop);
+            svg.addEvent(drawings.component.glass, 'dragover', (e) => {e.preventDefault()});
+            svg.addEvent(drawings.component.glass, 'drop', drop);
 
             const assignImageEvents = () => {
                 this.libraryManipulators.forEach(libraryManipulator => {
@@ -599,10 +599,10 @@ exports.GUI = function (globalVariables) {
                         let mouseupHandler = event => {
                             let svgObj = draggableImage.manipulator.ordonator.children.shift();
                             drawings.piste.remove(draggableImage.manipulator);
-                            let target = drawings.background.getTarget(event.pageX, event.pageY);
+                            let target = drawings.component.background.getTarget(event.pageX, event.pageY);
                             this.dropImage(svgObj, target);
                         };
-                        svg.event(drawings.glass, "mousedown", event);
+                        svg.event(drawings.component.glass, "mousedown", event);
                         svg.addEvent(draggableImage, 'mouseup', mouseupHandler);
                     };
                     svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
@@ -629,10 +629,10 @@ exports.GUI = function (globalVariables) {
                         })();
                         let mouseupHandler = event => {
                             drawings.piste.remove(draggableVideo);
-                            let target = drawings.background.getTarget(event.pageX, event.pageY);
+                            let target = drawings.component.background.getTarget(event.pageX, event.pageY);
                             this.dropVideo(this.videosTab[i], target);
                         };
-                        svg.event(drawings.glass, "mousedown", event);
+                        svg.event(drawings.component.glass, "mousedown", event);
                         draggableVideo.ordonator.children[0].parentManip.setHandler('mouseup', mouseupHandler);
                         svg.addEvent(draggableVideo.ordonator.children[1], 'mouseup', mouseupHandler);
                     };
@@ -1015,7 +1015,7 @@ exports.GUI = function (globalVariables) {
         this.returnButton.setHandler(returnHandler);
 
         let dblclickQuizHandler = (event, target) => {
-            target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+            target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
             let displayQuizManager = () => {
                 this.quizManager.loadQuiz(target);
                 this.quizDisplayed = target;
@@ -1028,7 +1028,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let clickQuizHandler = (event, target) => {
-            target = target || drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+            target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
             mainManipulator.unset(1, this.manipulator.add);
             main.currentPageDisplayed = "QuizPreview";
             this.quizDisplayed = new Quiz(target, false, this);
@@ -1227,7 +1227,7 @@ exports.GUI = function (globalVariables) {
                             tabElement.miniature.miniatureClickHandler();
                         };
                         drawings.piste.remove(tabElement.movingManipulator);
-                        let target = drawings.background.getTarget(eventUp.pageX, eventUp.pageY);
+                        let target = drawings.component.background.getTarget(eventUp.pageX, eventUp.pageY);
                         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
                             this.clicAction();
                         }
@@ -1244,7 +1244,7 @@ exports.GUI = function (globalVariables) {
                         }
                     };
                     putMiniatureInPiste();
-                    svg.event(drawings.glass, "mousedown", eventDown);
+                    svg.event(drawings.component.glass, "mousedown", eventDown);
                     svg.addEvent(miniatureElement[0], 'mouseup', mouseupHandler);
                     svg.addEvent(miniatureElement[1], 'mouseup', mouseupHandler);
                 };
@@ -2012,7 +2012,7 @@ exports.GUI = function (globalVariables) {
         let toggleButtonWidth = drawing.width / 5;
         var toggleHandler = (event)=> {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            const target = drawings.background.getTarget(event.pageX, event.pageY),
+            const target = drawings.component.background.getTarget(event.pageX, event.pageY),
                 questionType = target.parent.children[1].messageText;
 
             if (questionType === "Réponses multiples"){
@@ -2737,7 +2737,7 @@ exports.GUI = function (globalVariables) {
                 question = event.question;
             }
             else {
-                var target = drawings.background.getTarget(event.pageX, event.pageY);
+                var target = drawings.component.background.getTarget(event.pageX, event.pageY);
                 question = target.parent.parentManip.parentObject;
             }
             question.parentQuiz.parentFormation.quizManager.questionCreator.explanation = null;
