@@ -182,6 +182,10 @@ exports.Util = function (globalVariables) {
          * Created by qde3485 on 29/02/16.
          */
 
+        setCookie = function (cookie) {
+            document.cookie = cookie;
+        }
+
         sort = function mergeSort(array, isSmaller) {
             'use strict';
             if (array.length < 2) {
