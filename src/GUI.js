@@ -1024,7 +1024,7 @@ exports.GUI = function (globalVariables) {
                 this.selectedGame = null;
             };
             this.saveFormation(displayQuizManager);
-            svg.removeSelection();
+            //svg.removeSelection();
         };
 
         let clickQuizHandler = (event, target) => {
@@ -1045,7 +1045,7 @@ exports.GUI = function (globalVariables) {
                 trueWidth = longestLevel && longestLevel.gamesTab.length * spaceOccupiedByAGame + spaceOccupiedByAGame,
                 widthMAX = Math.max(this.panel.width, trueWidth);
             
-            if(!longestLevel) return;
+            if(!longestLevel || !height) return;
             this.panel.resizeContent(widthMAX - 1, height - MARGIN);
         };
 
