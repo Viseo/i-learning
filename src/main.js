@@ -55,7 +55,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     };
 
     let resizePaper = function (event) {
-        drawings.component.empty();
+        drawings.component.clean();
         let newWidth, newHeight;
         if (event.w && event.h) {
             newWidth = event.w;

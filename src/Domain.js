@@ -512,7 +512,6 @@ exports.Domain = function (globalVariables) {
 
         dropAction(event, game) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            drawings.screen.mouseCursor('default');
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
                 dropLocation.y -= this.panel.contentV.y;
@@ -946,7 +945,7 @@ exports.Domain = function (globalVariables) {
                     newElement.image.name = element.name;
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                            drawings.screen.empty();
+                            drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = null;
                             questionCreator.linkedQuestion.image = newElement.image;
@@ -958,11 +957,11 @@ exports.Domain = function (globalVariables) {
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
                             answer.video = null;
-                            answer.obj.video && drawings.screen.remove(answer.obj.video);
+                            answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element=>{
-                               element.obj && element.obj.video && drawings.screen.remove(element.obj.video);
+                               element.obj && element.obj.video && drawings.component.remove(element.obj.video);
                             });
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
@@ -993,7 +992,7 @@ exports.Domain = function (globalVariables) {
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             target.parent.parentManip.unset(2);
-                            drawings.screen.empty();
+                            drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = element;
                             questionCreator.linkedQuestion.image = null;
@@ -1004,12 +1003,12 @@ exports.Domain = function (globalVariables) {
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
-                            answer.obj.video && drawings.screen.remove(answer.obj.video);
+                            answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.video = element;
                             answer.image = null;
                             answer.imageSrc = null;
                             answer.parentQuestion.tabAnswer.forEach(otherAnswer => {
-                                otherAnswer.obj && otherAnswer.obj.video && drawings.screen.remove(otherAnswer.obj.video);
+                                otherAnswer.obj && otherAnswer.obj.video && drawings.component.remove(otherAnswer.obj.video);
                             });
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();

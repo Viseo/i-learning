@@ -161,7 +161,7 @@ exports.Util = function (globalVariables) {
             this.drawing.manipulator.addOrdonator(4);
             this.piste = new Manipulator(this);
             this.drawing.manipulator.set(2, this.piste);
-            this.component.empty = (survival) => {
+            this.component.clean = (survival) => {
                 for (let i = drawings.component.children.length; i >= 0; i--) {
                     drawings.component.children[i] !== drawing && drawings.component.children[i] !== survival && drawings.component.remove(drawings.component.children[i]);
                 }
@@ -181,11 +181,6 @@ exports.Util = function (globalVariables) {
         /**
          * Created by qde3485 on 29/02/16.
          */
-
-        setCookie = function (cookie) {
-            document.cookie = cookie;
-        }
-
         sort = function mergeSort(array, isSmaller) {
             'use strict';
             if (array.length < 2) {
@@ -457,7 +452,7 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             let {x, y} = border.globalPoint(-50, -50);
             const video = new svg.Video(x, y, 100, videoObject.src, controls);
-            drawings.screen.add(video);
+            drawings.component.add(video);
 
             if (editable) {
                 let parent = manipulator.parentObject;
@@ -503,7 +498,7 @@ exports.Util = function (globalVariables) {
                 video.playFunction = function () {
                     globalVariables.videoDisplayed = manipulator.parentObject;
                     svg.speechSynthesisCancel();
-                    drawings.screen.empty(video);
+                    drawings.component.clean(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
                     let drawGreyCross = () => {
@@ -520,7 +515,7 @@ exports.Util = function (globalVariables) {
                         const crossHandler = () => {
                             globalVariables.videoDisplayed = null;
                             drawing.manipulator.unset(3);
-                            drawings.screen.empty();
+                            drawings.component.clean();
                             let quiz = manipulator.parentObject.parentQuiz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuiz) || manipulator.parentObject.answer.parentQuestion.parentQuiz;
                             if (quiz.currentQuestionIndex !== -1 && quiz.currentQuestionIndex < quiz.tabQuestions.length) {
                                 quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
@@ -919,8 +914,9 @@ exports.Util = function (globalVariables) {
                 question.questionNum = index + 1;
             });
         };
-        setCookie = function () {
 
+        setCookie = function (cookie) {
+            document.cookie = cookie;
         }
         twinBcrypt = function (label) {
             return TwinBcrypt.hashSync(label);
@@ -1268,13 +1264,13 @@ exports.Util = function (globalVariables) {
             this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
             this.rightChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
             this.leftChevron.handler = () => {
-                drawings.screen.empty();
+                drawings.component.clean();
                 this.updateStartPosition("left");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();
             };
             this.rightChevron.handler = () => {
-                drawings.screen.empty();
+                drawings.component.clean();
                 this.updateStartPosition("right");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();

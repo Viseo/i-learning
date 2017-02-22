@@ -938,7 +938,7 @@ exports.GUI = function (globalVariables) {
                     questionCreator.linkedQuestion.checkValidity();
                     break;
                 case 'question':
-                    drawings.component.empty();
+                    drawings.component.clean();
                     let quizManager = this.parent;
                     quizManager.quiz.tabQuestions.pop();
                     (quizManager.quiz.tabQuestions.length > 0) && (quizManager.quiz.tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
@@ -1696,7 +1696,7 @@ exports.GUI = function (globalVariables) {
 
             const deconnexionHandler = () => {
                 setCookie("token=; path=/; max-age=0;");
-                drawings.component.empty();
+                drawings.component.clean();
                 drawing.username = null;
                 mainManipulator.flush();
                 main(svg, runtime, dbListener);
@@ -1717,7 +1717,7 @@ exports.GUI = function (globalVariables) {
         if (drawing.username){
             displayUser();
             returnToListFormation = ()=> {
-                drawings.component.empty();
+                drawings.component.clean();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
                     globalVariables.formationsManager = new FormationsManager(myFormations);
@@ -1790,7 +1790,7 @@ exports.GUI = function (globalVariables) {
         if (playerMode) {
             if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
                 let event = () => {
-                    drawings.component.empty();
+                    drawings.component.clean();
                     let tempFinishedQuiz = Object.assign({}, this.parentQuiz);
                     this.finishedQuiz = new Quiz(tempFinishedQuiz, true);
                     this.finishedQuiz.currentQuestionIndex = this.questionNum - 1;
@@ -2109,7 +2109,7 @@ exports.GUI = function (globalVariables) {
                 questionBlock.title.video.setRedCrossClickHandler(() => {
                     questionBlock.title.video.redCrossManipulator.flush();
                     this.questionManipulator.unset(3);
-                    drawings.component.empty();
+                    drawings.component.clean();
                     this.linkedQuestion.video = null;
                     this.parent.questionPuzzle.elementsArray[this.linkedQuestion.questionNum - 1].video = null;
                     this.display();
@@ -2471,7 +2471,7 @@ exports.GUI = function (globalVariables) {
         if (this.previewMode) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
-                    drawings.component.empty();
+                    drawings.component.clean();
                     this.closePopIn();
                     this.previewMode = false;
                     this.currentQuestionIndex = this.tabQuestions.length;
@@ -2484,10 +2484,10 @@ exports.GUI = function (globalVariables) {
                     (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
             } else {
-                drawings.component.empty();
+                drawings.component.clean();
                 returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
-                    drawings.component.empty();
+                    drawings.component.clean();
                     this.closePopIn();
                     this.manipulator.flush();
                     this.parentFormation.quizManager.loadQuiz(this, this.currentQuestionIndex);
@@ -2495,10 +2495,10 @@ exports.GUI = function (globalVariables) {
                 });
             }
         } else {
-            drawings.component.empty();
+            drawings.component.clean();
             returnButtonChevron.mark('returnButtonToFormation');
             let returnHandler = () => {
-                drawings.component.empty();
+                drawings.component.clean();
                 this.closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
@@ -2551,7 +2551,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let leftChevronHandler = () => {
-            drawings.component.empty();
+            drawings.component.clean();
             this.closePopIn();
             if (this.currentQuestionIndex > 0) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2562,7 +2562,7 @@ exports.GUI = function (globalVariables) {
             }
         };
         let rightChevronHandler = () => {
-            drawings.component.empty();
+            drawings.component.clean();
             this.closePopIn();
             if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2586,7 +2586,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizDisplayResult(color) {
-        drawings.component.empty();
+        drawings.component.clean();
         this.displayScore(color);
         this.leftChevronManipulator.unset(0);
         this.rightChevronManipulator.unset(0);
@@ -2600,7 +2600,7 @@ exports.GUI = function (globalVariables) {
         expButton.border.mark('expButton');
 
         const displayExplanation = () => {
-            drawings.component.empty();
+            drawings.component.clean();
             this.manipulator.flush();
             let quizExplanation = new Quiz(this, true);
             quizExplanation.currentQuestionIndex = 0;
@@ -2689,7 +2689,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizManagerDisplay() {
-        drawings.component.empty();
+        drawings.component.clean();
         let verticalPosition = drawing.height * HEADER_SIZE;
         this.height = drawing.height - drawing.height * HEADER_SIZE;
         this.quizManagerManipulator.move(0, verticalPosition);
@@ -2731,7 +2731,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.set(1, this.quizManagerManipulator);
 
         this.questionClickHandler = event => {
-            drawings.component.empty();
+            drawings.component.clean();
             let question;
             if (typeof event.pageX == "undefined" || typeof event.pageY == "undefined") {
                 question = event.question;
@@ -2785,7 +2785,7 @@ exports.GUI = function (globalVariables) {
         this.quizInfoManipulator.add(this.returnButtonManipulator);
 
         let returnHandler = ()=> {
-            drawings.component.empty();
+            drawings.component.clean();
             let target = this.returnButton;
             target.parent.parentFormation.quizManager.questionCreator.explanation = null;
             if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
@@ -2931,7 +2931,7 @@ exports.GUI = function (globalVariables) {
                 }
             });
             if (!this.quiz.isValid) {
-                drawings.component.empty();
+                drawings.component.clean();
                 this.displayMessage(message, myColors.red);
             }
             this.displayEditedQuestion = ()=> {
