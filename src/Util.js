@@ -919,6 +919,12 @@ exports.Util = function (globalVariables) {
                 question.questionNum = index + 1;
             });
         };
+        setCookie = function () {
+
+        }
+        twinBcrypt = function (label) {
+            return TwinBcrypt.hashSync(label);
+        }
     }
 
     class Picture {

@@ -61,7 +61,7 @@ exports.GUI = function (globalVariables) {
                 this.redCrossManipulator.flush();
                 let index = this.parentQuestion.tabAnswer.indexOf(this);
                 drawing.mousedOverTarget = null;
-                drawings.screen.remove(this.parentQuestion.tabAnswer[index].obj.video);
+                drawings.component.remove(this.parentQuestion.tabAnswer[index].obj.video);
                 this.parentQuestion.tabAnswer.splice(index, 1);
                 let questionCreator = this.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                 if (this.parentQuestion.tabAnswer.length < 3) {
@@ -130,12 +130,12 @@ exports.GUI = function (globalVariables) {
                     this.obj.content = picture.imageSVG.content;
                     this.obj.image.mark('answerImage' + this.parentQuestion.tabAnswer.indexOf(this));
                 }else if (this.video) {
-                    this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
+                    this.obj && this.obj.video && drawings.component.remove(this.obj.video);
                     let obj = drawVideo(text, this.video, w, h, this.colorBordure, this.bgColor, this.fontsize, this.font, this.manipulator, true, false, 8);
                     obj.video.setRedCrossClickHandler(() => {
                         obj.video.redCrossManipulator.flush();
                         this.manipulator.unset(8);
-                        this.obj && this.obj.video && drawings.screen.remove(this.obj.video);
+                        this.obj && this.obj.video && drawings.component.remove(this.obj.video);
                         this.video = null;
                         if (this.parentQuestion) {
                             let puzzle = this.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle;
@@ -186,15 +186,16 @@ exports.GUI = function (globalVariables) {
                     .mark('answerLabelContentArea')
                     .width = w;
                 contentarea.globalPointCenter = this.obj.content.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
-                drawings.screen.add(contentarea);
+                drawings.component.add(contentarea);
                 contentarea.height = this.obj.content.boundingRect().height;
                 this.manipulator.unset(1);
-                contentarea.setCaretPosition(this.label.length);
-
+                contentarea.focus();
+                //contentarea.setCaretPosition(this.label.length);
+    
                 let onblur = () => {
                     contentarea.enter();
                     this.label = contentarea.messageText;
-                    drawings.screen.remove(contentarea);
+                    drawings.component.remove(contentarea);
                     drawing.notInTextArea = true;
                     answerBlockDisplay();
                     let quizManager = this.parentQuestion.parentQuiz.parentFormation.quizManager;
@@ -712,7 +713,7 @@ exports.GUI = function (globalVariables) {
                         svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
                         svg.runtime.attr(fileExplorer.component, "hidden", "true");
                         svg.runtime.attr(fileExplorer.component, "multiple", "true");
-                        drawings.screen.add(fileExplorer);
+                        drawings.component.add(fileExplorer);
                         fileExplorer.fileClick = function(){
                             svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
                         }
@@ -920,7 +921,7 @@ exports.GUI = function (globalVariables) {
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
                     questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
-                        answer.obj && answer.obj.video && drawings.screen.remove(answer.obj.video);
+                        answer.obj && answer.obj.video && drawings.component.remove(answer.obj.video);
                     });
                     questionCreator.linkedQuestion.tabAnswer.pop();
                     questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
@@ -937,7 +938,7 @@ exports.GUI = function (globalVariables) {
                     questionCreator.linkedQuestion.checkValidity();
                     break;
                 case 'question':
-                    drawings.screen.empty();
+                    drawings.component.empty();
                     let quizManager = this.parent;
                     quizManager.quiz.tabQuestions.pop();
                     (quizManager.quiz.tabQuestions.length > 0) && (quizManager.quiz.tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
@@ -1346,7 +1347,8 @@ exports.GUI = function (globalVariables) {
                         .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
                     this.formationInfoManipulator.set(2, this.errorMessage);
-                    contentarea.setCaretPosition(this.label.length);
+                    contentarea.focus();
+                    //contentarea.setCaretPosition(this.label.length);
                     this.invalidLabelInput = REGEX_ERROR_FORMATION;
                 };
                 var onblur = ()=> {
@@ -1694,7 +1696,7 @@ exports.GUI = function (globalVariables) {
 
             const deconnexionHandler = () => {
                 setCookie("token=; path=/; max-age=0;");
-                drawings.screen.empty();
+                drawings.component.empty();
                 drawing.username = null;
                 mainManipulator.flush();
                 main(svg, runtime, dbListener);
@@ -1715,7 +1717,7 @@ exports.GUI = function (globalVariables) {
         if (drawing.username){
             displayUser();
             returnToListFormation = ()=> {
-                drawings.screen.empty();
+                drawings.component.empty();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
                     globalVariables.formationsManager = new FormationsManager(myFormations);
@@ -1788,7 +1790,7 @@ exports.GUI = function (globalVariables) {
         if (playerMode) {
             if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
                 let event = () => {
-                    drawings.screen.empty();
+                    drawings.component.empty();
                     let tempFinishedQuiz = Object.assign({}, this.parentQuiz);
                     this.finishedQuiz = new Quiz(tempFinishedQuiz, true);
                     this.finishedQuiz.currentQuestionIndex = this.questionNum - 1;
@@ -2107,7 +2109,7 @@ exports.GUI = function (globalVariables) {
                 questionBlock.title.video.setRedCrossClickHandler(() => {
                     questionBlock.title.video.redCrossManipulator.flush();
                     this.questionManipulator.unset(3);
-                    drawings.screen.empty();
+                    drawings.component.empty();
                     this.linkedQuestion.video = null;
                     this.parent.questionPuzzle.elementsArray[this.linkedQuestion.questionNum - 1].video = null;
                     this.display();
@@ -2152,8 +2154,9 @@ exports.GUI = function (globalVariables) {
                 .message(this.linkedQuestion.label)
                 .mark('questionBlockTextArea')
                 .font("Arial", 20);
-            drawings.screen.add(textarea);
-            textarea.setCaretPosition(this.linkedQuestion.label.length);
+            drawings.component.add(textarea);
+            textarea.focus();
+            //textarea.setCaretPosition(this.linkedQuestion.label.length);
 
             let onblur = () => {
                 textarea.enter();
@@ -2162,7 +2165,7 @@ exports.GUI = function (globalVariables) {
                     this.label = textarea.messageText;
                     this.linkedQuestion.label = textarea.messageText;
                 }
-                drawings.screen.remove(textarea);
+                drawings.component.remove(textarea);
                 drawing.notInTextArea = true;
                 questionBlockDisplay();
                 this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
@@ -2232,10 +2235,10 @@ exports.GUI = function (globalVariables) {
         this.manipulator.set(0, rect);
         this.manipulator.move(0, y);
         this.answer.editor && this.answer.editor.puzzle && this.answer.editor.puzzle.elementsArray.forEach(answerElement => {
-            answerElement.obj && answerElement.obj.video && drawings.screen.remove(answerElement.obj.video);
+            answerElement.obj && answerElement.obj.video && drawings.component.remove(answerElement.obj.video);
         });
         this.answer.parentQuestion.tabAnswer.forEach(answer => {
-            answer.video && drawings.screen.remove(answer.video.miniature);
+            answer.video && drawings.component.remove(answer.video.miniature);
         });
         let crossHandler;
         const drawGreyCross = (size) => {
@@ -2258,10 +2261,10 @@ exports.GUI = function (globalVariables) {
                 parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
                 this.displayed = false;
-                this.miniature && drawings.screen.remove(this.miniature.video);
+                this.miniature && drawings.component.remove(this.miniature.video);
                 if(parent instanceof Question){
                     parent.tabAnswer.forEach(answer => {
-                        answer.video && drawings.screen.add(answer.video.miniature);
+                        answer.video && drawings.component.add(answer.video.miniature);
                     });
                 }
             };
@@ -2293,7 +2296,7 @@ exports.GUI = function (globalVariables) {
             this.imageX = (-w + imageW) / 2 + MARGIN;
             this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
             if (this.image) {
-                this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
+                this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
                 this.manipulator.unset(6);
                 this.imageLayer = 3;
                 const imageSize = Math.min(imageW, panelHeight);
@@ -2310,14 +2313,14 @@ exports.GUI = function (globalVariables) {
                 picture.imageSVG.mark('imageExplanation');
                 this.answer.filled = true;
             }else if(this.video){
-                this.miniature && this.miniature.video && drawings.screen.remove(this.miniature.video);
+                this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
                 this.manipulator.unset(3);
                 this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuiz.previewMode, this.answer.parentQuestion.parentQuiz.previewMode, 5);
                 this.answer.parentQuestion.parentQuiz.previewMode || this.miniature.video.setRedCrossClickHandler(() => {
                     this.miniature.video.redCrossManipulator.flush();
                     this.manipulator.unset(5);
                     this.video = null;
-                    drawings.screen.remove(this.miniature.video);
+                    drawings.component.remove(this.miniature.video);
                     this.manipulator.unset(this.manipulator.lastLayerOrdonator());
                     let questionCreator = this.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
@@ -2343,7 +2346,7 @@ exports.GUI = function (globalVariables) {
             const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
                 imageX = 0;
             this.panelManipulator.unset(0);
-            this.miniature && drawings.screen.remove(this.miniature.video);
+            this.miniature && drawings.component.remove(this.miniature.video);
             if (this.image) {
                 this.manipulator.unset(6);
                 this.imageLayer = 3;
@@ -2361,7 +2364,7 @@ exports.GUI = function (globalVariables) {
                     this.miniature.video.redCrossManipulator.flush();
                     this.manipulator.unset(5);
                     this.video = null;
-                    drawings.screen.remove(this.video);
+                    drawings.component.remove(this.video);
                     this.manipulator.unset(this.manipulator.lastLayerOrdonator());
                     let questionCreator = this.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
@@ -2411,12 +2414,13 @@ exports.GUI = function (globalVariables) {
             this.textManipulator.unset(0);
             contentArea.scroll(svg.TextArea.SCROLL);
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
-            drawings.screen.add(contentArea);
-            contentArea.setCaretPosition(textToDisplay.length);
+            drawings.component.add(contentArea);
+            contentArea.focus();
+            //contentArea.setCaretPosition(textToDisplay.length);
             const onblur = () => {
                 contentArea.enter();
                 this.label = contentArea.messageText;
-                drawings.screen.remove(contentArea);
+                drawings.component.remove(contentArea);
                 drawing.notInTextArea = true;
                 this.display(parent, x, y, w, h);
             };
@@ -2467,7 +2471,7 @@ exports.GUI = function (globalVariables) {
         if (this.previewMode) {
             if (playerMode) {
                 this.returnButton.setHandler(() => {
-                    drawings.screen.empty();
+                    drawings.component.empty();
                     this.closePopIn();
                     this.previewMode = false;
                     this.currentQuestionIndex = this.tabQuestions.length;
@@ -2480,10 +2484,10 @@ exports.GUI = function (globalVariables) {
                     (this.oldQuiz ? this.oldQuiz : this).display(0, 0, drawing.width, drawing.height);
                 });
             } else {
-                drawings.screen.empty();
+                drawings.component.empty();
                 returnButtonChevron.mark('returnButtonPreview');
                 this.returnButton.setHandler(() => {
-                    drawings.screen.empty();
+                    drawings.component.empty();
                     this.closePopIn();
                     this.manipulator.flush();
                     this.parentFormation.quizManager.loadQuiz(this, this.currentQuestionIndex);
@@ -2491,10 +2495,10 @@ exports.GUI = function (globalVariables) {
                 });
             }
         } else {
-            drawings.screen.empty();
+            drawings.component.empty();
             returnButtonChevron.mark('returnButtonToFormation');
             let returnHandler = () => {
-                drawings.screen.empty();
+                drawings.component.empty();
                 this.closePopIn();
                 this.manipulator.flush();
                 this.parentFormation.displayFormation();
@@ -2547,7 +2551,7 @@ exports.GUI = function (globalVariables) {
         };
 
         let leftChevronHandler = () => {
-            drawings.screen.empty();
+            drawings.component.empty();
             this.closePopIn();
             if (this.currentQuestionIndex > 0) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2558,7 +2562,7 @@ exports.GUI = function (globalVariables) {
             }
         };
         let rightChevronHandler = () => {
-            drawings.screen.empty();
+            drawings.component.empty();
             this.closePopIn();
             if (this.currentQuestionIndex < this.tabQuestions.length - 1) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -2582,7 +2586,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizDisplayResult(color) {
-        drawings.screen.empty();
+        drawings.component.empty();
         this.displayScore(color);
         this.leftChevronManipulator.unset(0);
         this.rightChevronManipulator.unset(0);
@@ -2596,7 +2600,7 @@ exports.GUI = function (globalVariables) {
         expButton.border.mark('expButton');
 
         const displayExplanation = () => {
-            drawings.screen.empty();
+            drawings.component.empty();
             this.manipulator.flush();
             let quizExplanation = new Quiz(this, true);
             quizExplanation.currentQuestionIndex = 0;
@@ -2685,7 +2689,7 @@ exports.GUI = function (globalVariables) {
     }
 
     function quizManagerDisplay() {
-        drawings.screen.empty();
+        drawings.component.empty();
         let verticalPosition = drawing.height * HEADER_SIZE;
         this.height = drawing.height - drawing.height * HEADER_SIZE;
         this.quizManagerManipulator.move(0, verticalPosition);
@@ -2727,7 +2731,7 @@ exports.GUI = function (globalVariables) {
         mainManipulator.set(1, this.quizManagerManipulator);
 
         this.questionClickHandler = event => {
-            drawings.screen.empty();
+            drawings.component.empty();
             let question;
             if (typeof event.pageX == "undefined" || typeof event.pageY == "undefined") {
                 question = event.question;
@@ -2781,7 +2785,7 @@ exports.GUI = function (globalVariables) {
         this.quizInfoManipulator.add(this.returnButtonManipulator);
 
         let returnHandler = ()=> {
-            drawings.screen.empty();
+            drawings.component.empty();
             let target = this.returnButton;
             target.parent.parentFormation.quizManager.questionCreator.explanation = null;
             if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
@@ -2852,9 +2856,9 @@ exports.GUI = function (globalVariables) {
                 .mark("quizEditionTextArea")
                 .anchor("start");
             (this.quizNameDefault || this.quizName === "") && textarea.placeHolder(this.quizNameDefault);
-            drawings.screen.add(textarea);
-            textarea.setCaretPosition(this.quizName.length);
-            // textarea.focus();
+            drawings.component.add(textarea);
+            //textarea.setCaretPosition(this.quizName.length);
+            textarea.focus();
             textarea.value = this.quizName;
             var removeErrorMessage = ()=> {
                 this.questionCreator.quizNameValidInput = true;
@@ -2870,14 +2874,14 @@ exports.GUI = function (globalVariables) {
                 this.quizInfoManipulator.set(5, this.errorMessage);
                 this.errorMessage.position(quizLabel.border.width + MARGIN, bounds.height + 3 + quizLabel.border.height / 2 + this.errorMessage.boundingRect().height / 2)
                     .font("Arial", 15).color(myColors.red).anchor(anchor);
-                textarea.setCaretPosition(this.quizName.length);
-                // textarea.focus();
+                //textarea.setCaretPosition(this.quizName.length);
+                textarea.focus();
             };
             var onblur = ()=> {
                 textarea.enter();
                 this.quizName = textarea.messageText.trim();
                 this.quiz.title = textarea.messageText.trim();
-                drawings.screen.remove(textarea);
+                drawings.component.remove(textarea);
                 drawing.notInTextArea = true;
                 quizLabelDisplay();
                 header.display(this.parentFormation.label + " - " + this.quiz.title);
@@ -2927,7 +2931,7 @@ exports.GUI = function (globalVariables) {
                 }
             });
             if (!this.quiz.isValid) {
-                drawings.screen.empty();
+                drawings.component.empty();
                 this.displayMessage(message, myColors.red);
             }
             this.displayEditedQuestion = ()=> {
@@ -3014,8 +3018,10 @@ exports.GUI = function (globalVariables) {
                     .mark('inscriptionContentArea');
                 this[field].secret ? contentarea.type('password') : contentarea.type("text");
                 manipulator.unset(1, this[field].content.text);
-                drawings.screen.add(contentarea);
-                contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                drawings.component.add(contentarea);
+                contentarea.focus();
+                //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                //debugger;
                 var displayErrorMessage = (trueManipulator = manipulator)=> {
                     emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -3062,7 +3068,7 @@ exports.GUI = function (globalVariables) {
                             this[field].secret || displayErrorMessage();
                             this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
                         }
-                        drawings.screen.remove(contentarea);
+                        drawings.component.remove(contentarea);
                         drawing.notInTextArea = true;
                         alreadyDeleted = true;
                     }
@@ -3207,7 +3213,7 @@ exports.GUI = function (globalVariables) {
 
         this.saveButtonHandler = () => {
             if (!emptyAreasHandler(true) && AllOk()) {
-                this.passwordField.hash = svg.twinBcrypt(this.passwordField.labelSecret);
+                this.passwordField.hash = twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
                 let tempObject = {
                     lastName: this.lastNameField.label,
                     firstName: this.firstNameField.label,
@@ -3294,10 +3300,12 @@ exports.GUI = function (globalVariables) {
                     .mark('connectionContentArea')
                     .message(this[field].labelSecret || this[field].label)
                     .color(null, 0, myColors.black).font("Arial", 20);
+                    // ** DMA3622 debug
+                    //console.log (svg.TextField);
                 this[field].secret && contentarea.type('password');
                 manipulator.unset(1, this[field].content.text);
-                drawings.screen.add(contentarea);
-                contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                drawings.component.add(contentarea);
+                //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
 
                 let alreadyDeleted = false,
                     onblur = ()=> {
@@ -3317,11 +3325,12 @@ exports.GUI = function (globalVariables) {
                         contentarea.messageText && displayField(field, manipulator);
                         manipulator.unset(3);
                         drawing.notInTextArea = true;
-                        alreadyDeleted || drawings.screen.remove(contentarea);
+                        alreadyDeleted || drawings.component.remove(contentarea);
                         alreadyDeleted = true;
                     }
                 };
                 svg.addEvent(contentarea, "blur", onblur);
+                //debugger;
                 focusedField = this[field];
             };
         };
@@ -3333,6 +3342,9 @@ exports.GUI = function (globalVariables) {
             this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
             this[field].content = displayText.content;
+            // ** DMA3622 debug
+            //console.log(displayText);
+            //debugger;
             this[field].border = displayText.border;
             this[field].border.mark(field);
             var y = -fieldTitle.boundingRect().height / 4;
@@ -3357,8 +3369,11 @@ exports.GUI = function (globalVariables) {
             secret: true,
             errorMessage: "La confirmation du mot de passe n'est pas valide"
         };
-
+        // ** DMA3622 debug
+        //console.log(this.passwordManipulator);
         displayField('passwordField', this.passwordManipulator);
+        // ** DMA3622 debug
+        //console.log(this.passwordManipulator);
         const connexionButtonHeightRatio = 0.075,
             connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
             connexionButtonWidth = 200,
@@ -3366,7 +3381,12 @@ exports.GUI = function (globalVariables) {
         connexionButton.border.mark('connexionButton');
         this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
         svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
+        // ** DMA3622 debug
+        //console.log(this.connexionButtonHandler);
         svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
+        // ** DMA3622 debug
+        //console.log(this.mailAddressField);
+        //console.log(this.passwordField);
 
         let nextField = (backwards = false)=> {
             let index = this.tabForm.indexOf(focusedField);
@@ -3385,7 +3405,8 @@ exports.GUI = function (globalVariables) {
                 nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                svg.activeElement() && svg.activeElement().blur();
+                // ** DMA3622 : no mandatory 
+                /*svg.activeElement() && svg.activeElement().blur();*/
                 this.connexionButtonHandler();
             }
         });
