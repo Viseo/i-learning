@@ -160,8 +160,7 @@ const newVersion = (formation, version) => {
             });
             
             collectionFormations.updateOne({ "_id": new ObjectID(formation._id), "versions._id": new ObjectID(versionId) },
-                {$set: version}, (err, res) => {
-                    console.log(res);
+                {$set: version}, (err) => {
                     if (err) {
                         reject(err);
                     }
