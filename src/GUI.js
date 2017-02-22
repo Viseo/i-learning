@@ -339,7 +339,7 @@ exports.GUI = function (globalVariables) {
         this.libraryManipulator.set(0, this.border);
         this.libraryManipulator.move(this.x, this.y);
 
-        this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white, 2).position(w / 2 + 0.5, yPanel);
+        this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
         this.panel.border.color([], 3, [0, 0, 0]);
         this.libraryManipulator.set(2, this.panel.component);
         this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
@@ -501,7 +501,7 @@ exports.GUI = function (globalVariables) {
 
                     createDraggableCopy();
 
-                    svg.event(drawings.glass, "mousedown", event);
+                    svg.event(drawings.component.glass, "mousedown", event);
                     svg.addEvent(this.draggedObject.border, 'click', mouseClickHandler);
                     svg.addEvent(this.draggedObject.border, 'mouseup', mouseupHandler);
                     svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
@@ -1331,9 +1331,8 @@ exports.GUI = function (globalVariables) {
                     .mark("formationLabelContentArea")
                     .anchor("start");
                 (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
-                drawings.screen.add(contentarea);
-                contentarea.setCaretPosition(this.label.length);
-
+                drawings.component.add(contentarea);
+                contentarea.focus();
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
                     formationLabel.border.color(myColors.lightgrey, 1, myColors.none);
@@ -1353,7 +1352,7 @@ exports.GUI = function (globalVariables) {
                 var onblur = ()=> {
                     contentarea.enter();
                     this.label = contentarea.messageText.trim();
-                    drawings.screen.remove(contentarea);
+                    drawings.component.remove(contentarea);
                     drawing.notInTextArea = true;
                     formationLabelDisplay();
                     this.invalidLabelInput || header.display(this.label);
@@ -1384,8 +1383,9 @@ exports.GUI = function (globalVariables) {
                 if (text.length > MAX_CHARACTER_TITLE){
                     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
                 }
-                formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                formationLabel.content = new svg.Text(textToDisplay ? textToDisplay : text).font("Arial", 15).anchor('start');
                 formationLabel.content.mark('formationLabelContent');
+                this.formationInfoManipulator.set(1, formationLabel.content);
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);

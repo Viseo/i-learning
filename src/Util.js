@@ -166,6 +166,14 @@ exports.Util = function (globalVariables) {
                     drawings.component.children[i] !== drawing && drawings.component.children[i] !== survival && drawings.component.remove(drawings.component.children[i]);
                 }
             }
+
+            const ondblclickHandler = event => {
+                let target = this.component.background.getTarget(event.pageX, event.pageY);
+                if (target) {
+                    svg.event(target, "dblclick", event);
+                }
+            };
+            svg.addEvent(this.component.glass, "dblclick", ondblclickHandler);
         }
     }
 
