@@ -3306,7 +3306,7 @@ exports.GUI = function (globalVariables) {
                 manipulator.unset(1, this[field].content.text);
                 drawings.component.add(contentarea);
                 //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-
+                contentarea.focus();
                 let alreadyDeleted = false,
                     onblur = ()=> {
                     if (!alreadyDeleted) {
