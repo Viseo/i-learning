@@ -1755,9 +1755,12 @@ exports.Util = function (globalVariables) {
         MAX_CHARACTER_REGEX = 200;
         REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 200 caractères";
         MAX_CHARACTER_TITLE = 50;
+        MIN_CHARACTER_TITLE = 2;
+        TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
+        
         TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ °'-]){0,50}$/g;
         REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis";
-        REGEX_ERROR_FORMATION = "Le nom de la formation doit être composé de moins de 50 caractères: alphanumériques ou .,;:!?()";
+        REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
         myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",

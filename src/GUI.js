@@ -1390,6 +1390,7 @@ exports.GUI = function (globalVariables) {
                 if (text.length > MAX_CHARACTER_TITLE){
                     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
                 }
+        
                 formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
@@ -1537,11 +1538,11 @@ exports.GUI = function (globalVariables) {
         let addFormationButton, spaceBetweenElements;
         let displayPanel = () => {
             let heightAllocatedToPanel = drawing.height - (playerMode ?
-                toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN :
-                addFormationButton.border.globalPoint(0, 0).y + addFormationButton.border.height);
+                toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN : 100);
+              // addFormationButton.border.globalPoint(0, 0).y + addFormationButton.border.height;
             spaceBetweenElements = {
                 width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
-                height: this.panel ? 0.030 * this.panel.height : 0.030 * drawing.height
+                height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
             };
             this.y = (!playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
 
@@ -1563,6 +1564,7 @@ exports.GUI = function (globalVariables) {
             this.clippingManipulator.move(MARGIN / 2, this.y);
             var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
             var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
+
             if (typeof this.panel === "undefined") {
                 this.panel = new gui.Panel(drawing.width - 2 * MARGIN, heightAllocatedToPanel, myColors.none);
             }
@@ -1589,28 +1591,126 @@ exports.GUI = function (globalVariables) {
 
         var onClickNewFormation = () => {
             var formation = new Formation({}, this);
-            this.formationDisplayed = formation;
-            formation.parent = this;
-            formation.displayFormation();
-            drawings.screen.mouseCursor('default');
+            formation.label = this.label;
+            formation.saveNewFormation(function(message, error) {
+                this.manipulator.add(this.messageManipulator);
+                this.messageSvg = new svg.Text(message)
+                        .position(drawing.width/2.15, 35)
+                        .font("Arial", 16)
+                        .mark("formationErrorMessage")
+                        .anchor('middle').color(error ? myColors.red : myColors.green);
+                this.messageManipulator.set(3, this.messageSvg);
+                svg.timeout(() => {
+                    this.messageManipulator.unset(3);
+                }, 5000);
+            }.bind(this));
         };
 
         this.displayHeaderFormations = () => {
+            //ajout input
             this.headerManipulator.move(0, 0);
-            addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
-            addFormationButton.border.mark("addFormationCadre");
-            var addFormationButtonTextBr = addFormationButton.content.boundingRect();
-            addFormationButton.border.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
-            addFormationButton.content.position(this.plusDim + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 8);
-            let addFormationObject = drawPlusWithCircle(MARGIN, -addFormationButtonTextBr.height / 2, this.addButtonHeight, this.addButtonHeight);
+            this.manipulator.add(this.formationInfoManipulator);
+            let formationLabel = {};
+
+            let addFormationObject = drawPlusWithCircle(MARGIN+200, -12, this.addButtonSmall, this.addButtonSmall);
             this.addButtonManipulator.set(2, addFormationObject.circle);
             this.addButtonManipulator.set(3, addFormationObject.plus);
-            addFormationObject.circle.position(MARGIN, -addFormationButtonTextBr.height / 2);
+            addFormationObject.circle.position(MARGIN + 200, -12);
 
             svg.addEvent(addFormationObject.circle, "click", onClickNewFormation);
             svg.addEvent(addFormationObject.plus, "click", onClickNewFormation);
-            svg.addEvent(addFormationButton.content, "click", onClickNewFormation);
-            svg.addEvent(addFormationButton.border, "click", onClickNewFormation);
+
+            let clickEditionAddFormationLabel = () => {
+                let bounds = formationLabel.border.boundingRect();
+                this.formationInfoManipulator.unset(1);
+                let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
+                var contentareaStyle = {
+                    toppx: globalPointCenter.y + 4,
+                    leftpx: globalPointCenter.x + 4,
+                    width: formationLabel.border.width - MARGIN,
+                    height: this.labelHeight
+                };
+                drawing.notInTextArea = false;
+
+                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+                contentarea.color(myColors.white, 0, myColors.black)
+                    .font("Arial", 15)
+                    .mark("formationLabelContentArea")
+                    .anchor("start");
+                (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
+                drawings.screen.add(contentarea);
+                contentarea.setCaretPosition(this.label.length);
+
+                var removeErrorMessage = ()=> {
+                    this.errorMessage && this.formationInfoManipulator.unset(2);
+                    formationLabel.border.color(myColors.white, 1.5, myColors.black);
+                };
+
+                var displayErrorMessage = ()=> {
+                    removeErrorMessage();
+                    formationLabel.border.color(myColors.white, 2, myColors.red);
+                    var anchor = 'start';
+                    this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
+                        .position(formationLabel.border.width+ 6*MARGIN, 5)
+                        .font("Arial", 15).color(myColors.red).anchor(anchor);
+                    this.formationInfoManipulator.set(2, this.errorMessage);
+                    //contentarea.setCaretPosition(this.label.length);
+                    this.invalidLabelInput = REGEX_ERROR_FORMATION;
+                };
+                var onblur = ()=> {
+                    contentarea.enter();
+                    this.label = contentarea.messageText.trim();
+                    drawings.screen.remove(contentarea);
+                    drawing.notInTextArea = true;
+                    formationLabelDisplay();
+                };
+                svg.addEvent(contentarea, "blur", onblur);
+                let objectToBeChecked = {
+                    textarea: contentarea,
+                    border: formationLabel.border,
+                    onblur: onblur,
+                    remove: removeErrorMessage,
+                    display: displayErrorMessage
+                };
+                var oninput = ()=> {
+                    contentarea.enter();
+                    this.checkInputTextArea(objectToBeChecked);
+                    formationLabelDisplay();
+                };
+                svg.addEvent(contentarea, "input", oninput);
+                this.checkInputTextArea(objectToBeChecked);
+            };
+
+            let formationLabelDisplay = () => {
+                let text = this.label ? this.label : this.labelDefault;
+                let color = this.label ? myColors.black : myColors.grey;
+                let bgcolor = myColors.white;
+                this.formationLabelWidth = 200;
+                this.formationTitleWidth = 0;
+                let textToDisplay;
+                if (text.length > MAX_CHARACTER_TITLE){
+                    textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
+                }
+                      
+                formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                formationLabel.content.mark('formationLabelContent');
+                this.labelHeight = formationLabel.content.boundingRect().height;
+                //this.formationTitleWidth = this.titleSvg.boundingRect().width;
+                formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
+                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor,1.5,myColors.black);
+                formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2 +3);
+                this.formationInfoManipulator.set(0, formationLabel.border);
+                formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 2).color(color).anchor("start");
+                this.formationInfoManipulator.move(-5, 30);
+                svg.addEvent(formationLabel.content, "click", clickEditionAddFormationLabel);
+                svg.addEvent(formationLabel.border, "click", clickEditionAddFormationLabel);
+                svg.addEvent(formationLabel.content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+                svg.addEvent(formationLabel.content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+                svg.addEvent(formationLabel.border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
+                svg.addEvent(formationLabel.border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
+            };
+            formationLabelDisplay();
+           
 
             let checkLegend = statusEnum.Published.icon(this.iconeSize);
             this.checkManipulator.set(2, checkLegend.square);
@@ -1632,7 +1732,7 @@ exports.GUI = function (globalVariables) {
             return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
         };
         this.formations = sortAlphabetical(this.formations);
-        header.display("Liste des formations");
+        header.display("Formations");
         !playerMode && this.displayHeaderFormations();
         (this.tileHeight < 0) && (this.tileHeight = undefined);
         (!this.tileHeight || this.tileHeight > 0) && displayPanel();
@@ -1657,7 +1757,7 @@ exports.GUI = function (globalVariables) {
                 count++;
                 posx += (this.tileWidth + spaceBetweenElements.width);
             });
-            this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height - MARGIN);
+        this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height - MARGIN);
         };
         (this.tileHeight > 0) && this.displayFormations();
     }
