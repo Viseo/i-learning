@@ -1549,7 +1549,7 @@ exports.GUI = function (globalVariables) {
             this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
             if (this.rows === 0) this.rows = 1;
 
-            //drawing.notInTextArea = true;
+            drawing.notInTextArea = true;
             svg.addGlobalEvent("keydown", (event) => {
                 if (drawing.notInTextArea && hasKeyDownEvent(event)) {
                     event.preventDefault();
@@ -1563,7 +1563,6 @@ exports.GUI = function (globalVariables) {
             this.manipulator.add(this.clippingManipulator);
             this.clippingManipulator.move(MARGIN / 2, this.y);
             var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
-            console.log(formationPerLine);
             var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
 
             if (typeof this.panel === "undefined") {
@@ -1609,30 +1608,10 @@ exports.GUI = function (globalVariables) {
 
         this.displayHeaderFormations = () => {
             //ajout input
-           this.headerManipulator.move(0, 0);
-           // this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
-            //this.graphCreaHeight = (drawing.height - drawing.height*HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
-            //this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-           // this.gamesLibraryManipulator = this.library.libraryManipulator;
-            //this.manipulator.set(4, this.gamesLibraryManipulator);
+            this.headerManipulator.move(0, 0);
             this.manipulator.add(this.formationInfoManipulator);
-            //this.manipulator.add(this.addButtonManipulator);
-            //this.libraryWidth = drawing.width * this.libraryWidthRatio;
-            //this.y = drawing.height * HEADER_SIZE;
-            //this.titleSvg = new svg.Text("Formation : ").position(MARGIN, 1.3).font("Arial", 20).anchor("start");
-            //this.manipulator.set(2, this.titleSvg);
-            //let formationWidth = this.titleSvg.boundingRect().width;
             let formationLabel = {};
 
-             //this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
-            //addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
-            
-             // this.headerManipulator.move(0, 0);
-         //addFormationButton = displayText("Ajouter une formation", drawing.width / 7, this.addButtonHeight, myColors.none, myColors.lightgrey, 20, null, this.addButtonManipulator);
-       //     addFormationButton.border.mark("addFormationCadre");
-         //   var addFormationButtonTextBr = addFormationButton.content.boundingRect();
-           // addFormationButton.border.position(MARGIN + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 2).corners(0, 0);
-           // addFormationButton.content.position(this.plusDim + addFormationButtonTextBr.width / 2, -addFormationButtonTextBr.height / 8);
             let addFormationObject = drawPlusWithCircle(MARGIN+200, -12, this.addButtonSmall, this.addButtonSmall);
             this.addButtonManipulator.set(2, addFormationObject.circle);
             this.addButtonManipulator.set(3, addFormationObject.plus);
