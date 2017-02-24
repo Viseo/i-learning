@@ -1595,8 +1595,8 @@ exports.GUI = function (globalVariables) {
             formation.saveNewFormation(function(message, error) {
                 this.manipulator.add(this.messageManipulator);
                 this.messageSvg = new svg.Text(message)
-                        .position(drawing.width/2.15, 35)
-                        .font("Arial", 16)
+                        .position(200+198, 35)
+                        .font("Arial", 15)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
                 this.messageManipulator.set(3, this.messageSvg);
@@ -1649,7 +1649,7 @@ exports.GUI = function (globalVariables) {
                 var displayErrorMessage = ()=> {
                     removeErrorMessage();
                     formationLabel.border.color(myColors.white, 2, myColors.red);
-                    var anchor = 'start';
+                    var anchor = 'start'; 
                     this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                         .position(formationLabel.border.width+ 6*MARGIN, 5)
                         .font("Arial", 15).color(myColors.red).anchor(anchor);
