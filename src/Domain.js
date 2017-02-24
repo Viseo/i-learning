@@ -518,7 +518,7 @@ checkInputTextArea(myObj) {
             // HEIGHT
             this.graphCreaHeightRatio = 0.85;
             this.x = MARGIN;
-            this.regex = TITLE_REGEX;
+            this.regex = TITLE_FORMATION_REGEX;
             this.levelsTab = [];
             this.saveButtonHeightRatio = 0.07;
             this.publicationButtonHeightRatio = 0.07;
@@ -619,9 +619,8 @@ checkInputTextArea(myObj) {
 
     saveNewFormation(callback) {
             const
-                messageError = "Vous devez remplir correctement le nom de la formation.",
-                messageUsedName = "Le nom de cette formation est déjà utilisé !",
-                messageTooShort = "Le nom de la formation doit contenir au moins 2 caractères."
+                messageError = "Veuillez rentrer un nom de formation valide",
+                messageUsedName = "Cette formation existe déjà"
 
             const returnToFormationList = () => {
                 this.manipulator.flush();
@@ -653,8 +652,8 @@ checkInputTextArea(myObj) {
                         })
                 };
                 addNewFormation()         
-            } else {
-                callback(errorMessage, true);
+            }else if(this.label == "" || this.label== null){
+                callback(messageError, true);
             }
          }
 
