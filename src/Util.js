@@ -747,7 +747,6 @@ exports.Util = function (globalVariables) {
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
             let finalWidth = t.boundingRect().width;
             (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
-            t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
             return { finalHeight, finalWidth, text: t };
         };
 
