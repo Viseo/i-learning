@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive test/TestMocha.js ",
-    "test-svg": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive lib/test/svghandlerSpec.js "
+    "test-svg": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec --recursive lib/svghandlerSpec.js "
   },
   "main": "karma.conf.js",
   "directories": {
