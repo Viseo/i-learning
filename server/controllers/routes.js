@@ -259,7 +259,7 @@ module.exports = function (app, fs) {
                                             .catch(err => console.log(err));
                                     }
                                 } else {
-                                    res.send({saved: false, reason: "NameAlreadformationyUsed"});
+                                    res.send({saved: false, reason: "NameAlreadyUsed"});
                                 }
                             } else {
                                 formations.newVersion(formation, req.body)

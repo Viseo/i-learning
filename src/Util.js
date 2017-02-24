@@ -36,25 +36,25 @@ exports.Util = function (globalVariables) {
         /* istanbul ignore next */
         ImageController = function (imageRuntime) {
             return imageRuntime || {
-                    getImage: function (imgUrl, onloadHandler) {
-                        var image = new Image();
-                        image.src = imgUrl;
-                        image.onload = onloadHandler;
-                        return image;
-                    }
-                };
+                getImage: function (imgUrl, onloadHandler) {
+                    var image = new Image();
+                    image.src = imgUrl;
+                    image.onload = onloadHandler;
+                    return image;
+                }
+            };
         };
 
     }
 
     class Manipulator {
-        constructor(sourceObject) {
+        constructor(sourceObject, translator, rotator, scalor) {
             this.parentObject = sourceObject;
-            this.translator = new svg.Translation(0, 0);
+            this.translator = translator || new svg.Translation(0, 0);
             this.translator.parentManip = this;
-            this.rotator = new svg.Rotation(0);
+            this.rotator = rotator || new svg.Rotation(0);
             this.rotator.parentManip = this;
-            this.scalor = new svg.Scaling(1);
+            this.scalor = scalor || new svg.Scaling(1);
             this.scalor.parentManip = this;
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
@@ -153,40 +153,33 @@ exports.Util = function (globalVariables) {
 
     }
 
-    class Drawings {
+    class Drawings extends gui.Canvas {
         constructor(w, h, anchor = "content") {
-            this.screen = new svg.Screen(w, h).show(anchor);
-            this.drawing = new svg.Drawing(w, h);
-            this.screen.add(this.drawing);
-            this.drawing.manipulator = new Manipulator(this);
+            super(w, h);
+            this.component.show(anchor);
+            this.drawing.manipulator = new Manipulator(this, this.component.background);
             this.drawing.manipulator.addOrdonator(4);
             this.piste = new Manipulator(this);
-            this.glass = new svg.Rect(w, h).position(w / 2, h / 2).opacity(0.001).color(myColors.white);
-            this.glass.mark('bigGlass');
-            this.drawing.add(this.drawing.manipulator.translator);
-            this.background = this.drawing.manipulator.translator;
             this.drawing.manipulator.set(2, this.piste);
-            this.drawing.add(this.glass);
-            this.screen.empty = (survival)=> {
-                for (let i = drawings.screen.children.length; i >= 0; i--) {
-                    drawings.screen.children[i] !== drawing && drawings.screen.children[i] !== survival && drawings.screen.remove(drawings.screen.children[i]);
+            this.component.clean = (survival) => {
+                for (let i = drawings.component.children.length; i >= 0; i--) {
+                    drawings.component.children[i] !== drawing && drawings.component.children[i] !== survival && drawings.component.remove(drawings.component.children[i]);
                 }
-            };
-
+            }
             const onmousedownHandler = event => {
-                svg.activeElement() && svg.activeElement().blur(); //document.activeElement.blur();
-                this.target = this.background.getTarget(event.pageX, event.pageY);
+                document.activeElement.blur();
+                this.target = this.component.background.getTarget(event.pageX, event.pageY);
                 this.drag = this.target;
-                // console.log("Mouse: ( X : " + event.pageX + " ; " + "Y : " + event.pageY + " )");
-                // Rajouter des lignes pour target.border et target.image si existe ?
                 if (this.target) {
                     svg.event(this.target, "mousedown", event);
                 }
             };
-            svg.addEvent(this.glass, "mousedown", onmousedownHandler);
+
+            svg.addEvent(this.component.glass, "mousedown", onmousedownHandler);
+
 
             const onmousemoveHandler = event => {
-                this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
+                this.target = this.drag || this.component.background.getTarget(event.pageX, event.pageY);
                 if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
                     const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
                     if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
@@ -197,8 +190,6 @@ exports.Util = function (globalVariables) {
                 if (this.target) {
                     svg.event(this.target, "mousemove", event);
                     if (this.target.component.listeners && !this.target.component.listeners.mouseover && this.target.component.listeners.click){
-                        svg.addEvent(this.target, 'mouseover', ()=>{drawings.screen.mouseCursor('pointer');});
-                        svg.addEvent(this.target, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
                     }
                     if (this.target.component.listeners && this.target.component.listeners.mouseover) {
                         this.drawing.mousedOverTarget = {target: this.target};
@@ -206,44 +197,24 @@ exports.Util = function (globalVariables) {
                     }
                 }
             };
-            svg.addEvent(this.glass, "mousemove", onmousemoveHandler);
+            svg.addEvent(this.component.glass, "mousemove", onmousemoveHandler);
 
             const ondblclickHandler = event => {
-                this.target = this.background.getTarget(event.pageX, event.pageY);
-                if (this.target) {
-                    svg.event(this.target, "dblclick", event);
+                let target = this.component.background.getTarget(event.pageX, event.pageY);
+                if (target) {
+                    svg.event(target, "dblclick", event);
                 }
             };
-            svg.addEvent(this.glass, "dblclick", ondblclickHandler);
-
-            const onmouseupHandler = event => {
-                this.target = this.drag || this.background.getTarget(event.pageX, event.pageY);
-                if (this.target) {
-                    svg.event(this.target, "mouseup", event);
-                    svg.event(this.target, "click", event);
-                }
-                this.drag = null;
-            };
-            svg.addEvent(this.glass, "mouseup", onmouseupHandler);
-
-            const onmouseoutHandler = event => {
-                if (this.drag) {
-                    svg.event(this.target, "mouseup", event);
-                }
-                if (this.drawing.mousedOverTarget){
-                    this.drawing.mousedOverTarget.target = null;
-                }
-                this.drag = null;
-            };
-            svg.addEvent(this.glass, "mouseout", onmouseoutHandler);
+            svg.addEvent(this.component.glass, "dblclick", ondblclickHandler);
         }
     }
+
+
 
     function SVGUtil() {
         /**
          * Created by qde3485 on 29/02/16.
          */
-
         sort = function mergeSort(array, isSmaller) {
             'use strict';
             if (array.length < 2) {
@@ -275,7 +246,7 @@ exports.Util = function (globalVariables) {
         };
 
         onclickFunction = function (event) {
-            var target = drawings.background.getTarget(event.pageX, event.pageY);
+            var target = drawings.component.background.getTarget(event.pageX, event.pageY);
             var sender = null;
             target.answerParent && (sender = target.answerParent);
             var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
@@ -320,7 +291,7 @@ exports.Util = function (globalVariables) {
          * @param sender
          */
         displayCheckbox = function (x, y, size, sender) {
-            var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
+            var obj = { checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y) };
             sender.obj.checkbox = obj.checkbox;
             sender.x = x;
             sender.y = y;
@@ -414,23 +385,23 @@ exports.Util = function (globalVariables) {
                 .add(glass);
 
             return {
-                mark(label){
+                mark(label) {
                     glass.mark(label);
                     return this;
                 },
-                setHandler (event, handler) {
+                setHandler(event, handler) {
                     svg.addEvent(glass, event, handler);
                     return this;
                 },
-                removeHandler (event, handler) {
+                removeHandler(event, handler) {
                     svg.removeEvent(glass, event, handler);
                     return this;
                 },
-                color (fillColor, strokeWidth, strokeColor) {
+                color(fillColor, strokeWidth, strokeColor) {
                     path.color(fillColor, strokeWidth * 40, strokeColor);
                     return this;
                 },
-                get manipulator () {
+                get manipulator() {
                     return manipulator;
                 }
             }
@@ -459,7 +430,7 @@ exports.Util = function (globalVariables) {
             object.penManipulator.set(3, body);
             object.penManipulator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotate(40);
-            elementsTab.forEach(element=>svg.addEvent(element, "click", object.penHandler));
+            elementsTab.forEach(element => svg.addEvent(element, "click", object.penHandler));
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
@@ -494,10 +465,10 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             manipulator.set(1, text);
             manipulator.set(2, image.image);
-            return {border: border, image: image.image, content: text};
+            return { border: border, image: image.image, content: text };
         };
 
-        drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, controls, layer = 3, textWidth = w)=> {
+        drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, controls, layer = 3, textWidth = w) => {
             if ((w <= 0) || (h <= 0)) {
                 w = 1;
                 h = 1;
@@ -515,15 +486,15 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             let {x, y} = border.globalPoint(-50, -50);
             const video = new svg.Video(x, y, 100, videoObject.src, controls);
-            drawings.screen.add(video);
+            drawings.component.add(video);
 
             if (editable) {
                 let parent = manipulator.parentObject;
-                const position = parent.imageX ? {x:parent.imageX, y:-0} : {x:0, y:0},
+                const position = parent.imageX ? { x: parent.imageX, y: -0 } : { x: 0, y: 0 },
                     videoGlass = new svg.Rect(130, 80)
-                    .color(myColors.pink)
-                    .position(position.x, position.y -25)
-                    .opacity(0.001);
+                        .color(myColors.pink)
+                        .position(position.x, position.y - 25)
+                        .opacity(0.001);
                 manipulator.set(layer, videoGlass);
                 videoGlass.mark('glass' + videoObject.name.split('.')[0]);
                 border._acceptDrop = true;
@@ -543,7 +514,7 @@ exports.Util = function (globalVariables) {
                         manipulator.add(video.redCrossManipulator);
                     }
                     let redCrossSize = 15;
-                    let redCross = drawRedCross(position.x + 60, position.y -45, redCrossSize, video.redCrossManipulator);
+                    let redCross = drawRedCross(position.x + 60, position.y - 45, redCrossSize, video.redCrossManipulator);
                     redCross.mark('videoRedCross');
                     svg.addEvent(redCross, 'click', video.redCrossClickHandler);
                     video.redCrossManipulator.set(1, redCross);
@@ -561,7 +532,7 @@ exports.Util = function (globalVariables) {
                 video.playFunction = function () {
                     globalVariables.videoDisplayed = manipulator.parentObject;
                     svg.speechSynthesisCancel();
-                    drawings.screen.empty(video);
+                    drawings.component.clean(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);
                     let drawGreyCross = () => {
@@ -578,8 +549,8 @@ exports.Util = function (globalVariables) {
                         const crossHandler = () => {
                             globalVariables.videoDisplayed = null;
                             drawing.manipulator.unset(3);
-                            drawings.screen.empty();
-                            let quiz = manipulator.parentObject.parentQuiz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuiz) ||manipulator.parentObject.answer.parentQuestion.parentQuiz;
+                            drawings.component.clean();
+                            let quiz = manipulator.parentObject.parentQuiz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuiz) || manipulator.parentObject.answer.parentQuestion.parentQuiz;
                             if (quiz.currentQuestionIndex !== -1 && quiz.currentQuestionIndex < quiz.tabQuestions.length) {
                                 quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
                             }
@@ -613,12 +584,12 @@ exports.Util = function (globalVariables) {
                 border,
                 video,
                 content: text,
-                resize (width) {
+                resize(width) {
                     let {x, y} = border.globalPoint(0, 0);
                     video.dimension(width);
                     let bounds = video.component.getBoundingClientRect();
-                    video.position(x - bounds.width / 2, y - (bounds.height / 2 + 50) );
-                    videoTitle.text.position(0, bounds.height/2);
+                    video.position(x - bounds.width / 2, y - (bounds.height / 2 + 50));
+                    videoTitle.text.position(0, bounds.height / 2);
                     return this;
                 }
             };
@@ -629,7 +600,7 @@ exports.Util = function (globalVariables) {
             let border = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
             manipulator.set(0, border);
             manipulator.set(2, image.image);
-            return {image: image.image, height: image.height, border: border};
+            return { image: image.image, height: image.height, border: border };
         };
 
         /**
@@ -682,7 +653,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
             var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.set(layer1, border);
-            return {content: content, border: border};
+            return { content: content, border: border };
         };
 
         /**
@@ -701,7 +672,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var border = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
             manipulator.set(0, border);
-            return {content: content, border: border};
+            return { content: content, border: border };
         };
 
         /**
@@ -719,7 +690,7 @@ exports.Util = function (globalVariables) {
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             const result = displayText(label, w, h, rgbCadre, bgColor, textHeight, font, manipulator);
             result.border.corners(0, 0);
-            return {content: result.content, border: result.border};
+            return { content: result.content, border: result.border };
         };
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
@@ -776,8 +747,7 @@ exports.Util = function (globalVariables) {
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
             let finalWidth = t.boundingRect().width;
             (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
-            t.position(0, Math.round((finalHeight - fontSize / 2) / 2));
-            return {finalHeight, finalWidth, text: t};
+            return { finalHeight, finalWidth, text: t };
         };
 
         drawPlus = function (x, y, baseWidth, baseHeight) {
@@ -815,7 +785,7 @@ exports.Util = function (globalVariables) {
         drawPlusWithCircle = function (x, y, w, h) {
             var circle = new svg.Circle(w / 2).color(myColors.black);
             var plus = drawPlus(x, y, w - 1.5 * MARGIN, h - 1.5 * MARGIN).color(myColors.lightgrey);
-            return {circle: circle, plus: plus};
+            return { circle: circle, plus: plus };
         };
 
         /**
@@ -894,18 +864,17 @@ exports.Util = function (globalVariables) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
+                console.log(mouse)
                 manipulator.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
+                console.log('mousemove')
                 redraw && redraw();
                 return true;
             };
-            var mouseupHandler = function () {
-                svg.removeEvent(svgItem, 'mousemove', mousemoveHandler);
-            };
+
             var mousedownHandler = function (event) {
                 event.preventDefault(); // permet de s'assurer que l'event mouseup sera bien déclenché
                 ref = svgItem.localPoint(event.pageX, event.pageY);
                 svg.addEvent(svgItem, "mousemove", mousemoveHandler);
-                svg.addEvent(svgItem, "mouseup", mouseupHandler);
             };
             svg.addEvent(svgItem, "mousedown", mousedownHandler);
         };
@@ -913,7 +882,7 @@ exports.Util = function (globalVariables) {
         drawStraightArrow = function (x1, y1, x2, y2) {
             var arrow = new svg.Arrow(3, 9, 15).position(x1, y1, x2, y2);
             var arrowPath = new svg.Path(x1, y1);
-            arrow.points.forEach((point)=> {
+            arrow.points.forEach((point) => {
                 arrowPath.line(point.x, point.y);
             });
             arrowPath.line(x1, y1);
@@ -973,10 +942,23 @@ exports.Util = function (globalVariables) {
         };
 
         resetQuestionsIndex = function (quiz) {
-            quiz.tabQuestions.forEach((question, index)=> {
+            quiz.tabQuestions.forEach((question, index) => {
                 question.questionNum = index + 1;
             });
         };
+
+        setCookie = function (cookie) {
+            document.cookie = cookie;
+        }
+        twinBcrypt = function (label) {
+            return TwinBcrypt.hashSync(label);
+        }
+        speechSynthesisSpeak = function(textToSay){
+            speechSynthesis.speak(new SpeechSynthesisUtterance(textToSay));
+        }
+        speechSynthesisCancel = function(){
+            speechSynthesis.cancel();
+        }
     }
 
     class Picture {
@@ -1021,10 +1003,10 @@ exports.Util = function (globalVariables) {
         }
 
         drawImageRedCross() {
-            this.mouseleaveHandler = ()=> {
+            this.mouseleaveHandler = () => {
                 this.redCrossManipulator.flush();
             };
-            this.imageMouseoverHandler = ()=> {
+            this.imageMouseoverHandler = () => {
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
@@ -1055,7 +1037,6 @@ exports.Util = function (globalVariables) {
 
         redCrossClickHandler() {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            drawings.screen.mouseCursor('default');
             this.removeAllLinks();
             this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator);
             this.game.miniatureManipulator.unset(0);
@@ -1198,7 +1179,7 @@ exports.Util = function (globalVariables) {
             let iconSize = this.formation.parent.iconeSize;
             if (!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
-                icon.elements.forEach((element, index)=> {
+                icon.elements.forEach((element, index) => {
                     this.iconManipulator.set(index, element);
                 });
             }
@@ -1321,13 +1302,13 @@ exports.Util = function (globalVariables) {
             this.leftChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.leftChevronManipulator, "left");
             this.rightChevron = new Chevron(0, 0, this.chevronSize, this.chevronSize, this.rightChevronManipulator, "right");
             this.leftChevron.handler = () => {
-                drawings.screen.empty();
+                drawings.component.clean();
                 this.updateStartPosition("left");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();
             };
             this.rightChevron.handler = () => {
-                drawings.screen.empty();
+                drawings.component.clean();
                 this.updateStartPosition("right");
                 this.fillVisibleElementsArray(this.orientation);
                 this.display();
@@ -1516,7 +1497,7 @@ exports.Util = function (globalVariables) {
         }
 
         static connect(mail, password) {
-            return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
+            return dbListener.httpPostAsync('/auth/connect/', { mailAddress: mail, password: password })
         }
 
         static inscription(user) {
@@ -1539,7 +1520,7 @@ exports.Util = function (globalVariables) {
                 version: quiz.parentFormation._id,
                 formation: quiz.parentFormation.formationId
             };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({ validatedAnswers: x.validatedAnswers }));
             return dbListener.httpPostAsync("/user/saveProgress", data)
         }
 
@@ -1558,7 +1539,7 @@ exports.Util = function (globalVariables) {
         }
 
         static deactivateFormation(id, ignoredData) {
-            return dbListener.httpPostAsync("/formations/deactivateFormation", {id: id}, ignoredData);
+            return dbListener.httpPostAsync("/formations/deactivateFormation", { id: id }, ignoredData);
         }
 
         static upload(file, onProgress, onAbort) {
@@ -1573,7 +1554,7 @@ exports.Util = function (globalVariables) {
             return dbListener.httpPostAsync("/deleteVideo", video);
         }
 
-        static deleteAbortedVideos(){
+        static deleteAbortedVideos() {
             return dbListener.httpPostAsync("/deleteAbortedVideos");
         }
 
@@ -1590,161 +1571,12 @@ exports.Util = function (globalVariables) {
         }
     }
 
-    gui.ScrollablePanel = class ScrollablePanel {
-        constructor(width, height, color, borderThickness = 3) {
-            let vHandleCallback = position => {
-                var x = this.content.x;
-                var y = -position * this.content.height / this.view.height + this.view.height / 2;
-                this.contentV.move(x, y);
-            };
-            let hHandleCallback = position => {
-                var x = -position * this.content.width / this.view.width + this.view.width / 2;
-                var y = this.content.y;
-                this.contentH.move(x, y);
-            };
-            this.width = width;
-            this.height = height;
-            this.component = new svg.Translation();
-            this.component.focus = this;
-            this.border = new svg.Rect(this.width, this.height).color([], borderThickness, [0, 0, 0]);
-            this.view = new svg.Drawing(width, height).position(-width / 2, -height / 2);
-            this.translate = new svg.Translation();
-            this.component.add(this.view.add(this.translate)).add(this.border);
-            this.vHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], vHandleCallback).vertical(width / 2, -height / 2, height / 2);
-            this.hHandle = new gui.Handle([[255, 204, 0], 3, [220, 100, 0]], hHandleCallback).horizontal(-width / 2, width / 2, height / 2);
-            this.component.add(this.vHandle.component).add(this.hHandle.component);
-            this.back = new svg.Rect(width, height).color(color, 0, []);
-            this.content = new svg.Translation();
-            this.contentH = new svg.Translation();
-            this.contentV = new svg.Translation();
-            this.content.width = width;
-            this.content.height = height;
-            this.translate.add(this.back.position(width / 2, height / 2)).add(this.content.add(this.contentV.add(this.contentH)));
-        }
-
-        position(x, y) {
-            this.component.move(x, y);
-            return this;
-        }
-
-        resize(width, height) {
-            this.width = width;
-            this.height = height;
-            this.border.dimension(width, height);
-            this.view.dimension(width, height).position(-width / 2, -height / 2);
-            this.vHandle.vertical(width / 2, -height / 2, height / 2);
-            this.hHandle.horizontal(-width / 2, width / 2, height / 2);
-            this.back.dimension(width, height).position(width / 2, height / 2);
-            return this;
-        }
-
-        updateHandle() {
-            this.vHandle.dimension(this.view.height, this.content.height)
-                .position((this.view.height / 2 - this.contentV.y) / (this.content.height) * this.view.height);
-            this.hHandle.dimension(this.view.width, this.content.width)
-                .position((this.view.width / 2 - this.contentH.x) / (this.content.width) * this.view.width);
-            return this;
-        }
-
-        add(component) {
-            this.content.add(component);
-            return this;
-        }
-
-        remove(component) {
-            this.content.remove(component);
-            return this;
-        }
-
-        resizeContent(width, height) {
-            if (height > this.height) {
-                this.content.height = height;
-            }
-            if (width > this.width) {
-                this.content.width = width;
-            }
-            if (height > this.height || width > this.width) {
-                this.back.position(this.content.width / 2, this.content.height / 2);
-                this.back.dimension(this.content.width, this.content.height);
-                this.updateHandle();
-            }
-            return this;
-        }
-
-        controlPosition(x, y) {
-            if (x > 0) {
-                x = 0;
-            }
-            if (y > 0) {
-                y = 0;
-            }
-            if (x < -this.content.width + this.view.width) {
-                x = -this.content.width + this.view.width;
-            }
-            if (y < -this.content.height + this.view.height) {
-                y = -this.content.height + this.view.height;
-            }
-            return {x, y};
-        }
-
-        moveContent(x, y, content) {
-            let completeMovement = progress=> {
-                this.updateHandle();
-                if (progress === 1) {
-                    delete this.animation;
-                }
-            };
-            if (!this.animation) {
-                this.animation = true;
-                let point = this.controlPosition(x, y);
-                this[content].onChannel().smoothy(5, 100)
-                    .execute(completeMovement).moveTo(point.x, point.y);
-            }
-            return this;
-        }
-
-        processKeys(keycode) {
-            if (isLeftArrow(keycode)) {
-                this.moveContent(this.contentH.x + 100, this.contentH.y, 'contentH');
-            }
-            else if (isUpArrow(keycode)) {
-                this.moveContent(this.contentV.x, this.contentV.y + 100, 'contentV');
-            }
-            else if (isRightArrow(keycode)) {
-                this.moveContent(this.contentH.x - 100, this.contentH.y, 'contentH');
-            }
-            else if (isDownArrow(keycode)) {
-                this.moveContent(this.contentV.x, this.contentV.y - 100, 'contentV');
-            }
-            else {
-                return false;
-            }
-            return true;
-
-            function isLeftArrow(keycode) {
-                return keycode === 37;
-            }
-
-            function isUpArrow(keycode) {
-                return keycode === 38;
-            }
-
-            function isRightArrow(keycode) {
-                return keycode === 39;
-            }
-
-            function isDownArrow(keycode) {
-                return keycode === 40;
-            }
-        }
-    };
-
     svg.TextItem.prototype.enter = function () {
         this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
-        if (this.component.value === "")this.messageText = "";
+        if (this.component.value === "") this.messageText = "";
     };
 
-/////////////// Bdd.js //////////////////
+    /////////////// Bdd.js //////////////////
     /**
      * Created by ABL3483 on 10/03/2016.
      */
@@ -1903,7 +1735,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check Quiz Name:
             question => ({
-                isValid: ( question.parentQuiz.title !== "" && question.parentQuiz.title !== undefined && question.parentQuiz.title.match(REGEX)),
+                isValid: (question.parentQuiz.title !== "" && question.parentQuiz.title !== undefined && question.parentQuiz.title.match(REGEX)),
                 message: "Vous devez remplir correctement le nom du quiz."
             })
         ];
@@ -1949,12 +1781,12 @@ exports.Util = function (globalVariables) {
                 }
             },
             NotPublished: {
-                icon: () => ({elements: []})
+                icon: () => ({ elements: [] })
             }
         };
     }
 
-/////////////////// end of Bdd.js //////////////////////
+    /////////////////// end of Bdd.js //////////////////////
 
     return {
         SVGGlobalHandler,

@@ -538,11 +538,10 @@ checkInputTextArea(myObj) {
 
         dropAction(event, game) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            drawings.screen.mouseCursor('default');
             let getDropLocation = event => {
                 let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
-                dropLocation.y -= this.panel.contentV.y;
-                dropLocation.x -= this.panel.contentV.x;
+                dropLocation.y -= this.panel.content.y;
+                dropLocation.x -= this.panel.content.x;
                 return dropLocation;
             };
             let getLevel = (dropLocation) => {
@@ -658,7 +657,7 @@ checkInputTextArea(myObj) {
          }
 
 
-        saveFormation(displayQuizManager, status = "Edited") {
+        saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -705,8 +704,11 @@ checkInputTextArea(myObj) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
+                    if(onlyName && this._id){
+                        return {label: this.label};
+                    } else {
                         return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
-                    
+                    }
                 };
 
                 let addNewFormation = () => {
@@ -1011,7 +1013,7 @@ checkInputTextArea(myObj) {
                     newElement.image.name = element.name;
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
-                            drawings.screen.empty();
+                            drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = null;
                             questionCreator.linkedQuestion.image = newElement.image;
@@ -1023,11 +1025,11 @@ checkInputTextArea(myObj) {
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
                             answer.video = null;
-                            answer.obj.video && drawings.screen.remove(answer.obj.video);
+                            answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element=>{
-                               element.obj && element.obj.video && drawings.screen.remove(element.obj.video);
+                               element.obj && element.obj.video && drawings.component.remove(element.obj.video);
                             });
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
@@ -1058,7 +1060,7 @@ checkInputTextArea(myObj) {
                     switch (true) {
                         case target.parent.parentManip.parentObject instanceof QuestionCreator:
                             target.parent.parentManip.unset(2);
-                            drawings.screen.empty();
+                            drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = element;
                             questionCreator.linkedQuestion.image = null;
@@ -1069,12 +1071,12 @@ checkInputTextArea(myObj) {
                             break;
                         case target.parent.parentManip.parentObject instanceof Answer:
                             let answer = target.parent.parentManip.parentObject;
-                            answer.obj.video && drawings.screen.remove(answer.obj.video);
+                            answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.video = element;
                             answer.image = null;
                             answer.imageSrc = null;
                             answer.parentQuestion.tabAnswer.forEach(otherAnswer => {
-                                otherAnswer.obj && otherAnswer.obj.video && drawings.screen.remove(otherAnswer.obj.video);
+                                otherAnswer.obj && otherAnswer.obj.video && drawings.component.remove(otherAnswer.obj.video);
                             });
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
@@ -1460,10 +1462,14 @@ checkInputTextArea(myObj) {
             };
 
             this.connexionButtonHandler = () => {
+                // ** DMA3622 debug
+                //console.log(this.tabForm);
                 let emptyAreas = this.tabForm.filter(field => field.label === '');
                 emptyAreas.forEach(emptyArea => {
                     emptyArea.border.color(myColors.white, 3, myColors.red);
                 });
+                // ** DMA3622 debug
+                //console.log(emptyAreas);
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
