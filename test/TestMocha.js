@@ -163,7 +163,7 @@ describe('formationsManager', function () {
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
             let errorMessagePublication = retrieve(root, "[errorMessagePublication]");
-            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");*/
+            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");
 
             let gameQuiz = retrieve(root, "[gameQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
