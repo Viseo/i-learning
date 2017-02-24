@@ -1639,8 +1639,8 @@ exports.GUI = function (globalVariables) {
                     .mark("formationLabelContentArea")
                     .anchor("start");
                 (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
-                drawings.screen.add(contentarea);
-                contentarea.setCaretPosition(this.label.length);
+                drawings.component.add(contentarea);
+                contentarea.focus(this.label.length);
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
@@ -1661,7 +1661,7 @@ exports.GUI = function (globalVariables) {
                 var onblur = ()=> {
                     contentarea.enter();
                     this.label = contentarea.messageText.trim();
-                    drawings.screen.remove(contentarea);
+                    drawings.component.remove(contentarea);
                     drawing.notInTextArea = true;
                     formationLabelDisplay();
                 };
@@ -1705,10 +1705,6 @@ exports.GUI = function (globalVariables) {
                 this.formationInfoManipulator.move(-5, 30);
                 svg.addEvent(formationLabel.content, "click", clickEditionAddFormationLabel);
                 svg.addEvent(formationLabel.border, "click", clickEditionAddFormationLabel);
-                svg.addEvent(formationLabel.content, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
-                svg.addEvent(formationLabel.content, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
-                svg.addEvent(formationLabel.border, 'mouseover', ()=>{drawings.screen.mouseCursor('text');});
-                svg.addEvent(formationLabel.border, 'mouseout', ()=>{drawings.screen.mouseCursor('default');});
             };
             formationLabelDisplay();
            
