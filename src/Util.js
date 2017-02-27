@@ -864,9 +864,7 @@ exports.Util = function (globalVariables) {
                 var mouse = svgItem.localPoint(event.pageX, event.pageY);
                 var dx = mouse.x - ref.x;
                 var dy = mouse.y - ref.y;
-                console.log(mouse)
                 manipulator.move(manipulator.first.x + dx, manipulator.first.y + dy);//combinaison de translations
-                console.log('mousemove')
                 redraw && redraw();
                 return true;
             };
