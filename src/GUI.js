@@ -1800,7 +1800,7 @@ exports.GUI = function (globalVariables) {
             userManip.move(width, height * 0.75);
 
             const deconnexionHandler = () => {
-                setCookie("token=; path=/; max-age=0;");
+                runtime.setCookie("token=; path=/; max-age=0;");
                 drawings.component.clean();
                 drawing.username = null;
                 mainManipulator.flush();
