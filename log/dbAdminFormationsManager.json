@@ -1,0 +1,5 @@
+{"ack":"OK","user":{"lastName":"Lhote","firstName":"Caroline","admin":"true"}}
+{"myCollection":[]}
+{"saved":true,"id":"58b45553ac83400b04a87199","idVersion":"58b45553ac83400b04a87198"}
+{"myCollection":[{"label":"MaFormation","gamesCounter":{"quizz":0,"bd":0},"links":[],"levelsTab":[],"_id":"58b45553ac83400b04a87198","status":"NotPublished","formationId":"58b45553ac83400b04a87199"}]}
+{"saved":false,"reason":"NameAlreadyUsed"}

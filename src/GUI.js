@@ -1576,6 +1576,7 @@ exports.GUI = function (globalVariables) {
             this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
             this.clippingManipulator.add(this.panel.component);
             this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
+            this.formationsManipulator.first.mark("test");
             this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
             this.formationsManipulator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + spaceBetweenElements.height / 2);
         };
@@ -1617,6 +1618,8 @@ exports.GUI = function (globalVariables) {
             this.addButtonManipulator.set(2, addFormationObject.circle);
             this.addButtonManipulator.set(3, addFormationObject.plus);
             addFormationObject.circle.position(MARGIN + 200, -12);
+            addFormationObject.circle.mark("addFormationButton");
+            addFormationObject.plus.mark("addFormationButton");
 
             svg.addEvent(addFormationObject.circle, "click", onClickNewFormation);
             svg.addEvent(addFormationObject.plus, "click", onClickNewFormation);
@@ -1653,7 +1656,8 @@ exports.GUI = function (globalVariables) {
                     var anchor = 'start'; 
                     this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                         .position(formationLabel.border.width+ 6*MARGIN, 5)
-                        .font("Arial", 15).color(myColors.red).anchor(anchor);
+                        .font("Arial", 15).color(myColors.red).anchor(anchor)
+                        .mark('formationInputErrorMessage');
                     this.formationInfoManipulator.set(2, this.errorMessage);
                     //contentarea.setCaretPosition(this.label.length);
                     this.invalidLabelInput = REGEX_ERROR_FORMATION;
@@ -1688,12 +1692,11 @@ exports.GUI = function (globalVariables) {
                 let bgcolor = myColors.white;
                 this.formationLabelWidth = 200;
                 this.formationTitleWidth = 0;
-                let textToDisplay;
-                if (text.length > MAX_CHARACTER_TITLE){
-                    textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
-                }
-                      
-                formationLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+
+                // if (text.length > MAX_CHARACTER_TITLE){
+                //     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
+                // }
+                formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                 formationLabel.content.mark('formationLabelContent');
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 //this.formationTitleWidth = this.titleSvg.boundingRect().width;
@@ -1751,6 +1754,7 @@ exports.GUI = function (globalVariables) {
                 this.formationsManipulator.add(formation.miniature.miniatureManipulator);
                 formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
                 formation.miniature.setHandler(onClickFormation);
+
                 count++;
                 posx += (this.tileWidth + spaceBetweenElements.width);
             });
@@ -1987,7 +1991,8 @@ exports.GUI = function (globalVariables) {
             buttonW = 0.5 * drawing.width,
             buttonX = -buttonW / 2;
         if (playerMode && this.parentQuiz.previewMode) {
-            this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({ x: 0.4 * drawing.width, y: -100, width: 35 })
+           /* TODO lATER :
+                this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({ x: 0.4 * drawing.width, y: -100, width: 35 })
                 .color(myColors.white, 0.5, SELECTION_COLOR)
                 .mark('iconTextToSpeech');
             globalVariables.textToSpeechMode = false;
@@ -2002,7 +2007,7 @@ exports.GUI = function (globalVariables) {
             this.parentQuiz.textToSpeechIcon.setHandler('click', this.parentQuiz.textToSpeechIcon.clickHandler);
             this.manipulator.add(this.parentQuiz.textToSpeechIcon.manipulator);
             this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
-            displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
+            displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);*/
         }
         else if (!this.multipleChoice) {
             this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
@@ -3119,7 +3124,7 @@ exports.GUI = function (globalVariables) {
                 this[field].secret ? contentarea.type('password') : contentarea.type("text");
                 manipulator.unset(1, this[field].content.text);
                 drawings.component.add(contentarea);
-                contentarea.focus();
+                //TODO : contentarea.focus();
                 //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
                 //debugger;
                 var displayErrorMessage = (trueManipulator = manipulator) => {
@@ -3313,7 +3318,7 @@ exports.GUI = function (globalVariables) {
 
         this.saveButtonHandler = () => {
             if (!emptyAreasHandler(true) && AllOk()) {
-                this.passwordField.hash = twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
+                this.passwordField.hash = runtime.twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
                 let tempObject = {
                     lastName: this.lastNameField.label,
                     firstName: this.firstNameField.label,
@@ -3369,7 +3374,7 @@ exports.GUI = function (globalVariables) {
                 nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                svg.activeElement() && svg.activeElement().blur();
+                runtime.activeElement() && runtime.activeElement().blur();
                 this.saveButtonHandler();
             }
         });

@@ -456,8 +456,6 @@ exports.Domain = function (globalVariables) {
             this.exclamationManipulator = new Manipulator().addOrdonator(4);
             this.formationsManipulator = new Manipulator();
             this.clippingManipulator = new Manipulator(this);
-            this.errorMessageNewFormation = new Manipulator().addOrdonator(4);
-            this.errorMessageManipulator = new Manipulator().addOrdonator(4);
             this.errorMessage = new Manipulator(this).addOrdonator(3);
             this.message = new Manipulator(this).addOrdonator(3);
             this.messageManipulator = new Manipulator().addOrdonator(4);
@@ -636,7 +634,7 @@ checkInputTextArea(myObj) {
                 };
 
                 let addNewFormation = () => {
-                    Server.insertFormation(getObjectToSave(), status, ignoredData)
+                    Server.insertFormation(getObjectToSave(), ignoredData)
                         .then(data => {
                             let answer = JSON.parse(data);
                             if (answer.saved) {
