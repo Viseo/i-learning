@@ -359,6 +359,8 @@ exports.GUI = function (globalVariables) {
     function gamesLibraryDisplay(x, y, w, h) {
         libraryDisplay.call(this, x + MARGIN, y, w, h, 0.9, 0.9 * h / 2);
 
+        this.panel.hHandle.handle.color(myColors.none, 3, myColors.none);
+        this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
         let displayArrowModeButton = () => {
             this.libraryManipulator.remove(this.arrowModeManipulator);
             this.libraryManipulator.add(this.arrowModeManipulator);
