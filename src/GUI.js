@@ -359,6 +359,8 @@ exports.GUI = function (globalVariables) {
     function gamesLibraryDisplay(x, y, w, h) {
         libraryDisplay.call(this, x + MARGIN, y, w, h, 0.9, 0.9 * h / 2);
 
+        this.panel.hHandle.handle.color(myColors.none, 3, myColors.none);
+        this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
         let displayArrowModeButton = () => {
             this.libraryManipulator.remove(this.arrowModeManipulator);
             this.libraryManipulator.add(this.arrowModeManipulator);
@@ -1216,7 +1218,6 @@ exports.GUI = function (globalVariables) {
                         tabElement.movingManipulator.add(tabElement.miniatureManipulator);
                         drawings.piste.add(tabElement.movingManipulator);
                         tabElement.miniatureManipulator.move(point.x, point.y);
-                        console.log('manage')
                         manageDnD(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
                         manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
                     };
@@ -1835,10 +1836,10 @@ exports.GUI = function (globalVariables) {
             const clickHandler = () => {
                 (link === "Inscription") ? globalVariables.inscriptionManager.display() : globalVariables.connexionManager.display();
             };
-            const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4, 5);
+            const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4);
             special.border.mark('inscriptionLink');
             special.content.anchor("end");
-            userManip.move(width - MARGIN, height * 0.5);
+            userManip.move(width - MARGIN, height * 0.75);
             userManip.scale(1);
             svg.addEvent(special.content, "click", clickHandler);
             svg.addEvent(special.border, "click", clickHandler);
