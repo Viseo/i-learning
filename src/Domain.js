@@ -35,7 +35,20 @@ exports.Domain = function (globalVariables) {
         playerMode = globalVariables.playerMode;
     };
 
+    /**
+     * Réponse à un quiz. Cette réponse peut être correcte ou non. Une explication peut etre associée, avec une image ou une vidéo.
+     * @class
+     */
     class Answer {
+        /**
+         * Crée une réponse à un QCM
+         * @constructs
+         * @param {Object} answerParameters - permet d'affecter des valeurs par défaut
+         * @param {string} answerParameters.label - label de la réponse
+         * @param {string} answerParameters.imageSrc - source de l'image
+         * @param {Boolean} answerParameters.correct - la réponse est elle correcte
+         * @param {Object} parent - parent de la réponse (i.e Question)
+         */
         constructor(answerParameters, parent) {
             this.parentQuestion = parent;
             let answer = {
@@ -75,6 +88,10 @@ exports.Domain = function (globalVariables) {
             this.content = null;
         }
 
+        /**
+         * supprime la réponse
+         * @returns {boolean}
+         */
         remove() {
             let index = this.parentQuestion.tabAnswer.indexOf(this);
             if (index !== -1) {
@@ -85,6 +102,11 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * indique si la question est modifiable
+         * @param {Object} editor - instance de QuestionCreator correspondant à la réponse
+         * @param {Boolean} editable - la réponse est elle editable
+         */
         isEditable(editor, editable) {
             this.linesManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator.add(this.linesManipulator);
@@ -95,24 +117,28 @@ exports.Domain = function (globalVariables) {
             this._acceptDrop = editable;
             this.editor = editor;
             this.checkInputContentArea = editable ? ((objCont) => {
-                if (typeof objCont.contentarea.messageText !== "undefined") {
-                    if (objCont.contentarea.messageText.match(REGEX)) {
-                        this.invalidLabelInput = false;
-                        this.label = objCont.contentarea.messageText;
-                        objCont.remove();
+                    if (typeof objCont.contentarea.messageText !== "undefined") {
+                        if (objCont.contentarea.messageText.match(REGEX)) {
+                            this.invalidLabelInput = false;
+                            this.label = objCont.contentarea.messageText;
+                            objCont.remove();
+                        } else {
+                            this.invalidLabelInput = objCont.contentarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                                ? REGEX_ERROR_NUMBER_CHARACTER
+                                : REGEX_ERROR;
+                            this.label = objCont.contentarea.messageText;
+                            objCont.display(this.invalidLabelInput);
+                        }
                     } else {
-                        this.invalidLabelInput = objCont.contentarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
-                            ? REGEX_ERROR_NUMBER_CHARACTER
-                            : REGEX_ERROR;
-                        this.label = objCont.contentarea.messageText;
-                        objCont.display(this.invalidLabelInput);
+                        this.label = "";
                     }
-                } else {
-                    this.label = "";
-                }
-            }) : null;
+                }) : null;
         }
 
+        /**
+         * fonction appelée lorsque l'utilisateur sélectioonne la réponse.
+         * Affiche le message lui indiquant si la réponse est bonne ou pas
+         */
         select() {
             let question = this.parentQuestion,
                 quiz = question.parentQuiz;
@@ -133,7 +159,7 @@ exports.Domain = function (globalVariables) {
                     console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
                 }
                 let selectedAnswer = [quiz.tabQuestions[quiz.currentQuestionIndex].tabAnswer.indexOf(this)];
-                quiz.questionsAnswered[quiz.currentQuestionIndex]={
+                quiz.questionsAnswered[quiz.currentQuestionIndex] = {
                     index: quiz.questionsAnswered.length,
                     question: quiz.tabQuestions[quiz.currentQuestionIndex],
                     validatedAnswers: selectedAnswer
@@ -152,7 +178,17 @@ exports.Domain = function (globalVariables) {
 
     }
 
+    /**
+     * Question d'un quiz
+     * @class Question
+     */
     class Question {
+        /**
+         * construit une question pour un quizz
+         * @constructs
+         * @param question - paramètres par defaut pour la question
+         * @param quiz - quiz contenant la question
+         */
         constructor(question, quiz) {
             this.manipulator = new Manipulator(this).addOrdonator(7);
             this.answersManipulator = new Manipulator(this);
@@ -188,7 +224,7 @@ exports.Domain = function (globalVariables) {
             } else {
                 this.label = question.label;
                 this.imageSrc = question.imageSrc;
-                this.video=question.video;
+                this.video = question.video;
                 this.columns = question.columns ? question.columns : 4;
                 this.rightAnswers = [];
                 this.multipleChoice = question.multipleChoice;
@@ -229,6 +265,10 @@ exports.Domain = function (globalVariables) {
             this.content = null;
         }
 
+        /**
+         * suppression de la question
+         * @returns {boolean}
+         */
         remove() {
             let index = this.parentQuiz.tabQuestions.indexOf(this);
             if (index !== -1) {
@@ -240,6 +280,9 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * Verifie que la question est correctement formatée
+         */
         checkValidity() {
             var validation = true;
             this.questionType.validationTab.forEach((funcEl) => {
@@ -249,7 +292,10 @@ exports.Domain = function (globalVariables) {
             validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
         }
 
-        validateAnswers(){
+        /**
+         * vérifie si les réponses de l'utilisateur sont correctes
+         */
+        validateAnswers() {
             // test des valeurs, en gros si selectedAnswers === rigthAnswers
             var allRight = false;
             this.validatedAnswers = this.selectedAnswers;
@@ -258,7 +304,7 @@ exports.Domain = function (globalVariables) {
                 allRight = false;
             } else {
                 var subTotal = 0;
-                this.validatedAnswers.forEach((e)=> {
+                this.validatedAnswers.forEach((e) => {
                     if (e.correct) {
                         subTotal++;
                     }
@@ -270,7 +316,7 @@ exports.Domain = function (globalVariables) {
                 console.log("Bonne réponse!\n");
             } else {
                 var reponseD = "";
-                this.rightAnswers.forEach((e)=> {
+                this.rightAnswers.forEach((e) => {
                     if (e.label) {
                         reponseD += e.label + "\n";
                     }
@@ -286,13 +332,17 @@ exports.Domain = function (globalVariables) {
                 aSelectedAnswer.selected = false;
                 indexOfValidatedAnswers.push(this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
             });
-            this.parentQuiz.questionsAnswered[this.parentQuiz.currentQuestionIndex]={
+            this.parentQuiz.questionsAnswered[this.parentQuiz.currentQuestionIndex] = {
                 question: this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex],
                 validatedAnswers: indexOfValidatedAnswers
             };
             this.parentQuiz.nextQuestion();
         }
 
+        /**
+         * affiche ou cache le pictogramme indiquant que la question est mal formatée
+         * @param {Boolean} active - la question est elle mal formatée
+         */
         toggleInvalidQuestionPictogram(active) {
             let pictoSize = 20;
             if (active) {
@@ -309,7 +359,17 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * Créateur de questions pour le quiz
+     * @class
+     */
     class QuestionCreator {
+        /**
+         * Crée une nouvelle question dans un quiz
+         * @constructs
+         * @param {Object} parent - parent du créateur
+         * @param {Object} question - question associée
+         */
         constructor(parent, question) {
             this.MAX_ANSWERS = 8;
             this.parent = parent;
@@ -330,6 +390,10 @@ exports.Domain = function (globalVariables) {
             this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
         }
 
+        /**
+         * vérifie que le texte entré dans la question est correct
+         * @param myObj - input à tester
+         */
         checkInputTextArea(myObj) {
             if ((myObj.textarea.messageText && myObj.textarea.messageText.match(REGEX)) || myObj.textarea.messageText === "") {
                 myObj.remove();
@@ -343,6 +407,10 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * associe la question au créateur de question. i.e remplis les champs avec les infos de la question
+         * @param {Object} quest - question
+         */
         loadQuestion(quest) {
             this.linkedQuestion = quest;
             quest.label && (this.label = quest.label);
@@ -361,7 +429,18 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * explications d'une réponse à une question
+     * @class PopIn
+     */
     class PopIn {
+        /**
+         * construit un PopIn avec du texte d'explication, une image, une video
+         * @constructs
+         * @param {Object} answer - réponse
+         * @param {Object} answer.explanation - détails de l'explication (texte, image, video)
+         * @param {Boolean} editable - la réponse est elle modifiable
+         */
         constructor(answer, editable) {
             this.answer = answer;
             this.manipulator = new Manipulator(this).addOrdonator(7);
@@ -388,7 +467,17 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * Element pour ajouter une question vide ou une réponse vide
+     * @class
+     */
     class AddEmptyElement {
+        /**
+         * Ajoute un bouton pour ajouter une question vide ou une réponse vide
+         * @constructs
+         * @param {Object} parent - parent du bouton
+         * @param {string} type - type d'élément (question ou réponse)
+         */
         constructor(parent, type) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
             type && (this.type = type);
@@ -404,12 +493,26 @@ exports.Domain = function (globalVariables) {
             this.fontSize = 20;
             this.parent = parent;
         }
+
+        /**
+         * supprime le bouton
+         */
         remove() {
             console.log("Tentative de suppression d'AddEmptyElement");
         }
     }
 
+    /**
+     * Niveau d'une formation. Il peut contenir un ou plusieurs quiz. Une formation peut avoir un ou plusieurs niveaux
+     * @class
+     */
     class Level {
+        /**
+         * ajoute un niveau à une formation
+         * @constructs
+         * @param formation - formation qui va contenir le nouveau niveau
+         * @param gamesTab - quizs associés à ce niveau
+         */
         constructor(formation, gamesTab) {
             this.parentFormation = formation;
             this.manipulator = new Manipulator(this).addOrdonator(3);
@@ -420,13 +523,26 @@ exports.Domain = function (globalVariables) {
             this.y = (this.index - 1) * this.parentFormation.levelHeight;
         }
 
+        /**
+         * supprime le niveau de la formation parent
+         * @param index
+         */
         removeGame(index) {
             this.gamesTab.splice(index, 1);
         }
 
     }
 
+    /**
+     * Crée un formation manager
+     * @class
+     */
     class FormationsManager {
+        /**
+         * construit un formation manager
+         * @constructs
+         * @param [Array] formations - formations à ajouter au manager
+         */
         constructor(formations) {
             this.x = MARGIN;
             this.tileHeight = 180;
@@ -464,7 +580,11 @@ exports.Domain = function (globalVariables) {
             this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
         }
 
-checkInputTextArea(myObj) {
+        /**
+         * verifie la validité du texte dans l'input
+         * @param {Object} myObj - input à vérifier
+         */
+        checkInputTextArea(myObj) {
             if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
                 this.invalidLabelInput = false;
                 myObj.remove();
@@ -480,8 +600,17 @@ checkInputTextArea(myObj) {
         }
     }
 
-
+    /**
+     * Formation qui peut contenir différents jeux répartis sur différents niveaux
+     * @class
+     */
     class Formation {
+        /**
+         * construit une formation
+         * @constructs
+         * @param {Object} formation - valeurs par défaut pour la formaiton
+         * @param {Object} formationsManager - manager qui va contenir la formation
+         */
         constructor(formation, formationsManager) {
             this.gamesCounter = {
                 quizz: 0,
@@ -534,6 +663,11 @@ checkInputTextArea(myObj) {
             this.manipulator.add(this.deactivateFormationButtonManipulator);
         }
 
+        /**
+         *
+         * @param event
+         * @param game
+         */
         dropAction(event, game) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             let getDropLocation = event => {
@@ -554,7 +688,7 @@ checkInputTextArea(myObj) {
                 }
                 return level;
             };
-            let getColumn = (dropLocation, level)=> {
+            let getColumn = (dropLocation, level) => {
                 let column = this.levelsTab[level].gamesTab.length;
                 for (let i = 0; i < this.levelsTab[level].gamesTab.length; i++) {
                     if (dropLocation.x < this.levelsTab[level].gamesTab[i].miniaturePosition.x) {
@@ -586,8 +720,8 @@ checkInputTextArea(myObj) {
         moveGame(game, level, column) {
             this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
             this.levelsTab[level].gamesTab.splice(column, 0, game);
-            if(this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length-1)
-                this.levelsTab.splice(game.levelIndex,1);
+            if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1)
+                this.levelsTab.splice(game.levelIndex, 1);
         }
 
         createLink(parentGame, childGame, arrow) {
@@ -614,7 +748,7 @@ checkInputTextArea(myObj) {
                 })
         }
 
-    saveNewFormation(callback) {
+        saveNewFormation(callback) {
             const
                 messageError = "Veuillez rentrer un nom de formation valide",
                 messageUsedName = "Cette formation existe déjà"
@@ -630,7 +764,12 @@ checkInputTextArea(myObj) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab
+                    };
                 };
 
                 let addNewFormation = () => {
@@ -648,11 +787,11 @@ checkInputTextArea(myObj) {
                             }
                         })
                 };
-                addNewFormation()         
-            }else if(this.label == "" || this.label== null){
+                addNewFormation()
+            } else if (this.label == "" || this.label == null) {
                 callback(messageError, true);
             }
-         }
+        }
 
 
         saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
@@ -679,7 +818,7 @@ checkInputTextArea(myObj) {
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
-                        .position(drawing.width/2, messageY - saveFormationButtonCadre.height*1.5 - MARGIN)
+                        .position(drawing.width / 2, messageY - saveFormationButtonCadre.height * 1.5 - MARGIN)
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
@@ -702,10 +841,15 @@ checkInputTextArea(myObj) {
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
-                    if(onlyName && this._id){
+                    if (onlyName && this._id) {
                         return {label: this.label};
                     } else {
-                        return {label: this.label, gamesCounter: this.gamesCounter, links: this.links, levelsTab: this.levelsTab};
+                        return {
+                            label: this.label,
+                            gamesCounter: this.gamesCounter,
+                            links: this.links,
+                            levelsTab: this.levelsTab
+                        };
                     }
                 };
 
@@ -768,7 +912,7 @@ checkInputTextArea(myObj) {
                 this.errorMessagePublication = new svg.Text(messagePublication);
                 this.manipulator.set(5, this.errorMessagePublication);
                 const messageY = this.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
-                this.errorMessagePublication.position(drawing.width/2, messageY - this.publicationButtonHeight*1.5 - MARGIN)
+                this.errorMessagePublication.position(drawing.width / 2, messageY - this.publicationButtonHeight * 1.5 - MARGIN)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red)
                     .mark("errorMessagePublication");
@@ -891,8 +1035,8 @@ checkInputTextArea(myObj) {
 
         adjustGamesPositions(level) {
             let computeIndexes = () => {
-                this.levelsTab.forEach((level, lIndex)=>{
-                    level.gamesTab.forEach((game, gIndex)=>{
+                this.levelsTab.forEach((level, lIndex) => {
+                    level.gamesTab.forEach((game, gIndex) => {
                         game.levelIndex = lIndex;
                         game.gameIndex = gIndex;
                     })
@@ -966,7 +1110,7 @@ checkInputTextArea(myObj) {
             this.font = lib.font;
             this.fontSize = lib.fontSize;
             this.itemsTab = lib.tab;
-            this.itemsTab.forEach((item, index)=>{
+            this.itemsTab.forEach((item, index) => {
                 this.libraryManipulators[index] = new Manipulator(item).addOrdonator(2);
             });
             this.arrowModeManipulator = new Manipulator(this).addOrdonator(3);
@@ -986,7 +1130,7 @@ checkInputTextArea(myObj) {
         dropImage(element, target) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject instanceof PopIn) {
-                    let popIn =target.parent.parentManip.parentObject;
+                    let popIn = target.parent.parentManip.parentObject;
                     popIn.image = element.src;
                     popIn.video = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
@@ -1026,8 +1170,8 @@ checkInputTextArea(myObj) {
                             answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.image = newElement.image;
                             answer.imageSrc = newElement.image.src;
-                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element=>{
-                               element.obj && element.obj.video && drawings.component.remove(element.obj.video);
+                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element => {
+                                element.obj && element.obj.video && drawings.component.remove(element.obj.video);
                             });
                             answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
                             answer.parentQuestion.checkValidity();
@@ -1038,10 +1182,11 @@ checkInputTextArea(myObj) {
 
             }
         }
+
         dropVideo(element, target) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject instanceof PopIn) {
-                    let popIn =target.parent.parentManip.parentObject;
+                    let popIn = target.parent.parentManip.parentObject;
                     popIn.video = element;
                     popIn.image = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
@@ -1143,14 +1288,14 @@ checkInputTextArea(myObj) {
             };
         }
 
-        loadQuiz (quiz, indexOfEditedQuestion) {
-            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion!==-1 ? indexOfEditedQuestion: 0) ;
+        loadQuiz(quiz, indexOfEditedQuestion) {
+            this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion !== -1 ? indexOfEditedQuestion : 0);
             this.quiz = new Quiz(quiz, false, this.parentFormation);
             this.quizName = this.quiz.title;
             this.quiz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             this.quiz.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length-1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
+                (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) || question.tabAnswer.push(new AddEmptyElement(this.questionCreator, 'answer'));
             });
             this.quiz.tabQuestions.push(new AddEmptyElement(this, 'question'));
 
@@ -1208,9 +1353,9 @@ checkInputTextArea(myObj) {
                 this.quiz.isValid ? this.displayMessage(completeQuizMessage, myColors.green) : this.displayMessage(imcompleteQuizMessage, myColors.orange);
                 Server.replaceQuiz(quiz, this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
                     .then(() => {
-                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", ()=> {
+                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", () => {
                         });
-                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[1], "click", ()=> {
+                        svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[1], "click", () => {
                         });
                         this.quiz.tabQuestions = this.tabQuestions;
                         let quiz = this.parentFormation.levelsTab[this.quiz.levelIndex].gamesTab[this.quiz.gameIndex];
@@ -1250,12 +1395,13 @@ checkInputTextArea(myObj) {
             this.returnButtonManipulator = new Manipulator(this);
             this.manipulator = new Manipulator(this);
         }
-        isChildOf(parentGame){
+
+        isChildOf(parentGame) {
             return parentGame.parentFormation.links.some((link) => link.parentGame === parentGame.id && link.childGame === this.id);
         };
     }
 
-    class Quiz extends Game{
+    class Quiz extends Game {
         constructor(quiz, previewMode, parentFormation) {
             super(quiz, parentFormation);
             const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
@@ -1379,7 +1525,7 @@ checkInputTextArea(myObj) {
                         questionsWithBadAnswers.push(question);
                     } else {
                         let subTotal = 0;
-                        questionAnswered.validatedAnswers.forEach((e)=> {
+                        questionAnswered.validatedAnswers.forEach((e) => {
                             if (question.tabAnswer[e].correct) {
                                 subTotal++;
                             }
@@ -1398,7 +1544,7 @@ checkInputTextArea(myObj) {
 
     class Bd extends Game {
         constructor(bd, parentFormation) {
-            super(bd,parentFormation);
+            super(bd, parentFormation);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
             this.manipulator.add(this.returnButtonManipulator);
         }
@@ -1471,7 +1617,7 @@ checkInputTextArea(myObj) {
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
-                    svg.timeout(()=> {
+                    svg.timeout(() => {
                         this.connexionButtonManipulator.unset(3);
                         emptyAreas.forEach(emptyArea => {
                             emptyArea.border.color(myColors.white, 1, myColors.black);
