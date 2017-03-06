@@ -1012,15 +1012,6 @@ exports.Util = function (globalVariables) {
                 question.questionNum = index + 1;
             });
         };
-
-        speechSynthesisSpeak = function (textToSay) {
-            speechSynthesis.speak(new SpeechSynthesisUtterance(textToSay));
-        }
-        speechSynthesisCancel = function () {
-            /*TODO LATER :
-             speechSynthesis.cancel();
-             */
-        }
     }
 
     class Picture {
