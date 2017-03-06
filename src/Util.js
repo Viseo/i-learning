@@ -719,7 +719,7 @@ exports.Util = function (globalVariables) {
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
-            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
+            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(0, 0);
             manipulator.set(layer1, border);
             return {content: content, border: border};
         };
