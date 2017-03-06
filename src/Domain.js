@@ -664,9 +664,9 @@ exports.Domain = function (globalVariables) {
         }
 
         /**
-         *
-         * @param event
-         * @param game
+         * fonction appelée lorsqu'une bulle est lachée sur le graphe de formation (ajout ou déplacement d'un quiz)
+         * @param event - evenement js
+         * @param game - quiz associé au drop
          */
         dropAction(event, game) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
@@ -712,11 +712,22 @@ exports.Domain = function (globalVariables) {
             this.displayGraph();
         }
 
+        /**
+         * ajout d'un nouveau jeu à une formation
+         * @param level - niveau du jeu
+         * @param column - position du jeu sur le niveau
+         */
         addNewGame(level, column) {
             let gameBuilder = this.library.draggedObject || this.library.gameSelected;
             gameBuilder.create(this, level, column);
         }
 
+        /**
+         * change le niveau d'un jeu et/ou sa position sur le niveau
+         * @param game - jeu a modifier
+         * @param level - nouveau niveau
+         * @param column - nouvelle position
+         */
         moveGame(game, level, column) {
             this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
             this.levelsTab[level].gamesTab.splice(column, 0, game);
@@ -724,10 +735,21 @@ exports.Domain = function (globalVariables) {
                 this.levelsTab.splice(game.levelIndex, 1);
         }
 
+        /**
+         * crée un lien entre 2 jeux
+         * @param parentGame - jeux dont part le lien
+         * @param childGame - jeux pointé par le lien
+         * @param arrow - instance de la flèche qui représente le lien
+         */
         createLink(parentGame, childGame, arrow) {
             this.links.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
         };
 
+        /**
+         * supprime le lient entre 2 jeux
+         * @param parentGame - jeu parent
+         * @param childGame - jeu fils
+         */
         removeLink(parentGame, childGame) {
             for (let i = this.links.length - 1; i >= 0; i--) {
                 if (this.links[i].childGame === childGame.id && this.links[i].parentGame === parentGame.id)
@@ -735,6 +757,9 @@ exports.Domain = function (globalVariables) {
             }
         };
 
+        /**
+         * Désactive la formation. Elle n'est plus visible par les joueurs (seulement l'admin)
+         */
         deactivateFormation() {
             this.status = "NotPublished";
             Server.deactivateFormation(this.formationId, ignoredData)
@@ -748,6 +773,10 @@ exports.Domain = function (globalVariables) {
                 })
         }
 
+        /**
+         * crée et sauvegarde en bdd la nouvelle formation
+         * @param callback - fonction appelée lorsque la création a reussi ou raté
+         */
         saveNewFormation(callback) {
             const
                 messageError = "Veuillez rentrer un nom de formation valide",
@@ -793,7 +822,13 @@ exports.Domain = function (globalVariables) {
             }
         }
 
-
+        /**
+         * crée ou sauvegarde une formation
+         * TODO rassembler avec saveNewFormation
+         * @param displayQuizManager
+         * @param status - status de la formation (not Published, Edited, Published)
+         * @param onlyName - booleen pour indiquer si on veut ne sauvegarder que le nom
+         */
         saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
@@ -894,6 +929,9 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * publie une formation. Cela la rend visible aux utilisateurs du site
+         */
         publicationFormation() {
             this.publishedButtonActivated = true;
 
@@ -930,6 +968,10 @@ exports.Domain = function (globalVariables) {
             }
         };
 
+        /**
+         * charge la formation
+         * @param formation - infos à charger dans la formation
+         */
         loadFormation(formation) {
             this.levelsTab = [];
             this.gamesCounter = formation.gamesCounter;
@@ -945,6 +987,10 @@ exports.Domain = function (globalVariables) {
             });
         }
 
+        /**
+         * retourne la niveau possédant le plus de jeux
+         * @returns {Array} - tableau de jeux
+         */
         findLongestLevel() {
             var longestLevelCandidates = [];
             longestLevelCandidates.index = 0;
@@ -962,10 +1008,20 @@ exports.Domain = function (globalVariables) {
             return longestLevelCandidates;
         }
 
+        /**
+         * trouve la formation à l'aide de son id
+         * @param id - id de la formation
+         * @returns {*}
+         */
         findGameById(id) {
             return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
         }
 
+        /**
+         *
+         * @param game
+         * @returns {boolean}
+         */
         isGameAvailable(game) {
             let available = true;
             this.links.forEach(link => {
@@ -980,6 +1036,9 @@ exports.Domain = function (globalVariables) {
             return available;
         }
 
+        /**
+         * recalcule les différentes tailles des éléments en fonction de la taille d'écran
+         */
         changeableDimensions() {
             this.gamesLibraryManipulator = this.library.libraryManipulator;
             this.libraryWidth = drawing.width * this.libraryWidthRatio;
@@ -998,6 +1057,10 @@ exports.Domain = function (globalVariables) {
             this.clippingManipulator.flush();
         }
 
+        /**
+         * vérifie le texte entré dans un input
+         * @param myObj - input à tester
+         */
         checkInputTextArea(myObj) {
             if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
                 this.invalidLabelInput = false;
@@ -1013,6 +1076,10 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * ajoute un niveau à la formation
+         * @param index - indice du niveau
+         */
         addNewLevel(index) {
             var level = new Level(this);
             if (!index) {
@@ -1022,6 +1089,9 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * évènement pour ajouter un jeu à un niveau au clic de la souris.
+         */
         clickToAdd() {
             this.mouseUpGraphBlock = event => {
                 this.library.gameSelected && this.dropAction(event);
@@ -1033,6 +1103,10 @@ exports.Domain = function (globalVariables) {
             svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
         }
 
+        /**
+         * mets à jour l'index des jeux dans les différents niveaux
+         * @param level - niveau à réafficher
+         */
         adjustGamesPositions(level) {
             let computeIndexes = () => {
                 this.levelsTab.forEach((level, lIndex) => {
@@ -1052,6 +1126,10 @@ exports.Domain = function (globalVariables) {
             });
         }
 
+        /**
+         * affiche les jetons de statut sur les différentes formations de l'utilisateur. (i.e pas commencé, en cours, finis)
+         * @param displayFunction - fonction appelée lorsque trackProgress a finis
+         */
         trackProgress(displayFunction) {
             this.levelsTab.forEach(level => {
                 level.gamesTab.forEach(game => {
@@ -1095,7 +1173,15 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * class générique contenant un ensemble d'éléments du meme type
+     * @class
+     */
     class Library {
+        /**
+         * construit une bibliothèque
+         * @constructs
+         */
         constructor() {
             this.libraryManipulator = new Manipulator(this).addOrdonator(4);
             this.itemsTab = [];
@@ -1103,7 +1189,20 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * bibliothèque de jeux
+     * @class
+     */
     class GamesLibrary extends Library {
+        /**
+         * construit une bibliothèque de jeux
+         * @constructs
+         * @param lib - options sur la bibliothèque
+         * @param lib.title - titre de la bibliothèque
+         * @param lib.font - police d'écriture
+         * @param lib.fontSize - taille d'écriture
+         * @param lib.tab - tableau de jeux à ajouter à la bibliothèque
+         */
         constructor(lib) {
             super();
             this.title = lib.title;
@@ -1117,7 +1216,15 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * bibliothèque d'images
+     * @class
+     */
     class ImagesLibrary extends Library {
+        /**
+         * construit une bibliothèque d'images (et/ou de vidéos)
+         * @constructs
+         */
         constructor() {
             super();
             this.imageWidth = 50;
@@ -1127,6 +1234,11 @@ exports.Domain = function (globalVariables) {
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
         }
 
+        /**
+         * ajoute une image à une question ou l'explication d'une réponse
+         * @param element - image
+         * @param target - object à qui l'image va être ajoutée (i.e question ou réponse)
+         */
         dropImage(element, target) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject instanceof PopIn) {
@@ -1183,6 +1295,12 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         *
+         * ajoute une vidéo à une question ou l'explication d'une réponse
+         * @param element - vidéo
+         * @param target - object à qui l'image va être ajoutée (i.e question ou réponse)
+         */
         dropVideo(element, target) {
             if (target && target._acceptDrop) {
                 if (target.parent.parentManip.parentObject instanceof PopIn) {
@@ -1231,7 +1349,15 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * Bannière du site
+     * @class
+     */
     class Header {
+        /**
+         * construit la bannière du site
+         * @constructs
+         */
         constructor() {
             this.manipulator = new Manipulator(this).addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
@@ -1239,7 +1365,17 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * page de création d'un quiz
+     * @class
+     */
     class QuizManager {
+        /**
+         * construit un quiz associé à une formation
+         * @constructs
+         * @param quiz - objet qui va contenir toutes les informations du quiz crée
+         * @param formation - formation qui va contenir le quiz
+         */
         constructor(quiz, formation) {
             this.quizName = "";
             this.quizNameDefault = "Ecrire ici le nom du quiz";
@@ -1288,6 +1424,11 @@ exports.Domain = function (globalVariables) {
             };
         }
 
+        /**
+         * chargement du quizManager avec les infos du quiz à modifier
+         * @param quiz - quiz à modifier
+         * @param indexOfEditedQuestion - index de la question en train d'être modifiée
+         */
         loadQuiz(quiz, indexOfEditedQuestion) {
             this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion !== -1 ? indexOfEditedQuestion : 0);
             this.quiz = new Quiz(quiz, false, this.parentFormation);
@@ -1301,6 +1442,10 @@ exports.Domain = function (globalVariables) {
 
         };
 
+        /**
+         * retourne l'objet qui va être sauvegardé en base de données
+         * @returns {{id: *, title: (string|*), tabQuestions: Array, levelIndex: (*|number), gameIndex: (*|number)}}
+         */
         getObjectToSave() {
             this.tabQuestions = this.quiz.tabQuestions;
             (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
@@ -1325,6 +1470,11 @@ exports.Domain = function (globalVariables) {
             };
         }
 
+        /**
+         * affiche un message d'info sur l'état de la sauvegarde du quiz (bien sauvegardé ou erreur quelque part)
+         * @param message - message à afficher
+         * @param color - couleur du message
+         */
         displayMessage(message, color) {
             this.questionCreator.errorMessagePreview && this.questionCreator.errorMessagePreview.parent && this.previewButtonManipulator.remove(this.questionCreator.errorMessagePreview);
             this.questionCreator.errorMessagePreview = new svg.Text(message)
@@ -1337,6 +1487,9 @@ exports.Domain = function (globalVariables) {
             }, 5000);
         }
 
+        /**
+         * sauvegarde le quiz
+         */
         saveQuiz() {
             let completeQuizMessage = "Les modifications ont bien été enregistrées",
                 imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
@@ -1371,6 +1524,10 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * vérifie le texte entré dans un input
+         * @param myObj - input à vérifier
+         */
         checkInputTextArea(myObj) {
             if ((typeof myObj.textarea.messageText !== "undefined" && myObj.textarea.messageText.match(TITLE_REGEX)) || myObj.textarea.messageText === "") {
                 myObj.remove();
@@ -1385,7 +1542,17 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * classe générique représentant un jeu
+     * @class
+     */
     class Game {
+        /**
+         * construit un jeu
+         * @constructs
+         * @param game - options sur le jeu
+         * @param parentFormation - formation contenant le jeu
+         */
         constructor(game, parentFormation) {
             this.id = game.id;
             this.miniatureManipulator = new Manipulator(this);
@@ -1396,12 +1563,28 @@ exports.Domain = function (globalVariables) {
             this.manipulator = new Manipulator(this);
         }
 
+        /**
+         * le jeu est il lié au parentGame (i.e la flèche part du parentgame et pointe vers le jeu)
+         * @param parentGame - jeu parent
+         * @returns {boolean}
+         */
         isChildOf(parentGame) {
             return parentGame.parentFormation.links.some((link) => link.parentGame === parentGame.id && link.childGame === this.id);
         };
     }
 
+    /**
+     * Quiz
+     * @class
+     */
     class Quiz extends Game {
+        /**
+         * construit un quiz
+         * @constructs
+         * @param quiz - options sur le quiz
+         * @param previewMode - le jeu est il affiché en mode preview (lorsque l'admin modifie un quiz, il peut voir un aperçu de ce dernier
+         * @param parentFormation - formation contenant le quiz
+         */
         constructor(quiz, previewMode, parentFormation) {
             super(quiz, parentFormation);
             const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
@@ -1449,6 +1632,10 @@ exports.Domain = function (globalVariables) {
             this.currentQuestionIndex = quiz.currentQuestionIndex ? quiz.currentQuestionIndex : -1;
         }
 
+        /**
+         * charge les questions du quiz (crée une classe Question pour chaque objet dans quiz.tabQuestions)
+         * @param quiz - quiz à charger
+         */
         loadQuestions(quiz) {
             if (quiz && typeof quiz.tabQuestions !== 'undefined') {
                 this.tabQuestions = [];
@@ -1464,6 +1651,13 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         *
+         * @param x
+         * @param y
+         * @param w
+         * @param h
+         */
         run(x, y, w, h) {
             let intervalToken = svg.interval(() => {
                 if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
@@ -1473,6 +1667,9 @@ exports.Domain = function (globalVariables) {
             }, 100);
         }
 
+        /**
+         * affiche la question en cours
+         */
         displayCurrentQuestion() {
             if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
                 this.questionHeight = this.questionHeightWithImage;
@@ -1491,7 +1688,10 @@ exports.Domain = function (globalVariables) {
             this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.questionArea.w, this.answerHeight);
         }
 
-        // !_! bof, y'a encore des display appelés ici
+        /**
+         * question suivante
+         * !_! bof, y'a encore des display appelés ici
+         */
         nextQuestion() {
             if (this.currentQuestionIndex !== -1) {
                 this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
@@ -1515,6 +1715,10 @@ exports.Domain = function (globalVariables) {
             }
         }
 
+        /**
+         * retourne toutes les questions qui ont été mal répondues
+         * @returns {Array}
+         */
         getQuestionsWithBadAnswers() {
             let questionsWithBadAnswers = [],
                 allRight = false;
@@ -1542,7 +1746,17 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * Bd
+     * @class
+     */
     class Bd extends Game {
+        /**
+         * construit une Bd
+         * @constructs
+         * @param bd - options sur la bd
+         * @param parentFormation - formation contenant la bd
+         */
         constructor(bd, parentFormation) {
             super(bd, parentFormation);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
@@ -1550,7 +1764,15 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    /**
+     * classe qui gère l'inscription d'un utilisateut au site. (Cela ne permet pas de créer des admins)
+     * @class
+     */
     class InscriptionManager {
+        /**
+         * construit le manager
+         * @constructs
+         */
         constructor() {
             this.manipulator = new Manipulator(this);
             this.header = new Header("Inscription");
@@ -1582,7 +1804,15 @@ exports.Domain = function (globalVariables) {
 ////////////////// end of InscriptionManager.js //////////////////////////
 
 ////////////////// ConnexionManager.js //////////////////////////
+    /**
+     * classe qui gère la connexion au site
+     * @class
+     */
     class ConnexionManager {
+        /**
+         * construit le manager
+         * @constructs
+         */
         constructor() {
             this.manipulator = new Manipulator(this).addOrdonator(6);
             this.header = new Header("Connexion");
