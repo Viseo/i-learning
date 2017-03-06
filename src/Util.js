@@ -31,23 +31,50 @@ exports.Util = function (globalVariables) {
 
     };
 
+    /**
+     * Initialise globalVariables.imageController
+     * @constructor
+     */
+
     function SVGGlobalHandler() {
 
         /* istanbul ignore next */
+        /**
+         * Crée un objet
+         * @param imageRuntime
+         * @returns {*|{getImage: getImage}}
+         * @constructor
+         */
+
         ImageController = function (imageRuntime) {
             return imageRuntime || {
-                getImage: function (imgUrl, onloadHandler) {
-                    var image = new Image();
-                    image.src = imgUrl;
-                    image.onload = onloadHandler;
-                    return image;
-                }
-            };
+                    getImage: function (imgUrl, onloadHandler) {
+                        var image = new Image();
+                        image.src = imgUrl;
+                        image.onload = onloadHandler;
+                        return image;
+                    }
+                };
         };
 
     }
 
+    /**
+     * Crée un Manipulator
+     * @class
+     */
+
     class Manipulator {
+
+        /**
+         * Fonction qui crée une instance Manipulator de l'objet sourceObject
+         * @constructor
+         * @param sourceObject - objet auquel est rattaché le Manipulator
+         * @param translator - objet de classe Translation
+         * @param rotator - objet de classe Rotation
+         * @param scalor - objet de classe Scaling
+         */
+
         constructor(sourceObject, translator, rotator, scalor) {
             this.parentObject = sourceObject;
             this.translator = translator || new svg.Translation(0, 0);
@@ -61,6 +88,12 @@ exports.Util = function (globalVariables) {
             this.first = this.translator;
         }
 
+        /**
+         * Fonction qui instancie un objet de classe Ordered
+         * @param {number} layerNumber
+         * @returns {Manipulator}
+         */
+
         addOrdonator(layerNumber) {
             this.ordonator = new svg.Ordered(layerNumber);
             this.ordonator.parentManip = this;
@@ -68,9 +101,19 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
+        /**
+         * Fonction qui récupère l'indice du dernier élément de l'Ordenator
+         * @returns {number}
+         */
+
         lastLayerOrdonator() {
             return this.ordonator.children.length - 1;
         }
+
+        /**
+         * Fonction
+         * @returns {Manipulator}
+         */
 
         flush() {
             const clean = (handler) => {
@@ -97,20 +140,47 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
+        /**
+         * Modifie les positions x et y de l'attribut translator du Manipulator
+         * @param {number} x - Position x
+         * @param {number} y - Position y
+         * @returns {Manipulator}
+         */
+
         move(x, y) {
             this.translator.move(x, y);
             return this;
         }
+
+        /**
+         * Attribue un angle à l'attribut rotator du Manipulator
+         * @param angle
+         * @returns {Manipulator}
+         */
 
         rotate(angle) {
             this.rotator.rotate(angle);
             return this;
         }
 
+        /**
+         * ?
+         * @param scaleX
+         * @param scaleY
+         * @returns {Manipulator}
+         */
+
         scale(scaleX, scaleY) {
             this.scalor.scale(scaleX, scaleY);
             return this;
         }
+
+        /**
+         *
+         * @param layer
+         * @param component
+         * @returns {Manipulator}
+         */
 
         set(layer, component) {
             if (component instanceof Manipulator) {
@@ -189,7 +259,7 @@ exports.Util = function (globalVariables) {
                 }
                 if (this.target) {
                     svg.event(this.target, "mousemove", event);
-                    if (this.target.component.listeners && !this.target.component.listeners.mouseover && this.target.component.listeners.click){
+                    if (this.target.component.listeners && !this.target.component.listeners.mouseover && this.target.component.listeners.click) {
                     }
                     if (this.target.component.listeners && this.target.component.listeners.mouseover) {
                         this.drawing.mousedOverTarget = {target: this.target};
@@ -208,7 +278,6 @@ exports.Util = function (globalVariables) {
             svg.addEvent(this.component.glass, "dblclick", ondblclickHandler);
         }
     }
-
 
 
     function SVGUtil() {
@@ -291,7 +360,7 @@ exports.Util = function (globalVariables) {
          * @param sender
          */
         displayCheckbox = function (x, y, size, sender) {
-            var obj = { checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y) };
+            var obj = {checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x, y)};
             sender.obj.checkbox = obj.checkbox;
             sender.x = x;
             sender.y = y;
@@ -372,38 +441,38 @@ exports.Util = function (globalVariables) {
         };
 
         drawTextToSpeechIcon = function (spec) {
-      /*      const {width, x, y} = spec;
-            const path = new svg.SVGString('M 334.69355,623.49051 C 289.8995,584.06483 248.64559,540.68207 205.63637,499.28248 c -11.29726,-10.37856 -10.34004,-9.35409 -21.46833,-9.35409 -21.37924,-0.36847 -40.84236,-0.66609 -62.90561,-0.81372 -6.71529,0 -13.09488,-7.05327 -12.97672,-16.43594 0.30858,-39.21368 0.1216,-88.23843 0.0472,-127.38544 0.008,-7.36723 6.40498,-12.47496 12.53245,-12.47496 0,0 51.83247,-0.91194 67.26972,-0.91194 8.20775,0 8.10731,-0.0314 11.9649,-3.85201 44.09448,-43.67136 85.36979,-83.44781 130.31375,-126.29015 27.76352,-21.34674 33.20262,17.92379 33.20262,40.21802 0.14911,121.70107 0.12799,256.91578 0.12799,341.88567 0,34.54676 -18.06754,50.60585 -29.05079,39.62259 z M 483.7857,604.26844 c -26.06709,-16.21452 -0.71421,-35.38663 20.30056,-47.51951 57.9631,-38.74482 87.63413,-113.44922 72.96179,-181.43218 -10.1866,-53.48573 -47.56072,-99.25712 -95.45291,-124.11172 -25.8737,-21.24761 1.21708,-44.34707 28.40619,-28.64943 79.75061,45.78138 126.92102,147.52399 104.53353,236.98153 -13.99473,62.66459 -57.88505,118.359 -116.06635,145.6409 -4.79695,1.26648 -10.06603,0.88706 -14.68281,-0.90959 z m -39.72591,-53.51016 c -26.12618,-10.43626 -8.88813,-32.36239 10.70265,-45.49524 46.33069,-33.3171 61.15848,-101.84273 32.57039,-151.25663 -11.45475,-22.37064 -32.08392,-37.45577 -52.08511,-51.52849 -15.94935,-15.39173 2.64798,-42.10512 25.17228,-29.10071 52.50401,28.44677 85.67401,88.83257 80.18147,148.4859 -2.71184,53.39603 -36.13943,105.54705 -84.78504,128.36167 -3.75952,1.28587 -7.90447,1.63913 -11.75664,0.5335 z m -49.49904,-63.77407 c -25.36949,-11.58757 -12.09457,-32.37377 11.95285,-44.47184 26.64175,-16.19972 18.94154,-60.22903 -10.17716,-68.6405 -32.74214,-7.70475 -16.26996,-44.88808 17.63448,-35.80341 38.92798,16.06253 60.30833,65.09542 41.97643,103.9273 -10.07423,23.03243 -35.0042,46.07083 -61.3866,44.98845 z');
-            const glass = new svg.Rect(600, 500)
-                .color(myColors.pink)
-                .position(350, 400)
-                .opacity(0.001);
-            const manipulator = new Manipulator()
-                .scale(0.0025 * width, 0.0025 * width)
-                .move(x, y)
-                .add(glass);
+            /*      const {width, x, y} = spec;
+             const path = new svg.SVGString('M 334.69355,623.49051 C 289.8995,584.06483 248.64559,540.68207 205.63637,499.28248 c -11.29726,-10.37856 -10.34004,-9.35409 -21.46833,-9.35409 -21.37924,-0.36847 -40.84236,-0.66609 -62.90561,-0.81372 -6.71529,0 -13.09488,-7.05327 -12.97672,-16.43594 0.30858,-39.21368 0.1216,-88.23843 0.0472,-127.38544 0.008,-7.36723 6.40498,-12.47496 12.53245,-12.47496 0,0 51.83247,-0.91194 67.26972,-0.91194 8.20775,0 8.10731,-0.0314 11.9649,-3.85201 44.09448,-43.67136 85.36979,-83.44781 130.31375,-126.29015 27.76352,-21.34674 33.20262,17.92379 33.20262,40.21802 0.14911,121.70107 0.12799,256.91578 0.12799,341.88567 0,34.54676 -18.06754,50.60585 -29.05079,39.62259 z M 483.7857,604.26844 c -26.06709,-16.21452 -0.71421,-35.38663 20.30056,-47.51951 57.9631,-38.74482 87.63413,-113.44922 72.96179,-181.43218 -10.1866,-53.48573 -47.56072,-99.25712 -95.45291,-124.11172 -25.8737,-21.24761 1.21708,-44.34707 28.40619,-28.64943 79.75061,45.78138 126.92102,147.52399 104.53353,236.98153 -13.99473,62.66459 -57.88505,118.359 -116.06635,145.6409 -4.79695,1.26648 -10.06603,0.88706 -14.68281,-0.90959 z m -39.72591,-53.51016 c -26.12618,-10.43626 -8.88813,-32.36239 10.70265,-45.49524 46.33069,-33.3171 61.15848,-101.84273 32.57039,-151.25663 -11.45475,-22.37064 -32.08392,-37.45577 -52.08511,-51.52849 -15.94935,-15.39173 2.64798,-42.10512 25.17228,-29.10071 52.50401,28.44677 85.67401,88.83257 80.18147,148.4859 -2.71184,53.39603 -36.13943,105.54705 -84.78504,128.36167 -3.75952,1.28587 -7.90447,1.63913 -11.75664,0.5335 z m -49.49904,-63.77407 c -25.36949,-11.58757 -12.09457,-32.37377 11.95285,-44.47184 26.64175,-16.19972 18.94154,-60.22903 -10.17716,-68.6405 -32.74214,-7.70475 -16.26996,-44.88808 17.63448,-35.80341 38.92798,16.06253 60.30833,65.09542 41.97643,103.9273 -10.07423,23.03243 -35.0042,46.07083 -61.3866,44.98845 z');
+             const glass = new svg.Rect(600, 500)
+             .color(myColors.pink)
+             .position(350, 400)
+             .opacity(0.001);
+             const manipulator = new Manipulator()
+             .scale(0.0025 * width, 0.0025 * width)
+             .move(x, y)
+             .add(glass);
 
-            return {
-                mark(label) {
-                    glass.mark(label);
-                    return this;
-                },
-                setHandler(event, handler) {
-                    svg.addEvent(glass, event, handler);
-                    return this;
-                },
-                removeHandler(event, handler) {
-                    svg.removeEvent(glass, event, handler);
-                    return this;
-                },
-                color(fillColor, strokeWidth, strokeColor) {
-                    path.color(fillColor, strokeWidth * 40, strokeColor);
-                    return this;
-                },
-                get manipulator() {
-                    return manipulator;
-                }
-            }*/
+             return {
+             mark(label) {
+             glass.mark(label);
+             return this;
+             },
+             setHandler(event, handler) {
+             svg.addEvent(glass, event, handler);
+             return this;
+             },
+             removeHandler(event, handler) {
+             svg.removeEvent(glass, event, handler);
+             return this;
+             },
+             color(fillColor, strokeWidth, strokeColor) {
+             path.color(fillColor, strokeWidth * 40, strokeColor);
+             return this;
+             },
+             get manipulator() {
+             return manipulator;
+             }
+             }*/
         };
 
         displayPen = function (x, y, size, object) {
@@ -464,7 +533,7 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             manipulator.set(1, text);
             manipulator.set(2, image.image);
-            return { border: border, image: image.image, content: text };
+            return {border: border, image: image.image, content: text};
         };
 
         drawVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable, controls, layer = 3, textWidth = w) => {
@@ -489,7 +558,7 @@ exports.Util = function (globalVariables) {
 
             if (editable) {
                 let parent = manipulator.parentObject;
-                const position = parent.imageX ? { x: parent.imageX, y: -0 } : { x: 0, y: 0 },
+                const position = parent.imageX ? {x: parent.imageX, y: -0} : {x: 0, y: 0},
                     videoGlass = new svg.Rect(130, 80)
                         .color(myColors.pink)
                         .position(position.x, position.y - 25)
@@ -599,7 +668,7 @@ exports.Util = function (globalVariables) {
             let border = new svg.Rect(w, h).color(myColors.white, 1, myColors.none).corners(25, 25);
             manipulator.set(0, border);
             manipulator.set(2, image.image);
-            return { image: image.image, height: image.height, border: border };
+            return {image: image.image, height: image.height, border: border};
         };
 
         /**
@@ -652,7 +721,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
             var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.set(layer1, border);
-            return { content: content, border: border };
+            return {content: content, border: border};
         };
 
         /**
@@ -671,7 +740,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var border = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
             manipulator.set(0, border);
-            return { content: content, border: border };
+            return {content: content, border: border};
         };
 
         /**
@@ -689,7 +758,7 @@ exports.Util = function (globalVariables) {
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             const result = displayText(label, w, h, rgbCadre, bgColor, textHeight, font, manipulator);
             result.border.corners(0, 0);
-            return { content: result.content, border: result.border };
+            return {content: result.content, border: result.border};
         };
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
@@ -746,7 +815,7 @@ exports.Util = function (globalVariables) {
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);
             let finalWidth = t.boundingRect().width;
             (typeof finalWidth === 'undefined' && t.messageText === '') && (finalWidth = 0);
-            return { finalHeight, finalWidth, text: t };
+            return {finalHeight, finalWidth, text: t};
         };
 
         drawPlus = function (x, y, baseWidth, baseHeight) {
@@ -784,7 +853,7 @@ exports.Util = function (globalVariables) {
         drawPlusWithCircle = function (x, y, w, h) {
             var circle = new svg.Circle(w / 2).color(myColors.black);
             var plus = drawPlus(x, y, w - 1.5 * MARGIN, h - 1.5 * MARGIN).color(myColors.lightgrey);
-            return { circle: circle, plus: plus };
+            return {circle: circle, plus: plus};
         };
 
         /**
@@ -944,12 +1013,12 @@ exports.Util = function (globalVariables) {
             });
         };
 
-        speechSynthesisSpeak = function(textToSay){
+        speechSynthesisSpeak = function (textToSay) {
             speechSynthesis.speak(new SpeechSynthesisUtterance(textToSay));
         }
-        speechSynthesisCancel = function(){
+        speechSynthesisCancel = function () {
             /*TODO LATER :
-            speechSynthesis.cancel();
+             speechSynthesis.cancel();
              */
         }
     }
@@ -1490,7 +1559,7 @@ exports.Util = function (globalVariables) {
         }
 
         static connect(mail, password) {
-            return dbListener.httpPostAsync('/auth/connect/', { mailAddress: mail, password: password })
+            return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
         }
 
         static inscription(user) {
@@ -1513,7 +1582,7 @@ exports.Util = function (globalVariables) {
                 version: quiz.parentFormation._id,
                 formation: quiz.parentFormation.formationId
             };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({ validatedAnswers: x.validatedAnswers }));
+            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
             return dbListener.httpPostAsync("/user/saveProgress", data)
         }
 
@@ -1532,7 +1601,7 @@ exports.Util = function (globalVariables) {
         }
 
         static deactivateFormation(id, ignoredData) {
-            return dbListener.httpPostAsync("/formations/deactivateFormation", { id: id }, ignoredData);
+            return dbListener.httpPostAsync("/formations/deactivateFormation", {id: id}, ignoredData);
         }
 
         static upload(file, onProgress, onAbort) {
@@ -1582,7 +1651,7 @@ exports.Util = function (globalVariables) {
         MAX_CHARACTER_TITLE = 50;
         MIN_CHARACTER_TITLE = 2;
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
-        
+
         TITLE_REGEX = /^([A-Za-z0-9.,;:!?()éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ °'-]){0,50}$/g;
         REGEX_ERROR = "Seuls les caractères alphanumériques, avec accent et \"-,',.;?!°© sont permis";
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
@@ -1774,7 +1843,7 @@ exports.Util = function (globalVariables) {
                 }
             },
             NotPublished: {
-                icon: () => ({ elements: [] })
+                icon: () => ({elements: []})
             }
         };
     }
