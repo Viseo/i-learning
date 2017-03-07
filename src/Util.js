@@ -599,7 +599,7 @@ exports.Util = function (globalVariables) {
             if (controls) {
                 video.playFunction = function () {
                     globalVariables.videoDisplayed = manipulator.parentObject;
-                    svg.speechSynthesisCancel();
+                    runtime.speechSynthesisCancel();
                     drawings.component.clean(video);
                     video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
                     video.dimension(drawing.width * 0.8);

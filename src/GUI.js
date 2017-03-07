@@ -270,7 +270,7 @@ exports.GUI = function (globalVariables) {
         if (this.parentQuestion.parentQuiz.previewMode) {
             if (this.explanation && (this.explanation.image || this.explanation.video || this.explanation.label)) {
                 const openPopIn = () => {
-                    speechSynthesisCancel();
+                    runtime.speechSynthesisCancel();
                     this.parentQuestion.parentQuiz.closePopIn();
                     let popInParent = this.parentQuestion,
                         popInX = this.parentQuestion.parentQuiz.x,
@@ -284,7 +284,7 @@ exports.GUI = function (globalVariables) {
                         popInY = (this.parentQuestion.tileHeightMax * this.parentQuestion.lines + (this.parentQuestion.lines - 1) * MARGIN) / 2 + this.parentQuestion.parentQuiz.questionHeightWithoutImage / 2 + MARGIN;
                     }
                     if (globalVariables.textToSpeechMode && this.explanationPopIn.label && (!this.explanationPopIn.video || !this.explanationPopIn.said)) {
-                        setTimeout(() => { speechSynthesisSpeak(this.explanationPopIn.label) }, 200);
+                        setTimeout(() => { runtime.speechSynthesisSpeak(this.explanationPopIn.label) }, 200);
                         this.explanationPopIn.said = true;
                         (this.explanationPopIn.image || this.explanationPopIn.video) && this.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                     }
@@ -2362,7 +2362,7 @@ exports.GUI = function (globalVariables) {
                     textToSpeechIcon.removeHandler('mouseout', mouseLeaveHandler);
                 }
                 this.said = false;
-                speechSynthesisCancel();
+                runtime.speechSynthesisCancel();
                 this.editable && (parent.explanation = false);
                 parent.manipulator.remove(cross.parent.parentManip.parentObject.manipulator);
                 this.editable && parent.puzzle.display(x, y, w, h, false);
