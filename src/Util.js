@@ -187,6 +187,7 @@ exports.Util = function (globalVariables) {
                 component = component.first;
             }
             this.ordonator.set(layer, component)
+            //component.parent = this;
             return this;
         }
 
@@ -204,6 +205,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
+                //component.parent = this;
             }
             return this;
         }
@@ -220,6 +222,18 @@ exports.Util = function (globalVariables) {
             }
             return this;
         }
+
+        // globalPoint(...args) {
+        //     var point = getPoint(args);
+        //     point = {x: point.x + this.x, y: point.y + this.y};
+        //     return this.parent ? this.parent.globalPoint(point) : null;
+        // }
+        //
+        // localPoint(...args) {
+        //     var point = getPoint(args);
+        //     point = this.parent ? this.parent.localPoint(point) : null;
+        //     return point ? {x: point.x - this.x, y: point.y - this.y} : null;
+        // }
 
     }
 

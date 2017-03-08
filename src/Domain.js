@@ -36,6 +36,305 @@ exports.Domain = function (globalVariables) {
     };
 
     /**
+     * définis la manière d'afficher à l'écran un ou des éléments
+     * @class
+     */
+    class Vue {
+        /**
+         * @constructs
+         * @param option
+         * @param
+         */
+        constructor(options) {
+            if(!options) options = {};
+            this.manipulator = new Manipulator(this);
+            this.component = this.manipulator.translator;
+            this.model = options.model;
+            this.initialize();
+            this.setEvents();
+        }
+
+        events(){ return {}; }
+
+        initialize(){console.log('vue initialized')}
+
+        render(){console.log(this.model)}
+
+        //TODO make it work (translator cannot have events on it)
+        setEvents() {
+            this.events().forEach(function(handler, eventName){
+                this.addEvent(eventName, handler);
+            }.bind(this));
+        }
+
+        addEvent(eventName, handler){
+            runtime.addEvent(this.component, eventName, handler);
+        }
+        removeEvent(eventName){
+            runtime.removeEvent(this.component, eventName);
+        }
+    }
+
+    class Model {
+        constructor() {
+
+        }
+    }
+
+    class Collection {
+        constructor() {
+
+        }
+    }
+
+    class ConnexionManagerVue extends Vue {
+        constructor(options){
+            super(options);
+        }
+
+        //TODO define easily events
+        events(){
+            return {
+
+            }
+        }
+
+        initialize(){
+            this.header = new Header("Connexion");
+            this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordManipulator = new Manipulator(this).addOrdonator(4);
+            this.connexionButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator.add(this.mailAddressManipulator);
+            this.manipulator.add(this.passwordManipulator);
+            this.manipulator.add(this.connexionButtonManipulator);
+            this.mailAddressLabel = "Adresse mail :";
+            this.passwordLabel = "Mot de passe :";
+            this.connexionButtonLabel = "Connexion";
+            this.tabForm = [];
+
+            let listFormations = () => {
+                Server.getAllFormations().then(data => {
+                    let myFormations = JSON.parse(data).myCollection;
+                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager.display();
+                });
+            };
+
+            this.connexionButtonHandler = () => {
+                // ** DMA3622 debug
+                //console.log(this.tabForm);
+                let emptyAreas = this.tabForm.filter(field => field.label === '');
+                emptyAreas.forEach(emptyArea => {
+                    emptyArea.border.color(myColors.white, 3, myColors.red);
+                });
+                // ** DMA3622 debug
+                //console.log(emptyAreas);
+                if (emptyAreas.length > 0) {
+                    let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                    svg.timeout(() => {
+                        this.connexionButtonManipulator.unset(3);
+                        emptyAreas.forEach(emptyArea => {
+                            emptyArea.border.color(myColors.white, 1, myColors.black);
+                        });
+                    }, 5000);
+                } else {
+                    Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
+                        data = data && JSON.parse(data);
+                        if (data.ack === 'OK') {
+                            drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+                            data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
+                            listFormations();
+                        } else {
+                            let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                            message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                            svg.timeout(() => {
+                                this.connexionButtonManipulator.unset(3);
+                            }, 5000);
+                        }
+                    });
+                }
+            };
+        }
+
+        render(){
+            main.currentPageDisplayed = "ConnexionManager";
+            globalVariables.header.display("Connexion");
+            globalVariables.drawing.manipulator.set(1, this.manipulator);
+            this.manipulator.move(drawing.width / 2, drawing.height / 2);
+            let w = drawing.width / 6,
+                x = drawing.width / 10,
+                focusedField;
+            var clickEditionField = (field, manipulator) => {
+                return () => {
+                    const width = w,
+                        height = this.h,
+                        globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+                        contentareaStyle = {
+                            toppx: globalPointCenter.y,
+                            leftpx: globalPointCenter.x,
+                            height: height,
+                            width: this[field].border.width
+                        };
+                    drawing.notInTextArea = false;
+                    let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+                        .mark('connectionContentArea')
+                        .message(this[field].labelSecret || this[field].label)
+                        .color(null, 0, myColors.black).font("Arial", 20);
+                    // ** DMA3622 debug
+                    //console.log (svg.TextField);
+                    this[field].secret && contentarea.type('password');
+                    manipulator.unset(1, this[field].content.text);
+                    drawings.component.add(contentarea);
+                    //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+                    contentarea.focus();
+                    let alreadyDeleted = false,
+                        onblur = () => {
+                            if (!alreadyDeleted) {
+                                contentarea.enter();
+                                if (this[field].secret) {
+                                    this[field].label = '';
+                                    this[field].labelSecret = contentarea.messageText;
+                                    if (contentarea.messageText) {
+                                        for (let i = 0; i < contentarea.messageText.length; i++) {
+                                            this[field].label += '●';
+                                        }
+                                    }
+                                } else {
+                                    this[field].label = contentarea.messageText;
+                                }
+                                contentarea.messageText && displayField(field, manipulator);
+                                manipulator.unset(3);
+                                drawing.notInTextArea = true;
+                                alreadyDeleted || drawings.component.remove(contentarea);
+                                alreadyDeleted = true;
+                            }
+                        };
+                    svg.addEvent(contentarea, "blur", onblur);
+                    //debugger;
+                    focusedField = this[field];
+                };
+            };
+            var displayField = (field, manipulator) => {
+                var fieldTitle = new svg.Text(this[field].title).position(0, 0);
+                fieldTitle.font("Arial", 20).anchor("end");
+                manipulator.set(2, fieldTitle);
+                manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
+                this.h = 1.5 * fieldTitle.boundingRect().height;
+                var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
+                this[field].content = displayText.content;
+                // ** DMA3622 debug
+                //console.log(displayText);
+                //debugger;
+                this[field].border = displayText.border;
+                this[field].border.mark(field);
+                var y = -fieldTitle.boundingRect().height / 4;
+                this[field].content.position(x, 0);
+                this[field].border.position(x, y);
+                var clickEdition = clickEditionField(field, manipulator);
+                svg.addEvent(this[field].content, "click", clickEdition);
+                svg.addEvent(this[field].border, "click", clickEdition);
+                var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+                this[field].field = field;
+                alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+            };
+
+            this.mailAddressField = { label: "", title: this.mailAddressLabel, line: -1 };
+            this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
+            displayField("mailAddressField", this.mailAddressManipulator);
+            this.passwordField = {
+                label: '',
+                labelSecret: '',
+                title: this.passwordLabel,
+                line: 0,
+                secret: true,
+                errorMessage: "La confirmation du mot de passe n'est pas valide"
+            };
+            // ** DMA3622 debug
+            //console.log(this.passwordManipulator);
+            displayField('passwordField', this.passwordManipulator);
+            // ** DMA3622 debug
+            //console.log(this.passwordManipulator);
+            const connexionButtonHeightRatio = 0.075,
+                connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
+                connexionButtonWidth = 200,
+                connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
+            connexionButton.border.mark('connexionButton');
+            this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
+            svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
+            // ** DMA3622 debug
+            //console.log(this.connexionButtonHandler);
+            svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
+            // ** DMA3622 debug
+            //console.log(this.mailAddressField);
+            //console.log(this.passwordField);
+
+            let nextField = (backwards = false) => {
+                let index = this.tabForm.indexOf(focusedField);
+                if (index !== -1) {
+                    backwards ? index-- : index++;
+                    if (index === this.tabForm.length) index = 0;
+                    if (index === -1) index = this.tabForm.length - 1;
+                    clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parentManip);
+                    svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler);
+                }
+            };
+
+            svg.addGlobalEvent("keydown", (event) => {
+                if (event.keyCode === 9) { // TAB
+                    event.preventDefault();
+                    nextField(event.shiftKey);
+                } else if (event.keyCode === 13) { // Entrée
+                    event.preventDefault();
+                    // ** DMA3622 : no mandatory
+                    /*svg.activeElement() && svg.activeElement().blur();*/
+                    this.connexionButtonHandler();
+                }
+            });
+        }
+    }
+
+    class FormationVue extends Vue {
+        constructor(options){
+            super(options);
+            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
+            this.graphManipulator = new Manipulator(this);
+            this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
+            this.arrowsManipulator = new Manipulator(this);
+            this.miniaturesManipulator = new Manipulator(this);
+            this.graphManipulator.add(this.miniaturesManipulator);
+            this.graphManipulator.add(this.arrowsManipulator);
+            this.clippingManipulator = new Manipulator(this);
+            this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+
+            this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
+            this.returnButton = new ReturnButton(this, "Retour aux formations");
+            this.labelDefault = "Entrer le nom de la formation";
+            // WIDTH
+            this.libraryWidthRatio = 0.15;
+            this.graphWidthRatio = 1 - this.libraryWidthRatio;
+            // HEIGHT
+            this.graphCreaHeightRatio = 0.85;
+            this.x = MARGIN;
+
+            this.saveButtonHeightRatio = 0.07;
+            this.publicationButtonHeightRatio = 0.07;
+            this.marginRatio = 0.03;
+
+            this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
+            this.levelHeight = 150;
+            this.graphElementSize = this.levelHeight * 0.65;
+            this.miniature = new MiniatureFormation(this);
+            this.changeableDimensions();
+            this.manipulator.add(this.saveFormationButtonManipulator);
+            this.manipulator.add(this.publicationFormationButtonManipulator);
+            this.manipulator.add(this.deactivateFormationButtonManipulator);
+        }
+    }
+
+    /**
      * Réponse à un quiz. Cette réponse peut être correcte ou non. Une explication peut etre associée, avec une image ou une vidéo.
      * @class
      */
@@ -1018,7 +1317,7 @@ exports.Domain = function (globalVariables) {
         }
 
         /**
-         *
+         * indique si le jeu est disponible (pas joué)
          * @param game
          * @returns {boolean}
          */
@@ -1880,6 +2179,7 @@ exports.Domain = function (globalVariables) {
         Answer,
         Bd,
         ConnexionManager,
+        ConnexionManagerVue,
         Formation,
         FormationsManager,
         GamesLibrary,

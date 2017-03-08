@@ -29,7 +29,10 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
 
     const inscriptionManager = new domain.InscriptionManager();
     globalVariables.inscriptionManager = inscriptionManager;
-    const connexionManager = new domain.ConnexionManager();
+    // const connexionManager = new domain.ConnexionManager();
+    // globalVariables.connexionManager = connexionManager;
+
+    const connexionManager = new domain.ConnexionManagerVue();
     globalVariables.connexionManager = connexionManager;
 
     Gui = GUI(globalVariables);
@@ -74,7 +77,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         let quiz;
         switch (main.currentPageDisplayed) {
             case "ConnexionManager":
-                connexionManager.display();
+                connexionManager.render();
                 break;
             case "InscriptionManager":
                 inscriptionManager.display();
@@ -166,7 +169,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             util.setGlobalVariables();
             domain.setGlobalVariables();
             Gui.setGlobalVariables();
-            connexionManager.display();
+            connexionManager.render();
         }
     });
 
