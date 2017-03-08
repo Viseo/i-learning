@@ -8,6 +8,7 @@ exports.Domain = function (globalVariables) {
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
+        // util = globalVariables.util,
         clientWidth = globalVariables.clientWidth,
         clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
@@ -25,6 +26,7 @@ exports.Domain = function (globalVariables) {
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
         svg = globalVariables.svg;
+        // util = globalVariables.util;
         clientWidth = globalVariables.clientWidth;
         clientHeight = globalVariables.clientHeight;
         Manipulator = globalVariables.util.Manipulator;
@@ -126,21 +128,19 @@ exports.Domain = function (globalVariables) {
             var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
             this.lastNameField = { label: this.formLabels.lastNameField || "", title: this.lastNameLabel, line: -3 };
             this.lastNameField.errorMessage = nameErrorMessage;
-            // this.lastNameField.checkInput = () => nameCheckInput("lastNameField");
 
             this.firstNameField = { label: this.formLabels.firstNameField || "", title: this.firstNameLabel, line: -2 };
             this.firstNameField.errorMessage = nameErrorMessage;
-            // this.firstNameField.checkInput = () => nameCheckInput("firstNameField");
 
             this.mailAddressField = { label: this.formLabels.mailAddressField || "", title: this.mailAddressLabel, line: -1 };
             this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
+
             this.mailAddressField.checkInput = () => {
                 if (this.mailAddressField.label) {
                     var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
                     return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
                 }
             };
-
             this.passwordField = {
                 label: this.formLabels.passwordField || "",
                 labelSecret: (this.tabForm[3] && this.tabForm[3].labelSecret) || "",
@@ -150,7 +150,6 @@ exports.Domain = function (globalVariables) {
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
             this.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
-            // this.passwordField.checkInput = passwordCheckInput;
 
             this.passwordConfirmationField = {
                 label: this.formLabels.passwordConfirmationField || "",
@@ -160,18 +159,11 @@ exports.Domain = function (globalVariables) {
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
-            // this.passwordConfirmationField.checkInput = passwordCheckInput;
 
-            let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
-            this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
-            let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
-            let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
-            saveButton.border.mark('inscriptionButton');
         }
 
 
         render() {
-            console.log("rendering nothing");
             main.currentPageDisplayed = "InscriptionManager";
             globalVariables.header.display("Inscription");
             globalVariables.drawing.manipulator.set(1, this.manipulator);
@@ -179,14 +171,263 @@ exports.Domain = function (globalVariables) {
             let w = drawing.width / 5,
                 x = drawing.width / 9,
                 focusedField;
-            // displayField("lastNameField", this.lastNameManipulator);
-            // displayField("firstNameField", this.firstNameManipulator);
-            // displayField("mailAddressField", this.mailAddressManipulator);
-            // displayField("passwordField", this.passwordManipulator);
-            // displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
+
+            var clickEditionField = (field, manipulator) => {
+                return () => {
+                    let width = w,
+                        height = this.h,
+                        globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+                        contentareaStyle = {
+                            toppx: globalPointCenter.y,
+                            leftpx: globalPointCenter.x,
+                            height: height,
+                            width: width
+                        };
+                    drawing.notInTextArea = false;
+                    let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+                    contentarea.message(this[field].labelSecret || this[field].label)
+                        .color(null, 0, myColors.black).font("Arial", 20)
+                        .mark('inscriptionContentArea');
+                    this[field].secret ? contentarea.type('password') : contentarea.type("text");
+                    manipulator.unset(1, this[field].content.text);
+                    drawings.component.add(contentarea);
+                    //TODO : contentarea.focus();
+                    //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
+
+                    /**
+                     *  Rajoute en surbrillance les champs vides ou contenant des erreurs et affiche les erreurs correspondantes
+                     * @param trueManipulator
+                     */
+
+                    var displayErrorMessage = (trueManipulator = manipulator) => {
+                        emptyAreasHandler();
+                        if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
+                            var message = autoAdjustText(this[field].errorMessage, drawing.width, this.h, 20, null, trueManipulator, 3);
+                            message.text.color(myColors.red).position(this[field].border.width / 2 + MARGIN, this[field].border.height + MARGIN);
+                            message.text.mark('inscriptionErrorMessage' + field);
+                        }
+                    };
+
+                    /**
+                     * mouseEvent pour modifier le champ où le clic est effectué
+                     */
+
+                    var oninput = () => {
+                        contentarea.enter();
+                        this[field].label = contentarea.messageText;
+                        this[field].labelSecret !== "undefined" && (this[field].labelSecret = contentarea.messageText);
+                        if ((field === "lastNameField" || field === 'firstNameField') && !this[field].checkInput()) {
+                            displayErrorMessage();
+                            this[field].border.color(myColors.white, 3, myColors.red);
+                        }
+                        else {
+                            field !== "passwordConfirmationField" && manipulator.unset(3);
+                            this[field].border.color(myColors.white, 1, myColors.black);
+                        }
+                    };
+                    svg.addEvent(contentarea, "input", oninput);
+                    var alreadyDeleted = false;
+                    var onblur = () => {
+                        if (!alreadyDeleted) {
+                            contentarea.enter();
+                            if (this[field].secret) {
+                                this[field].label = '';
+                                this[field].labelSecret = contentarea.messageText;
+                                if (contentarea.messageText) {
+                                    for (let i = 0; i < contentarea.messageText.length; i++) {
+                                        this[field].label += '●';
+                                    }
+                                }
+                            } else {
+                                this[field].label = contentarea.messageText;
+                            }
+                            contentarea.messageText && displayField(field, manipulator);
+                            if (this[field].checkInput()) {
+                                this[field].border.color(myColors.white, 1, myColors.black);
+                                field !== "passwordConfirmationField" && manipulator.unset(3);
+                            }
+                            else {
+                                this[field].secret || displayErrorMessage();
+                                this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
+                            }
+                            drawings.component.remove(contentarea);
+                            drawing.notInTextArea = true;
+                            alreadyDeleted = true;
+                        }
+                    };
+                    svg.addEvent(contentarea, "blur", onblur);
+                    focusedField = this[field];
+                };
+            };
+
+            var displayField = (field, manipulator) => {
+                manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
+                var fieldTitle = new svg.Text(this[field].title).position(0, 0).font("Arial", 20).anchor("end");
+                manipulator.set(2, fieldTitle);
+                this.h = 1.5 * fieldTitle.boundingRect().height;
+                var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
+                this[field].content = displayText.content;
+                this[field].border = displayText.border;
+                this[field].border.mark(field);
+                var y = -fieldTitle.boundingRect().height / 4;
+                this[field].content.position(x, 0);
+                this[field].border.position(x, y);
+                var clickEdition = clickEditionField(field, manipulator);
+                svg.addEvent(this[field].content, "click", clickEdition);
+                svg.addEvent(this[field].border, "click", clickEdition);
+                var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+                this[field].field = field;
+                alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+                this.formLabels[field] = this[field].label;
+            };
+
+            var nameCheckInput = (field) => {
+                if (this[field].label) {
+                    this[field].label = this[field].label.trim();
+                    var regex = /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g;
+                    return this[field].label.match(regex);
+                }
+            };
+
+            var passwordCheckInput = () => {
+                const passTooShort = this.passwordField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordField.labelSecret.length < 6,
+                    confTooShort = this.passwordConfirmationField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordConfirmationField.labelSecret.length < 6,
+                    cleanIfEgality = () => {
+                        if (this.passwordField.labelSecret === this.passwordConfirmationField.labelSecret) {
+                            this.passwordField.border.color(myColors.white, 1, myColors.black);
+                            this.passwordConfirmationField.border.color(myColors.white, 1, myColors.black);
+                        }
+                    };
+                if (passTooShort || confTooShort) {
+                    if (passTooShort) {
+                        this.passwordField.border.color(myColors.white, 3, myColors.red);
+                        var message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
+                        message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
+                        message.text.mark('inscriptionErrorMessagepasswordField');
+                    }
+                    if (confTooShort) {
+                        this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
+                        message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
+                        message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
+                        message.text.mark('inscriptionErrorMessagepasswordField');
+                    }
+                }
+                else if (this.passwordConfirmationField.labelSecret !== "" && this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret) {
+                    this.passwordField.border.color(myColors.white, 3, myColors.red);
+                    this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
+                    message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
+                    message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
+                    message.text.mark('inscriptionErrorMessagepasswordField');
+                }
+                else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
+                    this.passwordField.border.color(myColors.white, 1, myColors.black);
+                    this.passwordManipulator.unset(3);
+                    cleanIfEgality();
+                }
+                return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
+            };
+
+            var AllOk = () => {
+                return this.lastNameField.checkInput() &&
+                    this.firstNameField.checkInput() &&
+                    this.mailAddressField.checkInput() &&
+                    this.passwordField.checkInput() &&
+                    this.passwordConfirmationField.checkInput();
+            };
+
+            var emptyAreasHandler = (save) => {
+                var emptyAreas = this.tabForm.filter(field => field.label === "");
+                emptyAreas.forEach(function (emptyArea) {
+                    save && emptyArea.border.color(myColors.white, 3, myColors.red);
+                });
+                if (emptyAreas.length > 0 && save) {
+                    var message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                    message.text.color(myColors.red).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
+                }
+                else {
+                    this.saveButtonManipulator.unset(3);
+                }
+                return (emptyAreas.length > 0);
+            };
+
+            this.lastNameField.checkInput = () => nameCheckInput("lastNameField");
+            this.firstNameField.checkInput = () => nameCheckInput("firstNameField");
+            this.passwordField.checkInput = passwordCheckInput;
+            this.passwordConfirmationField.checkInput = passwordCheckInput;
+
+            displayField("lastNameField", this.lastNameManipulator);
+            displayField("firstNameField", this.firstNameManipulator);
+            displayField("mailAddressField", this.mailAddressManipulator);
+            displayField("passwordField", this.passwordManipulator);
+            displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
+
+            let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+            this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
+            let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
+            let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
+            saveButton.border.mark('inscriptionButton');
             this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
 
+            svg.addEvent(saveButton.content, "click", this.saveButtonHandler);
+
+            let nextField = (backwards = false) => {
+                let index = this.tabForm.indexOf(focusedField);
+                if (index !== -1) {
+                    backwards ? index-- : index++;
+                    if (index === this.tabForm.length) index = 0;
+                    if (index === -1) index = this.tabForm.length - 1;
+                    clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parent.parentManip)();
+                }
+            };
+
+            svg.addGlobalEvent("keydown", (event) => {
+                if (event.keyCode === 9) { // TAB
+                    event.preventDefault();
+                    nextField(event.shiftKey);
+                } else if (event.keyCode === 13) { // Entrée
+                    event.preventDefault();
+                    runtime.activeElement() && runtime.activeElement().blur();
+                    this.saveButtonHandler();
+                }
+            });
+
+            AllOk();
         }
+
+        saveButtonHandler(){
+        if (!emptyAreasHandler(true) && AllOk()) {
+            this.passwordField.hash = runtime.twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
+            let tempObject = {
+                lastName: this.lastNameField.label,
+                firstName: this.firstNameField.label,
+                mailAddress: this.mailAddressField.label,
+                password: this.passwordField.hash
+            };
+            Server.inscription(tempObject)
+                .then(data => {
+                    let created = JSON.parse(data);
+                    if (created) {
+                        const messageText = "Votre compte a bien été créé !",
+                            message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                        message.text.color(myColors.green).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
+                        setTimeout(() => {
+                            this.saveButtonManipulator.unset(3);
+                        }, 10000);
+                    } else {
+                        const messageText = "Un utilisateur possède déjà cette adresse mail !",
+                            message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+                        message.text.color(myColors.red).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
+                        setTimeout(() => {
+                            this.saveButtonManipulator.unset(3);
+                        }, 10000);
+                    }
+                })
+        } else if (!AllOk()) {
+            const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
+                message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
+            message.text.color(myColors.red).position(0, -saveButton.border.height + MARGIN);
+        }
+    };
 
     }
 
