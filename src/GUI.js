@@ -1,3 +1,6 @@
+/*
+GUI.js will provide display method for every object that need one.
+ */
 exports.GUI = function (globalVariables) {
 
     let svg, gui, util, domain, runtime, drawings, drawing, imageController, playerMode,
@@ -48,6 +51,14 @@ exports.GUI = function (globalVariables) {
 
     setGlobalVariables();
 
+    /**
+     * Display function for Answer Class for AdminGui
+     * Handle mouse movement, answer block, red crosses and pen icon
+     * @param x - X position
+     * @param y - Y position
+     * @param w - Width
+     * @param h - Height
+     */
     function answerDisplay(x, y, w, h) {
         this.x = x;
         this.y = y;
@@ -327,7 +338,16 @@ exports.GUI = function (globalVariables) {
         this.manipulator.move(this.x, this.y);
     }
 
-    function libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
+    /**
+     * Display function for Library Class for AdminGui
+     * Handle key pressed and scrollbar.
+     * @param x - X position
+     * @param y - Y position
+     * @param w - Width
+     * @param h - Height
+     * @param ratioPanelHeight - Ratio of the panel on Height
+     */
+    function libraryDisplay(x, y, w, h, ratioPanelHeight) {
         this.libraryManipulator.flush();
         this.x = x;
         this.y = y;
@@ -341,8 +361,8 @@ exports.GUI = function (globalVariables) {
         this.libraryManipulator.set(0, this.border);
         this.libraryManipulator.move(this.x, this.y);
 
-        this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
-        this.panel.border.color([], 3, [0, 0, 0]);
+        this.panel = new gui.Panel(w - borderSize, ratioPanelHeight * h, myColors.white).position(w / 2, ratioPanelHeight * h / 2);
+        this.panel.border.color([], borderSize, [0, 0, 0]);
         this.libraryManipulator.set(2, this.panel.component);
         this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
         drawing.notInTextArea = true;
@@ -356,6 +376,14 @@ exports.GUI = function (globalVariables) {
         };
     }
 
+    /**
+     * Display function for gamesLibrary class for AdminGui
+     * Handle Arrow mode, Arrow Link, display items and assign events.
+     * @param x - X Position
+     * @param y - Y Position
+     * @param w - Width
+     * @param h - Height
+     */
     function gamesLibraryDisplay(x, y, w, h) {
         libraryDisplay.call(this, x + MARGIN, y, w, h, 0.9, 0.9 * h / 2);
 
@@ -520,6 +548,14 @@ exports.GUI = function (globalVariables) {
         assignEvents();
     }
 
+    /**
+     *
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @param callback
+     */
     function imagesLibraryDisplay(x, y, w, h, callback = () => { }) {
 
         let display = (x, y, w, h) => {
