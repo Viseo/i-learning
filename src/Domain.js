@@ -86,6 +86,109 @@ exports.Domain = function (globalVariables) {
 
         }
     }
+    class InscriptionManagerVue extends Vue {
+
+        constructor(options) {
+            super(options);
+        }
+
+        events() {
+            console.log("call none events");
+            return {};
+        }
+
+        initialize() {
+            this.header = new Header("Inscription");
+            this.firstNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.lastNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(3);
+            this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator.add(this.firstNameManipulator);
+            this.manipulator.add(this.lastNameManipulator);
+            this.manipulator.add(this.mailAddressManipulator);
+            this.manipulator.add(this.passwordManipulator);
+            this.manipulator.add(this.passwordConfirmationManipulator);
+            this.manipulator.add(this.saveButtonManipulator);
+            this.saveButtonHeightRatio = 0.075;
+            this.saveButtonWidthRatio = 0.25;
+            this.lastNameLabel = "Nom :";
+            this.firstNameLabel = "Prénom :";
+            this.mailAddressLabel = "Adresse mail :";
+            this.passwordLabel = "Mot de passe :";
+            this.passwordConfirmationLabel = "Confirmer votre mot de passe :";
+            this.lastNameLabel = "Nom :";
+            this.saveButtonLabel = "S'enregistrer";
+            this.tabForm = [];
+            this.formLabels = {};
+
+            var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
+            this.lastNameField = { label: this.formLabels.lastNameField || "", title: this.lastNameLabel, line: -3 };
+            this.lastNameField.errorMessage = nameErrorMessage;
+            // this.lastNameField.checkInput = () => nameCheckInput("lastNameField");
+
+            this.firstNameField = { label: this.formLabels.firstNameField || "", title: this.firstNameLabel, line: -2 };
+            this.firstNameField.errorMessage = nameErrorMessage;
+            // this.firstNameField.checkInput = () => nameCheckInput("firstNameField");
+
+            this.mailAddressField = { label: this.formLabels.mailAddressField || "", title: this.mailAddressLabel, line: -1 };
+            this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
+            this.mailAddressField.checkInput = () => {
+                if (this.mailAddressField.label) {
+                    var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+                    return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
+                }
+            };
+
+            this.passwordField = {
+                label: this.formLabels.passwordField || "",
+                labelSecret: (this.tabForm[3] && this.tabForm[3].labelSecret) || "",
+                title: this.passwordLabel,
+                line: 0,
+                secret: true,
+                errorMessage: "La confirmation du mot de passe n'est pas valide"
+            };
+            this.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
+            // this.passwordField.checkInput = passwordCheckInput;
+
+            this.passwordConfirmationField = {
+                label: this.formLabels.passwordConfirmationField || "",
+                labelSecret: (this.tabForm[4] && this.tabForm[4].labelSecret) || "",
+                title: this.passwordConfirmationLabel,
+                line: 1,
+                secret: true,
+                errorMessage: "La confirmation du mot de passe n'est pas valide"
+            };
+            // this.passwordConfirmationField.checkInput = passwordCheckInput;
+
+            let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+            this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
+            let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
+            let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
+            saveButton.border.mark('inscriptionButton');
+        }
+
+
+        render() {
+            console.log("rendering nothing");
+            main.currentPageDisplayed = "InscriptionManager";
+            globalVariables.header.display("Inscription");
+            globalVariables.drawing.manipulator.set(1, this.manipulator);
+            this.manipulator.move(drawing.width / 2, drawing.height / 2);
+            let w = drawing.width / 5,
+                x = drawing.width / 9,
+                focusedField;
+            // displayField("lastNameField", this.lastNameManipulator);
+            // displayField("firstNameField", this.firstNameManipulator);
+            // displayField("mailAddressField", this.mailAddressManipulator);
+            // displayField("passwordField", this.passwordManipulator);
+            // displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
+            this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
+
+        }
+
+    }
 
     class ConnexionManagerVue extends Vue {
         constructor(options){
@@ -2186,6 +2289,7 @@ exports.Domain = function (globalVariables) {
         ImagesLibrary,
         Header,
         InscriptionManager,
+        InscriptionManagerVue,
         Level,
         Library,
         PopIn,

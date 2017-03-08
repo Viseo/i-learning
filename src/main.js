@@ -27,11 +27,13 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     domain = Domain(globalVariables);
     globalVariables.domain = domain;
 
-    const inscriptionManager = new domain.InscriptionManager();
-    globalVariables.inscriptionManager = inscriptionManager;
+    // const inscriptionManager = new domain.InscriptionManager();
+    // globalVariables.inscriptionManager = inscriptionManager;
     // const connexionManager = new domain.ConnexionManager();
     // globalVariables.connexionManager = connexionManager;
 
+    const inscriptionManager = new domain.InscriptionManagerVue();
+    globalVariables.inscriptionManager = inscriptionManager;
     const connexionManager = new domain.ConnexionManagerVue();
     globalVariables.connexionManager = connexionManager;
 
@@ -80,7 +82,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                 connexionManager.render();
                 break;
             case "InscriptionManager":
-                inscriptionManager.display();
+                inscriptionManager.render();
                 break;
             case "FormationsManager":
                 formationsManager.clippingManipulator.remove(formationsManager.panel.component);
