@@ -46,43 +46,56 @@ exports.Domain = function (globalVariables) {
          * @param options.model - modele associé à la vue
          */
         constructor(options) {
-            if(!options) options = {};
+            if (!options) options = {};
             this.manipulator = new Manipulator(this);
             this.model = options.model;
             this.initialize();
         }
 
-        events(){ return {}; }
+        events() {
+            return {};
+        }
 
-        initialize(){console.log('vue initialized')}
-        render(){console.log("vue rendered")};
+        initialize() {
+            console.log('vue initialized')
+        }
 
-        display(){
+        render() {
+            console.log("vue rendered")
+        };
+
+        display() {
             this.render();
             this._setEvents();
             return this;
         }
-
-        //TODO
+        
         _setEvents() {
-            this.events().forEach(function(handler, eventName){
-                let [eventType, target] = eventName.split(' ');
-                let targetType = target[0];
-                let componentName = target.slice(1);
-                let component;
-                //TODO faire cas où  c'est un id svg (#)
-                switch(targetType){
-                    case ".":
-                        component = this[componentName];
-                        component.children().forEach(function(child){
-                            svg.addEvent(child, eventType, handler.bind(this));
-                        }, this);
-                        break;
-                    case "#":
-                        break;
-                    default:
-                        console.error(`error while assigning events: ${eventName}`);
-                        break;
+            this.events().forEach(function (handler, eventOptions) {
+                let [eventName, target] = eventOptions.split(' ');
+                //global event
+                if (!target) {
+                    svg.addGlobalEvent(eventName, handler.bind(this));
+                }
+                //local event
+                else {
+                    let targetType = target[0];
+                    let componentName = target.slice(1);
+                    let component;
+                    //TODO faire cas où  c'est un id svg (#)
+                    switch (targetType) {
+                        case ".":
+                            component = this[componentName];
+                            component.children().forEach(function (child) {
+                                svg.addEvent(child, eventName, handler.bind(this));
+                            }, this);
+                            break;
+                        case "#":
+                            break;
+                        default:
+                            console.error(`error while assigning events: ${eventOptions}`);
+                            break;
+                    }
                 }
             }.bind(this));
         }
@@ -101,17 +114,20 @@ exports.Domain = function (globalVariables) {
     }
 
     class ConnexionManagerVue extends Vue {
-        constructor(options){
+        constructor(options) {
             super(options);
         }
 
-        events(){
+        events() {
             return {
-                "click .connexionButtonManipulator": this.connexionButtonHandler
+                "click .connexionButtonManipulator": this.connexionButtonHandler,
+                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                "click .passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
+                "keydown": this.keyDownHandler
             }
         }
 
-        initialize(){
+        initialize() {
             this.header = new Header("Connexion");
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
@@ -125,91 +141,19 @@ exports.Domain = function (globalVariables) {
             this.tabForm = [];
         }
 
-        render(){
+        render() {
             main.currentPageDisplayed = "ConnexionManager";
             globalVariables.header.display("Connexion");
             globalVariables.drawing.manipulator.set(1, this.manipulator);
             this.manipulator.move(drawing.width / 2, drawing.height / 2);
-            let w = drawing.width / 6,
-                x = drawing.width / 10,
-                focusedField;
-            var clickEditionField = (field, manipulator) => {
-                return () => {
-                    const width = w,
-                        height = this.h,
-                        globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-                        contentareaStyle = {
-                            toppx: globalPointCenter.y,
-                            leftpx: globalPointCenter.x,
-                            height: height,
-                            width: this[field].border.width
-                        };
-                    drawing.notInTextArea = false;
-                    let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-                        .mark('connectionContentArea')
-                        .message(this[field].labelSecret || this[field].label)
-                        .color(null, 0, myColors.black).font("Arial", 20);
-                    // ** DMA3622 debug
-                    //console.log (svg.TextField);
-                    this[field].secret && contentarea.type('password');
-                    manipulator.unset(1, this[field].content.text);
-                    drawings.component.add(contentarea);
-                    //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-                    contentarea.focus();
-                    let alreadyDeleted = false,
-                        onblur = () => {
-                            if (!alreadyDeleted) {
-                                contentarea.enter();
-                                if (this[field].secret) {
-                                    this[field].label = '';
-                                    this[field].labelSecret = contentarea.messageText;
-                                    if (contentarea.messageText) {
-                                        for (let i = 0; i < contentarea.messageText.length; i++) {
-                                            this[field].label += '●';
-                                        }
-                                    }
-                                } else {
-                                    this[field].label = contentarea.messageText;
-                                }
-                                contentarea.messageText && displayField(field, manipulator);
-                                manipulator.unset(3);
-                                drawing.notInTextArea = true;
-                                alreadyDeleted || drawings.component.remove(contentarea);
-                                alreadyDeleted = true;
-                            }
-                        };
-                    svg.addEvent(contentarea, "blur", onblur);
-                    //debugger;
-                    focusedField = this[field];
-                };
-            };
-            var displayField = (field, manipulator) => {
-                var fieldTitle = new svg.Text(this[field].title).position(0, 0);
-                fieldTitle.font("Arial", 20).anchor("end");
-                manipulator.set(2, fieldTitle);
-                manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
-                this.h = 1.5 * fieldTitle.boundingRect().height;
-                var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
-                this[field].content = displayText.content;
-                // ** DMA3622 debug
-                //console.log(displayText);
-                //debugger;
-                this[field].border = displayText.border;
-                this[field].border.mark(field);
-                var y = -fieldTitle.boundingRect().height / 4;
-                this[field].content.position(x, 0);
-                this[field].border.position(x, y);
-                var clickEdition = clickEditionField(field, manipulator);
-                svg.addEvent(this[field].content, "click", clickEdition);
-                svg.addEvent(this[field].border, "click", clickEdition);
-                var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
-                this[field].field = field;
-                alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
-            };
 
-            this.mailAddressField = { label: "", title: this.mailAddressLabel, line: -1 };
-            this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-            displayField("mailAddressField", this.mailAddressManipulator);
+            this.focusedField = null;
+            this.mailAddressField = {
+                label: "",
+                title: this.mailAddressLabel,
+                line: -1,
+                errorMessage: "L'adresse email n'est pas valide"
+            };
             this.passwordField = {
                 label: '',
                 labelSecret: '',
@@ -219,39 +163,102 @@ exports.Domain = function (globalVariables) {
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
 
-            displayField('passwordField', this.passwordManipulator);
+            this.displayField("mailAddressField", this.mailAddressManipulator);
+            this.displayField('passwordField', this.passwordManipulator);
+
             const connexionButtonHeightRatio = 0.075,
                 connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
                 connexionButtonWidth = 200,
                 connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
             connexionButton.border.mark('connexionButton');
             this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
-
-            let nextField = (backwards = false) => {
-                let index = this.tabForm.indexOf(focusedField);
-                if (index !== -1) {
-                    backwards ? index-- : index++;
-                    if (index === this.tabForm.length) index = 0;
-                    if (index === -1) index = this.tabForm.length - 1;
-                    clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parentManip);
-                    svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler.bind(this));
-                }
-            };
-
-            svg.addGlobalEvent("keydown", (event) => {
-                if (event.keyCode === 9) { // TAB
-                    event.preventDefault();
-                    nextField(event.shiftKey);
-                } else if (event.keyCode === 13) { // Entrée
-                    event.preventDefault();
-                    // ** DMA3622 : no mandatory
-                    /*svg.activeElement() && svg.activeElement().blur();*/
-                    this.connexionButtonHandler();
-                }
-            });
         }
 
-        connexionButtonHandler (){
+        keyDownHandler(event){
+            if (event.keyCode === 9) { // TAB
+                event.preventDefault();
+                let index = this.tabForm.indexOf(this.focusedField);
+                if (index !== -1) {
+                    event.shiftKey ? index-- : index++;
+                    if (index === this.tabForm.length) index = 0;
+                    if (index === -1) index = this.tabForm.length - 1;
+                    svg.event(this.tabForm[index].border, "click");
+                }
+            } else if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                // ** DMA3622 : no mandatory
+                /*svg.activeElement() && svg.activeElement().blur();*/
+                this.connexionButtonHandler();
+            }
+        }
+
+        displayField(field, manipulator) {
+            var fieldTitle = new svg.Text(this[field].title).position(0, 0);
+            fieldTitle.font("Arial", 20).anchor("end");
+            manipulator.set(2, fieldTitle);
+            manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
+            this.h = 1.5 * fieldTitle.boundingRect().height;
+            var displayText = displayTextWithoutCorners(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, null, manipulator);
+            this[field].content = displayText.content;
+            this[field].border = displayText.border;
+            this[field].border.mark(field);
+            var y = -fieldTitle.boundingRect().height / 4;
+            this[field].content.position(drawing.width / 10, 0);
+            this[field].border.position(drawing.width / 10, y);
+            var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+            this[field].field = field;
+            alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+            this._setEvents(); //TODO a changer, on en a besoin car display field recrée à chaque fois le text, donc on perd les events
+        }
+
+        clickEditionField(field, manipulator) {
+            return () => {
+                const width = drawing.width / 6,
+                    height = this.h,
+                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+                    contentareaStyle = {
+                        toppx: globalPointCenter.y,
+                        leftpx: globalPointCenter.x,
+                        height: height,
+                        width: this[field].border.width
+                    };
+                drawing.notInTextArea = false;
+                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+                    .mark('connectionContentArea')
+                    .message(this[field].labelSecret || this[field].label)
+                    .color(null, 0, myColors.black).font("Arial", 20);
+                this[field].secret && contentarea.type('password');
+                manipulator.unset(1, this[field].content.text);
+                drawings.component.add(contentarea);
+                contentarea.focus();
+                let alreadyDeleted = false,
+                    onblur = () => {
+                        if (!alreadyDeleted) {
+                            contentarea.enter();
+                            if (this[field].secret) {
+                                this[field].label = '';
+                                this[field].labelSecret = contentarea.messageText;
+                                if (contentarea.messageText) {
+                                    for (let i = 0; i < contentarea.messageText.length; i++) {
+                                        this[field].label += '●';
+                                    }
+                                }
+                            } else {
+                                this[field].label = contentarea.messageText;
+                            }
+                            contentarea.messageText && this.displayField(field, manipulator);
+                            manipulator.unset(3);
+                            drawing.notInTextArea = true;
+                            alreadyDeleted || drawings.component.remove(contentarea);
+                            alreadyDeleted = true;
+                        }
+                    };
+                svg.addEvent(contentarea, "blur", onblur);
+                this.focusedField = this[field];
+            };
+        }
+
+        connexionButtonHandler() {
             let emptyAreas = this.tabForm.filter(field => field.label === '');
             emptyAreas.forEach(emptyArea => {
                 emptyArea.border.color(myColors.white, 3, myColors.red);
@@ -290,7 +297,7 @@ exports.Domain = function (globalVariables) {
     }
 
     class FormationVue extends Vue {
-        constructor(options){
+        constructor(options) {
             super(options);
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             this.graphManipulator = new Manipulator(this);
