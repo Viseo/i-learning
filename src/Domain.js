@@ -49,15 +49,10 @@ exports.Domain = function (globalVariables) {
             if (!options) options = {};
             this.manipulator = new Manipulator(this);
             this.model = options.model;
-            this.initialize();
         }
 
         events() {
             return {};
-        }
-
-        initialize() {
-            console.log('vue initialized')
         }
 
         render() {
@@ -69,7 +64,7 @@ exports.Domain = function (globalVariables) {
             this._setEvents();
             return this;
         }
-        
+
         _setEvents() {
             this.events().forEach(function (handler, eventOptions) {
                 let [eventName, target] = eventOptions.split(' ');
@@ -116,18 +111,6 @@ exports.Domain = function (globalVariables) {
     class ConnexionManagerVue extends Vue {
         constructor(options) {
             super(options);
-        }
-
-        events() {
-            return {
-                "click .connexionButtonManipulator": this.connexionButtonHandler,
-                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click .passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
-                "keydown": this.keyDownHandler
-            }
-        }
-
-        initialize() {
             this.header = new Header("Connexion");
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
@@ -139,6 +122,15 @@ exports.Domain = function (globalVariables) {
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
             this.tabForm = [];
+        }
+
+        events() {
+            return {
+                "click .connexionButtonManipulator": this.connexionButtonHandler,
+                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                "click .passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
+                "keydown": this.keyDownHandler
+            }
         }
 
         render() {
