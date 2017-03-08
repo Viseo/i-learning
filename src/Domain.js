@@ -42,36 +42,49 @@ exports.Domain = function (globalVariables) {
     class Vue {
         /**
          * @constructs
-         * @param option
-         * @param
+         * @param options - contient des options à appliquer sur la vue
+         * @param options.model - modele associé à la vue
          */
         constructor(options) {
             if(!options) options = {};
             this.manipulator = new Manipulator(this);
-            this.component = this.manipulator.translator;
             this.model = options.model;
             this.initialize();
-            this.setEvents();
         }
 
         events(){ return {}; }
 
         initialize(){console.log('vue initialized')}
+        render(){console.log("vue rendered")};
 
-        render(){console.log(this.model)}
+        display(){
+            this.render();
+            this._setEvents();
+            return this;
+        }
 
-        //TODO make it work (translator cannot have events on it)
-        setEvents() {
+        //TODO
+        _setEvents() {
             this.events().forEach(function(handler, eventName){
-                this.addEvent(eventName, handler);
+                let [eventType, target] = eventName.split(' ');
+                let targetType = target[0];
+                let componentName = target.slice(1);
+                let component;
+                //TODO faire cas où  c'est un id svg (#)
+                switch(targetType){
+                    case ".":
+                        component = this[componentName];
+                        component.children().forEach(function(child){
+                            svg.addEvent(child, eventType, handler.bind(this));
+                        }, this);
+                        break;
+                    case "#":
+                        break;
+                    default:
+                        console.error(`error while assigning events: ${eventName}`);
+                        break;
+                }
             }.bind(this));
-        }
-
-        addEvent(eventName, handler){
-            runtime.addEvent(this.component, eventName, handler);
-        }
-        removeEvent(eventName){
-            runtime.removeEvent(this.component, eventName);
         }
     }
 
@@ -92,10 +105,9 @@ exports.Domain = function (globalVariables) {
             super(options);
         }
 
-        //TODO define easily events
         events(){
             return {
-
+                "click .connexionButtonManipulator": this.connexionButtonHandler
             }
         }
 
@@ -111,50 +123,6 @@ exports.Domain = function (globalVariables) {
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
             this.tabForm = [];
-
-            let listFormations = () => {
-                Server.getAllFormations().then(data => {
-                    let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManager(myFormations);
-                    globalVariables.formationsManager.display();
-                });
-            };
-
-            this.connexionButtonHandler = () => {
-                // ** DMA3622 debug
-                //console.log(this.tabForm);
-                let emptyAreas = this.tabForm.filter(field => field.label === '');
-                emptyAreas.forEach(emptyArea => {
-                    emptyArea.border.color(myColors.white, 3, myColors.red);
-                });
-                // ** DMA3622 debug
-                //console.log(emptyAreas);
-                if (emptyAreas.length > 0) {
-                    let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                    message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
-                    svg.timeout(() => {
-                        this.connexionButtonManipulator.unset(3);
-                        emptyAreas.forEach(emptyArea => {
-                            emptyArea.border.color(myColors.white, 1, myColors.black);
-                        });
-                    }, 5000);
-                } else {
-                    Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
-                        data = data && JSON.parse(data);
-                        if (data.ack === 'OK') {
-                            drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                            data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
-                            listFormations();
-                        } else {
-                            let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                            message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
-                            svg.timeout(() => {
-                                this.connexionButtonManipulator.unset(3);
-                            }, 5000);
-                        }
-                    });
-                }
-            };
         }
 
         render(){
@@ -250,24 +218,14 @@ exports.Domain = function (globalVariables) {
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
-            // ** DMA3622 debug
-            //console.log(this.passwordManipulator);
+
             displayField('passwordField', this.passwordManipulator);
-            // ** DMA3622 debug
-            //console.log(this.passwordManipulator);
             const connexionButtonHeightRatio = 0.075,
                 connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
                 connexionButtonWidth = 200,
                 connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
             connexionButton.border.mark('connexionButton');
             this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
-            svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
-            // ** DMA3622 debug
-            //console.log(this.connexionButtonHandler);
-            svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
-            // ** DMA3622 debug
-            //console.log(this.mailAddressField);
-            //console.log(this.passwordField);
 
             let nextField = (backwards = false) => {
                 let index = this.tabForm.indexOf(focusedField);
@@ -276,7 +234,7 @@ exports.Domain = function (globalVariables) {
                     if (index === this.tabForm.length) index = 0;
                     if (index === -1) index = this.tabForm.length - 1;
                     clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parentManip);
-                    svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler);
+                    svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler.bind(this));
                 }
             };
 
@@ -291,6 +249,43 @@ exports.Domain = function (globalVariables) {
                     this.connexionButtonHandler();
                 }
             });
+        }
+
+        connexionButtonHandler (){
+            let emptyAreas = this.tabForm.filter(field => field.label === '');
+            emptyAreas.forEach(emptyArea => {
+                emptyArea.border.color(myColors.white, 3, myColors.red);
+            });
+
+            if (emptyAreas.length > 0) {
+                let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                svg.timeout(() => {
+                    this.connexionButtonManipulator.unset(3);
+                    emptyAreas.forEach(emptyArea => {
+                        emptyArea.border.color(myColors.white, 1, myColors.black);
+                    });
+                }, 5000);
+            } else {
+                Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
+                    data = data && JSON.parse(data);
+                    if (data.ack === 'OK') {
+                        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+                        data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
+                        Server.getAllFormations().then(data => {
+                            let myFormations = JSON.parse(data).myCollection;
+                            globalVariables.formationsManager = new FormationsManager(myFormations);
+                            globalVariables.formationsManager.display();
+                        });
+                    } else {
+                        let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                        message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                        svg.timeout(() => {
+                            this.connexionButtonManipulator.unset(3);
+                        }, 5000);
+                    }
+                });
+            }
         }
     }
 
