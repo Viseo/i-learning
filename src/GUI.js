@@ -549,12 +549,13 @@ exports.GUI = function (globalVariables) {
     }
 
     /**
-     *
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     * @param callback
+     * Display function for the image library.
+     * Handle uploading and uploaded image and video and assign them events.
+     * @param x - X position
+     * @param y - Y position
+     * @param w - Width
+     * @param h - Height
+     * @param callback - Callback that will be call withtout argument at the end of the function.
      */
     function imagesLibraryDisplay(x, y, w, h, callback = () => { }) {
 
@@ -943,6 +944,14 @@ exports.GUI = function (globalVariables) {
         callback();
     }
 
+    /**
+     * Display function to add an empty answer element or an empty question element.
+     * Handle the double click on those element.
+     * @param x - X position
+     * @param y - Y position
+     * @param w - Width
+     * @param h - Height
+     */
     function addEmptyElementDisplay(x, y, w, h) {
         let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
         let plus = drawPlus(0, 0, 2 * this.fontSize, 2 * this.fontSize);
@@ -1024,6 +1033,9 @@ exports.GUI = function (globalVariables) {
         svg.addEvent(obj.border, "dblclick", dblclickAdd);
     }
 
+    /**
+     * Display function for Fromation creator. 
+     */
     function formationDisplayFormation() {
         main.currentPageDisplayed = "Formation";
         header.display(this.label);
