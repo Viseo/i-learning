@@ -77,7 +77,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         let quiz;
         switch (main.currentPageDisplayed) {
             case "ConnexionManager":
-                connexionManager.render();
+                connexionManager.display();
                 break;
             case "InscriptionManager":
                 inscriptionManager.display();
@@ -169,7 +169,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             util.setGlobalVariables();
             domain.setGlobalVariables();
             Gui.setGlobalVariables();
-            connexionManager.render();
+            connexionManager.display();
         }
     });
 

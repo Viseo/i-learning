@@ -91,6 +91,18 @@ exports.Util = function (globalVariables) {
         }
 
         /**
+         * retourne tous les objets svg accrochés à ce manipulator
+         * @returns {Array}
+         */
+        children(){
+            if(this.ordonator){
+                return this.ordonator.children;
+            }else {
+                return this.last.children;
+            }
+        }
+
+        /**
          * Fonction qui instancie un objet de classe Ordered
          * @param {number} layerNumber
          * @returns {Manipulator}
