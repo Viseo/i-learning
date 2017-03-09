@@ -59,8 +59,11 @@ exports.Domain = function (globalVariables) {
         }
 
         render() {
-            console.log(this.model)
             console.log("vue rendered")
+        };
+
+        display() {
+            this.render();
             this._setEvents();
             return this;
         }
@@ -82,9 +85,11 @@ exports.Domain = function (globalVariables) {
                     switch (targetType) {
                         case ".":
                             component = this[componentName];
-                            component.children().forEach(function (child) {
-                                svg.addEvent(child, eventName, handler.bind(this));
-                            }, this);
+                            if (component.children()) {
+                                component.children().forEach(function (child) {
+                                    svg.addEvent(child, eventName, handler.bind(this));
+                                }, this);
+                            }
                             break;
                         case "#":
                             break;
@@ -124,7 +129,6 @@ exports.Domain = function (globalVariables) {
         }
 
         events() {
-            console.log("call none events");
             return {
                 "click .saveButtonManipulator": this.saveButtonHandler,
                 "click .firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
@@ -161,21 +165,17 @@ exports.Domain = function (globalVariables) {
             this.saveButtonLabel = "S'enregistrer";
             this.tabForm = [];
             this.formLabels = {};
-
             var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
             this.lastNameField = {label: this.formLabels.lastNameField || "", title: this.lastNameLabel, line: -3};
             this.lastNameField.errorMessage = nameErrorMessage;
-
             this.firstNameField = {label: this.formLabels.firstNameField || "", title: this.firstNameLabel, line: -2};
             this.firstNameField.errorMessage = nameErrorMessage;
-
             this.mailAddressField = {
                 label: this.formLabels.mailAddressField || "",
                 title: this.mailAddressLabel,
                 line: -1
             };
             this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
-
             this.mailAddressField.checkInput = () => {
                 if (this.mailAddressField.label) {
                     var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
@@ -191,7 +191,6 @@ exports.Domain = function (globalVariables) {
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
             this.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
-
             this.passwordConfirmationField = {
                 label: this.formLabels.passwordConfirmationField || "",
                 labelSecret: (this.tabForm[4] && this.tabForm[4].labelSecret) || "",
@@ -200,19 +199,14 @@ exports.Domain = function (globalVariables) {
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
-
         }
-
 
         render() {
             main.currentPageDisplayed = "InscriptionManager";
             globalVariables.header.display("Inscription");
             globalVariables.drawing.manipulator.set(1, this.manipulator);
             this.manipulator.move(drawing.width / 2, drawing.height / 2);
-            var w = drawing.width / 5,
-                x = drawing.width / 9;
-
-                this.focusedField = null;
+            this.focusedField = null;
 
             var nameCheckInput = (field) => {
                 if (this[field].label) {
@@ -221,7 +215,6 @@ exports.Domain = function (globalVariables) {
                     return this[field].label.match(regex);
                 }
             };
-
             var passwordCheckInput = () => {
                 const passTooShort = this.passwordField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordField.labelSecret.length < 6,
                     confTooShort = this.passwordConfirmationField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordConfirmationField.labelSecret.length < 6,
@@ -259,44 +252,36 @@ exports.Domain = function (globalVariables) {
                 }
                 return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
             };
-
-            var AllOk = () => {
-                return this.lastNameField.checkInput() &&
-                    this.firstNameField.checkInput() &&
-                    this.mailAddressField.checkInput() &&
-                    this.passwordField.checkInput() &&
-                    this.passwordConfirmationField.checkInput();
-            };
-
             this.lastNameField.checkInput = () => nameCheckInput("lastNameField");
             this.firstNameField.checkInput = () => nameCheckInput("firstNameField");
             this.passwordField.checkInput = passwordCheckInput;
             this.passwordConfirmationField.checkInput = passwordCheckInput;
-
             this.displayField("lastNameField", this.lastNameManipulator);
             this.displayField("firstNameField", this.firstNameManipulator);
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField("passwordField", this.passwordManipulator);
             this.displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
-
             let saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
             this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
             let saveButtonWidth = Math.min(drawing.width * this.saveButtonWidthRatio, 200);
             let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
             saveButton.border.mark('inscriptionButton');
             this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
-
             svg.addEvent(saveButton.content, "click", this.saveButtonHandler);
-
-            AllOk();
+            this.AllOk();
         }
 
+        /** TODO : function not working
+         * permet le changement de champ via le bouton Tab
+         * @param backwards
+         */
         nextField(backwards = false) {
             let index = this.tabForm.indexOf(this.focusedField);
             if (index !== -1) {
                 backwards ? index-- : index++;
                 if (index === this.tabForm.length) index = 0;
                 if (index === -1) index = this.tabForm.length - 1;
+                debugger;
                 this.clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parent.parentManip)();
             }
         };
@@ -304,10 +289,20 @@ exports.Domain = function (globalVariables) {
         keyDownHandler(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
+                /*let index = this.tabForm.indexOf(this.focusedField);
+                 if (index !== -1) {
+                 event.shiftKey ? index-- : index++;
+                 if (index === this.tabForm.length) index = 0;
+                 if (index === -1) index = this.tabForm.length - 1;
+                 svg.event(this.tabForm[index].border, "click");
+                 }*/
+                /** TODO : fix bouton Tab
+                 *
+                 */
                 this.nextField(event.shiftKey);
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                runtime.activeElement() && runtime.activeElement().blur();
+                // runtime.activeElement() && runtime.activeElement().blur();
                 this.saveButtonHandler();
             }
         }
@@ -329,7 +324,7 @@ exports.Domain = function (globalVariables) {
 
         clickEditionField(field, manipulator) {
             return () => {
-                let width = w,
+                let width = drawing.width / 5,
                     height = this.h,
                     globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
                     contentareaStyle = {
@@ -348,12 +343,10 @@ exports.Domain = function (globalVariables) {
                 drawings.component.add(contentarea);
                 //TODO : contentarea.focus();
                 //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-
                 /**
                  *  Rajoute en surbrillance les champs vides ou contenant des erreurs et affiche les erreurs correspondantes
                  * @param trueManipulator
                  */
-
                 var displayErrorMessage = (trueManipulator = manipulator) => {
                     this.emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -362,11 +355,9 @@ exports.Domain = function (globalVariables) {
                         message.text.mark('inscriptionErrorMessage' + field);
                     }
                 };
-
                 /**
                  * mouseEvent pour modifier le champ où le clic est effectué
                  */
-
                 var oninput = () => {
                     contentarea.enter();
                     this[field].label = contentarea.messageText;
@@ -381,39 +372,86 @@ exports.Domain = function (globalVariables) {
                     }
                 };
                 svg.addEvent(contentarea, "input", oninput);
-                var alreadyDeleted = false;
-                var onblur = () => {
-                    if (!alreadyDeleted) {
-                        contentarea.enter();
-                        if (this[field].secret) {
-                            this[field].label = '';
-                            this[field].labelSecret = contentarea.messageText;
-                            if (contentarea.messageText) {
-                                for (let i = 0; i < contentarea.messageText.length; i++) {
-                                    this[field].label += '●';
+                var alreadyDeleted = false,
+                    onblur = () => {
+                        if (!alreadyDeleted) {
+                            contentarea.enter();
+                            if (this[field].secret) {
+                                this[field].label = '';
+                                this[field].labelSecret = contentarea.messageText;
+                                if (contentarea.messageText) {
+                                    for (let i = 0; i < contentarea.messageText.length; i++) {
+                                        this[field].label += '●';
+                                    }
                                 }
+                            } else {
+                                this[field].label = contentarea.messageText;
                             }
-                        } else {
-                            this[field].label = contentarea.messageText;
+                            contentarea.messageText && this.displayField(field, manipulator);
+                            if (this[field].checkInput()) {
+                                this[field].border.color(myColors.white, 1, myColors.black);
+                                field !== "passwordConfirmationField" && manipulator.unset(3);
+                            }
+                            else {
+                                this[field].secret || displayErrorMessage();
+                                this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
+                            }
+                            drawings.component.remove(contentarea);
+                            drawing.notInTextArea = true;
+                            alreadyDeleted = true;
                         }
-                        contentarea.messageText && displayField(field, manipulator);
-                        if (this[field].checkInput()) {
-                            this[field].border.color(myColors.white, 1, myColors.black);
-                            field !== "passwordConfirmationField" && manipulator.unset(3);
-                        }
-                        else {
-                            this[field].secret || displayErrorMessage();
-                            this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
-                        }
-                        drawings.component.remove(contentarea);
-                        drawing.notInTextArea = true;
-                        alreadyDeleted = true;
-                    }
-                };
+                    };
                 svg.addEvent(contentarea, "blur", onblur);
                 this.focusedField = this[field];
             };
         };
+
+        /*clickEditionField(field, manipulator) {
+         return () => {
+         const width = drawing.width / 6,
+         height = this.h,
+         globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+         contentareaStyle = {
+         toppx: globalPointCenter.y,
+         leftpx: globalPointCenter.x,
+         height: height,
+         width: this[field].border.width
+         };
+         drawing.notInTextArea = false;
+         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+         .mark('connectionContentArea')
+         .message(this[field].labelSecret || this[field].label)
+         .color(null, 0, myColors.black).font("Arial", 20);
+         this[field].secret && contentarea.type('password');
+         manipulator.unset(1, this[field].content.text);
+         drawings.component.add(contentarea);
+         // contentarea.focus();
+         let alreadyDeleted = false,
+         onblur = () => {
+         if (!alreadyDeleted) {
+         contentarea.enter();
+         if (this[field].secret) {
+         this[field].label = '';
+         this[field].labelSecret = contentarea.messageText;
+         if (contentarea.messageText) {
+         for (let i = 0; i < contentarea.messageText.length; i++) {
+         this[field].label += '●';
+         }
+         }
+         } else {
+         this[field].label = contentarea.messageText;
+         }
+         contentarea.messageText && this.displayField(field, manipulator);
+         manipulator.unset(3);
+         drawing.notInTextArea = true;
+         alreadyDeleted || drawings.component.remove(contentarea);
+         alreadyDeleted = true;
+         }
+         };
+         svg.addEvent(contentarea, "blur", onblur);
+         this.focusedField = this[field];
+         };
+         };*/
 
         displayField(field, manipulator) {
             manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
@@ -434,10 +472,19 @@ exports.Domain = function (globalVariables) {
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
             this.formLabels[field] = this[field].label;
+            this._setEvents();
+        };
+
+        AllOk() {
+            return this.lastNameField.checkInput() &&
+                this.firstNameField.checkInput() &&
+                this.mailAddressField.checkInput() &&
+                this.passwordField.checkInput() &&
+                this.passwordConfirmationField.checkInput();
         };
 
         saveButtonHandler() {
-            if (!emptyAreasHandler(true) && AllOk()) {
+            if (!this.emptyAreasHandler(true) && this.AllOk()) {
                 this.passwordField.hash = runtime.twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
                 let tempObject = {
                     lastName: this.lastNameField.label,
@@ -464,7 +511,7 @@ exports.Domain = function (globalVariables) {
                             }, 10000);
                         }
                     })
-            } else if (!AllOk()) {
+            } else if (!this.AllOk()) {
                 const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
                     message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
                 message.text.color(myColors.red).position(0, -saveButton.border.height + MARGIN);
@@ -506,14 +553,10 @@ exports.Domain = function (globalVariables) {
             };
 
             this.connexionButtonHandler = () => {
-                // ** DMA3622 debug
-                //console.log(this.tabForm);
                 let emptyAreas = this.tabForm.filter(field => field.label === '');
                 emptyAreas.forEach(emptyArea => {
                     emptyArea.border.color(myColors.white, 3, myColors.red);
                 });
-                // ** DMA3622 debug
-                //console.log(emptyAreas);
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
@@ -566,8 +609,6 @@ exports.Domain = function (globalVariables) {
                         .mark('connectionContentArea')
                         .message(this[field].labelSecret || this[field].label)
                         .color(null, 0, myColors.black).font("Arial", 20);
-                    // ** DMA3622 debug
-                    //console.log (svg.TextField);
                     this[field].secret && contentarea.type('password');
                     manipulator.unset(1, this[field].content.text);
                     drawings.component.add(contentarea);
@@ -608,9 +649,6 @@ exports.Domain = function (globalVariables) {
                 this.h = 1.5 * fieldTitle.boundingRect().height;
                 var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);
                 this[field].content = displayText.content;
-                // ** DMA3622 debug
-                //console.log(displayText);
-                //debugger;
                 this[field].border = displayText.border;
                 this[field].border.mark(field);
                 var y = -fieldTitle.boundingRect().height / 4;
@@ -635,11 +673,7 @@ exports.Domain = function (globalVariables) {
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
-            // ** DMA3622 debug
-            //console.log(this.passwordManipulator);
             displayField('passwordField', this.passwordManipulator);
-            // ** DMA3622 debug
-            //console.log(this.passwordManipulator);
             const connexionButtonHeightRatio = 0.075,
                 connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
                 connexionButtonWidth = 200,
@@ -647,13 +681,7 @@ exports.Domain = function (globalVariables) {
             connexionButton.border.mark('connexionButton');
             this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
             svg.addEvent(connexionButton.content, "click", this.connexionButtonHandler);
-            // ** DMA3622 debug
-            //console.log(this.connexionButtonHandler);
             svg.addEvent(connexionButton.border, "click", this.connexionButtonHandler);
-            // ** DMA3622 debug
-            //console.log(this.mailAddressField);
-            //console.log(this.passwordField);
-
             let nextField = (backwards = false) => {
                 let index = this.tabForm.indexOf(focusedField);
                 if (index !== -1) {
@@ -664,14 +692,12 @@ exports.Domain = function (globalVariables) {
                     svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler);
                 }
             };
-
             svg.addGlobalEvent("keydown", (event) => {
                 if (event.keyCode === 9) { // TAB
                     event.preventDefault();
                     nextField(event.shiftKey);
                 } else if (event.keyCode === 13) { // Entrée
                     event.preventDefault();
-                    // ** DMA3622 : no mandatory
                     /*svg.activeElement() && svg.activeElement().blur();*/
                     this.connexionButtonHandler();
                 }
@@ -2520,14 +2546,10 @@ exports.Domain = function (globalVariables) {
             };
 
             this.connexionButtonHandler = () => {
-                // ** DMA3622 debug
-                //console.log(this.tabForm);
                 let emptyAreas = this.tabForm.filter(field => field.label === '');
                 emptyAreas.forEach(emptyArea => {
                     emptyArea.border.color(myColors.white, 3, myColors.red);
                 });
-                // ** DMA3622 debug
-                //console.log(emptyAreas);
                 if (emptyAreas.length > 0) {
                     let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                     message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);

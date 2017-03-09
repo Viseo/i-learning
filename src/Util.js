@@ -235,6 +235,17 @@ exports.Util = function (globalVariables) {
         //     return point ? {x: point.x - this.x, y: point.y - this.y} : null;
         // }
 
+        /**
+         * retourne tous les objets svg accrochés à ce manipulator
+         * @returns {Array}
+         */
+        children() {
+            if (this.ordonator) {
+                return this.ordonator.children;
+            } else {
+                return this.last.children;
+            }
+        }
     }
 
     class Drawings extends gui.Canvas {
