@@ -122,25 +122,8 @@ exports.Domain = function (globalVariables) {
         }
     }
     class InscriptionManagerVue extends Vue {
-
         constructor(options) {
             super(options);
-            this.initialize();
-        }
-
-        events() {
-            return {
-                "click .saveButtonManipulator": this.saveButtonHandler,
-                "click .firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
-                "click .lastNameManipulator": this.clickEditionField("lastNameField", this.lastNameManipulator),
-                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click .passwordManipulator": this.clickEditionField("passwordField", this.passwordManipulator),
-                "click .passwordConfirmationManipulator": this.clickEditionField("passwordConfirmationField", this.passwordConfirmationManipulator),
-                "keydown": this.keyDownHandler
-            };
-        }
-
-        initialize() {
             this.header = new Header("Inscription");
             this.firstNameManipulator = new Manipulator(this).addOrdonator(4);
             this.lastNameManipulator = new Manipulator(this).addOrdonator(4);
@@ -198,6 +181,18 @@ exports.Domain = function (globalVariables) {
                 line: 1,
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
+            };
+        }
+
+        events() {
+            return {
+                "click .saveButtonManipulator": this.saveButtonHandler,
+                "click .firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
+                "click .lastNameManipulator": this.clickEditionField("lastNameField", this.lastNameManipulator),
+                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                "click .passwordManipulator": this.clickEditionField("passwordField", this.passwordManipulator),
+                "click .passwordConfirmationManipulator": this.clickEditionField("passwordConfirmationField", this.passwordConfirmationManipulator),
+                "keydown": this.keyDownHandler
             };
         }
 
@@ -271,35 +266,16 @@ exports.Domain = function (globalVariables) {
             this.AllOk();
         }
 
-        /** TODO : function not working
-         * permet le changement de champ via le bouton Tab
-         * @param backwards
-         */
-        nextField(backwards = false) {
-            let index = this.tabForm.indexOf(this.focusedField);
-            if (index !== -1) {
-                backwards ? index-- : index++;
-                if (index === this.tabForm.length) index = 0;
-                if (index === -1) index = this.tabForm.length - 1;
-                debugger;
-                this.clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parent.parentManip)();
-            }
-        };
-
         keyDownHandler(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
-                /*let index = this.tabForm.indexOf(this.focusedField);
-                 if (index !== -1) {
-                 event.shiftKey ? index-- : index++;
-                 if (index === this.tabForm.length) index = 0;
-                 if (index === -1) index = this.tabForm.length - 1;
-                 svg.event(this.tabForm[index].border, "click");
-                 }*/
-                /** TODO : fix bouton Tab
-                 *
-                 */
-                this.nextField(event.shiftKey);
+                let index = this.tabForm.indexOf(this.focusedField);
+                if (index !== -1) {
+                    event.shiftKey ? index-- : index++;
+                    if (index === this.tabForm.length) index = 0;
+                    if (index === -1) index = this.tabForm.length - 1;
+                    svg.event(this.tabForm[index].border, "click");
+                }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
                 // runtime.activeElement() && runtime.activeElement().blur();
@@ -341,12 +317,8 @@ exports.Domain = function (globalVariables) {
                 this[field].secret ? contentarea.type('password') : contentarea.type("text");
                 manipulator.unset(1, this[field].content.text);
                 drawings.component.add(contentarea);
-                //TODO : contentarea.focus();
-                //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
-                /**
-                 *  Rajoute en surbrillance les champs vides ou contenant des erreurs et affiche les erreurs correspondantes
-                 * @param trueManipulator
-                 */
+                contentarea.focus();
+
                 var displayErrorMessage = (trueManipulator = manipulator) => {
                     this.emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -406,53 +378,6 @@ exports.Domain = function (globalVariables) {
             };
         };
 
-        /*clickEditionField(field, manipulator) {
-         return () => {
-         const width = drawing.width / 6,
-         height = this.h,
-         globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-         contentareaStyle = {
-         toppx: globalPointCenter.y,
-         leftpx: globalPointCenter.x,
-         height: height,
-         width: this[field].border.width
-         };
-         drawing.notInTextArea = false;
-         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-         .mark('connectionContentArea')
-         .message(this[field].labelSecret || this[field].label)
-         .color(null, 0, myColors.black).font("Arial", 20);
-         this[field].secret && contentarea.type('password');
-         manipulator.unset(1, this[field].content.text);
-         drawings.component.add(contentarea);
-         // contentarea.focus();
-         let alreadyDeleted = false,
-         onblur = () => {
-         if (!alreadyDeleted) {
-         contentarea.enter();
-         if (this[field].secret) {
-         this[field].label = '';
-         this[field].labelSecret = contentarea.messageText;
-         if (contentarea.messageText) {
-         for (let i = 0; i < contentarea.messageText.length; i++) {
-         this[field].label += '●';
-         }
-         }
-         } else {
-         this[field].label = contentarea.messageText;
-         }
-         contentarea.messageText && this.displayField(field, manipulator);
-         manipulator.unset(3);
-         drawing.notInTextArea = true;
-         alreadyDeleted || drawings.component.remove(contentarea);
-         alreadyDeleted = true;
-         }
-         };
-         svg.addEvent(contentarea, "blur", onblur);
-         this.focusedField = this[field];
-         };
-         };*/
-
         displayField(field, manipulator) {
             manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
             var fieldTitle = new svg.Text(this[field].title).position(0, 0).font("Arial", 20).anchor("end");
@@ -465,9 +390,6 @@ exports.Domain = function (globalVariables) {
             var y = -fieldTitle.boundingRect().height / 4;
             this[field].content.position(drawing.width / 9, 0);
             this[field].border.position(drawing.width / 9, y);
-            /*var clickEdition = clickEditionField(field, manipulator);
-             svg.addEvent(this[field].content, "click", clickEdition);
-             svg.addEvent(this[field].border, "click", clickEdition);*/
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
@@ -688,8 +610,7 @@ exports.Domain = function (globalVariables) {
                     backwards ? index-- : index++;
                     if (index === this.tabForm.length) index = 0;
                     if (index === -1) index = this.tabForm.length - 1;
-                    clickEditionField(this.tabForm[index].field, this.tabForm[index].border.parentManip);
-                    svg.event(this.tabForm[index].border, "click", this.connexionButtonHandler);
+                    svg.event(this.tabForm[index].border, "click");
                 }
             };
             svg.addGlobalEvent("keydown", (event) => {
