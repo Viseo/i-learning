@@ -27,11 +27,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     domain = Domain(globalVariables);
     globalVariables.domain = domain;
 
-    const inscriptionManager = new domain.InscriptionManager();
+    const inscriptionManager = new domain.InscriptionManagerVue();
     globalVariables.inscriptionManager = inscriptionManager;
-    // const connexionManager = new domain.ConnexionManager();
-    // globalVariables.connexionManager = connexionManager;
-
     const connexionManager = new domain.ConnexionManagerVue();
     globalVariables.connexionManager = connexionManager;
 

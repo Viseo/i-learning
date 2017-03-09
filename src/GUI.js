@@ -37,8 +37,8 @@ exports.GUI = function (globalVariables) {
         QuestionCreator = domain.QuestionCreator;
         Quiz = domain.Quiz;
         QuizManager = domain.QuizManager;
-        InscriptionManager = domain.InscriptionManager;
-        ConnexionManager = domain.ConnexionManager;
+        InscriptionManager = domain.InscriptionManagerVue;
+        ConnexionManager = domain.ConnexionManagerVue;
 
         Manipulator = util.Manipulator;
         MiniatureGame = util.MiniatureGame;
@@ -1835,7 +1835,7 @@ exports.GUI = function (globalVariables) {
         if (message === "Inscription" || message === "Connexion") {
             const link = message === "Inscription" ? "Connexion" : "Inscription";
             const clickHandler = () => {
-                (link === "Inscription") ? globalVariables.inscriptionManager.display() : globalVariables.connexionManager.display();
+                (link === "Inscription") ? globalVariables.inscriptionManager.render() : globalVariables.connexionManager.render();
             };
             const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4);
             special.border.mark('inscriptionLink');
@@ -3107,6 +3107,12 @@ exports.GUI = function (globalVariables) {
             x = drawing.width / 9,
             focusedField;
 
+        /**
+         * Crée un champ input à modifier, au clic de la souris
+         * @param field
+         * @param manipulator
+         * @returns {function()}
+         */
         var clickEditionField = (field, manipulator) => {
             return () => {
                 let width = w,
@@ -3129,6 +3135,11 @@ exports.GUI = function (globalVariables) {
                 //TODO : contentarea.focus();
                 //contentarea.setCaretPosition(this[field].labelSecret && this[field].labelSecret.length || this[field].label.length);
                 //debugger;
+                /**
+                 *  Rajoute en surbrillance les champs vides ou contenant des erreurs et affiche les erreurs correspondantes
+                 * @param trueManipulator
+                 */
+
                 var displayErrorMessage = (trueManipulator = manipulator) => {
                     emptyAreasHandler();
                     if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
@@ -3137,6 +3148,10 @@ exports.GUI = function (globalVariables) {
                         message.text.mark('inscriptionErrorMessage' + field);
                     }
                 };
+
+                /**
+                 * mouseEvent pour modifier le champ où le clic est effectué
+                 */
                 var oninput = () => {
                     contentarea.enter();
                     this[field].label = contentarea.messageText;
@@ -3565,11 +3580,11 @@ exports.GUI = function (globalVariables) {
         playerMode = true;
         Answer.prototype.display = answerDisplay;
         Bd.prototype.displayMiniature = gameDisplayMiniature;
-        ConnexionManager.prototype.display = connexionManagerDisplay;
+        //ConnexionManager.prototype.display = ConnexionManager.display;
         Formation.prototype.displayFormation = playerModeDisplayFormation;
         FormationsManager.prototype.display = formationsManagerDisplay;
         Header.prototype.display = headerDisplay;
-        InscriptionManager.prototype.display = inscriptionManagerDisplay;
+        //InscriptionManager.prototype.display = InscriptionManager.display;
         Library.prototype.display = libraryDisplay;
         PopIn.prototype.display = popInDisplay;
         Question.prototype.display = questionDisplay;
