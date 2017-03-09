@@ -921,7 +921,7 @@ exports.GUI = function (globalVariables) {
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
-                    let newAnswer = new Answer(null, this.parent.linkedQuestion);
+                    let newAnswer = new AnswerVue({model: new Answer(null, this.parent.linkedQuestion)});
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
                     questionCreator.linkedQuestion.tabAnswer.forEach(answer => {

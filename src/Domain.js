@@ -85,15 +85,7 @@ exports.Domain = function (globalVariables) {
     class AnswerVue extends Vue{
         constructor(options){
             super(options);
-            this.manipulator = new Manipulator(this).addOrdonator(10);
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
-            this.model = options.model;
-            this.border = this.model.border;
-            this.content = this.model.content;
-        }
-
-        getTarget(x,y){
-            this.model.getTarget(x,y);
         }
 
         isEditable(editor,editable){
@@ -108,10 +100,6 @@ exports.Domain = function (globalVariables) {
             return{
 
             }
-        }
-        //Nothing for now
-        initialize(){
-
         }
 
         render(x, y , w, h){
@@ -392,22 +380,6 @@ exports.Domain = function (globalVariables) {
             }
             this.manipulator.move(this.x, this.y);
         }
-
-        //TODO make it work (translator cannot have events on it)
-        setEvents() {
-            this.events().forEach(function(handler, eventName){
-                this.addEvent(eventName, handler);
-            }.bind(this));
-        }
-
-        addEvent(eventName, handler){
-            runtime.addEvent(this.component, eventName, handler);
-        }
-        removeEvent(eventName){
-            runtime.removeEvent(this.component, eventName);
-        }
-
-
     }
 
     class Collection {
@@ -685,8 +657,6 @@ exports.Domain = function (globalVariables) {
                 correct: false
             };
             answerParameters && (answer = answerParameters);
-            //this.manipulator = new Manipulator(this).addOrdonator(10);
-            //this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
             this.label = answer.label;
             this.imageSrc = answer.imageSrc;
             this.video = answer.video;
@@ -712,8 +682,6 @@ exports.Domain = function (globalVariables) {
             }
             this.colorBordure = answer.colorBordure ? answer.colorBordure : myColors.black;
             this.bgColor = answer.bgColor ? answer.bgColor : myColors.white;
-            this.border = null;
-            this.content = null;
         }
 
         /**
@@ -838,7 +806,7 @@ exports.Domain = function (globalVariables) {
                 this.imageSrc = "";
                 this.columns = 4;
                 this.rightAnswers = [];
-                this.tabAnswer = [new Answer(null, this), new Answer(null, this)];
+                this.tabAnswer = [new AnswerVue({model: new Answer(null, this)}), new AnswerVue({model: new Answer(null, this)})];
                 this.multipleChoice = false;
                 this.font = "Arial";
                 this.bgColor = myColors.white;
@@ -873,7 +841,7 @@ exports.Domain = function (globalVariables) {
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
-                    var tmp = new Answer(it, this);
+                    var tmp = new AnswerVue({model: new Answer(it, this)});
                     this.tabAnswer.push(tmp);
                     if (tmp.correct) {
                         this.rightAnswers.push(tmp);
@@ -1041,8 +1009,7 @@ exports.Domain = function (globalVariables) {
             this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
                 if (answer instanceof Answer) {
-                    let answerVue = new AnswerVue({"model": answer});
-                    answerVue.isEditable(this, true);
+                    answer.isEditable(this, true);
                 }
                 answer.popIn = new PopIn(answer, true);
             });
