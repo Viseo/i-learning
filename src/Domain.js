@@ -59,8 +59,8 @@ exports.Domain = function (globalVariables) {
             console.log("vue rendered")
         };
 
-        display() {
-            this.render();
+        display(...args) {
+            this.render(...args);
             this._setEvents();
             return this;
         }
@@ -96,17 +96,11 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    class Model {
-        constructor(model) {
-            this.model = model;
-            this.manipulator = model.manipulator;
-        }
-    }
-
     class AnswerVue extends Vue{
         constructor(options){
             super(options);
             this.explanationIconManipulator = new Manipulator(this).addOrdonator(5);
+            this.manipulator.addOrdonator(10);
         }
 
         isEditable(editor,editable){
@@ -134,7 +128,7 @@ exports.Domain = function (globalVariables) {
                 this.obj = {};
                 let redCrossClickHandler = () => {
                     this.redCrossManipulator.flush();
-                    let index = this.model.parentQuestion.tabAnswer.indexOf(this.model);
+                    let index = this.model.parentQuestion.tabAnswer.indexOf(this);
                     drawing.mousedOverTarget = null;
                     drawings.component.remove(this.model.parentQuestion.tabAnswer[index].obj.video);
                     this.model.parentQuestion.tabAnswer.splice(index, 1);
@@ -303,9 +297,9 @@ exports.Domain = function (globalVariables) {
                 displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this);
 
                 if (typeof this.obj.checkbox === 'undefined') {
-                    this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this.model).checkbox;
+                    this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
                     this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
-                    this.obj.checkbox.answerParent = this.model;
+                    this.obj.checkbox.answerParent = this;
                 }
                 this.manipulator.ordonator.children.forEach((e) => {
                     e._acceptDrop = true;
@@ -835,7 +829,7 @@ exports.Domain = function (globalVariables) {
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
-                    var tmp = new AnswerVue({model: new Answer(it, this)});
+                    var tmp = new AnswerVue({model: new Answer(it.model || it, this)});
                     this.tabAnswer.push(tmp);
                     if (tmp.correct) {
                         this.rightAnswers.push(tmp);
@@ -1002,7 +996,7 @@ exports.Domain = function (globalVariables) {
             quest.label && (this.label = quest.label);
             this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
-                if (answer instanceof Answer) {
+                if (answer instanceof AnswerVue) {
                     answer.isEditable(this, true);
                 }
                 answer.popIn = new PopIn(answer, true);
@@ -1066,6 +1060,7 @@ exports.Domain = function (globalVariables) {
          */
         constructor(parent, type) {
             this.manipulator = new Manipulator(this).addOrdonator(3);
+            this.model = {};
             type && (this.type = type);
             this.invalidLabelInput = false;
             switch (type) {
@@ -2037,14 +2032,15 @@ exports.Domain = function (globalVariables) {
             (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof AddEmptyElement) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
                 (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElement) && question.tabAnswer.pop();
-                question.tabAnswer.forEach(answer => {
+                question.tabAnswer = question.tabAnswer.map(answer => {
+                    let formatted = answer.model;
                     if (answer.popIn) {
-                        answer.explanation = {};
-                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
-                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
-                        answer.popIn.video && (answer.explanation.video = answer.popIn.video);
-                        answer.popIn = null;
+                        formatted.explanation = {};
+                        answer.popIn.image && (formatted.explanation.image = answer.popIn.image);
+                        answer.popIn.label && (formatted.explanation.label = answer.popIn.label);
+                        answer.popIn.video && (formatted.explanation.video = answer.popIn.video);
                     }
+                    return formatted;
                 });
             });
             return {

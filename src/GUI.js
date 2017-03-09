@@ -24,6 +24,7 @@ exports.GUI = function (globalVariables) {
 
         AddEmptyElement = domain.AddEmptyElement;
         Answer = domain.Answer;
+        AnswerVue = domain.AnswerVue;
         Bd = domain.Bd;
         Formation = domain.Formation;
         FormationsManager = domain.FormationsManager;

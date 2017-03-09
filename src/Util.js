@@ -346,14 +346,14 @@ exports.Util = function (globalVariables) {
             var target = drawings.component.background.getTarget(event.pageX, event.pageY);
             var sender = null;
             target.answerParent && (sender = target.answerParent);
-            var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
             !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
-                answer.correct = (answer !== sender) ? false : answer.correct;
+                answer.model.correct = (answer !== sender) ? false : answer.model.correct;
             });
-            sender.correct = !sender.correct;
-            sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
+            sender.model.correct = !sender.model.correct;
+            sender.model.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
             updateAllCheckBoxes(sender);
-            let quizManager = sender.parentQuestion.parentQuiz.parentFormation.quizManager;
+            let quizManager = sender.model.parentQuestion.parentQuiz.parentFormation.quizManager;
             quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
@@ -371,11 +371,11 @@ exports.Util = function (globalVariables) {
         };
 
         updateAllCheckBoxes = function (sender) {
-            var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
             editor.linkedQuestion.tabAnswer.forEach(answer => {
-                if (answer.editable && answer.obj.checkbox) {
+                if (answer.model.editable && answer.obj.checkbox) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                    !answer.correct && answer.manipulator.unset(4);
+                    !answer.model.correct && answer.manipulator.unset(4);
                 }
             });
         };
@@ -396,8 +396,8 @@ exports.Util = function (globalVariables) {
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);
             svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
             sender.manipulator.set(3, sender.obj.checkbox);
-            !sender.correct && sender.manipulator.unset(4);
-            sender.correct && drawPathChecked(sender, x, y, size);
+            !sender.model.correct && sender.manipulator.unset(4);
+            sender.model.correct && drawPathChecked(sender, x, y, size);
             return sender.obj;
         };
 
@@ -514,7 +514,7 @@ exports.Util = function (globalVariables) {
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey),
                 elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
-            square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
+            square.mark("explanationSquare" + object.model.parentQuestion.tabAnswer.indexOf(object));
             object.manipulator.set(6, square);
             object.linesManipulator.move(x, y);
             object.linesManipulator.set(0, line1);
