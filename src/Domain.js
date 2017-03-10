@@ -1350,7 +1350,7 @@ exports.Domain = function (globalVariables) {
                 this.returnButton.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                     globalVariables.formationsManager.display();
                 });
                 this.returnButton.removeHandler(returnHandler);
@@ -1993,7 +1993,7 @@ exports.Domain = function (globalVariables) {
                     this.manipulator.flush();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManager(myFormations);
+                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                         globalVariables.formationsManager.display();
                     });
                 })
@@ -2012,7 +2012,7 @@ exports.Domain = function (globalVariables) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                     globalVariables.formationsManager.display();
                 });
             };
@@ -2095,7 +2095,7 @@ exports.Domain = function (globalVariables) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManager(myFormations);
+                    globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                     globalVariables.formationsManager.display();
                 });
             };
@@ -2846,7 +2846,7 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManager(myFormations);
+                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                         globalVariables.formationsManager.display();
                     });
                 };
@@ -5511,9 +5511,12 @@ exports.Domain = function (globalVariables) {
         setGlobalVariables,
         FormationsManagerVue,
         AddEmptyElementVue,
-        Answer,
         AnswerVue,
         ConnexionManagerVue,
+        FormationVue,
+        FormationsManagerVue,
+        GamesLibraryVue,
+        ImagesLibraryVue,
         HeaderVue,
         InscriptionManagerVue,
         PopInVue,

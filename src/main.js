@@ -79,7 +79,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                 break;
             case "Formation":
                 formation.gamesLibraryManipulator.flush();
-                formation.displayFormation();
+                formation.display();
                 if (formation.message) {
                     let saveFormationButtonCadre = formation.saveFormationButtonManipulator.ordonator.children[0];
                     let messageY = saveFormationButtonCadre.globalPoint(0, 0).y;

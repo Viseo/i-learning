@@ -545,7 +545,7 @@ exports.Util = function (globalVariables) {
             object.penManipulator.set(3, body);
             object.penManipulator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotate(40);
-            elementsTab.forEach(element => svg.addEvent(element, "click", object.penHandler));
+            elementsTab.forEach(element => svg.addEvent(element, "click", object.model.penHandler));
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
@@ -1666,7 +1666,7 @@ exports.Util = function (globalVariables) {
         }
 
         static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData)
+            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
         }
 
         static getImages() {
@@ -1702,7 +1702,7 @@ exports.Util = function (globalVariables) {
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
-        myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
+        myParentsList = ["parent","parentManipulator","answersManipulator", "validateManipulator", "parentElement", "manipulator",
             "resetManipulator", "manipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizManager",
@@ -1713,7 +1713,8 @@ exports.Util = function (globalVariables) {
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
             "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow"];
+            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
+            "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1795,12 +1796,12 @@ exports.Util = function (globalVariables) {
         singleAnswerValidationTab = [
             // Check 1 Correct Answer:
             question => ({
-                isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
+                isValid: question.tabAnswer && question.tabAnswer.some(el => el.model.correct),
                 message: "Vous devez cocher au moins une bonne réponse."
             }),
             // Check answer's name:
             question => {
-                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video));
+                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video));
                 let message = "Vous devez remplir correctement toutes les réponses.";
 
                 return {
