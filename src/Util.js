@@ -86,6 +86,25 @@ exports.Util = function (globalVariables) {
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
             this.first = this.translator;
+            this.components = [];
+            this.component = this.translator;
+            let self = this;
+            Object.defineProperty(self, "x", {
+                get : function(){
+                    return self.component.globalPoint(0,0).x;
+                },
+                set : function(nouvelleValeur){} ,
+                enumerable : true,
+                configurable : true
+            });
+            Object.defineProperty(self, "y", {
+                get : function(){
+                    return self.component.globalPoint(0,0).y;
+                },
+                set : function(nouvelleValeur){} ,
+                enumerable : true,
+                configurable : true
+            });
         }
 
         /**
@@ -93,6 +112,25 @@ exports.Util = function (globalVariables) {
          * @param {number} layerNumber
          * @returns {Manipulator}
          */
+        globalPoint(...args){
+            return this.translator.globalPoint(args);
+        }
+        localPoint(...args) {
+            return this.translator.localPoint(args);
+        }
+
+        addEvent(eventName, handler){
+            this[eventName] = handler;
+            for (let i = 0; i < this.components.length; i++) {
+                svg.addEvent(this.components[i], eventName, handler);
+            }
+        }
+        removeEvent(eventName, handler){
+            this[eventName] = handler;
+            for (let i = 0; i < this.components.length; i++) {
+                svg.removeEvent(this.components[i], eventName, handler);
+            }
+        }
 
         addOrdonator(layerNumber) {
             this.ordonator = new svg.Ordered(layerNumber);
@@ -149,6 +187,8 @@ exports.Util = function (globalVariables) {
 
         move(x, y) {
             this.translator.move(x, y);
+            this.x = this.translator.localPoint(0,0);
+            this.y = this.translator.localPoint(0,0);
             return this;
         }
 
@@ -186,7 +226,8 @@ exports.Util = function (globalVariables) {
             if (component instanceof Manipulator) {
                 component = component.first;
             }
-            this.ordonator.set(layer, component)
+            this.ordonator.set(layer, component);
+            this.components.push(component);
             return this;
         }
 

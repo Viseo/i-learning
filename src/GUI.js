@@ -4,7 +4,7 @@ exports.GUI = function (globalVariables) {
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quiz, QuizManager,
         InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server,
-        mainManipulator, main, dbListener;
+        mainManipulator, main, dbListener, activeDND;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -44,6 +44,8 @@ exports.GUI = function (globalVariables) {
         Picture = util.Picture;
         Puzzle = util.Puzzle;
         Server = util.Server;
+
+        activeDND = globalVariables.gui.activeDnD;
     };
 
     setGlobalVariables();
@@ -1209,7 +1211,26 @@ exports.GUI = function (globalVariables) {
             }
 
             let manageMiniature = (tabElement) => {
-                let mouseDownAction = eventDown => {
+                let drag = (item, parent, x, y) => {
+                    if (item.parent!==drawings.component.glass.parent.manipulator) {
+                        item.parent.remove(item);
+                        drawings.component.glass.parent.manipulator.add(item);
+                    }
+                    item.move( x, y);
+                }
+
+                let drop = (item, parent, x, y) => {
+                    if (item.parent==drawings.component.glass.parent.manipulator) {
+                        drawings.component.glass.parent.manipulator.remove(item);
+                    }
+                    if (item.parent!==parent) {
+                        parent.add(item);
+                    }
+                    let point = parent.localPoint(x,y);
+                    item.move(point.x, point.y);
+                }
+                activeDND(tabElement.miniatureManipulator, {}, {drag: drag, drop: drop});
+                /*let mouseDownAction = eventDown => {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () => {
                         let point = miniatureElement[0].globalPoint(0, 0);
@@ -1218,7 +1239,7 @@ exports.GUI = function (globalVariables) {
                         tabElement.movingManipulator.add(tabElement.miniatureManipulator);
                         drawings.piste.add(tabElement.movingManipulator);
                         tabElement.miniatureManipulator.move(point.x, point.y);
-                        manageDnD(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
+                        activeDND(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
                         manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
                     };
                     let mouseupHandler = eventUp => {
@@ -1273,7 +1294,7 @@ exports.GUI = function (globalVariables) {
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
                     // Ouvrir le Bd creator du futur jeu Bd
-                }
+                }*/
             };
 
             this.levelsTab.forEach((level) => {
