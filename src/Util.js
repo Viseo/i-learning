@@ -8,12 +8,10 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
-        AddEmptyElement,
-        Quiz,
-        Bd,
-        Answer,
+        AddEmptyElementVue,
+        QuizVue,
+        BdVue,
         AnswerVue,
-        Question,
         QuestionCreator;
 
     setGlobalVariables = () => {
@@ -24,13 +22,10 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg;
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
-        AddEmptyElement = globalVariables.domain.AddEmptyElement;
-        Quiz = globalVariables.domain.Quiz;
-        Bd = globalVariables.domain.Bd;
-        Answer = globalVariables.domain.Answer;
+        AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
+        QuizVue = globalVariables.domain.QuizVue;
+        BdVue = globalVariables.domain.BdVue;
         AnswerVue = globalVariables.domain.AnswerVue;
-        Question = globalVariables.domain.Question;
-
     };
 
     /**
@@ -1238,7 +1233,7 @@ exports.Util = function (globalVariables) {
             let displayWhenPublished = () => {
                 let result = true;
                 gameMiniature.game.tabQuestions.forEach(question => {
-                    if (!(question instanceof AddEmptyElement)) {
+                    if (!(question instanceof AddEmptyElementVue)) {
                         question.questionType && question.questionType.validationTab.forEach(funcEl => {
                             result = result && funcEl(question).isValid;
                         })
@@ -1451,7 +1446,7 @@ exports.Util = function (globalVariables) {
             this.visibleElementsArray.forEach(array => {
                 array.forEach(
                     element => {
-                        if (!(element instanceof AddEmptyElement)) {
+                        if (!(element instanceof AddEmptyElementVue)) {
                             element.checkValidity();
                         }
                     });
@@ -1779,7 +1774,7 @@ exports.Util = function (globalVariables) {
                 {
                     label: "Quiz",
                     create: function (formation, level, posX) {
-                        var newQuiz = new Quiz(defaultQuiz, false, formation);
+                        var newQuiz = new QuizVue(defaultQuiz, false, formation);
                         newQuiz.tabQuestions[0].parentQuiz = newQuiz;
                         newQuiz.id = "quizz" + formation.gamesCounter.quizz;
                         formation.gamesCounter.quizz++;
@@ -1790,10 +1785,10 @@ exports.Util = function (globalVariables) {
                 {
                     label: "Bd",
                     create: function (formation, level, posX) {
-                        var newBd = new Bd({}, formation);
+                        var newBd = new BdVue({}, formation);
                         newBd.id = "bd" + formation.gamesCounter.bd;
                         formation.gamesCounter.bd++;
-                        newBd.title = "Bd " + formation.gamesCounter.bd;
+                        newBd.title = "BdVue " + formation.gamesCounter.bd;
                         formation.levelsTab[level].gamesTab.splice(posX, 0, newBd);
                     }
                 },
@@ -1840,7 +1835,7 @@ exports.Util = function (globalVariables) {
                     message: message
                 }
             },
-            // Check Question Name:
+            // Check QuestionVue Name:
             question => {
                 let isValid = !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video);
                 let message = "Vous devez remplir correctement le nom de la question.";
@@ -1867,7 +1862,7 @@ exports.Util = function (globalVariables) {
                 isValid: question.tabAnswer.every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
-            // Check Question Name:
+            // Check QuestionVue Name:
             question => ({
                 isValid: !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video), // Checker si le champ saisi de la question est valide
                 message: "Vous devez remplir correctement le nom de la question."

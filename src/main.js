@@ -147,7 +147,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     let listFormations = function () {
         util.Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
-            globalVariables.formationsManager = new domain.FormationsManager(myFormations);
+            globalVariables.formationsManager = new domain.FormationsManagerVue(myFormations);
             globalVariables.formationsManager.display();
         });
     };
