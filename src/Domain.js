@@ -5467,10 +5467,14 @@ exports.Domain = function (globalVariables) {
          * @param event - evenement js
          * @param game - quiz associé au drop
          */
-        dropAction(event, game) {
+        dropAction(x, y, item) {
+            let game = null;
+            if (item.parentObject){
+                game = item.parentObject;
+            }
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            let getDropLocation = event => {
-                let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
+            let getDropLocation = (x,y) => {
+                let dropLocation = item.component.parent.localPoint(x,y);//this.panel.back.localPoint(x, y);
                 dropLocation.y -= this.panel.content.y;
                 dropLocation.x -= this.panel.content.x;
                 return dropLocation;
@@ -5498,7 +5502,7 @@ exports.Domain = function (globalVariables) {
                 return column;
             };
 
-            let dropLocation = getDropLocation(event);
+            let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
             if (game) {

@@ -4,7 +4,7 @@ exports.GUI = function (globalVariables) {
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quiz, QuizManager,
         InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server,
-        mainManipulator, main, dbListener;
+        mainManipulator, main, dbListener, installDnD;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -45,6 +45,8 @@ exports.GUI = function (globalVariables) {
         Picture = util.Picture;
         Puzzle = util.Puzzle;
         Server = util.Server;
+
+        installDnD = globalVariables.gui.installDnD;
     };
 
     setGlobalVariables();
@@ -1210,6 +1212,34 @@ exports.GUI = function (globalVariables) {
             }
 
             let manageMiniature = (tabElement) => {
+                let drag = (item, parent, x, y) => {
+                    if (item.parent!==drawings.component.glass.parent.manipulator) {
+                        item.parent.remove(item);
+                        drawings.component.glass.parent.manipulator.add(item);
+                    }
+                    item.move(x, y);
+                }
+
+                let drop = (item, parent, x, y) => {
+                    drawings.component.glass.parent.manipulator.remove(item);
+                    if (item.parent!==parent) {
+                        parent.add(item);
+                    }
+                    point = parent.globalPoint(x,y);
+                    this.dropAction(x,y, item);
+                    //item.move(point.x, point.y);
+                }
+                tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                let conf = {
+                        clicked : (what) => {
+                        what.parentObject.miniature.miniatureClickHandler();
+                    },
+                        drop : (what, parent, x, y) =>{
+                            this.dropAction(x,y, what);
+                            return {x:what.x, y:what.y, parent:what.component.parent};
+                    }
+                };
+                installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                 let mouseDownAction = eventDown => {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () => {
@@ -1219,8 +1249,8 @@ exports.GUI = function (globalVariables) {
                         tabElement.movingManipulator.add(tabElement.miniatureManipulator);
                         drawings.piste.add(tabElement.movingManipulator);
                         tabElement.miniatureManipulator.move(point.x, point.y);
-                        manageDnD(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
-                        manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
+                        //activeDND(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
+                        //manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
                     };
                     let mouseupHandler = eventUp => {
                         this.clicAction = () => {
@@ -1258,7 +1288,7 @@ exports.GUI = function (globalVariables) {
                 !playerMode && svg.addEvent(tabElement.miniatureElement[1], 'mousedown', mouseDownAction);
 
                 this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
-                tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+
                 if (tabElement instanceof Quiz) {
                     let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizHandler(event, tabElement)];
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
