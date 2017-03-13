@@ -91,7 +91,7 @@ exports.Util = function (globalVariables) {
             let self = this;
             Object.defineProperty(self, "x", {
                 get : function(){
-                    return self.component.globalPoint(0,0).x;
+                    return self.component.x;
                 },
                 set : function(nouvelleValeur){} ,
                 enumerable : true,
@@ -99,7 +99,7 @@ exports.Util = function (globalVariables) {
             });
             Object.defineProperty(self, "y", {
                 get : function(){
-                    return self.component.globalPoint(0,0).y;
+                    return self.component.y;
                 },
                 set : function(nouvelleValeur){} ,
                 enumerable : true,

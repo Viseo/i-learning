@@ -669,16 +669,13 @@ exports.Domain = function (globalVariables) {
          * @param game - quiz associé au drop
          */
         dropAction(x, y, item) {
-            let game;
-            if (item && item.parentManip && item.parentManip.parentObject) {
-                game = item.parentManip.parentObject;
-            }
-            else{
-                game = null;
+            let game = null;
+            if (item.parentObject){
+                game = item.parentObject;
             }
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             let getDropLocation = (x,y) => {
-                let dropLocation = item.parent.localPoint(x,y);//this.panel.back.localPoint(x, y);
+                let dropLocation = item.component.parent.localPoint(x,y);//this.panel.back.localPoint(x, y);
                 dropLocation.y -= this.panel.content.y;
                 dropLocation.x -= this.panel.content.x;
                 return dropLocation;

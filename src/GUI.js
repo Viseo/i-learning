@@ -4,7 +4,7 @@ exports.GUI = function (globalVariables) {
         header, AddEmptyElement, Answer, Bd, Formation, FormationsManager, GamesLibrary, Header,
         ImagesLibrary, Library, PopIn, Question, QuestionCreator, Quiz, QuizManager,
         InscriptionManager, ConnexionManager, Manipulator, MiniatureGame, Picture, Puzzle, Server,
-        mainManipulator, main, dbListener, activeDND;
+        mainManipulator, main, dbListener, installDnD;
 
     setGlobalVariables = () => {
         svg = globalVariables.svg;
@@ -45,7 +45,7 @@ exports.GUI = function (globalVariables) {
         Puzzle = util.Puzzle;
         Server = util.Server;
 
-        activeDND = globalVariables.gui.activeDnD;
+        installDnD = globalVariables.gui.installDnD;
     };
 
     setGlobalVariables();
@@ -1216,7 +1216,7 @@ exports.GUI = function (globalVariables) {
                         item.parent.remove(item);
                         drawings.component.glass.parent.manipulator.add(item);
                     }
-                    item.move( x, y);
+                    item.move(x, y);
                 }
 
                 let drop = (item, parent, x, y) => {
@@ -1229,7 +1229,16 @@ exports.GUI = function (globalVariables) {
                     //item.move(point.x, point.y);
                 }
                 tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                activeDND(tabElement.miniatureManipulator, {}, {drag: drag, drop: drop});
+                let conf = {
+                        clicked : (what) => {
+                        what.parentObject.miniature.miniatureClickHandler();
+                    },
+                        drop : (what, parent, x, y) =>{
+                            this.dropAction(x,y, what);
+                            return {x:what.x, y:what.y, parent:what.component.parent};
+                    }
+                };
+                installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                 /*let mouseDownAction = eventDown => {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () => {
