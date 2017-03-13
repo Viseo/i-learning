@@ -1580,15 +1580,8 @@ exports.Util = function (globalVariables) {
             this.visibleElementsArray.forEach(it => {
                 it.forEach(elem => {
                     let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
-                    if (elem instanceof Answer){
-                        let answerVue = new AnswerVue({"model": elem});
-                        this.manipulator.set(layer, answerVue); // +2 pour les chevrons + 1 border
-                        answerVue.render(elem.x, elem.y, elem.width, elem.height);
-                    }
-                    else {
-                        this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
-                        elem.display(elem.x, elem.y, elem.width, elem.height);
-                    }
+                    this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
+                    elem.display(elem.x, elem.y, elem.width, elem.height);
                 });
                 itNumber++;
             });

@@ -2979,9 +2979,9 @@ exports.Domain = function (globalVariables) {
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
-                    var tmp = new AnswerVue({model: new Answer(it.model || it, this)});
+                    var tmp = new AnswerVue({model: new Answer(it.model, this)});
                     this.tabAnswer.push(tmp);
-                    if (tmp.correct) {
+                    if (tmp.model.correct) {
                         this.rightAnswers.push(tmp);
                     }
                 });
@@ -3118,12 +3118,12 @@ exports.Domain = function (globalVariables) {
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
                 if (!playerMode && this.parentQuiz.previewMode) {
-                    answerElement.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
+                    answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
                 } else if (playerMode && this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1)
-                        answerElement.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
+                        answerElement.model.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
                     else {
-                        answerElement.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen)
+                        answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen)
                     }
                 } else if (playerMode && !this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered.length < this.questionNum) {
@@ -4585,7 +4585,7 @@ exports.Domain = function (globalVariables) {
                 target.parent.quizManagerManipulator.flush();
                 target.parent.quizDisplayed = false;
                 target.parent.parentFormation.publishedButtonActivated = false;
-                target.parent.parentFormation.displayFormation();
+                target.parent.parentFormation.display();
                 [].concat(...target.parent.parentFormation.levelsTab.map(level => level.gamesTab))
                     .forEach(game => {
                         game.miniature.selected = false;
@@ -4724,15 +4724,14 @@ exports.Domain = function (globalVariables) {
             (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof AddEmptyElementVue) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
                 (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElementVue) && question.tabAnswer.pop();
-                question.tabAnswer = question.tabAnswer.map(answer => {
-                    let formatted = answer.model;
+                question.tabAnswer.forEach(answer => {
                     if (answer.popIn) {
-                        formatted.explanation = {};
-                        answer.popIn.image && (formatted.explanation.image = answer.popIn.image);
-                        answer.popIn.label && (formatted.explanation.label = answer.popIn.label);
-                        answer.popIn.video && (formatted.explanation.video = answer.popIn.video);
+                        answer.explanation = {};
+                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
+                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
+                        answer.popIn.video && (answer.explanation.video = answer.popIn.video);
+                        answer.popIn = null;
                     }
-                    return formatted;
                 });
             });
             return {
@@ -4769,16 +4768,15 @@ exports.Domain = function (globalVariables) {
                 imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorMessage = "Entrer un nom valide pour enregistrer";
             if (this.quizName !== "" && this.quizName.match(TITLE_REGEX)) {
-                let quiz = this.getObjectToSave();
                 this.quiz.isValid = true;
-                quiz.tabQuestions.forEach(question => {
+                this.quiz.tabQuestions.forEach(question => {
                     question.questionType && question.questionType.validationTab.forEach((funcEl) => {
                         var result = funcEl(question);
                         this.quiz.isValid = this.quiz.isValid && result.isValid;
                     });
                 });
                 this.quiz.isValid ? this.displayMessage(completeQuizMessage, myColors.green) : this.displayMessage(imcompleteQuizMessage, myColors.orange);
-                Server.replaceQuiz(quiz, this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
+                Server.replaceQuiz(this.getObjectToSave(), this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
                     .then(() => {
                         svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", () => {
                         });
@@ -4995,7 +4993,7 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     this.closePopIn();
                     this.manipulator.flush();
-                    this.parentFormation.displayFormation();
+                    this.parentFormation.display();
                     this.returnButton.removeHandler(returnHandler);
                 };
                 this.returnButton.setHandler(returnHandler);
@@ -5313,7 +5311,7 @@ exports.Domain = function (globalVariables) {
                 } : (event) => {
                     let target = bd.returnButton;//drawings.background.getTarget(event.pageX, event.pageY);
                     target.parent.manipulator.flush();
-                    target.parent.parentFormation.displayFormation();
+                    target.parent.parentFormation.display();
                 });
         }
     }
@@ -5492,7 +5490,6 @@ exports.Domain = function (globalVariables) {
     var adminGUI = function () {
         globalVariables.playerMode = false;
         util.setGlobalVariables();
-        playerMode = false;
 
         header = new HeaderVue();
         globalVariables.header = header;
@@ -5504,7 +5501,6 @@ exports.Domain = function (globalVariables) {
     var learningGUI = function () {
         globalVariables.playerMode = true;
         util.setGlobalVariables();
-        playerMode = true;
 
         header = new HeaderVue();
         globalVariables.header = header;
