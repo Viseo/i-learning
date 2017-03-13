@@ -1239,7 +1239,7 @@ exports.GUI = function (globalVariables) {
                     }
                 };
                 installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
-                /*let mouseDownAction = eventDown => {
+                let mouseDownAction = eventDown => {
                     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                     let putMiniatureInPiste = () => {
                         let point = miniatureElement[0].globalPoint(0, 0);
@@ -1303,7 +1303,7 @@ exports.GUI = function (globalVariables) {
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
                     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
                     // Ouvrir le Bd creator du futur jeu Bd
-                }*/
+                }
             };
 
             this.levelsTab.forEach((level) => {
