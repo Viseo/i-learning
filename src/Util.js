@@ -32,7 +32,6 @@ exports.Util = function (globalVariables) {
      * Initialise globalVariables.imageController
      * @constructor
      */
-
     function SVGGlobalHandler() {
 
         /* istanbul ignore next */
@@ -42,7 +41,6 @@ exports.Util = function (globalVariables) {
          * @returns {*|{getImage: getImage}}
          * @constructor
          */
-
         ImageController = function (imageRuntime) {
             return imageRuntime || {
                     getImage: function (imgUrl, onloadHandler) {
@@ -60,7 +58,6 @@ exports.Util = function (globalVariables) {
      * Crée un Manipulator
      * @class
      */
-
     class Manipulator {
 
         /**
@@ -270,30 +267,6 @@ exports.Util = function (globalVariables) {
                 this.last.remove(component);
             }
             return this;
-        }
-
-        // globalPoint(...args) {
-        //     var point = getPoint(args);
-        //     point = {x: point.x + this.x, y: point.y + this.y};
-        //     return this.parent ? this.parent.globalPoint(point) : null;
-        // }
-        //
-        // localPoint(...args) {
-        //     var point = getPoint(args);
-        //     point = this.parent ? this.parent.localPoint(point) : null;
-        //     return point ? {x: point.x - this.x, y: point.y - this.y} : null;
-        // }
-
-        /**
-         * retourne tous les objets svg accrochés à ce manipulator
-         * @returns {Array}
-         */
-        children() {
-            if (this.ordonator) {
-                return this.ordonator.children;
-            } else {
-                return this.last.children;
-            }
         }
     }
 

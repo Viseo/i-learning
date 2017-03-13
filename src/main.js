@@ -1,11 +1,10 @@
 const Domain = require('./Domain').Domain,
     Util = require('./Util').Util,
-    GUI = require('./GUI').GUI,
     svggui = require('../lib/svggui').Gui;
 
 let main = function (svg, runtime, dbListener, ImageRuntime) {
 
-    let domain, util, Gui, gui, drawing, drawings;
+    let domain, util, gui, drawing, drawings;
 
     let globalVariables = { svg, runtime, dbListener, ImageRuntime };
 
@@ -32,12 +31,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     const connexionManager = new domain.ConnexionManagerVue();
     globalVariables.connexionManager = connexionManager;
 
-    Gui = GUI(globalVariables);
-    globalVariables.GUI = Gui;
-
     util.setGlobalVariables();
     domain.setGlobalVariables();
-    Gui.setGlobalVariables();
 
     let findVideo = function () {
         let video;
@@ -50,7 +45,6 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         else if (globalVariables.videoDisplayed.video.miniature) {
             video = globalVariables.videoDisplayed.video.miniature;
         }
-        console.log(video);
         return video;
     };
 
@@ -156,16 +150,14 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
         data = data && JSON.parse(data);
         if (data.ack === 'OK') {
             drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-            data.user.admin ? Gui.AdminGUI() : Gui.LearningGUI();
+            data.user.admin ? domain.adminGUI() : domain.learningGUI();
             util.setGlobalVariables();
             domain.setGlobalVariables();
-            Gui.setGlobalVariables();
             listFormations();
         } else {
-            Gui.LearningGUI();
+            domain.learningGUI();
             util.setGlobalVariables();
             domain.setGlobalVariables();
-            Gui.setGlobalVariables();
             connexionManager.display();
         }
     });

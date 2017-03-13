@@ -906,10 +906,10 @@ exports.Domain = function (globalVariables) {
                     data = data && JSON.parse(data);
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-                        data.user.admin ? globalVariables.GUI.AdminGUI() : globalVariables.GUI.LearningGUI();
+                        data.user.admin ? globalVariables.domain.adminGUI() : globalVariables.domain.learningGUI();
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
-                            globalVariables.formationsManager = new FormationsManager(myFormations);
+                            globalVariables.formationsManager = new FormationsManagerVue(myFormations);
                             globalVariables.formationsManager.display();
                         });
                     } else {
@@ -5481,6 +5481,32 @@ exports.Domain = function (globalVariables) {
 
     }
 
+    /* Fonctions pour afficher le GUI correspondant à l'utilisateur connecté*/
+
+    /**
+     * affichage GUI pour l'admin
+     */
+    var adminGUI = function () {
+        globalVariables.playerMode = false;
+        util.setGlobalVariables();
+        playerMode = false;
+
+        header = new HeaderVue();
+        globalVariables.header = header;
+    };
+
+    /**
+     * affichage GUI pour l'utilisateur
+     */
+    var learningGUI = function () {
+        globalVariables.playerMode = true;
+        util.setGlobalVariables();
+        playerMode = true;
+
+        header = new HeaderVue();
+        globalVariables.header = header;
+    };
+
     return {
         setGlobalVariables,
         FormationsManagerVue,
@@ -5493,6 +5519,8 @@ exports.Domain = function (globalVariables) {
         PopInVue,
         QuestionVue,
         QuizVue,
-        Level
+        Level,
+        adminGUI,
+        learningGUI
     }
 };
