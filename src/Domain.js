@@ -18,7 +18,8 @@ exports.Domain = function (globalVariables) {
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
         playerMode = globalVariables.playerMode,
-        Picture = globalVariables.util.Picture;
+        Picture = globalVariables.util.Picture,
+        installDnD = globalVariables.gui.installDnD;
 
     imageController = ImageController(globalVariables.ImageRuntime);
     globalVariables.imageController = imageController;
@@ -41,6 +42,8 @@ exports.Domain = function (globalVariables) {
         Server = globalVariables.util.Server;
         playerMode = globalVariables.playerMode;
         Picture = globalVariables.util.Picture;
+        installDnD = globalVariables.gui.installDnD;
+
     };
 
     /**
@@ -1565,7 +1568,6 @@ exports.Domain = function (globalVariables) {
                         }
                         point = parent.globalPoint(x,y);
                         this.dropAction(x,y, item);
-                        //item.move(point.x, point.y);
                     }
                     tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                     let conf = {
@@ -1578,71 +1580,71 @@ exports.Domain = function (globalVariables) {
                         }
                     };
                     installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
-                    // let mouseDownAction = eventDown => {
-                    //     let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
-                    //     let putMiniatureInPiste = () => {
-                    //         let point = miniatureElement[0].globalPoint(0, 0);
-                    //         this.miniaturesManipulator.remove(tabElement.miniatureManipulator);
-                    //         tabElement.movingManipulator = new Manipulator(tabElement);
-                    //         tabElement.movingManipulator.add(tabElement.miniatureManipulator);
-                    //         drawings.piste.add(tabElement.movingManipulator);
-                    //         tabElement.miniatureManipulator.move(point.x, point.y);
-                    //         //activeDND(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
-                    //         //manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
-                    //     };
-                    //     let mouseupHandler = eventUp => {
-                    //         this.clicAction = () => {
-                    //             tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
-                    //             this.miniaturesManipulator.add(tabElement.miniatureManipulator);
-                    //             tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                    //             svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
-                    //             svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
-                    //             tabElement.miniature.miniatureClickHandler();
-                    //         };
-                    //         drawings.piste.remove(tabElement.movingManipulator);
-                    //         let target = drawings.component.background.getTarget(eventUp.pageX, eventUp.pageY);
-                    //         if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
-                    //             this.clicAction();
-                    //         }
-                    //         else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof FormationVue || target.parent.parentManip.parentObject instanceof QuizVue)) {
-                    //             this.dropAction(eventUp, tabElement);
-                    //         }
-                    //         else {
-                    //             tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
-                    //             this.miniaturesManipulator.add(tabElement.miniatureManipulator);
-                    //             tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
-                    //             this.displayGraph();
-                    //             svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
-                    //             svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
-                    //         }
-                    //     };
-                    //     putMiniatureInPiste();
-                    //     svg.event(drawings.component.glass, "mousedown", eventDown);
-                    //     svg.addEvent(miniatureElement[0], 'mouseup', mouseupHandler);
-                    //     svg.addEvent(miniatureElement[1], 'mouseup', mouseupHandler);
-                    // };
-                    // tabElement.miniatureElement = tabElement.miniature.game.miniatureManipulator.ordonator.children;
-                    // !playerMode && svg.addEvent(tabElement.miniatureElement[0], 'mousedown', mouseDownAction);
-                    // !playerMode && svg.addEvent(tabElement.miniatureElement[1], 'mousedown', mouseDownAction);
-                    //
-                    // this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
-                    //
-                    // if (tabElement instanceof QuizVue) {
-                    //     let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizHandler(event, tabElement)];
-                    //     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
-                    //     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
-                    // } else if (tabElement instanceof BdVue) {
-                    //     let eventToUse = playerMode ? ["click", () => {
-                    //         }] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
-                    //     let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
-                    //     var dblclickBdHandler = () => {
-                    //         let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
-                    //         bdDisplay(targetBd);
-                    //     };
-                    //     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
-                    //     tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
-                    //     // Ouvrir le Bd creator du futur jeu Bd
-                    // }
+                    /*let mouseDownAction = eventDown => {
+                        let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
+                        let putMiniatureInPiste = () => {
+                            let point = miniatureElement[0].globalPoint(0, 0);
+                            this.miniaturesManipulator.remove(tabElement.miniatureManipulator);
+                            tabElement.movingManipulator = new Manipulator(tabElement);
+                            tabElement.movingManipulator.add(tabElement.miniatureManipulator);
+                            drawings.piste.add(tabElement.movingManipulator);
+                            tabElement.miniatureManipulator.move(point.x, point.y);
+                            //activeDND(miniatureElement[0], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
+                            //manageDnD(miniatureElement[1], tabElement.movingManipulator, () => { tabElement.miniature.moveAllLinks(); });
+                        };
+                        let mouseupHandler = eventUp => {
+                            this.clicAction = () => {
+                                tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
+                                this.miniaturesManipulator.add(tabElement.miniatureManipulator);
+                                tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                                svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
+                                svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
+                                tabElement.miniature.miniatureClickHandler();
+                            };
+                            drawings.piste.remove(tabElement.movingManipulator);
+                            let target = drawings.component.background.getTarget(eventUp.pageX, eventUp.pageY);
+                            if (eventDown.pageX === eventUp.pageX && eventDown.pageY === eventUp.pageY) {
+                                this.clicAction();
+                            }
+                            else if (target && target.parent && target.parent.parentManip && (target.parent.parentManip.parentObject instanceof Formation || target.parent.parentManip.parentObject instanceof Quiz)) {
+                                this.dropAction(eventUp, tabElement);
+                            }
+                            else {
+                                tabElement.movingManipulator.remove(tabElement.miniatureManipulator);
+                                this.miniaturesManipulator.add(tabElement.miniatureManipulator);
+                                tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                                this.displayGraph();
+                                svg.addEvent(miniatureElement[0], 'mousedown', mouseDownAction);
+                                svg.addEvent(miniatureElement[1], 'mousedown', mouseDownAction);
+                            }
+                        };
+                        putMiniatureInPiste();
+                        svg.event(drawings.component.glass, "mousedown", eventDown);
+                        svg.addEvent(miniatureElement[0], 'mouseup', mouseupHandler);
+                        svg.addEvent(miniatureElement[1], 'mouseup', mouseupHandler);
+                    };
+                    tabElement.miniatureElement = tabElement.miniature.game.miniatureManipulator.ordonator.children;
+                    !playerMode && svg.addEvent(tabElement.miniatureElement[0], 'mousedown', mouseDownAction);
+                    !playerMode && svg.addEvent(tabElement.miniatureElement[1], 'mousedown', mouseDownAction);
+
+                    this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
+
+                    if (tabElement instanceof Quiz) {
+                        let eventToUse = playerMode ? ["click", (event, tabElement) => clickQuizHandler(event, tabElement)] : ["dblclick", (event, tabElement) => dblclickQuizHandler(event, tabElement)];
+                        tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
+                        tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
+                    } else if (tabElement instanceof Bd) {
+                        let eventToUse = playerMode ? ["click", () => {
+                            }] : ["dblclick", tabElement => dblclickBdHandler(tabElement)];
+                        let ignoredData = (key, value) => myParentsList.some(parent => key === parent) ? undefined : value;
+                        var dblclickBdHandler = () => {
+                            let targetBd = tabElement;//drawings.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+                            bdDisplay(targetBd);
+                        };
+                        tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[0], ...eventToUse);
+                        tabElement.status !== "notAvailable" && svg.addEvent(tabElement.miniatureElement[1], ...eventToUse);
+                        // Ouvrir le Bd creator du futur jeu Bd
+                    }*/
                 };
 
                 this.levelsTab.forEach((level) => {
@@ -1886,10 +1888,16 @@ exports.Domain = function (globalVariables) {
          * @param event - evenement js
          * @param game - quiz associé au drop
          */
-        dropAction(event, game) {
-            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-            let getDropLocation = event => {
-                let dropLocation = this.panel.back.localPoint(event.pageX, event.pageY);
+        dropAction(x, y, item) {
+            let game;
+            if (item.parentObject) {
+                game = item.parentObject;
+            }
+            else{
+                game = null;
+            }
+            let getDropLocation = (x,y) => {
+                let dropLocation = item.component.parent.localPoint(x,y);//this.panel.back.localPoint(x, y);
                 dropLocation.y -= this.panel.content.y;
                 dropLocation.x -= this.panel.content.x;
                 return dropLocation;
@@ -1917,7 +1925,7 @@ exports.Domain = function (globalVariables) {
                 return column;
             };
 
-            let dropLocation = getDropLocation(event);
+            let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
             if (game) {
