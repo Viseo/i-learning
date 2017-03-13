@@ -1579,6 +1579,9 @@ exports.Domain = function (globalVariables) {
                             return {x:what.x, y:what.y, parent:what.component.parent};
                         }
                     };
+                    tabElement.miniatureManipulator.addEvent('dblclick', event => {
+                        dblclickQuizHandler(event,tabElement);
+                    });
                     installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                     /*let mouseDownAction = eventDown => {
                         let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
