@@ -323,33 +323,34 @@ exports.Domain = function (globalVariables) {
                 return;
             }
 
-            if (this.label && this.imageSrc) { // Reponse avec Texte ET image
-                let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image);
+            if (this.model.label && this.model.imageSrc) { // Reponse avec Texte ET image
+                let obj = displayImageWithTitle(this.model.label, this.model.imageSrc, this.model.dimImage, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, this.model.image);
                 this.border = obj.border;
                 this.content = obj.text;
                 this.image = obj.image;
-            } else if (this.video) { // Reponse avec Texte uniquement
-                let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+            } else if (this.model.video) { // Reponse avec Texte uniquement
+                let obj = drawVideo(this.model.label, this.model.video, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, false, true);
                 this.border = obj.border;
                 this.content = obj.content;
                 this.video.miniature = obj.video;
-            } else if (this.label && !this.imageSrc) { // Reponse avec Texte uniquement
-                let obj = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator);
+            } else if (this.model.label && !this.model.imageSrc) { // Reponse avec Texte uniquement
+                let obj = displayText(this.model.label, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator);
                 this.border = obj.border;
                 this.content = obj.content;
-            } else if (this.imageSrc && !this.label) { // Reponse avec Image uniquement
-                let obj = displayImageWithBorder(this.imageSrc, this.dimImage, this.width, this.height, this.manipulator);
+            } else if (this.model.imageSrc && !this.model.label) { // Reponse avec Image uniquement
+                let obj = displayImageWithBorder(this.model.imageSrc, this.model.dimImage, this.width, this.height, this.manipulator);
                 this.image = obj.image;
                 this.border = obj.border;
             } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
-                this.border = new svg.Rect(this.width, this.height).color(this.bgColor, 1, myColors.black).corners(25, 25);
+                console.error("problème d'affichage de l'answerVue");
+                this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
                 this.manipulator.add(this.border);
             }
             let index = "answer" + this.model.parentQuestion.tabAnswer.indexOf(this);
             this.content && this.content.mark(index);
 
             if (this.model.parentQuestion.parentQuiz.previewMode) {
-                if (this.model.explanation && (this.model.explanation.image || this.modelexplanation.video || this.model.explanation.label)) {
+                if (this.model.explanation && (this.model.explanation.image || this.model.explanation.video || this.model.explanation.label)) {
                     const openPopIn = () => {
                         runtime.speechSynthesisCancel();
                         this.model.parentQuestion.parentQuiz.closePopIn();
@@ -3075,7 +3076,7 @@ exports.Domain = function (globalVariables) {
         }
 
         displayAnswers(w, h) {
-            findTileDimension = () => {
+            let findTileDimension = () => {
                 const width = (w - MARGIN * (this.columns - 1)) / this.columns,
                     heightMin = 2.50 * this.fontSize;
                 let height = 0;
@@ -4768,6 +4769,7 @@ exports.Domain = function (globalVariables) {
                 imcompleteQuizMessage = "Les modifications ont bien été enregistrées, mais ce jeu n'est pas encore valide",
                 errorMessage = "Entrer un nom valide pour enregistrer";
             if (this.quizName !== "" && this.quizName.match(TITLE_REGEX)) {
+                let quiz = this.getObjectToSave();
                 this.quiz.isValid = true;
                 this.quiz.tabQuestions.forEach(question => {
                     question.questionType && question.questionType.validationTab.forEach((funcEl) => {
@@ -4776,7 +4778,7 @@ exports.Domain = function (globalVariables) {
                     });
                 });
                 this.quiz.isValid ? this.displayMessage(completeQuizMessage, myColors.green) : this.displayMessage(imcompleteQuizMessage, myColors.orange);
-                Server.replaceQuiz(this.getObjectToSave(), this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
+                Server.replaceQuiz(quiz, this.parentFormation._id, this.quiz.levelIndex, this.quiz.gameIndex, ignoredData)
                     .then(() => {
                         svg.addEvent(this.saveQuizButtonManipulator.ordonator.children[0], "click", () => {
                         });
@@ -4928,7 +4930,6 @@ exports.Domain = function (globalVariables) {
          * @param h
          */
         render(x, y, w, h) {
-            console.log('render quiz');
             main.currentPageDisplayed = "Quiz";
             globalVariables.header.display(this.parentFormation.label + " - " + this.title);
             drawing.manipulator.set(1, this.manipulator);
@@ -5034,10 +5035,10 @@ exports.Domain = function (globalVariables) {
 
             this.closePopIn = () => {
                 this.tabQuestions[this.currentQuestionIndex] && this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
-                    if (answer.explanationPopIn && answer.explanationPopIn.displayed) {
-                        let said = answer.explanationPopIn.said;
-                        answer.explanationPopIn.cross.component.listeners["click"]();
-                        answer.explanationPopIn.said = said;
+                    if (answer.model.explanationPopIn && answer.model.explanationPopIn.displayed) {
+                        let said = answer.model.explanationPopIn.said;
+                        answer.model.explanationPopIn.cross.component.listeners["click"]();
+                        answer.model.explanationPopIn.said = said;
                     }
                 });
             };
@@ -5192,7 +5193,7 @@ exports.Domain = function (globalVariables) {
          */
         run(x, y, w, h) {
             let intervalToken = svg.interval(() => {
-                if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.imageLoaded))) {
+                if (this.tabQuestions.every(e => e.imageLoaded && e.tabAnswer.every(el => el.model.imageLoaded))) {
                     svg.clearInterval(intervalToken);
                     this.display(x, y, w, h);
                 }
