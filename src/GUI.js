@@ -1028,7 +1028,7 @@ exports.GUI = function (globalVariables) {
                 this.selectedGame = null;
             };
             this.saveFormation(displayQuizManager);
-            svg.removeSelection();
+           // svg.removeSelection();
         };
 
         let clickQuizHandler = (event, target) => {
