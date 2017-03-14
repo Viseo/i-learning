@@ -301,10 +301,10 @@ exports.Domain = function (globalVariables) {
                 this.manipulator.move(x, y);
                 answerBlockDisplay();
                 this.model.penHandler = () => {
-                    this.model.popIn = this.model.popIn || new PopInVue(this.model, true);
+                    this.popIn = this.popIn || new PopInVue(this, true);
                     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    this.model.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                    questionCreator.explanation = this.model.popIn;
+                    this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    questionCreator.explanation = this.popIn;
                 };
                 displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this);
 
@@ -2435,7 +2435,7 @@ exports.Domain = function (globalVariables) {
         }
 
         render(parent, x, y, w, h) {
-            let textToSpeechIcon = this.answer.parentQuestion.parentQuiz.textToSpeechIcon;
+            let textToSpeechIcon = this.answer.model.parentQuestion.parentQuiz.textToSpeechIcon;
             let clickBanned, mouseLeaveHandler;
             if (textToSpeechIcon) {
                 textToSpeechIcon.removeHandler('click');
@@ -2456,11 +2456,11 @@ exports.Domain = function (globalVariables) {
             parent.manipulator.add(this.manipulator);
             this.manipulator.set(0, rect);
             this.manipulator.move(0, y);
-            this.answer.editor && this.answer.editor.puzzle && this.answer.editor.puzzle.elementsArray.forEach(answerElement => {
+            this.answer.model.editor && this.answer.model.editor.puzzle && this.answer.model.editor.puzzle.elementsArray.forEach(answerElement => {
                 answerElement.obj && answerElement.obj.video && drawings.component.remove(answerElement.obj.video);
             });
-            this.answer.parentQuestion.tabAnswer.forEach(answer => {
-                answer.video && drawings.component.remove(answer.video.miniature);
+            this.answer.model.parentQuestion.tabAnswer.forEach(answer => {
+                answer.model.video && drawings.component.remove(answer.model.video.miniature);
             });
             let crossHandler;
             const drawGreyCross = (size) => {
