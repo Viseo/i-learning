@@ -1028,7 +1028,7 @@ exports.GUI = function (globalVariables) {
                 this.selectedGame = null;
             };
             this.saveFormation(displayQuizManager);
-            //svg.removeSelection();
+            svg.removeSelection();
         };
 
         let clickQuizHandler = (event, target) => {
@@ -1313,25 +1313,25 @@ exports.GUI = function (globalVariables) {
             this.manipulator.set(0, this.formationInfoManipulator);
             this.libraryWidth = drawing.width * this.libraryWidthRatio;
             this.y = drawing.height * HEADER_SIZE;
-            this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height * 1.3).font("Arial", 20).anchor("start");
+            this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height *1.1).font("Arial", 20).anchor("start");
             this.manipulator.set(2, this.titleSvg);
             let formationWidth = this.titleSvg.boundingRect().width;
             let formationLabel = {};
 
-            let dblclickEditionFormationLabel = () => {
+            let clickEditionFormationLabel = () => {
                 let bounds = formationLabel.border.boundingRect();
                 this.formationInfoManipulator.unset(1);
                 let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
                 var contentareaStyle = {
-                    toppx: globalPointCenter.y + 4,
-                    leftpx: globalPointCenter.x + 4,
+                    toppx: globalPointCenter.y + 5,
+                    leftpx: globalPointCenter.x + 5.2,
                     width: formationLabel.border.width - MARGIN,
                     height: this.labelHeight
                 };
                 drawing.notInTextArea = false;
 
                 let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-                contentarea.color(myColors.lightgrey, 0, myColors.black)
+                contentarea.color(myColors.white, 0, myColors.black)
                     .font("Arial", 15)
                     .mark("formationLabelContentArea")
                     .anchor("start");
@@ -1340,12 +1340,12 @@ exports.GUI = function (globalVariables) {
                 contentarea.focus();
                 var removeErrorMessage = () => {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
-                    formationLabel.border.color(myColors.lightgrey, 1, myColors.none);
+                    formationLabel.border.color(myColors.white, 1, myColors.black);
                 };
 
                 var displayErrorMessage = () => {
                     removeErrorMessage();
-                    formationLabel.border.color(myColors.lightgrey, 2, myColors.red);
+                    formationLabel.border.color(myColors.white, 2, myColors.red);
                     var anchor = 'start';
                     this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
                         .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
@@ -1383,8 +1383,8 @@ exports.GUI = function (globalVariables) {
             let formationLabelDisplay = () => {
                 let text = this.label ? this.label : this.labelDefault;
                 let color = this.label ? myColors.black : myColors.grey;
-                let bgcolor = myColors.lightgrey;
-                this.formationLabelWidth = 400;
+                let bgcolor = myColors.white;
+                this.formationLabelWidth = 300;
                 let textToDisplay;
                 if (text.length > MAX_CHARACTER_TITLE) {
                     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
@@ -1393,13 +1393,13 @@ exports.GUI = function (globalVariables) {
                 formationLabel.content = new svg.Text(textToDisplay ? textToDisplay : text).font("Arial", 15).anchor('start');
                 formationLabel.content.mark('formationLabelContent');
                 this.formationInfoManipulator.set(1, formationLabel.content);
-                this.labelHeight = formationLabel.content.boundingRect().height;
+                this.labelHeight = formationLabel.content.boundingRect().height -4;
                 this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor);
-                formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2);
+                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor, 1, myColors.black);
+                formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN);
                 this.formationInfoManipulator.set(0, formationLabel.border);
-                formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 0).color(color).anchor("start");
+                formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, -5).color(color).anchor("start");
                 this.formationInfoManipulator.move(0, this.returnButton.height * 1.3);
 
                 let saveNameIcon = new svg.Image('save-file-option.png')
@@ -1407,8 +1407,8 @@ exports.GUI = function (globalVariables) {
                     .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3);
                 this.formationInfoManipulator.set(2, saveNameIcon);
 
-                svg.addEvent(formationLabel.content, "dblclick", dblclickEditionFormationLabel);
-                svg.addEvent(formationLabel.border, "dblclick", dblclickEditionFormationLabel);
+                svg.addEvent(formationLabel.content, "click", clickEditionFormationLabel);
+                svg.addEvent(formationLabel.border, "click", clickEditionFormationLabel);
                 svg.addEvent(saveNameIcon, "click", () => this.saveFormation(null, "Edited", true));
             };
             formationLabelDisplay();
@@ -1648,7 +1648,7 @@ exports.GUI = function (globalVariables) {
 
                 var removeErrorMessage = ()=> {
                     this.errorMessage && this.formationInfoManipulator.unset(2);
-                    formationLabel.border.color(myColors.white, 1.5, myColors.black);
+                    formationLabel.border.color(myColors.white, 1, myColors.black);
                 };
 
                 var displayErrorMessage = ()=> {
@@ -1702,7 +1702,7 @@ exports.GUI = function (globalVariables) {
                 this.labelHeight = formationLabel.content.boundingRect().height;
                 //this.formationTitleWidth = this.titleSvg.boundingRect().width;
                 formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor,1.5,myColors.black);
+                this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor,1,myColors.black);
                 formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2 +3);
                 this.formationInfoManipulator.set(0, formationLabel.border);
                 formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 2).color(color).anchor("start");
@@ -2925,8 +2925,8 @@ exports.GUI = function (globalVariables) {
         var quizLabelDisplay = () => {
             const text = (this.quizName) ? this.quizName : this.quizNameDefault,
                 color = (this.quizName) ? myColors.black : myColors.grey,
-                bgcolor = myColors.lightgrey,
-                width = 700; // FontSize : 15px / Arial / 50*W  //self.quizLabel.content.component.getBoundingClientRect().width;
+                bgcolor = myColors.white,
+                width = 300; // FontSize : 15px / Arial / 50*W  //self.quizLabel.content.component.getBoundingClientRect().width;
             let textToDisplay;
             if (text.length > MAX_CHARACTER_TITLE) {
                 textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
@@ -2934,24 +2934,24 @@ exports.GUI = function (globalVariables) {
             quizLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, w, h / 2, 15, "Arial", this.quizInfoManipulator).text;
             quizLabel.content.mark("quizLabelContent");
             this.quizNameHeight = quizLabel.content.boundingRect().height;
-            quizLabel.border = new svg.Rect(width, 0.5 * h).mark("quizLabelCadre");
-            this.quizNameValidInput ? quizLabel.border.color(bgcolor) : quizLabel.border.color(bgcolor, 2, myColors.red);
+            quizLabel.border = new svg.Rect(width, h*0.7).mark("quizLabelCadre");
+            this.quizNameValidInput ? quizLabel.border.color(bgcolor, 1, myColors.black) : quizLabel.border.color(bgcolor, 2, myColors.red);
             quizLabel.border.position(width / 2, h / 2 + quizLabel.border.height / 2);
             this.quizInfoManipulator.set(0, quizLabel.border);
-            quizLabel.content.position(0, h / 2 + quizLabel.border.height * 9 / 12).color(color).anchor("start");
+            quizLabel.content.position(3, h / 2 + quizLabel.border.height * 9 / 12).color(color).anchor("start");
             this.quizInfoManipulator.move(x, y);
-            svg.addEvent(quizLabel.content, "dblclick", dblclickEditionQuiz);
-            svg.addEvent(quizLabel.border, "dblclick", dblclickEditionQuiz);
+            svg.addEvent(quizLabel.content, "click", clickEditionQuiz);
+            svg.addEvent(quizLabel.border, "click", clickEditionQuiz);
         };
 
-        var dblclickEditionQuiz = () => {
+        var clickEditionQuiz = () => {
             let bounds = quizLabel.content.boundingRect(),
                 globalPointCenter = quizLabel.content.globalPoint(0, -bounds.height + 3);
             this.quizInfoManipulator.unset(1);
             let contentareaStyle = {
                 leftpx: globalPointCenter.x,
-                toppx: globalPointCenter.y,
-                width: 700,
+                toppx: globalPointCenter.y +0.2,
+                width: 300,
                 height: (this.quizNameHeight + 3) - MARGIN / 2
             };
             drawing.notInTextArea = false;
@@ -2969,11 +2969,11 @@ exports.GUI = function (globalVariables) {
             var removeErrorMessage = () => {
                 this.questionCreator.quizNameValidInput = true;
                 this.errorMessage && this.quizInfoManipulator.unset(5);
-                quizLabel.border.color(myColors.lightgrey);
+                quizLabel.border.color(myColors.white, 1, myColors.black);
             };
             var displayErrorMessage = () => {
                 removeErrorMessage();
-                quizLabel.border.color(myColors.lightgrey, 2, myColors.red);
+                quizLabel.border.color(myColors.white, 2, myColors.red);
                 var anchor = 'start';
                 this.errorMessage = new svg.Text(REGEX_ERROR);
                 this.errorMessage.mark("quizErrorMessage");
@@ -3186,6 +3186,7 @@ exports.GUI = function (globalVariables) {
         var displayField = (field, manipulator) => {
             manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
             var fieldTitle = new svg.Text(this[field].title).position(0, 0).font("Arial", 20).anchor("end");
+
             manipulator.set(2, fieldTitle);
             this.h = 1.5 * fieldTitle.boundingRect().height;
             var displayText = displayTextWithoutCorners(this[field].label, w, this.h, myColors.black, myColors.white, 20, null, manipulator);

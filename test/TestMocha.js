@@ -310,7 +310,6 @@ describe('formationsManager', function () {
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
             formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            console.log(formationErrorMessage);
             assert.equal(formationErrorMessage.text, "Cette formation existe déjà");
 
         done();

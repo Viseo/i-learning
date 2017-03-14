@@ -756,9 +756,10 @@ exports.Util = function (globalVariables) {
          * @returns {{content, border}} : SVG items for text & border
          */
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
-            const result = displayText(label, w, h, rgbCadre, bgColor, textHeight, font, manipulator);
-            result.border.corners(0, 0);
-            return {content: result.content, border: result.border};
+            var content = autoAdjustText(label, w, h, textHeight, font, manipulator, 1).text;
+            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(0,0);
+            manipulator.set(0, border);
+            return {content: content, border: border};
         };
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
