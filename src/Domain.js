@@ -815,8 +815,6 @@ exports.Domain = function (globalVariables) {
                 }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                // ** DMA3622 : no mandatory
-                /*svg.activeElement() && svg.activeElement().blur();*/
                 this.connexionButtonHandler();
             }
         }
@@ -2408,10 +2406,10 @@ exports.Domain = function (globalVariables) {
      */
     class PopInVue extends Vue {
         //TODO changer le constructor pour pouvoir passer un model, au lieu de le définir directement dans la classe
-        constructor(answer, editable) {
+        constructor(answerVue, editable) {
             super();
             this.manipulator.addOrdonator(7);
-            this.answer = answer;
+            this.answer = answerVue;
             this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.set(2, this.closeButtonManipulator);
             this.panelManipulator = new Manipulator(this).addOrdonator(2);
@@ -2422,16 +2420,16 @@ exports.Domain = function (globalVariables) {
                 this.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
                 this.defaultLabel = "Cliquer ici pour ajouter du texte";
             }
-            if (answer.explanation && answer.explanation.label) {
-                this.label = answer.explanation.label;
+            if (this.answer.model.explanation && this.answer.model.explanation.label) {
+                this.label = this.answer.model.explanation.label;
             }
-            if (answer.explanation && answer.explanation.image) {
-                this.image = answer.explanation.image;
+            if (this.answer.model.explanation && this.answer.model.explanation.image) {
+                this.image = this.answer.model.explanation.image;
             }
-            if (answer.explanation && answer.explanation.video) {
-                this.video = answer.explanation.video;
+            if (this.answer.model.explanation && this.answer.model.explanation.video) {
+                this.video = this.answer.model.explanation.video;
             }
-            answer.filled = this.image || this.video || this.label;
+            this.answer.model.filled = this.image || this.video || this.label;
         }
 
         render(parent, x, y, w, h) {
@@ -4693,7 +4691,7 @@ exports.Domain = function (globalVariables) {
         displayQuizSaveButton(x, y, w, h) {
             let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
             saveButton.border.mark('saveButtonQuiz');
-            svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
+            // svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
             svg.addEvent(saveButton.content, "click", () => this.saveQuiz());
             this.saveQuizButtonManipulator.move(x, y);
         }
@@ -4727,10 +4725,10 @@ exports.Domain = function (globalVariables) {
                 (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElementVue) && question.tabAnswer.pop();
                 question.tabAnswer.forEach(answer => {
                     if (answer.popIn) {
-                        answer.explanation = {};
-                        answer.popIn.image && (answer.explanation.image = answer.popIn.image);
-                        answer.popIn.label && (answer.explanation.label = answer.popIn.label);
-                        answer.popIn.video && (answer.explanation.video = answer.popIn.video);
+                        answer.model.explanation = {};
+                        answer.popIn.image && (answer.model.explanation.image = answer.popIn.image);
+                        answer.popIn.label && (answer.model.explanation.label = answer.popIn.label);
+                        answer.popIn.video && (answer.model.explanation.video = answer.popIn.video);
                         answer.popIn = null;
                     }
                 });

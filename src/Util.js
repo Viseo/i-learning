@@ -1695,9 +1695,9 @@ exports.Util = function (globalVariables) {
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
-        myParentsList = ["parent","parentManipulator","answersManipulator", "validateManipulator", "parentElement", "manipulator",
-            "resetManipulator", "manipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
-            "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
+        myParentsList = ["parent","parentManipulator","answersManipulator", "validateManipulator", "parentElement",
+            "resetManipulator","manipulatorQuizInfo", "questionCreatorManipulator",
+            "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizManager",
             "quizInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
             "answerParent", "obj", "checkbox", "border", "content", "parentQuiz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
@@ -1706,8 +1706,9 @@ exports.Util = function (globalVariables) {
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
             "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
-            "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator"];
+            "formationsManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
+            "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator", "chevronManipulator", "leftChevronManipulator", "miniatureManipulator",
+            "rightChevronManipulator"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
