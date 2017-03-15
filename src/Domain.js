@@ -54,6 +54,7 @@ exports.Domain = function (globalVariables) {
      */
     class Vue {
         /**
+         * construit une vue. Son rôle est surtout de créer le manipulator principal
          * @constructs
          * @param options - contient des options à appliquer sur la vue
          * @param options.model - modele associé à la vue
@@ -64,47 +65,53 @@ exports.Domain = function (globalVariables) {
             this.model = options.model || {};
         }
 
+        /**
+         * définis les évènements de la classe. La cible de l'évènement doit forcément être attaché au this de la classe.
+         * L'objet doit être un manipulator ou n'importe quelle classe d'un objet SVG
+         * @returns {{"type_evenement nom_variable": handler}}
+         */
         events() {
             return {};
         }
 
-        render() {
-            console.log("vue rendered. This should be override");
-        };
+        /**
+         * fonction d'affichage qui doit être override dans toutes les classes qui extend Vue
+         */
+        render() { console.log("vue rendered. This should be override") };
 
+        /**
+         * affiche les éléments de la classe et attache les évènements définis dans events() aux bon objets
+         * @param args - accepte n'importe quel input
+         */
         display(...args) {
             this.render(...args);
             this._setEvents();
         }
 
+        /**
+         * fonction interne qui attache les évènements aux objets de la classe.
+         * @private
+         */
         _setEvents() {
-            this.events().forEach(function (handler, eventOptions) {
+            let events = this.events();
+            for(let eventOptions in events){
+                let handler = events[eventOptions];
                 let [eventName, target] = eventOptions.split(' ');
+
                 //global event
                 if (!target) {
                     svg.addGlobalEvent(eventName, handler.bind(this));
                 }
                 //local event
                 else {
-                    let targetType = target[0];
-                    let componentName = target.slice(1);
-                    let component;
-                    //TODO faire cas où  c'est un id svg (#)
-                    switch (targetType) {
-                        case ".":
-                            component = this[componentName];
-                            component.children().forEach(function (child) {
-                                svg.addEvent(child, eventName, handler.bind(this));
-                            }, this);
-                            break;
-                        case "#":
-                            break;
-                        default:
-                            console.error(`error while assigning events: ${eventOptions}`);
-                            break;
+                    let component = this[target];
+                    if(component instanceof Manipulator){
+                        component.addEvent(eventName, handler.bind(this));
+                    }else {
+                        svg.addEvent(component, eventName, handler.bind(this));
                     }
                 }
-            }.bind(this));
+            }
         }
     }
 
@@ -124,11 +131,6 @@ exports.Domain = function (globalVariables) {
             this.penManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator.add(this.penManipulator);
             this.model.isEditable(editor, editable);
-        }
-
-        //TODO define events
-        events() {
-            return {}
         }
 
         render(x, y, w, h) {
@@ -488,12 +490,12 @@ exports.Domain = function (globalVariables) {
 
         events() {
             return {
-                "click .saveButtonManipulator": this.saveButtonHandler,
-                "click .firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
-                "click .lastNameManipulator": this.clickEditionField("lastNameField", this.lastNameManipulator),
-                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click .passwordManipulator": this.clickEditionField("passwordField", this.passwordManipulator),
-                "click .passwordConfirmationManipulator": this.clickEditionField("passwordConfirmationField", this.passwordConfirmationManipulator),
+                "click saveButtonManipulator": this.saveButtonHandler,
+                "click firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
+                "click lastNameManipulator": this.clickEditionField("lastNameField", this.lastNameManipulator),
+                "click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                "click passwordManipulator": this.clickEditionField("passwordField", this.passwordManipulator),
+                "click passwordConfirmationManipulator": this.clickEditionField("passwordConfirmationField", this.passwordConfirmationManipulator),
                 "keydown": this.keyDownHandler
             };
         }
@@ -765,9 +767,9 @@ exports.Domain = function (globalVariables) {
 
         events() {
             return {
-                "click .connexionButtonManipulator": this.connexionButtonHandler,
-                "click .mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click .passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
+                "click connexionButtonManipulator": this.connexionButtonHandler,
+                "click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                "click passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
                 "keydown": this.keyDownHandler
             }
         }
@@ -2682,7 +2684,7 @@ exports.Domain = function (globalVariables) {
 
         events(){
             return {
-                "dblclick .manipulator": this.dblclickAdd
+                "dblclick manipulator": this.dblclickAdd
             }
         }
 
@@ -2781,12 +2783,6 @@ exports.Domain = function (globalVariables) {
             this.manipulator.addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
             this.label = "I-learning";
-        }
-
-        events(){
-            return {
-
-            }
         }
 
         render(message) {
