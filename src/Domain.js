@@ -1378,8 +1378,9 @@ exports.Domain = function (globalVariables) {
             };
 
             let clickQuizHandler = (event, target) => {
+                console.log("heeeeey");
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
-                mainManipulator.unset(1, this.manipulator.add);
+                drawing.manipulator.unset(1, this.manipulator.add);
                 main.currentPageDisplayed = "QuizPreview";
                 this.quizDisplayed = new QuizVue(target, false, this);
                 this.quizDisplayed.puzzleLines = 3;
@@ -1555,34 +1556,22 @@ exports.Domain = function (globalVariables) {
                 }
 
                 let manageMiniature = (tabElement) => {
-                    let drag = (item, parent, x, y) => {
-                        if (item.parent!==drawings.component.glass.parent.manipulator) {
-                            item.parent.remove(item);
-                            drawings.component.glass.parent.manipulator.add(item);
-                        }
-                        item.move(x, y);
-                    }
-
-                    let drop = (item, parent, x, y) => {
-                        drawings.component.glass.parent.manipulator.remove(item);
-                        if (item.parent!==parent) {
-                            parent.add(item);
-                        }
-                        point = parent.globalPoint(x,y);
-                        this.dropAction(x,y, item);
-                    }
                     tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                     let conf = {
                         clicked : (what) => {
                             what.parentObject.miniature.miniatureClickHandler();
                         },
                         drop : (what, parent, x, y) =>{
-                            this.dropAction(x,y, what);
+                            //let point = this.graphManipulator.component.localPoint(what.x,what.y);
+                            this.dropAction(what.x,what.y, what);
                             return {x:what.x, y:what.y, parent:what.component.parent};
                         }
                     };
-                    tabElement.miniatureManipulator.addEvent('dblclick', event => {
+                    !playerMode && tabElement.miniatureManipulator.addEvent('dblclick', event => {
                         dblclickQuizHandler(event,tabElement);
+                    });
+                    playerMode && tabElement.miniatureManipulator.addEvent('click', event => {
+                        clickQuizHandler(event,tabElement);
                     });
                     installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                     /*let mouseDownAction = eventDown => {
@@ -1895,24 +1884,19 @@ exports.Domain = function (globalVariables) {
          */
         dropAction(x, y, item) {
             let game;
-            if (item.parentObject) {
+            if (item && item.parentObject) {
                 game = item.parentObject;
             }
             else{
                 game = null;
             }
             let getDropLocation = (x,y) => {
-                let dropLocation = item.component.parent.localPoint(x,y);//this.panel.back.localPoint(x, y);
-                dropLocation.y -= this.panel.content.y;
-                dropLocation.x -= this.panel.content.x;
+                let dropLocation = this.panel.content.localPoint(x,y);
                 return dropLocation;
             };
             let getLevel = (dropLocation) => {
                 let level = -1;
-                while (dropLocation.y > -this.panel.content.height / 2) {
-                    dropLocation.y -= this.levelHeight;
-                    level++;
-                }
+                level = Math.floor(dropLocation.y/this.levelHeight);
                 if (level >= this.levelsTab.length) {
                     level = this.levelsTab.length;
                     this.addNewLevel(level);
@@ -1933,7 +1917,7 @@ exports.Domain = function (globalVariables) {
             let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
             let column = getColumn(dropLocation, level);
-            if (game) {
+            if (game && !item.addNew) {
                 this.moveGame(game, level, column);
                 game.levelIndex === level || game.miniature.removeAllLinks();
             } else {
@@ -3758,13 +3742,13 @@ exports.Domain = function (globalVariables) {
                     let mouseDownAction = event => {
 
                         this.arrowMode && this.toggleArrowMode();
-                        let mouseClickHandler = () => {
+                        /*let mouseClickHandler = () => {
                             if (item !== this.gameSelected) {
                                 this.gameSelected && this.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
                                 item.miniature.border.color(myColors.white, 3, SELECTION_COLOR);
                                 this.gameSelected = item;
                             } else {
-                                item.miniature.border.color(myColors.white, 1, myColors.black);
+                                   item.miniature.border.color(myColors.white, 1, myColors.black);
                                 this.gameSelected = null;
                             }
                             this.formation && !this.gameSelected && svg.removeEvent(this.formation.panel.back, "mouseup", this.formation.mouseUpGraphBlock);
@@ -3782,6 +3766,22 @@ exports.Domain = function (globalVariables) {
                                 }
                             }
                             this.draggedObject = null;
+                        };*/
+                        let conf = {
+                            drop: (what, whatParent, x, y) => {
+                                let target = this.formation.manipulator.component.getTarget(x, y);
+                                let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
+                                //drawings.component.glass.parent.manipulator.remove(what);
+                                if (parentObject !== what) {
+                                    if (parentObject instanceof FormationVue) {
+                                        //let point = this.formation.graphManipulator.component.localPoint(x,y);
+                                        this.formation.dropAction(what.x, what.y,what);
+                                    }
+                                }
+                                let tmp = what;
+                                what.flush();
+                                return {x:tmp.x,y:tmp.y,parent:tmp.parent};
+                            }
                         };
 
                         let createDraggableCopy = () => {
@@ -3791,23 +3791,78 @@ exports.Domain = function (globalVariables) {
                             manipulator.move(point.x, point.y);
                             this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
                             this.draggedObject.manipulator = manipulator;
+                            this.draggedObject.manipulator.addNew = true;
                             this.draggedObject.border.mark("draggedGameCadre");
                             this.draggedObject.create = this.itemsTab[i].create;
                             manipulator.set(0, this.draggedObject.border);
+                            installDnD(this.draggedObject.manipulator, drawings.component.glass.parent.manipulator.last, conf);
+                            svg.event(drawings.component.glass, "mousedown", event);
+                            svg.event(this.draggedObject.border, 'mousedown', event);
+                            svg.event(this.draggedObject.content, "mousedown", event);
 
-                            manageDnD(this.draggedObject.border, manipulator);
-                            manageDnD(this.draggedObject.content, manipulator);
+                            //manageDnD(this.draggedObject.border, manipulator);
+                            //manageDnD(this.draggedObject.content, manipulator);
                         };
 
-                        createDraggableCopy();
-
-                        svg.event(drawings.component.glass, "mousedown", event);
+                          createDraggableCopy();
+                        /*svg.event(drawings.component.glass, "mousedown", event);
                         svg.addEvent(this.draggedObject.border, 'click', mouseClickHandler);
                         svg.addEvent(this.draggedObject.border, 'mouseup', mouseupHandler);
-                        svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);
+                        svg.addEvent(this.draggedObject.content, 'mouseup', mouseupHandler);*/
                     };
-                    svg.addEvent(item.miniature.border, 'mousedown', mouseDownAction);
-                    svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
+                    item.miniature.border.parent.parentManip.addEvent('mousedown', mouseDownAction);
+                    //svg.addEvent(item.miniature.content, 'mousedown', mouseDownAction);
+
+                    /*let manipulator = new Manipulator(this).addOrdonator(2);
+                    //drawings.piste.add(manipulator);
+                    let point = item.miniature.border.globalPoint(0, 0);
+                    manipulator.move(point.x, point.y);
+                    this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
+                    this.draggedObject.manipulator = manipulator;
+                    this.draggedObject.border.mark("draggedGameCadre");
+                    this.draggedObject.create = this.itemsTab[i].create;
+                    //manipulator.set(0, this.draggedObject.border);
+                    let backPoint = item.miniature.border.parent.parentManip;
+                    let conf = {
+                        drop: (what, parent, x, y)=>{
+                            let target = drawings.component.background.getTarget(x, y);
+                            let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
+                            //drawings.component.glass.parent.manipulator.remove(what);
+                            if (parentObject !== what) {
+                                if (parentObject instanceof FormationVue) {
+                                    let point = what.component.parent.globalPoint(x,y);
+                                    this.formation.dropAction(x, y,what);
+                                }
+                            }
+                            displayItems();
+                            assignEvents();
+                            return {x:backPoint.x, y:backPoint.y, parent:what.component.parent};
+                            /*this.draggedObject = null;
+                            let manipulator = new Manipulator(this).addOrdonator(2);
+                            drawings.piste.add(manipulator);
+                            let point = item.miniature.border.globalPoint(0, 0);
+                            manipulator.move(point.x, point.y);
+                            this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
+                            this.draggedObject.manipulator = manipulator;
+                            this.draggedObject.border.mark("draggedGameCadre");
+                            this.draggedObject.create = this.itemsTab[i].create;
+                            manipulator.set(0, this.draggedObject.border);
+                            installDnD(this.draggedObject.manipulator, drawings.component.glass.parent.manipulator.last, conf);
+                        },
+                        drag: (what, x, y) =>{
+                            //let manipulator = new Manipulator(this).addOrdonator(2);
+                            //drawings.piste.add(manipulator);
+                            //let point =  drawings.component.glass.parent.manipulator.last.localPoint(item.miniature.border.globalPoint(0, 0));
+                            //manipulator.move(point.x, point.y);
+                            this.draggedObject = item.miniature;//displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
+                            //this.draggedObject.manipulator = manipulator;
+                            this.draggedObject.border.mark("draggedGameCadre");
+                            this.draggedObject.create = this.itemsTab[i].create;
+                            return {x:x,y:y};
+                        }
+                    }
+
+                    installDnD(item.miniature.border.parent.parentManip, drawings.component.glass.parent.manipulator.last, conf);*/
                 });
             };
             displayItems();
