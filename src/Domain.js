@@ -5486,6 +5486,7 @@ exports.Domain = function (globalVariables) {
     var adminGUI = function () {
         globalVariables.playerMode = false;
         util.setGlobalVariables();
+        playerMode = false;
 
         header = new HeaderVue();
         globalVariables.header = header;
@@ -5497,6 +5498,7 @@ exports.Domain = function (globalVariables) {
     var learningGUI = function () {
         globalVariables.playerMode = true;
         util.setGlobalVariables();
+        playerMode = true;
 
         header = new HeaderVue();
         globalVariables.header = header;
