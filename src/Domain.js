@@ -566,7 +566,6 @@ exports.Domain = function (globalVariables) {
             let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
             saveButton.border.mark('inscriptionButton');
             this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
-            svg.addEvent(saveButton.content, "click", this.saveButtonHandler);
             this.AllOk();
         }
 
@@ -740,7 +739,7 @@ exports.Domain = function (globalVariables) {
             } else if (!this.AllOk()) {
                 const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
                     message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                message.text.color(myColors.red).position(0, -saveButton.border.height + MARGIN);
+                message.text.color(myColors.red).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
             }
         };
 
