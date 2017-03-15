@@ -4,6 +4,7 @@ exports.Domain = function (globalVariables) {
     let myFormations;
 
     let
+        main = globalVariables.main,
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
@@ -27,6 +28,7 @@ exports.Domain = function (globalVariables) {
     installDnD = globalVariables.gui.installDnD;
 
     setGlobalVariables = () => {
+        main = globalVariables.main;
         runtime = globalVariables.runtime;
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
