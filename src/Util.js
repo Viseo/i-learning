@@ -1829,8 +1829,13 @@ exports.Util = function (globalVariables) {
                 }
             }
         ];
-
+        /** TODO changer logique de vérification **/
         multipleAnswerValidationTab = [
+            // Check 1 Correct Answer:
+            question => ({
+                isValid: question.tabAnswer && question.tabAnswer.some(el => el.model.correct),
+                message: "Vous devez cocher au moins une bonne réponse."
+            }),
             // Check answer's name:
             question => ({
                 isValid: question.tabAnswer.every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video)),
