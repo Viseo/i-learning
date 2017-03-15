@@ -2433,7 +2433,7 @@ exports.Domain = function (globalVariables) {
             if (this.answer.model.explanation && this.answer.model.explanation.video) {
                 this.video = this.answer.model.explanation.video;
             }
-            this.answer.model.filled = this.image || this.video || this.label;
+            this.answer.filled = this.image || this.video || this.label;
         }
 
         render(parent, x, y, w, h) {
