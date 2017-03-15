@@ -64,7 +64,7 @@ describe('formationsManager', function () {
         dbListener = new dbListenerModule(false, true);
     });
 
-    it ("should add a new formation", function(done) {
+    it ("should not add a new formation", function(done) {
         testutils.retrieveDB("./log/dbAdminFormationsManager.json", dbListener, function () {
             svg.screenSize(1920,947);
             main(svg, runtime, dbListener, ImageRuntime);
@@ -76,7 +76,7 @@ describe('formationsManager', function () {
 
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
             assert.equal(formationLabelContent.text,
-                testutils.escape("Ajouter une formation"));
+                testutils.escape("Ajouter une f…"));
 
             let addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
@@ -118,7 +118,6 @@ describe('formationsManager', function () {
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
             formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            console.log(formationErrorMessage);
             assert.equal(formationErrorMessage.text, testutils.escape("Cette formation existe déjà"));
 
             done();
