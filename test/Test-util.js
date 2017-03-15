@@ -2,8 +2,6 @@
  * Created by qde3485 on 09/03/16.
  */
 
-
-
 var ImageRuntime = {
     images: {},
     count: 0,

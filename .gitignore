@@ -8,3 +8,4 @@ resource/
 node_modules/
 html-report/
 npm-debug.log
+build/

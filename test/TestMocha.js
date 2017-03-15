@@ -155,7 +155,9 @@ describe('inscription', function(){
             let inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, '');
             let inscriptionErrorMessagelastNameField = retrieve(root, '[inscriptionErrorMessagelastNameField]');
-            assert.equal(inscriptionErrorMessagelastNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
+
+            assert.equal(inscriptionErrorMessagelastNameField.text,
+                testutils.escape("Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés"));
 
             lastNameField = retrieve(root, '[lastNameField]');
             lastNameField.listeners['click']();
@@ -169,7 +171,11 @@ describe('inscription', function(){
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, '');
             let inscriptionErrorMessagefirstNameField = retrieve(root, '[inscriptionErrorMessagefirstNameField]');
-            assert.equal(inscriptionErrorMessagefirstNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
+            assert.equal(inscriptionErrorMessagefirstNameField.text,
+                testutils.escape("Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés"));
+
+
+
 
             firstNameField = retrieve(root, '[firstNameField]');
             firstNameField.listeners['click']();
@@ -186,7 +192,9 @@ describe('inscription', function(){
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, 'ra@');
             let inscriptionErrorMessagemailAddressField= retrieve(root, '[inscriptionErrorMessagemailAddressField]');
-            assert.equal(inscriptionErrorMessagemailAddressField.text, "L'adresse email n'est pas valide");
+            assert.equal(inscriptionErrorMessagemailAddressField.text,
+                testutils.escape("L'adresse email n'est pas valide"));
+
 
             mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
@@ -200,7 +208,8 @@ describe('inscription', function(){
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, 'aaa');
             let inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
+            assert.equal(inscriptionErrorMessagepasswordField.text,
+                testutils.escape("Le mot de passe doit contenir au minimum 6 caractères"));
 
             passwordField = retrieve(root, '[passwordField]');
             passwordField.listeners['click']();
@@ -215,14 +224,16 @@ describe('inscription', function(){
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, 'aaa');
             inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
+            assert.equal(inscriptionErrorMessagepasswordField.text,
+                testutils.escape("Le mot de passe doit contenir au minimum 6 caractères"));
 
             passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
             passwordConfirmationField.listeners['click']();
             inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
             enter(inscriptionContentArea, 'aaaaaa');
             inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "La confirmation du mot de passe n'est pas valide");
+            assert.equal(inscriptionErrorMessagepasswordField.text,
+                testutils.escape("La confirmation du mot de passe n'est pas valide"));
 
             let inscriptionButton = retrieve(root, '[inscriptionButton]');
             inscriptionButton.listeners['click']();
@@ -273,11 +284,14 @@ describe('formationsManager', function () {
             runtime.advance();
 
             let formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text, "Ajouter une formation");
+            assert.equal(formationLabelContent.text,
+                testutils.escape("Ajouter une formation"));
+
             let addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
             let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            assert.equal(formationErrorMessage.text, "Veuillez rentrer un nom de formation valide");
+            assert.equal(formationErrorMessage.text,
+                testutils.escape("Veuillez rentrer un nom de formation valide"));
 
             runtime.advance();
 
@@ -285,7 +299,8 @@ describe('formationsManager', function () {
             formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
             enter(formationLabelContentArea, "Test[");
             let formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
-            assert.equal(formationInputErrorMessage.text, "Veuillez rentrer un nom de formation valide");
+            assert.equal(formationInputErrorMessage.text,
+                testutils.escape("Veuillez rentrer un nom de formation valide"));
 
 
             formationLabelContent = retrieve(root, "[formationLabelContent]");
@@ -295,6 +310,7 @@ describe('formationsManager', function () {
             formationLabelContent = retrieve(root, "[formationLabelContent]");
             formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
             assert(!formationInputErrorMessage);
+
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
             formationErrorMessage = retrieve(root, "[formationErrorMessage]");
@@ -307,11 +323,12 @@ describe('formationsManager', function () {
             formationLabelContent = retrieve(root, "[formationLabelContent]");
             formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
             assert(!formationInputErrorMessage);
+
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
             formationErrorMessage = retrieve(root, "[formationErrorMessage]");
             console.log(formationErrorMessage);
-            assert.equal(formationErrorMessage.text, "Cette formation existe déjà");
+            assert.equal(formationErrorMessage.text, testutils.escape("Cette formation existe déjà"));
 
         done();
         });
@@ -344,7 +361,8 @@ describe('formationsManager', function () {
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
             let errorMessagePublication = retrieve(root, "[errorMessagePublication]");
-            assert.equal(errorMessagePublication.text, "Veuillez ajouter au moins un jeu à votre formation.");
+            assert.equal(errorMessagePublication.text,
+                testutils.escape("Veuillez ajouter au moins un jeu à votre formation."));
 
             let gameQuiz = retrieve(root, "[gameQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
@@ -359,7 +377,7 @@ describe('formationsManager', function () {
             assert.equal(game0.text, "Quiz 1");
 
             publicationFormationButtonCadre.listeners["click"]();
-            assert.equal(errorMessagePublication.text, "Vous devez remplir le nom de la formation.");
+            assert.equal(errorMessagePublication.text, testutils.escape("Vous devez remplir le nom de la formation."));
 
             formationLabelContent.listeners["dblclick"]();
             let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
@@ -981,128 +999,6 @@ describe('connection check textarea', function(){
             runtime.advance();
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
             runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
-            done();
-        });
-    });
-});
-
-describe('inscription', function(){
-    beforeEach(function () {
-        runtime = mockRuntime();
-        svg = SVG(runtime);
-        runtime.declareAnchor('content');
-        main = require("../src/main").main;
-        dbListenerModule = require("../src/dbListener").dbListener;
-        dbListener = new dbListenerModule(false, true);
-    });
-
-    it("should sign up someone", function (done) {
-        testutils.retrieveDB("./log/dbInscription.json", dbListener, function () {
-            svg.screenSize(1920, 947);
-            main(svg, runtime, dbListener, ImageRuntime);
-            let root = runtime.anchor("content");
-
-            let  inscriptionLink = retrieve(root, '[inscriptionLink]');
-            inscriptionLink.listeners['click']();
-
-            runtime.listeners['resize']({w:1500, h:1500});
-
-            let lastNameField = retrieve(root, '[lastNameField]');
-            lastNameField.listeners['click']();
-            let inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, '');
-            let inscriptionErrorMessagelastNameField = retrieve(root, '[inscriptionErrorMessagelastNameField]');
-            assert.equal(inscriptionErrorMessagelastNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
-
-            lastNameField = retrieve(root, '[lastNameField]');
-            lastNameField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'nom');
-            inscriptionErrorMessagelastNameField = retrieve(root, '[inscriptionErrorMessagelastNameField]');
-            assert(!inscriptionErrorMessagelastNameField);
-
-            let firstNameField = retrieve(root, '[firstNameField]');
-            firstNameField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, '');
-            let inscriptionErrorMessagefirstNameField = retrieve(root, '[inscriptionErrorMessagefirstNameField]');
-            assert.equal(inscriptionErrorMessagefirstNameField.text, "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés");
-
-            firstNameField = retrieve(root, '[firstNameField]');
-            firstNameField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'prénom');
-            inscriptionErrorMessagefirstNameField = retrieve(root, '[inscriptionErrorMessagefirstNameField]');
-            assert(!inscriptionErrorMessagefirstNameField);
-
-            let mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, '');
-            mailAddressField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'ra@');
-            let inscriptionErrorMessagemailAddressField= retrieve(root, '[inscriptionErrorMessagemailAddressField]');
-            assert.equal(inscriptionErrorMessagemailAddressField.text, "L'adresse email n'est pas valide");
-
-            mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'test@test.test');
-            inscriptionErrorMessagemailAddressField = retrieve(root, '[inscriptionErrorMessagemailAddressField]');
-            assert(!inscriptionErrorMessagemailAddressField);
-
-            let passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'aaa');
-            let inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
-
-            passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'testtes');
-            enter(inscriptionContentArea, 'testtest');
-            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert(!inscriptionErrorMessagepasswordField);
-
-            let passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
-            passwordConfirmationField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'aaa');
-            inscriptionErrorMessagepasswordField= retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "Le mot de passe doit contenir au minimum 6 caractères");
-
-            passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
-            passwordConfirmationField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'aaaaaa');
-            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert.equal(inscriptionErrorMessagepasswordField.text, "La confirmation du mot de passe n'est pas valide");
-
-            let inscriptionButton = retrieve(root, '[inscriptionButton]');
-            inscriptionButton.listeners['click']();
-
-            runtime.listeners['keydown']({keyCode:13, preventDefault:()=>{}});
-
-            passwordConfirmationField = retrieve(root, '[passwordConfirmationField]');
-            passwordConfirmationField.listeners['click']();
-            inscriptionContentArea = retrieve(root, '[inscriptionContentArea]');
-            enter(inscriptionContentArea, 'testtest');
-            inscriptionErrorMessagepasswordField = retrieve(root, '[inscriptionErrorMessagepasswordField]');
-            assert(!inscriptionErrorMessagepasswordField);
-
-            inscriptionButton = retrieve(root, '[inscriptionButton]');
-            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:9, preventDefault:()=>{}});
-            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
-
-            inscriptionButton.listeners['click']();
-
-            let connectionLink = retrieve(root, '[inscriptionLink]');
-            connectionLink.listeners['click']();
-
             done();
         });
     });
