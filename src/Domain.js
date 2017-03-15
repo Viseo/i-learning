@@ -1573,7 +1573,8 @@ exports.Domain = function (globalVariables) {
                     playerMode && tabElement.miniatureManipulator.addEvent('click', event => {
                         clickQuizHandler(event,tabElement);
                     });
-                    installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
+
+                    !playerMode && installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                     /*let mouseDownAction = eventDown => {
                         let miniatureElement = tabElement.miniatureManipulator.ordonator.children;
                         let putMiniatureInPiste = () => {
@@ -3779,8 +3780,10 @@ exports.Domain = function (globalVariables) {
                                     }
                                 }
                                 let tmp = what;
+                                return {x:what.x,y:what.y,parent:what.component.parent};
+                            },
+                            moved: (what) => {
                                 what.flush();
-                                return {x:tmp.x,y:tmp.y,parent:tmp.parent};
                             }
                         };
 
