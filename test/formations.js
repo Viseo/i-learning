@@ -47,6 +47,47 @@ const enter = (contentArea, label) => {
     contentArea.listeners["blur"]();
 };
 
+
+/**
+ * @param root
+ * @param nameCheckElement {string} nom de l element qu on souhaite checker la valeur : valueExpected
+ * @param valueExpected la valeur qu on attend de l element : nameCheckElement, si cette la valeur est null on check si l element : nameCheckElement est bien null
+ */
+const testValueOnElement = (root, nameCheckElement, valueExpected) => {
+    let checkElement = retrieve(root, "[" + nameCheckElement +"]");
+    if(valueExpected == null){
+        assert(!checkElement);
+    }else{
+        assert.equal(checkElement.text, testutils.escape(valueExpected));
+    }
+};
+
+
+/**
+ *
+ * @param root
+ * @param nameClickElement {string} nom de l element qu on souhaite faire un click
+ */
+const callClickOnElement = (root, nameClickElement) => {
+    let clickElement = retrieve(root, "[" + nameClickElement + "]");
+    clickElement.listeners["click"]();
+};
+
+
+/**
+ *
+ * @param root
+ * @param nameEnterElement
+ * @param value
+ */
+const callEnterOnElement = (root, nameEnterElement, value) => {
+    var myElement = retrieve(root, "[" + nameEnterElement + "]");
+    enter(myElement, value);
+};
+
+
+
+
 let runtime,
     svg,
     main,
@@ -74,51 +115,30 @@ describe('formationsManager', function () {
 
             runtime.advance();
 
-            let formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text,
-                testutils.escape("Ajouter une f…"));
+            testValueOnElement(root, "formationLabelContent", "Ajouter une f…");
 
-            let addFormationButton = retrieve(root, "[addFormationButton]");
-            addFormationButton.listeners["click"]();
-            let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            assert.equal(formationErrorMessage.text,
-                testutils.escape("Veuillez rentrer un nom de formation valide"));
+            callClickOnElement(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", "Veuillez rentrer un nom de formation valide");
 
             runtime.advance();
 
-            formationLabelContent.listeners["click"]();
-            formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
-            enter(formationLabelContentArea, "Test[");
-            let formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
-            assert.equal(formationInputErrorMessage.text,
-                testutils.escape("Veuillez rentrer un nom de formation valide"));
+            callClickOnElement(root, "formationLabelContent");
+            callEnterOnElement(root, "formationLabelContentArea", "Test[");
+            testValueOnElement(root, "formationInputErrorMessage", "Veuillez rentrer un nom de formation valide");
 
+            callClickOnElement(root, "formationLabelContent");
+            callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
+            testValueOnElement(root, "formationInputErrorMessage", null);
 
-            formationLabelContent = retrieve(root, "[formationLabelContent]");
-            formationLabelContent.listeners["click"]();
-            formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
-            enter(formationLabelContentArea, "MaFormation");
-            formationLabelContent = retrieve(root, "[formationLabelContent]");
-            formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
-            assert(!formationInputErrorMessage);
+            callClickOnElement(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", null);
 
-            addFormationButton = retrieve(root, "[addFormationButton]");
-            addFormationButton.listeners["click"]();
-            formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            assert(!formationErrorMessage);
+            callClickOnElement(root, "formationLabelContent");
+            callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
+            testValueOnElement(root, "formationInputErrorMessage", null);
 
-            formationLabelContent = retrieve(root, "[formationLabelContent]");
-            formationLabelContent.listeners["click"]();
-            formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
-            enter(formationLabelContentArea, "MaFormation");
-            formationLabelContent = retrieve(root, "[formationLabelContent]");
-            formationInputErrorMessage = retrieve(root, '[formationInputErrorMessage]');
-            assert(!formationInputErrorMessage);
-
-            addFormationButton = retrieve(root, "[addFormationButton]");
-            addFormationButton.listeners["click"]();
-            formationErrorMessage = retrieve(root, "[formationErrorMessage]");
-            assert.equal(formationErrorMessage.text, testutils.escape("Cette formation existe déjà"));
+            callClickOnElement(root, "addFormationButton");
+            testValueOnElement(root, "formationErrorMessage", "Cette formation existe déjà");
 
             done();
         });
