@@ -1640,7 +1640,7 @@ exports.Util = function (globalVariables) {
         REGEX_NO_CHARACTER_LIMIT = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,}$/g;
         MAX_CHARACTER_REGEX = 200;
         REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 200 caractères";
-        MAX_CHARACTER_TITLE = 50;
+        MAX_CHARACTER_TITLE = 23;
         MIN_CHARACTER_TITLE = 2;
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
 
