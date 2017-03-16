@@ -3694,19 +3694,38 @@ exports.Domain = function (globalVariables) {
                                 what.flush();
                             },
                             clicked: (item) => {
-                                this.gameSelected = this.draggedObject;
-                                this.formation && this.gameSelected.border.color(myColors.white, 3, myColors.darkBlue);
-                                let clickPanelToAdd = (event) =>{
-                                    if (this.gameSelected && this.formation) {
-                                        this.formation.dropAction(event.x, event.y, this.gameSelected.manipulator);
-                                        this.gameSelected.border.color(myColors.white, 1, myColors.black);
-                                        this.gameSelected = null;
-                                        this.draggedObject = null;
-                                        item.flush();
+                                if(!this.gameSelected) {
+                                    this.gameSelected = this.draggedObject;
+                                    item.flush();
+
+                                    for (let it in this.itemsTab) {
+                                        if (this.itemsTab[it].label == this.draggedObject.label) {
+                                            this.miniatureSelected = this.itemsTab[it];
+                                            this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
+                                        }
                                     }
-                                    svg.removeEvent(this.formation.panel.back, 'click');
+                                    //this.formation && this.gameSelected.border.color(myColors.white, 3, myColors.darkBlue);
+                                    let clickPanelToAdd = (event) => {
+                                        if (this.gameSelected && this.formation) {
+                                            this.formation.dropAction(event.x, event.y, this.gameSelected.manipulator);
+                                            this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                                            this.miniatureSelected = null;
+                                            this.draggedObject = null;
+                                            this.gameSelected = null;
+                                        }
+                                        svg.removeEvent(this.formation.panel.back, 'click');
+                                    }
+                                    svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
                                 }
-                                svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
+                                else{
+                                    for (let it in this.itemsTab) {
+                                        if (this.itemsTab[it].label == this.draggedObject.label) {
+                                            this.miniatureSelected = this.itemsTab[it];
+                                            this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                                        }
+                                    }
+                                    this.gameSelected = null;
+                                }
                             }
                         };
 
@@ -3717,6 +3736,7 @@ exports.Domain = function (globalVariables) {
                             manipulator.move(point.x, point.y);
                             this.draggedObject = displayTextWithCircle(this.itemsTab[i].miniature.content.messageText, w / 2, h, myColors.black, myColors.white, null, this.fontSize, manipulator);
                             this.draggedObject.manipulator = manipulator;
+                            this.draggedObject.label = this.itemsTab[i].label;
                             this.draggedObject.manipulator.addNew = true;
                             this.draggedObject.border.mark("draggedGameCadre");
                             this.draggedObject.create = this.itemsTab[i].create;
