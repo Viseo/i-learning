@@ -137,6 +137,12 @@ exports.Util = function (globalVariables) {
                 svg.removeEvent(this.components[i], eventName, handler);
             }
         }
+        removeEvent(eventName){
+            let handler = this[eventName];
+            for (let i = 0; i < this.components.length; i++) {
+                svg.removeEvent(this.components[i], eventName, handler);
+            }
+        }
 
         addOrdonator(layerNumber) {
             this.ordonator = new svg.Ordered(layerNumber);
