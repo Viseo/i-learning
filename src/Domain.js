@@ -1564,8 +1564,8 @@ exports.Domain = function (globalVariables) {
                             what.parentObject.miniature.miniatureClickHandler();
                         },
                         drop : (what, parent, x, y) =>{
-                            //let point = this.graphManipulator.component.localPoint(what.x,what.y);
-                            this.dropAction(what.x,what.y, what);
+                            let point = what.component.parent.globalPoint(what.x,what.y);
+                            this.dropAction(point.x,point.y, what);
                             return {x:what.x, y:what.y, parent:what.component.parent};
                         }
                     };
@@ -3704,12 +3704,13 @@ exports.Domain = function (globalVariables) {
                                         if (this.itemsTab[it].label == this.draggedObject.label) {
                                             this.miniatureSelected = this.itemsTab[it];
                                             this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
+                                            this.miniatureSelected.miniature.border.mark('miniatureSelected');
                                         }
                                     }
                                     //this.formation && this.gameSelected.border.color(myColors.white, 3, myColors.darkBlue);
                                     let clickPanelToAdd = (event) => {
                                         if (this.gameSelected && this.formation) {
-                                            this.formation.dropAction(event.x, event.y, this.gameSelected.manipulator);
+                                            this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
                                             this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
                                             this.miniatureSelected = null;
                                             this.draggedObject = null;
