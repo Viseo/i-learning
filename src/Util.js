@@ -1829,7 +1829,7 @@ exports.Util = function (globalVariables) {
                 }
             }
         ];
-        /** TODO changer logique de vérification **/
+
         multipleAnswerValidationTab = [
             // Check 1 Correct Answer:
             question => ({
@@ -1838,7 +1838,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check answer's name:
             question => ({
-                isValid: question.tabAnswer.every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video)),
+                isValid: question.tabAnswer.slice(0, -1).every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
             // Check QuestionVue Name:

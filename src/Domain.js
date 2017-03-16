@@ -133,6 +133,10 @@ exports.Domain = function (globalVariables) {
             this.model.isEditable(editor, editable);
         }
 
+        select(){
+            this.model.select(this);
+        }
+
         render(x, y, w, h) {
             this.x = x;
             this.y = y;
@@ -346,7 +350,6 @@ exports.Domain = function (globalVariables) {
                 this.image = obj.image;
                 this.border = obj.border;
             } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
-                console.error("problème d'affichage de l'answerVue");
                 this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
                 this.manipulator.add(this.border);
             }
@@ -2621,7 +2624,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
-                    let newAnswer = new AnswerVue({model: new Answer(null, this.parent.linkedQuestion)});
+                    let newAnswer = new AnswerVue({model: new Answer(null, this.parent.linkedQuestion, this)});
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
                     questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
@@ -2859,7 +2862,7 @@ exports.Domain = function (globalVariables) {
                 this.imageSrc = "";
                 this.columns = 4;
                 this.rightAnswers = [];
-                this.tabAnswer = [new AnswerVue({model: new Answer(null, this)}), new AnswerVue({model: new Answer(null, this)})];
+                this.tabAnswer = [new AnswerVue({model: new Answer(null, this, this)}), new AnswerVue({model: new Answer(null, this, this)})];
                 this.multipleChoice = false;
                 this.font = "Arial";
                 this.bgColor = myColors.white;
@@ -5200,14 +5203,14 @@ exports.Domain = function (globalVariables) {
                     } else {
                         let subTotal = 0;
                         questionAnswered.validatedAnswers.forEach((e) => {
-                            if (question.tabAnswer[e].correct) {
+                            if (question.tabAnswer[e].model.correct) {
                                 subTotal++;
                             }
                         });
                         allRight = (subTotal === question.rightAnswers.length);
                         !allRight && questionsWithBadAnswers.push(question);
                     }
-                } else if (!question.multipleChoice && !question.tabAnswer[questionAnswered.validatedAnswers[0]].correct) {
+                } else if (!question.multipleChoice && !question.tabAnswer[questionAnswered.validatedAnswers[0]].model.correct) {
                     questionsWithBadAnswers.push(question);
                 }
 
@@ -5350,7 +5353,7 @@ exports.Domain = function (globalVariables) {
          * fonction appelée lorsque l'utilisateur sélectioonne la réponse.
          * Affiche le message lui indiquant si la réponse est bonne ou pas
          */
-        select() {
+        select(vue) {
             let question = this.parentQuestion,
                 quiz = question.parentQuiz;
             if (!question.multipleChoice) {
@@ -5369,7 +5372,7 @@ exports.Domain = function (globalVariables) {
                     });
                     console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
                 }
-                let selectedAnswer = [quiz.tabQuestions[quiz.currentQuestionIndex].tabAnswer.indexOf(this)];
+                let selectedAnswer = [quiz.tabQuestions[quiz.currentQuestionIndex].tabAnswer.indexOf(vue)];
                 quiz.questionsAnswered[quiz.currentQuestionIndex] = {
                     index: quiz.questionsAnswered.length,
                     question: quiz.tabQuestions[quiz.currentQuestionIndex],
@@ -5380,9 +5383,9 @@ exports.Domain = function (globalVariables) {
                 this.selected = !this.selected;
                 if (this.selected) {
                     // on sélectionne une réponse
-                    question.selectedAnswers.push(this);
+                    question.selectedAnswers.push(vue);
                 } else {
-                    question.selectedAnswers.splice(question.selectedAnswers.indexOf(this), 1);
+                    question.selectedAnswers.splice(question.selectedAnswers.indexOf(vue), 1);
                 }
             }
         }
