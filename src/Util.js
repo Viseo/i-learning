@@ -1762,7 +1762,7 @@ exports.Util = function (globalVariables) {
                         var newBd = new BdVue({}, formation);
                         newBd.id = "bd" + formation.gamesCounter.bd;
                         formation.gamesCounter.bd++;
-                        newBd.title = "BdVue " + formation.gamesCounter.bd;
+                        newBd.title = "Bd " + formation.gamesCounter.bd;
                         formation.levelsTab[level].gamesTab.splice(posX, 0, newBd);
                     }
                 },

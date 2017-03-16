@@ -5461,6 +5461,7 @@ exports.Domain = function (globalVariables) {
         PopInVue,
         QuestionVue,
         QuizVue,
+        BdVue,
         Level,
         adminGUI,
         learningGUI

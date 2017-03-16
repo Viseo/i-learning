@@ -78,7 +78,8 @@ describe('Player mode', function () {
             greekMythFormationCadre.listeners["click"]();
 
             let firstGame = retrieve(root, "[level0quizz1]");
-            assert.equal(firstGame.text, "Le Chaos");
+            assert.equal(firstGame.handler.messageText, "Le\nChaos");
+
             firstGame.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
@@ -86,7 +87,7 @@ describe('Player mode', function () {
             runtime.advance();
 
             let header = retrieve(root, "[headerMessage]");
-            assert.equal(header.text, "Mythologie grecque - Le Chaos");
+            assert.equal(header.text, testutils.escape("Mythologie grecque - Le Chaos"));
 
             let answer;
             const playerAnswers = (index, label) => {
