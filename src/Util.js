@@ -1838,7 +1838,7 @@ exports.Util = function (globalVariables) {
             }),
             // Check answer's name:
             question => ({
-                isValid: question.tabAnswer.every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video)),
+                isValid: question.tabAnswer.every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
             // Check QuestionVue Name:
