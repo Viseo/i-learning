@@ -1563,11 +1563,11 @@ exports.Domain = function (globalVariables) {
                         clicked : (what) => {
                             what.parentObject.miniature.miniatureClickHandler();
                         },
-                        drop : (what, parent, x, y) =>{
+                        moved: (what) => {
                             let point = what.component.parent.globalPoint(what.x,what.y);
                             this.dropAction(point.x,point.y, what);
-                            return {x:what.x, y:what.y, parent:what.component.parent};
-                        }
+                            return true;
+                    }
                     };
                     !playerMode && tabElement.miniatureManipulator.addEvent('dblclick', event => {
                         dblclickQuizHandler(event,tabElement);
@@ -3688,12 +3688,12 @@ exports.Domain = function (globalVariables) {
                                         this.formation.dropAction(what.x, what.y,what);
                                     }
                                 }
-                                let tmp = what;
                                 return {x:what.x,y:what.y,parent:what.component.parent};
                             },
                             moved: (what) => {
                                 this.draggedObject = null;
                                 what.flush();
+                                return true;
                             },
                             clicked: (item) => {
                                 if(!this.gameSelected) {
