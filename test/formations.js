@@ -194,13 +194,13 @@ describe('formationsManager', function () {
             let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
             enter(formationLabelContentArea, "La première formation ==");
             formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text, "La première formation ==");
+            assert.equal(formationLabelContent.text, testutils.escape("La première formation =="));
 
             formationLabelContent.listeners["dblclick"]();
             formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
             enter(formationLabelContentArea, "La première formation");
             formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text, "La première formation");
+            assert.equal(formationLabelContent.text, testutils.escape("La première formation"));
 
             const dragQuiz = (pointX, pointY) => {
                 gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
