@@ -366,7 +366,7 @@ exports.Domain = function (globalVariables) {
                             popInY,
                             popInWidth = this.model.parentQuestion.width,
                             popInHeight = this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines * 0.8;
-                        this.model.explanationPopIn = this.model.explanationPopIn || new PopInVue(this.model, false);
+                        this.model.explanationPopIn = this.model.explanationPopIn || new PopInVue(this, false);
                         if (this.model.parentQuestion.image) {
                             popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithImage / 2 + MARGIN;
                         } else {
@@ -1381,7 +1381,6 @@ exports.Domain = function (globalVariables) {
             };
 
             let clickQuizHandler = (event, target) => {
-                console.log("heeeeey");
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                 drawing.manipulator.unset(1, this.manipulator.add);
                 main.currentPageDisplayed = "QuizPreview";
