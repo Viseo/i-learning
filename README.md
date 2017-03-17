@@ -43,3 +43,12 @@ MongoDB
 [MongoDB Link]:https://www.mongodb.com/download-center#community
 [NodeJS Link]:https://nodejs.org/en/download/
 
+## Tests
+dans un terminal, taper la commande: `npm test`
+
+pour voir le details du code coverage, ouvrir dans le navigateur: coverage/lcov-report/index.html
+
+##Adresses serveurs
+ développement : http://54.229.14.93:8080/
+ 
+ production : http://54.194.167.185:8080/ 
