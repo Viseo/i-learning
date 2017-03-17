@@ -8,11 +8,10 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
-        AddEmptyElement,
-        Quiz,
-        Bd,
-        Answer,
-        Question,
+        AddEmptyElementVue,
+        QuizVue,
+        BdVue,
+        AnswerVue,
         QuestionCreator;
 
     setGlobalVariables = () => {
@@ -23,19 +22,16 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg;
         gui = globalVariables.gui;
         playerMode = globalVariables.playerMode;
-        AddEmptyElement = globalVariables.domain.AddEmptyElement;
-        Quiz = globalVariables.domain.Quiz;
-        Bd = globalVariables.domain.Bd;
-        Answer = globalVariables.domain.Answer;
-        Question = globalVariables.domain.Question;
-
+        AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
+        QuizVue = globalVariables.domain.QuizVue;
+        BdVue = globalVariables.domain.BdVue;
+        AnswerVue = globalVariables.domain.AnswerVue;
     };
 
     /**
      * Initialise globalVariables.imageController
      * @constructor
      */
-
     function SVGGlobalHandler() {
 
         /* istanbul ignore next */
@@ -45,7 +41,6 @@ exports.Util = function (globalVariables) {
          * @returns {*|{getImage: getImage}}
          * @constructor
          */
-
         ImageController = function (imageRuntime) {
             return imageRuntime || {
                     getImage: function (imgUrl, onloadHandler) {
@@ -63,7 +58,6 @@ exports.Util = function (globalVariables) {
      * Crée un Manipulator
      * @class
      */
-
     class Manipulator {
 
         /**
@@ -86,6 +80,37 @@ exports.Util = function (globalVariables) {
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
             this.first = this.translator;
+            this.components = [];
+            this.component = this.translator;
+            let self = this;
+            Object.defineProperty(self, "x", {
+                get : function(){
+                    return self.component.x;
+                },
+                set : function(nouvelleValeur){} ,
+                enumerable : true,
+                configurable : true
+            });
+            Object.defineProperty(self, "y", {
+                get : function(){
+                    return self.component.y;
+                },
+                set : function(nouvelleValeur){} ,
+                enumerable : true,
+                configurable : true
+            });
+        }
+
+        /**
+         * retourne tous les objets svg accrochés à ce manipulator
+         * @returns {Array}
+         */
+        children(){
+            if(this.ordonator){
+                return this.ordonator.children;
+            }else {
+                return this.last.children;
+            }
         }
 
         /**
@@ -93,6 +118,31 @@ exports.Util = function (globalVariables) {
          * @param {number} layerNumber
          * @returns {Manipulator}
          */
+        globalPoint(...args){
+            return this.translator.globalPoint(args);
+        }
+        localPoint(...args) {
+            return this.translator.localPoint(args);
+        }
+
+        addEvent(eventName, handler){
+            this[eventName] = handler;
+            for (let i = 0; i < this.components.length; i++) {
+                svg.addEvent(this.components[i], eventName, handler);
+            }
+        }
+        removeEvent(eventName, handler){
+            this[eventName] = handler;
+            for (let i = 0; i < this.components.length; i++) {
+                svg.removeEvent(this.components[i], eventName, handler);
+            }
+        }
+        removeEvent(eventName){
+            let handler = this[eventName];
+            for (let i = 0; i < this.components.length; i++) {
+                svg.removeEvent(this.components[i], eventName, handler);
+            }
+        }
 
         addOrdonator(layerNumber) {
             this.ordonator = new svg.Ordered(layerNumber);
@@ -149,6 +199,8 @@ exports.Util = function (globalVariables) {
 
         move(x, y) {
             this.translator.move(x, y);
+            this.x = this.translator.localPoint(0,0);
+            this.y = this.translator.localPoint(0,0);
             return this;
         }
 
@@ -186,7 +238,8 @@ exports.Util = function (globalVariables) {
             if (component instanceof Manipulator) {
                 component = component.first;
             }
-            this.ordonator.set(layer, component)
+            this.ordonator.set(layer, component);
+            this.components.push(component);
             return this;
         }
 
@@ -204,6 +257,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
+                //component.parent = this;
             }
             return this;
         }
@@ -220,7 +274,6 @@ exports.Util = function (globalVariables) {
             }
             return this;
         }
-
     }
 
     class Drawings extends gui.Canvas {
@@ -244,30 +297,7 @@ exports.Util = function (globalVariables) {
                     svg.event(this.target, "mousedown", event);
                 }
             };
-
             svg.addEvent(this.component.glass, "mousedown", onmousedownHandler);
-
-
-            const onmousemoveHandler = event => {
-                this.target = this.drag || this.component.background.getTarget(event.pageX, event.pageY);
-                if (this.drawing.mousedOverTarget && this.drawing.mousedOverTarget.target) {
-                    const bool = this.drawing.mousedOverTarget.target.inside(event.pageX, event.pageY);
-                    if (this.drawing.mousedOverTarget.target.component.listeners && this.drawing.mousedOverTarget.target.component.listeners.mouseout && !bool) {
-                        svg.event(this.drawing.mousedOverTarget.target, "mouseout", event);
-                        this.drawing.mousedOverTarget = null;
-                    }
-                }
-                if (this.target) {
-                    svg.event(this.target, "mousemove", event);
-                    if (this.target.component.listeners && !this.target.component.listeners.mouseover && this.target.component.listeners.click) {
-                    }
-                    if (this.target.component.listeners && this.target.component.listeners.mouseover) {
-                        this.drawing.mousedOverTarget = {target: this.target};
-                        svg.event(this.target, "mouseover", event);
-                    }
-                }
-            };
-            svg.addEvent(this.component.glass, "mousemove", onmousemoveHandler);
 
             const ondblclickHandler = event => {
                 let target = this.component.background.getTarget(event.pageX, event.pageY);
@@ -318,14 +348,14 @@ exports.Util = function (globalVariables) {
             var target = drawings.component.background.getTarget(event.pageX, event.pageY);
             var sender = null;
             target.answerParent && (sender = target.answerParent);
-            var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
             !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
-                answer.correct = (answer !== sender) ? false : answer.correct;
+                answer.model.correct = (answer !== sender) ? false : answer.model.correct;
             });
-            sender.correct = !sender.correct;
-            sender.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
+            sender.model.correct = !sender.model.correct;
+            sender.model.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
             updateAllCheckBoxes(sender);
-            let quizManager = sender.parentQuestion.parentQuiz.parentFormation.quizManager;
+            let quizManager = sender.model.parentQuestion.parentQuiz.parentFormation.quizManager;
             quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
@@ -343,11 +373,11 @@ exports.Util = function (globalVariables) {
         };
 
         updateAllCheckBoxes = function (sender) {
-            var editor = (sender.editor.linkedQuestion ? sender.editor : sender.editor.parent);
+            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
             editor.linkedQuestion.tabAnswer.forEach(answer => {
-                if (answer.editable && answer.obj.checkbox) {
+                if (answer.model.editable && answer.obj.checkbox) {
                     answer.obj.checkbox.color(myColors.white, 2, myColors.black);
-                    !answer.correct && answer.manipulator.unset(4);
+                    !answer.model.correct && answer.manipulator.unset(4);
                 }
             });
         };
@@ -368,8 +398,8 @@ exports.Util = function (globalVariables) {
             sender.obj.checkbox.color(myColors.white, 2, myColors.black);
             svg.addEvent(sender.obj.checkbox, "click", onclickFunction);
             sender.manipulator.set(3, sender.obj.checkbox);
-            !sender.correct && sender.manipulator.unset(4);
-            sender.correct && drawPathChecked(sender, x, y, size);
+            !sender.model.correct && sender.manipulator.unset(4);
+            sender.model.correct && drawPathChecked(sender, x, y, size);
             return sender.obj;
         };
 
@@ -486,7 +516,7 @@ exports.Util = function (globalVariables) {
                 line3 = new svg.Line(-size / 2 + size / 8, -size / 2 + 3 * size / 5, size / 2 - size / 8, -size / 2 + 3 * size / 5).color(myColors.grey, 1, myColors.grey),
                 line4 = new svg.Line(-size / 2 + size / 8, -size / 2 + 4 * size / 5, -size / 2 + size / 5, -size / 2 + 4 * size / 5).color(myColors.grey, 1, myColors.grey),
                 elementsTab = [square, tipEnd, end, body, line1, line2, line3, line4];
-            square.mark("explanationSquare" + object.parentQuestion.tabAnswer.indexOf(object));
+            square.mark("explanationSquare" + object.model.parentQuestion.tabAnswer.indexOf(object));
             object.manipulator.set(6, square);
             object.linesManipulator.move(x, y);
             object.linesManipulator.set(0, line1);
@@ -498,7 +528,7 @@ exports.Util = function (globalVariables) {
             object.penManipulator.set(3, body);
             object.penManipulator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotate(40);
-            elementsTab.forEach(element => svg.addEvent(element, "click", object.penHandler));
+            elementsTab.forEach(element => svg.addEvent(element, "click", object.model.penHandler));
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
@@ -1160,7 +1190,7 @@ exports.Util = function (globalVariables) {
             let displayWhenPublished = () => {
                 let result = true;
                 gameMiniature.game.tabQuestions.forEach(question => {
-                    if (!(question instanceof AddEmptyElement)) {
+                    if (!(question instanceof AddEmptyElementVue)) {
                         question.questionType && question.questionType.validationTab.forEach(funcEl => {
                             result = result && funcEl(question).isValid;
                         })
@@ -1373,7 +1403,7 @@ exports.Util = function (globalVariables) {
             this.visibleElementsArray.forEach(array => {
                 array.forEach(
                     element => {
-                        if (!(element instanceof AddEmptyElement)) {
+                        if (!(element instanceof AddEmptyElementVue)) {
                             element.checkValidity();
                         }
                     });
@@ -1613,7 +1643,7 @@ exports.Util = function (globalVariables) {
         }
 
         static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData)
+            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
         }
 
         static getImages() {
@@ -1649,9 +1679,9 @@ exports.Util = function (globalVariables) {
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
-        myParentsList = ["parent", "answersManipulator", "validateManipulator", "parentElement", "manipulator",
-            "resetManipulator", "manipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
-            "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator", "manipulator",
+        myParentsList = ["parent","parentManipulator","answersManipulator", "validateManipulator", "parentElement",
+            "resetManipulator","manipulatorQuizInfo", "questionCreatorManipulator",
+            "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizManager",
             "quizInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",
             "answerParent", "obj", "checkbox", "border", "content", "parentQuiz", "selectedAnswers", "validatedAnswers", "linkedQuestion",
@@ -1660,7 +1690,9 @@ exports.Util = function (globalVariables) {
             "simpleChoiceMessageManipulator", "arrowsManipulator", "miniaturesManipulator", "miniature", "previewMode", "miniaturePosition",
             "resultArea", "questionArea", "titleArea", "redCrossManipulator", "parentQuestion", "questionsWithBadAnswers", "score", "currentQuestionIndex",
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
-            "formationsManipulator", "miniatureManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow"];
+            "formationsManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
+            "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator", "chevronManipulator", "leftChevronManipulator", "miniatureManipulator",
+            "rightChevronManipulator"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
@@ -1694,7 +1726,7 @@ exports.Util = function (globalVariables) {
                 {
                     label: "Quiz",
                     create: function (formation, level, posX) {
-                        var newQuiz = new Quiz(defaultQuiz, false, formation);
+                        var newQuiz = new QuizVue(defaultQuiz, false, formation);
                         newQuiz.tabQuestions[0].parentQuiz = newQuiz;
                         newQuiz.id = "quizz" + formation.gamesCounter.quizz;
                         formation.gamesCounter.quizz++;
@@ -1705,7 +1737,7 @@ exports.Util = function (globalVariables) {
                 {
                     label: "Bd",
                     create: function (formation, level, posX) {
-                        var newBd = new Bd({}, formation);
+                        var newBd = new BdVue({}, formation);
                         newBd.id = "bd" + formation.gamesCounter.bd;
                         formation.gamesCounter.bd++;
                         newBd.title = "Bd " + formation.gamesCounter.bd;
@@ -1742,12 +1774,12 @@ exports.Util = function (globalVariables) {
         singleAnswerValidationTab = [
             // Check 1 Correct Answer:
             question => ({
-                isValid: question.tabAnswer && question.tabAnswer.some(el => el.correct),
+                isValid: question.tabAnswer && question.tabAnswer.some(el => el.model.correct),
                 message: "Vous devez cocher au moins une bonne réponse."
             }),
             // Check answer's name:
             question => {
-                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video));
+                let isValid = question.tabAnswer.slice(0, -1).every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video));
                 let message = "Vous devez remplir correctement toutes les réponses.";
 
                 return {
@@ -1755,7 +1787,7 @@ exports.Util = function (globalVariables) {
                     message: message
                 }
             },
-            // Check Question Name:
+            // Check QuestionVue Name:
             question => {
                 let isValid = !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video);
                 let message = "Vous devez remplir correctement le nom de la question.";
@@ -1777,12 +1809,17 @@ exports.Util = function (globalVariables) {
         ];
 
         multipleAnswerValidationTab = [
+            // Check 1 Correct Answer:
+            question => ({
+                isValid: question.tabAnswer && question.tabAnswer.some(el => el.model.correct),
+                message: "Vous devez cocher au moins une bonne réponse."
+            }),
             // Check answer's name:
             question => ({
-                isValid: question.tabAnswer.every(el => ((el.label && (!el.invalidLabelInput)) || el.imageSrc || el.video)),
+                isValid: question.tabAnswer.slice(0, -1).every(el => ((el.model.label && (!el.model.invalidLabelInput)) || el.model.imageSrc || el.model.video)),
                 message: "Vous devez remplir correctement toutes les réponses."
             }),
-            // Check Question Name:
+            // Check QuestionVue Name:
             question => ({
                 isValid: !!((question.label && (!question.invalidLabelInput)) || question.imageSrc || question.video), // Checker si le champ saisi de la question est valide
                 message: "Vous devez remplir correctement le nom de la question."
