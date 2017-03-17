@@ -1844,7 +1844,9 @@ exports.Domain = function (globalVariables) {
             let getColumn = (dropLocation, level) => {
                 let column = this.levelsTab[level].gamesTab.length;
                 for (let i = 0; i < this.levelsTab[level].gamesTab.length; i++) {
-                    if (dropLocation.x < this.levelsTab[level].gamesTab[i].miniaturePosition.x) {
+                    let globalPointGameInLevel = this.graphManipulator.component.globalPoint(this.levelsTab[level].gamesTab[i].miniaturePosition);
+                    let localPointGameInLevel = this.panel.content.localPoint(globalPointGameInLevel);
+                    if (dropLocation.x < localPointGameInLevel.x) {
                         column = i;
                         break;
                     }
