@@ -1184,7 +1184,7 @@ exports.Domain = function (globalVariables) {
                     //     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
                     // }
                     formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
-                    formationLabel.content.mark('formationLabelContent');
+                    formationLabel.content.mark('formationManagerLabelContent');
                     this.labelHeight = formationLabel.content.boundingRect().height;
                     //this.formationTitleWidth = this.titleSvg.boundingRect().width;
                     formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);

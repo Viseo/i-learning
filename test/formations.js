@@ -115,25 +115,25 @@ describe('formationsManager', function () {
 
             runtime.advance();
 
-            testValueOnElement(root, "formationLabelContent", "Ajouter une f…");
+            testValueOnElement(root, "formationManagerLabelContent", "Ajouter une f…");
 
             callClickOnElement(root, "addFormationButton");
             testValueOnElement(root, "formationErrorMessage", "Veuillez rentrer un nom de formation valide");
 
             runtime.advance();
 
-            callClickOnElement(root, "formationLabelContent");
+            callClickOnElement(root, "formationManagerLabelContent");
             callEnterOnElement(root, "formationLabelContentArea", "Test[");
             testValueOnElement(root, "formationInputErrorMessage", "Veuillez rentrer un nom de formation valide");
 
-            callClickOnElement(root, "formationLabelContent");
+            callClickOnElement(root, "formationManagerLabelContent");
             callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
             testValueOnElement(root, "formationInputErrorMessage", null);
 
             callClickOnElement(root, "addFormationButton");
             testValueOnElement(root, "formationErrorMessage", null);
 
-            callClickOnElement(root, "formationLabelContent");
+            callClickOnElement(root, "formationManagerLabelContent");
             callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
             testValueOnElement(root, "formationInputErrorMessage", null);
 
@@ -154,11 +154,11 @@ describe('formationsManager', function () {
 
             runtime.advance();
 
-            let formationLabelContent = retrieve(root, "[formationLabelContent]");
-            formationLabelContent.listeners["click"]();
+            let formationManagerLabelContent = retrieve(root, "[formationManagerLabelContent]");
+            formationManagerLabelContent.listeners["click"]();
             let formationLabelContentArea2 = retrieve(root, "[formationLabelContentArea]");
             enter(formationLabelContentArea2, "maFormation");
-            formationLabelContent = retrieve(root, "[formationLabelContent]");
+            formationManagerLabelContent = retrieve(root, "[formationManagerLabelContent]");
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
 
@@ -188,6 +188,7 @@ describe('formationsManager', function () {
 
             publicationFormationButtonCadre.listeners["click"]();
             //assert.equal(errorMessagePublication.text, testutils.escape("Vous devez remplir le nom de la formation."));
+            let formationLabelContent = retrieve(root, "[formationLabelContent]");
 
             formationLabelContent.listeners["dblclick"]();
             let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
