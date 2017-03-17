@@ -1492,7 +1492,7 @@ exports.Domain = function (globalVariables) {
                     } else if (event.keyCode === 27 && this.library && this.library.arrowMode) { // échap
                         this.library.toggleArrowMode();
                     } else if (event.keyCode === 27 && this.library && this.library.gameSelected) {
-                        this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                        this.library.gameSelected.border.color(myColors.white, 1, myColors.black);
                         this.library.gameSelected = null;
                     }
                     return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
@@ -3725,11 +3725,13 @@ exports.Domain = function (globalVariables) {
                                 else{
                                     for (let it in this.itemsTab) {
                                         if (this.itemsTab[it].label == this.draggedObject.label) {
-                                            this.miniatureSelected = this.itemsTab[it];
-                                            this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                                            this.miniatureSelected = null;
+                                            this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
                                         }
                                     }
                                     this.gameSelected = null;
+                                    this.draggedObject = null;
+                                    item.flush();
                                 }
                             }
                         };

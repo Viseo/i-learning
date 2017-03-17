@@ -206,8 +206,7 @@ describe('formationsManager', function () {
                 gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
                 draggedGameCadre = retrieve(root, "[draggedGameCadre]");
                 draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-                draggedGameCadre.listeners["click"]();
-                pointX && pointY && panelBack.listeners['mouseup']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
+                pointX && pointY && panelBack.listeners['click']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
 
             };
 
@@ -216,19 +215,19 @@ describe('formationsManager', function () {
 
             dragQuiz(300, 300);
             let game1 = retrieve(root, "[level1quizz1]");
-            assert.equal(game1.text, "Quiz 2");
+            assert.equal(game1.handler.messageText, "Quiz\n2");
             let miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 2);
 
             dragQuiz(300, 300);
             let game2 = retrieve(root, "[level1quizz2]");
-            assert.equal(game2.text, "Quiz 3");
+            assert.equal(game2.handler.messageText, "Quiz\n3");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 3);
 
             dragQuiz(300, 300);
             let game3 = retrieve(root, "[level1quizz3]");
-            assert.equal(game3.text, "Quiz 4");
+            assert.equal(game3.handler.messageText, "Quiz\n4");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
@@ -236,7 +235,12 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
+            miniatureSelected = retrieve(root, "[miniatureSelected]");
+            miniatureSelected && gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
+            gameQuiz = retrieve(root, "[gameQuiz]");
+            assert.equal(gameQuiz.stroke, 'rgb(0,0,0)');
 
             dragQuiz();
             let bdGame = retrieve(root, "[gameBd]");
