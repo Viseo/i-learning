@@ -16,8 +16,10 @@
 <script src="src/Util.js"></script>
 <script src="src/Domain.js"></script>
 <script src="src/main.js"></script>
+<script src="lib/enhancer.js"></script>
 <script>
     const
+        enhance = exports.Enhance(),
         targetRuntime = exports.targetRuntime(),
         SVG = exports.SVG,
         dbListener = new DbListener(true, false);
