@@ -360,6 +360,8 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
         }
     }
 
-    return FormationsManagerVue;
+    return {
+        FormationsManagerVue
+    };
 }
 

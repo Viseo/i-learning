@@ -1,13 +1,27 @@
-exports.Library = function(globalVariables, Vue){
+exports.Library = function(globalVariables, Vue, FormationVue){
 
     let
+        imageController,
         main = globalVariables.main,
+        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
+        gui = globalVariables.gui,
+        util = globalVariables.util,
+        clientWidth = globalVariables.clientWidth,
+        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
+        MiniatureFormation = globalVariables.util.MiniatureFormation,
+        Puzzle = globalVariables.util.Puzzle,
+        ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode;
+        playerMode = globalVariables.playerMode,
+        Picture = globalVariables.util.Picture,
+        installDnD = globalVariables.gui.installDnD;
+
+    imageController = ImageController(globalVariables.ImageRuntime);
+    globalVariables.imageController = imageController;
 
     /**
      * TODO renommer this.libraryManipulator en this.manipulator (harmonisation)
@@ -784,7 +798,6 @@ exports.Library = function(globalVariables, Vue){
     }
 
     return {
-        LibraryVue,
         GamesLibraryVue,
         ImagesLibraryVue
     }
