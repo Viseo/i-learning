@@ -1,6 +1,4 @@
-let FLevel = require('./game/Level').Level;
-let FQuiz = require('./game/Quiz').Quiz;
-let FBd = require('./game/Bd').Bd;
+let FGame = require('./include/Game').Game;
 let FUser = require('./include/User').User;
 
 exports.Domain = function (globalVariables) {
@@ -8,9 +6,6 @@ exports.Domain = function (globalVariables) {
     let imageController;
     let myFormations;
 
-
-    //Decoupage redefinition des class
-    let Level = FLevel(globalVariables).Level;
 
 
     let
@@ -2301,9 +2296,8 @@ exports.Domain = function (globalVariables) {
     }
 
 
-    let fUser = FUser(globalVariables, Vue, HeaderVue, FormationsManagerVue);
-    let InscriptionManagerVue = fUser.InscriptionManagerVue;
-    let ConnexionManagerVue = fUser.ConnexionManagerVue;
+    let {InscriptionManagerVue, ConnexionManagerVue} = FUser(globalVariables, Vue, HeaderVue, FormationsManagerVue);
+
 
     /**
      * TODO renommer this.libraryManipulator en this.manipulator (harmonisation)
@@ -4322,8 +4316,7 @@ exports.Domain = function (globalVariables) {
         };
     }
 
-    let QuizVue = FQuiz(globalVariables, GameVue, QuestionVue).QuizVue;
-    let BdVue = FBd(GameVue).BdVue;
+    let {BdVue, Level, QuizVue} = FGame(globalVariables, GameVue, QuestionVue);
 
 
     /**
