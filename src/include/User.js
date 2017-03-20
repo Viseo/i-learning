@@ -432,6 +432,10 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                     }
                 });
             }
+            else{
+                let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                fieldTitle.pattern(regex);
+            }
             //fieldTitle.position(-drawing.width / 10, this[field].line * drawing.height / 10);
             this.h = 1.5 * fieldTitle.height;
             //var displayText = util.displayText(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, 'Arial', manipulator);
@@ -451,52 +455,52 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         }
 
         /*clickEditionField(field, manipulator) {
-         return () => {
-         const width = drawing.width / 6,
-         height = this.h,
-         globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-         contentareaStyle = {
-         toppx: globalPointCenter.y,
-         leftpx: globalPointCenter.x,
-         height: height,
-         width: this[field].border.width
-         };
-         drawing.notInTextArea = false;
-         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-         .mark('connectionContentArea')
-         .message(this[field].labelSecret || this[field].label)
-         .color(null, 0, myColors.black).font("Arial", 20);
-         this[field].secret && contentarea.type('password');
-         manipulator.unset(1, this[field].content.text);
-         drawings.component.add(contentarea);
-         contentarea.focus();
-         let alreadyDeleted = false,
-         onblur = () => {
-         if (!alreadyDeleted) {
-         contentarea.enter();
-         if (this[field].secret) {
-         this[field].label = '';
-         this[field].labelSecret = contentarea.messageText;
-         if (contentarea.messageText) {
-         for (let i = 0; i < contentarea.messageText.length; i++) {
-         this[field].label += '●';
-         }
-         }
-         } else {
-         this[field].label = contentarea.messageText;
-         }
-         contentarea.messageText && this.displayField(field, manipulator);
-         manipulator.unset(3);
-         drawing.notInTextArea = true;
-         alreadyDeleted || drawings.component.remove(contentarea);
-         alreadyDeleted = true;
-         }
-         };
-         svg.addEvent(contentarea, "blur", onblur);
-         this.focusedField = this[field];
-         };
-         }
-         */
+            return () => {
+                const width = drawing.width / 6,
+                    height = this.h,
+                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+                    contentareaStyle = {
+                        toppx: globalPointCenter.y,
+                        leftpx: globalPointCenter.x,
+                        height: height,
+                        width: this[field].border.width
+                    };
+                drawing.notInTextArea = false;
+                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+                    .mark('connectionContentArea')
+                    .message(this[field].labelSecret || this[field].label)
+                    .color(null, 0, myColors.black).font("Arial", 20);
+                this[field].secret && contentarea.type('password');
+                manipulator.unset(1, this[field].content.text);
+                drawings.component.add(contentarea);
+                contentarea.focus();
+                let alreadyDeleted = false,
+                    onblur = () => {
+                        if (!alreadyDeleted) {
+                            contentarea.enter();
+                            if (this[field].secret) {
+                                this[field].label = '';
+                                this[field].labelSecret = contentarea.messageText;
+                                if (contentarea.messageText) {
+                                    for (let i = 0; i < contentarea.messageText.length; i++) {
+                                        this[field].label += '●';
+                                    }
+                                }
+                            } else {
+                                this[field].label = contentarea.messageText;
+                            }
+                            contentarea.messageText && this.displayField(field, manipulator);
+                            manipulator.unset(3);
+                            drawing.notInTextArea = true;
+                            alreadyDeleted || drawings.component.remove(contentarea);
+                            alreadyDeleted = true;
+                        }
+                    };
+                svg.addEvent(contentarea, "blur", onblur);
+                this.focusedField = this[field];
+            };
+        }*/
+
 
         connexionButtonHandler() {
             let emptyAreas = this.tabForm.filter(field => field.item.textMessage === '');
