@@ -15,7 +15,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
+        //playerMode = globalVariables.globalVariables.playerMode,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
 
@@ -75,7 +75,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
 
             let toggleFormationsCheck;
 
-            if (playerMode) {
+            if (globalVariables.playerMode) {
                 this.headerManipulator.add(this.toggleFormationsManipulator);
                 let manip = this.toggleFormationsManipulator,
                     pos = -MARGIN,
@@ -116,14 +116,14 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
 
             let addFormationButton, spaceBetweenElements;
             let displayPanel = () => {
-                let heightAllocatedToPanel = drawing.height - (playerMode ?
+                let heightAllocatedToPanel = drawing.height - (globalVariables.playerMode ?
                         toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN : 100);
                 // addFormationButton.border.globalPoint(0, 0).y + addFormationButton.border.height;
                 spaceBetweenElements = {
                     width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                     height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                 };
-                this.y = (!playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
+                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
 
                 this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
                 if (this.rows === 0) this.rows = 1;
@@ -310,7 +310,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
             };
             this.formations = sortAlphabetical(this.formations);
             globalVariables.header.display("Formations");
-            !playerMode && this.displayHeaderFormations();
+            !globalVariables.playerMode && this.displayHeaderFormations();
             (this.tileHeight < 0) && (this.tileHeight = undefined);
             (!this.tileHeight || this.tileHeight > 0) && displayPanel();
 
@@ -320,7 +320,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
                     count = 0,
                     totalLines = 1;
                 this.formations.forEach(formation => {
-                    if (playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
+                    if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
                     if (count > (this.rows - 1)) {
                         count = 0;
                         totalLines++;

@@ -14,7 +14,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
+        //playerMode = globalVariables.globalVariables.playerMode,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
 
@@ -1024,7 +1024,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
             }
             else if (this.video) {//&& this.label !== ""
                 let obj;
-                if (this.parentQuiz.previewMode || playerMode) {
+                if (this.parentQuiz.previewMode || globalVariables.playerMode) {
                     obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
                 }
                 else {
@@ -1051,7 +1051,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
                 this.manipulator.set(0, this.border);
             }
 
-            if (playerMode) {
+            if (globalVariables.playerMode) {
                 if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
                     let event = () => {
                         drawings.component.clean();
@@ -1127,15 +1127,15 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
-                if (!playerMode && this.parentQuiz.previewMode) {
+                if (!globalVariables.playerMode && this.parentQuiz.previewMode) {
                     answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
-                } else if (playerMode && this.parentQuiz.previewMode) {
+                } else if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1)
                         answerElement.model.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
                     else {
                         answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen)
                     }
-                } else if (playerMode && !this.parentQuiz.previewMode) {
+                } else if (globalVariables.playerMode && !this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered.length < this.questionNum) {
                         answerElement.border.color(myColors.white, 1, answerElement.border.strokeColor);
                     } else if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1) {
@@ -1149,7 +1149,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
                 buttonH = Math.min(tileDimension.height, 50),
                 buttonW = 0.5 * drawing.width,
                 buttonX = -buttonW / 2;
-            if (playerMode && this.parentQuiz.previewMode) {
+            if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                 /* TODO lATER :
                  this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({ x: 0.4 * drawing.width, y: -100, width: 35 })
                  .color(myColors.white, 0.5, SELECTION_COLOR)
@@ -1744,7 +1744,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
                     explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));
                 }
 
-            } else if (playerMode && !this.model.parentQuestion.parentQuiz.previewMode) {
+            } else if (globalVariables.playerMode && !this.model.parentQuestion.parentQuiz.previewMode) {
                 let clickAnswerHandler = () => {
                     this.select();
                     if (this.model.parentQuestion.multipleChoice && this.selected) {
@@ -2092,7 +2092,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
          */
         constructor(quiz, previewMode, parentFormation) {
             super(quiz, parentFormation);
-            const returnText = playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
+            const returnText = globalVariables.playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
             this.returnButton = new ReturnButton(this, returnText);
             this.manipulator.add(this.returnButtonManipulator);
             this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
@@ -2177,7 +2177,7 @@ exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
             this.returnButtonManipulator.ordonator.children[0].mark('returnButtonToResults');
             let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
             if (this.previewMode) {
-                if (playerMode) {
+                if (globalVariables.playerMode) {
                     this.returnButton.setHandler(() => {
                         drawings.component.clean();
                         this.closePopIn();

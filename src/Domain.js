@@ -23,7 +23,7 @@ exports.Domain = function ( globalVariables) {
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
+        //globalVariables.playerMode = globalVariables.globalVariables.playerMode,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
 
@@ -47,7 +47,7 @@ exports.Domain = function ( globalVariables) {
         Puzzle = globalVariables.util.Puzzle;
         ReturnButton = globalVariables.util.ReturnButton;
         Server = globalVariables.util.Server;
-        playerMode = globalVariables.playerMode;
+        //playerMode = globalVariables.globalVariables.playerMode;
         Picture = globalVariables.util.Picture;
         installDnD = globalVariables.gui.installDnD;
 
@@ -1136,13 +1136,13 @@ exports.Domain = function ( globalVariables) {
 
             let displayLevel = (w, h, level) => {
                 this.panel.content.add(level.manipulator.first);
-                var lineColor = playerMode ? myColors.grey : myColors.black;
-                var levelText = playerMode ? "" : "Niveau " + level.index;
+                var lineColor = globalVariables.playerMode ? myColors.grey : myColors.black;
+                var levelText = globalVariables.playerMode ? "" : "Niveau " + level.index;
                 let obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator, 0);
                 obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
                 obj.line.component.setAttribute && obj.line.component.setAttribute('stroke-dasharray', '6');
 
-                if (!playerMode) {
+                if (!globalVariables.playerMode) {
                     this.redCrossManipulator;
                     let overLevelHandler = (event) => {
                         let levelIndex = -1;
@@ -1228,7 +1228,7 @@ exports.Domain = function ( globalVariables) {
                     }
                 });
                 this.manipulator.set(1, this.clippingManipulator);
-                playerMode ? this.clippingManipulator.move(MARGIN, drawing.height * HEADER_SIZE)
+                globalVariables.playerMode ? this.clippingManipulator.move(MARGIN, drawing.height * HEADER_SIZE)
                     : this.clippingManipulator.move(this.libraryWidth, drawing.height * HEADER_SIZE);
                 this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio - drawing.height * 0.1;//-15-this.saveButtonHeight;//15: Height Message Error
 
@@ -1293,14 +1293,14 @@ exports.Domain = function ( globalVariables) {
                             return true;
                     }
                     };
-                    !playerMode && tabElement.miniatureManipulator.addEvent('dblclick', event => {
+                    !globalVariables.playerMode && tabElement.miniatureManipulator.addEvent('dblclick', event => {
                         dblclickQuizHandler(event,tabElement);
                     });
-                    playerMode && tabElement.miniatureManipulator.addEvent('click', event => {
+                    globalVariables.playerMode && tabElement.miniatureManipulator.addEvent('click', event => {
                         clickQuizHandler(event,tabElement);
                     });
 
-                    !playerMode && installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
+                    !globalVariables.playerMode && installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                 };
 
                 this.levelsTab.forEach((level) => {
@@ -1316,14 +1316,14 @@ exports.Domain = function ( globalVariables) {
                         manageMiniature(tabElement);
                     });
                 });
-                !playerMode && displayMessageDragAndDrop();
+                !globalVariables.playerMode && displayMessageDragAndDrop();
                 this.graphManipulator.move(this.graphW / 2, this.graphH / 2);
                 resizePanel();
                 this.panel.back.parent.parentManip = this.graphManipulator;
                 updateAllLinks();
             };
 
-            if (playerMode) {
+            if (globalVariables.playerMode) {
                 this.graphCreaHeightRatio = 0.97;
                 this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
                 this.graphCreaWidth = drawing.width - 2 * MARGIN;
@@ -2062,7 +2062,7 @@ exports.Domain = function ( globalVariables) {
     var adminGUI = function () {
         globalVariables.playerMode = false;
         util.setGlobalVariables();
-        playerMode = false;
+        //playerMode = false;
 
         header = new HeaderVue();
         globalVariables.header = header;
@@ -2074,7 +2074,7 @@ exports.Domain = function ( globalVariables) {
     var learningGUI = function () {
         globalVariables.playerMode = true;
         util.setGlobalVariables();
-        playerMode = true;
+        //playerMode = true;
 
         header = new HeaderVue();
         globalVariables.header = header;
