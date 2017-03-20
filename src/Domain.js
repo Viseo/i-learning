@@ -2301,7 +2301,7 @@ exports.Domain = function (globalVariables) {
     }
 
 
-    let fUser = FUser(globalVariables, Vue, HeaderVue);
+    let fUser = FUser(globalVariables, Vue, HeaderVue, FormationsManagerVue);
     let InscriptionManagerVue = fUser.InscriptionManagerVue;
     let ConnexionManagerVue = fUser.ConnexionManagerVue;
 
@@ -4326,7 +4326,6 @@ exports.Domain = function (globalVariables) {
     let BdVue = FBd(GameVue).BdVue;
 
 
-
     /**
      * Réponse à un quiz. Cette réponse peut être correcte ou non. Une explication peut etre associée, avec une image ou une vidéo.
      * @class
@@ -4461,7 +4460,6 @@ exports.Domain = function (globalVariables) {
         }
 
     }
-
 
 
     /* Fonctions pour afficher le GUI correspondant à l'utilisateur connecté*/

@@ -2,25 +2,15 @@
  * Created by MLE3657 on 20/03/2017.
  */
 
-exports.User = function (globalVariables, Vue, HeaderVue) {
+exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) {
     let
         main = globalVariables.main,
         runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
-        gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
-        Picture = globalVariables.util.Picture,
-        installDnD = globalVariables.gui.installDnD;
+        Server = globalVariables.util.Server;
 
     /**
      * @class
