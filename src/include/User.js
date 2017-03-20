@@ -11,6 +11,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator,
         Server = globalVariables.util.Server;
+        gui = globalVariables.gui;
 
     /**
      * @class
@@ -357,9 +358,9 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         events() {
             return {
                 "click connexionButtonManipulator": this.connexionButtonHandler,
-                "click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
-                "keydown": this.keyDownHandler
+                /*"click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
+                 "click passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
+                 */"keydown": this.keyDownHandler
             }
         }
 
@@ -413,75 +414,95 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         }
 
         displayField(field, manipulator) {
-            var fieldTitle = new svg.Text(this[field].title).position(0, 0);
-            fieldTitle.font("Arial", 20).anchor("end");
-            manipulator.set(2, fieldTitle);
-            manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
-            this.h = 1.5 * fieldTitle.boundingRect().height;
-            var displayText = displayTextWithoutCorners(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, null, manipulator);
-            this[field].content = displayText.content;
-            this[field].border = displayText.border;
-            this[field].border.mark(field);
-            var y = -fieldTitle.boundingRect().height / 4;
-            this[field].content.position(drawing.width / 10, 0);
-            this[field].border.position(drawing.width / 10, y);
+            this[field].label = field == "mailAddressField" ? "Mail" : "Password";
+            let fieldTitle = new gui.TextField(0,0, 200, 25, this[field].label);// svg.Text(this[field].title).position(0, 0);
+            fieldTitle.font("Arial", 20).anchor("center");
+            fieldTitle.color([myColors.white, 1, myColors.black]);
+            if (field == "passwordField"){
+                fieldTitle.pass = "";
+                fieldTitle.onInput((oldMessage,message,valid) => {
+                    if(valid){
+                        let messageArray = message.split('');
+                        fieldTitle.pass += messageArray[messageArray.length - 1];
+                        let tmp = '';
+                        for (let i in message){
+                            tmp += '*';
+                        }
+                        fieldTitle.message(tmp);
+                    }
+                });
+            }
+            //fieldTitle.position(-drawing.width / 10, this[field].line * drawing.height / 10);
+            this.h = 1.5 * fieldTitle.height;
+            //var displayText = util.displayText(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, 'Arial', manipulator);
+            this[field].manipulator = fieldTitle.component;
+            this[field].item = fieldTitle;
+            manipulator.set(2, fieldTitle.component);
+            manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
+            //this[field].border = displayText.border;
+            //this[field].border.mark(field);
+            var y = -fieldTitle.height / 4;
+            //this[field].content.position(drawing.width / 10, 0);
+            //this[field].border.position(drawing.width / 10, y);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
-            this._setEvents(); //TODO a changer, on en a besoin car display field recrée à chaque fois le text, donc on perd les events
+            //this._setEvents(); //TODO a changer, on en a besoin car display field recrée à chaque fois le text, donc on perd les events
         }
 
-        clickEditionField(field, manipulator) {
-            return () => {
-                const width = drawing.width / 6,
-                    height = this.h,
-                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-                    contentareaStyle = {
-                        toppx: globalPointCenter.y,
-                        leftpx: globalPointCenter.x,
-                        height: height,
-                        width: this[field].border.width
-                    };
-                drawing.notInTextArea = false;
-                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-                    .mark('connectionContentArea')
-                    .message(this[field].labelSecret || this[field].label)
-                    .color(null, 0, myColors.black).font("Arial", 20);
-                this[field].secret && contentarea.type('password');
-                manipulator.unset(1, this[field].content.text);
-                drawings.component.add(contentarea);
-                contentarea.focus();
-                let alreadyDeleted = false,
-                    onblur = () => {
-                        if (!alreadyDeleted) {
-                            contentarea.enter();
-                            if (this[field].secret) {
-                                this[field].label = '';
-                                this[field].labelSecret = contentarea.messageText;
-                                if (contentarea.messageText) {
-                                    for (let i = 0; i < contentarea.messageText.length; i++) {
-                                        this[field].label += '●';
-                                    }
-                                }
-                            } else {
-                                this[field].label = contentarea.messageText;
-                            }
-                            contentarea.messageText && this.displayField(field, manipulator);
-                            manipulator.unset(3);
-                            drawing.notInTextArea = true;
-                            alreadyDeleted || drawings.component.remove(contentarea);
-                            alreadyDeleted = true;
-                        }
-                    };
-                svg.addEvent(contentarea, "blur", onblur);
-                this.focusedField = this[field];
-            };
-        }
+        /*clickEditionField(field, manipulator) {
+         return () => {
+         const width = drawing.width / 6,
+         height = this.h,
+         globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
+         contentareaStyle = {
+         toppx: globalPointCenter.y,
+         leftpx: globalPointCenter.x,
+         height: height,
+         width: this[field].border.width
+         };
+         drawing.notInTextArea = false;
+         let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+         .mark('connectionContentArea')
+         .message(this[field].labelSecret || this[field].label)
+         .color(null, 0, myColors.black).font("Arial", 20);
+         this[field].secret && contentarea.type('password');
+         manipulator.unset(1, this[field].content.text);
+         drawings.component.add(contentarea);
+         contentarea.focus();
+         let alreadyDeleted = false,
+         onblur = () => {
+         if (!alreadyDeleted) {
+         contentarea.enter();
+         if (this[field].secret) {
+         this[field].label = '';
+         this[field].labelSecret = contentarea.messageText;
+         if (contentarea.messageText) {
+         for (let i = 0; i < contentarea.messageText.length; i++) {
+         this[field].label += '●';
+         }
+         }
+         } else {
+         this[field].label = contentarea.messageText;
+         }
+         contentarea.messageText && this.displayField(field, manipulator);
+         manipulator.unset(3);
+         drawing.notInTextArea = true;
+         alreadyDeleted || drawings.component.remove(contentarea);
+         alreadyDeleted = true;
+         }
+         };
+         svg.addEvent(contentarea, "blur", onblur);
+         this.focusedField = this[field];
+         };
+         }
+         */
 
         connexionButtonHandler() {
-            let emptyAreas = this.tabForm.filter(field => field.label === '');
+            let emptyAreas = this.tabForm.filter(field => field.item.textMessage === '');
             emptyAreas.forEach(emptyArea => {
-                emptyArea.border.color(myColors.white, 3, myColors.red);
+                emptyArea.item.color([myColors.white, 2, myColors.red]);
+                emptyArea.item.message(emptyArea.label);
             });
 
             if (emptyAreas.length > 0) {
@@ -490,11 +511,11 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 svg.timeout(() => {
                     this.connexionButtonManipulator.unset(3);
                     emptyAreas.forEach(emptyArea => {
-                        emptyArea.border.color(myColors.white, 1, myColors.black);
+                        emptyArea.item.color([myColors.white, 1, myColors.black]);
                     });
                 }, 5000);
             } else {
-                Server.connect(this.mailAddressField.label, this.passwordField.labelSecret).then(data => {
+                Server.connect(this.mailAddressField.item.textMessage, this.passwordField.item.pass).then(data => {
                     data = data && JSON.parse(data);
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
