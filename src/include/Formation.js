@@ -6,7 +6,7 @@
     FormationVue,
  */
 exports.Formation = function (globalVariables, classContainer) {
-    let {Vue} = classContainer;
+    let Vue = classContainer.getClass("Vue");
 
     let imageController;
     let myFormations;
@@ -61,9 +61,9 @@ exports.Formation = function (globalVariables, classContainer) {
             this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.library = new classContainer.GamesLibraryVue(myLibraryGames);
+            this.library = classContainer.createClass("GamesLibraryVue", myLibraryGames);
             this.library.formation = this;
-            this.quizManager = new classContainer.QuizManagerVue(null, this);
+            this.quizManager = classContainer.createClass("QuizManagerVue", null, this);
             this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
@@ -112,7 +112,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.returnButton.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                     globalVariables.formationsManager.display();
                 });
                 this.returnButton.removeHandler(returnHandler);
@@ -141,7 +141,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                 drawing.manipulator.unset(1, this.manipulator.add);
                 main.currentPageDisplayed = "QuizPreview";
-                this.quizDisplayed = new classContainer.QuizVue(target, false, this);
+                this.quizDisplayed = classContainer.createClass("QuizVue", target, false, this);
                 this.quizDisplayed.puzzleLines = 3;
                 this.quizDisplayed.puzzleRows = 3;
                 this.quizDisplayed.run(0, 0, drawing.width, drawing.height);
@@ -504,10 +504,10 @@ exports.Formation = function (globalVariables, classContainer) {
                 let allQuizValid = true;
                 this.levelsTab.forEach(level => {
                     level.gamesTab.forEach(game => {
-                        let checkQuiz = new classContainer.QuizVue(game, false, this);
+                        let checkQuiz = classContainer.createClass("QuizVue", game, false, this);
                         checkQuiz.isValid = true;
                         checkQuiz.tabQuestions.forEach(question => {
-                            if (!(question instanceof classContainer.AddEmptyElementVue)) {
+                            if (!(classContainer.isInstanceOf("AddEmptyElementVue", question))) {
                                 question.questionType && question.questionType.validationTab.forEach(funcEl => {
                                     var result = funcEl && funcEl(question);
                                     if (result && (!result.isValid)) {
@@ -678,7 +678,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.manipulator.flush();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                         globalVariables.formationsManager.display();
                     });
                 })
@@ -697,7 +697,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                     globalVariables.formationsManager.display();
                 });
             };
@@ -780,7 +780,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                     globalVariables.formationsManager.display();
                 });
             };
@@ -890,11 +890,11 @@ exports.Formation = function (globalVariables, classContainer) {
             formation.levelsTab.forEach(level => {
                 var gamesTab = [];
                 level.gamesTab.forEach(game => {
-                    game.tabQuestions && gamesTab.push(new classContainer.QuizVue(game, false, this));
-                    game.tabQuestions || gamesTab.push(new classContainer.BdVue(game, this));
+                    game.tabQuestions && gamesTab.push(classContainer.createClass("QuizVue", game, false, this));
+                    game.tabQuestions || gamesTab.push(classContainer.createClass("BdVue", game, this));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
-                this.levelsTab.push(new classContainer.Level(this, gamesTab));
+                this.levelsTab.push(classContainer.createClass("Level", this, gamesTab));
             });
         }
 
@@ -992,7 +992,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param index - indice du niveau
          */
         addNewLevel(index) {
-            var level = new classContainer.Level(this);
+            var level = classContainer.createClass("Level", this);
             if (!index) {
                 this.levelsTab.push(level);
             } else {

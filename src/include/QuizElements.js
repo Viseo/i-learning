@@ -22,7 +22,7 @@
  */
 exports.QuizElements = function(globalVariables, classContainer){
 
-    let {Vue} = classContainer;
+    let Vue = classContainer.getClass("Vue");
 
     let
         main = globalVariables.main,
@@ -201,17 +201,17 @@ exports.QuizElements = function(globalVariables, classContainer){
                     puzzleLines: 3,
                     puzzleRows: 3
                 };
-                this.quiz = new QuizVue(initialQuizObject, false, this.parentFormation);
+                this.quiz = classContainer.createClass("QuizVue", initialQuizObject, false, this.parentFormation);
                 this.indexOfEditedQuestion = 0;
                 this.quizName = this.quiz.title;
             } else {
                 this.loadQuiz(quiz);
             }
-            this.questionCreator = new QuestionCreatorVue(this, this.quiz.tabQuestions[this.indexOfEditedQuestion]);
-            this.library = new classContainer.ImagesLibraryVue();
+            this.questionCreator = classContainer.createClass("QuestionCreatorVue", this, this.quiz.tabQuestions[this.indexOfEditedQuestion]);
+            this.library = classContainer.createClass('ImagesLibraryVue');
             this.quiz.tabQuestions[0].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[0]);
-            this.quiz.tabQuestions.push(new AddEmptyElementVue(this, 'question'));
+            this.quiz.tabQuestions.push(classContainer.createClass("AddEmptyElementVue", this, 'question'));
             this.quizManagerManipulator = new Manipulator(this);
             this.questionsPuzzleManipulator = new Manipulator(this).addOrdonator(1);
             this.quizInfoManipulator = new Manipulator(this).addOrdonator(6);
@@ -343,7 +343,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     }
                 }
                 this.quiz.tabQuestions.forEach(question => {
-                    if (!(question instanceof classContainer.AddEmptyElementVue)) {
+                    if (!(classContainer.isInstanceOf("AddEmptyElementVue", question))) {
                         question.questionType.validationTab.forEach((funcEl) => {
                             var result = funcEl(question);
                             if (!result.isValid) {
@@ -363,9 +363,9 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.quizManagerManipulator.flush();
                     this.quiz.tabQuestions.pop();
                     this.quiz.tabQuestions.forEach((it) => {
-                        (it.tabAnswer[it.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) && it.tabAnswer.pop();
+                        (classContainer.isInstanceOf("AddEmptyElementVue",it.tabAnswer[it.tabAnswer.length - 1])) && it.tabAnswer.pop();
                     });
-                    this.previewQuiz = new QuizVue(this.quiz, true);
+                    this.previewQuiz = classContainer.createClass("QuizVue", this.quiz, true);
                     this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
                     this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
                 };
@@ -545,14 +545,14 @@ exports.QuizElements = function(globalVariables, classContainer){
          */
         loadQuiz(quiz, indexOfEditedQuestion) {
             this.indexOfEditedQuestion = (indexOfEditedQuestion && indexOfEditedQuestion !== -1 ? indexOfEditedQuestion : 0);
-            this.quiz = new QuizVue(quiz, false, this.parentFormation);
+            this.quiz = classContainer.createClass("QuizVue", quiz, false, this.parentFormation);
             this.quizName = this.quiz.title;
             this.quiz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             this.quiz.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) || question.tabAnswer.push(new classContainer.AddEmptyElementVue(this.questionCreator, 'answer'));
+                (classContainer.isInstanceOf("AddEmptyElementVue", question.tabAnswer[question.tabAnswer.length - 1] )) || question.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this.questionCreator, 'answer'));
             });
-            this.quiz.tabQuestions.push(new classContainer.AddEmptyElementVue(this, 'question'));
+            this.quiz.tabQuestions.push(classContainer.createClass("AddEmptyElementVue", this, 'question'));
 
         };
 
@@ -562,9 +562,9 @@ exports.QuizElements = function(globalVariables, classContainer){
          */
         getObjectToSave() {
             this.tabQuestions = this.quiz.tabQuestions;
-            (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof classContainer.AddEmptyElementVue) && this.tabQuestions.pop();
+            (classContainer.isInstanceOf('AddEmptyElementVue', this.tabQuestions[this.quiz.tabQuestions.length - 1])) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) && question.tabAnswer.pop();
+                (classContainer.isInstanceOf("AddEmptyElementVue", question.tabAnswer[question.tabAnswer.length - 1])) && question.tabAnswer.pop();
                 question.tabAnswer.forEach(answer => {
                     if (answer.popIn) {
                         answer.model.explanation = {};
@@ -891,8 +891,8 @@ exports.QuizElements = function(globalVariables, classContainer){
                 h: height
             };
             // bloc Answers
-            if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue)) {
-                this.linkedQuestion.tabAnswer.push(new AddEmptyElementVue(this, 'answer'));
+            if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(classContainer.isInstanceOf("AddEmptyElementVue", this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1]))) {
+                this.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this, 'answer'));
             }
             this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
             this.manipulator.add(this.puzzle.manipulator);
@@ -931,10 +931,10 @@ exports.QuizElements = function(globalVariables, classContainer){
             quest.label && (this.label = quest.label);
             this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
-                if (answer instanceof classContainer.AnswerVue) {
+                if (classContainer.isInstanceOf("AnswerVue", answer)) {
                     answer.isEditable(this, true);
                 }
-                answer.popIn = new PopInVue(answer, true);
+                answer.popIn = classContainer.createClass("PopInVue", answer, true);
             });
             quest.tabAnswer.forEach(el => {
                 if (el.correct) {
@@ -974,7 +974,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.imageSrc = "";
                 this.columns = 4;
                 this.rightAnswers = [];
-                this.tabAnswer = [new AnswerVue({model: new Answer(null, this, this)}), new AnswerVue({model: new Answer(null, this, this)})];
+                this.tabAnswer = [classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)}), classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)})];
                 this.multipleChoice = false;
                 this.font = "Arial";
                 this.bgColor = myColors.white;
@@ -1009,7 +1009,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
-                    var tmp = new AnswerVue({model: new Answer(it.model, this)});
+                    var tmp = classContainer.createClass("AnswerVue", {model: new Answer(it.model, this)});
                     this.tabAnswer.push(tmp);
                     if (tmp.model.correct) {
                         this.rightAnswers.push(tmp);
@@ -1076,7 +1076,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     let event = () => {
                         drawings.component.clean();
                         let tempFinishedQuiz = Object.assign({}, this.parentQuiz);
-                        this.finishedQuiz = new QuizVue(tempFinishedQuiz, true);
+                        this.finishedQuiz = classContainer.createClass("QuizVue", tempFinishedQuiz, true);
                         this.finishedQuiz.currentQuestionIndex = this.questionNum - 1;
                         this.finishedQuiz.parentFormation.quizDisplayed = this.finishedQuiz;
                         this.finishedQuiz.run(1, 1, drawing.width, drawing.height);
@@ -1240,7 +1240,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         questionsArray = questionPuzzle.elementsArray;
                     let index = questionsArray.indexOf(this);
                     this.remove();
-                    (questionsArray[index] instanceof classContainer.AddEmptyElementVue) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
+                    (classContainer.isInstanceOf("AddEmptyElementVue", questionsArray[index])) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
                     if (index !== -1) {
                         quizManager.indexOfEditedQuestion = index;
                         this.parentQuiz.tabQuestions[index].selected = true;
@@ -1251,7 +1251,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         quizManager.questionClickHandler({ question: this.parentQuiz.tabQuestions[index] });
                     }
                     else {
-                        this.parentQuiz.tabQuestions.splice(0, 0, new QuestionVue(defaultQuestion, this.parentQuiz));
+                        this.parentQuiz.tabQuestions.splice(0, 0, classContainer.createClass("QuestionVue", defaultQuestion, this.parentQuiz));
                         resetQuestionsIndex(this.parentQuiz);
                         if (questionPuzzle) {
                             questionPuzzle.visibleElementsArray[0].length === 6 && questionPuzzle.updateStartPosition('right');
@@ -1414,7 +1414,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
-                    let newAnswer = new AnswerVue({model: new Answer(null, this.parent.linkedQuestion, this)});
+                    let newAnswer = classContainer.createClass("AnswerVue", {model: new Answer(null, this.parent.linkedQuestion, this)});
                     newAnswer.isEditable(this, true);
                     let questionCreator = this.parent;
                     questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
@@ -1424,7 +1424,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
 
                     if (questionCreator.linkedQuestion.tabAnswer.length < questionCreator.MAX_ANSWERS) {
-                        questionCreator.linkedQuestion.tabAnswer.push(new AddEmptyElementVue(questionCreator, this.type));
+                        questionCreator.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", questionCreator, this.type));
                     }
                     questionCreator.puzzle.updateElementsArray(questionCreator.linkedQuestion.tabAnswer);
                     questionCreator.puzzle && questionCreator.puzzle.fillVisibleElementsArray("leftToRight");
@@ -1450,10 +1450,10 @@ exports.QuizElements = function(globalVariables, classContainer){
                             }
                         })
                     });
-                    let newQuestion = new QuestionVue(null, quizManager.quiz);
+                    let newQuestion = classContainer.createClass("QuestionVue", null, quizManager.quiz);
                     newQuestion.selected = true;
                     quizManager.quiz.tabQuestions.push(newQuestion);
-                    let AddNewEmptyQuestion = new AddEmptyElementVue(quizManager, 'question');
+                    let AddNewEmptyQuestion = classContainer.createClass("AddEmptyElementVue", quizManager, 'question');
                     quizManager.quiz.tabQuestions.push(AddNewEmptyQuestion);
                     quizManager.questionPuzzle.visibleElementsArray[0].length === 6 && quizManager.questionPuzzle.updateStartPosition('right');
                     if (quizManager.questionPuzzle.elementsArray.length > quizManager.questionPuzzle.columns) {
@@ -1679,7 +1679,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.manipulator.move(x, y);
                 answerBlockDisplay();
                 this.model.penHandler = () => {
-                    this.popIn = this.popIn || new PopInVue(this, true);
+                    this.popIn = this.popIn || classContainer.createClass("PopInVue", this, true);
                     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     questionCreator.explanation = this.popIn;
@@ -1736,7 +1736,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                             popInY,
                             popInWidth = this.model.parentQuestion.width,
                             popInHeight = this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines * 0.8;
-                        this.model.explanationPopIn = this.model.explanationPopIn || new PopInVue(this, false);
+                        this.model.explanationPopIn = this.model.explanationPopIn || classContainer.createClass("PopInVue", this, false);
                         if (this.model.parentQuestion.image) {
                             popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithImage / 2 + MARGIN;
                         } else {
@@ -1876,7 +1876,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.editable && parent.puzzle.display(x, y, w, h, false);
                     this.displayed = false;
                     this.miniature && drawings.component.remove(this.miniature.video);
-                    if (parent instanceof classContainer.QuestionVue) {
+                    if (classContainer.isInstanceOf("QuestionVue", parent)) {
                         parent.tabAnswer.forEach(answer => {
                             answer.video && drawings.component.add(answer.video.miniature);
                         });
@@ -2334,7 +2334,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             const displayExplanation = () => {
                 drawings.component.clean();
                 this.manipulator.flush();
-                let quizExplanation = new QuizVue(this, true);
+                let quizExplanation = classContainer.createClass("QuizVue", this, true);
                 quizExplanation.currentQuestionIndex = 0;
                 quizExplanation.oldQuiz = this;
                 globalVariables.formationsManager.formationDisplayed.quizDisplayed = quizExplanation;
@@ -2409,13 +2409,13 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.tabQuestions = [];
                 quiz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    let tmp = new QuestionVue(it, this);
+                    let tmp = classContainer.createClass("QuestionVue", it, this);
                     tmp.parentQuiz = this;
                     this.tabQuestions.push(tmp);
                 });
             } else {
                 this.tabQuestions = [];
-                this.tabQuestions.push(new QuestionVue(defaultQuestion, this));
+                this.tabQuestions.push(classContainer.createClass("QuestionVue", defaultQuestion, this));
             }
         }
 
@@ -2586,10 +2586,15 @@ exports.QuizElements = function(globalVariables, classContainer){
 
     return {
         QuizManagerVue,
+        QuestionCreatorVue,
         AddEmptyElementVue,
+        QuestionVue,
+        Answer,
         AnswerVue,
+        GameVue,
         QuizVue,
         BdVue,
+        PopInVue,
         Level
     };
 }

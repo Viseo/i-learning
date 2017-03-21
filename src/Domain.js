@@ -4,7 +4,7 @@ const FUser = require('./include/User').User;
 const FQuizElements = require('./include/QuizElements').QuizElements;
 const FFormation = require('./include/Formation').Formation;
 
-exports.Domain = function ( globalVariables) {
+exports.Domain = function (globalVariables) {
 
     //Celui qui contient les references des differences class qui permet de decouper en plusieur fichier et contourner les depences circulaires
     let classContainer;
@@ -85,7 +85,9 @@ exports.Domain = function ( globalVariables) {
         /**
          * fonction d'affichage qui doit être override dans toutes les classes qui extend Vue
          */
-        render() { console.log("vue rendered. This should be override") };
+        render() {
+            console.log("vue rendered. This should be override")
+        };
 
         /**
          * affiche les éléments de la classe et attache les évènements définis dans events() aux bon objets
@@ -102,7 +104,7 @@ exports.Domain = function ( globalVariables) {
          */
         _setEvents() {
             let events = this.events();
-            for(let eventOptions in events){
+            for (let eventOptions in events) {
                 let handler = events[eventOptions];
                 let [eventName, target] = eventOptions.split(' ');
 
@@ -113,9 +115,9 @@ exports.Domain = function ( globalVariables) {
                 //local event
                 else {
                     let component = this[target];
-                    if(component instanceof Manipulator){
+                    if (component instanceof Manipulator) {
                         component.addEvent(eventName, handler.bind(this));
-                    }else {
+                    } else {
                         svg.addEvent(component, eventName, handler.bind(this));
                     }
                 }
@@ -124,11 +126,37 @@ exports.Domain = function ( globalVariables) {
     }
 
     /**
+     * factory permettant de gérer la liste des classes existantes.
+     * @class
+     */
+    class Factory {
+        constructor(classes){
+            this.classes = classes || {};
+        }
+
+        add(...classes){
+            this.classes = Object.assign(this.classes, ...classes);
+        }
+
+        getClass(className){
+            return this.classes[className];
+        }
+
+        isInstanceOf(className, classInstance){
+            return this.classes[className] && classInstance instanceof this.classes[className];
+        }
+
+        createClass(className, ...params){
+            return new this.classes[className](...params);
+        }
+    }
+
+    /**
      * header du site
      * @class
      */
     class HeaderVue extends Vue {
-        constructor(options){
+        constructor(options) {
             super(options);
             this.manipulator.addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
@@ -221,10 +249,9 @@ exports.Domain = function ( globalVariables) {
         }
     }
 
-    classContainer = {Vue, HeaderVue};
+    classContainer = new Factory({Vue, HeaderVue});
 
-    //imageslibraryVue
-    classContainer = Object.assign(classContainer,
+    classContainer.add(
         FQuizElements(globalVariables, classContainer),
         FLibrary(globalVariables, classContainer),
         FFormationsManager(globalVariables, classContainer),
@@ -260,5 +287,5 @@ exports.Domain = function ( globalVariables) {
         setGlobalVariables,
         adminGUI,
         learningGUI
-    }, classContainer);
+    }, classContainer.classes);
 };

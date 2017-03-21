@@ -6,7 +6,7 @@
     FormationsManagerVue,
  */
 exports.formationsManager = function(globalVariables, classContainer){
-    let {Vue} = classContainer;
+    let Vue = classContainer.getClass("Vue");
 
     let
         main = globalVariables.main,
@@ -48,7 +48,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.labelDefault = "Ajouter une formation";
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             for (let formation of formations) {
-                this.formations.push(new classContainer.FormationVue(formation, this));
+                this.formations.push(classContainer.createClass("FormationVue", formation, this));
             }
             this.manipulator = new Manipulator();
             this.headerManipulator = new Manipulator().addOrdonator(1);
@@ -167,7 +167,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
 
             var onClickNewFormation = () => {
-                var formation = new classContainer.FormationVue({}, this);
+                var formation = classContainer.createClass("FormationVue", {}, this);
                 formation.label = this.label;
                 formation.saveNewFormation(function(message, error) {
                     this.manipulator.add(this.messageManipulator);

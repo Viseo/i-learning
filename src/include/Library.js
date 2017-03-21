@@ -10,7 +10,7 @@
  */
 exports.Library = function(globalVariables, classContainer){
 
-    let {Vue} = classContainer;
+    let Vue = classContainer.getClass("Vue");
 
     let
         imageController,
@@ -145,8 +145,8 @@ exports.Library = function(globalVariables, classContainer){
                                 let targetChild = graph.getTarget(event.pageX, event.pageY);
                                 let booleanInstanceOfCorrect = function (e) {
                                     return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                        (e.parent.parentManip.parentObject instanceof classContainer.QuizVue ||
-                                        e.parent.parentManip.parentObject instanceof classContainer.BdVue);
+                                        (classContainer.isInstanceOf('QuizVue', e.parent.parentManip.parentObject) ||
+                                        classContainer.isInstanceOf('BdVue', e.parent.parentManip.parentObject));
                                 };
                                 if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                     createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
@@ -205,7 +205,7 @@ exports.Library = function(globalVariables, classContainer){
                                 let target = this.formation.manipulator.component.getTarget(x, y);
                                 let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                                 if (parentObject !== what) {
-                                    if (parentObject instanceof classContainer.FormationVue) {
+                                    if (classContainer.isInstanceOf("FormationVue", parentObject)) {
                                         this.formation.dropAction(what.x, what.y,what);
                                     }
                                 }
@@ -691,7 +691,7 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropImage(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof classContainer.PopInVue) {
+                if (classContainer.isInstanceOf('PopInVue', target.parent.parentManip.parentObject)) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.image = element.src;
                     popIn.video = null;
@@ -716,7 +716,7 @@ exports.Library = function(globalVariables, classContainer){
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof classContainer.QuestionCreatorVue:
+                        case classContainer.isInstanceOf("QuestionCreatorVue", target.parent.parentManip.parentObject):
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = null;
@@ -726,7 +726,7 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof classContainer.Answer:
+                        case classContainer.isInstanceOf("Answer",target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
                             answer.video = null;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
@@ -753,7 +753,7 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropVideo(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof classContainer.PopInVue) {
+                if (classContainer.isInstanceOf("PopInVue", target.parent.parentManip.parentObject)) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.video = element;
                     popIn.image = null;
@@ -769,7 +769,7 @@ exports.Library = function(globalVariables, classContainer){
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof classContainer.QuestionCreatorVue:
+                        case classContainer.isInstanceOf('QuestionCreatorVue', target.parent.parentManip.parentObject):
                             target.parent.parentManip.unset(2);
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
@@ -780,7 +780,7 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof classContainer.Answer:
+                        case classContainer.isInstanceOf('Answer', target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.video = element;

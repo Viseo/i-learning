@@ -12,7 +12,7 @@
     ConnexionManagerVue
  */
 exports.User = function (globalVariables, classContainer) {
-    let {Vue, HeaderVue} = classContainer;
+    let {Vue, HeaderVue} = classContainer.classes;
 
     let
         main = globalVariables.main,
@@ -512,7 +512,7 @@ exports.User = function (globalVariables, classContainer) {
                         data.user.admin ? globalVariables.domain.adminGUI() : globalVariables.domain.learningGUI();
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
-                            globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                            globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                             globalVariables.formationsManager.display();
                         });
                     } else {
