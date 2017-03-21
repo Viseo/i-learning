@@ -5,6 +5,7 @@
 const
     assert = require('assert'),
     TwinBcrypt = require('twin-bcrypt'),
+    //enhance = require('../lib/enhancer').Enhance(),
 
     testutils = require('../lib/testutils'),
     mockRuntime = require('../lib/runtimemock').mockRuntime,
@@ -55,11 +56,13 @@ let runtime,
     svg,
     main,
     dbListenerModule,
+    enhance,
     dbListener;
 
 describe('Connection check headerMessage', function () {
 
     beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
