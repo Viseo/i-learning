@@ -12,6 +12,15 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         Manipulator = globalVariables.util.Manipulator,
         Server = globalVariables.util.Server;
         gui = globalVariables.gui;
+    const
+        FONT = 'Arial',
+        FONT_SIZE_INPUT = 15,
+        FONT_SIZE_TITLE = 15,
+        EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
+        COLORS = [myColors.white, 1, myColors.black],
+        INPUT_WIDTH = 300,
+        INPUT_HEIGHT = 25,
+        TITLE_COLOR = [myColors.white, 0, myColors.white];
 
     /**
      * @class
@@ -273,17 +282,17 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         };
 
         displayField(field, manipulator) {
-            manipulator.move(-drawing.width / 10, this[field].line * drawing.height / 10);
-            var fieldTitle = new svg.Text(this[field].title).position(0, 0).font("Arial", 20).anchor("end");
-            manipulator.set(2, fieldTitle);
-            this.h = 1.5 * fieldTitle.boundingRect().height;
-            var displayText = displayTextWithoutCorners(this[field].label, drawing.width / 5, this.h, myColors.black, myColors.white, 20, null, manipulator);
-            this[field].content = displayText.content;
-            this[field].border = displayText.border;
-            this[field].border.mark(field);
-            var y = -fieldTitle.boundingRect().height / 4;
-            this[field].content.position(drawing.width / 9, 0);
-            this[field].border.position(drawing.width / 9, y);
+            manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
+            var fieldTitle = new gui.TextField(0,0,INPUT_WIDTH, FONT_SIZE_TITLE, this[field].title);
+            fieldTitle.color(TITLE_COLOR).font(FONT, FONT_SIZE_TITLE).anchor('left');
+            svg.removeEvent(fieldTitle.glass, 'click');
+            this.h = 1.5 * fieldTitle.height;
+            var fieldArea = new gui.TextField(0,0, INPUT_WIDTH, INPUT_HEIGHT, '');
+            fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('left').editColor(EDIT_COLORS);
+            var y = -fieldTitle.height / 4;
+            manipulator.set(1, fieldArea.component);
+            manipulator.set(2, fieldTitle.component);
+            fieldTitle.position(manipulator.x, (fieldArea.y - fieldArea.height));
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
@@ -358,9 +367,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         events() {
             return {
                 "click connexionButtonManipulator": this.connexionButtonHandler,
-                /*"click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                 "click passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
-                 */"keydown": this.keyDownHandler
+                 "keydown": this.keyDownHandler
             }
         }
 
@@ -405,7 +412,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                     event.shiftKey ? index-- : index++;
                     if (index === this.tabForm.length) index = 0;
                     if (index === -1) index = this.tabForm.length - 1;
-                    svg.event(this.tabForm[index].border, "click");
+                    svg.event(this.tabForm[index].input.glass, "click");
                 }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
@@ -415,103 +422,52 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
 
         displayField(field, manipulator) {
             this[field].label = field == "mailAddressField" ? "Email : " : "Password : ";
-            let fieldTitle = new gui.TextField(0,0,300,15,this[field].label);
-            let fieldArea = new gui.TextField(0,0, 300, 25, '');
+            let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
+            let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
             svg.removeEvent(fieldTitle.glass, 'click');
-            fieldTitle.color([myColors.white, 0, myColors.white]);
-            fieldTitle.font('Arial', 15);
-            fieldArea.font("Arial", 20).anchor("center");
-            fieldArea.color([myColors.white, 1, myColors.black]);
-            fieldArea.editColor([myColors.white, 1, myColors.greyerBlue]);
-            if (field == "passwordField"){
-                let hidePassword = (oldMessage,message,valid) => {
-                    if(valid){
+            fieldTitle.color(TITLE_COLOR);
+            fieldTitle.font(FONT, FONT_SIZE_TITLE);
+            fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
+            fieldArea.color(COLORS);
+            fieldArea.editColor(EDIT_COLORS);
+            if (field == "passwordField") {
+                let hidePassword = (oldMessage, message, valid) => {
+                    if (valid) {
                         let messageArray = message.split('');
                         fieldArea.pass += messageArray[messageArray.length - 1];
                         let tmp = '';
-                        for (let i in message){
+                        for (let i in message) {
                             tmp += '*';
                         }
                         fieldArea.message(tmp);
                     }
+                    this.focusedField = this[field];
                 }
                 fieldArea.pass = "";
                 fieldArea.onInput(hidePassword);
             }
-            else{
+            else {
                 let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 fieldArea.pattern(regexEmail);
                 let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
                     fieldArea.message(message);
+                    this.focusedField = this[field];
                 }
                 fieldArea.onInput(showEmailEvenIfIncorrect);
             }
-            //fieldArea.position(-drawing.width / 10, this[field].line * drawing.height / 10);
             this.h = 1.5 * fieldArea.height;
-            //var displayText = util.displayText(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, 'Arial', manipulator);
-            this[field].manipulator = fieldArea.component;
-            this[field].item = fieldArea;
+            this[field].translator = fieldArea.component;
+            this[field].input = fieldArea;
+            this[field].titleText = fieldTitle;
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
-            fieldTitle.position(manipulator.x, -1*(fieldArea.y + fieldArea.height));
+            fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
-            //this[field].border = displayText.border;
-            //this[field].border.mark(field);
             var y = -fieldArea.height / 4;
-            //this[field].content.position(drawing.width / 10, 0);
-            //this[field].border.position(drawing.width / 10, y);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
-            //this._setEvents(); //TODO a changer, on en a besoin car display field recrée à chaque fois le text, donc on perd les events
         }
-
-        /*clickEditionField(field, manipulator) {
-            return () => {
-                const width = drawing.width / 6,
-                    height = this.h,
-                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-                    contentareaStyle = {
-                        toppx: globalPointCenter.y,
-                        leftpx: globalPointCenter.x,
-                        height: height,
-                        width: this[field].border.width
-                    };
-                drawing.notInTextArea = false;
-                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-                    .mark('connectionContentArea')
-                    .message(this[field].labelSecret || this[field].label)
-                    .color(null, 0, myColors.black).font("Arial", 20);
-                this[field].secret && contentarea.type('password');
-                manipulator.unset(1, this[field].content.text);
-                drawings.component.add(contentarea);
-                contentarea.focus();
-                let alreadyDeleted = false,
-                    onblur = () => {
-                        if (!alreadyDeleted) {
-                            contentarea.enter();
-                            if (this[field].secret) {
-                                this[field].label = '';
-                                this[field].labelSecret = contentarea.messageText;
-                                if (contentarea.messageText) {
-                                    for (let i = 0; i < contentarea.messageText.length; i++) {
-                                        this[field].label += '●';
-                                    }
-                                }
-                            } else {
-                                this[field].label = contentarea.messageText;
-                            }
-                            contentarea.messageText && this.displayField(field, manipulator);
-                            manipulator.unset(3);
-                            drawing.notInTextArea = true;
-                            alreadyDeleted || drawings.component.remove(contentarea);
-                            alreadyDeleted = true;
-                        }
-                    };
-                svg.addEvent(contentarea, "blur", onblur);
-                this.focusedField = this[field];
-            };
-        }*/
 
 
         connexionButtonHandler() {
