@@ -1,23 +1,21 @@
-exports.formationsManager = function(globalVariables, Vue, FormationVue){
+/**
+ * Contient
+    FormationsManagerVue,
+ *
+ * Return
+    FormationsManagerVue,
+ */
+exports.formationsManager = function(globalVariables, classContainer){
+    let Vue = classContainer.getClass("Vue");
 
     let
         main = globalVariables.main,
-        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server,
-        //playerMode = globalVariables.globalVariables.playerMode,
-        Picture = globalVariables.util.Picture,
-        installDnD = globalVariables.gui.installDnD;
+        Server = globalVariables.util.Server;
 
     /**
      * Crée un formation manager
@@ -50,7 +48,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
             this.labelDefault = "Ajouter une formation";
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             for (let formation of formations) {
-                this.formations.push(new FormationVue(formation, this));
+                this.formations.push(classContainer.createClass("FormationVue", formation, this));
             }
             this.manipulator = new Manipulator();
             this.headerManipulator = new Manipulator().addOrdonator(1);
@@ -169,7 +167,7 @@ exports.formationsManager = function(globalVariables, Vue, FormationVue){
             };
 
             var onClickNewFormation = () => {
-                var formation = new FormationVue({}, this);
+                var formation = classContainer.createClass("FormationVue", {}, this);
                 formation.label = this.label;
                 formation.saveNewFormation(function(message, error) {
                     this.manipulator.add(this.messageManipulator);

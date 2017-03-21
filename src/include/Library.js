@@ -1,22 +1,25 @@
-exports.Library = function(globalVariables, Vue, FormationVue){
+/**
+ * Contient
+    LibraryVue,
+    GamesLibraryVue,
+    ImagesLibraryVue
+ *
+ * Return
+    GamesLibraryVue,
+    ImagesLibraryVue
+ */
+exports.Library = function(globalVariables, classContainer){
+
+    let Vue = classContainer.getClass("Vue");
 
     let
         imageController,
-        main = globalVariables.main,
-        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
 
@@ -24,34 +27,33 @@ exports.Library = function(globalVariables, Vue, FormationVue){
     globalVariables.imageController = imageController;
 
     /**
-     * TODO renommer this.libraryManipulator en this.manipulator (harmonisation)
      * @class
      */
     class LibraryVue extends Vue {
         constructor(options){
             super(options);
-            this.libraryManipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
             this.itemsTab = [];
             this.libraryManipulators = [];
         }
 
         libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
-            this.libraryManipulator.flush();
+            this.manipulator.flush();
             this.x = x;
             this.y = y;
             this.w = w;
             this.h = h;
             let borderSize = 3;
 
-            this.border = new svg.Rect(w - borderSize, h, this.libraryManipulator)
+            this.border = new svg.Rect(w - borderSize, h, this.manipulator)
                 .color(myColors.white, borderSize, myColors.black)
                 .position(w / 2, h / 2);
-            this.libraryManipulator.set(0, this.border);
-            this.libraryManipulator.move(this.x, this.y);
+            this.manipulator.set(0, this.border);
+            this.manipulator.move(this.x, this.y);
 
             this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
             this.panel.border.color([], 3, [0, 0, 0]);
-            this.libraryManipulator.set(2, this.panel.component);
+            this.manipulator.set(2, this.panel.component);
             this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
             this.panel.hHandle.handle.color(myColors.none, 0, myColors.none);
             drawing.notInTextArea = true;
@@ -97,8 +99,8 @@ exports.Library = function(globalVariables, Vue, FormationVue){
             this.panel.hHandle.handle.color(myColors.none, 3, myColors.none);
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             let displayArrowModeButton = () => {
-                this.libraryManipulator.remove(this.arrowModeManipulator);
-                this.libraryManipulator.add(this.arrowModeManipulator);
+                this.manipulator.remove(this.arrowModeManipulator);
+                this.manipulator.add(this.arrowModeManipulator);
                 this.arrowModeManipulator.move(w / 2, h - 0.05 * h);
 
                 let createLink = (parentGame, childGame) => {
@@ -143,8 +145,8 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                                 let targetChild = graph.getTarget(event.pageX, event.pageY);
                                 let booleanInstanceOfCorrect = function (e) {
                                     return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                        (e.parent.parentManip.parentObject instanceof QuizVue ||
-                                        e.parent.parentManip.parentObject instanceof BdVue);
+                                        (classContainer.isInstanceOf('QuizVue', e.parent.parentManip.parentObject) ||
+                                        classContainer.isInstanceOf('BdVue', e.parent.parentManip.parentObject));
                                 };
                                 if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                     createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
@@ -203,7 +205,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                                 let target = this.formation.manipulator.component.getTarget(x, y);
                                 let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                                 if (parentObject !== what) {
-                                    if (parentObject instanceof FormationVue) {
+                                    if (classContainer.isInstanceOf("FormationVue", parentObject)) {
                                         this.formation.dropAction(what.x, what.y,what);
                                     }
                                 }
@@ -512,7 +514,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
 
                     this.addButtonManipulator.set(0, addButton);
                     this.addButtonManipulator.set(2, plus);
-                    this.libraryManipulator.add(this.addButtonManipulator);
+                    this.manipulator.add(this.addButtonManipulator);
                     this.addButtonManipulator.move(this.w / 2, 9 * this.h / 10);
                     svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
                     svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
@@ -663,15 +665,15 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                     const tabManager = createTabManager(this);
                     tabManager.addTab("Images", 0, () => {
                         displayItems();
-                        this.libraryManipulator.set(2, imagesPanel.component);
+                        this.manipulator.set(2, imagesPanel.component);
                     });
                     tabManager.addTab("Vidéos", 1, () => {
-                        this.libraryManipulator.set(2, videosPanel.component);
+                        this.manipulator.set(2, videosPanel.component);
                         loadVideos();
                     });
                     tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
                     tabManager.select(this.selectedTab);
-                    this.libraryManipulator.set(1, tabManager.manipulator);
+                    this.manipulator.set(1, tabManager.manipulator);
                     assignVideoEvents();
                 };
                 displayTabs();
@@ -689,7 +691,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
          */
         dropImage(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof PopInVue) {
+                if (classContainer.isInstanceOf('PopInVue', target.parent.parentManip.parentObject)) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.image = element.src;
                     popIn.video = null;
@@ -714,7 +716,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof QuestionCreatorVue:
+                        case classContainer.isInstanceOf("QuestionCreatorVue", target.parent.parentManip.parentObject):
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = null;
@@ -724,7 +726,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof Answer:
+                        case classContainer.isInstanceOf("Answer",target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
                             answer.video = null;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
@@ -751,7 +753,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
          */
         dropVideo(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof PopInVue) {
+                if (classContainer.isInstanceOf("PopInVue", target.parent.parentManip.parentObject)) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.video = element;
                     popIn.image = null;
@@ -767,7 +769,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof QuestionCreatorVue:
+                        case classContainer.isInstanceOf('QuestionCreatorVue', target.parent.parentManip.parentObject):
                             target.parent.parentManip.unset(2);
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
@@ -778,7 +780,7 @@ exports.Library = function(globalVariables, Vue, FormationVue){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof Answer:
+                        case classContainer.isInstanceOf('Answer', target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.video = element;

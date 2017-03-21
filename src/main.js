@@ -91,8 +91,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
                 }
                 break;
             case "QuizManager":
-                formation.library.libraryManipulator.flush();
-                quizManager.library.libraryManipulator.flush();
+                formation.library.manipulator.flush();
+                quizManager.library.manipulator.flush();
                 quizManager.resizing = true;
                 quizManager.display();
                 break;

@@ -15,16 +15,19 @@
 <script src="src/dbListener.js"></script>
 
 <script src="src/include/User.js"></script>
-<script src="src/include/formationsManager.js"></script>
-<script src="src/include/library.js"></script>
+<script src="src/include/FormationsManager.js"></script>
+<script src="src/include/Formation.js"></script>
+<script src="src/include/Library.js"></script>
 <script src="src/include/QuizElements.js"></script>
 
 
 <script src="src/Util.js"></script>
 <script src="src/Domain.js"></script>
 <script src="src/main.js"></script>
+<script src="lib/enhancer.js"></script>
 <script>
     const
+        enhance = exports.Enhance(),
         targetRuntime = exports.targetRuntime(),
         SVG = exports.SVG,
         dbListener = new DbListener(true, false);
