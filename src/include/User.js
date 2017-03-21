@@ -505,7 +505,7 @@ exports.User = function (globalVariables, classContainer) {
                             globalVariables.formationsManager.display();
                         });
                     } else {
-                        let message = autoAdjustText('Adresse et/ou mot de passe invalide(s)', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
+                        let message = autoAdjustText('Connexion refusée : veuillez entrer une adresse e-mail et un mot de passe valide', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
                         message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
                         svg.timeout(() => {
                             this.connexionButtonManipulator.unset(3);
