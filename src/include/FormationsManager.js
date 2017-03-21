@@ -1,9 +1,7 @@
 /**
- * Contient
+ *
     FormationsManagerVue,
  *
- * Return
-    FormationsManagerVue,
  */
 exports.formationsManager = function(globalVariables, classContainer){
     let Vue = classContainer.getClass("Vue");

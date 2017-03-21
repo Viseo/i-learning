@@ -1,12 +1,9 @@
 /**
- * Contient
+ *
     LibraryVue,
     GamesLibraryVue,
     ImagesLibraryVue
  *
- * Return
-    GamesLibraryVue,
-    ImagesLibraryVue
  */
 exports.Library = function(globalVariables, classContainer){
 
@@ -27,6 +24,7 @@ exports.Library = function(globalVariables, classContainer){
     globalVariables.imageController = imageController;
 
     /**
+     * classe générique représentant une collection d'objets
      * @class
      */
     class LibraryVue extends Vue {
@@ -69,6 +67,7 @@ exports.Library = function(globalVariables, classContainer){
     }
 
     /**
+     * Collection de jeux disponibles
      * @class
      */
     class GamesLibraryVue extends LibraryVue {
@@ -285,6 +284,7 @@ exports.Library = function(globalVariables, classContainer){
     }
 
     /**
+     * Collection d'images
      * @class
      */
     class ImagesLibraryVue extends LibraryVue {
@@ -800,6 +800,7 @@ exports.Library = function(globalVariables, classContainer){
     }
 
     return {
+        LibraryVue,
         GamesLibraryVue,
         ImagesLibraryVue
     }

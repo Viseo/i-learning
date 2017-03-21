@@ -3,13 +3,10 @@
  */
 
 /**
- * Contient
+ *
     InscriptionManagerVue,
     ConnexionManagerVue
  *
- * Return
-    InscriptionManagerVue,
-    ConnexionManagerVue
  */
 exports.User = function (globalVariables, classContainer) {
     let {Vue, HeaderVue} = classContainer.classes;
@@ -35,6 +32,7 @@ exports.User = function (globalVariables, classContainer) {
         ERROR_INPUT = [myColors.white, 2, myColors.red];
 
     /**
+     * Page d'inscription
      * @class
      */
     class InscriptionManagerVue extends Vue {
@@ -309,6 +307,7 @@ exports.User = function (globalVariables, classContainer) {
     }
 
     /**
+     * Page de connexion
      * @class
      */
     class ConnexionManagerVue extends Vue {
@@ -518,7 +517,7 @@ exports.User = function (globalVariables, classContainer) {
     }
 
     return {
-        InscriptionManagerVue: InscriptionManagerVue,
-        ConnexionManagerVue: ConnexionManagerVue
+        InscriptionManagerVue,
+        ConnexionManagerVue
     }
 }
