@@ -1,6 +1,6 @@
 exports.Library = function(globalVariables, classContainer){
 
-    let {Vue, FormationVue} = classContainer;
+    let {Vue} = classContainer;
 
     let
         imageController,
@@ -145,8 +145,8 @@ exports.Library = function(globalVariables, classContainer){
                                 let targetChild = graph.getTarget(event.pageX, event.pageY);
                                 let booleanInstanceOfCorrect = function (e) {
                                     return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                        (e.parent.parentManip.parentObject instanceof QuizVue ||
-                                        e.parent.parentManip.parentObject instanceof BdVue);
+                                        (e.parent.parentManip.parentObject instanceof classContainer.QuizVue ||
+                                        e.parent.parentManip.parentObject instanceof classContainer.BdVue);
                                 };
                                 if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
                                     createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
@@ -205,7 +205,7 @@ exports.Library = function(globalVariables, classContainer){
                                 let target = this.formation.manipulator.component.getTarget(x, y);
                                 let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                                 if (parentObject !== what) {
-                                    if (parentObject instanceof FormationVue) {
+                                    if (parentObject instanceof classContainer.FormationVue) {
                                         this.formation.dropAction(what.x, what.y,what);
                                     }
                                 }
@@ -691,7 +691,7 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropImage(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof PopInVue) {
+                if (target.parent.parentManip.parentObject instanceof classContainer.PopInVue) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.image = element.src;
                     popIn.video = null;
@@ -716,7 +716,7 @@ exports.Library = function(globalVariables, classContainer){
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof QuestionCreatorVue:
+                        case target.parent.parentManip.parentObject instanceof classContainer.QuestionCreatorVue:
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
                             questionCreator.linkedQuestion.video = null;
@@ -726,7 +726,7 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof Answer:
+                        case target.parent.parentManip.parentObject instanceof classContainer.Answer:
                             let answer = target.parent.parentManip.parentObject;
                             answer.video = null;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
@@ -753,7 +753,7 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropVideo(element, target) {
             if (target && target._acceptDrop) {
-                if (target.parent.parentManip.parentObject instanceof PopInVue) {
+                if (target.parent.parentManip.parentObject instanceof classContainer.PopInVue) {
                     let popIn = target.parent.parentManip.parentObject;
                     popIn.video = element;
                     popIn.image = null;
@@ -769,7 +769,7 @@ exports.Library = function(globalVariables, classContainer){
                     target.parent.parentManip.unset(0);
                     target.parent.parentManip.unset(1);
                     switch (true) {
-                        case target.parent.parentManip.parentObject instanceof QuestionCreatorVue:
+                        case target.parent.parentManip.parentObject instanceof classContainer.QuestionCreatorVue:
                             target.parent.parentManip.unset(2);
                             drawings.component.clean();
                             let questionCreator = target.parent.parentManip.parentObject;
@@ -780,7 +780,7 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case target.parent.parentManip.parentObject instanceof Answer:
+                        case target.parent.parentManip.parentObject instanceof classContainer.Answer:
                             let answer = target.parent.parentManip.parentObject;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.video = element;

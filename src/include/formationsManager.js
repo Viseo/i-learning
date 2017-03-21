@@ -51,7 +51,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.labelDefault = "Ajouter une formation";
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             for (let formation of formations) {
-                this.formations.push(new FormationVue(formation, this));
+                this.formations.push(new classContainer.FormationVue(formation, this));
             }
             this.manipulator = new Manipulator();
             this.headerManipulator = new Manipulator().addOrdonator(1);
@@ -160,6 +160,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
 
             let onClickFormation = formation => {
+                console.log(formation)
                 formation.miniature.removeHandler(onClickFormation);
                 Server.getVersionById(formation._id).then(data => {
                     var myFormation = JSON.parse(data).formation;
@@ -170,7 +171,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
 
             var onClickNewFormation = () => {
-                var formation = new FormationVue({}, this);
+                var formation = new classContainer.FormationVue({}, this);
                 formation.label = this.label;
                 formation.saveNewFormation(function(message, error) {
                     this.manipulator.add(this.messageManipulator);

@@ -1,5 +1,5 @@
 exports.Formation = function (globalVariables, classContainer) {
-    let {Vue, FormationManagerVue, QuizManagerVue, QuizVue, GamesLibraryVue} = classContainer;
+    let {Vue} = classContainer;
 
     let imageController;
     let myFormations;
@@ -62,9 +62,9 @@ exports.Formation = function (globalVariables, classContainer) {
             this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.library = new GamesLibraryVue(myLibraryGames);
+            this.library = new classContainer.GamesLibraryVue(myLibraryGames);
             this.library.formation = this;
-            this.quizManager = new QuizManagerVue(null, this);
+            this.quizManager = new classContainer.QuizManagerVue(null, this);
             this.returnButtonManipulator = new Manipulator(this);//.addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour aux formations");
             this.labelDefault = "Entrer le nom de la formation";
@@ -113,7 +113,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.returnButton.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
                     globalVariables.formationsManager.display();
                 });
                 this.returnButton.removeHandler(returnHandler);
@@ -142,7 +142,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
                 drawing.manipulator.unset(1, this.manipulator.add);
                 main.currentPageDisplayed = "QuizPreview";
-                this.quizDisplayed = new QuizVue(target, false, this);
+                this.quizDisplayed = new classContainer.QuizVue(target, false, this);
                 this.quizDisplayed.puzzleLines = 3;
                 this.quizDisplayed.puzzleRows = 3;
                 this.quizDisplayed.run(0, 0, drawing.width, drawing.height);
@@ -282,758 +282,806 @@ exports.Formation = function (globalVariables, classContainer) {
             };
 
             let updateAllLinks = () => {
-                if (globalVariables.playerMode) {
-                    this.graphCreaHeightRatio = 0.97;
-                    this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
-                    this.graphCreaWidth = drawing.width - 2 * MARGIN;
-                    displayFrame(this.graphCreaWidth, this.graphCreaHeight);
-                    this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-                    this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
-                } else {
-                    this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
-                    this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
-                    this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
-                    this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-                    this.gamesLibraryManipulator = this.library.libraryManipulator;
-                    this.manipulator.set(4, this.gamesLibraryManipulator);
-                    this.manipulator.set(0, this.formationInfoManipulator);
-                    this.libraryWidth = drawing.width * this.libraryWidthRatio;
-                    this.y = drawing.height * HEADER_SIZE;
-                    this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height * 1.1).font("Arial", 20).anchor("start");
-                    this.manipulator.set(2, this.titleSvg);
-                    let formationWidth = this.titleSvg.boundingRect().width;
-                    let formationLabel = {};
-
-                    let clickEditionFormationLabel = () => {
-                        let bounds = formationLabel.border.boundingRect();
-                        this.formationInfoManipulator.unset(1);
-                        let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
-                        var contentareaStyle = {
-                            toppx: globalPointCenter.y + 5,
-                            leftpx: globalPointCenter.x + 5.2,
-                            width: formationLabel.border.width - MARGIN,
-                            height: this.labelHeight
-                        };
-                        drawing.notInTextArea = false;
-
-                        let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-                        contentarea.color(myColors.white, 0, myColors.black)
-                            .font("Arial", 15)
-                            .mark("formationLabelContentArea")
-                            .anchor("start");
-                        (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
-                        drawings.component.add(contentarea);
-                        contentarea.focus();
-                        var removeErrorMessage = () => {
-                            this.errorMessage && this.formationInfoManipulator.unset(2);
-                            formationLabel.border.color(myColors.white, 1, myColors.black);
-                        };
-
-                        var displayErrorMessage = () => {
-                            removeErrorMessage();
-                            formationLabel.border.color(myColors.white, 2, myColors.red);
-                            var anchor = 'start';
-                            this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
-                                .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
-                                .font("Arial", 15).color(myColors.red).anchor(anchor);
-                            this.formationInfoManipulator.set(2, this.errorMessage);
-                            contentarea.focus();
-                            //contentarea.setCaretPosition(this.label.length);
-                            this.invalidLabelInput = REGEX_ERROR_FORMATION;
-                        };
-                        var onblur = () => {
-                            contentarea.enter();
-                            this.label = contentarea.messageText.trim();
-                            drawings.component.remove(contentarea);
-                            drawing.notInTextArea = true;
-                            formationLabelDisplay();
-                            this.invalidLabelInput || header.display(this.label);
-                        };
-                        svg.addEvent(contentarea, "blur", onblur);
-                        let objectToBeChecked = {
-                            textarea: contentarea,
-                            border: formationLabel.border,
-                            onblur: onblur,
-                            remove: removeErrorMessage,
-                            display: displayErrorMessage
-                        };
-                        var oninput = () => {
-                            contentarea.enter();
-                            this.checkInputTextArea(objectToBeChecked);
-                            formationLabelDisplay();
-                        };
-                        svg.addEvent(contentarea, "input", oninput);
-                        this.checkInputTextArea(objectToBeChecked);
-                    };
-
-                    let formationLabelDisplay = () => {
-                        let text = this.label ? this.label : this.labelDefault;
-                        let color = this.label ? myColors.black : myColors.grey;
-                        let bgcolor = myColors.white;
-                        this.formationLabelWidth = 300;
-                        let textToDisplay;
-                        if (text.length > MAX_CHARACTER_TITLE) {
-                            textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
-                        }
-
-                        formationLabel.content = new svg.Text(textToDisplay ? textToDisplay : text).font("Arial", 15).anchor('start');
-                        formationLabel.content.mark('formationLabelContent');
-                        this.formationInfoManipulator.set(1, formationLabel.content);
-                        this.labelHeight = formationLabel.content.boundingRect().height - 4;
-                        this.formationTitleWidth = this.titleSvg.boundingRect().width;
-                        formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                        this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor, 1, myColors.black);
-                        formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN);
-                        this.formationInfoManipulator.set(0, formationLabel.border);
-                        formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, -5).color(color).anchor("start");
-                        this.formationInfoManipulator.move(0, this.returnButton.height * 1.3);
-
-                        let saveNameIcon = new svg.Image('save-file-option.png')
-                            .dimension(16, 16)
-                            .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3);
-                        this.formationInfoManipulator.set(2, saveNameIcon);
-
-                        svg.addEvent(formationLabel.content, "dblclick", clickEditionFormationLabel);
-                        svg.addEvent(formationLabel.border, "dblclick", clickEditionFormationLabel);
-                        svg.addEvent(saveNameIcon, "click", () => this.saveFormation(null, "Edited", true));
-                    };
-                    formationLabelDisplay();
-                    this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
-
-                    if (this.status !== "NotPublished") {
-                        this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                        this.displayFormationPublicationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
-                        this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                    } else {
-                        this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                        this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
-                    }
-                    displayFrame(this.graphCreaWidth, this.graphCreaHeight);
-                    this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-                }
-            }
-
-            /**
-             * affiche le bouton pour publier la formation
-             * @param x
-             * @param y
-             * @param w
-             * @param h
-             */
-            displayFormationPublicationButton(x, y, w, h)
-            {
-                let label = "Publier";
-                let publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
-                this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
-                this.publicationFormationQuizManager = () => {
-                    let message = [];
-                    let arrayOfUncorrectQuestions = [];
-                    let allQuizValid = true;
-                    this.levelsTab.forEach(level => {
-                        level.gamesTab.forEach(game => {
-                            let checkQuiz = new QuizVue(game, false, this);
-                            checkQuiz.isValid = true;
-                            checkQuiz.tabQuestions.forEach(question => {
-                                if (!(question instanceof AddEmptyElementVue)) {
-                                    question.questionType && question.questionType.validationTab.forEach(funcEl => {
-                                        var result = funcEl && funcEl(question);
-                                        if (result && (!result.isValid)) {
-                                            message.push("Un ou plusieurs jeu(x) ne sont pas complet(s)");
-                                            arrayOfUncorrectQuestions.push(question.questionNum - 1);
-                                        }
-                                        result && (checkQuiz.isValid = checkQuiz.isValid && result.isValid);
-                                    });
-                                }
-                                allQuizValid = allQuizValid && checkQuiz.isValid;
-                            });
-                            checkQuiz.isValid || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
-                        });
+                this.arrowsManipulator.flush();
+                var childElement, parentElement;
+                this.links.forEach((link) => {
+                    this.levelsTab.forEach((level) => {
+                        level.gamesTab.forEach((game) => {
+                            game.id === link.childGame && (childElement = game);
+                            game.id === link.parentGame && (parentElement = game);
+                        })
                     });
-                    if (!allQuizValid) {
-                        this.displayPublicationMessage(message[0]);
-                    } else {
-                        this.saveFormation(null, "Published");
-                    }
-                };
-                publicationFormationButton.border.mark("publicationFormationButtonCadre");
-                svg.addEvent(publicationFormationButton.border, "click", () => this.publicationFormation());
-                svg.addEvent(publicationFormationButton.content, "click", () => this.publicationFormation());
-                this.publicationFormationButtonManipulator.move(x, y);
-            }
+                    link.arrow = new Arrow(parentElement, childElement);
+                });
+            };
 
-            /**
-             * affiche le bouton pour sauvegarder la formation
-             * @param x
-             * @param y
-             * @param w
-             * @param h
-             */
-            displayFormationSaveButton(x, y, w, h)
-            {
-                let saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
-                this.message && this.message.parent && this.saveFormationButtonManipulator.remove(this.message);
-                saveFormationButton.border.mark("saveFormationButtonCadre");
-                svg.addEvent(saveFormationButton.border, "click", () => this.saveFormation());
-                svg.addEvent(saveFormationButton.content, "click", () => this.saveFormation());
-                this.saveFormationButtonManipulator.move(x, y);
-            }
+            let displayMessageDragAndDrop = () => {
+                this.messageDragDropMargin = this.graphCreaHeight / 8 - borderSize;
+                let messageDragDrop = autoAdjustText("Glisser et déposer un jeu pour ajouter un jeu", this.graphW, this.graphH, 20, null, this.messageDragDropManipulator).text;
+                messageDragDrop._acceptDrop = true;
+                messageDragDrop.x = this.panel.width / 2;
+                messageDragDrop.y = this.messageDragDropMargin + (this.levelsTab.length) * this.levelHeight;
+                messageDragDrop.position(messageDragDrop.x, messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
+                this.panel.back._acceptDrop = true;
+            };
 
-            /**
-             * affiche le bouton pour dépublier une formation
-             * @param x
-             * @param y
-             * @param w
-             * @param h
-             */
-            displayFormationDeactivationButton(x, y, w, h)
-            {
-                let deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
-                svg.addEvent(deactivateFormationButton.border, "click", () => this.deactivateFormation());
-                svg.addEvent(deactivateFormationButton.content, "click", () => this.deactivateFormation());
-                this.deactivateFormationButtonManipulator.move(x, y);
-            }
-
-            /**
-             * suppression du message d'erreur
-             * @param message
-             */
-            removeErrorMessage(message)
-            {
-                message && message.parent && message.parent.remove(message);
-            }
-
-            /**
-             * fonction appelée lorsqu'une bulle est lachée sur le graphe de formation (ajout ou déplacement d'un quiz)
-             * @param event - evenement js
-             * @param game - quiz associé au drop
-             */
-            dropAction(x, y, item)
-            {
-                let game;
-                if (item && item.parentObject) {
-                    game = item.parentObject;
+            this.displayGraph = (w, h) => {
+                this.movePanelContent();
+                resizePanel();
+                if (typeof w !== "undefined") this.graphW = w;
+                if (typeof h !== "undefined") this.graphH = h;
+                this.messageDragDropMargin = this.graphCreaHeight / 8 - borderSize;
+                if (this.levelWidth < this.graphCreaWidth) {
+                    this.levelWidth = this.graphCreaWidth;
                 }
-                else {
-                    game = null;
-                }
-                let getDropLocation = (x, y) => {
-                    let dropLocation = this.panel.content.localPoint(x, y);
-                    return dropLocation;
-                };
-                let getLevel = (dropLocation) => {
-                    let level = -1;
-                    level = Math.floor(dropLocation.y / this.levelHeight);
-                    if (level >= this.levelsTab.length) {
-                        level = this.levelsTab.length;
-                        this.addNewLevel(level);
-                    }
-                    return level;
-                };
-                let getColumn = (dropLocation, level) => {
-                    let column = this.levelsTab[level].gamesTab.length;
-                    for (let i = 0; i < this.levelsTab[level].gamesTab.length; i++) {
-                        let globalPointGameInLevel = this.graphManipulator.component.globalPoint(this.levelsTab[level].gamesTab[i].miniaturePosition);
-                        let localPointGameInLevel = this.panel.content.localPoint(globalPointGameInLevel);
-                        if (dropLocation.x < localPointGameInLevel.x) {
-                            column = i;
-                            break;
+
+                let manageMiniature = (tabElement) => {
+                    tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                    let conf = {
+                        clicked : (what) => {
+                            what.parentObject.miniature.miniatureClickHandler();
+                        },
+                        moved: (what) => {
+                            let point = what.component.parent.globalPoint(what.x,what.y);
+                            this.dropAction(point.x,point.y, what);
+                            return true;
                         }
-                    }
-                    return column;
+                    };
+                    !globalVariables.playerMode && tabElement.miniatureManipulator.addEvent('dblclick', event => {
+                        dblclickQuizHandler(event,tabElement);
+                    });
+                    globalVariables.playerMode && tabElement.miniatureManipulator.addEvent('click', event => {
+                        clickQuizHandler(event,tabElement);
+                    });
+
+                    !globalVariables.playerMode && installDnD(tabElement.miniatureManipulator, drawings.component.glass.parent.manipulator.last, conf);
                 };
 
-                let dropLocation = getDropLocation(x, y);
-                let level = getLevel(dropLocation);
-                let column = getColumn(dropLocation, level);
-                if (game && !item.addNew) {
-                    this.moveGame(game, level, column);
-                    game.levelIndex === level || game.miniature.removeAllLinks();
+                this.levelsTab.forEach((level) => {
+                    displayLevel(this.graphCreaWidth, this.graphCreaHeight, level);
+                    this.adjustGamesPositions(level);
+                    this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
+                    level.gamesTab.forEach((tabElement) => {
+                        tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
+                        this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                        if (typeof tabElement.miniature === "undefined") {
+                            (tabElement.miniature = tabElement.displayMiniature(this.graphElementSize));
+                        }
+                        manageMiniature(tabElement);
+                    });
+                });
+                !globalVariables.playerMode && displayMessageDragAndDrop();
+                this.graphManipulator.move(this.graphW / 2, this.graphH / 2);
+                resizePanel();
+                this.panel.back.parent.parentManip = this.graphManipulator;
+                updateAllLinks();
+            };
+
+            if (globalVariables.playerMode) {
+                this.graphCreaHeightRatio = 0.97;
+                this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
+                this.graphCreaWidth = drawing.width - 2 * MARGIN;
+                displayFrame(this.graphCreaWidth, this.graphCreaHeight);
+                this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
+                this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
+            } else {
+                this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+                this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
+                this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
+                this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
+                this.gamesLibraryManipulator = this.library.libraryManipulator;
+                this.manipulator.set(4, this.gamesLibraryManipulator);
+                this.manipulator.set(0, this.formationInfoManipulator);
+                this.libraryWidth = drawing.width * this.libraryWidthRatio;
+                this.y = drawing.height * HEADER_SIZE;
+                this.titleSvg = new svg.Text("Formation : ").position(MARGIN, this.returnButton.height *1.1).font("Arial", 20).anchor("start");
+                this.manipulator.set(2, this.titleSvg);
+                let formationWidth = this.titleSvg.boundingRect().width;
+                let formationLabel = {};
+
+                let clickEditionFormationLabel = () => {
+                    let bounds = formationLabel.border.boundingRect();
+                    this.formationInfoManipulator.unset(1);
+                    let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
+                    var contentareaStyle = {
+                        toppx: globalPointCenter.y + 5,
+                        leftpx: globalPointCenter.x + 5.2,
+                        width: formationLabel.border.width - MARGIN,
+                        height: this.labelHeight
+                    };
+                    drawing.notInTextArea = false;
+
+                    let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+                    contentarea.color(myColors.white, 0, myColors.black)
+                        .font("Arial", 15)
+                        .mark("formationLabelContentArea")
+                        .anchor("start");
+                    (this.label === "" || this.label === this.labelDefault) ? contentarea.placeHolder(this.labelDefault) : contentarea.message(this.label);
+                    drawings.component.add(contentarea);
+                    contentarea.focus();
+                    var removeErrorMessage = () => {
+                        this.errorMessage && this.formationInfoManipulator.unset(2);
+                        formationLabel.border.color(myColors.white, 1, myColors.black);
+                    };
+
+                    var displayErrorMessage = () => {
+                        removeErrorMessage();
+                        formationLabel.border.color(myColors.white, 2, myColors.red);
+                        var anchor = 'start';
+                        this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
+                            .position(formationLabel.border.width + formationWidth + 2 * MARGIN, 0)
+                            .font("Arial", 15).color(myColors.red).anchor(anchor);
+                        this.formationInfoManipulator.set(2, this.errorMessage);
+                        contentarea.focus();
+                        //contentarea.setCaretPosition(this.label.length);
+                        this.invalidLabelInput = REGEX_ERROR_FORMATION;
+                    };
+                    var onblur = () => {
+                        contentarea.enter();
+                        this.label = contentarea.messageText.trim();
+                        drawings.component.remove(contentarea);
+                        drawing.notInTextArea = true;
+                        formationLabelDisplay();
+                        this.invalidLabelInput || header.display(this.label);
+                    };
+                    svg.addEvent(contentarea, "blur", onblur);
+                    let objectToBeChecked = {
+                        textarea: contentarea,
+                        border: formationLabel.border,
+                        onblur: onblur,
+                        remove: removeErrorMessage,
+                        display: displayErrorMessage
+                    };
+                    var oninput = () => {
+                        contentarea.enter();
+                        this.checkInputTextArea(objectToBeChecked);
+                        formationLabelDisplay();
+                    };
+                    svg.addEvent(contentarea, "input", oninput);
+                    this.checkInputTextArea(objectToBeChecked);
+                };
+
+                let formationLabelDisplay = () => {
+                    let text = this.label ? this.label : this.labelDefault;
+                    let color = this.label ? myColors.black : myColors.grey;
+                    let bgcolor = myColors.white;
+                    this.formationLabelWidth = 300;
+                    let textToDisplay;
+                    if (text.length > MAX_CHARACTER_TITLE) {
+                        textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
+                    }
+
+                    formationLabel.content = new svg.Text(textToDisplay ? textToDisplay : text).font("Arial", 15).anchor('start');
+                    formationLabel.content.mark('formationLabelContent');
+                    this.formationInfoManipulator.set(1, formationLabel.content);
+                    this.labelHeight = formationLabel.content.boundingRect().height - 4;
+                    this.formationTitleWidth = this.titleSvg.boundingRect().width;
+                    formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
+                    this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor, 1, myColors.black);
+                    formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN);
+                    this.formationInfoManipulator.set(0, formationLabel.border);
+                    formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, -5).color(color).anchor("start");
+                    this.formationInfoManipulator.move(0, this.returnButton.height * 1.3);
+
+                    let saveNameIcon = new svg.Image('save-file-option.png')
+                        .dimension(16, 16)
+                        .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3);
+                    this.formationInfoManipulator.set(2, saveNameIcon);
+
+                    svg.addEvent(formationLabel.content, "dblclick", clickEditionFormationLabel);
+                    svg.addEvent(formationLabel.border, "dblclick", clickEditionFormationLabel);
+                    svg.addEvent(saveNameIcon, "click", () => this.saveFormation(null, "Edited", true));
+                };
+                formationLabelDisplay();
+                this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
+
+                if (this.status !== "NotPublished") {
+                    this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                    this.displayFormationPublicationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+                    this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
                 } else {
-                    this.addNewGame(level, column)
+                    this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                    this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
                 }
-                this.displayGraph();
+                displayFrame(this.graphCreaWidth, this.graphCreaHeight);
+                this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
             }
+        }
 
-            /**
-             * ajout d'un nouveau jeu à une formation
-             * @param level - niveau du jeu
-             * @param column - position du jeu sur le niveau
-             */
-            addNewGame(level, column)
-            {
-                let gameBuilder = this.library.draggedObject || this.library.gameSelected;
-                gameBuilder.create(this, level, column);
-            }
-
-            /**
-             * change le niveau d'un jeu et/ou sa position sur le niveau
-             * @param game - jeu a modifier
-             * @param level - nouveau niveau
-             * @param column - nouvelle position
-             */
-            moveGame(game, level, column)
-            {
-                this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
-                this.levelsTab[level].gamesTab.splice(column, 0, game);
-                if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1)
-                    this.levelsTab.splice(game.levelIndex, 1);
-            }
-
-            /**
-             * crée un lien entre 2 jeux
-             * @param parentGame - jeux dont part le lien
-             * @param childGame - jeux pointé par le lien
-             * @param arrow - instance de la flèche qui représente le lien
-             */
-            createLink(parentGame, childGame, arrow)
-            {
-                this.links.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
-            }
-            ;
-
-            /**
-             * supprime le lient entre 2 jeux
-             * @param parentGame - jeu parent
-             * @param childGame - jeu fils
-             */
-            removeLink(parentGame, childGame)
-            {
-                for (let i = this.links.length - 1; i >= 0; i--) {
-                    if (this.links[i].childGame === childGame.id && this.links[i].parentGame === parentGame.id)
-                        this.links.splice(i, 1);
-                }
-            }
-            ;
-
-            /**
-             * Désactive la formation. Elle n'est plus visible par les joueurs (seulement l'admin)
-             */
-            deactivateFormation()
-            {
-                this.status = "NotPublished";
-                Server.deactivateFormation(this.formationId, ignoredData)
-                    .then(() => {
-                        this.manipulator.flush();
-                        Server.getAllFormations().then(data => {
-                            let myFormations = JSON.parse(data).myCollection;
-                            globalVariables.formationsManager = new FormationsManagerVue(myFormations);
-                            globalVariables.formationsManager.display();
+        /**
+         * affiche le bouton pour publier la formation
+         * @param x
+         * @param y
+         * @param w
+         * @param h
+         */
+        displayFormationPublicationButton(x, y, w, h) {
+            let label = "Publier";
+            let publicationFormationButton = displayText(label, w, h, myColors.black, myColors.white, 20, null, this.publicationFormationButtonManipulator);
+            this.errorMessagePublication && this.errorMessagePublication.parent && this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
+            this.publicationFormationQuizManager = () => {
+                let message = [];
+                let arrayOfUncorrectQuestions = [];
+                let allQuizValid = true;
+                this.levelsTab.forEach(level => {
+                    level.gamesTab.forEach(game => {
+                        let checkQuiz = new classContainer.QuizVue(game, false, this);
+                        checkQuiz.isValid = true;
+                        checkQuiz.tabQuestions.forEach(question => {
+                            if (!(question instanceof AddEmptyElementVue)) {
+                                question.questionType && question.questionType.validationTab.forEach(funcEl => {
+                                    var result = funcEl && funcEl(question);
+                                    if (result && (!result.isValid)) {
+                                        message.push("Un ou plusieurs jeu(x) ne sont pas complet(s)");
+                                        arrayOfUncorrectQuestions.push(question.questionNum - 1);
+                                    }
+                                    result && (checkQuiz.isValid = checkQuiz.isValid && result.isValid);
+                                });
+                            }
+                            allQuizValid = allQuizValid && checkQuiz.isValid;
                         });
-                    })
+                        checkQuiz.isValid || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+                    });
+                });
+                if (!allQuizValid) {
+                    this.displayPublicationMessage(message[0]);
+                } else {
+                    this.saveFormation(null, "Published");
+                }
+            };
+            publicationFormationButton.border.mark("publicationFormationButtonCadre");
+            svg.addEvent(publicationFormationButton.border, "click", () => this.publicationFormation());
+            svg.addEvent(publicationFormationButton.content, "click", () => this.publicationFormation());
+            this.publicationFormationButtonManipulator.move(x, y);
+        }
+
+        /**
+         * affiche le bouton pour sauvegarder la formation
+         * @param x
+         * @param y
+         * @param w
+         * @param h
+         */
+        displayFormationSaveButton(x, y, w, h) {
+            let saveFormationButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveFormationButtonManipulator);
+            this.message && this.message.parent && this.saveFormationButtonManipulator.remove(this.message);
+            saveFormationButton.border.mark("saveFormationButtonCadre");
+            svg.addEvent(saveFormationButton.border, "click", () => this.saveFormation());
+            svg.addEvent(saveFormationButton.content, "click", () => this.saveFormation());
+            this.saveFormationButtonManipulator.move(x, y);
+        }
+
+        /**
+         * affiche le bouton pour dépublier une formation
+         * @param x
+         * @param y
+         * @param w
+         * @param h
+         */
+        displayFormationDeactivationButton(x, y, w, h) {
+            let deactivateFormationButton = displayText("Désactiver", w, h, myColors.black, myColors.white, 20, null, this.deactivateFormationButtonManipulator);
+            svg.addEvent(deactivateFormationButton.border, "click", () => this.deactivateFormation());
+            svg.addEvent(deactivateFormationButton.content, "click", () => this.deactivateFormation());
+            this.deactivateFormationButtonManipulator.move(x, y);
+        }
+
+        /**
+         * suppression du message d'erreur
+         * @param message
+         */
+        removeErrorMessage(message) {
+            message && message.parent && message.parent.remove(message);
+        }
+
+        /**
+         * fonction appelée lorsqu'une bulle est lachée sur le graphe de formation (ajout ou déplacement d'un quiz)
+         * @param event - evenement js
+         * @param game - quiz associé au drop
+         */
+        dropAction(x, y, item) {
+            let game;
+            if (item && item.parentObject) {
+                game = item.parentObject;
             }
+            else{
+                game = null;
+            }
+            let getDropLocation = (x,y) => {
+                let dropLocation = this.panel.content.localPoint(x,y);
+                return dropLocation;
+            };
+            let getLevel = (dropLocation) => {
+                let level = -1;
+                level = Math.floor(dropLocation.y/this.levelHeight);
+                if (level >= this.levelsTab.length) {
+                    level = this.levelsTab.length;
+                    this.addNewLevel(level);
+                }
+                return level;
+            };
+            let getColumn = (dropLocation, level) => {
+                let column = this.levelsTab[level].gamesTab.length;
+                for (let i = 0; i < this.levelsTab[level].gamesTab.length; i++) {
+                    let globalPointGameInLevel = this.graphManipulator.component.globalPoint(this.levelsTab[level].gamesTab[i].miniaturePosition);
+                    let localPointGameInLevel = this.panel.content.localPoint(globalPointGameInLevel);
+                    if (dropLocation.x < localPointGameInLevel.x) {
+                        column = i;
+                        break;
+                    }
+                }
+                return column;
+            };
 
-            /**
-             * crée et sauvegarde en bdd la nouvelle formation
-             * @param callback - fonction appelée lorsque la création a reussi ou raté
-             */
-            saveNewFormation(callback)
-            {
-                const
-                    messageError = "Veuillez rentrer un nom de formation valide",
-                    messageUsedName = "Cette formation existe déjà"
+            let dropLocation = getDropLocation(x,y);
+            let level = getLevel(dropLocation);
+            let column = getColumn(dropLocation, level);
+            if (game && !item.addNew) {
+                this.moveGame(game, level, column);
+                game.levelIndex === level || game.miniature.removeAllLinks();
+            } else {
+                this.addNewGame(level, column)
+            }
+            this.displayGraph();
+        }
 
-                const returnToFormationList = () => {
+        /**
+         * ajout d'un nouveau jeu à une formation
+         * @param level - niveau du jeu
+         * @param column - position du jeu sur le niveau
+         */
+        addNewGame(level, column) {
+            let gameBuilder = this.library.draggedObject || this.library.gameSelected;
+            gameBuilder.create(this, level, column);
+        }
+
+        /**
+         * change le niveau d'un jeu et/ou sa position sur le niveau
+         * @param game - jeu a modifier
+         * @param level - nouveau niveau
+         * @param column - nouvelle position
+         */
+        moveGame(game, level, column) {
+            this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
+            this.levelsTab[level].gamesTab.splice(column, 0, game);
+            if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1)
+                this.levelsTab.splice(game.levelIndex, 1);
+        }
+
+        /**
+         * crée un lien entre 2 jeux
+         * @param parentGame - jeux dont part le lien
+         * @param childGame - jeux pointé par le lien
+         * @param arrow - instance de la flèche qui représente le lien
+         */
+        createLink(parentGame, childGame, arrow) {
+            this.links.push({parentGame: parentGame.id, childGame: childGame.id, arrow: arrow});
+        };
+
+        /**
+         * supprime le lient entre 2 jeux
+         * @param parentGame - jeu parent
+         * @param childGame - jeu fils
+         */
+        removeLink(parentGame, childGame) {
+            for (let i = this.links.length - 1; i >= 0; i--) {
+                if (this.links[i].childGame === childGame.id && this.links[i].parentGame === parentGame.id)
+                    this.links.splice(i, 1);
+            }
+        };
+
+        /**
+         * Désactive la formation. Elle n'est plus visible par les joueurs (seulement l'admin)
+         */
+        deactivateFormation() {
+            this.status = "NotPublished";
+            Server.deactivateFormation(this.formationId, ignoredData)
+                .then(() => {
                     this.manipulator.flush();
                     Server.getAllFormations().then(data => {
-                        myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                        let myFormations = JSON.parse(data).myCollection;
+                        globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
                         globalVariables.formationsManager.display();
                     });
+                })
+        }
+
+        /**
+         * crée et sauvegarde en bdd la nouvelle formation
+         * @param callback - fonction appelée lorsque la création a reussi ou raté
+         */
+        saveNewFormation(callback) {
+            const
+                messageError = "Veuillez rentrer un nom de formation valide",
+                messageUsedName = "Cette formation existe déjà"
+
+            const returnToFormationList = () => {
+                this.manipulator.flush();
+                Server.getAllFormations().then(data => {
+                    myFormations = JSON.parse(data).myCollection;
+                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager.display();
+                });
+            };
+
+            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+                const getObjectToSave = () => {
+                    return {
+                        label: this.label,
+                        gamesCounter: this.gamesCounter,
+                        links: this.links,
+                        levelsTab: this.levelsTab
+                    };
                 };
 
-                if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
-                    const getObjectToSave = () => {
+                let addNewFormation = () => {
+                    Server.insertFormation(getObjectToSave(), ignoredData)
+                        .then(data => {
+                            let answer = JSON.parse(data);
+                            if (answer.saved) {
+                                this._id = answer.idVersion;
+                                this.formationId = answer.id;
+                                returnToFormationList();
+                            } else {
+                                if (answer.reason === "NameAlreadyUsed") {
+                                    callback(messageUsedName, true);
+                                }
+                            }
+                        })
+                };
+                addNewFormation()
+            } else if (this.label == "" || this.label == null) {
+                callback(messageError, true);
+            }
+        }
+
+        /**
+         * crée ou sauvegarde une formation
+         * TODO rassembler avec saveNewFormation
+         * @param displayQuizManager
+         * @param status - status de la formation (not Published, Edited, Published)
+         * @param onlyName - booleen pour indiquer si on veut ne sauvegarder que le nom
+         */
+        saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
+            const
+                messageSave = "Votre travail a bien été enregistré.",
+                messageError = "Vous devez remplir correctement le nom de la formation.",
+                messageReplace = "Les modifications ont bien été enregistrées.",
+                messageUsedName = "Le nom de cette formation est déjà utilisé !",
+                messageNoModification = "Les modifications ont déjà été enregistrées.";
+
+            const displayMessage = (message, displayQuizManager, error = false) => {
+                switch (message) {
+                    case messageError:
+                    case messageUsedName:
+                        error = true;
+                        break;
+                    default:
+                        error = false;
+                }
+                this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
+                if (displayQuizManager && !error) {
+                    displayQuizManager();
+                } else {
+                    let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
+                    const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
+                    this.message = new svg.Text(message)
+                        .position(drawing.width / 2, messageY - saveFormationButtonCadre.height * 1.5 - MARGIN)
+                        .font("Arial", 20)
+                        .mark("formationErrorMessage")
+                        .anchor('middle').color(error ? myColors.red : myColors.green);
+                    this.manipulator.set(5, this.message);
+                    svg.timeout(() => {
+                        this.manipulator.unset(5);
+                    }, 5000);
+                }
+            };
+
+
+            const returnToFormationList = () => {
+                this.manipulator.flush();
+                Server.getAllFormations().then(data => {
+                    let myFormations = JSON.parse(data).myCollection;
+                    globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
+                    globalVariables.formationsManager.display();
+                });
+            };
+
+            if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
+                const getObjectToSave = () => {
+                    if (onlyName && this._id) {
+                        return {label: this.label};
+                    } else {
                         return {
                             label: this.label,
                             gamesCounter: this.gamesCounter,
                             links: this.links,
                             levelsTab: this.levelsTab
                         };
-                    };
+                    }
+                };
 
-                    let addNewFormation = () => {
-                        Server.insertFormation(getObjectToSave(), ignoredData)
-                            .then(data => {
-                                let answer = JSON.parse(data);
-                                if (answer.saved) {
-                                    this._id = answer.idVersion;
-                                    this.formationId = answer.id;
-                                    returnToFormationList();
-                                } else {
-                                    if (answer.reason === "NameAlreadyUsed") {
-                                        callback(messageUsedName, true);
-                                    }
+                let addNewFormation = () => {
+                    Server.insertFormation(getObjectToSave(), status, ignoredData)
+                        .then(data => {
+                            let answer = JSON.parse(data);
+                            if (answer.saved) {
+                                this._id = answer.idVersion;
+                                this.formationId = answer.id;
+                                status === "Edited" ? displayMessage(messageSave, displayQuizManager) : returnToFormationList();
+                            } else {
+                                if (answer.reason === "NameAlreadyUsed") {
+                                    displayMessage(messageUsedName, displayQuizManager);
                                 }
-                            })
-                    };
-                    addNewFormation()
-                } else if (this.label == "" || this.label == null) {
-                    callback(messageError, true);
-                }
-            }
-
-            /**
-             * crée ou sauvegarde une formation
-             * TODO rassembler avec saveNewFormation
-             * @param displayQuizManager
-             * @param status - status de la formation (not Published, Edited, Published)
-             * @param onlyName - booleen pour indiquer si on veut ne sauvegarder que le nom
-             */
-            saveFormation(displayQuizManager, status = "Edited", onlyName = false)
-            {
-                const
-                    messageSave = "Votre travail a bien été enregistré.",
-                    messageError = "Vous devez remplir correctement le nom de la formation.",
-                    messageReplace = "Les modifications ont bien été enregistrées.",
-                    messageUsedName = "Le nom de cette formation est déjà utilisé !",
-                    messageNoModification = "Les modifications ont déjà été enregistrées.";
-
-                const displayMessage = (message, displayQuizManager, error = false) => {
-                    switch (message) {
-                        case messageError:
-                        case messageUsedName:
-                            error = true;
-                            break;
-                        default:
-                            error = false;
-                    }
-                    this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
-                    if (displayQuizManager && !error) {
-                        displayQuizManager();
-                    } else {
-                        let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
-                        const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
-                        this.message = new svg.Text(message)
-                            .position(drawing.width / 2, messageY - saveFormationButtonCadre.height * 1.5 - MARGIN)
-                            .font("Arial", 20)
-                            .mark("formationErrorMessage")
-                            .anchor('middle').color(error ? myColors.red : myColors.green);
-                        this.manipulator.set(5, this.message);
-                        svg.timeout(() => {
-                            this.manipulator.unset(5);
-                        }, 5000);
-                    }
-                };
-
-
-                const returnToFormationList = () => {
-                    this.manipulator.flush();
-                    Server.getAllFormations().then(data => {
-                        let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
-                        globalVariables.formationsManager.display();
-                    });
-                };
-
-                if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
-                    const getObjectToSave = () => {
-                        if (onlyName && this._id) {
-                            return {label: this.label};
-                        } else {
-                            return {
-                                label: this.label,
-                                gamesCounter: this.gamesCounter,
-                                links: this.links,
-                                levelsTab: this.levelsTab
-                            };
-                        }
-                    };
-
-                    let addNewFormation = () => {
-                        Server.insertFormation(getObjectToSave(), status, ignoredData)
-                            .then(data => {
-                                let answer = JSON.parse(data);
-                                if (answer.saved) {
-                                    this._id = answer.idVersion;
-                                    this.formationId = answer.id;
-                                    status === "Edited" ? displayMessage(messageSave, displayQuizManager) : returnToFormationList();
-                                } else {
-                                    if (answer.reason === "NameAlreadyUsed") {
-                                        displayMessage(messageUsedName, displayQuizManager);
-                                    }
-                                }
-                            })
-                    };
-
-                    let replaceFormation = () => {
-                        Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
-                            .then((data) => {
-                                let answer = JSON.parse(data);
-                                if (answer.saved) {
-                                    status === "Edited" ? displayMessage(messageReplace, displayQuizManager) : returnToFormationList();
-                                } else {
-                                    switch (answer.reason) {
-                                        case "NoModif" :
-                                            displayMessage(messageNoModification, displayQuizManager);
-                                            break;
-                                        case "NameAlreadyUsed" :
-                                            displayMessage(messageUsedName, displayQuizManager);
-                                            break;
-                                    }
-                                }
-                            })
-                    };
-
-                    this._id ? replaceFormation() : addNewFormation();
-                } else {
-                    displayMessage(messageError, displayQuizManager);
-                }
-            }
-
-            /**
-             * publie une formation. Cela la rend visible aux utilisateurs du site
-             */
-            publicationFormation()
-            {
-                this.publishedButtonActivated = true;
-
-                [].concat(...this.levelsTab.map(level => level.gamesTab))
-                    .filter(elem => elem.miniature.selected === true)
-                    .forEach(game => {
-                        game.miniature.selected = false;
-                        game.miniature.updateSelectionDesign();
-                    });
-
-                const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
-                    messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
-
-                this.displayPublicationMessage = (messagePublication) => {
-                    this.formationInfoManipulator.unset(2);
-                    this.errorMessagePublication = new svg.Text(messagePublication);
-                    this.manipulator.set(5, this.errorMessagePublication);
-                    const messageY = this.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
-                    this.errorMessagePublication.position(drawing.width / 2, messageY - this.publicationButtonHeight * 1.5 - MARGIN)
-                        .font("Arial", 20)
-                        .anchor('middle').color(myColors.red)
-                        .mark("errorMessagePublication");
-                    svg.timeout(() => {
-                        this.manipulator.unset(5, this.errorMessagePublication);
-                    }, 5000);
-                };
-
-                this.publicationFormationQuizManager();
-                if (this.levelsTab.length === 0) {
-                    this.displayPublicationMessage(messageErrorNoGame);
-                }
-                if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
-                    this.displayPublicationMessage(messageErrorNoNameFormation);
-                }
-            }
-            ;
-
-            /**
-             * charge la formation
-             * @param formation - infos à charger dans la formation
-             */
-            loadFormation(formation)
-            {
-                this.levelsTab = [];
-                this.gamesCounter = formation.gamesCounter;
-                this.links = formation.links || formation.link;
-                formation.levelsTab.forEach(level => {
-                    var gamesTab = [];
-                    level.gamesTab.forEach(game => {
-                        game.tabQuestions && gamesTab.push(new QuizVue(game, false, this));
-                        game.tabQuestions || gamesTab.push(new BdVue(game, this));
-                        gamesTab[gamesTab.length - 1].id = game.id;
-                    });
-                    this.levelsTab.push(new Level(this, gamesTab));
-                });
-            }
-
-            /**
-             * retourne la niveau possédant le plus de jeux
-             * @returns {Array} - tableau de jeux
-             */
-            findLongestLevel()
-            {
-                var longestLevelCandidates = [];
-                longestLevelCandidates.index = 0;
-                this.levelsTab.forEach(level => {
-                    if (level.gamesTab.length >= this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                        if (level.gamesTab.length === this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
-                            longestLevelCandidates.push(level);
-                        } else {
-                            longestLevelCandidates = [];
-                            longestLevelCandidates.push(level);
-                        }
-                        longestLevelCandidates.index = level.index - 1;
-                    }
-                });
-                return longestLevelCandidates;
-            }
-
-            /**
-             * trouve la formation à l'aide de son id
-             * @param id - id de la formation
-             * @returns {*}
-             */
-            findGameById(id)
-            {
-                return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
-            }
-
-            /**
-             * indique si le jeu est disponible (pas joué)
-             * @param game
-             * @returns {boolean}
-             */
-            isGameAvailable(game)
-            {
-                let available = true;
-                this.links.forEach(link => {
-                    if (link.childGame === game.id) {
-                        const parentGame = this.findGameById(link.parentGame);
-                        if (parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
-                            available = false;
-                            return available;
-                        }
-                    }
-                });
-                return available;
-            }
-
-            /**
-             * recalcule les différentes tailles des éléments en fonction de la taille d'écran
-             */
-            changeableDimensions()
-            {
-                this.gamesLibraryManipulator = this.library.libraryManipulator;
-                this.libraryWidth = drawing.width * this.libraryWidthRatio;
-                this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-                this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;
-                this.levelWidth = drawing.width - this.libraryWidth - MARGIN;
-                this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
-                this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
-                this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
-                this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
-                this.buttonWidth = 150;
-                this.globalMargin = {
-                    height: this.marginRatio * drawing.height,
-                    width: this.marginRatio * drawing.width
-                };
-                this.clippingManipulator.flush();
-            }
-
-            /**
-             * vérifie le texte entré dans un input
-             * @param myObj - input à tester
-             */
-            checkInputTextArea(myObj)
-            {
-                if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
-                    this.invalidLabelInput = false;
-                    myObj.remove();
-                    myObj.textarea.onblur = myObj.onblur;
-                    myObj.textarea.border = "none";
-                    myObj.textarea.outline = "none";
-                } else {
-                    myObj.display();
-                    this.invalidLabelInput = myObj.textarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
-                        ? REGEX_ERROR_NUMBER_CHARACTER
-                        : REGEX_ERROR;
-                }
-            }
-
-            /**
-             * ajoute un niveau à la formation
-             * @param index - indice du niveau
-             */
-            addNewLevel(index)
-            {
-                var level = new Level(this);
-                if (!index) {
-                    this.levelsTab.push(level);
-                } else {
-                    this.levelsTab.splice(index, 0, level);
-                }
-            }
-
-            /**
-             * évènement pour ajouter un jeu à un niveau au clic de la souris.
-             */
-            clickToAdd()
-            {
-                this.mouseUpGraphBlock = event => {
-                    this.library.gameSelected && this.dropAction(event);
-                    this.library.gameSelected && this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
-                    this.library.gameSelected = null;
-                    svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-                };
-                svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-                svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
-            }
-
-            /**
-             * mets à jour l'index des jeux dans les différents niveaux
-             * @param level - niveau à réafficher
-             */
-            adjustGamesPositions(level)
-            {
-                let computeIndexes = () => {
-                    this.levelsTab.forEach((level, lIndex) => {
-                        level.gamesTab.forEach((game, gIndex) => {
-                            game.levelIndex = lIndex;
-                            game.gameIndex = gIndex;
+                            }
                         })
-                    });
                 };
 
-                computeIndexes();
-                var nbOfGames = level.gamesTab.length;
-                var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
-                level.gamesTab.forEach(game => {
-                    game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                    game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
-                });
-            }
+                let replaceFormation = () => {
+                    Server.replaceFormation(this._id, getObjectToSave(), status, ignoredData)
+                        .then((data) => {
+                            let answer = JSON.parse(data);
+                            if (answer.saved) {
+                                status === "Edited" ? displayMessage(messageReplace, displayQuizManager) : returnToFormationList();
+                            } else {
+                                switch (answer.reason) {
+                                    case "NoModif" :
+                                        displayMessage(messageNoModification, displayQuizManager);
+                                        break;
+                                    case "NameAlreadyUsed" :
+                                        displayMessage(messageUsedName, displayQuizManager);
+                                        break;
+                                }
+                            }
+                        })
+                };
 
-            /**
-             * affiche les jetons de statut sur les différentes formations de l'utilisateur. (i.e pas commencé, en cours, finis)
-             * @param displayFunction - fonction appelée lorsque trackProgress a finis
-             */
-            trackProgress(displayFunction)
-            {
+                this._id ? replaceFormation() : addNewFormation();
+            } else {
+                displayMessage(messageError, displayQuizManager);
+            }
+        }
+
+        /**
+         * publie une formation. Cela la rend visible aux utilisateurs du site
+         */
+        publicationFormation() {
+            this.publishedButtonActivated = true;
+
+            [].concat(...this.levelsTab.map(level => level.gamesTab))
+                .filter(elem => elem.miniature.selected === true)
+                .forEach(game => {
+                    game.miniature.selected = false;
+                    game.miniature.updateSelectionDesign();
+                });
+
+            const messageErrorNoNameFormation = "Vous devez remplir le nom de la formation.",
+                messageErrorNoGame = "Veuillez ajouter au moins un jeu à votre formation.";
+
+            this.displayPublicationMessage = (messagePublication) => {
+                this.formationInfoManipulator.unset(2);
+                this.errorMessagePublication = new svg.Text(messagePublication);
+                this.manipulator.set(5, this.errorMessagePublication);
+                const messageY = this.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
+                this.errorMessagePublication.position(drawing.width / 2, messageY - this.publicationButtonHeight * 1.5 - MARGIN)
+                    .font("Arial", 20)
+                    .anchor('middle').color(myColors.red)
+                    .mark("errorMessagePublication");
+                svg.timeout(() => {
+                    this.manipulator.unset(5, this.errorMessagePublication);
+                }, 5000);
+            };
+
+            this.publicationFormationQuizManager();
+            if (this.levelsTab.length === 0) {
+                this.displayPublicationMessage(messageErrorNoGame);
+            }
+            if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
+                this.displayPublicationMessage(messageErrorNoNameFormation);
+            }
+        };
+
+        /**
+         * charge la formation
+         * @param formation - infos à charger dans la formation
+         */
+        loadFormation(formation) {
+            this.levelsTab = [];
+            this.gamesCounter = formation.gamesCounter;
+            this.links = formation.links || formation.link;
+            formation.levelsTab.forEach(level => {
+                var gamesTab = [];
+                level.gamesTab.forEach(game => {
+                    game.tabQuestions && gamesTab.push(new classContainer.QuizVue(game, false, this));
+                    game.tabQuestions || gamesTab.push(new classContainer.BdVue(game, this));
+                    gamesTab[gamesTab.length - 1].id = game.id;
+                });
+                this.levelsTab.push(new classContainer.Level(this, gamesTab));
+            });
+        }
+
+        /**
+         * retourne la niveau possédant le plus de jeux
+         * @returns {Array} - tableau de jeux
+         */
+        findLongestLevel() {
+            var longestLevelCandidates = [];
+            longestLevelCandidates.index = 0;
+            this.levelsTab.forEach(level => {
+                if (level.gamesTab.length >= this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                    if (level.gamesTab.length === this.levelsTab[longestLevelCandidates.index].gamesTab.length) {
+                        longestLevelCandidates.push(level);
+                    } else {
+                        longestLevelCandidates = [];
+                        longestLevelCandidates.push(level);
+                    }
+                    longestLevelCandidates.index = level.index - 1;
+                }
+            });
+            return longestLevelCandidates;
+        }
+
+        /**
+         * trouve la formation à l'aide de son id
+         * @param id - id de la formation
+         * @returns {*}
+         */
+        findGameById(id) {
+            return [].concat(...this.levelsTab.map(x => x.gamesTab)).find(game => game.id === id);
+        }
+
+        /**
+         * indique si le jeu est disponible (pas joué)
+         * @param game
+         * @returns {boolean}
+         */
+        isGameAvailable(game) {
+            let available = true;
+            this.links.forEach(link => {
+                if (link.childGame === game.id) {
+                    const parentGame = this.findGameById(link.parentGame);
+                    if (parentGame && (parentGame.status === undefined || (parentGame.status && parentGame.status !== "done"))) {
+                        available = false;
+                        return available;
+                    }
+                }
+            });
+            return available;
+        }
+
+        /**
+         * recalcule les différentes tailles des éléments en fonction de la taille d'écran
+         */
+        changeableDimensions() {
+            this.gamesLibraryManipulator = this.library.libraryManipulator;
+            this.libraryWidth = drawing.width * this.libraryWidthRatio;
+            this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
+            this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;
+            this.levelWidth = drawing.width - this.libraryWidth - MARGIN;
+            this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
+            this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
+            this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
+            this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
+            this.buttonWidth = 150;
+            this.globalMargin = {
+                height: this.marginRatio * drawing.height,
+                width: this.marginRatio * drawing.width
+            };
+            this.clippingManipulator.flush();
+        }
+
+        /**
+         * vérifie le texte entré dans un input
+         * @param myObj - input à tester
+         */
+        checkInputTextArea(myObj) {
+            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
+                this.invalidLabelInput = false;
+                myObj.remove();
+                myObj.textarea.onblur = myObj.onblur;
+                myObj.textarea.border = "none";
+                myObj.textarea.outline = "none";
+            } else {
+                myObj.display();
+                this.invalidLabelInput = myObj.textarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                    ? REGEX_ERROR_NUMBER_CHARACTER
+                    : REGEX_ERROR;
+            }
+        }
+
+        /**
+         * ajoute un niveau à la formation
+         * @param index - indice du niveau
+         */
+        addNewLevel(index) {
+            var level = new classContainer.Level(this);
+            if (!index) {
+                this.levelsTab.push(level);
+            } else {
+                this.levelsTab.splice(index, 0, level);
+            }
+        }
+
+        /**
+         * évènement pour ajouter un jeu à un niveau au clic de la souris.
+         */
+        clickToAdd() {
+            this.mouseUpGraphBlock = event => {
+                this.library.gameSelected && this.dropAction(event);
+                this.library.gameSelected && this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
+                this.library.gameSelected = null;
+                svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
+            };
+            svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
+            svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
+        }
+
+        /**
+         * mets à jour l'index des jeux dans les différents niveaux
+         * @param level - niveau à réafficher
+         */
+        adjustGamesPositions(level) {
+            let computeIndexes = () => {
+                this.levelsTab.forEach((level, lIndex) => {
+                    level.gamesTab.forEach((game, gIndex) => {
+                        game.levelIndex = lIndex;
+                        game.gameIndex = gIndex;
+                    })
+                });
+            };
+
+            computeIndexes();
+            var nbOfGames = level.gamesTab.length;
+            var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
+            level.gamesTab.forEach(game => {
+                game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
+                game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
+            });
+        }
+
+        /**
+         * affiche les jetons de statut sur les différentes formations de l'utilisateur. (i.e pas commencé, en cours, finis)
+         * @param displayFunction - fonction appelée lorsque trackProgress a finis
+         */
+        trackProgress(displayFunction) {
+            this.levelsTab.forEach(level => {
+                level.gamesTab.forEach(game => {
+                    delete game.miniature;
+                    delete game.status;
+                });
+            });
+            this.miniaturesManipulator.flush();
+            Server.getUser().then(data => {
+                let user = JSON.parse(data);
+                if (user.formationsTab) {
+                    let formationUser = user.formationsTab.find(formation => formation.version === this._id);
+                    formationUser && formationUser.gamesTab.forEach(game => {
+                        let theGame = this.findGameById(game.game);
+                        if (!theGame) {
+                            return;
+                        }
+                        theGame.currentQuestionIndex = game.questionsAnswered.length;
+                        theGame.questionsAnswered = [];
+                        if (game.questionsAnswered) {
+                            game.questionsAnswered.forEach((wrongAnswer, i) => {
+                                theGame.questionsAnswered.push({
+                                    question: theGame.tabQuestions[i],
+                                    validatedAnswers: wrongAnswer.validatedAnswers
+                                });
+                            });
+                            theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
+                            theGame.status = (game.questionsAnswered.length === theGame.tabQuestions.length) ? "done" : "inProgress";
+                        }
+                    });
+                }
                 this.levelsTab.forEach(level => {
                     level.gamesTab.forEach(game => {
-                        delete game.miniature;
-                        delete game.status;
+                        if (!this.isGameAvailable(game)) {
+                            game.status = "notAvailable";
+                        }
                     });
                 });
-                this.miniaturesManipulator.flush();
-                Server.getUser().then(data => {
-                    let user = JSON.parse(data);
-                    if (user.formationsTab) {
-                        let formationUser = user.formationsTab.find(formation => formation.version === this._id);
-                        formationUser && formationUser.gamesTab.forEach(game => {
-                            let theGame = this.findGameById(game.game);
-                            if (!theGame) {
-                                return;
-                            }
-                            theGame.currentQuestionIndex = game.questionsAnswered.length;
-                            theGame.questionsAnswered = [];
-                            if (game.questionsAnswered) {
-                                game.questionsAnswered.forEach((wrongAnswer, i) => {
-                                    theGame.questionsAnswered.push({
-                                        question: theGame.tabQuestions[i],
-                                        validatedAnswers: wrongAnswer.validatedAnswers
-                                    });
-                                });
-                                theGame.score = game.questionsAnswered.length - theGame.getQuestionsWithBadAnswers().length;
-                                theGame.status = (game.questionsAnswered.length === theGame.tabQuestions.length) ? "done" : "inProgress";
-                            }
-                        });
-                    }
-                    this.levelsTab.forEach(level => {
-                        level.gamesTab.forEach(game => {
-                            if (!this.isGameAvailable(game)) {
-                                game.status = "notAvailable";
-                            }
-                        });
-                    });
-                    displayFunction.call(this);
-                });
-            }
+                displayFunction.call(this);
+            });
         }
     }
 

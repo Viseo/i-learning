@@ -221,17 +221,12 @@ exports.Domain = function ( globalVariables) {
         }
     }
 
-    class Factory {
-        constructor(){
-            
-        }
-    }
-
     classContainer = {Vue, HeaderVue};
 
     //imageslibraryVue
     classContainer = Object.assign(classContainer,
         FQuizElements(globalVariables, classContainer),
+        FLibrary(globalVariables, classContainer),
         FFormationsManager(globalVariables, classContainer),
         FFormation(globalVariables, classContainer),
         FUser(globalVariables, classContainer)

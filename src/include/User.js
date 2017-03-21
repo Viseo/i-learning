@@ -3,7 +3,7 @@
  */
 
 exports.User = function (globalVariables, classContainer) {
-    let {Vue, HeaderVue, FormationsManagerVue} = classContainer;
+    let {Vue, HeaderVue} = classContainer;
 
     let
         main = globalVariables.main,

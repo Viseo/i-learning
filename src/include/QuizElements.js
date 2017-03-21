@@ -1,6 +1,6 @@
 exports.QuizElements = function(globalVariables, classContainer){
 
-    let {Vue, ImagesLibraryVue} = classContainer;
+    let {Vue} = classContainer;
 
     let
         main = globalVariables.main,
@@ -191,7 +191,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.loadQuiz(quiz);
             }
             this.questionCreator = new QuestionCreatorVue(this, this.quiz.tabQuestions[this.indexOfEditedQuestion]);
-            this.library = new ImagesLibraryVue();
+            this.library = new classContainer.ImagesLibraryVue();
             this.quiz.tabQuestions[0].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[0]);
             this.quiz.tabQuestions.push(new AddEmptyElementVue(this, 'question'));
@@ -326,7 +326,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     }
                 }
                 this.quiz.tabQuestions.forEach(question => {
-                    if (!(question instanceof AddEmptyElementVue)) {
+                    if (!(question instanceof classContainer.AddEmptyElementVue)) {
                         question.questionType.validationTab.forEach((funcEl) => {
                             var result = funcEl(question);
                             if (!result.isValid) {
@@ -346,7 +346,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.quizManagerManipulator.flush();
                     this.quiz.tabQuestions.pop();
                     this.quiz.tabQuestions.forEach((it) => {
-                        (it.tabAnswer[it.tabAnswer.length - 1] instanceof AddEmptyElementVue) && it.tabAnswer.pop();
+                        (it.tabAnswer[it.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) && it.tabAnswer.pop();
                     });
                     this.previewQuiz = new QuizVue(this.quiz, true);
                     this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
@@ -533,9 +533,9 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.quiz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             this.quiz.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElementVue) || question.tabAnswer.push(new AddEmptyElementVue(this.questionCreator, 'answer'));
+                (question.tabAnswer[question.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) || question.tabAnswer.push(new classContainer.AddEmptyElementVue(this.questionCreator, 'answer'));
             });
-            this.quiz.tabQuestions.push(new AddEmptyElementVue(this, 'question'));
+            this.quiz.tabQuestions.push(new classContainer.AddEmptyElementVue(this, 'question'));
 
         };
 
@@ -545,9 +545,9 @@ exports.QuizElements = function(globalVariables, classContainer){
          */
         getObjectToSave() {
             this.tabQuestions = this.quiz.tabQuestions;
-            (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof AddEmptyElementVue) && this.tabQuestions.pop();
+            (this.tabQuestions[this.quiz.tabQuestions.length - 1] instanceof classContainer.AddEmptyElementVue) && this.tabQuestions.pop();
             this.tabQuestions.forEach(question => {
-                (question.tabAnswer[question.tabAnswer.length - 1] instanceof AddEmptyElementVue) && question.tabAnswer.pop();
+                (question.tabAnswer[question.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue) && question.tabAnswer.pop();
                 question.tabAnswer.forEach(answer => {
                     if (answer.popIn) {
                         answer.model.explanation = {};
@@ -874,7 +874,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 h: height
             };
             // bloc Answers
-            if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1] instanceof AddEmptyElementVue)) {
+            if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1] instanceof classContainer.AddEmptyElementVue)) {
                 this.linkedQuestion.tabAnswer.push(new AddEmptyElementVue(this, 'answer'));
             }
             this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
@@ -914,7 +914,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             quest.label && (this.label = quest.label);
             this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
-                if (answer instanceof AnswerVue) {
+                if (answer instanceof classContainer.AnswerVue) {
                     answer.isEditable(this, true);
                 }
                 answer.popIn = new PopInVue(answer, true);
@@ -1223,7 +1223,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         questionsArray = questionPuzzle.elementsArray;
                     let index = questionsArray.indexOf(this);
                     this.remove();
-                    (questionsArray[index] instanceof AddEmptyElementVue) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
+                    (questionsArray[index] instanceof classContainer.AddEmptyElementVue) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
                     if (index !== -1) {
                         quizManager.indexOfEditedQuestion = index;
                         this.parentQuiz.tabQuestions[index].selected = true;
@@ -1859,7 +1859,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.editable && parent.puzzle.display(x, y, w, h, false);
                     this.displayed = false;
                     this.miniature && drawings.component.remove(this.miniature.video);
-                    if (parent instanceof QuestionVue) {
+                    if (parent instanceof classContainer.QuestionVue) {
                         parent.tabAnswer.forEach(answer => {
                             answer.video && drawings.component.add(answer.video.miniature);
                         });
