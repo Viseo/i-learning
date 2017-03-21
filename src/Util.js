@@ -84,20 +84,22 @@ exports.Util = function (globalVariables) {
             this.component = this.translator;
             let self = this;
             Object.defineProperty(self, "x", {
-                get : function(){
+                get: function () {
                     return self.component.x;
                 },
-                set : function(nouvelleValeur){} ,
-                enumerable : true,
-                configurable : true
+                set: function (nouvelleValeur) {
+                },
+                enumerable: true,
+                configurable: true
             });
             Object.defineProperty(self, "y", {
-                get : function(){
+                get: function () {
                     return self.component.y;
                 },
-                set : function(nouvelleValeur){} ,
-                enumerable : true,
-                configurable : true
+                set: function (nouvelleValeur) {
+                },
+                enumerable: true,
+                configurable: true
             });
         }
 
@@ -105,10 +107,10 @@ exports.Util = function (globalVariables) {
          * retourne tous les objets svg accrochés à ce manipulator
          * @returns {Array}
          */
-        children(){
-            if(this.ordonator){
+        children() {
+            if (this.ordonator) {
                 return this.ordonator.children;
-            }else {
+            } else {
                 return this.last.children;
             }
         }
@@ -118,26 +120,29 @@ exports.Util = function (globalVariables) {
          * @param {number} layerNumber
          * @returns {Manipulator}
          */
-        globalPoint(...args){
+        globalPoint(...args) {
             return this.translator.globalPoint(args);
         }
+
         localPoint(...args) {
             return this.translator.localPoint(args);
         }
 
-        addEvent(eventName, handler){
+        addEvent(eventName, handler) {
             this[eventName] = handler;
             for (let i = 0; i < this.components.length; i++) {
                 svg.addEvent(this.components[i], eventName, handler);
             }
         }
-        removeEvent(eventName, handler){
+
+        removeEvent(eventName, handler) {
             this[eventName] = handler;
             for (let i = 0; i < this.components.length; i++) {
                 svg.removeEvent(this.components[i], eventName, handler);
             }
         }
-        removeEvent(eventName){
+
+        removeEvent(eventName) {
             let handler = this[eventName];
             for (let i = 0; i < this.components.length; i++) {
                 svg.removeEvent(this.components[i], eventName, handler);
@@ -199,8 +204,8 @@ exports.Util = function (globalVariables) {
 
         move(x, y) {
             this.translator.move(x, y);
-            this.x = this.translator.localPoint(0,0);
-            this.y = this.translator.localPoint(0,0);
+            this.x = this.translator.localPoint(0, 0);
+            this.y = this.translator.localPoint(0, 0);
             return this;
         }
 
@@ -359,6 +364,21 @@ exports.Util = function (globalVariables) {
             quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
+        onclickFunction = function (event) {
+            var target = drawings.component.background.getTarget(event.pageX, event.pageY);
+            var sender = null;
+            target.answerParent && (sender = target.answerParent);
+            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
+            !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
+                answer.model.correct = (answer !== sender) ? false : answer.model.correct;
+            });
+            sender.model.correct = !sender.model.correct;
+            sender.model.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
+            updateAllCheckBoxes(sender);
+            let quizManager = sender.model.parentQuestion.parentQuiz.parentFormation.quizManager;
+            quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
+        };
+
         drawCheck = function (x, y, size) {
             return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
                 .line(x - .1 * size, y + .2 * size).line(x + .3 * size, y - .3 * size)
@@ -401,6 +421,23 @@ exports.Util = function (globalVariables) {
             !sender.model.correct && sender.manipulator.unset(4);
             sender.model.correct && drawPathChecked(sender, x, y, size);
             return sender.obj;
+        };
+
+        addCookieCheckbox = function (x, y, size, sourceObject) {
+            let manipulator = sourceObject.cookieManipulator;
+            let obj = {
+                checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x - drawing.width / 8, y),
+                size: size,
+                x: x,
+                y: y
+
+            };
+            sourceObject.obj = obj;
+            manipulator.set(0, sourceObject.obj.checkbox);
+            let fieldTitle = new svg.Text(sourceObject["cookieField"].title).position(x, y);
+            fieldTitle.font("Arial", 20).anchor("end");
+            manipulator.set(1, fieldTitle);
+            manipulator.move(-drawing.width / 7, sourceObject["cookieField"].line * drawing.height / 10);
         };
 
         drawVideoIcon = function (x, y, size, parentObject) {
@@ -787,10 +824,17 @@ exports.Util = function (globalVariables) {
          */
         displayTextWithoutCorners = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator, 1).text;
-            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(0,0);
+            var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(0, 0);
             manipulator.set(0, border);
             return {content: content, border: border};
         };
+
+        /*displayCheckBox = function () {
+         var content = "testText";
+         var border = new svg.Rect(20, 20).color(bgColor, 1, rgbCadre).corners(0,0);
+         manipulator.set(0, border);
+         return {content: content, border: border};
+         }*/
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
             let words = content.split(' '),
@@ -1679,8 +1723,8 @@ exports.Util = function (globalVariables) {
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
-        myParentsList = ["parent","parentManipulator","answersManipulator", "validateManipulator", "parentElement",
-            "resetManipulator","manipulatorQuizInfo", "questionCreatorManipulator",
+        myParentsList = ["parent", "parentManipulator", "answersManipulator", "validateManipulator", "parentElement",
+            "resetManipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator",
             "mainManipulator", "manipulator", "resultManipulator", "scoreManipulator", "quizManager",
             "quizInfoManipulator", "returnButtonManipulator", "questionPuzzleManipulator", "component", "drawing",

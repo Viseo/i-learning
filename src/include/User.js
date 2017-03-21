@@ -345,13 +345,19 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.cookieManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator.add(this.mailAddressManipulator);
             this.manipulator.add(this.passwordManipulator);
             this.manipulator.add(this.connexionButtonManipulator);
+            this.manipulator.add(this.cookieManipulator);
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
+            this.cookieLabel = "Rester connecté";
             this.tabForm = [];
+            this.obj = {checkbox: "", checked: "", size: 0, x: 0, y: 0};      /** format requis pour la vérification d'une case à cocher **/
+            this.model = {correct: false};              /** Reprendre le format de la classe AnswerVue **/
+
         }
 
         events() {
@@ -359,6 +365,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 "click connexionButtonManipulator": this.connexionButtonHandler,
                 "click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
                 "click passwordManipulator": this.clickEditionField('passwordField', this.passwordManipulator),
+                "click cookieManipulator": this.cookieAction,
                 "keydown": this.keyDownHandler
             }
         }
@@ -384,9 +391,23 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
+            this.cookieField = {
+                label: '',
+                labelSecret: '',
+                title: this.cookieLabel,
+                line: 1,
+                errorMessage: "errMsgTest"
+            };
+            this.obj && (this.obj.size = 20) && (this.obj.x = 40);
+            /*this.obj = {
+                size: 20,
+                x: 40,
+                y: 0,
+            };*/
 
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField('passwordField', this.passwordManipulator);
+            addCookieCheckbox(this.obj.x, this.obj.y, this.obj.size, this);
 
             const connexionButtonHeightRatio = 0.075,
                 connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
@@ -394,6 +415,17 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
             connexionButton.border.mark('connexionButton');
             this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
+        }
+
+        cookieAction() {
+            if (this.model.correct) {
+                this.model.correct = false;
+                this.cookieManipulator.unset(2);
+            } else if (!this.model.correct) {
+                this.model.correct = true;
+                this.obj.checked = drawCheck(this.obj.x - drawing.width / 8, this.obj.y, this.obj.size);
+                this.cookieManipulator.set(2, this.obj.checked);
+            }
         }
 
         keyDownHandler(event) {
@@ -430,6 +462,14 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
             this._setEvents(); //TODO a changer, on en a besoin car display field recrée à chaque fois le text, donc on perd les events
         }
+
+        /*displayCookieLabel(sourceObject) {
+         let fieldTitle = new svg.Text(sourceObject["cookieField"].title).position(0, 0);
+         fieldTitle.font("Arial", 20).anchor("end");
+         let manipulator = sourceObject.cookieManipulator;
+         manipulator.set(2, fieldTitle);
+         manipulator.move(-drawing.width / 10, sourceObject["cookieField"].line * drawing.height / 10);
+         }*/
 
         clickEditionField(field, manipulator) {
             return () => {
@@ -502,6 +542,9 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
                             globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                            if (!this.obj.checked) {
+                                runtime.setCookie("token=; path=/; max-age=0;");
+                            }
                             globalVariables.formationsManager.display();
                         });
                     } else {
