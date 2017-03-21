@@ -436,19 +436,25 @@ exports.User = function (globalVariables, classContainer) {
             fieldArea.editColor(EDIT_COLORS);
             if (field == "passwordField") {
                 let hidePassword = (oldMessage, message, valid) => {
-                    if (valid) {
-                        let messageArray = message.split('');
-                        fieldArea.pass += messageArray[messageArray.length - 1];
-                        let tmp = '';
-                        for (let i in message) {
-                            tmp += '*';
-                        }
-                        fieldArea.message(tmp);
+                    let messageArray = message.split('');
+                    fieldArea.pass += messageArray[messageArray.length - 1];
+                    let tmp = '';
+                    for (let i in message) {
+                        tmp += '*';
                     }
+                    fieldArea.message(tmp);
                     this.focusedField = this[field];
+                    if(!this.focusedField.input.valid){
+                        this.focusedField.input.color(ERROR_INPUT);
+                    }
+                    else{
+                        this.focusedField.input.color(COLORS);
+                    }
                 }
                 fieldArea.pass = "";
                 fieldArea.onInput(hidePassword);
+                let regex = /^[ -~]{6,63}$/;
+                fieldArea.pattern(regex);
             }
             else {
                 let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -456,6 +462,12 @@ exports.User = function (globalVariables, classContainer) {
                 let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
                     fieldArea.message(message);
                     this.focusedField = this[field];
+                    if(!this.focusedField.input.valid){
+                        this.focusedField.input.color(ERROR_INPUT);
+                    }
+                    else{
+                        this.focusedField.input.color(COLORS);
+                    }
                 }
                 fieldArea.onInput(showEmailEvenIfIncorrect);
             }
