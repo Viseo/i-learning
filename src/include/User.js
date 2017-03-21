@@ -20,7 +20,8 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         COLORS = [myColors.white, 1, myColors.black],
         INPUT_WIDTH = 300,
         INPUT_HEIGHT = 25,
-        TITLE_COLOR = [myColors.white, 0, myColors.white];
+        TITLE_COLOR = [myColors.white, 0, myColors.white],
+        ERROR_INPUT = [myColors.white, 2, myColors.red];
 
     /**
      * @class
@@ -53,6 +54,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             this.tabForm = [];
             this.formLabels = {};
             var nameErrorMessage = "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés";
+            this.errorToDisplay = '';
             this.lastNameField = {label: this.formLabels.lastNameField || "", title: this.lastNameLabel, line: -3};
             this.lastNameField.errorMessage = nameErrorMessage;
             this.firstNameField = {label: this.formLabels.firstNameField || "", title: this.firstNameLabel, line: -2};
@@ -64,9 +66,17 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             };
             this.mailAddressField.errorMessage = "L'adresse email n'est pas valide";
             this.mailAddressField.checkInput = () => {
-                if (this.mailAddressField.label) {
-                    var regex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-                    return this.mailAddressField.label === "" || this.mailAddressField.label.match(regex);
+                if (this.mailAddressField.input.textMessage) {
+                    var regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    let valid = regex.test(this.mailAddressField.input.textMessage);
+                    if(valid){
+                        this.mailAddressField.input.color(COLORS);
+                    }
+                    else{
+                        this.mailAddressField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.mailAddressField.errorMessage;
+                    }
+                    return valid;
                 }
             };
             this.passwordField = {
@@ -91,11 +101,6 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         events() {
             return {
                 "click saveButtonManipulator": this.saveButtonHandler,
-                "click firstNameManipulator": this.clickEditionField("firstNameField", this.firstNameManipulator),
-                "click lastNameManipulator": this.clickEditionField("lastNameField", this.lastNameManipulator),
-                "click mailAddressManipulator": this.clickEditionField("mailAddressField", this.mailAddressManipulator),
-                "click passwordManipulator": this.clickEditionField("passwordField", this.passwordManipulator),
-                "click passwordConfirmationManipulator": this.clickEditionField("passwordConfirmationField", this.passwordConfirmationManipulator),
                 "keydown": this.keyDownHandler
             };
         }
@@ -108,44 +113,47 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             this.focusedField = null;
 
             var nameCheckInput = (field) => {
-                if (this[field].label) {
-                    this[field].label = this[field].label.trim();
+                if (this[field].input.textMessage) {
+                    this[field].input.textMessage = this[field].input.textMessage.trim();
                     var regex = /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g;
-                    return this[field].label.match(regex);
+                    let valid = regex.test(this[field].input.textMessage);
+                    if (valid){
+                        valid && this[field].input.color(COLORS);
+                        return valid;
+                    }else {
+                        !valid && this[field].input.color(ERROR_INPUT)
+                        this.errorToDisplay = this[field].errorMessage;
+                    }
                 }
             };
             var passwordCheckInput = () => {
-                const passTooShort = this.passwordField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordField.labelSecret.length < 6,
-                    confTooShort = this.passwordConfirmationField.labelSecret !== "" && this.passwordField.labelSecret && this.passwordConfirmationField.labelSecret.length < 6,
+                const passTooShort = this.passwordField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordField.input.textMessage.length < 6,
+                    confTooShort = this.passwordConfirmationField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordConfirmationField.input.textMessage.length < 6,
                     cleanIfEgality = () => {
-                        if (this.passwordField.labelSecret === this.passwordConfirmationField.labelSecret) {
-                            this.passwordField.border.color(myColors.white, 1, myColors.black);
-                            this.passwordConfirmationField.border.color(myColors.white, 1, myColors.black);
+                        if (this.passwordField.input.textMessage === this.passwordConfirmationField.input.textMessage) {
+                            this.passwordField.input.color(COLORS);
+                            this.passwordConfirmationField.input.color(COLORS);
                         }
                     };
                 if (passTooShort || confTooShort) {
                     if (passTooShort) {
-                        this.passwordField.border.color(myColors.white, 3, myColors.red);
-                        var message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                        message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
-                        message.text.mark('inscriptionErrorMessagepasswordField');
+                        this.passwordField.input.color(ERROR_INPUT);
+                         this.errorToDisplay = this.passwordField.errorMessage;
                     }
                     if (confTooShort) {
-                        this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
-                        message = autoAdjustText(this.passwordField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                        message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
-                        message.text.mark('inscriptionErrorMessagepasswordField');
+                        this.passwordConfirmationField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.passwordField.errorMessage;
                     }
                 }
-                else if (this.passwordConfirmationField.labelSecret !== "" && this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret) {
-                    this.passwordField.border.color(myColors.white, 3, myColors.red);
-                    this.passwordConfirmationField.border.color(myColors.white, 3, myColors.red);
+                else if (this.passwordConfirmationField.input.textMessage !== "" && this.passwordConfirmationField.input.textMessage !== this.passwordField.input.textMessage) {
+                    this.passwordField.input.color(ERROR_INPUT);
+                    this.passwordConfirmationField.input.color(ERROR_INPUT);
                     message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
                     message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
                     message.text.mark('inscriptionErrorMessagepasswordField');
                 }
                 else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
-                    this.passwordField.border.color(myColors.white, 1, myColors.black);
+                    this.passwordField.input.color(COLORS);
                     this.passwordManipulator.unset(3);
                     cleanIfEgality();
                 }
@@ -166,7 +174,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             let saveButton = displayText(this.saveButtonLabel, saveButtonWidth, saveButtonHeight, myColors.black, myColors.white, 20, null, this.saveButtonManipulator);
             saveButton.border.mark('inscriptionButton');
             this.saveButtonManipulator.move(0, 2.5 * drawing.height / 10);
-            this.AllOk();
+            this._setEvents();
         }
 
         keyDownHandler(event) {
@@ -177,108 +185,28 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                     event.shiftKey ? index-- : index++;
                     if (index === this.tabForm.length) index = 0;
                     if (index === -1) index = this.tabForm.length - 1;
-                    svg.event(this.tabForm[index].border, "click");
+                    svg.event(this.tabForm[index].input.glass, "click");
+                    this.focusedField = this.tabForm[index];
                 }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                // runtime.activeElement() && runtime.activeElement().blur();
+                this.focusedField.input.hideControl();
                 this.saveButtonHandler();
             }
-        }
+        };
 
         emptyAreasHandler(save) {
-            var emptyAreas = this.tabForm.filter(field => field.label === "");
+            var emptyAreas = this.tabForm.filter(field => field.input.textMessage === "");
             emptyAreas.forEach(function (emptyArea) {
-                save && emptyArea.border.color(myColors.white, 3, myColors.red);
+                save && emptyArea.input.color(ERROR_INPUT);
             });
             if (emptyAreas.length > 0 && save) {
-                var message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
-                message.text.color(myColors.red).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
+                this.errorToDisplay = EMPTY_FIELD_ERROR;
             }
             else {
                 this.saveButtonManipulator.unset(3);
             }
             return (emptyAreas.length > 0);
-        };
-
-        clickEditionField(field, manipulator) {
-            return () => {
-                let width = drawing.width / 5,
-                    height = this.h,
-                    globalPointCenter = this[field].border.globalPoint(-(width) / 2, -(height) / 2),
-                    contentareaStyle = {
-                        toppx: globalPointCenter.y,
-                        leftpx: globalPointCenter.x,
-                        height: height,
-                        width: width
-                    };
-                drawing.notInTextArea = false;
-                let contentarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-                contentarea.message(this[field].labelSecret || this[field].label)
-                    .color(null, 0, myColors.black).font("Arial", 20)
-                    .mark('inscriptionContentArea');
-                this[field].secret ? contentarea.type('password') : contentarea.type("text");
-                manipulator.unset(1, this[field].content.text);
-                drawings.component.add(contentarea);
-                contentarea.focus();
-
-                var displayErrorMessage = (trueManipulator = manipulator) => {
-                    this.emptyAreasHandler();
-                    if (!(field === "passwordConfirmationField" && trueManipulator.ordonator.children[3].messageText)) {
-                        var message = autoAdjustText(this[field].errorMessage, drawing.width, this.h, 20, null, trueManipulator, 3);
-                        message.text.color(myColors.red).position(this[field].border.width / 2 + MARGIN, this[field].border.height + MARGIN);
-                        message.text.mark('inscriptionErrorMessage' + field);
-                    }
-                };
-                /**
-                 * mouseEvent pour modifier le champ où le clic est effectué
-                 */
-                var oninput = () => {
-                    contentarea.enter();
-                    this[field].label = contentarea.messageText;
-                    this[field].labelSecret !== "undefined" && (this[field].labelSecret = contentarea.messageText);
-                    if ((field === "lastNameField" || field === 'firstNameField') && !this[field].checkInput()) {
-                        displayErrorMessage();
-                        this[field].border.color(myColors.white, 3, myColors.red);
-                    }
-                    else {
-                        field !== "passwordConfirmationField" && manipulator.unset(3);
-                        this[field].border.color(myColors.white, 1, myColors.black);
-                    }
-                };
-                svg.addEvent(contentarea, "input", oninput);
-                var alreadyDeleted = false,
-                    onblur = () => {
-                        if (!alreadyDeleted) {
-                            contentarea.enter();
-                            if (this[field].secret) {
-                                this[field].label = '';
-                                this[field].labelSecret = contentarea.messageText;
-                                if (contentarea.messageText) {
-                                    for (let i = 0; i < contentarea.messageText.length; i++) {
-                                        this[field].label += '●';
-                                    }
-                                }
-                            } else {
-                                this[field].label = contentarea.messageText;
-                            }
-                            contentarea.messageText && this.displayField(field, manipulator);
-                            if (this[field].checkInput()) {
-                                this[field].border.color(myColors.white, 1, myColors.black);
-                                field !== "passwordConfirmationField" && manipulator.unset(3);
-                            }
-                            else {
-                                this[field].secret || displayErrorMessage();
-                                this[field].secret || this[field].border.color(myColors.white, 3, myColors.red);
-                            }
-                            drawings.component.remove(contentarea);
-                            drawing.notInTextArea = true;
-                            alreadyDeleted = true;
-                        }
-                    };
-                svg.addEvent(contentarea, "blur", onblur);
-                this.focusedField = this[field];
-            };
         };
 
         displayField(field, manipulator) {
@@ -288,16 +216,40 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             svg.removeEvent(fieldTitle.glass, 'click');
             this.h = 1.5 * fieldTitle.height;
             var fieldArea = new gui.TextField(0,0, INPUT_WIDTH, INPUT_HEIGHT, '');
-            fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('left').editColor(EDIT_COLORS);
+            fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('center').editColor(EDIT_COLORS);
             var y = -fieldTitle.height / 4;
             manipulator.set(1, fieldArea.component);
             manipulator.set(2, fieldTitle.component);
             fieldTitle.position(manipulator.x, (fieldArea.y - fieldArea.height));
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             this[field].field = field;
+            this[field].translatorInput = fieldArea.component;
+            this[field].translatorTitle = fieldTitle.component;
+            this[field].input = fieldArea;
+            this[field].titleText = fieldTitle;
+            let hidePassword = (oldMessage, message, valid) => {
+                if (valid) {
+                    let messageArray = message.split('');
+                    fieldArea.pass += messageArray[messageArray.length - 1];
+                    let tmp = '';
+                    for (let i in message) {
+                        tmp += '*';
+                    }
+                    fieldArea.message(tmp);
+                }
+                this.focusedField = this[field];
+            }
+            if(field == "passwordField" || field == "passwordConfirmationField"){
+                fieldArea.pass = '';
+                fieldArea.onInput(hidePassword);
+            }
+            else{
+                fieldArea.onInput((oldMessage, message, valid) => {
+                    this.focusedField = this[field];
+                });
+            }
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
-            this.formLabels[field] = this[field].label;
-            this._setEvents();
+            this.formLabels[field] = this[field].field;
         };
 
         AllOk() {
@@ -310,11 +262,11 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
 
         saveButtonHandler() {
             if (!this.emptyAreasHandler(true) && this.AllOk()) {
-                this.passwordField.hash = runtime.twinBcrypt(this.passwordField.labelSecret); // algorithme pour crypter le mot de passe
+                this.passwordField.hash = runtime.twinBcrypt(this.passwordField.input.pass); // algorithme pour crypter le mot de passe
                 let tempObject = {
-                    lastName: this.lastNameField.label,
-                    firstName: this.firstNameField.label,
-                    mailAddress: this.mailAddressField.label,
+                    lastName: this.lastNameField.input.textMessage,
+                    firstName: this.firstNameField.input.textMessage,
+                    mailAddress: this.mailAddressField.input.textMessage,
                     password: this.passwordField.hash
                 };
                 Server.inscription(tempObject)
@@ -336,8 +288,8 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                             }, 10000);
                         }
                     })
-            } else if (!this.AllOk()) {
-                const messageText = "Corrigez les erreurs des champs avant d'enregistrer !",
+            } else {
+                const messageText = this.errorToDisplay,
                     message = autoAdjustText(messageText, drawing.width, this.h, 20, null, this.saveButtonManipulator, 3);
                 message.text.color(myColors.red).position(0, -this.saveButtonManipulator.ordonator.children[0].height + MARGIN);
             }
@@ -445,9 +397,11 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                     if (index === this.tabForm.length) index = 0;
                     if (index === -1) index = this.tabForm.length - 1;
                     svg.event(this.tabForm[index].input.glass, "click");
+                    this.focusedField = this.tabForm[index];
                 }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
+                this.focusedField.input.hideControl();
                 this.connexionButtonHandler();
             }
         }
@@ -488,24 +442,25 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 fieldArea.onInput(showEmailEvenIfIncorrect);
             }
             this.h = 1.5 * fieldArea.height;
-            this[field].translator = fieldArea.component;
+            this[field].translatorInput = fieldArea.component;
+            this[field].translatorTitle = fieldTitle.component;
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
+            this[field].field = field;
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
             var y = -fieldArea.height / 4;
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
-            this[field].field = field;
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
 
 
         connexionButtonHandler() {
-            let emptyAreas = this.tabForm.filter(field => field.item.textMessage === '');
+            let emptyAreas = this.tabForm.filter(field => field.input.textMessage === '');
             emptyAreas.forEach(emptyArea => {
-                emptyArea.item.color([myColors.white, 2, myColors.red]);
+                emptyArea.input.color([myColors.white, 2, myColors.red]);
             });
 
             if (emptyAreas.length > 0) {
@@ -514,11 +469,11 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 svg.timeout(() => {
                     this.connexionButtonManipulator.unset(3);
                     emptyAreas.forEach(emptyArea => {
-                        emptyArea.item.color([myColors.white, 1, myColors.black]);
+                        emptyArea.input.color([myColors.white, 1, myColors.black]);
                     });
                 }, 5000);
             } else {
-                Server.connect(this.mailAddressField.item.textMessage, this.passwordField.item.pass).then(data => {
+                Server.connect(this.mailAddressField.input.textMessage, this.passwordField.input.pass).then(data => {
                     data = data && JSON.parse(data);
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
