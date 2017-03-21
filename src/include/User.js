@@ -316,11 +316,29 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
             this.cookieLabel = "Rester connecté";
-            this.tabForm = [];
-            this.obj = {checkbox: "", checked: "", size: 0, x: 0, y: 0};      /** format requis pour la vérification d'une case à cocher **/
+            this.tabForm = [];/** format requis pour la vérification d'une case à cocher **/
             this.model = {correct: false};              /** Reprendre le format de la classe AnswerVue **/
 
         }
+
+        addCookieCheckbox(x, y, size, manipulator) {
+            let obj = {
+                checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black),
+                size: size,
+                x: x,
+                y: y
+
+            };
+            this.checkBox = obj;
+            let fieldTitle = new gui.TextField(x + size + MARGIN,y,INPUT_WIDTH, FONT_SIZE_TITLE,this.cookieLabel);
+            obj.checkbox.position(x - fieldTitle.width/2 + size/2, y + size/2);
+            svg.removeEvent(fieldTitle.glass, 'click');
+            fieldTitle.font("Arial", 20).anchor("end");
+            fieldTitle.color(TITLE_COLOR);
+            manipulator.set(1, fieldTitle.component);
+            manipulator.set(2, obj.checkbox);
+            manipulator.move(x, y);
+        };
 
         events() {
             return {
@@ -351,23 +369,11 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                 secret: true,
                 errorMessage: "La confirmation du mot de passe n'est pas valide"
             };
-            this.cookieField = {
-                label: '',
-                labelSecret: '',
-                title: this.cookieLabel,
-                line: 1,
-                errorMessage: "errMsgTest"
-            };
-            this.obj && (this.obj.size = 20) && (this.obj.x = 40);
-            /*this.obj = {
-                size: 20,
-                x: 40,
-                y: 0,
-            };*/
 
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField('passwordField', this.passwordManipulator);
-            addCookieCheckbox(this.obj.x, this.obj.y, this.obj.size, this);
+            this.addCookieCheckbox(this.mailAddressManipulator.x, this.passwordField.input.y + this.passwordField.input.height
+                , 15, this.cookieManipulator);
 
             const connexionButtonHeightRatio = 0.075,
                 connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
@@ -380,11 +386,13 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         cookieAction() {
             if (this.model.correct) {
                 this.model.correct = false;
-                this.cookieManipulator.unset(2);
+                this.cookieManipulator.unset(3);
             } else if (!this.model.correct) {
                 this.model.correct = true;
-                this.obj.checked = drawCheck(this.obj.x - drawing.width / 8, this.obj.y, this.obj.size);
-                this.cookieManipulator.set(2, this.obj.checked);
+                this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
+                this.checkManipulator = new Manipulator(this).addOrdonator(4);
+                this.cookieManipulator.set(3, this.checkBox.checked);
+
             }
         }
 
@@ -481,7 +489,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
                             globalVariables.formationsManager = new FormationsManagerVue(myFormations);
-                            if (!this.obj.checked) {
+                            if (!this.checkBox.checked) {
                                 runtime.setCookie("token=; path=/; max-age=0;");
                             }
                             globalVariables.formationsManager.display();

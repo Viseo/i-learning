@@ -423,23 +423,6 @@ exports.Util = function (globalVariables) {
             return sender.obj;
         };
 
-        addCookieCheckbox = function (x, y, size, sourceObject) {
-            let manipulator = sourceObject.cookieManipulator;
-            let obj = {
-                checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black).position(x - drawing.width / 8, y),
-                size: size,
-                x: x,
-                y: y
-
-            };
-            sourceObject.obj = obj;
-            manipulator.set(0, sourceObject.obj.checkbox);
-            let fieldTitle = new svg.Text(sourceObject["cookieField"].title).position(x, y);
-            fieldTitle.font("Arial", 20).anchor("end");
-            manipulator.set(1, fieldTitle);
-            manipulator.move(-drawing.width / 7, sourceObject["cookieField"].line * drawing.height / 10);
-        };
-
         drawVideoIcon = function (x, y, size, parentObject) {
             const
                 bigSquare = new svg.Rect(9 * size / 10, size).color(myColors.white, 1, myColors.black).position(x, y).corners(2, 2),
