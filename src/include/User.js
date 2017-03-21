@@ -414,38 +414,50 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
         }
 
         displayField(field, manipulator) {
-            this[field].label = field == "mailAddressField" ? "Mail" : "Password";
-            let fieldTitle = new gui.TextField(0,0, 200, 25, this[field].label);// svg.Text(this[field].title).position(0, 0);
-            fieldTitle.font("Arial", 20).anchor("center");
-            fieldTitle.color([myColors.white, 1, myColors.black]);
+            this[field].label = field == "mailAddressField" ? "Email : " : "Password : ";
+            let fieldTitle = new gui.TextField(0,0,300,15,this[field].label);
+            let fieldArea = new gui.TextField(0,0, 300, 25, '');
+            svg.removeEvent(fieldTitle.glass, 'click');
+            fieldTitle.color([myColors.white, 0, myColors.white]);
+            fieldTitle.font('Arial', 15);
+            fieldArea.font("Arial", 20).anchor("center");
+            fieldArea.color([myColors.white, 1, myColors.black]);
+            fieldArea.editColor([myColors.white, 1, myColors.greyerBlue]);
             if (field == "passwordField"){
-                fieldTitle.pass = "";
-                fieldTitle.onInput((oldMessage,message,valid) => {
+                let hidePassword = (oldMessage,message,valid) => {
                     if(valid){
                         let messageArray = message.split('');
-                        fieldTitle.pass += messageArray[messageArray.length - 1];
+                        fieldArea.pass += messageArray[messageArray.length - 1];
                         let tmp = '';
                         for (let i in message){
                             tmp += '*';
                         }
-                        fieldTitle.message(tmp);
+                        fieldArea.message(tmp);
                     }
-                });
+                }
+                fieldArea.pass = "";
+                fieldArea.onInput(hidePassword);
             }
             else{
-                let regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                fieldTitle.pattern(regex);
+                let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                fieldArea.pattern(regexEmail);
+                let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
+                    fieldArea.message(message);
+                }
+                fieldArea.onInput(showEmailEvenIfIncorrect);
             }
-            //fieldTitle.position(-drawing.width / 10, this[field].line * drawing.height / 10);
-            this.h = 1.5 * fieldTitle.height;
+            //fieldArea.position(-drawing.width / 10, this[field].line * drawing.height / 10);
+            this.h = 1.5 * fieldArea.height;
             //var displayText = util.displayText(this[field].label, drawing.width / 6, this.h, myColors.black, myColors.white, 20, 'Arial', manipulator);
-            this[field].manipulator = fieldTitle.component;
-            this[field].item = fieldTitle;
-            manipulator.set(2, fieldTitle.component);
+            this[field].manipulator = fieldArea.component;
+            this[field].item = fieldArea;
+            manipulator.set(3, fieldTitle.component);
+            manipulator.set(2, fieldArea.component);
+            fieldTitle.position(manipulator.x, -1*(fieldArea.y + fieldArea.height));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
             //this[field].border = displayText.border;
             //this[field].border.mark(field);
-            var y = -fieldTitle.height / 4;
+            var y = -fieldArea.height / 4;
             //this[field].content.position(drawing.width / 10, 0);
             //this[field].border.position(drawing.width / 10, y);
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
@@ -506,7 +518,6 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
             let emptyAreas = this.tabForm.filter(field => field.item.textMessage === '');
             emptyAreas.forEach(emptyArea => {
                 emptyArea.item.color([myColors.white, 2, myColors.red]);
-                emptyArea.item.message(emptyArea.label);
             });
 
             if (emptyAreas.length > 0) {
