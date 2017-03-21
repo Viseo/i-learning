@@ -1,4 +1,6 @@
-exports.Library = function(globalVariables, Vue, FormationVue){
+exports.Library = function(globalVariables, classContainer){
+
+    let {Vue, FormationVue} = classContainer;
 
     let
         imageController,

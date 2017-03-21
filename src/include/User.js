@@ -2,7 +2,9 @@
  * Created by MLE3657 on 20/03/2017.
  */
 
-exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) {
+exports.User = function (globalVariables, classContainer) {
+    let {Vue, HeaderVue, FormationsManagerVue} = classContainer;
+
     let
         main = globalVariables.main,
         runtime = globalVariables.runtime,
@@ -501,7 +503,7 @@ exports.User = function (globalVariables, Vue, HeaderVue, FormationsManagerVue) 
                         data.user.admin ? globalVariables.domain.adminGUI() : globalVariables.domain.learningGUI();
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
-                            globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                            globalVariables.formationsManager = new classContainer.FormationsManagerVue(myFormations);
                             globalVariables.formationsManager.display();
                         });
                     } else {

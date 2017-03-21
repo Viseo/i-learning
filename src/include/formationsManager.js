@@ -1,4 +1,5 @@
-exports.formationsManager = function(globalVariables, Vue, FormationVue){
+exports.formationsManager = function(globalVariables, classContainer){
+    let {Vue, FormationVue} = classContainer;
 
     let
         main = globalVariables.main,

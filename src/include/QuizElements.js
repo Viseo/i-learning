@@ -1,4 +1,7 @@
-exports.QuizElements = function(globalVariables, Vue, ImagesLibraryVue){
+exports.QuizElements = function(globalVariables, classContainer){
+
+    let {Vue, ImagesLibraryVue} = classContainer;
+
     let
         main = globalVariables.main,
         runtime = globalVariables.runtime,
