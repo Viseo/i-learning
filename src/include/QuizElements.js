@@ -1,3 +1,25 @@
+/**
+ * Contient
+    Answer,
+    QuizManagerVue,
+    QuestionCreatorVue,
+    QuestionVue,
+    AddEmptyElementVue,
+    AnswerVue,
+    PopInVue,
+    GameVue,
+    QuizVue,
+    Level,
+    BdVue
+ *
+ * Return
+    QuizManagerVue,
+    AddEmptyElementVue,
+    AnswerVue,
+    QuizVue,
+    BdVue,
+    Level
+ */
 exports.QuizElements = function(globalVariables, classContainer){
 
     let {Vue} = classContainer;
@@ -10,16 +32,11 @@ exports.QuizElements = function(globalVariables, classContainer){
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        //playerMode = globalVariables.globalVariables.playerMode,
-        Picture = globalVariables.util.Picture,
-        installDnD = globalVariables.gui.installDnD;
+        Picture = globalVariables.util.Picture;
 
     ///////MODEL/////////////////////////////////////////////////////////
     /**
@@ -202,7 +219,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
             this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.libraryIManipulator = this.library.libraryManipulator;
+            this.libraryIManipulator = this.library.manipulator;
             this.questionPuzzle = new Puzzle(1, 6, this.quiz.tabQuestions, "leftToRight", this);
             this.questionPuzzle.leftChevronHandler = () => {
                 this.questionPuzzle.updateStartPosition("left");

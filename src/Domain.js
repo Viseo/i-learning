@@ -1,15 +1,15 @@
-const FLibrary = require('./include/library').Library;
-const FFormationsManager = require('./include/formationsManager').formationsManager;
+const FLibrary = require('./include/Library').Library;
+const FFormationsManager = require('./include/FormationsManager').formationsManager;
 const FUser = require('./include/User').User;
 const FQuizElements = require('./include/QuizElements').QuizElements;
-const FFormation = require('./includes/Formation').Formation;
+const FFormation = require('./include/Formation').Formation;
 
 exports.Domain = function ( globalVariables) {
 
+    //Celui qui contient les references des differences class qui permet de decouper en plusieur fichier et contourner les depences circulaires
     let classContainer;
 
     let imageController;
-    let myFormations;
 
     let
         main = globalVariables.main,

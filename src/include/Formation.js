@@ -1,3 +1,10 @@
+/**
+ * Contient
+    FormationVue,
+ *
+ * Return
+    FormationVue,
+ */
 exports.Formation = function (globalVariables, classContainer) {
     let {Vue} = classContainer;
 
@@ -6,22 +13,14 @@ exports.Formation = function (globalVariables, classContainer) {
 
     let
         main = globalVariables.main,
-        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server,
-        //globalVariables.playerMode = globalVariables.globalVariables.playerMode,
-        Picture = globalVariables.util.Picture,
-        installDnD = globalVariables.gui.installDnD;
+        Server = globalVariables.util.Server;
 
     imageController = ImageController(globalVariables.ImageRuntime);
     globalVariables.imageController = imageController;
@@ -369,7 +368,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
                 this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - 40 - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
                 this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
-                this.gamesLibraryManipulator = this.library.libraryManipulator;
+                this.gamesLibraryManipulator = this.library.manipulator;
                 this.manipulator.set(4, this.gamesLibraryManipulator);
                 this.manipulator.set(0, this.formationInfoManipulator);
                 this.libraryWidth = drawing.width * this.libraryWidthRatio;
@@ -508,7 +507,7 @@ exports.Formation = function (globalVariables, classContainer) {
                         let checkQuiz = new classContainer.QuizVue(game, false, this);
                         checkQuiz.isValid = true;
                         checkQuiz.tabQuestions.forEach(question => {
-                            if (!(question instanceof AddEmptyElementVue)) {
+                            if (!(question instanceof classContainer.AddEmptyElementVue)) {
                                 question.questionType && question.questionType.validationTab.forEach(funcEl => {
                                     var result = funcEl && funcEl(question);
                                     if (result && (!result.isValid)) {
@@ -952,7 +951,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * recalcule les différentes tailles des éléments en fonction de la taille d'écran
          */
         changeableDimensions() {
-            this.gamesLibraryManipulator = this.library.libraryManipulator;
+            this.gamesLibraryManipulator = this.library.manipulator;
             this.libraryWidth = drawing.width * this.libraryWidthRatio;
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;

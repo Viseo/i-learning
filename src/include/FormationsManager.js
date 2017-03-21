@@ -1,24 +1,21 @@
+/**
+ * Contient
+    FormationsManagerVue,
+ *
+ * Return
+    FormationsManagerVue,
+ */
 exports.formationsManager = function(globalVariables, classContainer){
-    let {Vue, FormationVue} = classContainer;
+    let {Vue} = classContainer;
 
     let
         main = globalVariables.main,
-        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server,
-        //playerMode = globalVariables.globalVariables.playerMode,
-        Picture = globalVariables.util.Picture,
-        installDnD = globalVariables.gui.installDnD;
+        Server = globalVariables.util.Server;
 
     /**
      * Crée un formation manager
@@ -160,7 +157,6 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
 
             let onClickFormation = formation => {
-                console.log(formation)
                 formation.miniature.removeHandler(onClickFormation);
                 Server.getVersionById(formation._id).then(data => {
                     var myFormation = JSON.parse(data).formation;

@@ -1,24 +1,25 @@
+/**
+ * Contient
+    LibraryVue,
+    GamesLibraryVue,
+    ImagesLibraryVue
+ *
+ * Return
+    GamesLibraryVue,
+    ImagesLibraryVue
+ */
 exports.Library = function(globalVariables, classContainer){
 
     let {Vue} = classContainer;
 
     let
         imageController,
-        main = globalVariables.main,
-        runtime = globalVariables.runtime,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
-        util = globalVariables.util,
-        clientWidth = globalVariables.clientWidth,
-        clientHeight = globalVariables.clientHeight,
         Manipulator = globalVariables.util.Manipulator,
-        MiniatureFormation = globalVariables.util.MiniatureFormation,
-        Puzzle = globalVariables.util.Puzzle,
-        ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
-        playerMode = globalVariables.playerMode,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
 
@@ -26,34 +27,33 @@ exports.Library = function(globalVariables, classContainer){
     globalVariables.imageController = imageController;
 
     /**
-     * TODO renommer this.libraryManipulator en this.manipulator (harmonisation)
      * @class
      */
     class LibraryVue extends Vue {
         constructor(options){
             super(options);
-            this.libraryManipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
             this.itemsTab = [];
             this.libraryManipulators = [];
         }
 
         libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
-            this.libraryManipulator.flush();
+            this.manipulator.flush();
             this.x = x;
             this.y = y;
             this.w = w;
             this.h = h;
             let borderSize = 3;
 
-            this.border = new svg.Rect(w - borderSize, h, this.libraryManipulator)
+            this.border = new svg.Rect(w - borderSize, h, this.manipulator)
                 .color(myColors.white, borderSize, myColors.black)
                 .position(w / 2, h / 2);
-            this.libraryManipulator.set(0, this.border);
-            this.libraryManipulator.move(this.x, this.y);
+            this.manipulator.set(0, this.border);
+            this.manipulator.move(this.x, this.y);
 
             this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
             this.panel.border.color([], 3, [0, 0, 0]);
-            this.libraryManipulator.set(2, this.panel.component);
+            this.manipulator.set(2, this.panel.component);
             this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
             this.panel.hHandle.handle.color(myColors.none, 0, myColors.none);
             drawing.notInTextArea = true;
@@ -99,8 +99,8 @@ exports.Library = function(globalVariables, classContainer){
             this.panel.hHandle.handle.color(myColors.none, 3, myColors.none);
             this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
             let displayArrowModeButton = () => {
-                this.libraryManipulator.remove(this.arrowModeManipulator);
-                this.libraryManipulator.add(this.arrowModeManipulator);
+                this.manipulator.remove(this.arrowModeManipulator);
+                this.manipulator.add(this.arrowModeManipulator);
                 this.arrowModeManipulator.move(w / 2, h - 0.05 * h);
 
                 let createLink = (parentGame, childGame) => {
@@ -514,7 +514,7 @@ exports.Library = function(globalVariables, classContainer){
 
                     this.addButtonManipulator.set(0, addButton);
                     this.addButtonManipulator.set(2, plus);
-                    this.libraryManipulator.add(this.addButtonManipulator);
+                    this.manipulator.add(this.addButtonManipulator);
                     this.addButtonManipulator.move(this.w / 2, 9 * this.h / 10);
                     svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
                     svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
@@ -665,15 +665,15 @@ exports.Library = function(globalVariables, classContainer){
                     const tabManager = createTabManager(this);
                     tabManager.addTab("Images", 0, () => {
                         displayItems();
-                        this.libraryManipulator.set(2, imagesPanel.component);
+                        this.manipulator.set(2, imagesPanel.component);
                     });
                     tabManager.addTab("Vidéos", 1, () => {
-                        this.libraryManipulator.set(2, videosPanel.component);
+                        this.manipulator.set(2, videosPanel.component);
                         loadVideos();
                     });
                     tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
                     tabManager.select(this.selectedTab);
-                    this.libraryManipulator.set(1, tabManager.manipulator);
+                    this.manipulator.set(1, tabManager.manipulator);
                     assignVideoEvents();
                 };
                 displayTabs();

@@ -2,6 +2,15 @@
  * Created by MLE3657 on 20/03/2017.
  */
 
+/**
+ * Contient
+    InscriptionManagerVue,
+    ConnexionManagerVue
+ *
+ * Return
+    InscriptionManagerVue,
+    ConnexionManagerVue
+ */
 exports.User = function (globalVariables, classContainer) {
     let {Vue, HeaderVue} = classContainer;
 

@@ -14,7 +14,6 @@ const
     checkScenario = testutils.checkScenario,
     ERROR_MESSAGE_INPUT = 'Seuls les caractères alphanumériques, avec accent et "-,\',.;?!°© sont permis';
 
-
 const ImageRuntime = {
     images: {},
     count: 0,
