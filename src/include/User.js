@@ -18,8 +18,9 @@ exports.User = function (globalVariables, classContainer) {
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator,
-        Server = globalVariables.util.Server;
-        gui = globalVariables.gui;
+        Server = globalVariables.util.Server,
+        gui = globalVariables.gui,
+        util = globalVariables.util;
     const
         INSCRIPTION_TEXT = "Vous venez d'arriver ? Créer un compte",
         CONNECTION_REFUSED_ERROR = 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide',
@@ -32,7 +33,8 @@ exports.User = function (globalVariables, classContainer) {
         INPUT_HEIGHT = 40,
         BUTTON_HEIGHT = INPUT_HEIGHT*5/4,
         TITLE_COLOR = [myColors.white, 0, myColors.white],
-        ERROR_INPUT = [myColors.white, 2, myColors.red];
+        ERROR_INPUT = [myColors.white, 2, myColors.red],
+        ICON_SIZE = FONT_SIZE_INPUT * 2/3;
 
     /**
      * Page d'inscription
@@ -324,10 +326,12 @@ exports.User = function (globalVariables, classContainer) {
             this.inscriptionButtonManipulator = new Manipulator(this);
             this.manipulator
                 .add(this.mailAddressManipulator)
-                .add(this.passwordManipulator)
-                .add(this.connexionButtonManipulator)
                 .add(this.cookieManipulator)
                 .add(this.inscriptionButtonManipulator);
+                .add(this.passwordManipulator)
+                .add(this.connexionButtonManipulator)
+            this.mailAddressManipulator.imageLayer = 4;
+            this.passwordManipulator.imageLayer = 4;
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
@@ -391,6 +395,7 @@ exports.User = function (globalVariables, classContainer) {
             this.displayField('passwordField', this.passwordManipulator);
             this.addCookieCheckbox(this.mailAddressManipulator.x, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
+            this.loadImage();
 
             let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
             this.connexionButtonManipulator.set(0, button.component);
@@ -433,6 +438,13 @@ exports.User = function (globalVariables, classContainer) {
                 this.focusedField.input.hideControl();
                 this.connexionButtonHandler();
             }
+        }
+
+        loadImage(){
+            this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '',null);
+            this.mailIcon.draw(-this.mailAddressField.input.width/2 + MARGIN, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
+            this.passIcon = new util.Picture('../images/001-lock.png', false, this.passwordManipulator, '', null);
+            this.passIcon.draw(-this.passwordField.input.width/2 + MARGIN, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
         }
 
         displayField(field, manipulator) {

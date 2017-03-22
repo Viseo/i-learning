@@ -22,7 +22,8 @@ exports.Formation = function (globalVariables, classContainer) {
         Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
         ReturnButton = globalVariables.util.ReturnButton,
-        Server = globalVariables.util.Server;
+        Server = globalVariables.util.Server,
+        util = globalVariables.util;
 
     imageController = ImageController(globalVariables.ImageRuntime);
     globalVariables.imageController = imageController;
