@@ -27,15 +27,15 @@ exports.User = function (globalVariables, classContainer) {
         CONNECTION_REFUSED_ERROR = 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide',
         FONT = 'Arial',
         FONT_SIZE_INPUT = 30,
-        FONT_SIZE_TITLE = 30,
+        FONT_SIZE_TITLE = 25,
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
         INPUT_WIDTH = 550,
-        INPUT_HEIGHT = 40,
+        INPUT_HEIGHT = 30,
         BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
         TITLE_COLOR = [myColors.white, 0, myColors.white],
         ERROR_INPUT = [myColors.white, 2, myColors.red],
-        ICON_SIZE = FONT_SIZE_INPUT * 2/3;
+        ICON_SIZE = INPUT_HEIGHT * 2/3;
 
     /**
      * Page d'inscription
