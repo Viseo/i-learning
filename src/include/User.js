@@ -319,17 +319,17 @@ exports.User = function (globalVariables, classContainer) {
         constructor(options) {
             super(options);
             this.header = new HeaderVue("Connexion");
-            this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
-            this.passwordManipulator = new Manipulator(this).addOrdonator(4);
+            this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
+            this.passwordManipulator = new Manipulator(this).addOrdonator(5);
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.cookieManipulator = new Manipulator(this).addOrdonator(4);
+            this.cookieManipulator = new Manipulator(this).addOrdonator(5);
             this.inscriptionButtonManipulator = new Manipulator(this);
             this.manipulator
                 .add(this.mailAddressManipulator)
                 .add(this.cookieManipulator)
-                .add(this.inscriptionButtonManipulator);
+                .add(this.inscriptionButtonManipulator)
                 .add(this.passwordManipulator)
-                .add(this.connexionButtonManipulator)
+                .add(this.connexionButtonManipulator);
             this.mailAddressManipulator.imageLayer = 4;
             this.passwordManipulator.imageLayer = 4;
             this.mailAddressLabel = "Adresse mail :";
@@ -350,7 +350,7 @@ exports.User = function (globalVariables, classContainer) {
 
             };
             this.checkBox = obj;
-            let fieldTitle = new gui.TextField(x + size + MARGIN,y,INPUT_WIDTH, FONT_SIZE_TITLE,this.cookieLabel);
+            let fieldTitle = new gui.TextField(x + size + MARGIN,y + size/2,INPUT_WIDTH, FONT_SIZE_TITLE,this.cookieLabel);
             obj.checkbox.position(x - fieldTitle.width/2 + size/2, y + size/2);
             svg.removeEvent(fieldTitle.glass, 'click');
             fieldTitle.font("Arial", 20).anchor("end");
@@ -442,9 +442,9 @@ exports.User = function (globalVariables, classContainer) {
 
         loadImage(){
             this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '',null);
-            this.mailIcon.draw(-this.mailAddressField.input.width/2 + MARGIN, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
+            this.mailIcon.draw(-this.mailAddressField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
             this.passIcon = new util.Picture('../images/001-lock.png', false, this.passwordManipulator, '', null);
-            this.passIcon.draw(-this.passwordField.input.width/2 + MARGIN, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
+            this.passIcon.draw(-this.passwordField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
         }
 
         displayField(field, manipulator) {
@@ -502,7 +502,7 @@ exports.User = function (globalVariables, classContainer) {
             this[field].field = field;
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
-            fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height));
+            fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
             var y = -fieldArea.height / 4;
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
