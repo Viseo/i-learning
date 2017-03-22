@@ -335,6 +335,10 @@ exports.User = function (globalVariables, classContainer) {
             }
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
             this.formLabels[field] = this[field].field;
+            this[field].input.onInput((oldMessage, message, valid) =>{
+                !this[field].checkInput() && this[field].input.control.fontColor(svg.RED);
+                this[field].checkInput() && this[field].input.control.fontColor(svg.BLACK);
+            });
         };
 
         AllOk() {
