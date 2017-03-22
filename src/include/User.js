@@ -370,8 +370,8 @@ exports.User = function (globalVariables, classContainer) {
 
             };
             this.checkBox = obj;
-            let fieldTitle = new gui.TextField(x + size + MARGIN, y, INPUT_WIDTH, FONT_SIZE_TITLE, this.cookieLabel);
-            obj.checkbox.position(x - fieldTitle.width / 2 + size / 2, y + size / 2);
+            let fieldTitle = new gui.TextField(size + MARGIN,size/2,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
+            obj.checkbox.position(-fieldTitle.width/2 + size/2,size/2);
             svg.removeEvent(fieldTitle.glass, 'click');
             fieldTitle.font("Arial", 20).anchor("end");
             fieldTitle.color(TITLE_COLOR);
@@ -414,7 +414,7 @@ exports.User = function (globalVariables, classContainer) {
 
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField('passwordField', this.passwordManipulator);
-            this.addCookieCheckbox(this.mailAddressManipulator.x, this.passwordField.input.y + this.passwordField.input.height
+            this.addCookieCheckbox(this.mailAddressManipulator.x - INPUT_WIDTH/4, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
             this.loadImage();
 
