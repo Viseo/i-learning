@@ -21,13 +21,16 @@ exports.User = function (globalVariables, classContainer) {
         Server = globalVariables.util.Server;
         gui = globalVariables.gui;
     const
+        INSCRIPTION_TEXT = "Vous venez d'arriver ? Créer un compte",
+        CONNECTION_REFUSED_ERROR = 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide',
         FONT = 'Arial',
-        FONT_SIZE_INPUT = 15,
-        FONT_SIZE_TITLE = 15,
+        FONT_SIZE_INPUT = 30,
+        FONT_SIZE_TITLE = 30,
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
-        INPUT_WIDTH = 300,
-        INPUT_HEIGHT = 25,
+        INPUT_WIDTH = 550,
+        INPUT_HEIGHT = 40,
+        BUTTON_HEIGHT = INPUT_HEIGHT*5/4,
         TITLE_COLOR = [myColors.white, 0, myColors.white],
         ERROR_INPUT = [myColors.white, 2, myColors.red];
 
@@ -316,12 +319,15 @@ exports.User = function (globalVariables, classContainer) {
             this.header = new HeaderVue("Connexion");
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
-            this.connexionButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.cookieManipulator = new Manipulator(this).addOrdonator(4);
-            this.manipulator.add(this.mailAddressManipulator);
-            this.manipulator.add(this.passwordManipulator);
-            this.manipulator.add(this.connexionButtonManipulator);
-            this.manipulator.add(this.cookieManipulator);
+            this.inscriptionButtonManipulator = new Manipulator(this);
+            this.manipulator
+                .add(this.mailAddressManipulator)
+                .add(this.passwordManipulator)
+                .add(this.connexionButtonManipulator)
+                .add(this.cookieManipulator)
+                .add(this.inscriptionButtonManipulator);
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
@@ -353,6 +359,7 @@ exports.User = function (globalVariables, classContainer) {
         events() {
             return {
                 "click connexionButtonManipulator": this.connexionButtonHandler,
+                "click inscriptionButtonManipulator": this.inscriptionButtonHandler,
                 "click cookieManipulator": this.cookieAction,
                 "keydown": this.keyDownHandler
             }
@@ -385,12 +392,16 @@ exports.User = function (globalVariables, classContainer) {
             this.addCookieCheckbox(this.mailAddressManipulator.x, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
 
-            const connexionButtonHeightRatio = 0.075,
-                connexionButtonHeight = drawing.height * connexionButtonHeightRatio,
-                connexionButtonWidth = 200,
-                connexionButton = displayText(this.connexionButtonLabel, connexionButtonWidth, connexionButtonHeight, myColors.black, myColors.white, 20, null, this.connexionButtonManipulator);
-            connexionButton.border.mark('connexionButton');
-            this.connexionButtonManipulator.move(0, 2.5 * drawing.height / 10);
+            let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
+            this.connexionButtonManipulator.set(0, button.component);
+            this.connexionButtonManipulator.move(this.connexionButtonManipulator.x, 2.5 * drawing.height / 10);
+
+            let inscriptionText = new svg.Text(INSCRIPTION_TEXT)
+                .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                .position(0,250)
+                .color(myColors.greyerBlue)
+                .font(FONT, FONT_SIZE_INPUT - 10);
+            this.inscriptionButtonManipulator.add(inscriptionText);
         }
 
         cookieAction() {
@@ -480,7 +491,7 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height));
-            manipulator.move(manipulator.x, this[field].line * drawing.height / 10);
+            manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
             var y = -fieldArea.height / 4;
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
@@ -490,16 +501,21 @@ exports.User = function (globalVariables, classContainer) {
         connexionButtonHandler() {
             let emptyAreas = this.tabForm.filter(field => field.input.textMessage === '');
             emptyAreas.forEach(emptyArea => {
-                emptyArea.input.color([myColors.white, 2, myColors.red]);
+                emptyArea.input.color(ERROR_INPUT);
             });
 
             if (emptyAreas.length > 0) {
-                let message = autoAdjustText(EMPTY_FIELD_ERROR, drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                let message = new svg.Text(EMPTY_FIELD_ERROR)
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .position(0, -MARGIN-BUTTON_HEIGHT)
+                    .color(myColors.red)
+                    .font(FONT, FONT_SIZE_INPUT);
+                this.connexionButtonManipulator.set(1, message);
+
                 svg.timeout(() => {
-                    this.connexionButtonManipulator.unset(3);
+                    this.connexionButtonManipulator.unset(1);
                     emptyAreas.forEach(emptyArea => {
-                        emptyArea.input.color([myColors.white, 1, myColors.black]);
+                        emptyArea.input.color(COLORS);
                     });
                 }, 5000);
             } else {
@@ -517,14 +533,22 @@ exports.User = function (globalVariables, classContainer) {
                             globalVariables.formationsManager.display();
                         });
                     } else {
-                        let message = autoAdjustText('Connexion refusée : veuillez entrer une adresse e-mail et un mot de passe valide', drawing.width, this.h, 20, null, this.connexionButtonManipulator, 3);
-                        message.text.color(myColors.red).position(0, -this.connexionButtonManipulator.ordonator.children[0].height + MARGIN);
+                        let message = new svg.Text(CONNECTION_REFUSED_ERROR)
+                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                            .position(0, 120)
+                            .color(myColors.red)
+                            .font(FONT, FONT_SIZE_INPUT - 10);
+                        this.connexionButtonManipulator.set(1, message);
                         svg.timeout(() => {
-                            this.connexionButtonManipulator.unset(3);
+                            this.connexionButtonManipulator.unset(1);
                         }, 5000);
                     }
                 });
             }
+        }
+
+        inscriptionButtonHandler(){
+            globalVariables.inscriptionManager.render();
         }
     }
 

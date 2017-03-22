@@ -261,6 +261,7 @@ exports.Util = function (globalVariables) {
                 component = svgObject;
             }
             if (this.scalor.children.indexOf(component) === -1) {
+                this.components.push(component);
                 this.last.add(component);
                 //component.parent = this;
             }

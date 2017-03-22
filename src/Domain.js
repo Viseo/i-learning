@@ -233,19 +233,6 @@ exports.Domain = function (globalVariables) {
                 };
                 svg.addEvent(text, 'click', returnToListFormation);
             }
-            if (message === "Inscription" || message === "Connexion") {
-                const link = message === "Inscription" ? "Connexion" : "Inscription";
-                const clickHandler = () => {
-                    (link === "Inscription") ? globalVariables.inscriptionManager.render() : globalVariables.connexionManager.render();
-                };
-                const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4);
-                special.border.mark('inscriptionLink');
-                special.content.anchor("end");
-                userManip.move(width - MARGIN, height * 0.75);
-                userManip.scale(1);
-                svg.addEvent(special.content, "click", clickHandler);
-                svg.addEvent(special.border, "click", clickHandler);
-            }
         }
     }
 
