@@ -26,7 +26,7 @@ exports.User = function (globalVariables, classContainer) {
         CONNECTION_TEXT = "Vous êtes déjà inscrit ? Se connecter",
         CONNECTION_REFUSED_ERROR = 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide',
         FONT = 'Arial',
-        FONT_SIZE_INPUT = 30,
+        FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
         EDIT_COLORS = [myColors.white, 1, myColors.greyerBlue],
         COLORS = [myColors.white, 1, myColors.black],
@@ -368,8 +368,8 @@ exports.User = function (globalVariables, classContainer) {
                 .add(this.inscriptionTextManipulator)
                 .add(this.passwordManipulator)
                 .add(this.connexionButtonManipulator);
-            this.mailAddressManipulator.imageLayer = 4;
-            this.passwordManipulator.imageLayer = 4;
+            this.mailAddressManipulator.imageLayer = 3;
+            this.passwordManipulator.imageLayer = 3;
             this.mailAddressLabel = "Adresse mail :";
             this.passwordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
@@ -484,6 +484,39 @@ exports.User = function (globalVariables, classContainer) {
             this.mailIcon.draw(-this.mailAddressField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
             this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
             this.passIcon.draw(-this.passwordField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
+            this.loadPasswordSelector();
+        }
+
+        loadPasswordSelector(){
+            let passwordSelectorHandler = (event)=>{
+                if(this.passwordHidden){
+                    svg.removeEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
+                    this.passwordSelectorIcon.hide.draw(this.passwordField.input.width/2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4 , 'hideIcon');
+                    svg.addEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
+                }
+                else{
+                    svg.removeEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
+                    this.passwordSelectorIcon.view.draw(this.passwordField.input.width/2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4 , 'viewIcon');
+                    svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
+                }
+                this.passwordHidden = !this.passwordHidden;
+                if (!this.passwordHidden){
+                    this.passwordField.input.message(this.passwordField.input.pass);
+                }
+                else{
+                    let hidden = '';
+                    for (let i in this.passwordField.input.pass.split('')){
+                        hidden += '*';
+                    }
+                    this.passwordField.input.message(hidden);
+                }
+            }
+            this.passwordHidden = true;
+            this.passwordSelectorIcon = {}
+            this.passwordSelectorIcon.view = new util.Picture('../images/view.png', false, this.passwordManipulator, '', null);
+            this.passwordSelectorIcon.hide = new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null);
+            this.passwordSelectorIcon.view.draw(this.passwordField.input.width/2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4 , 'viewIcon');
+            svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
         }
 
         displayField(field, manipulator) {
@@ -539,8 +572,8 @@ exports.User = function (globalVariables, classContainer) {
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
             this[field].field = field;
-            manipulator.set(3, fieldTitle.component);
-            manipulator.set(2, fieldArea.component);
+            manipulator.set(2, fieldTitle.component);
+            manipulator.set(1, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
             var y = -fieldArea.height / 4;

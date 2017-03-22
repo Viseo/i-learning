@@ -1087,7 +1087,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        draw(x, y, w, h, manipulator = this.parent.manipulator, textWidth) {
+        draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth ) {
             this.width = w;
             this.height = h;
             if (this.editable) {
@@ -1106,7 +1106,10 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this._acceptDrop;
-                manipulator.set(this.parent.imageLayer, this.imageSVG);
+                manipulator.set(layer, this.imageSVG);
+                if(mark){
+                    manipulator[mark] = this.imageSVG;
+                }
             }
         }
 
