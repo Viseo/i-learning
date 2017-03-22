@@ -105,9 +105,8 @@ exports.User = function (globalVariables, classContainer) {
                 title: this.passwordLabel,
                 line: 0,
                 secret: true,
-                errorMessage: "La confirmation du mot de passe n'est pas valide"
+                errorMessage: "Le mot de passe doit contenir au minimum 6 caractères"
             };
-            this.passwordField.errorMessage = "Le mot de passe doit contenir au minimum 6 caractères";
             this.passwordConfirmationField = {
                 label: this.formLabels.passwordConfirmationField || "",
                 labelSecret: (this.tabForm[4] && this.tabForm[4].labelSecret) || "",
@@ -359,6 +358,7 @@ exports.User = function (globalVariables, classContainer) {
             this.header = new HeaderVue("Connexion");
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
             this.passwordManipulator = new Manipulator(this).addOrdonator(5);
+            this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
             this.inscriptionTextManipulator = new Manipulator(this);
@@ -366,12 +366,15 @@ exports.User = function (globalVariables, classContainer) {
                 .add(this.mailAddressManipulator)
                 .add(this.cookieManipulator)
                 .add(this.inscriptionTextManipulator)
+                .add(this.newPasswordManipulator)
                 .add(this.passwordManipulator)
                 .add(this.connexionButtonManipulator);
             this.mailAddressManipulator.imageLayer = 4;
+            this.newPasswordManipulator.imageLayer = 4;
             this.passwordManipulator.imageLayer = 4;
             this.mailAddressLabel = "Adresse mail :";
-            this.passwordLabel = "Mot de passe :";
+            this.passwordLabel = "Mot de passe oublié ?";
+            this.newPasswordLabel = "Mot de passe :";
             this.connexionButtonLabel = "Connexion";
             this.cookieLabel = "Rester connecté";
             this.tabForm = [];/** format requis pour la vérification d'une case à cocher **/
@@ -398,11 +401,21 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.move(x, y);
         };
 
+        addNewPassword(x, y, manipulator) {
+            let fieldTitle = new gui.TextField(INPUT_WIDTH, y, INPUT_WIDTH, FONT_SIZE_TITLE, this.newPasswordLabel);
+            svg.removeEvent(fieldTitle.glass, 'click');
+            fieldTitle.font("Arial", 20).anchor("end");
+            fieldTitle.color(TITLE_COLOR);
+            manipulator.set(0, fieldTitle.component);
+            manipulator.move(x, y);
+        }
+
         events() {
             return {
                 "click connexionButtonManipulator": this.connexionButtonHandler,
                 "click inscriptionTextManipulator": this.inscriptionTextHandler,
                 "click cookieManipulator": this.cookieAction,
+                "click newPasswordManipulator": this.newPasswordAction,
                 "keydown": this.keyDownHandler
             }
         }
@@ -434,6 +447,7 @@ exports.User = function (globalVariables, classContainer) {
             this.displayField('passwordField', this.passwordManipulator);
             this.addCookieCheckbox(this.mailAddressManipulator.x - INPUT_WIDTH/4, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
+            // this.addNewPassword(this.mailAddressManipulator.x, this.passwordField.input.y + this.passwordField.input.height, this.newPasswordManipulator);
             this.loadImage();
 
             let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
@@ -459,6 +473,11 @@ exports.User = function (globalVariables, classContainer) {
                 this.cookieManipulator.set(3, this.checkBox.checked);
 
             }
+        }
+
+        newPasswordAction(event) {
+            event.preventDefault();
+            globalVariables.password.display();
         }
 
         keyDownHandler(event) {
@@ -604,8 +623,71 @@ exports.User = function (globalVariables, classContainer) {
         }
     }
 
+    /**
+     * Page de réinitialisation de mot de passe
+     * @class
+     */
+    class PasswordVue extends Vue {
+        constructor(options) {
+            super(options);
+            this.header = new HeaderVue("Password");
+            this.createPasswordManipulator = new Manipulator(this).addOrdonator(4);
+            this.checkPasswordManipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator.add(this.createPasswordManipulator)
+                .add(this.checkPasswordManipulator);
+            this.createPasswordLabel = "Nouveau mot de passe :";
+            this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
+        }
+
+        events() {
+
+        }
+
+        render() {
+            main.currentPageDisplayed = "Password";
+            globalVariables.header.display("Password");
+            globalVariables.drawing.manipulator.set(1, this.manipulator);
+            this.manipulator.move(drawing.width / 2, drawing.height / 2);
+            this.focusedField = null;
+
+            var passwordCheckInput = () => {
+                const passTooShort = this.passwordField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordField.input.textMessage.length < 6,
+                    confTooShort = this.passwordConfirmationField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordConfirmationField.input.textMessage.length < 6,
+                    cleanIfEgality = () => {
+                        if (this.passwordField.input.textMessage === this.passwordConfirmationField.input.textMessage) {
+                            this.passwordField.input.color(COLORS);
+                            this.passwordConfirmationField.input.color(COLORS);
+                        }
+                    };
+                if (passTooShort || confTooShort) {
+                    if (passTooShort) {
+                        this.passwordField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.passwordField.errorMessage;
+                    }
+                    if (confTooShort) {
+                        this.passwordConfirmationField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.passwordField.errorMessage;
+                    }
+                }
+                else if (this.passwordConfirmationField.input.textMessage !== "" && this.passwordConfirmationField.input.textMessage !== this.passwordField.input.textMessage) {
+                    this.passwordField.input.color(ERROR_INPUT);
+                    this.passwordConfirmationField.input.color(ERROR_INPUT);
+                    message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
+                    message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
+                    message.text.mark('inscriptionErrorMessagepasswordField');
+                }
+                else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
+                    this.passwordField.input.color(COLORS);
+                    this.passwordManipulator.unset(3);
+                    cleanIfEgality();
+                }
+                return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
+            };
+        }
+    }
     return {
         InscriptionManagerVue,
-        ConnexionManagerVue
+        ConnexionManagerVue,
+        PasswordVue
     }
 }
