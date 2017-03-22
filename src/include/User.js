@@ -46,10 +46,15 @@ exports.User = function (globalVariables, classContainer) {
             super(options);
             this.header = new HeaderVue("Inscription");
             this.firstNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.firstNameManipulator.imageLayer = 3;
             this.lastNameManipulator = new Manipulator(this).addOrdonator(4);
+            this.lastNameManipulator.imageLayer = 3;
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(4);
+            this.mailAddressManipulator.imageLayer = 3;
             this.passwordManipulator = new Manipulator(this).addOrdonator(4);
-            this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(3);
+            this.passwordManipulator.imageLayer = 3;
+            this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordConfirmationManipulator.imageLayer = 2;
             this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
             this.connexionTextManipulator = new Manipulator(this);
             this.manipulator.add(this.firstNameManipulator)
@@ -185,6 +190,7 @@ exports.User = function (globalVariables, classContainer) {
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField("passwordField", this.passwordManipulator);
             this.displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
+            this.loadImage();
 
             let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);
             this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
@@ -194,6 +200,18 @@ exports.User = function (globalVariables, classContainer) {
                 .color(myColors.greyerBlue)
                 .font(FONT, FONT_SIZE_INPUT - 10);
             this.connexionTextManipulator.add(connexionText).move(0, 250);
+        }
+        loadImage(){
+            this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '',null);
+            this.mailIcon.draw(-this.mailAddressField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
+            this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
+            this.passIcon.draw(-this.passwordField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
+            this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
+            this.passIcon.draw(-this.passwordConfirmationField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator);
+            this.userIcon = new util.Picture('../images/user.png', false, this.firstNameManipulator, '',null);
+            this.userIcon.draw(-this.firstNameField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.firstNameManipulator);
+            this.userIcon = new util.Picture('../images/user.png', false, this.lastNameManipulator, '',null);
+            this.userIcon.draw(-this.lastNameField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.lastNameManipulator);
         }
 
         keyDownHandler(event) {
@@ -464,7 +482,7 @@ exports.User = function (globalVariables, classContainer) {
         loadImage(){
             this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '',null);
             this.mailIcon.draw(-this.mailAddressField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
-            this.passIcon = new util.Picture('../images/001-lock.png', false, this.passwordManipulator, '', null);
+            this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
             this.passIcon.draw(-this.passwordField.input.width/2 + ICON_SIZE, 0,ICON_SIZE, ICON_SIZE, this.passwordManipulator);
         }
 
