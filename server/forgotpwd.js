@@ -17,6 +17,19 @@ function createUUID(size) {
     return uuid;
 }
 
+function insertDemandResetPWD(collectionDB, resolve, data) {
+    collectionDB.insertOne(data, (err) => {
+        if(err) {
+            resolve(500);
+        }else{
+            //todo send email
+            //resolve(generateForgotPWD);
+            resolve(200);
+        }
+    })
+};
+
+
 /**
  * Demande a reset le PWD
  * on passe email si email existe on genere une demande (BDD => table mdp)
@@ -48,33 +61,14 @@ const resetPWD = (mailAddress) => {
 
                 resetPWDCollection.find().toArray((err, docsReset) => {
                     if(err){
-                        //todo refactor en une fonction
-                        resetPWDCollection.insertOne(generateForgotPWD, (err) => {
-                            if(err) {
-                                resolve(500);
-                            }else{
-                                //todo send email
-                                //resolve(generateForgotPWD);
-                                resolve(200);
-                            }
-                        })
+                        insertDemandResetPWD(resetPWDCollection, resolve, generateForgotPWD);
                     }else{
                         let resultAskResetPWD = docsReset.find(rPWD => rPWD.mailAddress === mailAddress);
                         if(resultAskResetPWD){
                             resetPWDCollection.updateOne({mailAddress: mailAddress},  generateForgotPWD);
                             resolve(200);
                         }else{
-
-                            //todo refactor en une fonction
-                            resetPWDCollection.insertOne(generateForgotPWD, (err) => {
-                                if(err) {
-                                    resolve(500);
-                                }else{
-                                    //todo send email
-                                    //resolve(generateForgotPWD);
-                                    resolve(200);
-                                }
-                            })
+                            insertDemandResetPWD(resetPWDCollection, resolve, generateForgotPWD);
                         }
                     }
                 });
@@ -84,6 +78,8 @@ const resetPWD = (mailAddress) => {
         })
     });
 };
+
+
 
 /**
  * Check si id pour reset password et son timestamp est bien valide
