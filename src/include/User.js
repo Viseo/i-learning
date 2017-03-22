@@ -198,7 +198,7 @@ exports.User = function (globalVariables, classContainer) {
             let connexionText = new svg.Text(CONNECTION_TEXT)
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                 .color(myColors.greyerBlue)
-                .font(FONT, FONT_SIZE_INPUT - 10);
+                .font(FONT, FONT_SIZE_TITLE*2/3);
             this.connexionTextManipulator.add(connexionText).move(0, 250);
         }
 
@@ -492,7 +492,7 @@ exports.User = function (globalVariables, classContainer) {
             let inscriptionText = new svg.Text(INSCRIPTION_TEXT)
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                 .color(myColors.greyerBlue)
-                .font(FONT, FONT_SIZE_INPUT - 10);
+                .font(FONT, FONT_SIZE_TITLE*2/3);
             this.inscriptionTextManipulator.add(inscriptionText).move(0, 250);
         }
 
