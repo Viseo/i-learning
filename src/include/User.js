@@ -458,6 +458,16 @@ exports.User = function (globalVariables, classContainer) {
                 "keydown": this.keyDownHandler
             }
         }
+        hidePassword(oldMessage, message, valid){
+            let messageArray = message.split('');
+            this.passwordField.input.pass += messageArray[messageArray.length - 1];
+            let tmp = '';
+            for (let i in message) {
+                tmp += '*';
+            }
+            this.passwordField.input.message(tmp);
+            this.focusedField = this.passwordField;
+        }
 
         render() {
             this.inscriptionTextManipulator.flush();
@@ -554,6 +564,10 @@ exports.User = function (globalVariables, classContainer) {
                 this.passwordHidden = !this.passwordHidden;
                 if (!this.passwordHidden){
                     this.passwordField.input.message(this.passwordField.input.pass);
+                    this.passwordField.input.onInput((oldMessage,message,valid)=>{
+                        this.passwordField.input.message(message);
+                        this.passwordField.input.pass = message;
+                    });
                 }
                 else{
                     let hidden = '';
@@ -561,9 +575,15 @@ exports.User = function (globalVariables, classContainer) {
                         hidden += '*';
                     }
                     this.passwordField.input.message(hidden);
+                    this.passwordField.input.onInput((oldMessage, message, valid) =>{
+                        this.hidePassword(oldMessage,message,valid);
+                    });
                 }
             }
             this.passwordHidden = true;
+            this.passwordField.input.onInput((oldMessage, message, valid) =>{
+                this.hidePassword(oldMessage,message,valid);
+            });
             this.passwordSelectorIcon = {}
             this.passwordSelectorIcon.view = new util.Picture('../images/view.png', false, this.passwordManipulator, '', null);
             this.passwordSelectorIcon.hide = new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null);
@@ -582,24 +602,7 @@ exports.User = function (globalVariables, classContainer) {
             fieldArea.color(COLORS);
             fieldArea.editColor(EDIT_COLORS);
             if (field == "passwordField") {
-                let hidePassword = (oldMessage, message, valid) => {
-                    let messageArray = message.split('');
-                    fieldArea.pass += messageArray[messageArray.length - 1];
-                    let tmp = '';
-                    for (let i in message) {
-                        tmp += '*';
-                    }
-                    fieldArea.message(tmp);
-                    this.focusedField = this[field];
-                    if (!this.focusedField.input.valid) {
-                        this.focusedField.input.color(ERROR_INPUT);
-                    }
-                    else {
-                        this.focusedField.input.color(COLORS);
-                    }
-                }
                 fieldArea.pass = "";
-                fieldArea.onInput(hidePassword);
                 let regex = /^[ -~]{6,63}$/;
                 fieldArea.pattern(regex);
             }
