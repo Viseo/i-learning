@@ -330,16 +330,16 @@ module.exports = function (app, fs) {
         pwd.resetPWD(req.body.mailAddress)
             .then(data => {
                 if (data) {
-                    res.status(data);
-                    res.send(data);
+                    res.send({ack: 'ok', status: 200});
+                    //res.send({ack:'ok'});
                 } else {
-                    res.status(500);
-                    res.send(500);
+                    res.sendStatus(500);
+                    //res.send(500);
                 }
             })
             .catch(err => {
-                res.status(400);
-                res.send(400)
+                res.sendStatus(400);
+                //res.send(400)
             });
     });
 

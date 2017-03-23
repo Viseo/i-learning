@@ -322,6 +322,8 @@ exports.User = function (globalVariables, classContainer) {
                     fieldArea.message(tmp);
                 }
                 this.focusedField = this[field];
+                !this[field].checkInput() && this[field].input.control.fontColor(svg.RED);
+                this[field].checkInput() && this[field].input.control.fontColor(svg.BLACK);
             }
             if (field == "passwordField" || field == "passwordConfirmationField") {
                 fieldArea.pass = '';
@@ -330,14 +332,12 @@ exports.User = function (globalVariables, classContainer) {
             else {
                 fieldArea.onInput((oldMessage, message, valid) => {
                     this.focusedField = this[field];
+                    !this[field].checkInput() && this[field].input.control.fontColor(svg.RED);
+                    this[field].checkInput() && this[field].input.control.fontColor(svg.BLACK);
                 });
             }
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
             this.formLabels[field] = this[field].field;
-            this[field].input.onInput((oldMessage, message, valid) =>{
-                !this[field].checkInput() && this[field].input.control.fontColor(svg.RED);
-                this[field].checkInput() && this[field].input.control.fontColor(svg.BLACK);
-            });
         };
 
         AllOk() {
@@ -541,7 +541,12 @@ exports.User = function (globalVariables, classContainer) {
 
         newPasswordAction(event) {
             event.preventDefault();
-            globalVariables.password.display();
+            let mailAddress = this.mailAddressField.input.textMessage;
+            console.log(mailAddress);
+            let p = Server.resetPassword({mailAddress:mailAddress});
+            p.then((data)=>{
+                console.log(data);
+            });
         }
 
         keyDownHandler(event) {
