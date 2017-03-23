@@ -445,7 +445,7 @@ exports.User = function (globalVariables, classContainer) {
             let fieldTitle = new gui.TextField(size + MARGIN,size/2,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
             obj.checkbox.position(-fieldTitle.width/2 + size/2,size/2);
             svg.removeEvent(fieldTitle.glass, 'click');
-            fieldTitle.font("Arial", 20).anchor("end");
+            fieldTitle.font("Arial", 20).anchor("start");
             fieldTitle.color(TITLE_COLOR);
             this.model.correct = true;
             this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
@@ -510,7 +510,7 @@ exports.User = function (globalVariables, classContainer) {
 
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField('passwordField', this.passwordManipulator);
-            this.addCookieCheckbox(MARGIN - INPUT_WIDTH / 2, this.passwordField.input.y + this.passwordField.input.height
+            this.addCookieCheckbox(-INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
             this.addNewPassword(MARGIN + INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.newPasswordManipulator);
