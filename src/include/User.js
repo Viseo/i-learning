@@ -170,16 +170,14 @@ exports.User = function (globalVariables, classContainer) {
                 else if (this.passwordConfirmationField.input.textMessage !== "" && this.passwordConfirmationField.input.textMessage !== this.passwordField.input.textMessage) {
                     this.passwordField.input.color(ERROR_INPUT);
                     this.passwordConfirmationField.input.color(ERROR_INPUT);
-                    message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                    message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
-                    message.text.mark('inscriptionErrorMessagepasswordField');
+                    this.errorToDisplay = this.passwordConfirmationField.errorMessage;
                 }
                 else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
                     this.passwordField.input.color(COLORS);
                     this.passwordManipulator.unset(3);
                     cleanIfEgality();
                 }
-                return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
+                return !(passTooShort || confTooShort ||this.passwordConfirmationField.input.textMessage !== this.passwordField.input.textMessage);
             };
             this.lastNameField.checkInput = () => nameCheckInput("lastNameField");
             this.firstNameField.checkInput = () => nameCheckInput("firstNameField");
