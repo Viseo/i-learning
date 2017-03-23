@@ -393,8 +393,7 @@ exports.User = function (globalVariables, classContainer) {
             }
         };
 
-        connexionTextHandler(event) {
-            event.preventDefault();
+        connexionTextHandler() {
             globalVariables.connexionManager.display();
         }
 
@@ -519,7 +518,7 @@ exports.User = function (globalVariables, classContainer) {
             button.text.color(myColors.lightgrey, 0, myColors.white);
             this.connexionButtonManipulator
                 .set(0, button.component)
-                .move(this.connexionButtonManipulator.x, 2.5 * drawing.height / 10);
+                .move(0, 2.5 * drawing.height / 10);
 
             let inscriptionText = new svg.Text(INSCRIPTION_TEXT)
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
@@ -699,9 +698,9 @@ exports.User = function (globalVariables, classContainer) {
                     } else {
                         let message = new svg.Text(CONNECTION_REFUSED_ERROR)
                             .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                            .position(0, -MARGIN - BUTTON_HEIGHT - 10)
+                            .position(0, -2*(INPUT_HEIGHT + MARGIN))
                             .color(myColors.red)
-                            .font(FONT, FONT_SIZE_INPUT - 10);
+                            .font(FONT, FONT_SIZE_INPUT);
                         this.connexionButtonManipulator.set(1, message);
                         svg.timeout(() => {
                             this.connexionButtonManipulator.unset(1);
@@ -711,8 +710,7 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
-        inscriptionTextHandler(event) {
-            event.preventDefault();
+        inscriptionTextHandler() {
             globalVariables.inscriptionManager.display();
         }
     }

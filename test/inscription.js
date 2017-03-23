@@ -68,7 +68,7 @@ describe('inscription', function(){
             svg.screenSize(1920, 947);
             let global = main(svg, runtime, dbListener, ImageRuntime);
 
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]({preventDefault: ()=>{}});
+            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
             global.inscriptionManager.saveButtonManipulator.listeners['click']();
 
             let errorMessage = global.inscriptionManager.saveButtonManipulator.children()[1];
@@ -81,7 +81,7 @@ describe('inscription', function(){
        testutils.retrieveDB("./log/dbInscription.json", dbListener, function(){
            svg.screenSize(1920, 947);
            let global = main(svg, runtime, dbListener, ImageRuntime);
-           global.connexionManager.inscriptionTextManipulator.listeners["click"]({preventDefault: ()=>{}});
+           global.connexionManager.inscriptionTextManipulator.listeners["click"]();
 
            setField(global.inscriptionManager, 'lastNameField', 'nom');
            setField(global.inscriptionManager, 'firstNameField', 'prénom');
@@ -101,7 +101,7 @@ describe('inscription', function(){
         testutils.retrieveDB("./log/dbInscription.json", dbListener, function(){
             svg.screenSize(1920, 947);
             let global = main(svg, runtime, dbListener, ImageRuntime);
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]({preventDefault: ()=>{}});
+            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
 
             setField(global.inscriptionManager, 'lastNameField', 'nom');
             setField(global.inscriptionManager, 'firstNameField', 'prénom');
@@ -123,7 +123,7 @@ describe('inscription', function(){
             let global = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]({preventDefault: ()=>{}});
+            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
 
             let headerMessage = retrieve(root, "[headerMessage]");
             assert.equal(headerMessage.text, "Inscription");
