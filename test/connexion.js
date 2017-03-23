@@ -122,7 +122,7 @@ describe('connection check textarea', function(){
             let root = runtime.anchor("content");
             runtime.listeners['resize']({w: 1500, h: 1500});
 
-            let connexionManager = main.globalVariables.connexionManager;
+            let connexionManager = main.connexionManager;
             let mailAddressInput = connexionManager.mailAddressField.input;
             let passwordInput = connexionManager.passwordField.input;
 
@@ -148,26 +148,10 @@ describe('connection check textarea', function(){
             runtime.advance();
 
             mailAddressInput.textMessage = "a@a.a";
-            connexionManager.connexionButtonManipulator.listeners.click();
-
-
-            //assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
-            runtime.advance();
-
-
-            //connexionManager.mailAddressField.translatorTitle);
-
-            /*
-            mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'a@a.a');
-            passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
-            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});*/
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+            assert.notEqual(main.formationsManager, null);
+            assert.equal(main.formationsManager.labelDefault, "Ajouter une formation");
             done();
         });
     });
@@ -178,17 +162,24 @@ describe('connection check textarea', function(){
             main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            let connexionManager = main.globalVariables.connexionManager;
+            let connexionManager = main.connexionManager;
             let mailAddressInput = connexionManager.mailAddressField.input;
             let passwordInput = connexionManager.passwordField.input;
 
-            mailAddressInput.textMessage = "a@d.m";
+            mailAddressInput.textMessage = "a";
             passwordInput.textMessage = "aaaaaa";
             connexionManager.connexionButtonManipulator.listeners.click();
+            assert.equal(connexionManager.connexionButtonManipulator.components[1].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            runtime.advance();
+
+            mailAddressInput.textMessage = "a@d.m";
+            connexionManager.connexionButtonManipulator.listeners.click();
+            assert.notEqual(main.formationsManager, null);
+            assert.equal(main.formationsManager.labelDefault, "Ajouter une formation");
+
 
             runtime.advance();
-            //runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
-            //runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+
             done();
         });
     });

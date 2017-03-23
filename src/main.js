@@ -175,8 +175,6 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     svg.addGlobalEvent("resize", resizePaper);
 
 
-    return {
-        globalVariables
-    }
+    return globalVariables;
 };
 exports.main = main;
