@@ -30,6 +30,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
     globalVariables.inscriptionManager = inscriptionManager;
     const connexionManager = new domain.ConnexionManagerVue();
     globalVariables.connexionManager = connexionManager;
+    const password = new domain.PasswordVue();
+    globalVariables.password = password;
 
     util.setGlobalVariables();
     domain.setGlobalVariables();
@@ -67,6 +69,9 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             quizManager = formation && formation.quizManager;
         let quiz;
         switch (main.currentPageDisplayed) {
+            case "Password":
+                password.display();
+                break;
             case "ConnexionManager":
                 connexionManager.display();
                 break;
