@@ -118,33 +118,46 @@ describe('connection check textarea', function(){
     it("should connect someone", function (done) {
         testutils.retrieveDB("./log/dbConnection.json", dbListener, function () {
             svg.screenSize(1920, 947);
-            main(svg, runtime, dbListener, ImageRuntime);
+            main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
             runtime.listeners['resize']({w: 1500, h: 1500});
-            let mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, '');
-            let passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
-            let connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+
+            let connexionManager = main.globalVariables.connexionManager;
+            let mailAddressInput = connexionManager.mailAddressField.input;
+            let passwordInput = connexionManager.passwordField.input;
+
+            assert.equal(2, connexionManager.connexionButtonManipulator.components.length);
+
+            connexionManager.connexionButtonManipulator.listeners.click();
             runtime.advance();
 
-            mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'a@');
-            passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
-            connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+            assert.equal(3, connexionManager.connexionButtonManipulator.components.length);
+            assert.equal(connexionManager.connexionButtonManipulator.components[2].messageText, "Veuillez remplir tous les champs");
+
+
+            mailAddressInput.textMessage = "aaaaaa";
+            passwordInput.textMessage = "aaaaaa";
+            connexionManager.connexionButtonManipulator.listeners.click();
+            assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
 
+
+            mailAddressInput.textMessage = "a@";
+            connexionManager.connexionButtonManipulator.listeners.click();
+            assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            runtime.advance();
+
+            mailAddressInput.textMessage = "a@a.a";
+            connexionManager.connexionButtonManipulator.listeners.click();
+
+
+            //assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            runtime.advance();
+
+
+            //connexionManager.mailAddressField.translatorTitle);
+
+            /*
             mailAddressField = retrieve(root, '[mailAddressField]');
             mailAddressField.listeners['click']();
             connectionContentArea = retrieve(root, '[connectionContentArea]');
@@ -154,7 +167,7 @@ describe('connection check textarea', function(){
             connectionContentArea = retrieve(root, '[connectionContentArea]');
             enter(connectionContentArea, 'aaaaaa');
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
-            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});*/
             done();
         });
     });
@@ -162,23 +175,20 @@ describe('connection check textarea', function(){
     it("should connect an admin", function (done) {
         testutils.retrieveDB("./log/dbAdminConnection.json", dbListener, function () {
             svg.screenSize(1920, 947);
-            main(svg, runtime, dbListener, ImageRuntime);
+            main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
-            let mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'a@d.m';
-            connectionContentArea.listeners['blur']();
-            let passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'aaaaaa';
-            connectionContentArea.listeners['blur']();
-            let connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+
+            let connexionManager = main.globalVariables.connexionManager;
+            let mailAddressInput = connexionManager.mailAddressField.input;
+            let passwordInput = connexionManager.passwordField.input;
+
+            mailAddressInput.textMessage = "a@d.m";
+            passwordInput.textMessage = "aaaaaa";
+            connexionManager.connexionButtonManipulator.listeners.click();
+
             runtime.advance();
-            runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
-            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+            //runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
+            //runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
             done();
         });
     });
