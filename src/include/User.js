@@ -442,10 +442,11 @@ exports.User = function (globalVariables, classContainer) {
                 y: y
             };
             this.checkBox = obj;
-            let fieldTitle = new gui.TextField(size + MARGIN,size/2,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
-            obj.checkbox.position(-fieldTitle.width/2 + size/2,size/2);
+            let fieldTitle = new gui.TextField(0,0,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
+            fieldTitle.position(0, MARGIN);
+            obj.checkbox.position(size ,MARGIN);
             svg.removeEvent(fieldTitle.glass, 'click');
-            fieldTitle.font("Arial", 20).anchor("start");
+            fieldTitle.font("Arial", FONT_SIZE_TITLE *3/4).anchor("start");
             fieldTitle.color(TITLE_COLOR);
             this.model.correct = true;
             this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
@@ -458,9 +459,9 @@ exports.User = function (globalVariables, classContainer) {
         addNewPassword(x, y, size, manipulator) {
             let fieldTitle = new svg.Text(this.newPasswordLabel)
                 .color(myColors.greyerBlue)
-                .dimension(INPUT_WIDTH / 2, 0)
-                .position(size + MARGIN, 0)
-                .font(FONT, 20);
+                .dimension(INPUT_WIDTH / 2, size/2)
+                .position(size + MARGIN, size/2)
+                .font(FONT, FONT_SIZE_TITLE * 3/4);
             manipulator.set(0, fieldTitle);
             manipulator.move(x, y + MARGIN);
         }
