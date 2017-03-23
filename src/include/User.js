@@ -567,7 +567,6 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.set(2, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
-            var y = -fieldArea.height / 4;
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
@@ -639,16 +638,23 @@ exports.User = function (globalVariables, classContainer) {
             this.createPasswordManipulator = new Manipulator(this).addOrdonator(4);
             this.checkPasswordManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordValidManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordButtonManipulator = new Manipulator(this).addOrdonator(4);
             this.manipulator
                 .add(this.createPasswordManipulator)
                 .add(this.checkPasswordManipulator)
-                .add(this.passwordValidManipulator);
+                .add(this.passwordValidManipulator)
+                .add(this.passwordButtonManipulator);
             this.createPasswordLabel = "Nouveau mot de passe :";
             this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
+            this.passwordButtonLabel = "Réinitialiser le mot de passe";
+            this.tabForm = [];
         }
 
         events() {
-
+            return {
+                "click passwordButtonManipulator": this.sendNewPassword,
+                "keydown": this.keyDownHandler
+            }
         }
 
         render() {
@@ -657,12 +663,6 @@ exports.User = function (globalVariables, classContainer) {
             globalVariables.drawing.manipulator.set(1, this.manipulator);
             this.manipulator.move(drawing.width / 2, drawing.height / 2);
             this.focusedField = null;
-            this.checkPasswordField = {
-                label: "",
-                title: this.checkPasswordLabel,
-                line: 0,
-                errorMessage: "La confirmation du mot de passe n'est pas valide"
-            };
             this.createPasswordField = {
                 label: "",
                 labelSecret: "",
@@ -671,31 +671,34 @@ exports.User = function (globalVariables, classContainer) {
                 secret: true,
                 errorMessage: "Le mot de passe doit contenir au minimum 6 caractères"
             };
-            this.displayField("createPasswordField", this.createPasswordManipulator);
-            this.displayField("checkPasswordField", this.checkPasswordManipulator);
-
+            this.checkPasswordField = {
+                label: "",
+                title: this.checkPasswordLabel,
+                line: 0,
+                errorMessage: "La confirmation du mot de passe n'est pas valide"
+            };
             var passwordCheckInput = () => {
-                const passTooShort = this.passwordField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordField.input.textMessage.length < 6,
-                    confTooShort = this.passwordConfirmationField.input.textMessage !== "" && this.passwordField.input.textMessage && this.passwordConfirmationField.input.textMessage.length < 6,
+                const passTooShort = this.createPasswordField.input.textMessage !== "" && this.createPasswordField.input.textMessage && this.createPasswordField.input.textMessage.length < 6,
+                    confTooShort = this.checkPasswordField.input.textMessage !== "" && this.checkPasswordField.input.textMessage && this.checkPasswordField.input.textMessage.length < 6,
                     cleanIfEgality = () => {
-                        if (this.passwordField.input.textMessage === this.passwordConfirmationField.input.textMessage) {
-                            this.passwordField.input.color(COLORS);
-                            this.passwordConfirmationField.input.color(COLORS);
+                        if (this.createPasswordField.input.textMessage === this.checkPasswordField.input.textMessage) {
+                            this.createPasswordField.input.color(COLORS);
+                            this.checkPasswordField.input.color(COLORS);
                         }
                     };
                 if (passTooShort || confTooShort) {
                     if (passTooShort) {
-                        this.passwordField.input.color(ERROR_INPUT);
-                        this.errorToDisplay = this.passwordField.errorMessage;
+                        this.createPasswordField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.createPasswordField.errorMessage;
                     }
                     if (confTooShort) {
-                        this.passwordConfirmationField.input.color(ERROR_INPUT);
-                        this.errorToDisplay = this.passwordField.errorMessage;
+                        this.checkPasswordField.input.color(ERROR_INPUT);
+                        this.errorToDisplay = this.createPasswordField.errorMessage;
                     }
                 }
-                else if (this.passwordConfirmationField.input.textMessage !== "" && this.passwordConfirmationField.input.textMessage !== this.passwordField.input.textMessage) {
-                    this.passwordField.input.color(ERROR_INPUT);
-                    this.passwordConfirmationField.input.color(ERROR_INPUT);
+                else if (this.checkPasswordField.input.textMessage !== "" && this.checkPasswordField.input.textMessage !== this.createPasswordField.input.textMessage) {
+                    this.createPasswordField.input.color(ERROR_INPUT);
+                    this.checkPasswordField.input.color(ERROR_INPUT);
                     message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
                     message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
                     message.text.mark('inscriptionErrorMessagepasswordField');
@@ -707,6 +710,14 @@ exports.User = function (globalVariables, classContainer) {
                 }
                 return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
             };
+            this.createPasswordField.checkInput = passwordCheckInput;
+            this.checkPasswordField.checkInput = passwordCheckInput;
+            this.displayField("createPasswordField", this.createPasswordManipulator);
+            this.displayField("checkPasswordField", this.checkPasswordManipulator);
+            let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.passwordButtonLabel);
+            this.passwordButtonManipulator
+                .set(0, button.component)
+                .move(this.passwordButtonManipulator.x, 2.5 * drawing.height / 10);
         }
 
         displayField(field, manipulator) {
@@ -724,10 +735,41 @@ exports.User = function (globalVariables, classContainer) {
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
             this[field].field = field;
+            // this.focusedField = this[field];
+            // if (!this.focusedField.input.valid) {
+            //     this.focusedField.input.color(ERROR_INPUT);
+            // }
+            // else {
+            //     this.focusedField.input.color(COLORS);
+            // }
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
             manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
+            var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+            alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+        }
+
+        sendNewPassword() {
+            console.log("back reset pwd");
+        }
+
+        keyDownHandler(event) {
+            if (event.keyCode === 9) { // TAB
+                event.preventDefault();
+                let index = this.tabForm.indexOf(this.focusedField);
+                if (index !== -1) {
+                    event.shiftKey ? index-- : index++;
+                    if (index === this.tabForm.length) index = 0;
+                    if (index === -1) index = this.tabForm.length - 1;
+                    svg.event(this.tabForm[index].input.glass, "click");
+                    this.focusedField = this.tabForm[index];
+                }
+            } else if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                this.focusedField.input.hideControl();
+                this.sendNewPassword();
+            }
         }
     }
     return {
