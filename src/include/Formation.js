@@ -496,7 +496,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, -5).color(color).anchor("start");
                     this.formationInfoManipulator.move(0, this.returnButton.height * 1.3);
 
-                    let saveNameIcon = new svg.Image('save-file-option.png')
+                    let saveNameIcon = new svg.Image('../images/save-file-option.png')
                         .dimension(16, 16)
                         .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3);
                     this.formationInfoManipulator.set(2, saveNameIcon);
