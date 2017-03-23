@@ -193,6 +193,7 @@ exports.User = function (globalVariables, classContainer) {
             this.loadImage();
 
             let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);
+            saveButton.text.color(myColors.lightgrey, 0, myColors.white);
             this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
 
             let connexionText = new svg.Text(CONNECTION_TEXT)
@@ -500,6 +501,7 @@ exports.User = function (globalVariables, classContainer) {
             this.loadImage();
 
             let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
+            button.text.color(myColors.lightgrey, 0, myColors.white);
             this.connexionButtonManipulator
                 .set(0, button.component)
                 .move(this.connexionButtonManipulator.x, 2.5 * drawing.height / 10);

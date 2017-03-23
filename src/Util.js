@@ -1718,6 +1718,7 @@ exports.Util = function (globalVariables) {
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
         myColors = {
+            customBlue : [43, 120, 228],
             darkBlue: [25, 25, 112],
             blue: [25, 122, 230],
             primaryBlue: [0, 0, 255],
