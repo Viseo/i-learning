@@ -440,11 +440,11 @@ exports.User = function (globalVariables, classContainer) {
             };
             this.checkBox = obj;
             let fieldTitle = new gui.TextField(0,0,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
-            fieldTitle.position(0, MARGIN);
-            obj.checkbox.position(size ,MARGIN);
+            obj.checkbox.position(size ,0);
             svg.removeEvent(fieldTitle.glass, 'click');
             fieldTitle.font("Arial", FONT_SIZE_TITLE *3/4).anchor("start");
             fieldTitle.color(TITLE_COLOR);
+            fieldTitle.position(0, 0);
             this.model.correct = true;
             this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
             this.cookieManipulator.set(3, this.checkBox.checked);
@@ -453,12 +453,14 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.move(x, y + MARGIN);
         };
 
-        addNewPassword(x, y, size, manipulator) {
+        addNewPassword(x, y, manipulator) {
             let fieldTitle = new svg.Text(this.newPasswordLabel)
                 .color(myColors.greyerBlue)
-                .dimension(INPUT_WIDTH / 2, size/2)
-                .position(size + MARGIN, size/2)
+                .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT/2)
+                .anchor('end')
+                .position(0, 0)
                 .font(FONT, FONT_SIZE_TITLE * 3/4);
+            this.newPasswordText = fieldTitle;
             manipulator.set(0, fieldTitle);
             manipulator.move(x, y + MARGIN);
         }
@@ -508,10 +510,10 @@ exports.User = function (globalVariables, classContainer) {
 
             this.displayField("mailAddressField", this.mailAddressManipulator);
             this.displayField('passwordField', this.passwordManipulator);
-            this.addCookieCheckbox(-INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
+            this.addCookieCheckbox(-INPUT_WIDTH/4, this.passwordField.input.y + this.passwordField.input.height
                 , 15, this.cookieManipulator);
-            this.addNewPassword(MARGIN + INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
-                , 15, this.newPasswordManipulator);
+            this.addNewPassword(INPUT_WIDTH / 2, this.passwordField.input.y + this.passwordField.input.height
+                , this.newPasswordManipulator);
             this.loadImage();
 
             let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
@@ -538,13 +540,27 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        forgottenPasswordMessage(mailAddress){
+            let forgotttenPassText = new svg.Text('Un mail a était envoyé à ' + mailAddress + ' pour réinitialiser votre mot de passe.')
+                .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT/2)
+                .color(myColors.greyerBlue)
+                .font(FONT, FONT_SIZE_TITLE*2/3);
+            this.newPasswordManipulator.set(0, forgotttenPassText);
+            svg.timeout(() => {
+                this.newPasswordManipulator.set(0, this.newPasswordText);
+            }, 5000);
+        }
+
         newPasswordAction(event) {
             event.preventDefault();
             let mailAddress = this.mailAddressField.input.textMessage;
             console.log(mailAddress);
             let p = Server.resetPassword({mailAddress:mailAddress});
             p.then((data)=>{
-                console.log(data);
+                data = JSON.parse(data);
+                if (data.status == 200) {
+                    this.forgottenPasswordMessage(mailAddress);
+                }
             });
         }
 

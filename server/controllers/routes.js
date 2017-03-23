@@ -329,7 +329,7 @@ module.exports = function (app, fs) {
     app.post('/resetPWD', function (req, res) {
         pwd.resetPWD(req.body.mailAddress)
             .then(data => {
-                if (data) {
+                if (data == 200) {
                     res.send({ack: 'ok', status: 200});
                     //res.send({ack:'ok'});
                 } else {

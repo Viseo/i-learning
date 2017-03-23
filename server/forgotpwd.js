@@ -73,7 +73,7 @@ const resetPWD = (mailAddress) => {
                     }
                 });
             }else{
-                resolve(404);
+                resolve(200);
             }
         })
     });
