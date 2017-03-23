@@ -428,7 +428,6 @@ exports.User = function (globalVariables, classContainer) {
             this.cookieLabel = "Rester connecté";
             this.tabForm = [];/** format requis pour la vérification d'une case à cocher **/
             this.model = {correct: false};              /** Reprendre le format de la classe AnswerVue **/
-
         }
 
         addCookieCheckbox(x, y, size, manipulator) {
@@ -437,7 +436,6 @@ exports.User = function (globalVariables, classContainer) {
                 size: size,
                 x: x,
                 y: y
-
             };
             this.checkBox = obj;
             let fieldTitle = new gui.TextField(size + MARGIN,size/2,INPUT_WIDTH/2, FONT_SIZE_TITLE,this.cookieLabel);
@@ -445,6 +443,9 @@ exports.User = function (globalVariables, classContainer) {
             svg.removeEvent(fieldTitle.glass, 'click');
             fieldTitle.font("Arial", 20).anchor("end");
             fieldTitle.color(TITLE_COLOR);
+            this.model.correct = true;
+            this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
+            this.cookieManipulator.set(3, this.checkBox.checked);
             manipulator.set(1, fieldTitle.component);
             manipulator.set(2, obj.checkbox);
             manipulator.move(x, y);
@@ -517,9 +518,7 @@ exports.User = function (globalVariables, classContainer) {
             } else if (!this.model.correct) {
                 this.model.correct = true;
                 this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
-                this.checkManipulator = new Manipulator(this).addOrdonator(4);
                 this.cookieManipulator.set(3, this.checkBox.checked);
-
             }
         }
 
@@ -666,7 +665,7 @@ exports.User = function (globalVariables, classContainer) {
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
                             globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
-                            if (!this.checkBox.checked) {
+                            if (!this.model.correct) {
                                 runtime.setCookie("token=; path=/; max-age=0;");
                             }
                             globalVariables.formationsManager.display();
