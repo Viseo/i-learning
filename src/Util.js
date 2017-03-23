@@ -82,6 +82,7 @@ exports.Util = function (globalVariables) {
             this.first = this.translator;
             this.components = [];
             this.component = this.translator;
+            this.listeners = {};
             let self = this;
             Object.defineProperty(self, "x", {
                 get: function () {
@@ -129,24 +130,13 @@ exports.Util = function (globalVariables) {
         }
 
         addEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.addEvent(this.components[i], eventName, handler);
-            }
-        }
-
-        removeEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+            this.listeners[eventName] = handler;
+            svg.addEvent(this.translator, eventName, handler);
         }
 
         removeEvent(eventName) {
-            let handler = this[eventName];
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+            let handler = this.listeners[eventName];
+            svg.removeEvent(this.translator, eventName, handler);
         }
 
         addOrdonator(layerNumber) {
@@ -1087,7 +1077,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        draw(x, y, w, h, manipulator = this.parent.manipulator, textWidth) {
+        draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth ) {
             this.width = w;
             this.height = h;
             if (this.editable) {
@@ -1106,7 +1096,10 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this._acceptDrop;
-                manipulator.set(this.parent.imageLayer, this.imageSVG);
+                manipulator.set(layer, this.imageSVG);
+                if(mark){
+                    manipulator[mark] = this.imageSVG;
+                }
             }
         }
 
@@ -1737,6 +1730,7 @@ exports.Util = function (globalVariables) {
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
         myColors = {
+            customBlue : [43, 120, 228],
             darkBlue: [25, 25, 112],
             blue: [25, 122, 230],
             primaryBlue: [0, 0, 255],
