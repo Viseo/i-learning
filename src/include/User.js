@@ -591,7 +591,7 @@ exports.User = function (globalVariables, classContainer) {
         }
 
         displayField(field, manipulator) {
-            this[field].label = field == "mailAddressField" ? "Email : " : "Password : ";
+            this[field].label = field == "mailAddressField" ? "Adresse mail : " : "Mot de passe : ";
             let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
             let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
             svg.removeEvent(fieldTitle.glass, 'click');
