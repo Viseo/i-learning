@@ -82,6 +82,7 @@ exports.Util = function (globalVariables) {
             this.first = this.translator;
             this.components = [];
             this.component = this.translator;
+            this.listeners = {};
             let self = this;
             Object.defineProperty(self, "x", {
                 get: function () {
@@ -129,24 +130,13 @@ exports.Util = function (globalVariables) {
         }
 
         addEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.addEvent(this.components[i], eventName, handler);
-            }
-        }
-
-        removeEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+            this.listeners[eventName] = handler;
+            svg.addEvent(this.translator, eventName, handler);
         }
 
         removeEvent(eventName) {
-            let handler = this[eventName];
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+            let handler = this.listeners[eventName];
+            svg.removeEvent(this.translator, eventName, handler);
         }
 
         addOrdonator(layerNumber) {
