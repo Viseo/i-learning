@@ -1675,11 +1675,23 @@ exports.Util = function (globalVariables) {
         }
 
         static getImages() {
-            return dbListener.httpPostAsync('/getAllImages')
+            return dbListener.httpPostAsync('/getAllImages');
         }
 
         static getVideos() {
-            return dbListener.httpPostAsync('/getAllVideos')
+            return dbListener.httpPostAsync('/getAllVideos');
+        }
+
+        static resetPassword(mailAddress) {
+            return dbListener.httpPostAsync('/resetPWD', mailAddress);
+        }
+
+        static checkTimestampPassword(id) {
+            return dbListener.httpPostAsync('/newPWD/' + id);
+        }
+
+        static updatePassword(id, mailAddress, password) {
+            return dbListener.httpPostAsync('/newPWD', {id: id, mailAddress: mailAddress, password: password});
         }
     }
 

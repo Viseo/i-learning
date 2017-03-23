@@ -752,6 +752,13 @@ exports.User = function (globalVariables, classContainer) {
 
         sendNewPassword() {
             console.log("back reset pwd");
+            /*
+            let newPassword = getNewValidPassword();
+            exports.resetPWD(mailAddressPersonReset) // TODO appel de resetPWD lors du clic sur le champ dans la page Connexion "Mot de passe oublié?"
+            exports.checkResetPWD(randomID) // TODO appel lors requete POST au clic de l'URL qui contient le ?id=bidejazgaz
+            exports.updatePWD(newPassword);
+            this.setView("Connexion");
+            */
         }
 
         keyDownHandler(event) {
