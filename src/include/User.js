@@ -198,7 +198,7 @@ exports.User = function (globalVariables, classContainer) {
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                 .color(myColors.greyerBlue)
                 .font(FONT, FONT_SIZE_TITLE*2/3);
-            this.connexionTextManipulator.add(connexionText).move(0, 250);
+            this.connexionTextManipulator.add(connexionText).move(0, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
         }
 
         loadPasswordSelector(){
@@ -525,7 +525,7 @@ exports.User = function (globalVariables, classContainer) {
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                 .color(myColors.greyerBlue)
                 .font(FONT, FONT_SIZE_TITLE*2/3);
-            this.inscriptionTextManipulator.add(inscriptionText).move(0, 250);
+            this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
         }
 
         cookieAction() {
