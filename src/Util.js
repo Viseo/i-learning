@@ -109,7 +109,7 @@ exports.Util = function (globalVariables) {
          */
         children() {
             if (this.ordonator) {
-                return this.ordonator.children;
+                return this.ordonator.children.filter((elem) => {return !elem.dummy});
             } else {
                 return this.last.children;
             }
