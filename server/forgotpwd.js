@@ -2,7 +2,9 @@
  * Created by MLE3657 on 21/03/2017.
  */
 const
+    TwinBcrypt = require('twin-bcrypt'),
     ObjectID = require('mongodb').ObjectID;
+
 
 const
     db = require('./db');
@@ -93,7 +95,6 @@ const resetPWD = (mailAddress) => {
  */
 const checkResetPWD = (id) => {
     return new Promise((resolve, reject) => {
-        console.log(id);
         let resetPWDCollection = db.get().collection('mdp');
         resetPWDCollection.find().toArray((err, docs) => {
             if(err){
@@ -147,10 +148,10 @@ const updatePWD = (newPWD) => {
                        if(err){
                            resolve(404);
                        }else{
-                           let resultFindUser = userDocs.find(resetPWD => resetPWD.mailAddress === newPWD.mailAddress);
+                           let resultFindUser = userDocs.find(resetPWD => resetPWD.mailAddress === result.mailAddress);
                            if(resultFindUser){
-                               resultFindUser.password = newPWD.password;
-                               usersCollection.updateOne({mailAddress: newPWD.mailAddress}, resultFindUser);
+                               resultFindUser.password = TwinBcrypt.hashSync(newPWD.password);
+                               usersCollection.updateOne({mailAddress: result.mailAddress}, resultFindUser);
 
                                //todo delete
                                resetPWDCollection.removeOne({"id":newPWD.id});

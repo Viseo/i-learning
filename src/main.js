@@ -2,7 +2,7 @@ const Domain = require('./Domain').Domain,
     Util = require('./Util').Util,
     svggui = require('../lib/svggui').Gui;
 
-let main = function (svg, runtime, dbListener, ImageRuntime) {
+let main = function (svg, runtime, dbListener, ImageRuntime,param) {
 
     let domain, util, gui, drawing, drawings;
 
@@ -35,6 +35,10 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
 
     util.setGlobalVariables();
     domain.setGlobalVariables();
+    let redirect;
+    if(param){
+        redirect = param.redirect;
+    }
 
     let findVideo = function () {
         let video;
@@ -68,6 +72,9 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
             formation = formationsManager && formationsManager.formationDisplayed,
             quizManager = formation && formation.quizManager;
         let quiz;
+        if(redirect){
+            main.currentPageDisplayed = 'Password';
+        }
         switch (main.currentPageDisplayed) {
             case "Password":
                 password.display();
@@ -153,17 +160,23 @@ let main = function (svg, runtime, dbListener, ImageRuntime) {
 
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
-        if (data.ack === 'OK') {
-            drawing.username = `${data.user.firstName} ${data.user.lastName}`;
-            data.user.admin ? domain.adminGUI() : domain.learningGUI();
-            util.setGlobalVariables();
-            domain.setGlobalVariables();
-            listFormations();
-        } else {
-            domain.learningGUI();
-            util.setGlobalVariables();
-            domain.setGlobalVariables();
-            connexionManager.display();
+        if(redirect){
+            password.display(param.ID);
+            redirect = false;
+        }
+        else {
+            if (data.ack === 'OK') {
+                drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+                data.user.admin ? domain.adminGUI() : domain.learningGUI();
+                util.setGlobalVariables();
+                domain.setGlobalVariables();
+                listFormations();
+            } else {
+                domain.learningGUI();
+                util.setGlobalVariables();
+                domain.setGlobalVariables();
+                connexionManager.display();
+            }
         }
     });
 

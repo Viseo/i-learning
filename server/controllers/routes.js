@@ -353,12 +353,12 @@ module.exports = function (app, fs) {
      * 403 : le lien n est plus valide du au timestamp
      * 404 : id non trouver
      */
-    app.get('/newPWD/:id', function (req, res) {
-        pwd.checkResetPWD(req.params.id)
+    app.post('/newPWD', function (req, res) {
+        pwd.checkResetPWD(req.body.id)
             .then(data => {
                 if (data) {
-                    res.status(data);
-                    res.send(data);
+                    //res.status(data);
+                    res.send({data:data});
                 } else {
                     res.status(500);
                     res.send(500);
@@ -386,13 +386,12 @@ module.exports = function (app, fs) {
      * 403 : le lien n est plus valide du au timestamp
      * 404 : id non trouver
      */
-    app.put('/newPWD', function (req, res) {
+    app.post('/updatePWD', function (req, res) {
+        console.log(req.body)
         pwd.updatePWD(req.body)
             .then(data => {
                 if (data) {
-                    res.status(data);
-                    res.send(data);
-                    console.log("senddata")
+                    res.send({data:data});
                 } else {
                     res.status(500);
                     res.send(500);

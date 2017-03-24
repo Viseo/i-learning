@@ -1066,7 +1066,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth ) {
+        draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth) {
             this.width = w;
             this.height = h;
             if (this.editable) {
@@ -1086,7 +1086,7 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this._acceptDrop;
                 manipulator.set(layer, this.imageSVG);
-                if(mark){
+                if (mark) {
                     manipulator[mark] = this.imageSVG;
                 }
             }
@@ -1669,13 +1669,14 @@ exports.Util = function (globalVariables) {
         }
 
         static checkTimestampPassword(id) {
-            return dbListener.httpPostAsync('/newPWD/' + id);
+            return dbListener.httpPostAsync('/newPWD', id);
         }
 
-        static updatePassword(id, mailAddress, password) {
-            return dbListener.httpPostAsync('/newPWD', {id: id, mailAddress: mailAddress, password: password});
+        static updatePassword(id, password) {
+            return dbListener.httpPostAsync('/updatePWD', {id: id, password: password});
         }
     }
+
 
     svg.TextItem.prototype.enter = function () {
         this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
