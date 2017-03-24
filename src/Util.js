@@ -105,18 +105,6 @@ exports.Util = function (globalVariables) {
         }
 
         /**
-         * retourne tous les objets svg accrochés à ce manipulator
-         * @returns {Array}
-         */
-        children() {
-            if (this.ordonator) {
-                return this.ordonator.children.filter((elem) => {return !elem.dummy});
-            } else {
-                return this.last.children;
-            }
-        }
-
-        /**
          * Fonction qui instancie un objet de classe Ordered
          * @param {number} layerNumber
          * @returns {Manipulator}
@@ -235,7 +223,6 @@ exports.Util = function (globalVariables) {
             }
             this.ordonator.set(layer, component);
             this.components.push(component);
-            //component.parentManip = this;
             return this;
         }
 
@@ -254,8 +241,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
-                this.components.add(component);
-                //component.parentManip = this;
+                this.components.push(component);
             }
             return this;
         }

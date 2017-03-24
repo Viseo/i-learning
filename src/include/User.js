@@ -57,7 +57,9 @@ exports.User = function (globalVariables, classContainer) {
             this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(5);
             this.passwordConfirmationManipulator.imageLayer = 2;
             this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.saveButtonManipulator.component.mark('saveButton');
             this.connexionTextManipulator = new Manipulator(this);
+            this.connexionTextManipulator.component.mark('connexionText');
             this.manipulator.add(this.firstNameManipulator)
                 .add(this.lastNameManipulator)
                 .add(this.mailAddressManipulator)
@@ -192,12 +194,14 @@ exports.User = function (globalVariables, classContainer) {
 
             let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);
             saveButton.text.color(myColors.lightgrey, 0, myColors.white);
+            saveButton.component.mark('saveButton');
             this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
 
             let connexionText = new svg.Text(CONNECTION_TEXT)
                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                 .color(myColors.greyerBlue)
-                .font(FONT, FONT_SIZE_TITLE*2/3);
+                .font(FONT, FONT_SIZE_TITLE*2/3)
+                .mark('connexionText');
             this.connexionTextManipulator.add(connexionText).move(0, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
         }
 
@@ -301,6 +305,10 @@ exports.User = function (globalVariables, classContainer) {
             this.h = 1.5 * fieldTitle.height;
             var fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
             fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('center').editColor(EDIT_COLORS);
+            //TODO a changer, corrige le problème de handler de TextField
+            fieldArea.component.mark(field);
+            fieldArea.component.parentObj = fieldArea;
+            /////////////////////////////////////////////////////////////
             var y = -fieldTitle.height / 4;
             manipulator.set(1, fieldArea.component);
             manipulator.set(2, fieldTitle.component);
@@ -365,7 +373,8 @@ exports.User = function (globalVariables, classContainer) {
                                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                                 .position(0, -MARGIN - BUTTON_HEIGHT)
                                 .color(myColors.green)
-                                .font(FONT, FONT_SIZE_INPUT);
+                                .font(FONT, FONT_SIZE_INPUT)
+                                .mark('successMessage');
                             this.saveButtonManipulator.set(1, message);
                             setTimeout(() => {
                                 this.saveButtonManipulator.unset(1);
@@ -376,7 +385,8 @@ exports.User = function (globalVariables, classContainer) {
                                 .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                                 .position(0, -MARGIN - BUTTON_HEIGHT)
                                 .color(myColors.red)
-                                .font(FONT, FONT_SIZE_INPUT);
+                                .font(FONT, FONT_SIZE_INPUT)
+                                .mark('errorMessage');
                             this.saveButtonManipulator.set(1, message);
                             setTimeout(() => {
                                 this.saveButtonManipulator.unset(1);
@@ -388,7 +398,8 @@ exports.User = function (globalVariables, classContainer) {
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .position(0, -MARGIN - BUTTON_HEIGHT)
                     .color(myColors.red)
-                    .font(FONT, FONT_SIZE_INPUT);
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .mark('errorMessage');
                 this.saveButtonManipulator.set(1, message);
             }
         };
@@ -414,6 +425,7 @@ exports.User = function (globalVariables, classContainer) {
             this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
             this.inscriptionTextManipulator = new Manipulator(this);
+            this.inscriptionTextManipulator.component.mark("inscriptiontext");
             this.manipulator
                 .add(this.mailAddressManipulator)
                 .add(this.cookieManipulator)

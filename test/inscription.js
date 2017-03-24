@@ -41,16 +41,16 @@ const testKeyDownArrow = (runtime) => {
 };
 
 const setField = (root, fieldName, text) => {
-    let field = root[fieldName].input;
-    field.message(text);
-    assert.equal(field.textMessage, text);
+    let field = retrieve(root, "[" + fieldName + "]").handler.parentObj;
+    field.textMessage = text;
 }
 
 let runtime,
     svg,
     main,
     dbListenerModule,
-    dbListener;
+    dbListener,
+    root;
 
 describe('inscription', function(){
     beforeEach(function () {
@@ -66,13 +66,17 @@ describe('inscription', function(){
     it('should not signup (empty field)', function(done){
         testutils.retrieveDB("./log/dbInscription.json", dbListener, function(){
             svg.screenSize(1920, 947);
-            let global = main(svg, runtime, dbListener, ImageRuntime);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor('content');
 
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
-            global.inscriptionManager.saveButtonManipulator.listeners['click']();
+            let inscriptionText = retrieve(root, "[inscriptiontext]");
+            inscriptionText.handler.parentManip.listeners["click"]();
 
-            let errorMessage = global.inscriptionManager.saveButtonManipulator.children()[1];
-            assert.equal(errorMessage.messageText, 'Veuillez remplir tous les champs');
+            let saveButton = retrieve(root, "[saveButton]");
+            saveButton.handler.parentManip.listeners["click"]();
+
+            let errorMessage = retrieve(root, "[errorMessage]");
+            assert.equal(errorMessage.handler.messageText, 'Veuillez remplir tous les champs');
             done();
         });
     });
@@ -81,18 +85,22 @@ describe('inscription', function(){
        testutils.retrieveDB("./log/dbInscription.json", dbListener, function(){
            svg.screenSize(1920, 947);
            let global = main(svg, runtime, dbListener, ImageRuntime);
-           global.connexionManager.inscriptionTextManipulator.listeners["click"]();
+           let root = runtime.anchor('content');
 
-           setField(global.inscriptionManager, 'lastNameField', 'nom');
-           setField(global.inscriptionManager, 'firstNameField', 'prénom');
-           setField(global.inscriptionManager, 'mailAddressField', 'test@test.test')
-           setField(global.inscriptionManager, 'passwordField', 'aaa');
-           setField(global.inscriptionManager, 'passwordConfirmationField', 'aaa');
+           let inscriptionText = retrieve(root, "[inscriptiontext]");
+           inscriptionText.handler.parentManip.listeners["click"]();
 
-           global.inscriptionManager.saveButtonManipulator.listeners['click']();
+           setField(root, 'lastNameField', 'nom');
+           setField(root, 'firstNameField', 'prénom');
+           setField(root, 'mailAddressField', 'test@test.test')
+           setField(root, 'passwordField', 'aaa');
+           setField(root, 'passwordConfirmationField', 'aaa');
 
-           let errorMessage = global.inscriptionManager.saveButtonManipulator.children()[1];
-           assert.equal(errorMessage.messageText, 'Le mot de passe doit contenir au minimum 6 caractères');
+           let saveButton = retrieve(root, "[saveButton]");
+           saveButton.handler.parentManip.listeners["click"]();
+
+           let errorMessage = retrieve(root, "[errorMessage]");
+           assert.equal(errorMessage.handler.messageText, 'Le mot de passe doit contenir au minimum 6 caractères');
            done();
        })
     });
@@ -101,18 +109,22 @@ describe('inscription', function(){
         testutils.retrieveDB("./log/dbInscription.json", dbListener, function(){
             svg.screenSize(1920, 947);
             let global = main(svg, runtime, dbListener, ImageRuntime);
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
+            let root = runtime.anchor('content');
 
-            setField(global.inscriptionManager, 'lastNameField', 'nom');
-            setField(global.inscriptionManager, 'firstNameField', 'prénom');
-            setField(global.inscriptionManager, 'mailAddressField', 'test@test.test')
-            setField(global.inscriptionManager, 'passwordField', 'aaaaaa');
-            setField(global.inscriptionManager, 'passwordConfirmationField', 'adfdsfaaabbb');
+            let inscriptionText = retrieve(root, "[inscriptiontext]");
+            inscriptionText.handler.parentManip.listeners["click"]();
 
-            global.inscriptionManager.saveButtonManipulator.listeners['click']();
+            setField(root, 'lastNameField', 'nom');
+            setField(root, 'firstNameField', 'prénom');
+            setField(root, 'mailAddressField', 'test@test.test')
+            setField(root, 'passwordField', 'aaaaaa');
+            setField(root, 'passwordConfirmationField', 'adfdsfaaabbb');
 
-            let errorMessage = global.inscriptionManager.saveButtonManipulator.children()[1];
-            assert.equal(errorMessage.messageText, "La confirmation du mot de passe n'est pas valide");
+            let saveButton = retrieve(root, "[saveButton]");
+            saveButton.handler.parentManip.listeners["click"]();
+
+            let errorMessage = retrieve(root, "[errorMessage]");
+            assert.equal(errorMessage.handler.messageText, "La confirmation du mot de passe n'est pas valide");
             done();
         })
     });
@@ -123,21 +135,20 @@ describe('inscription', function(){
             let global = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            global.connexionManager.inscriptionTextManipulator.listeners["click"]();
+            let inscriptionText = retrieve(root, "[inscriptiontext]");
+            inscriptionText.handler.parentManip.listeners["click"]();
 
-            let headerMessage = retrieve(root, "[headerMessage]");
-            assert.equal(headerMessage.text, "Inscription");
+            setField(root, 'lastNameField', 'nom');
+            setField(root, 'firstNameField', 'prénom');
+            setField(root, 'mailAddressField', 'test@test.test')
+            setField(root, 'passwordField', 'aaaaaa');
+            setField(root, 'passwordConfirmationField', 'aaaaaa');
 
-            setField(global.inscriptionManager, 'lastNameField', 'nom');
-            setField(global.inscriptionManager, 'firstNameField', 'prénom');
-            setField(global.inscriptionManager, 'mailAddressField', 'test@test.test')
-            setField(global.inscriptionManager, 'passwordField', 'aaaaaa');
-            setField(global.inscriptionManager, 'passwordConfirmationField', 'aaaaaa');
+            let saveButton = retrieve(root, "[saveButton]");
+            saveButton.handler.parentManip.listeners["click"]();
 
-            global.inscriptionManager.saveButtonManipulator.listeners['click']();
-
-            let successMessage = global.inscriptionManager.saveButtonManipulator.children()[1];
-            assert.equal(successMessage.messageText, 'Votre compte a bien été créé !');
+            let successMessage = retrieve(root, "[successMessage]")
+            assert.equal(successMessage.handler.messageText, 'Votre compte a bien été créé !');
 
             done();
         });

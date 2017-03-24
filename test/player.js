@@ -56,6 +56,7 @@ let runtime,
 describe('Player mode', function () {
 
     beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
