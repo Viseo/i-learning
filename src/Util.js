@@ -80,7 +80,6 @@ exports.Util = function (globalVariables) {
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
             this.first = this.translator;
-            this.components = [];
             this.component = this.translator;
             this.listeners = {};
             let self = this;
@@ -234,11 +233,12 @@ exports.Util = function (globalVariables) {
                 component = component.first;
             }
             this.ordonator.set(layer, component);
-            this.components.push(component);
+            component.parentManip = this;
             return this;
         }
 
         unset(layer) {
+            delete this.ordonator.children[layer].parentManip;
             this.ordonator.unset(layer)
             return this;
         }
@@ -251,9 +251,8 @@ exports.Util = function (globalVariables) {
                 component = svgObject;
             }
             if (this.scalor.children.indexOf(component) === -1) {
-                this.components.push(component);
                 this.last.add(component);
-                //component.parent = this;
+                component.parentManip = this;
             }
             return this;
         }
@@ -267,6 +266,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) !== -1) {
                 this.last.remove(component);
+                delete component.parentManip;
             }
             return this;
         }
