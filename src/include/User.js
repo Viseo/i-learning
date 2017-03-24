@@ -411,6 +411,7 @@ exports.User = function (globalVariables, classContainer) {
             this.passwordManipulator = new Manipulator(this).addOrdonator(5);
             this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
+            this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
             this.inscriptionTextManipulator = new Manipulator(this);
             this.manipulator
@@ -665,6 +666,10 @@ exports.User = function (globalVariables, classContainer) {
             this.h = 1.5 * fieldArea.height;
             this[field].translatorInput = fieldArea.component;
             this[field].translatorTitle = fieldTitle.component;
+
+            fieldArea.component.mark(field);
+            fieldArea.component.parentObj = fieldArea;
+
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
             this[field].field = field;

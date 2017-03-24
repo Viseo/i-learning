@@ -122,36 +122,37 @@ describe('connection check textarea', function(){
             let root = runtime.anchor("content");
             runtime.listeners['resize']({w: 1500, h: 1500});
 
-            let connexionManager = main.connexionManager;
-            let mailAddressInput = connexionManager.mailAddressField.input;
-            let passwordInput = connexionManager.passwordField.input;
 
-            assert.equal(2, connexionManager.connexionButtonManipulator.components.length);
+            let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+            let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
+            let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
 
-            connexionManager.connexionButtonManipulator.listeners.click();
+            //assert.equal(2, connexionButtonManipulator.handler.parentManip.children().length);
+
+            connexionButtonManipulator.listeners.click();
             runtime.advance();
 
-            assert.equal(3, connexionManager.connexionButtonManipulator.components.length);
-            assert.equal(connexionManager.connexionButtonManipulator.components[2].messageText, "Veuillez remplir tous les champs");
+            assert.equal(3, connexionButtonManipulator.handler.parentManip.components.length);
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[2].messageText, "Veuillez remplir tous les champs");
 
 
             mailAddressInput.textMessage = "aaaaaa";
             passwordInput.textMessage = "aaaaaa";
-            connexionManager.connexionButtonManipulator.listeners.click();
-            assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
 
 
             mailAddressInput.textMessage = "a@";
-            connexionManager.connexionButtonManipulator.listeners.click();
-            assert.equal(connexionManager.connexionButtonManipulator.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
 
             mailAddressInput.textMessage = "a@a.a";
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
             runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
             assert.notEqual(main.formationsManager, null);
-            assert.equal(main.formationsManager.labelDefault, "Ajouter une formation");
+            assert.equal(main.playerMode , true);
             done();
         });
     });
@@ -162,20 +163,24 @@ describe('connection check textarea', function(){
             main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            let connexionManager = main.connexionManager;
-            let mailAddressInput = connexionManager.mailAddressField.input;
-            let passwordInput = connexionManager.passwordField.input;
+            let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
 
+            let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
             mailAddressInput.textMessage = "a";
+
+            let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
             passwordInput.textMessage = "aaaaaa";
-            connexionManager.connexionButtonManipulator.listeners.click();
-            assert.equal(connexionManager.connexionButtonManipulator.components[1].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[1].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
 
             mailAddressInput.textMessage = "a@d.m";
-            connexionManager.connexionButtonManipulator.listeners.click();
+
+            connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+            connexionButtonManipulator.listeners.click();
             assert.notEqual(main.formationsManager, null);
-            assert.equal(main.formationsManager.labelDefault, "Ajouter une formation");
+            assert.equal(main.playerMode , false);
 
 
             runtime.advance();

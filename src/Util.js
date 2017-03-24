@@ -81,6 +81,7 @@ exports.Util = function (globalVariables) {
             this.last = this.scalor;
             this.first = this.translator;
             this.component = this.translator;
+            this.components = [];
             this.listeners = {};
             let self = this;
             Object.defineProperty(self, "x", {
@@ -233,13 +234,14 @@ exports.Util = function (globalVariables) {
                 component = component.first;
             }
             this.ordonator.set(layer, component);
-            component.parentManip = this;
+            this.components.push(component);
+            //component.parentManip = this;
             return this;
         }
 
         unset(layer) {
             delete this.ordonator.children[layer].parentManip;
-            this.ordonator.unset(layer)
+            this.ordonator.unset(layer);
             return this;
         }
 
@@ -252,7 +254,8 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
-                component.parentManip = this;
+                this.components.add(component);
+                //component.parentManip = this;
             }
             return this;
         }
