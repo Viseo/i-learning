@@ -172,7 +172,7 @@ exports.Domain = function (globalVariables) {
                 manip = this.manipulator,
                 userManip = this.userManipulator,
                 text = new svg.Text(this.label).position(MARGIN, height * 0.75).font('Arial', 20).anchor('start'),
-                line = new svg.Line(0, height, width, height).color(myColors.black, 3, myColors.black);
+                line = new svg.Line(0, height, width, height).color(myColors.black, 2, myColors.black);
             manip.set(1, text);
             manip.set(0, line);
             drawing.manipulator.set(0, manip);
@@ -232,19 +232,6 @@ exports.Domain = function (globalVariables) {
                     });
                 };
                 svg.addEvent(text, 'click', returnToListFormation);
-            }
-            if (message === "Inscription" || message === "Connexion") {
-                const link = message === "Inscription" ? "Connexion" : "Inscription";
-                const clickHandler = () => {
-                    (link === "Inscription") ? globalVariables.inscriptionManager.render() : globalVariables.connexionManager.render();
-                };
-                const special = displayText(link, 220, 40, myColors.none, myColors.none, 25, 'Arial', userManip, 4);
-                special.border.mark('inscriptionLink');
-                special.content.anchor("end");
-                userManip.move(width - MARGIN, height * 0.75);
-                userManip.scale(1);
-                svg.addEvent(special.content, "click", clickHandler);
-                svg.addEvent(special.border, "click", clickHandler);
             }
         }
     }

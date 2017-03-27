@@ -174,7 +174,7 @@ describe('formationsManager', function () {
             assert.equal(errorMessagePublication.text,
                 testutils.escape("Veuillez ajouter au moins un jeu à votre formation."));
 
-            let gameQuiz = retrieve(root, "[gameQuiz]");
+            let gameQuiz = retrieve(root, "[miniInLibraryQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             let draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
@@ -192,9 +192,9 @@ describe('formationsManager', function () {
 
             formationLabelContent.listeners["dblclick"]();
             let formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
-            enter(formationLabelContentArea, "La première formation ==");
+            enter(formationLabelContentArea, "La première formation =");
             formationLabelContent = retrieve(root, "[formationLabelContent]");
-            assert.equal(formationLabelContent.text, testutils.escape("La première formation =="));
+            assert.equal(formationLabelContent.text, testutils.escape("La première formation ="));
 
             formationLabelContent.listeners["dblclick"]();
             formationLabelContentArea = retrieve(root, "[formationLabelContentArea]");
@@ -204,14 +204,14 @@ describe('formationsManager', function () {
 
             const dragQuiz = (pointX, pointY) => {
                 gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-                draggedGameCadre = retrieve(root, "[draggedGameCadre]");
+                let draggedGameCadre = retrieve(root, "[draggedGameCadre]");
                 draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
                 pointX && pointY && panelBack.listeners['click']({pageX:pointX, pageY:pointY, preventDefault:()=>{}});
 
             };
 
-            dragQuiz();
-            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
+            //dragQuiz();
+            //runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
 
             dragQuiz(300, 300);
             let game1 = retrieve(root, "[level1quizz1]");
@@ -235,15 +235,11 @@ describe('formationsManager', function () {
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            miniatureSelected = retrieve(root, "[miniatureSelected]");
-            miniatureSelected && gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            draggedGameCadre = retrieve(root, "[draggedGameCadre]");
-            draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:300, preventDefault:()=>{}});
-            gameQuiz = retrieve(root, "[gameQuiz]");
-            assert.equal(gameQuiz.stroke, 'rgb(0,0,0)');
+            let gameQuizBorder = retrieve(root, "[miniInLibraryQuizBorder]");
+            assert.equal(gameQuizBorder.stroke, 'rgb(0,0,0)');
 
             dragQuiz();
-            let bdGame = retrieve(root, "[gameBd]");
+            let bdGame = retrieve(root, "[miniInLibraryBd]");
             bdGame.listeners['mousedown']({pageX:165, pageY:460, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:460, preventDefault:()=>{}});

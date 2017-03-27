@@ -118,43 +118,41 @@ describe('connection check textarea', function(){
     it("should connect someone", function (done) {
         testutils.retrieveDB("./log/dbConnection.json", dbListener, function () {
             svg.screenSize(1920, 947);
-            main(svg, runtime, dbListener, ImageRuntime);
+            main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
             runtime.listeners['resize']({w: 1500, h: 1500});
-            let mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, '');
-            let passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
-            let connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+
+
+            let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+            let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
+            let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
+
+            //assert.equal(2, connexionButtonManipulator.handler.parentManip.children().length);
+
+            connexionButtonManipulator.listeners.click();
             runtime.advance();
 
-            mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'a@');
-            passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
-            connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+            assert.equal(3, connexionButtonManipulator.handler.parentManip.components.length);
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[2].messageText, "Veuillez remplir tous les champs");
+
+
+            mailAddressInput.textMessage = "aaaaaa";
+            passwordInput.textMessage = "aaaaaa";
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
 
-            mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'a@a.a');
-            passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            enter(connectionContentArea, 'aaaaaa');
+
+            mailAddressInput.textMessage = "a@";
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
+            runtime.advance();
+
+            mailAddressInput.textMessage = "a@a.a";
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
             runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+            assert.notEqual(main.formationsManager, null);
+            assert.equal(main.playerMode , true);
             done();
         });
     });
@@ -162,23 +160,31 @@ describe('connection check textarea', function(){
     it("should connect an admin", function (done) {
         testutils.retrieveDB("./log/dbAdminConnection.json", dbListener, function () {
             svg.screenSize(1920, 947);
-            main(svg, runtime, dbListener, ImageRuntime);
+            main = main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
-            let mailAddressField = retrieve(root, '[mailAddressField]');
-            mailAddressField.listeners['click']();
-            let connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'a@d.m';
-            connectionContentArea.listeners['blur']();
-            let passwordField = retrieve(root, '[passwordField]');
-            passwordField.listeners['click']();
-            connectionContentArea = retrieve(root, '[connectionContentArea]');
-            connectionContentArea.value = 'aaaaaa';
-            connectionContentArea.listeners['blur']();
-            let connexionButton = retrieve(root, '[connexionButton]');
-            connexionButton.listeners['click']();
+
+            let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+
+            let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
+            mailAddressInput.textMessage = "a";
+
+            let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
+            passwordInput.textMessage = "aaaaaa";
+
+            connexionButtonManipulator.listeners.click();
+            assert.equal(connexionButtonManipulator.handler.parentManip.components[1].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
-            runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
-            runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
+
+            mailAddressInput.textMessage = "a@d.m";
+
+            connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+            connexionButtonManipulator.listeners.click();
+            assert.notEqual(main.formationsManager, null);
+            assert.equal(main.playerMode , false);
+
+
+            runtime.advance();
+
             done();
         });
     });

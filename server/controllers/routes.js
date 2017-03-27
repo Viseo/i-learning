@@ -9,7 +9,8 @@ module.exports = function (app, fs) {
         cookies = require('../cookies'),
         formations = require('../formations'),
         db = require('../db'),
-        users = require('../users');
+        users = require('../users'),
+        pwd = require('../forgotpwd');
 
     try {
         fs.accessSync("./log/db.json", fs.F_OK);
@@ -153,7 +154,7 @@ module.exports = function (app, fs) {
                     res.send(false);
                 } else {
                     return users.inscription(req.body)
-                        .then(() => res.send({"ack":"ok"}));
+                        .then(() => res.send({"ack": "ok"}));
                 }
             })
             .catch(err => console.log(err));
@@ -308,6 +309,95 @@ module.exports = function (app, fs) {
             console.log("Can't access to db.json");
             res.send({ack: 'ok'});
         }
+    });
+
+    /**
+     * Demande a reset le PWD
+     * on passe email si email existe on genere une demande (BDD => table mdp)
+     *      de reset et on envoit un mail a l utilisateur de sa demande
+     *
+     * a envoyer en body
+     * {
+	    "mailAddress":"te@g.g"
+       }
+     * return
+     * 200 : OK
+     * 404 : email non trouver
+     * 500 : probleme serveur interne
+     */
+    app.post('/resetPWD', function (req, res) {
+        pwd.resetPWD(req.body.mailAddress)
+            .then(data => {
+                if (data == 200) {
+                    res.send({ack: 'ok', status: 200});
+                    //res.send({ack:'ok'});
+                } else {
+                    res.sendStatus(500);
+                    //res.send(500);
+                }
+            })
+            .catch(err => {
+                res.sendStatus(400);
+                //res.send(400)
+            });
+    });
+
+    /**
+     * Check si id pour reset password et son timestamp est bien valide
+     *
+     * id : en parametre, id de la demande de reset password
+     *
+     * return
+     * 200 : OK
+     * 403 : le lien n est plus valide du au timestamp
+     * 404 : id non trouver
+     */
+    app.post('/newPWD', function (req, res) {
+        pwd.checkResetPWD(req.body.id)
+            .then(data => {
+                if (data) {
+                    //res.status(data);
+                    res.send({data: data});
+                } else {
+                    res.status(500);
+                    res.send(500);
+                }
+            })
+            .catch(err => {
+                res.status(400);
+                res.send(400);
+            });
+    });
+
+    /**
+     * Verifie id et timestamp si valide avant de mettre a jour le mot de passe et effacer dans la BDD la demande resetPWD
+     *
+     * a envoyer en body
+     * {
+        "id":"cf9d07c60141b8bb986df5b1b44239de3156",
+        "mailAddress":"te@g.g",
+        "password":"erererfeferferferfre"
+       }
+     *
+     * return
+     * 200 : OK
+     * 403 : le lien n est plus valide du au timestamp
+     * 404 : id non trouver
+     */
+    app.post('/updatePWD', function (req, res) {
+        console.log(req.body)
+        pwd.updatePWD(req.body)
+            .then(data => {
+                if (data) {
+                    res.send({data: data});
+                } else {
+                    res.status(500);
+                    res.send(500);
+                }
+            })
+            .catch(err => {
+                res.status(400), res.send(data);
+            });
     });
 };
 

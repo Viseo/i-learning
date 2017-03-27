@@ -56,6 +56,7 @@ let runtime,
 describe('Player mode', function () {
 
     beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
@@ -80,7 +81,9 @@ describe('Player mode', function () {
             let firstGame = retrieve(root, "[level0quizz0]");
             assert.equal(firstGame.handler.messageText, "Fa");
 
-            firstGame.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
+            //firstGame.parent.parent.parent.parent.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
+            firstGame.handler.parentManip.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
+
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }

@@ -12,7 +12,8 @@ exports.Util = function (globalVariables) {
         QuizVue,
         BdVue,
         AnswerVue,
-        QuestionCreator;
+        QuestionCreator,
+        svgr;
 
     setGlobalVariables = () => {
         runtime = globalVariables.runtime;
@@ -26,6 +27,7 @@ exports.Util = function (globalVariables) {
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
         AnswerVue = globalVariables.domain.AnswerVue;
+        svgr = globalVariables.runtime;
     };
 
     /**
@@ -80,8 +82,9 @@ exports.Util = function (globalVariables) {
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
             this.first = this.translator;
-            this.components = [];
             this.component = this.translator;
+            this.components = [];
+            this.listeners = {};
             let self = this;
             Object.defineProperty(self, "x", {
                 get: function () {
@@ -104,18 +107,6 @@ exports.Util = function (globalVariables) {
         }
 
         /**
-         * retourne tous les objets svg accrochés à ce manipulator
-         * @returns {Array}
-         */
-        children() {
-            if (this.ordonator) {
-                return this.ordonator.children;
-            } else {
-                return this.last.children;
-            }
-        }
-
-        /**
          * Fonction qui instancie un objet de classe Ordered
          * @param {number} layerNumber
          * @returns {Manipulator}
@@ -128,25 +119,20 @@ exports.Util = function (globalVariables) {
             return this.translator.localPoint(args);
         }
 
-        addEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.addEvent(this.components[i], eventName, handler);
-            }
+        mark(id) {
+            this.id = id;
+            this.component && this.component.mark(id);
+            return this;
         }
 
-        removeEvent(eventName, handler) {
-            this[eventName] = handler;
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+        addEvent(eventName, handler) {
+            this.listeners[eventName] = handler;
+            svg.addEvent(this.translator, eventName, handler);
         }
 
         removeEvent(eventName) {
-            let handler = this[eventName];
-            for (let i = 0; i < this.components.length; i++) {
-                svg.removeEvent(this.components[i], eventName, handler);
-            }
+            let handler = this.listeners[eventName];
+            svg.removeEvent(this.translator, eventName, handler);
         }
 
         addOrdonator(layerNumber) {
@@ -249,7 +235,8 @@ exports.Util = function (globalVariables) {
         }
 
         unset(layer) {
-            this.ordonator.unset(layer)
+            delete this.ordonator.children[layer].parentManip;
+            this.ordonator.unset(layer);
             return this;
         }
 
@@ -262,7 +249,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
-                //component.parent = this;
+                this.components.push(component);
             }
             return this;
         }
@@ -276,6 +263,7 @@ exports.Util = function (globalVariables) {
             }
             if (this.scalor.children.indexOf(component) !== -1) {
                 this.last.remove(component);
+                delete component.parentManip;
             }
             return this;
         }
@@ -347,21 +335,6 @@ exports.Util = function (globalVariables) {
 
         getComplementary = function (tab) {
             return [255 - tab[0], 255 - tab[1], 255 - tab[2]];
-        };
-
-        onclickFunction = function (event) {
-            var target = drawings.component.background.getTarget(event.pageX, event.pageY);
-            var sender = null;
-            target.answerParent && (sender = target.answerParent);
-            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
-            !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
-                answer.model.correct = (answer !== sender) ? false : answer.model.correct;
-            });
-            sender.model.correct = !sender.model.correct;
-            sender.model.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-            updateAllCheckBoxes(sender);
-            let quizManager = sender.model.parentQuestion.parentQuiz.parentFormation.quizManager;
-            quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
         onclickFunction = function (event) {
@@ -790,6 +763,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var border = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
             manipulator.set(0, border);
+            content.parentManip = manipulator;
             return {content: content, border: border};
         };
 
@@ -1086,7 +1060,7 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        draw(x, y, w, h, manipulator = this.parent.manipulator, textWidth) {
+        draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth) {
             this.width = w;
             this.height = h;
             if (this.editable) {
@@ -1105,7 +1079,10 @@ exports.Util = function (globalVariables) {
                 svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
                 svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this._acceptDrop;
-                manipulator.set(this.parent.imageLayer, this.imageSVG);
+                manipulator.set(layer, this.imageSVG);
+                if (mark) {
+                    manipulator[mark] = this.imageSVG;
+                }
             }
         }
 
@@ -1674,11 +1651,23 @@ exports.Util = function (globalVariables) {
         }
 
         static getImages() {
-            return dbListener.httpPostAsync('/getAllImages')
+            return dbListener.httpPostAsync('/getAllImages');
         }
 
         static getVideos() {
-            return dbListener.httpPostAsync('/getAllVideos')
+            return dbListener.httpPostAsync('/getAllVideos');
+        }
+
+        static resetPassword(mailAddress) {
+            return dbListener.httpPostAsync('/resetPWD', mailAddress);
+        }
+
+        static checkTimestampPassword(id) {
+            return dbListener.httpPostAsync('/newPWD', id);
+        }
+
+        static updatePassword(id, password) {
+            return dbListener.httpPostAsync('/updatePWD', {id: id, password: password});
         }
     }
 
@@ -1720,10 +1709,14 @@ exports.Util = function (globalVariables) {
             "formationsManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
             "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator", "chevronManipulator", "leftChevronManipulator", "miniatureManipulator",
             "rightChevronManipulator"];
+        jsonDuplicateList = myParentsList.push("bgColor");
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
+        toBeIgnoredData = (key, value) => jsonDuplicateList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
+
 
         myColors = {
+            customBlue: [43, 120, 228],
             darkBlue: [25, 25, 112],
             blue: [25, 122, 230],
             primaryBlue: [0, 0, 255],

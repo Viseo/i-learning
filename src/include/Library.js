@@ -185,11 +185,11 @@ exports.Library = function(globalVariables, classContainer){
 
                     let label = myLibraryGames.tab[i].label,
                         obj = displayTextWithCircle(label, Math.min(w / 2, h / 4), h, myColors.black, myColors.white, null, this.fontSize, this.libraryManipulators[i]);
-                    obj.border.mark("game" + label);
                     obj.border.clicked = false;
+                    obj.border.mark('miniInLibrary' + label + 'Border');
                     this.itemsTab[i].miniature = obj;
                     let X = x + libMargin - 2 * MARGIN + ((i % maxGamesPerLine + 1) * (libMargin + w / 2 - 2 * MARGIN));
-                    this.libraryManipulators[i].move(X, tempY);
+                    this.libraryManipulators[i].move(X, tempY).mark("miniInLibrary" + label);
                 });
                 this.panel.resizeContent(w, tempY += Math.min(w / 2, h / 4) - 1);
             };
@@ -197,7 +197,6 @@ exports.Library = function(globalVariables, classContainer){
             let assignEvents = () => {
                 this.itemsTab.forEach((item, i) => {
                     let mouseDownAction = event => {
-
                         this.arrowMode && this.toggleArrowMode();
                         let conf = {
                             drop: (what, whatParent, x, y) => {
@@ -225,6 +224,7 @@ exports.Library = function(globalVariables, classContainer){
                                             this.miniatureSelected = this.itemsTab[it];
                                             this.miniatureSelected.miniature.border.color(myColors.white, 3, myColors.darkBlue);
                                             this.miniatureSelected.miniature.border.mark('miniatureSelected');
+                                            this.miniatureSelected.miniature.content.mark('miniatureSelected');
                                         }
                                     }
                                     //this.formation && this.gameSelected.border.color(myColors.white, 3, myColors.darkBlue);
@@ -233,11 +233,12 @@ exports.Library = function(globalVariables, classContainer){
                                             this.formation.dropAction(event.pageX, event.pageY, this.gameSelected.manipulator);
                                             this.miniatureSelected.miniature.border.color(myColors.white, 1, myColors.black);
                                             this.miniatureSelected = null;
-                                            this.draggedObject = null;
                                             this.gameSelected = null;
                                         }
                                         svg.removeEvent(this.formation.panel.back, 'click');
                                     }
+                                    this.draggedObject.manipulator.mark('');
+                                    this.draggedObject = null;
                                     svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
                                 }
                                 else{
@@ -245,9 +246,12 @@ exports.Library = function(globalVariables, classContainer){
                                         if (this.itemsTab[it].label == this.draggedObject.label) {
                                             this.miniatureSelected = null;
                                             this.itemsTab[it].miniature.border.color(myColors.white, 1, myColors.black);
+                                            this.itemsTab[it].miniature.border.mark('miniInLibrary' + this.itemsTab[it].label + 'Border');
+                                            this.itemsTab[it].miniature.content.mark('miniInLibrary' + this.itemsTab[it].label + 'Content');
                                         }
                                     }
                                     this.gameSelected = null;
+                                    this.draggedObject.manipulator.mark('');
                                     this.draggedObject = null;
                                     item.flush();
                                 }
@@ -263,13 +267,13 @@ exports.Library = function(globalVariables, classContainer){
                             this.draggedObject.manipulator = manipulator;
                             this.draggedObject.label = this.itemsTab[i].label;
                             this.draggedObject.manipulator.addNew = true;
-                            this.draggedObject.border.mark("draggedGameCadre");
                             this.draggedObject.create = this.itemsTab[i].create;
                             manipulator.set(0, this.draggedObject.border);
                             installDnD(this.draggedObject.manipulator, drawings.component.glass.parent.manipulator.last, conf);
                             svg.event(drawings.component.glass, "mousedown", event);
                             svg.event(this.draggedObject.border, 'mousedown', event);
                             svg.event(this.draggedObject.content, "mousedown", event);
+                            this.draggedObject.manipulator.mark("draggedGameCadre");
                         };
 
                         createDraggableCopy();
