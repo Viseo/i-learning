@@ -72,6 +72,8 @@ describe('inscription', function(){
             let inscriptionText = retrieve(root, "[inscriptiontext]");
             inscriptionText.handler.parentManip.listeners["click"]();
 
+            runtime.listeners['resize']({w: 1500, h: 1500});
+
             let saveButton = retrieve(root, "[saveButton]");
             saveButton.handler.parentManip.listeners["click"]();
 
