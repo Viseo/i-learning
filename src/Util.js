@@ -352,21 +352,6 @@ exports.Util = function (globalVariables) {
             quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
         };
 
-        onclickFunction = function (event) {
-            var target = drawings.component.background.getTarget(event.pageX, event.pageY);
-            var sender = null;
-            target.answerParent && (sender = target.answerParent);
-            var editor = (sender.model.editor.linkedQuestion ? sender.model.editor : sender.model.editor.parent);
-            !editor.multipleChoice && editor.linkedQuestion.tabAnswer.forEach(answer => {
-                answer.model.correct = (answer !== sender) ? false : answer.model.correct;
-            });
-            sender.model.correct = !sender.model.correct;
-            sender.model.correct && drawPathChecked(sender, sender.x, sender.y, sender.size);
-            updateAllCheckBoxes(sender);
-            let quizManager = sender.model.parentQuestion.parentQuiz.parentFormation.quizManager;
-            quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
-        };
-
         drawCheck = function (x, y, size) {
             return new svg.Path(x, y).move(x - .3 * size, y - .1 * size)
                 .line(x - .1 * size, y + .2 * size).line(x + .3 * size, y - .3 * size)
