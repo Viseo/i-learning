@@ -12,7 +12,8 @@ exports.Util = function (globalVariables) {
         QuizVue,
         BdVue,
         AnswerVue,
-        QuestionCreator;
+        QuestionCreator,
+        svgr;
 
     setGlobalVariables = () => {
         runtime = globalVariables.runtime;
@@ -26,6 +27,7 @@ exports.Util = function (globalVariables) {
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
         AnswerVue = globalVariables.domain.AnswerVue;
+        svgr = globalVariables.runtime;
     };
 
     /**
@@ -115,6 +117,12 @@ exports.Util = function (globalVariables) {
 
         localPoint(...args) {
             return this.translator.localPoint(args);
+        }
+
+        mark(id) {
+            this.id = id;
+            this.component && this.component.mark(id);
+            return this;
         }
 
         addEvent(eventName, handler) {
