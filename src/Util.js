@@ -770,6 +770,7 @@ exports.Util = function (globalVariables) {
             var content = autoAdjustText(label, w, h, textHeight, font, manipulator).text;
             var border = new svg.Circle(w / 2).color(bgColor, 1, rgbCadre);
             manipulator.set(0, border);
+            content.parentManip = manipulator;
             return {content: content, border: border};
         };
 
