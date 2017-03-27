@@ -1677,7 +1677,6 @@ exports.Util = function (globalVariables) {
         }
     }
 
-
     svg.TextItem.prototype.enter = function () {
         this.messageText = this.component.value || (this.component.target && this.component.target.value) || (this.component.mock && this.component.mock.value);
         if (this.component.value === "") this.messageText = "";
@@ -1716,11 +1715,14 @@ exports.Util = function (globalVariables) {
             "formationsManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
             "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator", "chevronManipulator", "leftChevronManipulator", "miniatureManipulator",
             "rightChevronManipulator"];
+        jsonDuplicateList = myParentsList.push("bgColor");
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
+        toBeIgnoredData = (key, value) => jsonDuplicateList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
+
 
         myColors = {
-            customBlue : [43, 120, 228],
+            customBlue: [43, 120, 228],
             darkBlue: [25, 25, 112],
             blue: [25, 122, 230],
             primaryBlue: [0, 0, 255],

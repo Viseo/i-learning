@@ -555,7 +555,7 @@ exports.User = function (globalVariables, classContainer) {
         }
 
         forgottenPasswordMessage(mailAddress){
-            let forgotttenPassText = new svg.Text('Un mail a était envoyé à ' + mailAddress + ' pour réinitialiser votre mot de passe.')
+            let forgotttenPassText = new svg.Text('Un mail a été envoyé à ' + mailAddress + ' pour réinitialiser votre mot de passe.')
                 .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT/2)
                 .color(myColors.greyerBlue)
                 .font(FONT, FONT_SIZE_TITLE*2/3);
@@ -568,7 +568,6 @@ exports.User = function (globalVariables, classContainer) {
         newPasswordAction(event) {
             event.preventDefault();
             let mailAddress = this.mailAddressField.input.textMessage;
-            console.log(mailAddress);
             let p = Server.resetPassword({mailAddress:mailAddress});
             p.then((data)=>{
                 data = JSON.parse(data);

@@ -311,7 +311,6 @@ module.exports = function (app, fs) {
         }
     });
 
-
     /**
      * Demande a reset le PWD
      * on passe email si email existe on genere une demande (BDD => table mdp)
@@ -358,7 +357,7 @@ module.exports = function (app, fs) {
             .then(data => {
                 if (data) {
                     //res.status(data);
-                    res.send({data:data});
+                    res.send({data: data});
                 } else {
                     res.status(500);
                     res.send(500);
@@ -369,7 +368,6 @@ module.exports = function (app, fs) {
                 res.send(400);
             });
     });
-
 
     /**
      * Verifie id et timestamp si valide avant de mettre a jour le mot de passe et effacer dans la BDD la demande resetPWD
@@ -391,7 +389,7 @@ module.exports = function (app, fs) {
         pwd.updatePWD(req.body)
             .then(data => {
                 if (data) {
-                    res.send({data:data});
+                    res.send({data: data});
                 } else {
                     res.status(500);
                     res.send(500);
