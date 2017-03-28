@@ -1,6 +1,8 @@
 const Domain = require('./Domain').Domain,
     Util = require('./Util').Util,
-    svggui = require('../lib/svggui').Gui;
+    svggui = require('../lib/svggui').Gui,
+    svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
+    guiPolyfill = require('../lib/svgguiPoly').guiPolyfill;
 
 let main = function (svg, runtime, dbListener, ImageRuntime,param) {
 
@@ -9,11 +11,12 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
     let globalVariables = { svg, runtime, dbListener, ImageRuntime };
 
     //polyfill pour ajouter des fonctionnalités à svghandler
-    exports.svgPolyfill(svg);
+    svgPolyfill(svg);
 
     gui = svggui(svg, { speed: 5, step: 100 });
     globalVariables.gui = gui;
-    exports.guiPolyfill(svg, gui);
+    //polyfill pour ajouter des fonctionnaolités à svggui
+    guiPolyfill(svg, gui);
 
     globalVariables.main = main;
 
