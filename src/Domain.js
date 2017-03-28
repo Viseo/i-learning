@@ -151,6 +151,8 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    classContainer = new Factory({Vue});
+
     /**
      * header du site
      * @class
@@ -227,7 +229,7 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                         globalVariables.formationsManager.display();
                     });
                 };
@@ -236,7 +238,7 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    classContainer = new Factory({Vue, HeaderVue});
+    classContainer.add({HeaderVue});
 
     classContainer.add(
         FQuizElements(globalVariables, classContainer),
