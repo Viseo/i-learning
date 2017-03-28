@@ -215,6 +215,8 @@ exports.User = function (globalVariables, classContainer) {
                     this.passwordSelectorIcon.hide.draw(this.passwordConfirmationField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator, 4, 'hideIcon');
                     svg.addEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
                     svg.addEvent(this.passwordConfirmationManipulator.hideIcon, 'click', passwordSelectorHandler);
+                    this.passwordField.input.type('text');
+                    this.passwordConfirmationField.input.type('text');
                 }
                 else {
                     svg.removeEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
@@ -223,24 +225,10 @@ exports.User = function (globalVariables, classContainer) {
                     this.passwordSelectorIcon.view.draw(this.passwordConfirmationField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator, 4, 'viewIcon');
                     svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
                     svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', passwordSelectorHandler);
+                    this.passwordField.input.type('password');
+                    this.passwordConfirmationField.input.type('password');
                 }
                 this.passwordHidden = !this.passwordHidden;
-                if (!this.passwordHidden) {
-                    this.passwordField.input.message(this.passwordField.input.pass);
-                    this.passwordConfirmationField.input.message(this.passwordConfirmationField.input.pass);
-                }
-                else {
-                    let hidden = '';
-                    for (let i in this.passwordField.input.pass.split('')) {
-                        hidden += '*';
-                    }
-                    this.passwordField.input.message(hidden);
-                    let hiddenConfirm = '';
-                    for (let i in this.passwordConfirmationField.input.pass.split('')) {
-                        hiddenConfirm += '*';
-                    }
-                    this.passwordConfirmationField.input.message(hiddenConfirm);
-                }
             }
             this.passwordHidden = true;
             this.passwordSelectorIcon = {}
@@ -248,8 +236,8 @@ exports.User = function (globalVariables, classContainer) {
             this.passwordSelectorIcon.hide = new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null);
             this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
             this.passwordSelectorIcon.view.draw(this.passwordConfirmationField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator, 4, 'viewIcon');
-            //svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
-            //svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', passwordSelectorHandler);
+            svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
+            svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', passwordSelectorHandler);
         }
 
         loadImage() {
@@ -306,6 +294,9 @@ exports.User = function (globalVariables, classContainer) {
             this.h = 1.5 * fieldTitle.height;
             var fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
             fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('center').editColor(EDIT_COLORS);
+            if(this[field].secret){
+                fieldArea.type("password");
+            }
             //TODO a changer, corrige le problème de handler de TextField
             fieldArea.component.mark(field);
             fieldArea.component.parentObj = fieldArea;
@@ -580,23 +571,22 @@ exports.User = function (globalVariables, classContainer) {
                     svg.removeEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
                     this.passwordSelectorIcon.hide.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'hideIcon');
                     svg.addEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
+                    this.passwordField.input.type('text');
                 }
                 else {
                     svg.removeEvent(this.passwordManipulator.hideIcon, 'click', passwordSelectorHandler);
                     this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
                     svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
+                    this.passwordField.input.type('password');
                 }
-                this.passwordField.input.message(this.passwordField.input.pass);
-                this.passwordField.input.onInput((oldMessage, message, valid) => {
-                    this.passwordField.input.message(message);
-                    this.passwordField.input.pass = message;
-                });
+                this.passwordHidden = !this.passwordHidden
             }
+            this.passwordHidden = true;
             this.passwordSelectorIcon = {}
             this.passwordSelectorIcon.view = new util.Picture('../images/view.png', false, this.passwordManipulator, '', null);
             this.passwordSelectorIcon.hide = new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null);
             this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
-            //svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
+            svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
         }
 
         displayField(field, manipulator) {
@@ -612,6 +602,7 @@ exports.User = function (globalVariables, classContainer) {
             if (field == "passwordField") {
                 let regex = /^[ -~]{6,63}$/;
                 fieldArea.pattern(regex);
+                fieldArea.type('password');
             }
             else {
                 let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

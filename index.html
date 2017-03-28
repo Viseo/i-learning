@@ -12,8 +12,10 @@
 <script src="lib/runtimemock.js"></script>
 <script src="lib/svghandler.js"></script>
 <script src="lib/svggui.js"></script>
-<script src="src/dbListener.js"></script>
+<script src="lib/svghandlerPoly.js"></script>
+<script src="lib/svgguiPoly.js"></script>
 
+<script src="src/dbListener.js"></script>
 <script src="src/include/User.js"></script>
 <script src="src/include/FormationsManager.js"></script>
 <script src="src/include/Formation.js"></script>
@@ -35,16 +37,16 @@
     var query = url.split('?')[1];
     var ID;
     var param;
-    if(query){
+    if (query) {
         param = query.split('=')[0];
     }
     var redirect = false;
-    if (param == 'ID'){
+    if (param == 'ID') {
         redirect = true;
         ID = query.split('=')[1];
 
     }
-    main(SVG(targetRuntime), targetRuntime, dbListener, false, {redirect: redirect, ID:ID});
+    main(SVG(targetRuntime), targetRuntime, dbListener, false, {redirect: redirect, ID: ID});
 </script>
 </body>
 

@@ -151,6 +151,8 @@ exports.Domain = function (globalVariables) {
         }
     }
 
+    classContainer = new Factory({Vue});
+
     /**
      * header du site
      * @class
@@ -172,7 +174,7 @@ exports.Domain = function (globalVariables) {
                 manip = this.manipulator,
                 userManip = this.userManipulator,
                 text = new svg.Text(this.label).position(MARGIN, height * 0.75).font('Arial', 20).anchor('start'),
-                line = new svg.Line(0, height, width, height).color(myColors.black, 2, myColors.black);
+                line = new svg.Line(0, height, width, height).color(myColors.black, 1, myColors.black);
             manip.set(1, text);
             manip.set(0, line);
             drawing.manipulator.set(0, manip);
@@ -227,7 +229,7 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = new FormationsManagerVue(myFormations);
+                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                         globalVariables.formationsManager.display();
                     });
                 };
@@ -236,7 +238,7 @@ exports.Domain = function (globalVariables) {
         }
     }
 
-    classContainer = new Factory({Vue, HeaderVue});
+    classContainer.add({HeaderVue});
 
     classContainer.add(
         FQuizElements(globalVariables, classContainer),

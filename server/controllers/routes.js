@@ -2,7 +2,7 @@ module.exports = function (app, fs) {
     const
         TwinBcrypt = require('twin-bcrypt'),
         ObjectID = require('mongodb').ObjectID,
-        multer = require('../../lib/multer'),
+        multer = require('multer'),
         mmm = require('mmmagic');
 
     const
