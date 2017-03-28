@@ -8,8 +8,13 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
 
     let globalVariables = { svg, runtime, dbListener, ImageRuntime };
 
+    //polyfill pour ajouter des fonctionnalités à svghandler
+    exports.svgPolyfill(svg);
+
     gui = svggui(svg, { speed: 5, step: 100 });
     globalVariables.gui = gui;
+    exports.guiPolyfill(svg, gui);
+
     globalVariables.main = main;
 
     util = Util(globalVariables);

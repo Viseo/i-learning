@@ -306,6 +306,9 @@ exports.User = function (globalVariables, classContainer) {
             this.h = 1.5 * fieldTitle.height;
             var fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
             fieldArea.color(COLORS).font(FONT, FONT_SIZE_INPUT).anchor('center').editColor(EDIT_COLORS);
+            if(this[field].secret){
+                fieldArea.type("password");
+            }
             //TODO a changer, corrige le problème de handler de TextField
             fieldArea.component.mark(field);
             fieldArea.component.parentObj = fieldArea;
@@ -612,6 +615,7 @@ exports.User = function (globalVariables, classContainer) {
             if (field == "passwordField") {
                 let regex = /^[ -~]{6,63}$/;
                 fieldArea.pattern(regex);
+                fieldArea.type('password');
             }
             else {
                 let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

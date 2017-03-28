@@ -172,7 +172,7 @@ exports.Domain = function (globalVariables) {
                 manip = this.manipulator,
                 userManip = this.userManipulator,
                 text = new svg.Text(this.label).position(MARGIN, height * 0.75).font('Arial', 20).anchor('start'),
-                line = new svg.Line(0, height, width, height).color(myColors.black, 2, myColors.black);
+                line = new svg.Line(0, height, width, height).color(myColors.black, 1, myColors.black);
             manip.set(1, text);
             manip.set(0, line);
             drawing.manipulator.set(0, manip);

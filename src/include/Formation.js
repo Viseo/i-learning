@@ -335,7 +335,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 messageDragDrop._acceptDrop = true;
                 messageDragDrop.x = this.panel.width / 2;
                 messageDragDrop.y = this.messageDragDropMargin + (this.levelsTab.length) * this.levelHeight;
-                messageDragDrop.position(messageDragDrop.x, messageDragDrop.y).color(myColors.grey);//.fontStyle("italic");
+                messageDragDrop.position(messageDragDrop.x, messageDragDrop.y).color(myColors.grey).fontStyle("italic");
                 this.panel.back._acceptDrop = true;
             };
 

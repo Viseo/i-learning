@@ -57,7 +57,6 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.clippingManipulator = new Manipulator(this);
             this.errorMessage = new Manipulator(this).addOrdonator(3);
             this.message = new Manipulator(this).addOrdonator(3);
-            this.messageManipulator = new Manipulator().addOrdonator(4);
             this.regex = TITLE_FORMATION_REGEX;
             /* for Player */
             this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
@@ -168,15 +167,14 @@ exports.formationsManager = function(globalVariables, classContainer){
                 var formation = classContainer.createClass("FormationVue", {}, this);
                 formation.label = this.label;
                 formation.saveNewFormation(function(message, error) {
-                    this.manipulator.add(this.messageManipulator);
-                    this.messageSvg = new svg.Text(message)
-                        .position(200+198, 35)
+                    this.messageSvg = new svg.Text(message) //TODO factoriser le code pour afficher les messages d'erreur
+                        .position(200+ 6*MARGIN, 5)
                         .font("Arial", 15)
                         .mark("formationErrorMessage")
-                        .anchor('middle').color(error ? myColors.red : myColors.green);
-                    this.messageManipulator.set(3, this.messageSvg);
+                        .anchor('start').color(error ? myColors.red : myColors.green);
+                    this.formationInfoManipulator.set(2, this.messageSvg);
                     svg.timeout(() => {
-                        this.messageManipulator.unset(3);
+                        this.formationInfoManipulator.unset(2);
                     }, 5000);
                 }.bind(this));
             };
@@ -226,10 +224,9 @@ exports.formationsManager = function(globalVariables, classContainer){
                     var displayErrorMessage = ()=> {
                         removeErrorMessage();
                         formationLabel.border.color(myColors.white, 2, myColors.red);
-                        var anchor = 'start';
                         this.errorMessage = new svg.Text(REGEX_ERROR_FORMATION)
-                            .position(formationLabel.border.width+ 6*MARGIN, 5)
-                            .font("Arial", 15).color(myColors.red).anchor(anchor)
+                            .position(formationLabel.border.width+ 6*MARGIN, 5) //TODO position sur le manipulator
+                            .font("Arial", 15).color(myColors.red).anchor('start')
                             .mark('formationInputErrorMessage');
                         this.formationInfoManipulator.set(2, this.errorMessage);
                         //contentarea.setCaretPosition(this.label.length);
