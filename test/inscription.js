@@ -50,6 +50,7 @@ let runtime,
     main,
     dbListenerModule,
     dbListener,
+    enhance,
     root;
 
 describe('inscription', function(){
@@ -94,7 +95,7 @@ describe('inscription', function(){
 
            setField(root, 'lastNameField', 'nom');
            setField(root, 'firstNameField', 'prénom');
-           setField(root, 'mailAddressField', 'test@test.test')
+           setField(root, 'mailAddressField', 'test@test.test');
            setField(root, 'passwordField', 'aaa');
            setField(root, 'passwordConfirmationField', 'aaa');
 

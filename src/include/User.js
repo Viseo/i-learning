@@ -401,6 +401,7 @@ exports.User = function (globalVariables, classContainer) {
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
             this.passwordManipulator = new Manipulator(this).addOrdonator(5);
             this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
+            this.newPasswordManipulator.component.mark("newPasswordManipulator");
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
@@ -530,14 +531,14 @@ exports.User = function (globalVariables, classContainer) {
                 .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
                 .color(myColors.greyerBlue)
                 .font(FONT, FONT_SIZE_TITLE * 2 / 3);
+            forgotttenPassText.mark("forgottenPassText");
             this.newPasswordManipulator.set(0, forgotttenPassText);
             svg.timeout(() => {
                 this.newPasswordManipulator.set(0, this.newPasswordText);
             }, 5000);
         }
 
-        newPasswordAction(event) {
-            event.preventDefault();
+        newPasswordAction() {
             let mailAddress = this.mailAddressField.input.textMessage;
             let p = Server.resetPassword({mailAddress: mailAddress});
             p.then((data) => {
@@ -714,14 +715,14 @@ exports.User = function (globalVariables, classContainer) {
             this.passwordValidManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordButtonManipulator = new Manipulator(this).addOrdonator(4);
             this.waitManipulator = new Manipulator(this).addOrdonator(5);
-            this.manipulator.add(this.waitManipulator);
             this.messageManipulator = new Manipulator(this).addOrdonator(1);
             this.manipulator
                 .add(this.createPasswordManipulator)
                 .add(this.checkPasswordManipulator)
                 .add(this.passwordValidManipulator)
                 .add(this.passwordButtonManipulator)
-                .add(this.messageManipulator);
+                .add(this.messageManipulator)
+                .add(this.waitManipulator);
             this.createPasswordLabel = "Nouveau mot de passe :";
             this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
             this.passwordButtonLabel = "Réinitialiser le mot de passe";

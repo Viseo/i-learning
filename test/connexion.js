@@ -51,6 +51,11 @@ const enter = (contentArea, label) => {
     contentArea.listeners["blur"]();
 };
 
+const setField = (root, fieldName, text) => {
+    let field = retrieve(root, "[" + fieldName + "]").handler.parentObj;
+    field.textMessage = text;
+}
+
 let runtime,
     svg,
     main,
@@ -188,4 +193,38 @@ describe('connection check textarea', function(){
             done();
         });
     });
+});
+
+describe('Forgotten password', function () {
+    beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should send an email to reset your password with a valid user", function (done) {
+        testutils.retrieveDB("./log/dbResetPassword.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+            setField(root,"mailAddressField","ilearningtest@gmail.com");
+            // let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
+            let newPassword = retrieve(root, "[newPasswordManipulator]");
+            newPassword.listeners.click();
+            let forgottenPassText = retrieve(root, "[forgottenPassText]");
+            assert.equal(forgottenPassText.handler.messageText, "Un mail a été envoyé à ilearningtest@gmail.com pour réinitialiser votre mot de passe.");
+
+            done();
+        });
+    });
+
+    // it("should check")
+
+
 });
