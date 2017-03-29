@@ -79,7 +79,7 @@ describe('Player mode', function () {
             greekMythFormationCadre.listeners["click"]();
 
             let firstGame = retrieve(root, "[level0quizz0]");
-            assert.equal(firstGame.handler.messageText, "Fa");
+            assert.equal(firstGame.handler.parentManip.components[0].messageText, "Fa");
 
             //firstGame.parent.parent.parent.parent.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});
             firstGame.handler.parentManip.listeners["click"]({pageX:959, pageY:172, preventDefault:()=>{}});

@@ -60,7 +60,7 @@ exports.Library = function(globalVariables, classContainer){
                     event.preventDefault();
                 }
             });
-            hasKeyDownEvent = (event) => {
+            let hasKeyDownEvent = (event) => {
                 return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
             };
         }
