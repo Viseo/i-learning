@@ -184,7 +184,7 @@ describe('formationsManager', function () {
             let panelBack = retrieve(root, "[panelBack]");
             panelBack.listeners['click']({pageX:300, pageY:300, preventDefault:()=>{}});
             let game0 = retrieve(root, "[level0quizz0]");
-            assert.equal(game0.handler.messageText, "Quiz\n1");
+            assert.equal(game0.handler.parentManip.components[0].messageText, "Quiz\n1");
 
             publicationFormationButtonCadre.listeners["click"]();
             //assert.equal(errorMessagePublication.text, testutils.escape("Vous devez remplir le nom de la formation."));
@@ -215,19 +215,19 @@ describe('formationsManager', function () {
 
             dragQuiz(300, 300);
             let game1 = retrieve(root, "[level1quizz1]");
-            assert.equal(game1.handler.messageText, "Quiz\n2");
+            assert.equal(game1.handler.parentManip.components[0].messageText, "Quiz\n2");
             let miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 2);
 
             dragQuiz(300, 300);
             let game2 = retrieve(root, "[level1quizz2]");
-            assert.equal(game2.handler.messageText, "Quiz\n3");
+            assert.equal(game2.handler.parentManip.components[0].messageText, "Quiz\n3");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 3);
 
             dragQuiz(300, 300);
             let game3 = retrieve(root, "[level1quizz3]");
-            assert.equal(game3.handler.messageText, "Quiz\n4");
+            assert.equal(game3.handler.parentManip.components[0].messageText, "Quiz\n4");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
 
@@ -243,7 +243,6 @@ describe('formationsManager', function () {
             bdGame.listeners['mousedown']({pageX:165, pageY:460, preventDefault:()=>{}});
             draggedGameCadre = retrieve(root, "[draggedGameCadre]");
             draggedGameCadre.listeners["mouseup"]({pageX:165, pageY:460, preventDefault:()=>{}});
-            draggedGameCadre.listeners["click"]();
 
             let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
             arrowModeButtonCadre.listeners['click']();
@@ -251,6 +250,17 @@ describe('formationsManager', function () {
             assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
 
             let glass = retrieve(root, '[theGlass]');
+            let coord = Array(4).fill({x:0, y:0}, 0, 4);
+            console.log(coord);
+            coord[0].x = game0.handler.parent.globalPoint(game0.handler.parentManip.x,game0.handler.parentManip.y).x;
+            coord[0].y = game0.handler.parent.globalPoint(game0.handler.parentManip.x,game0.handler.parentManip.y).y;
+            coord[1].x = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game0.handler.parentManip.y).x;
+            coord[1].y = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game0.handler.parentManip.y).y;
+            coord[2].x = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game0.handler.parentManip.y).x;
+            coord[2].y = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game0.handler.parentManip.y).y;
+            coord[3].x = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game0.handler.parentManip.y).x;
+            coord[3].y = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game0.handler.parentManip.y).y;
+
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
             glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});

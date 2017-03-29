@@ -60,7 +60,7 @@ exports.Library = function(globalVariables, classContainer){
                     event.preventDefault();
                 }
             });
-            var hasKeyDownEvent = (event) => {
+            hasKeyDownEvent = (event) => {
                 return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
             };
         }
@@ -90,6 +90,24 @@ exports.Library = function(globalVariables, classContainer){
                 this.libraryManipulators[index] = new Manipulator(item).addOrdonator(2);
             });
             this.arrowModeManipulator = new Manipulator(this).addOrdonator(3);
+        }
+
+        events(){
+            return {
+                'keydown' : this.keyDownHandler
+            }
+        }
+
+        keyDownHandler(event){
+            if(event.keyCode === 27) { //ESC
+                hasKeyDownEvent(event);
+                this.arrowMode && this.toggleArrowMode();
+                if (this.miniatureSelected) {
+                    this.miniatureSelected.mark('');
+                    this.miniatureSelected = null;
+                }
+            }
+            event.preventDefault();
         }
 
         render(x, y, w, h) {
