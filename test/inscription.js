@@ -152,7 +152,7 @@ describe('inscription', function(){
 
             let successMessage = retrieve(root, "[successMessage]")
             assert.equal(successMessage.handler.messageText, 'Votre compte a bien été créé !');
-
+            runtime.advance();
             done();
         });
     });
