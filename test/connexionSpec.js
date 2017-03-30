@@ -128,11 +128,9 @@ describe('connection check textarea', function(){
             let root = runtime.anchor("content");
             runtime.listeners['resize']({w: 1500, h: 1500});
 
-
             let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
             let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
             let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
-
             //assert.equal(2, connexionButtonManipulator.handler.parentManip.children().length);
 
             connexionButtonManipulator.listeners.click();
@@ -141,13 +139,11 @@ describe('connection check textarea', function(){
             assert.equal(3, connexionButtonManipulator.handler.parentManip.components.length);
             assert.equal(connexionButtonManipulator.handler.parentManip.components[2].messageText, "Veuillez remplir tous les champs");
 
-
             mailAddressInput.textMessage = "aaaaaa";
             passwordInput.textMessage = "aaaaaa";
             connexionButtonManipulator.listeners.click();
             assert.equal(connexionButtonManipulator.handler.parentManip.components[3].messageText, "Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide");
             runtime.advance();
-
 
             mailAddressInput.textMessage = "a@";
             connexionButtonManipulator.listeners.click();
@@ -170,6 +166,9 @@ describe('connection check textarea', function(){
             let root = runtime.anchor("content");
 
             let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
+            let cookieManipulator = retrieve(root,"[cookieManipulator]");
+            cookieManipulator.listeners.click();            // on désélectionne la case "Rester connecté"
+            cookieManipulator.listeners.click();            // on recoche la case "Rester connecté"
 
             let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
             mailAddressInput.textMessage = "a";
@@ -194,6 +193,7 @@ describe('connection check textarea', function(){
             done();
         });
     });
+
 });
 
 describe('Forgotten password', function () {
@@ -215,7 +215,6 @@ describe('Forgotten password', function () {
             let headerMessage = retrieve(root, "[headerMessage]");
             assert.equal(headerMessage.text, "Connexion");
             setField(root, "mailAddressField", "ilearningtest@gmail.com");
-            // let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
             let newPassword = retrieve(root, "[newPasswordManipulator]");
             newPassword.listeners.click();
             let forgottenPassText = retrieve(root, "[forgottenPassText]");
@@ -267,8 +266,13 @@ describe('Forgotten password', function () {
             /**
              * Test en cas de mots de passe qui ne sont pas identiques dans les deux champs
              */
-            setField(root, "createPasswordField", "testmocha");
-            setField(root, "checkPasswordField", "testmocho");
+            // setField(root, "createPasswordField", "testmocha");
+            // setField(root, "checkPasswordField", "testmocho"); /** TODO trouver un moyen de simuler clicEvent **/
+            let createPasswordField = retrieve(root, "[createPasswordField]").handler.parentObj;
+            createPasswordField.textMessage = "testmocha";
+            let checkPasswordField = retrieve(root, "[checkPasswordField]").handler.parentObj;
+            checkPasswordField.textMessage = "testmocho";
+
             passwordButtonManipulator.listeners.click();
             messageManipulator = retrieve(root,"[PWDnotMatchError]");
             assert.equal(messageManipulator.handler.messageText, "Les champs ne correspondent pas !");
@@ -281,10 +285,24 @@ describe('Forgotten password', function () {
             headerMessage = retrieve(root, "[headerMessage]");
             assert.equal(headerMessage.text, "Connexion");
             done();
-            // let newPassword = retrieve(root, "[newPasswordManipulator]");
-            // newPassword.listeners.click();
         });
     });
 
-
+    it("should not save given new password", function (done) {
+        testutils.retrieveDB("./log/dbResetPWDserverCrash.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            let randomID = "5429f8a8b6018bd7c0fb32c4d2b5f9a664b5";                          // retour base de données comme ID valide
+            main(svg, runtime, dbListener, ImageRuntime, {redirect: true, ID: randomID});
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Password");
+            setField(root, "createPasswordField", "testmocha");
+            setField(root, "checkPasswordField", "testmocha");
+            let passwordButtonManipulator = retrieve(root, "[passwordButtonManipulator]");
+            passwordButtonManipulator.listeners.click();
+            let messageManipulator = retrieve(root,"[serverErrorMessage]");
+            assert.equal(messageManipulator.handler.messageText, "Une Erreur est survenue, rééssayer plus tard !");
+            done();
+        });
+    });
 });

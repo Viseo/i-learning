@@ -446,6 +446,7 @@ exports.User = function (globalVariables, classContainer) {
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
+            this.cookieManipulator.component.mark("cookieManipulator");
             this.inscriptionTextManipulator = new Manipulator(this);
             this.inscriptionTextManipulator.component.mark("inscriptiontext");
             this.manipulator

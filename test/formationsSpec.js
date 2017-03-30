@@ -210,8 +210,8 @@ describe('formationsManager', function () {
 
             };
 
-            //dragQuiz();
-            //runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});
+            dragQuiz();                                                         // on sélectionne un quiz
+            runtime.listeners['keydown']({keyCode:27, preventDefault:()=>{}});  // au bouton échap, on déselectionne le quiz en surbrillance
 
             dragQuiz(300, 300);
             let game1 = retrieve(root, "[level1quizz1]");
