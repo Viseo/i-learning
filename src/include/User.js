@@ -637,7 +637,7 @@ exports.User = function (globalVariables, classContainer) {
                 }
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
-                this.focusedField.input.hideControl();
+                this.focusedField && this.focusedField.input.hideControl();
                 this.connexionButtonHandler();
             }
         }

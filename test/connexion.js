@@ -112,6 +112,7 @@ describe('Connection check headerMessage', function () {
 
 describe('connection check textarea', function(){
     beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
