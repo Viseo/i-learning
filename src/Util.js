@@ -1017,7 +1017,7 @@ exports.Util = function (globalVariables) {
             formation.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
-                formation.selectedGame && formation.clicAction();//selectedGame.game.miniatureManipulator.ordonator.children[0].component.listeners.mouseup();
+                //formation.selectedGame && formation.clicAction();//selectedGame.game.miniatureManipulator.ordonator.children[0].component.listeners.mouseup();
                 if (!this.selected) {
                     if (formation.selectedArrow) {
                         formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
@@ -1110,7 +1110,7 @@ exports.Util = function (globalVariables) {
             this.game = game;
             this.scoreSize = 13;
             let icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
-            icon.content.mark('level' + this.game.levelIndex + game.id);
+            game.miniatureManipulator.mark('level' + this.game.levelIndex + game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
