@@ -1055,7 +1055,7 @@ exports.Util = function (globalVariables) {
             this.textToDisplay = textToDisplay;
             this.imageRedCrossClickHandler = imageRedCrossClickHandler;
             if (typeof this.redCrossManipulator === 'undefined') {
-                this.redCrossManipulator = new Manipulator(this);
+                this.redCrossManipulator = new Manipulator(this.parent);
                 this.redCrossManipulator.addOrdonator(2);
             }
         }
@@ -1069,15 +1069,15 @@ exports.Util = function (globalVariables) {
             }
             if (this.textToDisplay) {
                 this.imageSVG = displayImageWithTitle(this.textToDisplay, this.src, this.parent.image, w, h, this.parent.colorBordure, this.parent.bgColor, this.parent.fontSize, this.parent.font, manipulator, null, textWidth);
-                svg.addEvent(this.imageSVG.image, 'mouseover', this.imageMouseoverHandler);
-                svg.addEvent(this.imageSVG.image, 'mouseout', this.mouseleaveHandler);
+                svg.addEvent(this.imageSVG.image, 'mouseenter', this.imageMouseoverHandler);
+                svg.addEvent(this.imageSVG.image, 'mouseleave', this.mouseleaveHandler);
                 this.imageSVG.image._acceptDrop = this.editable;
             }
             else {
                 this.imageSVG = new svg.Image(this.src).dimension(w, h);
                 this.imageSVG.position(x, y);
-                svg.addEvent(this.imageSVG, 'mouseover', this.imageMouseoverHandler);
-                svg.addEvent(this.imageSVG, 'mouseout', this.mouseleaveHandler);
+                svg.addEvent(this.imageSVG, 'mouseenter', this.imageMouseoverHandler);
+                svg.addEvent(this.imageSVG, 'mouseleave', this.mouseleaveHandler);
                 this.imageSVG._acceptDrop = this._acceptDrop;
                 manipulator.set(layer, this.imageSVG);
                 if (mark) {
@@ -1115,7 +1115,8 @@ exports.Util = function (globalVariables) {
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
             this.redCrossManipulator.add(this.redCross);
-            svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
+            // svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
+            svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
             this.selected = false;
             icon.border.color(myColors.white, 1, myColors.black);
             if (playerMode) {

@@ -75,6 +75,7 @@ let runtime,
     main,
     dbListenerModule,
     dbListener,
+    enhance,
     root;
 
 describe('inscription', function(){

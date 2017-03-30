@@ -47,7 +47,8 @@ const enter = (contentArea, label) => {
     contentArea.listeners["blur"]();
 };
 
-let runtime,
+let enhance,
+    runtime,
     svg,
     main,
     dbListenerModule,

@@ -51,6 +51,11 @@ const enter = (contentArea, label) => {
     contentArea.listeners["blur"]();
 };
 
+const setField = (root, fieldName, text) => {
+    let field = retrieve(root, "[" + fieldName + "]").handler.parentObj;
+    field.textMessage = text;
+}
+
 let runtime,
     svg,
     main,
@@ -188,4 +193,97 @@ describe('connection check textarea', function(){
             done();
         });
     });
+});
+
+describe('Forgotten password', function () {
+    beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
+        runtime = mockRuntime();
+        svg = SVG(runtime);
+        runtime.declareAnchor('content');
+        main = require("../src/main").main;
+        dbListenerModule = require("../src/dbListener").dbListener;
+        dbListener = new dbListenerModule(false, true);
+    });
+
+    it("should send an email to reset your password with a valid user", function (done) {
+        testutils.retrieveDB("./log/dbResetPassword.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+            setField(root, "mailAddressField", "ilearningtest@gmail.com");
+            // let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
+            let newPassword = retrieve(root, "[newPasswordManipulator]");
+            newPassword.listeners.click();
+            let forgottenPassText = retrieve(root, "[forgottenPassText]");
+            assert.equal(forgottenPassText.handler.messageText, "Un mail a été envoyé à ilearningtest@gmail.com pour réinitialiser votre mot de passe.");
+            runtime.advance();
+            done();
+        });
+    });
+
+    it("should check false ID in the URL typed", function (done) {
+        testutils.retrieveDB("./log/dbNotValidPWDID.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            let randomID = "5429f8a8b6018bd7c0fb32c4d2b5f9a664b5";                          // retour base de données comme ID faux
+            main(svg, runtime, dbListener, ImageRuntime, {redirect: true, ID: randomID});
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Password");
+            let errorMessage = retrieve(root,"[tryAgainError]");
+            assert.equal(errorMessage.handler.messageText,"Veuillez réessayer, le délai est dépassé, ou l\'ID est érroné");
+            done();
+        });
+    });
+
+    it("should check given ID in the URL typed", function (done) {
+        testutils.retrieveDB("./log/dbResetPWDwithID.json", dbListener, function () {
+            svg.screenSize(1920, 1500);
+            let randomID = "5429f8a8b6018bd7c0fb32c4d2b5f9a664b5";                          // retour base de données comme ID valide
+            main(svg, runtime, dbListener, ImageRuntime, {redirect: true, ID: randomID});
+            let root = runtime.anchor("content");
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Password");
+            /**
+             * Test en cas de champs vides
+             */
+            let passwordButtonManipulator = retrieve(root, "[passwordButtonManipulator]");
+            passwordButtonManipulator.listeners.click();
+            // runtime.advance(); /** TODO Timeout qui fait planter la suite **/
+            let messageManipulator = retrieve(root,"[emptyFieldError]");
+            assert.equal(messageManipulator.handler.messageText, EMPTY_FIELD_ERROR);
+            /**
+             * Test en cas de mot de passe de moins de 6 caractères
+             */
+            passwordButtonManipulator = retrieve(root, "[passwordButtonManipulator]");
+            setField(root, "createPasswordField", "court");
+            setField(root, "checkPasswordField", "court");
+            passwordButtonManipulator.listeners.click();
+            messageManipulator = retrieve(root,"[shortPWDError]");
+            assert.equal(messageManipulator.handler.messageText, "Le mot de passe doit contenir au minimum 6 caractères");
+            /**
+             * Test en cas de mots de passe qui ne sont pas identiques dans les deux champs
+             */
+            setField(root, "createPasswordField", "testmocha");
+            setField(root, "checkPasswordField", "testmocho");
+            passwordButtonManipulator.listeners.click();
+            messageManipulator = retrieve(root,"[PWDnotMatchError]");
+            assert.equal(messageManipulator.handler.messageText, "Les champs ne correspondent pas !");
+            setField(root, "createPasswordField", "testmocha");
+            setField(root, "checkPasswordField", "testmocha");
+            passwordButtonManipulator.listeners.click();
+            messageManipulator = retrieve(root,"[updatedPWD]");
+            assert.equal(messageManipulator.handler.messageText, "Mot de passe mis à jour !");
+            runtime.advance();
+            headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+            done();
+            // let newPassword = retrieve(root, "[newPasswordManipulator]");
+            // newPassword.listeners.click();
+        });
+    });
+
+
 });

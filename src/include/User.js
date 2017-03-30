@@ -442,6 +442,7 @@ exports.User = function (globalVariables, classContainer) {
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
             this.passwordManipulator = new Manipulator(this).addOrdonator(5);
             this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
+            this.newPasswordManipulator.component.mark("newPasswordManipulator");
             this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
             this.cookieManipulator = new Manipulator(this).addOrdonator(5);
@@ -597,7 +598,8 @@ exports.User = function (globalVariables, classContainer) {
             let forgotttenPassText = new svg.Text('Un mail a été envoyé à ' + mailAddress + ' pour réinitialiser votre mot de passe.')
                 .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
                 .color(myColors.greyerBlue)
-                .font(FONT, FONT_SIZE_TITLE * 2 / 3);
+                .font(FONT, FONT_SIZE_TITLE * 2 / 3)
+                .mark("forgottenPassText");
             this.newPasswordManipulator.set(0, forgotttenPassText);
             svg.timeout(() => {
                 this.newPasswordManipulator.set(0, this.newPasswordText);
@@ -606,10 +608,8 @@ exports.User = function (globalVariables, classContainer) {
 
         /**
          * handler appelelé lorsqu'on clique sur "mot de passe oublié"
-         * @param event
          */
-        newPasswordAction(event) {
-            event.preventDefault();
+        newPasswordAction() {
             let mailAddress = this.mailAddressField.input.textMessage;
             let p = Server.resetPassword({mailAddress: mailAddress});
             p.then((data) => {
@@ -805,14 +805,15 @@ exports.User = function (globalVariables, classContainer) {
             this.checkPasswordManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordValidManipulator = new Manipulator(this).addOrdonator(4);
             this.passwordButtonManipulator = new Manipulator(this).addOrdonator(4);
+            this.passwordButtonManipulator.component.mark("passwordButtonManipulator");
             this.waitManipulator = new Manipulator(this).addOrdonator(5);
-            this.manipulator.add(this.waitManipulator);
             this.messageManipulator = new Manipulator(this).addOrdonator(1);
             this.manipulator
                 .add(this.createPasswordManipulator)
                 .add(this.checkPasswordManipulator)
                 .add(this.passwordValidManipulator)
                 .add(this.passwordButtonManipulator)
+                .add(this.waitManipulator)
                 .add(this.messageManipulator);
             this.createPasswordLabel = "Nouveau mot de passe :";
             this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
@@ -827,7 +828,7 @@ exports.User = function (globalVariables, classContainer) {
          */
         events() {
             return {
-                "click passwordButtonManipulator": this.sendNewPassword,
+                "click passwordButtonManipulator": this.sendNewPasswordButtonHandler,
                 "keydown": this.keyDownHandler
             }
         }
@@ -852,7 +853,6 @@ exports.User = function (globalVariables, classContainer) {
                 .color(myColors.black)
                 .font(FONT, FONT_SIZE_TITLE * 3 / 2);
             this.waitManipulator.set(4, waitText);
-            //this.waitManipulator.move(200,200);
             let check = Server.checkTimestampPassword({id: ID});
             check.then(data => {
                 data = JSON.parse(data);
@@ -861,53 +861,14 @@ exports.User = function (globalVariables, classContainer) {
                     this.focusedField = null;
                     this.createPasswordField = {
                         label: "",
-                        labelSecret: "",
                         title: this.createPasswordLabel,
                         line: -1,
-                        secret: true,
-                        errorMessage: "Le mot de passe doit contenir au minimum 6 caractères"
                     };
                     this.checkPasswordField = {
                         label: "",
                         title: this.checkPasswordLabel,
                         line: 0,
-                        errorMessage: "La confirmation du mot de passe n'est pas valide"
                     };
-                    var passwordCheckInput = () => {
-                        const passTooShort = this.createPasswordField.input.textMessage !== "" && this.createPasswordField.input.textMessage && this.createPasswordField.input.textMessage.length < 6,
-                            confTooShort = this.checkPasswordField.input.textMessage !== "" && this.checkPasswordField.input.textMessage && this.checkPasswordField.input.textMessage.length < 6,
-                            cleanIfEgality = () => {
-                                if (this.createPasswordField.input.textMessage === this.checkPasswordField.input.textMessage) {
-                                    this.createPasswordField.input.color(COLORS);
-                                    this.checkPasswordField.input.color(COLORS);
-                                }
-                            };
-                        if (passTooShort || confTooShort) {
-                            if (passTooShort) {
-                                this.createPasswordField.input.color(ERROR_INPUT);
-                                this.errorToDisplay = this.createPasswordField.errorMessage;
-                            }
-                            if (confTooShort) {
-                                this.checkPasswordField.input.color(ERROR_INPUT);
-                                this.errorToDisplay = this.createPasswordField.errorMessage;
-                            }
-                        }
-                        else if (this.checkPasswordField.input.textMessage !== "" && this.checkPasswordField.input.textMessage !== this.createPasswordField.input.textMessage) {
-                            this.createPasswordField.input.color(ERROR_INPUT);
-                            this.checkPasswordField.input.color(ERROR_INPUT);
-                            message = autoAdjustText(this.passwordConfirmationField.errorMessage, drawing.width, this.h, 20, null, this.passwordManipulator, 3);
-                            message.text.color(myColors.red).position(this.passwordField.border.width / 2 + MARGIN, this.passwordField.border.height + MARGIN);
-                            message.text.mark('inscriptionErrorMessagepasswordField');
-                        }
-                        else { //(this.passwordField.labelSecret && this.passwordField.labelSecret.length >= 6) {
-                            this.passwordField.input.color(COLORS);
-                            this.passwordManipulator.unset(3);
-                            cleanIfEgality();
-                        }
-                        return !(passTooShort || confTooShort || this.passwordConfirmationField.labelSecret !== this.passwordField.labelSecret);
-                    };
-                    this.createPasswordField.checkInput = passwordCheckInput;
-                    this.checkPasswordField.checkInput = passwordCheckInput;
                     this.displayField("createPasswordField", this.createPasswordManipulator);
                     this.displayField("checkPasswordField", this.checkPasswordManipulator);
                     let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.passwordButtonLabel);
@@ -917,7 +878,7 @@ exports.User = function (globalVariables, classContainer) {
                 }
                 else {
                     this.waitManipulator.set(4, new svg.Text('Veuillez réessayer, le délai est dépassé, ou l\'ID est érroné')
-                        .font(FONT, FONT_SIZE_TITLE * 3 / 2));
+                        .font(FONT, FONT_SIZE_TITLE * 3 / 2).mark("tryAgainError"));
                 }
             });
 
@@ -943,14 +904,12 @@ exports.User = function (globalVariables, classContainer) {
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
             this[field].field = field;
+            fieldArea.component.mark(field);
+            fieldArea.component.parentObj = fieldArea;
             fieldArea.pattern(/^[ -~]{6,63}$/);
-            // this.focusedField = this[field];
-            // if (!this.focusedField.input.valid) {
-            //     this.focusedField.input.color(ERROR_INPUT);
-            // }
-            // else {
-            //     this.focusedField.input.color(COLORS);
-            // }
+            fieldArea.onInput((oldMessage, message, valid) => {
+                this.focusedField = this[field];
+            });
             manipulator.set(3, fieldTitle.component);
             manipulator.set(2, fieldArea.component);
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
@@ -959,36 +918,59 @@ exports.User = function (globalVariables, classContainer) {
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
 
-        /**
-         * envoi au serveur du nouveau mot de passe
-         */
-        sendNewPassword() {
-            let newPass = this.createPasswordField.input.textMessage;
-            let checkPass = this.checkPasswordField.input.textMessage;
-            if (newPass == checkPass) {
-                let update = Server.updatePassword(this.ID, newPass);
-                update.then((data) => {
-                    data = JSON.parse(data);
-                    if (data.data == 200) {
-                        let message = new svg.Text('Mot de passe mis à jour !').font(FONT, FONT_SIZE_TITLE * 3 / 2);
-                        this.messageManipulator.set(0, message);
-                        this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
-                        svg.timeout(() => {
-                            this.manipulator.flush();
-                            globalVariables.connexionManager.display();
-                        }, 3000);
-                    }
-                    else {
-                        let message = new svg.Text('Une Erreur est survenue, rééssayer plus tard !').font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED);
-                        this.messageManipulator.set(0, message);
-                        this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
-                    }
-                });
-            }
-            else {
-                let message = new svg.Text('Les champs ne correspondent pas !').font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED);
+        sendNewPasswordButtonHandler() {
+            let emptyAreas = this.tabForm.filter(field => field.input.textMessage === '');
+            emptyAreas.forEach(emptyArea => {
+                emptyArea.input.color(ERROR_INPUT);
+            });
+            if (emptyAreas.length > 0) {
+                let message = new svg.Text(EMPTY_FIELD_ERROR).font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED).mark("emptyFieldError");
                 this.messageManipulator.set(0, message);
                 this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
+
+                svg.timeout(() => {
+                    this.messageManipulator.unset(0);
+                    emptyAreas.forEach(emptyArea => {
+                        emptyArea.input.color(COLORS);
+                    });
+                }, 5000);
+            } else {
+                let newPass = this.createPasswordField.input.textMessage;
+                let checkPass = this.checkPasswordField.input.textMessage;
+                if (newPass.length < 6 || checkPass.length < 6) {
+                    let message = new svg.Text('Le mot de passe doit contenir au minimum 6 caractères').font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED)
+                        .mark("shortPWDError");
+                    this.messageManipulator.set(0, message);
+                    this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
+                }
+                else if (newPass == checkPass) {
+                    let update = Server.updatePassword(this.ID, newPass);
+                    update.then((data) => {
+                        data = JSON.parse(data);
+                        if (data.data == 200) {
+                            let message = new svg.Text('Mot de passe mis à jour !').font(FONT, FONT_SIZE_TITLE * 3 / 2);
+                            message.mark("updatedPWD");
+                            this.messageManipulator.set(0, message);
+                            this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
+                            svg.timeout(() => {
+                                this.manipulator.flush();
+                                globalVariables.connexionManager.display();
+                            }, 3000);
+                        }
+                        else {
+                            let message = new svg.Text('Une Erreur est survenue, rééssayer plus tard !').font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED);
+                            message.mark("serverErrorMessage");
+                            this.messageManipulator.set(0, message);
+                            this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
+                        }
+                    });
+                }
+                else {
+                    let message = new svg.Text('Les champs ne correspondent pas !').font(FONT, FONT_SIZE_TITLE * 3 / 2).color(svg.RED);
+                    message.mark("PWDnotMatchError");
+                    this.messageManipulator.set(0, message);
+                    this.messageManipulator.move(this.passwordButtonManipulator.x, this.passwordButtonManipulator.y - BUTTON_HEIGHT);
+                }
             }
         }
 
@@ -1010,7 +992,7 @@ exports.User = function (globalVariables, classContainer) {
             } else if (event.keyCode === 13) { // Entrée
                 event.preventDefault();
                 this.focusedField.input.hideControl();
-                this.sendNewPassword();
+                this.sendNewPasswordButtonHandler();
             }
         }
     }
