@@ -44,6 +44,11 @@ exports.User = function (globalVariables, classContainer) {
      * @class
      */
     class InscriptionManagerVue extends Vue {
+        /**
+         * construit une page d'inscription
+         * @param options
+         * @constructs
+         */
         constructor(options) {
             super(options);
             this.header = new HeaderVue("Inscription");
@@ -121,6 +126,10 @@ exports.User = function (globalVariables, classContainer) {
             };
         }
 
+        /**
+         * définition des évènements
+         * @returns {{click saveButtonManipulator: InscriptionManagerVue.saveButtonHandler, click connexionTextManipulator: InscriptionManagerVue.connexionTextHandler, keydown: InscriptionManagerVue.keyDownHandler}}
+         */
         events() {
             return {
                 "click saveButtonManipulator": this.saveButtonHandler,
@@ -129,6 +138,9 @@ exports.User = function (globalVariables, classContainer) {
             };
         }
 
+        /**
+         * affichage de la page inscription
+         */
         render() {
             this.connexionTextManipulator.flush();
             main.currentPageDisplayed = "InscriptionManager";
@@ -206,6 +218,9 @@ exports.User = function (globalVariables, classContainer) {
             this.connexionTextManipulator.add(connexionText).move(0, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
         }
 
+        /**
+         * affichage de l'oeil pour afficher/masquer le mot de passe
+         */
         loadPasswordSelector() {
             let passwordSelectorHandler = (event) => {
                 if (this.passwordHidden) {
@@ -240,6 +255,9 @@ exports.User = function (globalVariables, classContainer) {
             svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', passwordSelectorHandler);
         }
 
+        /**
+         * chargement des icones de champs
+         */
         loadImage() {
             this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '', null);
             this.mailIcon.draw(-this.mailAddressField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
@@ -254,6 +272,10 @@ exports.User = function (globalVariables, classContainer) {
             this.loadPasswordSelector();
         }
 
+        /**
+         * handler global pour gérer les appuis sur les touches. i.e touche tab pour passer au champ suivant ou touche entrée pour valider
+         * @param event - evenement js
+         */
         keyDownHandler(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
@@ -272,6 +294,11 @@ exports.User = function (globalVariables, classContainer) {
             }
         };
 
+        /**
+         * handler pour vérifier si des champs n'ont pas été remplis
+         * @param save - boolean indiquant s'il faut ou non afficher le message d'erreur
+         * @returns {boolean}
+         */
         emptyAreasHandler(save) {
             var emptyAreas = this.tabForm.filter(field => field.input.textMessage === "");
             emptyAreas.forEach(function (emptyArea) {
@@ -286,6 +313,11 @@ exports.User = function (globalVariables, classContainer) {
             return (emptyAreas.length > 0);
         };
 
+        /**
+         * affichage des champs input
+         * @param field - nom du champ
+         * @param manipulator^- manipulator sur lequel rattacher le champ
+         */
         displayField(field, manipulator) {
             manipulator.move(manipulator.x, this[field].line * drawing.height / 8.5);
             var fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].title);
@@ -320,6 +352,10 @@ exports.User = function (globalVariables, classContainer) {
             this.formLabels[field] = this[field].field;
         };
 
+        /**
+         * vérifie que tous les champs sont correctement remplis
+         * @returns {*}
+         */
         AllOk() {
             return this.lastNameField.checkInput() &&
                 this.firstNameField.checkInput() &&
@@ -328,6 +364,9 @@ exports.User = function (globalVariables, classContainer) {
                 this.passwordConfirmationField.checkInput();
         };
 
+        /**
+         * handler appelé lors du click sur le bouton inscription
+         */
         saveButtonHandler() {
             if (!this.emptyAreasHandler(true) && this.AllOk()) {
                 let tempObject = {
@@ -375,6 +414,9 @@ exports.User = function (globalVariables, classContainer) {
             }
         };
 
+        /**
+         * handler appelé lors du click sur le lien vers la page connexion
+         */
         connexionTextHandler() {
             globalVariables.connexionManager.display();
         }
@@ -386,7 +428,15 @@ exports.User = function (globalVariables, classContainer) {
      * @class
      */
     class ConnexionManagerVue extends Vue {
+        /**
+         * Construit une page de connexion
+         * @param options
+         */
         constructor(options) {
+            /**
+             * construit une page de connexion
+             * @constructs
+             */
             super(options);
             this.header = new HeaderVue("Connexion");
             this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
@@ -417,6 +467,13 @@ exports.User = function (globalVariables, classContainer) {
             /** Reprendre le format de la classe AnswerVue **/
         }
 
+        /**
+         * ajoute la checkbox "rester connecté"
+         * @param x - position x
+         * @param y - positioin y
+         * @param size - taille de la checkbox
+         * @param manipulator - manipulator sur lequl l'attacher
+         */
         addCookieCheckbox(x, y, size, manipulator) {
             let obj = {
                 checkbox: new svg.Rect(size, size).color(myColors.white, 2, myColors.black),
@@ -439,6 +496,12 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.move(x, y + MARGIN);
         };
 
+        /**
+         * lien "mot de passe oublié"
+         * @param x - position x
+         * @param y - position y
+         * @param manipulator - manipulator sur lequel l'attacher
+         */
         addNewPassword(x, y, manipulator) {
             let fieldTitle = new svg.Text(this.newPasswordLabel)
                 .color(myColors.greyerBlue)
@@ -451,6 +514,10 @@ exports.User = function (globalVariables, classContainer) {
             manipulator.move(x, y + MARGIN);
         }
 
+        /**
+         * définition des évènements
+         * @returns {{click connexionButtonManipulator: ConnexionManagerVue.connexionButtonHandler, click inscriptionTextManipulator: ConnexionManagerVue.inscriptionTextHandler, click cookieManipulator: ConnexionManagerVue.cookieAction, click newPasswordManipulator: ConnexionManagerVue.newPasswordAction, keydown: ConnexionManagerVue.keyDownHandler}}
+         */
         events() {
             return {
                 "click connexionButtonManipulator": this.connexionButtonHandler,
@@ -461,6 +528,9 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * affiche la page de connexion
+         */
         render() {
             this.inscriptionTextManipulator.flush();
             main.currentPageDisplayed = "ConnexionManager";
@@ -505,6 +575,9 @@ exports.User = function (globalVariables, classContainer) {
             this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
         }
 
+        /**
+         * handler appelé lorsqu'on clique sur la checkbox "rester connecté"
+         */
         cookieAction() {
             if (this.model.correct) {
                 this.model.correct = false;
@@ -516,6 +589,10 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * affichage du message lorsqu'on clique sur "mot de passe oublié"
+         * @param mailAddress - addresse qui devrait recevoir le message
+         */
         forgottenPasswordMessage(mailAddress) {
             let forgotttenPassText = new svg.Text('Un mail a été envoyé à ' + mailAddress + ' pour réinitialiser votre mot de passe.')
                 .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
@@ -527,6 +604,10 @@ exports.User = function (globalVariables, classContainer) {
             }, 5000);
         }
 
+        /**
+         * handler appelelé lorsqu'on clique sur "mot de passe oublié"
+         * @param event
+         */
         newPasswordAction(event) {
             event.preventDefault();
             let mailAddress = this.mailAddressField.input.textMessage;
@@ -539,6 +620,10 @@ exports.User = function (globalVariables, classContainer) {
             });
         }
 
+        /**
+         * handler global pour gérer les appuis sur les touches du clavier
+         * @param event
+         */
         keyDownHandler(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();
@@ -557,6 +642,9 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * affichage des icones des champs
+         */
         loadImage() {
             this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '', null);
             this.mailIcon.draw(-this.mailAddressField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
@@ -565,6 +653,9 @@ exports.User = function (globalVariables, classContainer) {
             this.loadPasswordSelector();
         }
 
+        /**
+         * affichage de l'oeil pour afficher/cacher le mot de passe
+         */
         loadPasswordSelector() {
             let passwordSelectorHandler = (event) => {
                 if (this.passwordHidden) {
@@ -589,6 +680,11 @@ exports.User = function (globalVariables, classContainer) {
             svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
         }
 
+        /**
+         * affichage des champs input
+         * @param field
+         * @param manipulator
+         */
         displayField(field, manipulator) {
             this[field].label = field == "mailAddressField" ? "Adresse mail : " : "Mot de passe : ";
             let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
@@ -637,7 +733,9 @@ exports.User = function (globalVariables, classContainer) {
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
 
-
+        /**
+         * handler appelé lorsqu'on clique sur le bouton de connexion
+         */
         connexionButtonHandler() {
             let emptyAreas = this.tabForm.filter(field => field.input.textMessage === '');
             emptyAreas.forEach(emptyArea => {
@@ -687,6 +785,9 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * handler appelé lorsqu'on veut afficher la page d'inscription
+         */
         inscriptionTextHandler() {
             globalVariables.inscriptionManager.display();
         }
@@ -720,6 +821,10 @@ exports.User = function (globalVariables, classContainer) {
             this.ID;
         }
 
+        /**
+         * définition des évènements
+         * @returns {{click passwordButtonManipulator: PasswordVue.sendNewPassword, keydown: PasswordVue.keyDownHandler}}
+         */
         events() {
             return {
                 "click passwordButtonManipulator": this.sendNewPassword,
@@ -727,6 +832,10 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * affichage de la page de modification du mot de passe
+         * @param ID
+         */
         render(ID) {
             this.ID = ID;
             main.currentPageDisplayed = "Password";
@@ -814,6 +923,11 @@ exports.User = function (globalVariables, classContainer) {
 
         }
 
+        /**
+         * affichage des champs input
+         * @param field
+         * @param manipulator
+         */
         displayField(field, manipulator) {
             this[field].label = field == "createPasswordField" ? this.createPasswordLabel : this.checkPasswordLabel;
             let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
@@ -845,6 +959,9 @@ exports.User = function (globalVariables, classContainer) {
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
 
+        /**
+         * envoi au serveur du nouveau mot de passe
+         */
         sendNewPassword() {
             let newPass = this.createPasswordField.input.textMessage;
             let checkPass = this.checkPasswordField.input.textMessage;
@@ -875,6 +992,10 @@ exports.User = function (globalVariables, classContainer) {
             }
         }
 
+        /**
+         * handler global pour gérer les appuis sur les touches de clavier
+         * @param event
+         */
         keyDownHandler(event) {
             if (event.keyCode === 9) { // TAB
                 event.preventDefault();

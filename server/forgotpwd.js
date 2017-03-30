@@ -25,8 +25,6 @@ function insertDemandResetPWD(collectionDB, resolve, data) {
         if (err) {
             resolve(500);
         } else {
-            //todo send email
-            //resolve(generateForgotPWD);
             resolve(200);
         }
     })
@@ -181,7 +179,6 @@ const updatePWD = (newPWD) => {
                                 resultFindUser.password = TwinBcrypt.hashSync(newPWD.password);
                                 usersCollection.updateOne({mailAddress: result.mailAddress}, resultFindUser);
 
-                                //todo delete
                                 resetPWDCollection.removeOne({"id": newPWD.id});
                                 resolve(200);
                             } else {
