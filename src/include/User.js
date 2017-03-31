@@ -738,6 +738,7 @@ exports.User = function (globalVariables, classContainer) {
          * handler appelé lorsqu'on clique sur le bouton de connexion
          */
         connexionButtonHandler() {
+            this.mailAddressField.input.hideControl() && this.passwordField.input.hideControl();
             let emptyAreas = this.tabForm.filter(field => field.input.textMessage === '');
             emptyAreas.forEach(emptyArea => {
                 emptyArea.input.color(ERROR_INPUT);
