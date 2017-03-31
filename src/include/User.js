@@ -873,7 +873,7 @@ exports.User = function (globalVariables, classContainer) {
                     };
                     this.displayField("createPasswordField", this.createPasswordManipulator);
                     this.displayField("checkPasswordField", this.checkPasswordManipulator);
-                    let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.passwordButtonLabel);
+                    let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.white], this.passwordButtonLabel);
                     this.passwordButtonManipulator
                         .set(0, button.component)
                         .move(this.passwordButtonManipulator.x, 2.5 * drawing.height / 10);
