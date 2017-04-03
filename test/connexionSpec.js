@@ -236,7 +236,7 @@ describe('Forgotten password', function () {
             let headerMessage = retrieve(root, "[headerMessage]");
             assert.equal(headerMessage.text, "Password");
             let errorMessage = retrieve(root,"[tryAgainError]");
-            assert.equal(errorMessage.handler.messageText,"Veuillez réessayer, le délai est dépassé, ou l\'ID est érroné");
+            assert.equal(errorMessage.handler.messageText,"Le lien de récupération du mot de passe a échoué.\nMerci de bien vouloir renouveler votre demande.");
             done();
         });
     });

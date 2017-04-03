@@ -884,7 +884,7 @@ exports.User = function (globalVariables, classContainer) {
                         .move(this.passwordButtonManipulator.x, 2.5 * drawing.height / 10);
                 }
                 else {
-                    this.waitManipulator.set(4, new svg.Text('Veuillez réessayer, le délai est dépassé, ou l\'ID est érroné')
+                    this.waitManipulator.set(4, new svg.Text('Le lien de récupération du mot de passe a échoué.\nMerci de bien vouloir renouveler votre demande.')
                         .font(FONT, FONT_SIZE_TITLE * 3 / 2).mark("tryAgainError"));
                 }
             });
