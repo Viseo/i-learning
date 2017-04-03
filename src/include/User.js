@@ -37,7 +37,8 @@ exports.User = function (globalVariables, classContainer) {
         TITLE_COLOR = [myColors.white, 0, myColors.white],
         // BLUE_FIELD_COLOR = [myColors.blue, 0, myColors.blue],
         ERROR_INPUT = [myColors.white, 2, myColors.red],
-        ICON_SIZE = INPUT_HEIGHT * 2 / 3;
+        ICON_SIZE = INPUT_HEIGHT * 2 / 3,
+        MARGIN_DISPOSITION_BUTTON_FACTOR = 8.5;
 
     /**
      * Page d'inscription
@@ -319,7 +320,7 @@ exports.User = function (globalVariables, classContainer) {
          * @param manipulator^- manipulator sur lequel rattacher le champ
          */
         displayField(field, manipulator) {
-            manipulator.move(manipulator.x, this[field].line * drawing.height / 8.5);
+            manipulator.move(manipulator.x, this[field].line * drawing.height / MARGIN_DISPOSITION_BUTTON_FACTOR);
             var fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].title);
             fieldTitle.color(TITLE_COLOR).font(FONT, FONT_SIZE_TITLE).anchor('left');
             svg.removeEvent(fieldTitle.glass, 'click');
@@ -729,8 +730,11 @@ exports.User = function (globalVariables, classContainer) {
             this[field].field = field;
             manipulator.set(2, fieldTitle.component);
             manipulator.set(1, fieldArea.component);
+
+            //position
             fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
-            manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
+            manipulator.move(manipulator.x, this[field].line * drawing.height / MARGIN_DISPOSITION_BUTTON_FACTOR);
+
             var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
             alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
