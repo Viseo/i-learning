@@ -723,6 +723,7 @@ exports.User = function (globalVariables, classContainer) {
             fieldArea.component.mark(field);
             fieldArea.component.parentObj = fieldArea;
 
+
             this[field].input = fieldArea;
             this[field].titleText = fieldTitle;
             this[field].field = field;

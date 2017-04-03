@@ -131,6 +131,8 @@ describe('connection check textarea', function(){
             let connexionButtonManipulator = retrieve(root, "[connexionButtonManipulator]");
             let mailAddressInput = retrieve(root, "[mailAddressField]").handler.parentObj;
             let passwordInput = retrieve(root, "[passwordField]").handler.parentObj;
+
+
             //assert.equal(2, connexionButtonManipulator.handler.parentManip.children().length);
 
             connexionButtonManipulator.listeners.click();
@@ -151,6 +153,7 @@ describe('connection check textarea', function(){
             runtime.advance();
 
             mailAddressInput.textMessage = "a@a.a";
+            //mailAddressInput.onInputFct("a@a.a");
             runtime.listeners['keydown']({keyCode: 9, preventDefault: ()=> {}});
             runtime.listeners['keydown']({keyCode: 13, preventDefault: ()=> {}});
             assert.notEqual(main.formationsManager, null);
