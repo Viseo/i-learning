@@ -172,36 +172,40 @@ exports.Domain = function (globalVariables) {
             const width = drawing.width,
                 height = HEADER_SIZE * drawing.height,
                 manip = this.manipulator,
+                font_size = 20,
+                pos_text_y = height/2 +font_size/4,
                 userManip = this.userManipulator,
-                text = new svg.Text(this.label).position(MARGIN, height * 0.75).font('Arial', 20).anchor('start'),
-                line = new svg.Line(0, height, width, height).color(myColors.black, 1, myColors.black);
+                text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white),
+                rect = new svg.Rect(width, height).color(myColors.customBlue, 1, myColors.black).position(width/2, height/2);
             manip.set(1, text);
-            manip.set(0, line);
+            manip.set(0, rect);
             drawing.manipulator.set(0, manip);
 
             const displayUser = () => {
 
                 let pos = -MARGIN;
-                const deconnexion = displayText("Déconnexion", width * 0.15, height, myColors.none, myColors.none, 20, null, userManip, 4, 5),
+                const deconnexion = displayText("Déconnexion", width * 0.1, pos_text_y, myColors.white, myColors.none, 20, null, userManip, 4, 5),
                     deconnexionWidth = deconnexion.content.boundingRect().width,
                     ratio = 0.65,
-                    body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.black),
-                    head = new svg.Circle(12 * ratio).color(myColors.black, 2, myColors.white),
+                    body = new svg.CurvedShield(35 * ratio, 30 * ratio, 0.5).color(myColors.white),
+                    head = new svg.Circle(12 * ratio).color(myColors.white, 1, myColors.customBlue),
                     userText = autoAdjustText(drawing.username, width * 0.23, height, 20, null, userManip, 3);
 
+                deconnexion.border.corners(5,5);
                 pos -= deconnexionWidth / 2;
-                deconnexion.content.position(pos, 0);
-                deconnexion.border.position(pos, -30 / 2).mark('deconnection');
+                deconnexion.content.position(0, 0);
+                deconnexion.border.position(0, -font_size/4).mark('deconnection');
+                deconnexion.content.color(myColors.white);
                 pos -= deconnexionWidth / 2 + 40;
-                userText.text.anchor('end').position(pos, 0);
+                userText.text.anchor('end').position(-deconnexionWidth, 0).color(myColors.white);
                 pos -= userText.finalWidth;
                 userManip.set(0, body);
                 userManip.set(1, head);
 
                 pos -= body.boundingRect().width / 2 + MARGIN;
-                body.position(pos, -5 * ratio);
-                head.position(pos, -20 * ratio);
-                userManip.move(width, height * 0.75);
+                body.position(-deconnexionWidth -userText.finalWidth -body.width, -5 * ratio);
+                head.position(-deconnexionWidth -userText.finalWidth -body.width, -20 * ratio);
+                userManip.move(width - deconnexionWidth, pos_text_y);
 
                 const deconnexionHandler = () => {
                     runtime.setCookie("token=; path=/; max-age=0;");
@@ -217,6 +221,7 @@ exports.Domain = function (globalVariables) {
             if (message) {
                 const messageText = autoAdjustText(message, width * 0.3, height, 32, 'Arial', manip, 2);
                 messageText.text.position(width / 2, height / 2 + MARGIN)
+                    .color(myColors.white)
                     .mark("headerMessage");
             } else {
                 manip.unset(2);

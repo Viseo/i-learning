@@ -799,7 +799,6 @@ exports.Util = function (globalVariables) {
                 w = wi * 0.94,
                 t = new svg.Text('text');
             manipulator.set(layer, t);
-            (fontSize) || (fontSize = 20);
             t.font(font ? font : 'Arial', fontSize);
 
             while (words.length > 0) {
@@ -1682,7 +1681,7 @@ exports.Util = function (globalVariables) {
      * Created by ABL3483 on 10/03/2016.
      */
     function Bdd() {
-        HEADER_SIZE = 0.05;
+        HEADER_SIZE = 0.07;
         REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,50}$/g;
         REGEX_NO_CHARACTER_LIMIT = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,}$/g;
         MAX_CHARACTER_REGEX = 200;
