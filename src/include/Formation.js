@@ -42,14 +42,49 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param formation - formation qui va contenir le nouveau niveau
          * @param gamesTab - quizs associés à ce niveau
          */
-        constructor(formation, gamesTab) {
+        constructor(formation, gamesTab, playerCheck) {
             this.parentFormation = formation;
             this.manipulator = new Manipulator(this).addOrdonator(3);
+
+            //croix rouge pour fermer
             this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
+
+
             this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
             this.y = (this.index - 1) * this.parentFormation.levelHeight;
+
+            if(!playerCheck){
+                //const rect = new svg.Rect(200, 150).color( myColors.red, 5, myColors.darkerGreen);
+                //this.manipulator.set(1, rect);
+
+                this.manipulator.add( this.redCrossManipulator);
+                let redCross = drawRedCross(150, 15, 20, this.redCrossManipulator);
+                this.redCrossManipulator.add(redCross);
+
+                //effacer l objet (ce niveau)
+                this.redCrossClickHandler = () => {
+                    this.redCrossManipulator.flush();
+                    formation.levelsTab.splice(this.index-1, 1);
+                    this.manipulator.flush();
+                    this.gamesTab.forEach(game => {
+                        game.miniatureManipulator.flush();
+                        for (let j=formation.links.length-1; j>=0; j--){
+                            if (formation.links[j].childGame === game.id || formation.links[j].parentGame === game.id){
+                                formation.links.splice(j, 1);
+                            }
+                        }
+                    });
+                    for (let i=this.index-1; i<formation.levelsTab.length; i++){
+                        //formation.levelsTab[i].manipulator.flush();
+                        formation.levelsTab[i].index --;
+                        //formation.levelsTab[i].manipulator.flush();
+                    }
+                    formation.displayGraph(formation.graphW, formation.graphH);
+                };
+                svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+            }
         }
 
         /**
@@ -210,6 +245,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
                 obj.line.component.setAttribute && obj.line.component.setAttribute('stroke-dasharray', '6');
 
+                /* todo Fonctionne plus
                 if (!globalVariables.playerMode) {
                     this.redCrossManipulator;
                     let overLevelHandler = (event) => {
@@ -266,7 +302,10 @@ exports.Formation = function (globalVariables, classContainer) {
                         }
                         this.displayGraph(this.graphW, this.graphH);
                     };
-                }
+                }*/
+
+
+
                 level.manipulator.set(1, obj.line);
                 obj.text.position(obj.text.boundingRect().width, obj.text.boundingRect().height);
                 obj.text._acceptDrop = true;
@@ -929,7 +968,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     game.tabQuestions || gamesTab.push(classContainer.createClass("BdVue", game, this));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
-                this.levelsTab.push(classContainer.createClass("Level", this, gamesTab));
+                this.levelsTab.push(classContainer.createClass("Level", this, gamesTab, globalVariables.playerMode));
             });
         }
 
