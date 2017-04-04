@@ -78,34 +78,38 @@ exports.formationsManager = function(globalVariables, classContainer){
                 let createFilter = ()=>{
                     let toggleInProgress = () => {
                         this.progressOnly = !this.progressOnly;
-                        /*let check = drawCheck(pos, 0, 20),
-                         manip = this.toggleFormationsManipulator.last;
-                         svg.addEvent(manip, "click", toggleFormations);
-                         if (this.progressOnly) {
-                         manip.add(check);
-                         } else {
-                         manip.remove(manip.children[manip.children.length - 1]);
-                         }*/
-                        this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
-                        !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
+                        this.doneOnly = false;
+                        this.undoneOnly = false;
                         this.formationsManipulator.flush();
                         this.displayFormations();
+                        drawBorderFilter();
                     };
 
                     let toggleDone = () =>{
                         this.doneOnly = !this.doneOnly;
+                        this.progressOnly = false;
+                        this.undoneOnly = false;
                         this.formationsManipulator.flush();
                         this.displayFormations();
-                        this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
-                        !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                        drawBorderFilter();
                     }
 
                     let toggleUndone = () =>{
                         this.undoneOnly = !this.undoneOnly;
+                        this.doneOnly = false;
+                        this.progressOnly = false;
                         this.formationsManipulator.flush();
                         this.displayFormations();
+                        drawBorderFilter();
+                    }
+
+                    let drawBorderFilter = () =>{
                         this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
                         !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
+                        this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
+                        !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                        this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
+                        !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
                     }
                     this.undoneIcon = {};
                     this.undoneIcon.border = new svg.Circle(12.5).color(myColors.blue, 0, myColors.none);
