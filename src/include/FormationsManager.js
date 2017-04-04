@@ -127,7 +127,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.clippingManipulator.move(MARGIN / 2, (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2);
 
                 if (typeof this.panel === "undefined") {
-                    this.panel = new gui.Panel(drawing.width - 2 * MARGIN, heightAllocatedToPanel, myColors.none);
+                    this.panel = new gui.Panel(drawing.width, heightAllocatedToPanel, myColors.none);
                 }
                 else {
                     this.panel.resize(drawing.width - 2 * MARGIN, heightAllocatedToPanel);
@@ -339,7 +339,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     count++;
                     posx += (this.tileWidth + spaceBetweenElements.width);
                 });
-                //this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height + MARGIN);
+                this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height + MARGIN);
             };
             this.displayFormations();
         }
