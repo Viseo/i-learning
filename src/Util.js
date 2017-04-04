@@ -1287,35 +1287,36 @@ exports.Util = function (globalVariables) {
             this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
-            this.drawIcon();
+            playerMode && this.drawIcon();
         }
 
         drawIcon() {
+            const circleToggleSize = 12.5;
             let iconsize = 20,
                 size = 25,
                 iconInfos;
             switch (this.formation.progress) {
                 case "done":
-                    iconInfos = drawCheck(size / 2, -size / 2, iconsize);
-                    iconInfos.color(myColors.none, 5, myColors.green);
-                    let rect = new svg.Rect(iconsize, iconsize);
-                    rect.color(myColors.white, 1, myColors.green);
-                    rect.position(size / 2, -size / 2);
-                    this.iconManipulator.set(0, rect);
-                    this.iconManipulator.set(1, iconInfos);
+                    let doneIcon = {};
+                    doneIcon.border = new svg.Circle(circleToggleSize);
+                    doneIcon.border.color(myColors.green, 0, myColors.none);
+                    doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
+                    this.iconManipulator.set(0, doneIcon.border);
+                    this.iconManipulator.set(1, doneIcon.content);
                     this.miniatureManipulator.add(this.iconManipulator);
                     break;
                 case "inProgress":
-                    iconInfos = new svg.Circle(iconsize / 2).color(myColors.white, 1, myColors.orange).position(size / 2, -size / 2);
-                    let iconInfosdot1 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 - iconsize / 4, -size / 2);
-                    let iconInfosdot2 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2, -size / 2);
-                    let iconInfosdot3 = new svg.Circle(iconsize / 12).color(myColors.orange).position(size / 2 + iconsize / 4, -size / 2);
-                    this.iconManipulator.set(0, iconInfos);
-                    this.iconManipulator.set(1, iconInfosdot1);
-                    this.iconManipulator.set(2, iconInfosdot2);
-                    this.iconManipulator.set(3, iconInfosdot3);
+                    let inProgressIcon = displayTextWithCircle('...',circleToggleSize*2,circleToggleSize*2,myColors.none, myColors.orange,15,'Arial',this.iconManipulator);
+                    inProgressIcon.content.font('arial',20).color(myColors.white);
                     this.miniatureManipulator.add(this.iconManipulator);
-                    // this.formation.parent.formationsManipulator.add(this.iconManipulator);
+                    break;
+                default:
+                    let undoneIcon = {};
+                    undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
+                    undoneIcon.content = new svg.Triangle(8,8,'E').color(myColors.none, 3, myColors.white);
+                    this.iconManipulator.set(0, undoneIcon.border);
+                    this.iconManipulator.set(1, undoneIcon.content);
+                    this.miniatureManipulator.add(this.iconManipulator);
                     break;
             }
         }

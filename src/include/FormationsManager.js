@@ -105,15 +105,13 @@ exports.formationsManager = function(globalVariables, classContainer){
                         !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
                     }
                     this.undoneIcon = {};
-                    this.undoneIcon.border = new svg.Circle(12.5).color(myColors.blue, 0, myColors.none);
+                    this.undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
                     this.undoneIcon.content = new svg.Triangle(8,8,'E').color(myColors.none, 3, myColors.white);
                     this.inProgressIcon = displayTextWithCircle('...',circleToggleSize*2,circleToggleSize*2,myColors.none, myColors.orange,15,'Arial',manip);
                     this.inProgressIcon.content.font('arial',20).color(myColors.white);
                     this.doneIcon = {};
                     this.doneIcon.border = new svg.Circle(circleToggleSize);
                     this.doneIcon.border.color(myColors.green, 0, myColors.none);
-                    this.inProgressIcon.border.position(0,0);
-                    this.inProgressIcon.content.position(0,0);
                     this.doneIcon.border.position(-circleToggleSize*2-MARGIN, 0);
                     this.undoneIcon.content.position(-circleToggleSize*4-MARGIN*2, 0);
                     this.undoneIcon.border.position(-circleToggleSize*4-MARGIN*2, 0);
@@ -129,16 +127,8 @@ exports.formationsManager = function(globalVariables, classContainer){
                     svg.addEvent(this.doneIcon.content, 'click', toggleDone);
                     svg.addEvent(this.undoneIcon.border, 'click', toggleUndone);
                     svg.addEvent(this.undoneIcon.content, 'click', toggleUndone);
-
-
-
-
                 }
                 createFilter();
-
-                // svg.addEvent(toggleFormationsCheck, 'click', toggleFormations);
-                // svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
-                // svg.addEvent(toggleFormationsText.border, 'click', toggleFormations);
             } else {
                 this.headerManipulator.add(this.addButtonManipulator);
                 this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
