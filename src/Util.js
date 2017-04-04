@@ -1261,11 +1261,19 @@ exports.Util = function (globalVariables) {
         }
 
         display(x, y, w, h) {
+            let points = [
+                [w / 2, -h / 1.5],
+                [0, -h],
+                [-w / 2, -h / 1.5],
+                [-w / 2, h / 1.5],
+                [0, h],
+                [w / 2, h / 1.5]
+            ];
+
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
-            //let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
             let miniature = {
-                content: new svg.Text(this.formation.label).dimension(w, h).position(0, h/2),
-                border: new svg.Hexagon(h, "V").dimension(h, w).color(myColors.white, 1, myColors.grey)
+                content: new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
+                border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
             };
             this.miniatureManipulator.set(1, miniature.content);
             this.miniatureManipulator.set(0, miniature.border);
@@ -1277,7 +1285,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(index, element);
                 });
             }
-            this.iconManipulator.move(w/4, -h*2/3 - iconSize/2);
+            this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             this.drawIcon();
