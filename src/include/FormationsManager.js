@@ -59,10 +59,11 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.message = new Manipulator(this).addOrdonator(3);
             this.regex = TITLE_FORMATION_REGEX;
             /* for Player */
-            this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(3);
+            this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(6);
         }
 
         render() {
+            const circleToggleSize = 12.5;
             main.currentPageDisplayed = 'FormationsManager';
             this.manipulator.move(0, drawing.height * HEADER_SIZE);
             drawing.manipulator.set(1, this.manipulator);
@@ -73,35 +74,78 @@ exports.formationsManager = function(globalVariables, classContainer){
             if (globalVariables.playerMode) {
                 this.headerManipulator.add(this.toggleFormationsManipulator);
                 let manip = this.toggleFormationsManipulator,
-                    pos = -MARGIN,
-                    toggleFormationsText = displayText('Formations en cours', drawing.width * 0.2, 25, myColors.none, myColors.none, 20, null, manip, 0, 1),
-                    textWidth = toggleFormationsText.content.boundingRect().width;
-                toggleFormationsCheck = new svg.Rect(20, 20).color(myColors.white, 2, myColors.black);
-                pos -= textWidth / 2;
-                toggleFormationsText.content.position(pos, 6);
-                toggleFormationsText.border.position(pos, 0);
-                pos -= textWidth / 2 + 2 * MARGIN;
-                toggleFormationsCheck.position(pos, 0);
-                manip.set(2, toggleFormationsCheck);
-                manip.move(drawing.width, 10 + MARGIN);
-                toggleFormationsText.border.mark('toggleFormationsText');
+                    pos = -MARGIN;
+                let createFilter = ()=>{
+                    let toggleInProgress = () => {
+                        this.progressOnly = !this.progressOnly;
+                        this.doneOnly = false;
+                        this.undoneOnly = false;
+                        this.formationsManipulator.flush();
+                        this.displayFormations();
+                        drawBorderFilter();
+                    };
 
-                let toggleFormations = () => {
-                    this.progressOnly = !this.progressOnly;
-                    let check = drawCheck(pos, 0, 20),
-                        manip = this.toggleFormationsManipulator.last;
-                    svg.addEvent(manip, "click", toggleFormations);
-                    if (this.progressOnly) {
-                        manip.add(check);
-                    } else {
-                        manip.remove(manip.children[manip.children.length - 1]);
+                    let toggleDone = () =>{
+                        this.doneOnly = !this.doneOnly;
+                        this.progressOnly = false;
+                        this.undoneOnly = false;
+                        this.formationsManipulator.flush();
+                        this.displayFormations();
+                        drawBorderFilter();
                     }
-                    this.formationsManipulator.flush();
-                    this.displayFormations();
-                };
-                svg.addEvent(toggleFormationsCheck, 'click', toggleFormations);
-                svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
-                svg.addEvent(toggleFormationsText.border, 'click', toggleFormations);
+
+                    let toggleUndone = () =>{
+                        this.undoneOnly = !this.undoneOnly;
+                        this.doneOnly = false;
+                        this.progressOnly = false;
+                        this.formationsManipulator.flush();
+                        this.displayFormations();
+                        drawBorderFilter();
+                    }
+
+                    let drawBorderFilter = () =>{
+                        this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
+                        !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
+                        this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
+                        !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                        this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
+                        !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
+                    }
+                    this.undoneIcon = {};
+                    this.undoneIcon.border = new svg.Circle(12.5).color(myColors.blue, 0, myColors.none);
+                    this.undoneIcon.content = new svg.Triangle(8,8,'E').color(myColors.none, 3, myColors.white);
+                    this.inProgressIcon = displayTextWithCircle('...',circleToggleSize*2,circleToggleSize*2,myColors.none, myColors.orange,15,'Arial',manip);
+                    this.inProgressIcon.content.font('arial',20).color(myColors.white);
+                    this.doneIcon = {};
+                    this.doneIcon.border = new svg.Circle(circleToggleSize);
+                    this.doneIcon.border.color(myColors.green, 0, myColors.none);
+                    this.inProgressIcon.border.position(0,0);
+                    this.inProgressIcon.content.position(0,0);
+                    this.doneIcon.border.position(-circleToggleSize*2-MARGIN, 0);
+                    this.undoneIcon.content.position(-circleToggleSize*4-MARGIN*2, 0);
+                    this.undoneIcon.border.position(-circleToggleSize*4-MARGIN*2, 0);
+                    this.doneIcon.content = drawCheck(this.doneIcon.border.x,this.doneIcon.border.y,20).color(myColors.none, 3, myColors.white);
+                    manip.move(drawing.width-MARGIN*3,MARGIN + circleToggleSize*2);
+                    manip.set(4, this.doneIcon.content);
+                    manip.set(3, this.doneIcon.border);
+                    manip.set(5, this.undoneIcon.content);
+                    manip.set(2, this.undoneIcon.border);
+                    svg.addEvent(this.inProgressIcon.border, 'click', toggleInProgress);
+                    svg.addEvent(this.inProgressIcon.content, 'click', toggleInProgress);
+                    svg.addEvent(this.doneIcon.border, 'click', toggleDone);
+                    svg.addEvent(this.doneIcon.content, 'click', toggleDone);
+                    svg.addEvent(this.undoneIcon.border, 'click', toggleUndone);
+                    svg.addEvent(this.undoneIcon.content, 'click', toggleUndone);
+
+
+
+
+                }
+                createFilter();
+
+                // svg.addEvent(toggleFormationsCheck, 'click', toggleFormations);
+                // svg.addEvent(toggleFormationsText.content, 'click', toggleFormations);
+                // svg.addEvent(toggleFormationsText.border, 'click', toggleFormations);
             } else {
                 this.headerManipulator.add(this.addButtonManipulator);
                 this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
@@ -112,13 +156,13 @@ exports.formationsManager = function(globalVariables, classContainer){
             let addFormationButton, spaceBetweenElements;
             let displayPanel = () => {
                 let heightAllocatedToPanel = drawing.height - (globalVariables.playerMode ?
-                        toggleFormationsCheck.globalPoint(0, 0).y + toggleFormationsCheck.height + MARGIN : 100);
+                        this.toggleFormationsManipulator.component.globalPoint(0, 0).y+ MARGIN : 100);
                 // addFormationButton.border.globalPoint(0, 0).y + addFormationButton.border.height;
                 spaceBetweenElements = {
                     width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                     height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                 };
-                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : toggleFormationsCheck.height * 2;//drawing.height * this.header.size;
+                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize * 2;//drawing.height * this.header.size;
 
                 this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
                 if (this.rows === 0) this.rows = 1;
@@ -135,7 +179,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 };
 
                 this.manipulator.add(this.clippingManipulator);
-                this.clippingManipulator.move(MARGIN / 2, this.y);
+                this.clippingManipulator.move(MARGIN / 2, this.y-MARGIN);
                 var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
                 var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
 
@@ -314,6 +358,8 @@ exports.formationsManager = function(globalVariables, classContainer){
                     totalLines = 1;
                 this.formations.forEach(formation => {
                     if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
+                    if (globalVariables.playerMode && this.doneOnly && formation.progress !== 'done') return;
+                    if (globalVariables.playerMode && this.undoneOnly && formation.progress != '') return;
                     if (count > (this.rows - 1)) {
                         count = 0;
                         totalLines++;
