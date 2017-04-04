@@ -188,6 +188,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 //         console.log("Bleu");
                 //     }
                 if (target) {
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text)) {
                     this.mousedOverFormation = target.parent.children[0];
                     this.mousedOverFormation.color(myColors.customBlue,3,myColors.black);
                 }
@@ -208,8 +209,10 @@ exports.formationsManager = function(globalVariables, classContainer){
                 // }
                 if (target) {
                     // this.mousedOverFormation = target.parent.children[0];
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation) {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
                 } else {
+                } else if (!target && this.mousedOverFormation) {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
                     this.mousedOverFormation = null;
                 }
