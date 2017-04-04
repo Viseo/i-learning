@@ -146,7 +146,6 @@ exports.formationsManager = function(globalVariables, classContainer){
 
             let onClickDisplayFormation = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                // formation.miniature.removeHandler("click", onClickDisplayFormation);
                 let formation = target.parent.parentManip.parentObject.formation;
                 formation.miniature.removeHandler("click");
                 Server.getVersionById(formation._id).then(data => {

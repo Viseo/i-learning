@@ -1323,40 +1323,10 @@ exports.Util = function (globalVariables) {
 
         setHandler(eventname, handler) {
             this.miniatureManipulator.addEvent(eventname,handler);
-            // let miniature = this.miniatureManipulator.ordonator.children;
-            // svg.addEvent(miniature[0], eventname, () => {
-            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
-            //         handler(miniature[0]);
-            //     } else {
-            //         handler(this.formation);
-            //     }
-            // });
-            // svg.addEvent(miniature[1], eventname, () => {
-            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
-            //         handler(miniature[1]);
-            //     } else {
-            //         handler(this.formation);
-            //     }
-            // });
         }
 
         removeHandler(eventname) {
             this.miniatureManipulator.removeEvent(eventname);
-            // let miniature = this.miniatureManipulator.ordonator.children;
-            // svg.removeEvent(miniature[0], eventname, () => {
-            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
-            //         handler(miniature[0]);
-            //     } else {
-            //         handler(this.formation);
-            //     }
-            // });
-            // svg.removeEvent(miniature[1], eventname, () => {
-            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
-            //         handler(miniature[1]);
-            //     } else {
-            //         handler(this.formation);
-            //     }
-            // });
         }
     }
 
