@@ -1262,8 +1262,13 @@ exports.Util = function (globalVariables) {
 
         display(x, y, w, h) {
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
-            let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
-            miniature.border.corners(50, 50);
+            //let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
+            let miniature = {
+                content: new svg.Text(this.formation.label).dimension(w, h).position(0, h/2),
+                border: new svg.Hexagon(h, "V").dimension(h, w).color(myColors.white, 1, myColors.grey)
+            };
+            this.miniatureManipulator.set(1, miniature.content);
+            this.miniatureManipulator.set(0, miniature.border);
             miniature.border.mark(this.formation.label);
             let iconSize = this.formation.parent.iconeSize;
             if (!playerMode && statusEnum[this.formation.status]) {
@@ -1272,7 +1277,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(index, element);
                 });
             }
-            this.iconManipulator.move(w / 2 - iconSize + MARGIN + 2, -h / 2 + iconSize - MARGIN - 2);//2Pxl pour la largeur de border
+            this.iconManipulator.move(w/4, -h*2/3 - iconSize/2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             this.drawIcon();

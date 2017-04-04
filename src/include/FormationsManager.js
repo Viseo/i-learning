@@ -28,8 +28,8 @@ exports.formationsManager = function(globalVariables, classContainer){
         constructor(formations) {
             super();
             this.x = MARGIN;
-            this.tileHeight = 180;
-            this.tileWidth = this.tileHeight * (14 / 9);
+            this.tileHeight = 150;
+            this.tileWidth = this.tileHeight*5/4;
             this.addButtonWidth = 330;
             this.addButtonHeight = 40;
             this.addButtonSmall = 30;
@@ -145,6 +145,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 else {
                     this.panel.resize(drawing.width - 2 * MARGIN, heightAllocatedToPanel);
                 }
+                this.panel.border.color([], 0, []);
                 this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
                 this.clippingManipulator.add(this.panel.component);
                 this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
@@ -309,7 +310,7 @@ exports.formationsManager = function(globalVariables, classContainer){
 
             this.displayFormations = () => {
                 let posx = this.initialFormationsPosX,
-                    posy = MARGIN,
+                    posy = MARGIN + this.tileHeight/2,
                     count = 0,
                     totalLines = 1;
                 this.formations.forEach(formation => {
@@ -317,8 +318,8 @@ exports.formationsManager = function(globalVariables, classContainer){
                     if (count > (this.rows - 1)) {
                         count = 0;
                         totalLines++;
-                        posy += (this.tileHeight + spaceBetweenElements.height);
-                        posx = this.initialFormationsPosX;
+                        posy += (this.tileHeight*4/3 + spaceBetweenElements.height);
+                        posx = this.initialFormationsPosX + (this.tileWidth + spaceBetweenElements.width)*(totalLines%2 === 0 ? 1: 0)/2;
                     }
                     formation.parent = this;
                     this.formationsManipulator.add(formation.miniature.miniatureManipulator);
