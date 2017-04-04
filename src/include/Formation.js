@@ -139,7 +139,6 @@ exports.Formation = function (globalVariables, classContainer) {
             };
 
             let borderSize = 3;
-            this.manipulator.move(0, drawing.height * 0.075);
             drawing.manipulator.set(1, this.manipulator);
             this.manipulator.add(this.returnButtonManipulator);
 
@@ -158,6 +157,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.returnButton.height = returnButtonChevron.boundingRect().height;
             returnButtonChevron.mark('returnButtonToFormationsManager');
             this.returnButton.setHandler(returnHandler);
+            this.manipulator.move(0, globalVariables.header.height + this.returnButton.height);
 
             let dblclickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;

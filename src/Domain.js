@@ -163,6 +163,7 @@ exports.Domain = function (globalVariables) {
             this.manipulator.addOrdonator(3);
             this.userManipulator = new Manipulator(this).addOrdonator(6);
             this.label = "I-learning";
+            this.height = HEADER_SIZE * drawing.height;
         }
 
         render(message) {
