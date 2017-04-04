@@ -146,15 +146,9 @@ exports.formationsManager = function(globalVariables, classContainer){
 
             let onClickDisplayFormation = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                // console.log(target);
                 // formation.miniature.removeHandler("click", onClickDisplayFormation);
                 let formation = target.parent.parentManip.parentObject.formation;
-                // let fomrmation
                 formation.miniature.removeHandler("click");
-                /** Need help
-                 * formation.miniature.removeHandler("mouseenter", onMouseOverSelect);
-                 * formation.miniature.removeHandler("mouseleave", onMouseOutSelect);
-                 */
                 Server.getVersionById(formation._id).then(data => {
                     var myFormation = JSON.parse(data).formation;
                     formation.loadFormation(myFormation);
@@ -181,54 +175,19 @@ exports.formationsManager = function(globalVariables, classContainer){
             let FormationVue = classContainer.getClass("FormationVue");
             let onMouseOverSelect = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY); // on récupère la formation selon le pointeur de la souris
-                // console.log(target);
-                // target && console.log(target.parent.children[0]);
-                // if (target && target.parent.parentManip.parentObject.formation && target.parent.parentManip.parentObject.formation instanceof FormationVue) {
-                //     if (target && (target instanceof svg.Rect || target instanceof svg.Text)) {
-                //         console.log("Bleu");
-                //     }
-                if (target) {
                 if (target && (target instanceof svg.Polygon || target instanceof svg.Text)) {
                     this.mousedOverFormation = target.parent.children[0];
                     this.mousedOverFormation.color(myColors.customBlue,3,myColors.black);
                 }
-                // }
-                // this.miniatureManipulator.ordonator.children[0];
-                // console.log("entered");
-                // console.log(this);
-                // miniature.color(myColors.customBlue,3,myColors.black);
             };
             let onMouseOutSelect = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                // console.log(target);
-                // // target && console.log(target.parent.children[0]);
-                // if (target && target.parent.parentManip.parentObject.formation && target.parent.parentManip.parentObject.formation instanceof FormationVue) {
-                // if (target && (target instanceof svg.Rect || target instanceof svg.Text)) {
-                // if (target && (target instanceof svg.Rect || target instanceof svg.Text)) {
-                //     console.log("Pas bleu");
-                // }
-                if (target) {
-                    // this.mousedOverFormation = target.parent.children[0];
                 if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation) {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
-                } else {
                 } else if (!target && this.mousedOverFormation) {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
                     this.mousedOverFormation = null;
                 }
-                // if (this.formations) {
-                //     for (let formation of this.formations) {
-                //         // if (!formation.miniaturesManipulator.ordonator) {
-                //         //     console.log(formation);
-                //         // }
-                //         // svg.timeout(() => {
-                //         //     formation.miniaturesManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
-                //         // }, 1000);
-                //     }
-                // }
-                // console.log("out");
-                // console.log(this);
-                // miniature.color(myColors.white,1,myColors.black);
             };
 
             this.displayHeaderFormations = () => {
@@ -376,10 +335,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                     this.formationsManipulator.add(formation.miniature.miniatureManipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
                     formation.miniature.setHandler("click", onClickDisplayFormation);
-                    // let formationRect = formation.miniature.miniatureManipulator.ordonator.children[0]; // children[1] == svg.Text
-                    // svg.addEvent(formation.miniature.miniatureManipulator.ordonator.children[0], "mouseenter", onMouseOverSelect);
-                    // svg.addEvent(formation.miniature.miniatureManipulator.ordonator.children[0], "mouseleave", onMouseOutSelect);
-                    // console.log(formation);
                     formation.miniature.setHandler("mouseenter", onMouseOverSelect);
                     formation.miniature.setHandler("mouseleave", onMouseOutSelect);
                     count++;
