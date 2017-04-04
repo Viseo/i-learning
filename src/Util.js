@@ -1092,7 +1092,7 @@ exports.Util = function (globalVariables) {
 
         drawImageRedCross() {
             this.mouseleaveHandler = () => {
-                this.redCrossManipulator.flush();
+                this.redCrossManipulator && this.redCrossManipulator.flush();
             };
             this.imageMouseoverHandler = () => {
                 let redCrossSize = 15;
@@ -1255,9 +1255,9 @@ exports.Util = function (globalVariables) {
 
     class MiniatureFormation {
         constructor(formation) {
-            this.miniatureManipulator = new Manipulator().addOrdonator(2);
-            this.iconManipulator = new Manipulator().addOrdonator(4);
             this.formation = formation;
+            this.miniatureManipulator = new Manipulator(this).addOrdonator(2);
+            this.iconManipulator = new Manipulator(this).addOrdonator(4);
         }
 
         display(x, y, w, h) {
@@ -1316,28 +1316,47 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(2, iconInfosdot2);
                     this.iconManipulator.set(3, iconInfosdot3);
                     this.miniatureManipulator.add(this.iconManipulator);
+                    // this.formation.parent.formationsManipulator.add(this.iconManipulator);
                     break;
             }
         }
 
-        setHandler(handler) {
-            let miniature = this.miniatureManipulator.ordonator.children;
-            svg.addEvent(miniature[0], "click", () => {
-                handler(this.formation);
-            });
-            svg.addEvent(miniature[1], "click", () => {
-                handler(this.formation);
-            });
+        setHandler(eventname, handler) {
+            this.miniatureManipulator.addEvent(eventname,handler);
+            // let miniature = this.miniatureManipulator.ordonator.children;
+            // svg.addEvent(miniature[0], eventname, () => {
+            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
+            //         handler(miniature[0]);
+            //     } else {
+            //         handler(this.formation);
+            //     }
+            // });
+            // svg.addEvent(miniature[1], eventname, () => {
+            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
+            //         handler(miniature[1]);
+            //     } else {
+            //         handler(this.formation);
+            //     }
+            // });
         }
 
-        removeHandler(handler) {
-            let miniature = this.miniatureManipulator.ordonator.children;
-            svg.removeEvent(miniature[0], "click", () => {
-                handler(this.formation);
-            });
-            svg.removeEvent(miniature[1], "click", () => {
-                handler(this.formation);
-            });
+        removeHandler(eventname) {
+            this.miniatureManipulator.removeEvent(eventname);
+            // let miniature = this.miniatureManipulator.ordonator.children;
+            // svg.removeEvent(miniature[0], eventname, () => {
+            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
+            //         handler(miniature[0]);
+            //     } else {
+            //         handler(this.formation);
+            //     }
+            // });
+            // svg.removeEvent(miniature[1], eventname, () => {
+            //     if (eventname === "mouseenter" || eventname === "mouseleave") {
+            //         handler(miniature[1]);
+            //     } else {
+            //         handler(this.formation);
+            //     }
+            // });
         }
     }
 
