@@ -1091,7 +1091,7 @@ exports.Util = function (globalVariables) {
 
         drawImageRedCross() {
             this.mouseleaveHandler = () => {
-                this.redCrossManipulator.flush();
+                this.redCrossManipulator && this.redCrossManipulator.flush();
             };
             this.imageMouseoverHandler = () => {
                 let redCrossSize = 15;
@@ -1254,15 +1254,28 @@ exports.Util = function (globalVariables) {
 
     class MiniatureFormation {
         constructor(formation) {
-            this.miniatureManipulator = new Manipulator().addOrdonator(2);
-            this.iconManipulator = new Manipulator().addOrdonator(4);
             this.formation = formation;
+            this.miniatureManipulator = new Manipulator(this).addOrdonator(2);
+            this.iconManipulator = new Manipulator(this).addOrdonator(4);
         }
 
         display(x, y, w, h) {
+            let points = [
+                [w / 2, -h / 1.5],
+                [0, -h],
+                [-w / 2, -h / 1.5],
+                [-w / 2, h / 1.5],
+                [0, h],
+                [w / 2, h / 1.5]
+            ];
+
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
-            let miniature = displayText(this.formation.label, w, h, myColors.black, myColors.white, null, null, this.miniatureManipulator);
-            miniature.border.corners(50, 50);
+            let miniature = {
+                content: new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
+                border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
+            };
+            this.miniatureManipulator.set(1, miniature.content);
+            this.miniatureManipulator.set(0, miniature.border);
             miniature.border.mark(this.formation.label);
             let iconSize = this.formation.parent.iconeSize;
             if (!playerMode && statusEnum[this.formation.status]) {
@@ -1271,7 +1284,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(index, element);
                 });
             }
-            this.iconManipulator.move(w / 2 - iconSize + MARGIN + 2, -h / 2 + iconSize - MARGIN - 2);//2Pxl pour la largeur de border
+            this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             this.drawIcon();
@@ -1302,28 +1315,17 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(2, iconInfosdot2);
                     this.iconManipulator.set(3, iconInfosdot3);
                     this.miniatureManipulator.add(this.iconManipulator);
+                    // this.formation.parent.formationsManipulator.add(this.iconManipulator);
                     break;
             }
         }
 
-        setHandler(handler) {
-            let miniature = this.miniatureManipulator.ordonator.children;
-            svg.addEvent(miniature[0], "click", () => {
-                handler(this.formation);
-            });
-            svg.addEvent(miniature[1], "click", () => {
-                handler(this.formation);
-            });
+        setHandler(eventname, handler) {
+            this.miniatureManipulator.addEvent(eventname,handler);
         }
 
-        removeHandler(handler) {
-            let miniature = this.miniatureManipulator.ordonator.children;
-            svg.removeEvent(miniature[0], "click", () => {
-                handler(this.formation);
-            });
-            svg.removeEvent(miniature[1], "click", () => {
-                handler(this.formation);
-            });
+        removeHandler(eventname) {
+            this.miniatureManipulator.removeEvent(eventname);
         }
     }
 

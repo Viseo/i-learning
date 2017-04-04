@@ -27,28 +27,22 @@ exports.formationsManager = function(globalVariables, classContainer){
          */
         constructor(formations) {
             super();
-            this.x = MARGIN;
-            this.tileHeight = 180;
-            this.tileWidth = this.tileHeight * (14 / 9);
+            this.tileHeight = 100;
+            this.tileWidth = this.tileHeight*5/4;
             this.addButtonWidth = 330;
             this.addButtonHeight = 40;
             this.addButtonSmall = 30;
             this.fontSize = 20;
             this.plusDim = this.fontSize * 2;
             this.iconeSize = this.plusDim / 1.5;
-            this.puzzleRows = 6;
-            this.initialFormationsPosX = MARGIN;
-            this.rows = 6;
-            this.lines = 4;
-            this.formations = [];
-            this.count = 0;
             this.label = this.label ? this.label : "";
             this.labelDefault = "Ajouter une formation";
-            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
+            this.formations = [];
             for (let formation of formations) {
                 this.formations.push(classContainer.createClass("FormationVue", formation, this));
             }
             this.manipulator = new Manipulator();
+            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             this.headerManipulator = new Manipulator().addOrdonator(1);
             this.addButtonManipulator = new Manipulator().addOrdonator(4);
             this.checkManipulator = new Manipulator().addOrdonator(4);
@@ -57,7 +51,6 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.clippingManipulator = new Manipulator(this);
             this.errorMessage = new Manipulator(this).addOrdonator(3);
             this.message = new Manipulator(this).addOrdonator(3);
-            this.regex = TITLE_FORMATION_REGEX;
             /* for Player */
             this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(6);
         }
@@ -162,10 +155,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                     width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                     height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                 };
-                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize * 2;//drawing.height * this.header.size;
-
-                this.rows = Math.floor((drawing.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
-                if (this.rows === 0) this.rows = 1;
 
                 drawing.notInTextArea = true;
                 svg.addGlobalEvent("keydown", (event) => {
@@ -179,26 +168,31 @@ exports.formationsManager = function(globalVariables, classContainer){
                 };
 
                 this.manipulator.add(this.clippingManipulator);
-                this.clippingManipulator.move(MARGIN / 2, this.y-MARGIN);
-                var formationPerLine = Math.floor((drawing.width - 2 * MARGIN) / ((this.tileWidth + spaceBetweenElements.width)));
-                var widthAllocatedToDisplayedElementInPanel = Math.floor((drawing.width - 2 * MARGIN) - (formationPerLine * (this.tileWidth + spaceBetweenElements.width)));
+                let heightListFormations = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize * 2;
+                this.clippingManipulator.move(MARGIN / 2, heightListFormations-MARGIN);
 
                 if (typeof this.panel === "undefined") {
-                    this.panel = new gui.Panel(drawing.width - 2 * MARGIN, heightAllocatedToPanel, myColors.none);
+                    this.panel = new gui.Panel(drawing.width, heightAllocatedToPanel, myColors.none);
                 }
                 else {
                     this.panel.resize(drawing.width - 2 * MARGIN, heightAllocatedToPanel);
                 }
+                this.panel.border.color([], 0, []);
                 this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
                 this.clippingManipulator.add(this.panel.component);
                 this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
                 this.formationsManipulator.first.mark("test");
                 this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-                this.formationsManipulator.move((this.tileWidth + widthAllocatedToDisplayedElementInPanel) / 2, this.tileHeight / 2 + spaceBetweenElements.height / 2);
+
+                this.cols = Math.floor((this.panel.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
+                this.formationsManipulator.move(MARGIN + (this.tileWidth) / 2, this.tileHeight + spaceBetweenElements.height / 2);
+
             };
 
-            let onClickFormation = formation => {
-                formation.miniature.removeHandler(onClickFormation);
+            let onClickDisplayFormation = event => {
+                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                let formation = target.parent.parentManip.parentObject.formation;
+                formation.miniature.removeHandler("click");
                 Server.getVersionById(formation._id).then(data => {
                     var myFormation = JSON.parse(data).formation;
                     formation.loadFormation(myFormation);
@@ -207,7 +201,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 });
             };
 
-            var onClickNewFormation = () => {
+            let onClickNewFormation = () => {
                 var formation = classContainer.createClass("FormationVue", {}, this);
                 formation.label = this.label;
                 formation.saveNewFormation(function(message, error) {
@@ -221,6 +215,23 @@ exports.formationsManager = function(globalVariables, classContainer){
                         this.formationInfoManipulator.unset(2);
                     }, 5000);
                 }.bind(this));
+            };
+            let FormationVue = classContainer.getClass("FormationVue");
+            let onMouseOverSelect = event => {
+                let target = drawings.component.background.getTarget(event.pageX, event.pageY); // on récupère la formation selon le pointeur de la souris
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text)) {
+                    this.mousedOverFormation = target.parent.children[0];
+                    this.mousedOverFormation.color(myColors.customBlue,3,myColors.black);
+                }
+            };
+            let onMouseOutSelect = event => {
+                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation) {
+                    this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
+                } else if (!target && this.mousedOverFormation) {
+                    this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
+                    this.mousedOverFormation = null;
+                }
             };
 
             this.displayHeaderFormations = () => {
@@ -348,35 +359,36 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.formations = sortAlphabetical(this.formations);
             globalVariables.header.display("Formations");
             !globalVariables.playerMode && this.displayHeaderFormations();
-            (this.tileHeight < 0) && (this.tileHeight = undefined);
-            (!this.tileHeight || this.tileHeight > 0) && displayPanel();
+            displayPanel();
 
             this.displayFormations = () => {
-                let posx = this.initialFormationsPosX,
-                    posy = MARGIN,
-                    count = 0,
+                let evenLine = (totalLines) => totalLines%2 === 0 ? 1:0;
+                let posx = 0,
+                    posy = 0,
+                    count = 1,
                     totalLines = 1;
                 this.formations.forEach(formation => {
                     if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
                     if (globalVariables.playerMode && this.doneOnly && formation.progress !== 'done') return;
                     if (globalVariables.playerMode && this.undoneOnly && formation.progress != '') return;
-                    if (count > (this.rows - 1)) {
-                        count = 0;
+                    if (count > (this.cols - evenLine(totalLines))) {
+                        count = 1;
                         totalLines++;
-                        posy += (this.tileHeight + spaceBetweenElements.height);
-                        posx = this.initialFormationsPosX;
+                        posy += (this.tileHeight*3/2 + spaceBetweenElements.height);
+                        posx = (this.tileWidth + spaceBetweenElements.width)*evenLine(totalLines)/2;
                     }
                     formation.parent = this;
                     this.formationsManipulator.add(formation.miniature.miniatureManipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-                    formation.miniature.setHandler(onClickFormation);
-
+                    formation.miniature.setHandler("click", onClickDisplayFormation);
+                    formation.miniature.setHandler("mouseenter", onMouseOverSelect);
+                    formation.miniature.setHandler("mouseleave", onMouseOutSelect);
                     count++;
                     posx += (this.tileWidth + spaceBetweenElements.width);
                 });
-                this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height - MARGIN);
+                this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height + MARGIN);
             };
-            (this.tileHeight > 0) && this.displayFormations();
+            this.displayFormations();
         }
 
         /**
@@ -384,7 +396,7 @@ exports.formationsManager = function(globalVariables, classContainer){
          * @param {Object} myObj - input à vérifier
          */
         checkInputTextArea(myObj) {
-            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(this.regex)) || myObj.textarea.messageText === "") {
+            if ((myObj.textarea.messageText && myObj.textarea.messageText.match(TITLE_FORMATION_REGEX)) || myObj.textarea.messageText === "") {
                 this.invalidLabelInput = false;
                 myObj.remove();
                 myObj.textarea.onblur = myObj.onblur;
