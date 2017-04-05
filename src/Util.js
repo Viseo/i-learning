@@ -221,6 +221,15 @@ exports.Util = function (globalVariables) {
         /**
          *
          * @param layer
+         * @returns {*}
+         */
+        get(layer){
+            return this.ordonator.get(layer);
+        }
+
+        /**
+         *
+         * @param layer
          * @param component
          * @returns {Manipulator}
          */
@@ -231,6 +240,7 @@ exports.Util = function (globalVariables) {
             }
             this.ordonator.set(layer, component);
             this.components.push(component);
+            component.parentManip = this;
             return this;
         }
 
@@ -250,6 +260,7 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
                 this.components.push(component);
+                component.parentManip = this;
             }
             return this;
         }
@@ -1288,6 +1299,16 @@ exports.Util = function (globalVariables) {
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             playerMode && this.drawIcon();
+
+            let onMouseOverSelect = miniatureManipulator => {
+                miniatureManipulator.get(0).color([130,180,255], 3, myColors.black);
+            };
+            let onMouseOutSelect = miniatureManipulator => {
+                miniatureManipulator.get(0).color([250, 250, 250], 1, myColors.grey);
+            };
+
+            this.setHandler("mouseenter", () => onMouseOverSelect(this.miniatureManipulator));
+            this.setHandler("mouseleave", () => onMouseOutSelect(this.miniatureManipulator));
         }
 
         drawIcon() {
