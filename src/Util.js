@@ -1115,12 +1115,49 @@ exports.Util = function (globalVariables) {
         }
     }
 
+    let drawHexagon = (w,h, orientation, ratio)=>{
+        let factor = ratio || 1;
+        if (orientation == 'V'){
+            var points = [
+                [w / 2, -h / 1.5],
+                [0, -factor*h],
+                [-w / 2, -h / 1.5],
+                [-w / 2, h / 1.5],
+                [0, factor*h],
+                [w / 2, h / 1.5]
+            ];
+        }
+        else{
+            var points = [
+                [w / 2, -h / 1.5],
+                [factor*w,0],
+                [w / 2, h / 1.5],
+                [-w / 2, h / 1.5],
+                [-factor*w, 0],
+                [-w / 2,- h / 1.5]
+            ];
+        }
+
+        return new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey);
+    }
+
     class MiniatureGame {
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
-            let icon = displayTextWithCircle(game.title, size, size - this.scoreSize - MARGIN, myColors.black, myColors.white, 20, null, game.miniatureManipulator);
+            this.width = size;
+            this.height = size/2;
+
+            let icon = {
+                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                underContent: new svg.Text(game.questionsAnswered.length + '/' + game.tabQuestions.length).position(0,2*MARGIN),
+                border: drawHexagon(this.width, this.height, 'H', 0.8)
+            };
+            game.miniatureManipulator.set(0, icon.border);
+            game.miniatureManipulator.set(2, icon.underContent);
+            game.miniatureManipulator.set(1, icon.content);
             game.miniatureManipulator.mark('level' + this.game.levelIndex + game.id);
+            //globalVariables.drawing.manipulator.add(game.miniatureManipulator);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(size / 2, -size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
@@ -1128,7 +1165,6 @@ exports.Util = function (globalVariables) {
             // svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
             this.selected = false;
-            icon.border.color(myColors.white, 1, myColors.black);
             if (playerMode) {
                 this.drawProgressIcon(game, size);
             }
@@ -1935,6 +1971,7 @@ exports.Util = function (globalVariables) {
         Picture,
         Puzzle,
         ReturnButton,
-        Server
+        Server,
+        drawHexagon
     }
 };
