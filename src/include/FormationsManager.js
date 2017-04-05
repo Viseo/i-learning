@@ -209,14 +209,14 @@ exports.formationsManager = function(globalVariables, classContainer){
             let FormationVue = classContainer.getClass("FormationVue");
             let onMouseOverSelect = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY); // on récupère la formation selon le pointeur de la souris
-                if (target && (target instanceof svg.Polygon || target instanceof svg.Text)) {
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && target.messageText != "...") {
                     this.mousedOverFormation = target.parent.children[0];
-                    this.mousedOverFormation.color(myColors.customBlue,3,myColors.black);
+                    this.mousedOverFormation.color([130,180,255],3,myColors.black);
                 }
             };
             let onMouseOutSelect = event => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation) {
+                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation && target.messageText != "...") {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
                 } else if (!target && this.mousedOverFormation) {
                     this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
