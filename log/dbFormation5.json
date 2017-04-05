@@ -1,0 +1,4 @@
+{"ack":"OK","user":{"lastName":"admin","firstName":"Istrateur","admin":true}}
+{"myCollection":[{"label":"maFormation","gamesCounter":{"quizz":0,"bd":0},"links":[],"levelsTab":[],"_id":"579afe677c5d460d5c94ad58","status":"NotPublished","formationId":"58b45553ac83400b04a87199"}]}
+{"formation":{"label":"maFormation","gamesCounter":{"quizz":0,"bd":0},"links":[],"levelsTab":[],"_id":"579afe677c5d460d5c94ad58","status":"NotPublished"}}
+{"saved":true,"id":"579afe677c5d460d5c94ad58"}

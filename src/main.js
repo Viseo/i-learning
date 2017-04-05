@@ -84,9 +84,6 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
             main.currentPageDisplayed = 'Password';
         }
         switch (main.currentPageDisplayed) {
-            case "Password":
-                password.display();
-                break;
             case "ConnexionManager":
                 connexionManager.display();
                 break;

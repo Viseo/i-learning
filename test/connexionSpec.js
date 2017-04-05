@@ -203,6 +203,22 @@ describe('connection check textarea', function(){
         });
     });
 
+    it('should disconnect someone', function(done){
+        testutils.retrieveDB("./log/dbDisconnect.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main = main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let deconnection = retrieve(root, '[deconnection]');
+            deconnection.listeners['click']();
+
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Connexion");
+
+            done();
+        })
+    })
+
 });
 
 describe('Forgotten password', function () {
