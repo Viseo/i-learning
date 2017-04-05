@@ -196,7 +196,8 @@ exports.Formation = function (globalVariables, classContainer) {
             returnButtonChevron.mark('returnButtonToFormationsManager');
             this.returnButton.setHandler(returnHandler);
             this.manipulator.move(0, globalVariables.header.height + this.returnButton.height);
-            this.graphManipulator.move(this.graphElementWidth, 0);
+            globalVariables.playerMode && this.graphManipulator.move(this.graphElementWidth, 0);
+            !globalVariables.playerMode && this.graphManipulator.move(this.graphElementWidth/4,0);
 
             let dblclickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
