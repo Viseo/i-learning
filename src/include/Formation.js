@@ -42,14 +42,46 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param formation - formation qui va contenir le nouveau niveau
          * @param gamesTab - quizs associés à ce niveau
          */
-        constructor(formation, gamesTab) {
+        constructor(formation, gamesTab, playerCheck) {
             this.parentFormation = formation;
-            this.manipulator = new Manipulator(this).addOrdonator(3);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
+
+            //croix rouge pour fermer
             this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
+
+
             this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
             this.y = (this.index - 1) * this.parentFormation.levelHeight;
+
+           if(!playerCheck){
+                this.manipulator.add( this.redCrossManipulator);
+                let redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
+                this.redCrossManipulator.add(redCross);
+
+                //effacer l objet (ce niveau)
+                this.redCrossClickHandler = () => {
+                    this.redCrossManipulator.flush();
+                    formation.levelsTab.splice(this.index-1, 1);
+                    this.manipulator.flush();
+                    this.gamesTab.forEach(game => {
+                        game.miniatureManipulator.flush();
+                        for (let j=formation.links.length-1; j>=0; j--){
+                            if (formation.links[j].childGame === game.id || formation.links[j].parentGame === game.id){
+                                formation.links.splice(j, 1);
+                            }
+                        }
+                    });
+                    for (let i=this.index-1; i<formation.levelsTab.length; i++){
+                        //formation.levelsTab[i].manipulator.flush();
+                        formation.levelsTab[i].index --;
+                        //formation.levelsTab[i].manipulator.flush();
+                    }
+                    formation.displayGraph(formation.graphW, formation.graphH);
+                };
+                svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+            }
         }
 
         /**
@@ -84,12 +116,15 @@ exports.Formation = function (globalVariables, classContainer) {
             this.formationId = (formation.formationId || null);
             this.progress = formation.progress;
             this.formationsManager = formationsManager;
-            this.manipulator = new Manipulator(this).addOrdonator(6);
+            this.manipulator.addOrdonator(7);
+
             this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
             this.graphManipulator = new Manipulator(this);
+
             this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
             this.arrowsManipulator = new Manipulator(this);
             this.miniaturesManipulator = new Manipulator(this);
+
             this.graphManipulator.add(this.miniaturesManipulator);
             this.graphManipulator.add(this.arrowsManipulator);
             this.clippingManipulator = new Manipulator(this);
@@ -213,66 +248,10 @@ exports.Formation = function (globalVariables, classContainer) {
                     line: new svg.Line(0, 0, this.graphElementWidth/2 , 0)
                         .color(myColors.grey, 1, myColors.grey)
                 };
-                if (!globalVariables.playerMode) {
-                    this.redCrossManipulator;
-                    let overLevelHandler = (event) => {
-                        let levelIndex = -1;
-                        let mouseY;
-                        mouseY = this.panel.back.localPoint(event.pageX, event.pageY).y;
-                        mouseY -= this.panel.content.y;
-                        while (mouseY > -this.panel.content.height / 2) {
-                            mouseY -= this.levelHeight;
-                            levelIndex++;
-                        }
-                        this.levelsTab.forEach(levelElement => {
-                            levelElement.redCrossManipulator.flush();
-                        });
-                        let levelObject = this.levelsTab[levelIndex];
-                        if (levelIndex >= 0 && levelIndex < this.levelsTab.length) {
-                            if (typeof levelObject.redCrossManipulator === 'undefined') {
-                                levelObject.redCrossManipulator = new Manipulator(levelObject).addOrdonator(2);
-                            }
-                            levelObject.manipulator.set(2, levelObject.redCrossManipulator);
-                            let redCrossSize = 15;
-                            let redCross = this.textToDisplay ? drawRedCross(0, 0, redCrossSize, levelObject.redCrossManipulator)
-                                : drawRedCross(60, -60, redCrossSize, levelObject.redCrossManipulator);
-                            redCross.mark('levelRedCross');
-                            levelObject.redCrossManipulator.move(obj.text.boundingRect().width / 2 + levelObject.x / 2, 15);
-                            svg.addEvent(redCross, 'click', levelObject.redCrossClickHandler);
-                            levelObject.redCrossManipulator.set(1, redCross);
-                        }
-                    };
-                    let mouseleaveHandler = () => {
-                        this.levelsTab.forEach(levelElement => {
-                            levelElement.redCrossManipulator.flush();
-                        });
-                    };
 
-                    svg.addEvent(this.panel.back, 'mouseover', overLevelHandler);
-                    svg.addEvent(this.panel.back, 'mouseout', mouseleaveHandler);
-
-                    level.redCrossClickHandler = () => {
-                        level.redCrossManipulator.flush();
-                        this.levelsTab.splice(level.index - 1, 1);
-                        level.manipulator.flush();
-                        level.gamesTab.forEach(game => {
-                            game.miniatureManipulator.flush();
-                            for (let j = this.links.length - 1; j >= 0; j--) {
-                                if (this.links[j].childGame === game.id || this.links[j].parentGame === game.id) {
-                                    this.links.splice(j, 1);
-                                }
-                            }
-                        });
-                        for (let i = level.index - 1; i < this.levelsTab.length; i++) {
-                            this.levelsTab[i].index--;
-                            this.levelsTab[i].manipulator.flush();
-                        }
-                        this.displayGraph(this.graphW, this.graphH);
-                    };
-                }
                 level.manipulator.set(1, icon.content);
                 level.manipulator.set(2, icon.line);
-                //level.manipulator.set(0,icon.border);
+
                 level.w = w;
                 level.h = h;
                 level.y = (level.index -0.5) * level.parentFormation.levelHeight;
@@ -318,12 +297,24 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.clippingManipulator.remove(this.panel.component);
                 }
                 this.panel = new gui.Panel(w, h, myColors.white);
+
                 this.panel.border.color([], 0, []);
+
+                //on utilise actuellement pour desectionner
+                this.clickOnPanel = () => {
+                    this.selectedArrow = null;
+                    this.displayGraph();
+                };
+
+                svg.addEvent(this.panel.back, "click", this.clickOnPanel);
+
                 this.panel.back.mark("panelBack");
+                //this.panel.content.add(this.levelManipulator.first);
                 this.panel.content.add(this.messageDragDropManipulator.first);
                 this.panel.component.move(w / 2, h / 2);
                 this.clippingManipulator.add(this.panel.component);
                 this.panel.content.add(this.graphManipulator.first);
+
                 this.panel.hHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
                 this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
                 resizePanel();
@@ -666,10 +657,15 @@ exports.Formation = function (globalVariables, classContainer) {
 
             let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
+
             let column = getColumn(dropLocation, level);
             if (game && !item.addNew) {
                 this.moveGame(game, level, column);
                 game.levelIndex === level || game.miniature.removeAllLinks();
+                if(this.levelsTab[game.levelIndex].gamesTab.length == 0){
+                    this.levelsTab[game.levelIndex].redCrossClickHandler();
+                }
+                game.levelIndex = level;
             } else {
                 this.addNewGame(level, column)
             }
@@ -695,8 +691,9 @@ exports.Formation = function (globalVariables, classContainer) {
         moveGame(game, level, column) {
             this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
             this.levelsTab[level].gamesTab.splice(column, 0, game);
-            if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1)
-                this.levelsTab.splice(game.levelIndex, 1);
+            //if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1){
+            //    this.levelsTab.splice(game.levelIndex, 1);
+            //}
         }
 
         /**
@@ -947,7 +944,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     game.tabQuestions || gamesTab.push(classContainer.createClass("BdVue", game, this));
                     gamesTab[gamesTab.length - 1].id = game.id;
                 });
-                this.levelsTab.push(classContainer.createClass("Level", this, gamesTab));
+                this.levelsTab.push(classContainer.createClass("Level", this, gamesTab, globalVariables.playerMode));
             });
         }
 
@@ -1053,19 +1050,6 @@ exports.Formation = function (globalVariables, classContainer) {
             }
         }
 
-        /**
-         * évènement pour ajouter un jeu à un niveau au clic de la souris.
-         */
-        clickToAdd() {
-            this.mouseUpGraphBlock = event => {
-                this.library.gameSelected && this.dropAction(event);
-                this.library.gameSelected && this.library.gameSelected.miniature.border.color(myColors.white, 1, myColors.black);
-                this.library.gameSelected = null;
-                svg.removeEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-            };
-            svg.addEvent(this.panel.back, "mouseup", this.mouseUpGraphBlock);
-            svg.addEvent(this.messageDragDropManipulator.ordonator.children[1], "mouseup", this.mouseUpGraphBlock);
-        }
 
         /**
          * mets à jour l'index des jeux dans les différents niveaux
