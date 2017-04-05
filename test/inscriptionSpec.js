@@ -51,14 +51,16 @@ const testFields = (fieldsInfo, errorMessage, successMessage) => {
     let root = runtime.anchor('content');
 
     let inscriptionText = retrieve(root, "[inscriptiontext]");
-    inscriptionText.handler.parentManip.listeners["click"]();
+    inscriptionText.listeners["click"]();
+    // inscriptionText.handler.parentManip.listeners["click"]();
 
     fieldsInfo.forEach(function(value, key){
         setField(root, key, value);
     });
 
     let saveButton = retrieve(root, "[saveButton]");
-    saveButton.handler.parentManip.listeners["click"]();
+    saveButton.listeners["click"]();
+    // saveButton.handler.parentManip.listeners["click"]();
 
     if(errorMessage){
         let errorMessageText = retrieve(root, "[errorMessage]");
@@ -96,12 +98,14 @@ describe('inscription', function(){
             let root = runtime.anchor('content');
 
             let inscriptionText = retrieve(root, "[inscriptiontext]");
-            inscriptionText.handler.parentManip.listeners["click"]();
+            inscriptionText.listeners["click"]();
+            // inscriptionText.handler.parentManip.listeners["click"]();
 
             runtime.listeners['resize']({w: 1500, h: 1500});
 
             let saveButton = retrieve(root, "[saveButton]");
-            saveButton.handler.parentManip.listeners["click"]();
+            saveButton.listeners["click"]();
+            // saveButton.handler.parentManip.listeners["click"]();
 
             let errorMessage = retrieve(root, "[errorMessage]");
             assert.equal(errorMessage.handler.messageText, 'Veuillez remplir tous les champs');
