@@ -251,16 +251,16 @@ describe('formationsManager', function () {
 
             let glass = retrieve(root, '[theGlass]');
             let coord = Array(4).fill({x:0, y:0}, 0, 4);
-            console.log(coord);
+
             coord[0].x = game0.handler.parent.globalPoint(game0.handler.parentManip.x,game0.handler.parentManip.y).x;
             coord[0].y = game0.handler.parent.globalPoint(game0.handler.parentManip.x,game0.handler.parentManip.y).y;
-            coord[1].x = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game0.handler.parentManip.y).x;
-            coord[1].y = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game0.handler.parentManip.y).y;
-            coord[2].x = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game0.handler.parentManip.y).x;
-            coord[2].y = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game0.handler.parentManip.y).y;
-            coord[3].x = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game0.handler.parentManip.y).x;
-            coord[3].y = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game0.handler.parentManip.y).y;
-
+            coord[1].x = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game1.handler.parentManip.y).x;
+            coord[1].y = game1.handler.parent.globalPoint(game1.handler.parentManip.x,game1.handler.parentManip.y).y;
+            coord[2].x = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game2.handler.parentManip.y).x;
+            coord[2].y = game2.handler.parent.globalPoint(game2.handler.parentManip.x,game2.handler.parentManip.y).y;
+            coord[3].x = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game3.handler.parentManip.y).x;
+            coord[3].y = game3.handler.parent.globalPoint(game3.handler.parentManip.x,game3.handler.parentManip.y).y;
+            console.log(coord);
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});
             glass.listeners['mouseup']({pageX:1108, pageY:360, preventDefault:()=>{}});
             glass.listeners['mousedown']({pageX:1108, pageY:211, preventDefault:()=>{}});

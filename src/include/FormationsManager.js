@@ -53,6 +53,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             this.message = new Manipulator(this).addOrdonator(3);
             /* for Player */
             this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(6);
+
         }
 
         render() {
@@ -145,7 +146,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                     height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                 };
-
+                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize;//drawing.height * this.header.size;
                 drawing.notInTextArea = true;
                 svg.addGlobalEvent("keydown", (event) => {
                     if (drawing.notInTextArea && hasKeyDownEvent(event)) {
@@ -160,6 +161,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.manipulator.add(this.clippingManipulator);
                 let heightListFormations = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize * 2;
                 this.clippingManipulator.move(MARGIN / 2, heightListFormations-MARGIN);
+
 
                 if (typeof this.panel === "undefined") {
                     this.panel = new gui.Panel(drawing.width, heightAllocatedToPanel, myColors.none);

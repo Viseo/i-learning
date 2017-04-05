@@ -118,12 +118,15 @@ exports.Formation = function (globalVariables, classContainer) {
             this.invalidLabelInput = false;
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.levelHeight = 150;
-            this.graphElementSize = this.levelHeight * 0.65;
+            this.graphElementSize = 100;//Cette valeur influe directement sur les proportions du graph.
+            this.graphElementWidth = this.graphElementSize * 2;
             this.miniature = new MiniatureFormation(this);
             this.changeableDimensions();
             this.manipulator.add(this.saveFormationButtonManipulator);
             this.manipulator.add(this.publicationFormationButtonManipulator);
             this.manipulator.add(this.deactivateFormationButtonManipulator);
+            this.formationLeftManipulator = new Manipulator(this);
+            this.manipulator.add(this.formationLeftManipulator);
         }
 
         /**
@@ -158,6 +161,7 @@ exports.Formation = function (globalVariables, classContainer) {
             returnButtonChevron.mark('returnButtonToFormationsManager');
             this.returnButton.setHandler(returnHandler);
             this.manipulator.move(0, globalVariables.header.height + this.returnButton.height);
+            this.graphManipulator.move(this.graphElementWidth, 0);
 
             let dblclickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
@@ -203,13 +207,12 @@ exports.Formation = function (globalVariables, classContainer) {
             };
 
             let displayLevel = (w, h, level) => {
-                this.panel.content.add(level.manipulator.first);
-                var lineColor = globalVariables.playerMode ? myColors.grey : myColors.black;
-                var levelText = globalVariables.playerMode ? "" : "Niveau " + level.index;
-                let obj = autoAdjustText(levelText, w - 3 * borderSize, this.levelHeight, 20, "Arial", level.manipulator, 0);
-                obj.line = new svg.Line(MARGIN, this.levelHeight, level.parentFormation.levelWidth, this.levelHeight).color(lineColor, 3, lineColor);
-                obj.line.component.setAttribute && obj.line.component.setAttribute('stroke-dasharray', '6');
-
+                this.graphManipulator.add(level.manipulator.first);
+                let icon = {
+                    content: new svg.Text("Niveau " + level.index).dimension(this.graphElementWidth, 0).anchor('left').position(0, -MARGIN),
+                    line: new svg.Line(0, 0, this.graphElementWidth/2 , 0)
+                        .color(myColors.grey, 1, myColors.grey)
+                };
                 if (!globalVariables.playerMode) {
                     this.redCrossManipulator;
                     let overLevelHandler = (event) => {
@@ -267,14 +270,25 @@ exports.Formation = function (globalVariables, classContainer) {
                         this.displayGraph(this.graphW, this.graphH);
                     };
                 }
-                level.manipulator.set(1, obj.line);
-                obj.text.position(obj.text.boundingRect().width, obj.text.boundingRect().height);
-                obj.text._acceptDrop = true;
+                level.manipulator.set(1, icon.content);
+                level.manipulator.set(2, icon.line);
+                //level.manipulator.set(0,icon.border);
                 level.w = w;
                 level.h = h;
-                level.y = (level.index - 1) * level.parentFormation.levelHeight;
+                level.y = (level.index -0.5) * level.parentFormation.levelHeight;
                 level.manipulator.move(0, level.y);
             };
+
+            let displayFormationLeft = ()=>{
+                let icon = {
+                    content: new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
+                    border: util.drawHexagon(this.graphElementWidth/2, this.graphElementSize*1.5, 'V', 1)
+                }
+
+                this.formationLeftManipulator.add(icon.border);
+                this.formationLeftManipulator.add(icon.content);
+                this.formationLeftManipulator.move(this.graphElementWidth/3, globalVariables.drawing.height/2 - globalVariables.header.height);
+            }
 
             let displayFrame = (w, h) => {
                 let hasKeyDownEvent = (event) => {
@@ -304,6 +318,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.clippingManipulator.remove(this.panel.component);
                 }
                 this.panel = new gui.Panel(w, h, myColors.white);
+                this.panel.border.color([], 0, []);
                 this.panel.back.mark("panelBack");
                 this.panel.content.add(this.messageDragDropManipulator.first);
                 this.panel.component.move(w / 2, h / 2);
@@ -350,7 +365,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 }
 
                 let manageMiniature = (tabElement) => {
-                    tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
+                    //tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                     let conf = {
                         clicked : (what) => {
                             what.parentObject.miniature.miniatureClickHandler();
@@ -373,19 +388,21 @@ exports.Formation = function (globalVariables, classContainer) {
 
                 this.levelsTab.forEach((level) => {
                     displayLevel(this.graphCreaWidth, this.graphCreaHeight, level);
-                    this.adjustGamesPositions(level);
                     this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     level.gamesTab.forEach((tabElement) => {
                         tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
-                        this.miniaturesManipulator.add(tabElement.miniatureManipulator);// mettre un manipulateur par niveau !_! attention à bien les enlever
+                        this.miniaturesManipulator.add(tabElement.miniatureManipulator);
+                        // mettre un manipulateur par niveau !_! attention à bien les enlever
                         if (typeof tabElement.miniature === "undefined") {
                             (tabElement.miniature = tabElement.displayMiniature(this.graphElementSize));
+
                         }
+                        this.adjustGamesPositions(level);
                         manageMiniature(tabElement);
                     });
                 });
                 !globalVariables.playerMode && displayMessageDragAndDrop();
-                this.graphManipulator.move(this.graphW / 2, this.graphH / 2);
+
                 resizePanel();
                 this.panel.back.parent.parentManip = this.graphManipulator;
                 updateAllLinks();
@@ -396,6 +413,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.graphCreaHeight = (drawing.height - drawing.height * HEADER_SIZE - this.returnButton.height) * this.graphCreaHeightRatio;//-15-this.saveButtonHeight;//15: Height Message Error
                 this.graphCreaWidth = drawing.width - 2 * MARGIN;
                 displayFrame(this.graphCreaWidth, this.graphCreaHeight);
+                displayFormationLeft();
                 this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
                 this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
             } else {
@@ -991,7 +1009,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.graphCreaHeight = drawing.height * this.graphCreaHeightRatio + MARGIN;
             this.levelWidth = drawing.width - this.libraryWidth - MARGIN;
-            this.minimalMarginBetweenGraphElements = this.graphElementSize / 2;
+            this.minimalMarginBetweenGraphElements = this.graphElementSize / 4;
             this.y = drawing.height * HEADER_SIZE + 3 * MARGIN;
             this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
             this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
@@ -1065,10 +1083,11 @@ exports.Formation = function (globalVariables, classContainer) {
 
             computeIndexes();
             var nbOfGames = level.gamesTab.length;
-            var spaceOccupied = nbOfGames * this.minimalMarginBetweenGraphElements + this.graphElementSize * nbOfGames;
+            var spaceOccupied = this.minimalMarginBetweenGraphElements + this.graphElementWidth*0.8;
             level.gamesTab.forEach(game => {
-                game.miniaturePosition.x = this.minimalMarginBetweenGraphElements * (3 / 2) + (game.gameIndex - nbOfGames / 2) * spaceOccupied / nbOfGames;
-                game.miniaturePosition.y = -this.panel.height / 2 + (level.index - 1 / 2) * this.levelHeight;
+                game.miniatureManipulator.move(this.graphElementWidth*0.9+ (game.gameIndex * spaceOccupied) ,
+                    (level.index - 0.5) * game.parentFormation.levelHeight );
+                //game.miniaturePosition.y = -this.panel.height / 2 + (level.index) * this.levelHeight/2;
             });
         }
 
