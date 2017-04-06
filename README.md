@@ -49,7 +49,7 @@ dans un terminal, taper la commande: `npm test`
 pour voir le details du code coverage, ouvrir dans le navigateur: coverage/lcov-report/index.html
 
 ### Adresses serveurs
- développement : http://54.229.14.93:8080/
+ développement : http://i-learning-dev.viseolab.com/
  
  production : http://54.194.167.185:8080/
 
