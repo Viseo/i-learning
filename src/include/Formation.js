@@ -386,9 +386,9 @@ exports.Formation = function (globalVariables, classContainer) {
                         this.miniaturesManipulator.add(tabElement.miniatureManipulator);
                         // mettre un manipulateur par niveau !_! attention à bien les enlever
                         if (typeof tabElement.miniature === "undefined") {
-                            (tabElement.miniature = tabElement.displayMiniature(this.graphElementSize));
-
+                            (tabElement.miniature = tabElement.createMiniature(this.graphElementSize));
                         }
+                        tabElement.miniature.display();
                         this.adjustGamesPositions(level);
                         manageMiniature(tabElement);
                     });
@@ -423,6 +423,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 let formationWidth = this.titleSvg.boundingRect().width;
                 let formationLabel = {};
 
+                //TODO changer l'input pour changer le nom de la formation
                 let clickEditionFormationLabel = () => {
                     let bounds = formationLabel.border.boundingRect();
                     this.formationInfoManipulator.unset(1);
@@ -509,7 +510,8 @@ exports.Formation = function (globalVariables, classContainer) {
 
                     let saveNameIcon = new svg.Image('../images/save-file-option.png')
                         .dimension(16, 16)
-                        .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3);
+                        .position(formationLabel.border.width + formationWidth + 3 * MARGIN, -MARGIN + 3)
+                        .mark('saveNameIcon');
                     this.formationInfoManipulator.set(2, saveNameIcon);
 
                     svg.addEvent(formationLabel.content, "dblclick", clickEditionFormationLabel);
@@ -740,18 +742,8 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param callback - fonction appelée lorsque la création a reussi ou raté
          */
         saveNewFormation(callback) {
-            const
-                messageError = "Veuillez rentrer un nom de formation valide",
+            const messageError = "Veuillez rentrer un nom de formation valide",
                 messageUsedName = "Cette formation existe déjà"
-
-            const returnToFormationList = () => {
-                this.manipulator.flush();
-                Server.getAllFormations().then(data => {
-                    myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
-                    globalVariables.formationsManager.display();
-                });
-            };
 
             if (this.label && this.label !== this.labelDefault && this.label.match(this.regex)) {
                 const getObjectToSave = () => {
@@ -763,22 +755,24 @@ exports.Formation = function (globalVariables, classContainer) {
                     };
                 };
 
-                let addNewFormation = () => {
-                    Server.insertFormation(getObjectToSave(), ignoredData)
-                        .then(data => {
-                            let answer = JSON.parse(data);
-                            if (answer.saved) {
-                                this._id = answer.idVersion;
-                                this.formationId = answer.id;
-                                returnToFormationList();
-                            } else {
-                                if (answer.reason === "NameAlreadyUsed") {
-                                    callback(messageUsedName, true);
-                                }
+                Server.insertFormation(getObjectToSave(), ignoredData)
+                    .then(data => {
+                        let answer = JSON.parse(data);
+                        if (answer.saved) {
+                            this._id = answer.idVersion;
+                            this.formationId = answer.id;
+                            this.manipulator.flush();
+                            Server.getAllFormations().then(data => {
+                                myFormations = JSON.parse(data).myCollection;
+                                globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                                globalVariables.formationsManager.display();
+                            });
+                        } else {
+                            if (answer.reason === "NameAlreadyUsed") {
+                                callback(messageUsedName, true);
                             }
-                        })
-                };
-                addNewFormation()
+                        }
+                    })
             } else if (this.label == "" || this.label == null) {
                 callback(messageError, true);
             }
@@ -921,13 +915,16 @@ exports.Formation = function (globalVariables, classContainer) {
                 }, 5000);
             };
 
-            this.publicationFormationQuizManager();
             if (this.levelsTab.length === 0) {
                 this.displayPublicationMessage(messageErrorNoGame);
+                return;
             }
             if (!this.label || this.label === this.labelDefault || !this.label.match(this.regex)) {
                 this.displayPublicationMessage(messageErrorNoNameFormation);
+                return;
             }
+
+            this.publicationFormationQuizManager();
         };
 
         /**
@@ -1156,7 +1153,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param size - taille de la miniature
          * @returns {MiniatureGame}
          */
-        displayMiniature(size) {
+        createMiniature(size) {
             return new util.MiniatureGame(this, size);
         }
 

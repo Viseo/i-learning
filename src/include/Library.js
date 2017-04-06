@@ -718,7 +718,7 @@ exports.Library = function(globalVariables, classContainer){
                     popIn.image = element.src;
                     popIn.video = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
-                    let questionCreator = target.parent.parentManip.parentObject.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                    let questionCreator = target.parent.parentManip.parentObject.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {

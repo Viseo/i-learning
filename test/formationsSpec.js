@@ -97,6 +97,7 @@ let runtime,
 describe('formationsManager', function () {
 
     beforeEach(function () {
+        enhance = require('../lib/enhancer').Enhance();
         runtime = mockRuntime();
         svg = SVG(runtime);
         runtime.declareAnchor('content');
@@ -106,13 +107,12 @@ describe('formationsManager', function () {
     });
 
     it ("should not add a new formation", function(done) {
-        testutils.retrieveDB("./log/dbAdminFormationsManager.json", dbListener, function () {
+        testutils.retrieveDB("./log/dbFormation1.json", dbListener, function () {
             svg.screenSize(1920,947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content") ;
-
+            runtime.listeners['resize']({w:1500, h:1500});
             testKeyDownArrow(runtime);
-
             runtime.advance();
 
             testValueOnElement(root, "formationManagerLabelContent", "Ajouter une f…");
@@ -131,28 +131,38 @@ describe('formationsManager', function () {
             testValueOnElement(root, "formationInputErrorMessage", null);
 
             callClickOnElement(root, "addFormationButton");
-            testValueOnElement(root, "formationErrorMessage", null);
-
-            callClickOnElement(root, "formationManagerLabelContent");
-            callEnterOnElement(root, "formationLabelContentArea", "MaFormation");
-            testValueOnElement(root, "formationInputErrorMessage", null);
-
-            callClickOnElement(root, "addFormationButton");
             testValueOnElement(root, "formationErrorMessage", "Cette formation existe déjà");
 
             done();
         });
     });
 
-    it("should add a formation", function(done){
-        testutils.retrieveDB("./log/dbNewQuiz.json", dbListener, function () {
+    it('should highlight a formation', function(done){
+        testutils.retrieveDB("./log/dbFormation2.json", dbListener, function(){
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
 
-            testKeyDownArrow(runtime);
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners['mouseenter']();
+            assert.ok(maFormation.handler.parentManip.get(0).fillColor.equals([130,180,255]));
+            assert.equal(maFormation.handler.parentManip.get(0).strokeWidth, 3);
+            assert.ok(maFormation.handler.parentManip.get(0).strokeColor.equals([0,0,0]));
 
-            runtime.advance();
+            maFormation.handler.parentManip.listeners['mouseleave']();
+            assert.ok(maFormation.handler.parentManip.get(0).fillColor.equals([250,250,250]));
+            assert.equal(maFormation.handler.parentManip.get(0).strokeWidth, 1);
+            assert.ok(maFormation.handler.parentManip.get(0).strokeColor.equals([125, 122, 117]));
+
+            done();
+        });
+    });
+
+    it('should add a formation', function (done) {
+        testutils.retrieveDB("./log/dbFormation3.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
 
             let formationManagerLabelContent = retrieve(root, "[formationManagerLabelContent]");
             formationManagerLabelContent.listeners["click"]();
@@ -162,17 +172,80 @@ describe('formationsManager', function () {
             addFormationButton = retrieve(root, "[addFormationButton]");
             addFormationButton.listeners["click"]();
 
-            //let addFormationCadre = retrieve(root, "[addFormationCadre]");
-            //addFormationCadre.listeners["click"]();
+            let maFormation = retrieve(root, "[maFormation]");
+            assert.equal(maFormation.handler.parentManip.get(1).messageText, "maFormation");
+
+            done();
+        })
+    })
+
+    it('should not publish a formation', function(done){
+        testutils.retrieveDB("./log/dbFormation4.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
 
             let maFormation = retrieve(root, "[maFormation]");
-            maFormation.listeners["click"]();
+            maFormation.handler.parentManip.listeners["click"]();
+
+            runtime.listeners['resize']({w:1500, h:1500});
+
+            let headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "maFormation");
 
             let publicationFormationButtonCadre = retrieve(root, "[publicationFormationButtonCadre]");
             publicationFormationButtonCadre.listeners["click"]();
             let errorMessagePublication = retrieve(root, "[errorMessagePublication]");
             assert.equal(errorMessagePublication.text,
                 testutils.escape("Veuillez ajouter au moins un jeu à votre formation."));
+
+            runtime.listeners['resize']({w:1500, h:1500});
+
+            let homeText = retrieve(root, "[homeText]");
+            homeText.listeners['click']();
+
+            headerMessage = retrieve(root, "[headerMessage]");
+            assert.equal(headerMessage.text, "Formations");
+
+            done();
+        })
+    })
+
+    it("should change a formation's name", function (done) {
+        testutils.retrieveDB("./log/dbFormation5.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
+
+            let formationLabel = retrieve(root, "[formationLabelContent]");
+            formationLabel.listeners["dblclick"]();
+            let contentarea = retrieve(root, "[formationLabelContentArea]");
+            enter(contentarea, "maFormation2");
+
+            let saveNameIcon = retrieve(root, "[saveNameIcon]");
+            saveNameIcon.listeners['click']();
+
+            let formationErrorMessage = retrieve(root, "[formationErrorMessage]");
+            assert.equal(formationErrorMessage.text,
+                testutils.escape("Les modifications ont bien été enregistrées."));
+
+            runtime.listeners['resize']({w:1500, h:1500});
+
+            done()
+        })
+    })
+
+    it("should add a quiz", function(done){
+        testutils.retrieveDB("./log/dbFormation6.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
 
             let gameQuiz = retrieve(root, "[miniInLibraryQuiz]");
             gameQuiz.listeners["mousedown"]({pageX:165, pageY:300, preventDefault:()=>{}});
@@ -736,9 +809,6 @@ describe('formationsManager', function () {
             bigGlass.listeners['mousemove']({pageX:31, pageY:71, preventDefault:()=>{}});
 
             runtime.listeners['resize']({w:1500, h:1500});
-
-            let deconnection = retrieve(root, '[deconnection]');
-            deconnection.listeners['click']();
 
             done();
 

@@ -14,6 +14,7 @@ exports.Domain = function (globalVariables) {
     let
         main = globalVariables.main,
         runtime = globalVariables.runtime,
+        dbListener = globalVariables.dbListener,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
@@ -38,6 +39,7 @@ exports.Domain = function (globalVariables) {
     setGlobalVariables = () => {
         main = globalVariables.main;
         runtime = globalVariables.runtime;
+        dbListener = globalVariables.dbListener;
         drawing = globalVariables.drawing;
         drawings = globalVariables.drawings;
         svg = globalVariables.svg;
@@ -85,9 +87,7 @@ exports.Domain = function (globalVariables) {
         /**
          * fonction d'affichage qui doit être override dans toutes les classes qui extend Vue
          */
-        render() {
-            console.log("vue rendered. This should be override")
-        };
+        render() {};
 
         /**
          * affiche les éléments de la classe et attache les évènements définis dans events() aux bon objets
@@ -176,7 +176,7 @@ exports.Domain = function (globalVariables) {
                 font_size = 20,
                 pos_text_y = height/2 +font_size/4,
                 userManip = this.userManipulator,
-                text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white),
+                text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white).mark('homeText'),
                 rect = new svg.Rect(width, height).color(myColors.customBlue, 1, myColors.black).position(width/2, height/2);
             manip.set(1, text);
             manip.set(0, rect);

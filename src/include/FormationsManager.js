@@ -181,9 +181,7 @@ exports.formationsManager = function(globalVariables, classContainer){
 
             };
 
-            let onClickDisplayFormation = event => {
-                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                let formation = target.parent.parentManip.parentObject.formation;
+            let onClickDisplayFormation = formation => {
                 formation.miniature.removeHandler("click");
                 Server.getVersionById(formation._id).then(data => {
                     var myFormation = JSON.parse(data).formation;
@@ -207,23 +205,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                         this.formationInfoManipulator.unset(2);
                     }, 5000);
                 }.bind(this));
-            };
-            let FormationVue = classContainer.getClass("FormationVue");
-            let onMouseOverSelect = event => {
-                let target = drawings.component.background.getTarget(event.pageX, event.pageY); // on récupère la formation selon le pointeur de la souris
-                if (target && (target instanceof svg.Polygon || target instanceof svg.Text)) {
-                    this.mousedOverFormation = target.parent.children[0];
-                    this.mousedOverFormation.color(myColors.customBlue,3,myColors.black);
-                }
-            };
-            let onMouseOutSelect = event => {
-                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                if (target && (target instanceof svg.Polygon || target instanceof svg.Text) && this.mousedOverFormation) {
-                    this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
-                } else if (!target && this.mousedOverFormation) {
-                    this.mousedOverFormation.color([250, 250, 250], 1, myColors.grey);
-                    this.mousedOverFormation = null;
-                }
             };
 
             this.displayHeaderFormations = () => {
@@ -372,9 +353,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     formation.parent = this;
                     this.formationsManipulator.add(formation.miniature.miniatureManipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-                    formation.miniature.setHandler("click", onClickDisplayFormation);
-                    formation.miniature.setHandler("mouseenter", onMouseOverSelect);
-                    formation.miniature.setHandler("mouseleave", onMouseOutSelect);
+                    formation.miniature.setHandler("click", () => onClickDisplayFormation(formation));
                     count++;
                     posx += (this.tileWidth + spaceBetweenElements.width);
                 });

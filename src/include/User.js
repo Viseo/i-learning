@@ -67,7 +67,8 @@ exports.User = function (globalVariables, classContainer) {
             this.saveButtonManipulator.component.mark('saveButton');
             this.connexionTextManipulator = new Manipulator(this);
             this.connexionTextManipulator.component.mark('connexionText');
-            this.manipulator.add(this.firstNameManipulator)
+            this.manipulator
+                .add(this.firstNameManipulator)
                 .add(this.lastNameManipulator)
                 .add(this.mailAddressManipulator)
                 .add(this.passwordManipulator)
@@ -208,7 +209,7 @@ exports.User = function (globalVariables, classContainer) {
 
             let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);
             saveButton.text.color(myColors.lightgrey, 0, myColors.white);
-            saveButton.component.mark('saveButton');
+            // saveButton.component.mark('saveButton');
             this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
 
             let connexionText = new svg.Text(CONNECTION_TEXT)
@@ -754,7 +755,8 @@ exports.User = function (globalVariables, classContainer) {
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                     .position(0, -MARGIN - BUTTON_HEIGHT)
                     .color(myColors.red)
-                    .font(FONT, FONT_SIZE_INPUT);
+                    .font(FONT, FONT_SIZE_INPUT)
+                    .mark("msgFieldError");
                 this.connexionButtonManipulator.set(1, message);
 
                 svg.timeout(() => {
@@ -782,7 +784,8 @@ exports.User = function (globalVariables, classContainer) {
                             .dimension(INPUT_WIDTH, INPUT_HEIGHT)
                             .position(0, -2 * (INPUT_HEIGHT + MARGIN))
                             .color(myColors.red)
-                            .font(FONT, FONT_SIZE_INPUT);
+                            .font(FONT, FONT_SIZE_INPUT)
+                            .mark("msgFieldError");
                         this.connexionButtonManipulator.set(1, message);
                         svg.timeout(() => {
                             this.connexionButtonManipulator.unset(1);
