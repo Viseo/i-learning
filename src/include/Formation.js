@@ -1518,6 +1518,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.resultManipulator && this.manipulator.remove(this.resultManipulator);
             this.resultManipulator = new Manipulator(this);
             this.scoreManipulator = new Manipulator(this).addOrdonator(2);
+            this.scoreManipulator.mark('scoreManipulator');
             this.resultManipulator.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
             this.resultManipulator.add(this.scoreManipulator);
             this.resultManipulator.add(this.puzzle.manipulator);

@@ -206,17 +206,57 @@ describe('Player mode', function () {
             let firstGame = retrieve(root, "[level0quizz0]");
             firstGame.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
             // firstGame.handler.parentManip.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
-
-            let answer;
-            answer = retrieve(root,'[answer0]');
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advance();
+            let answer
+            let answerLabelCadre;
+            // answerLabelCadre.listeners['click']();
             const playerAnswers = (index, label) => {
                 answer = retrieve(root, "[answer" + index + "]");
-                assert.equal(answer.text, label);
+                assert.equal(answer.text, testutils.escape(label));
                 answer.listeners['click']();
             };
             playerAnswers(0, 'Une réponse');
+            // answerLabelCadre = retrieve(root,'[answerLabelCadre0]');
+            let scoreManipulator = retrieve(root,'[scoreManipulator]');
+            let manip = retrieve(root,'[resultManipulator]');
+            // let endQuizFinalMessage = scoreManipulator.handler.children["0"].children["0"].children["0"].children["1"].messageText;
+            let endQuizFinalMessage = scoreManipulator.children["0"].children["0"].children["0"].children["1"];
+            assert.equal(endQuizFinalMessage.text, testutils.escape('Impressionant ! Vous avez répondu à 1 questions, et toutes sont justes !'));
             runtime.listeners['resize']({w:1500, h:1500});
+            // page résultat final => on souhaite afficher les explications
+            let expButton = retrieve(root,'[expButton]');
+            expButton.listeners['click']();
+            for(let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
+            }
+            runtime.advance();
+            let questionLabel = retrieve(root,'[questionFromPuzzleBordure1]');
+            let questionLabelText = questionLabel.handler.parentManip.components[2];        // tester si la question affichée correspond bien à "Une question"
+            assert.equal(questionLabelText.messageText, 'Une question');                    // nom de la question du quiz d'indice level0quizz0
+            let answerElement;
+            const playerAnswersElements = (index, label) => {
+                answerElement = retrieve(root, "[answerElement" + index + "]");
+                assert.equal(answerElement.parent.children["1"].text, testutils.escape(label));
+                answerElement.listeners['click']();
+            };
+            playerAnswersElements(0, 'Une réponse');
+            let explanationIconSquare = retrieve(root, '[explanationIconSquare]');
+            explanationIconSquare.listeners['click']();
+            let circleCloseExplanation = retrieve(root, '[circleCloseExplanation]');
+            circleCloseExplanation.listeners['click']();
+            playerAnswersElements(1, 'Plusieurs réponses');
 
+            let returnButtonToResults = retrieve(root, '[returnButtonToResults]');
+            returnButtonToResults.listeners['click']();
+
+            let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
+            returnButtonToFormation.listeners['click']();
+
+            let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
+            returnButtonToFormationsManager.listeners['click']();
             done();
         });
     });
