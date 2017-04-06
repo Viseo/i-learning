@@ -1173,19 +1173,20 @@ exports.Util = function (globalVariables) {
         }
 
         redCrossClickHandler() {
+            let formationVue = this.game.parentFormation;
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             this.removeAllLinks();
-            this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator);
+            formationVue.miniaturesManipulator.remove(this.game.miniatureManipulator);
             this.game.miniatureManipulator.unset(0);
             this.game.miniatureManipulator.unset(1);
             this.game.miniatureManipulator.remove(this.redCrossManipulator);
-            var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
-            if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)) {
-                this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
-                this.game.parentFormation.movePanelContent();
+            var longestLevelCandidates = formationVue.findLongestLevel();
+            if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
+                formationVue.levelWidth -= (formationVue.graphElementSize + formationVue.minimalMarginBetweenGraphElements);
+                formationVue.movePanelContent();
             }
-            this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
-            var levelsTab = this.game.parentFormation.levelsTab;
+            formationVue.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+            var levelsTab = formationVue.levelsTab;
             if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
                 levelsTab[this.game.levelIndex].redCrossClickHandler();
             }
@@ -1193,11 +1194,11 @@ exports.Util = function (globalVariables) {
                 levelsTab[levelsTab.length - 1].manipulator.unset(2);
                 levelsTab[levelsTab.length - 1].manipulator.unset(1);
                 levelsTab[levelsTab.length - 1].manipulator.unset(0);
-                this.game.parentFormation.levelsTab.pop();
+                formationVue.levelsTab.pop();
             }
-            this.game.parentFormation.selectedGame.selected = false;
-            this.game.parentFormation.selectedGame = null;
-            this.game.parentFormation.displayGraph();
+            formationVue.selectedGame.selected = false;
+            formationVue.selectedGame = null;
+            formationVue.displayGraph();
         }
 
         removeAllLinks() {
@@ -1215,12 +1216,13 @@ exports.Util = function (globalVariables) {
         }
 
         miniatureClickHandler() {
-            this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
+            let formationVue = this.game.parentFormation;
+            formationVue.selectedArrow && formationVue.selectedArrow.arrowPath.component.listeners.click();
             if (!this.selected) {
-                if (this.game.parentFormation.selectedGame) {
-                    this.checkAndDrawValidity(this.game.parentFormation.selectedGame);
-                    this.game.parentFormation.selectedGame.selected = false;
-                    !playerMode && this.game.parentFormation.selectedGame.game.miniatureManipulator.remove(this.game.parentFormation.selectedGame.redCrossManipulator);
+                if (formationVue.selectedGame) {
+                    this.checkAndDrawValidity(formationVue.selectedGame);
+                    formationVue.selectedGame.selected = false;
+                    !playerMode && formationVue.selectedGame.game.miniatureManipulator.remove(formationVue.selectedGame.redCrossManipulator);
                 }
             }
             this.selected = !this.selected;
@@ -1299,6 +1301,11 @@ exports.Util = function (globalVariables) {
                     break;
             }
         };
+
+        removeRedCross(){
+            this.game.miniatureManipulator.remove(this.redCrossManipulator);
+            this.selected = false;
+        }
     }
 
     class MiniatureFormation {

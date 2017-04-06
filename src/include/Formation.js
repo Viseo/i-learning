@@ -84,6 +84,25 @@ exports.Formation = function (globalVariables, classContainer) {
             }
         }
 
+
+        displayLevel(){
+            this.parentFormation.graphManipulator.add(this.manipulator.first);
+            let icon = {
+                content: new svg.Text("Niveau " + this.index).dimension(this.parentFormation.graphElementWidth, 0).anchor('left').position(0, -MARGIN),
+                line: new svg.Line(0, 0, this.parentFormation.graphElementWidth/2 , 0)
+                    .color(myColors.grey, 1, myColors.grey)
+            };
+
+            this.manipulator.set(1, icon.content);
+            this.manipulator.set(2, icon.line);
+
+            this.w = this.parentFormation.graphCreaWidth;
+            this.h = this.parentFormation.graphCreaHeight;
+            this.y = (this.index -0.5) * this.parentFormation.levelHeight;
+            this.manipulator.move(0, this.y);
+        }
+
+
         /**
          * supprime le niveau de la formation parent
          * @param index
@@ -242,23 +261,6 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.miniaturesManipulator.move((widthMAX - this.panel.width) / 2, 0);
             };
 
-            let displayLevel = (w, h, level) => {
-                this.graphManipulator.add(level.manipulator.first);
-                let icon = {
-                    content: new svg.Text("Niveau " + level.index).dimension(this.graphElementWidth, 0).anchor('left').position(0, -MARGIN),
-                    line: new svg.Line(0, 0, this.graphElementWidth/2 , 0)
-                        .color(myColors.grey, 1, myColors.grey)
-                };
-
-                level.manipulator.set(1, icon.content);
-                level.manipulator.set(2, icon.line);
-
-                level.w = w;
-                level.h = h;
-                level.y = (level.index -0.5) * level.parentFormation.levelHeight;
-                level.manipulator.move(0, level.y);
-            };
-
             let displayFormationLeft = ()=>{
                 let icon = {
                     content: new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
@@ -304,7 +306,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 //on utilise actuellement pour desectionner
                 this.clickOnPanel = () => {
                     this.selectedArrow = null;
+                    this.selectedGame && this.selectedGame.removeRedCross();
                     this.displayGraph();
+                    //this.selectedGame.
                 };
 
                 svg.addEvent(this.panel.back, "click", this.clickOnPanel);
@@ -379,7 +383,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 };
 
                 this.levelsTab.forEach((level) => {
-                    displayLevel(this.graphCreaWidth, this.graphCreaHeight, level);
+                    level.displayLevel();
                     this.miniaturesManipulator.last.mark("miniaturesManipulatorLast");
                     level.gamesTab.forEach((tabElement) => {
                         tabElement.miniatureManipulator.ordonator || tabElement.miniatureManipulator.addOrdonator(3);
@@ -625,6 +629,8 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param game - quiz associé au drop
          */
         dropAction(x, y, item) {
+            this.selectedGame && this.selectedGame.removeRedCross();
+
             let game;
             if (item && item.parentObject) {
                 game = item.parentObject;
