@@ -1115,6 +1115,14 @@ exports.Util = function (globalVariables) {
         }
     }
 
+
+    const hexagonDefaultColors = ()=>{
+        return { fillColor : myColors.lightwhite,
+            strokeWidth : 1,
+            strokeColor : myColors.grey
+        };
+    };
+
     let drawHexagon = (w,h, orientation, ratio)=>{
         let factor = ratio || 1;
         if (orientation == 'V'){
@@ -1138,8 +1146,9 @@ exports.Util = function (globalVariables) {
             ];
         }
 
-        return new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey);
-    }
+        return new svg.Polygon().add(points).color(
+            hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+    };
 
     class MiniatureGame {
         constructor(game, size) {
@@ -1149,6 +1158,7 @@ exports.Util = function (globalVariables) {
             this.height = size/2;
             this.size = size;
         }
+
         display(){
             let icon = {
                 content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
@@ -1170,6 +1180,11 @@ exports.Util = function (globalVariables) {
             if (playerMode) {
                 this.drawProgressIcon(this.game, this.size);
             }
+        }
+
+        showDefaultColor(){
+            this.game.miniatureManipulator.ordonator.children[0]
+                .color(hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
         }
 
         redCrossClickHandler() {
@@ -1222,12 +1237,13 @@ exports.Util = function (globalVariables) {
                 if (formationVue.selectedGame) {
                     this.checkAndDrawValidity(formationVue.selectedGame);
                     formationVue.selectedGame.selected = false;
-                    !playerMode && formationVue.selectedGame.game.miniatureManipulator.remove(formationVue.selectedGame.redCrossManipulator);
+                    !playerMode && formationVue.selectedGame.removeRedCross();
                 }
             }
             this.selected = !this.selected;
             this.updateSelectionDesign();
         }
+
 
         updateSelectionDesign() {
             if (this.selected) {
@@ -1251,7 +1267,8 @@ exports.Util = function (globalVariables) {
                         })
                     }
                 });
-                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black) : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black)
+                    : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
             };
             let displayWhenNotPublished = () => {
                 gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
@@ -1305,6 +1322,7 @@ exports.Util = function (globalVariables) {
         removeRedCross(){
             this.game.miniatureManipulator.remove(this.redCrossManipulator);
             this.selected = false;
+            this.showDefaultColor();
         }
     }
 
@@ -1791,6 +1809,7 @@ exports.Util = function (globalVariables) {
             primaryBlue: [0, 0, 255],
             grey: [125, 122, 117],
             lightgrey: [242, 242, 241],
+            lightwhite : [250, 250, 250],
             orange: [230, 122, 25],
             purple: [170, 100, 170],
             green: [155, 222, 17],

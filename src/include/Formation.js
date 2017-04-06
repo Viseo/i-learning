@@ -570,7 +570,8 @@ exports.Formation = function (globalVariables, classContainer) {
                             }
                             allQuizValid = allQuizValid && checkQuiz.isValid;
                         });
-                        checkQuiz.isValid || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+                        checkQuiz.isValid
+                            || game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
                     });
                 });
                 if (!allQuizValid) {
