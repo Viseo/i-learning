@@ -441,9 +441,9 @@ exports.Formation = function (globalVariables, classContainer) {
                         this.miniaturesManipulator.add(tabElement.miniatureManipulator);
                         // mettre un manipulateur par niveau !_! attention à bien les enlever
                         if (typeof tabElement.miniature === "undefined") {
-                            (tabElement.miniature = tabElement.displayMiniature(this.graphElementSize));
-
+                            (tabElement.miniature = tabElement.createMiniature(this.graphElementSize));
                         }
+                        tabElement.miniature.display();
                         this.adjustGamesPositions(level);
                         manageMiniature(tabElement);
                     });
@@ -1208,7 +1208,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param size - taille de la miniature
          * @returns {MiniatureGame}
          */
-        displayMiniature(size) {
+        createMiniature(size) {
             return new util.MiniatureGame(this, size);
         }
 
