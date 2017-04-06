@@ -215,7 +215,8 @@ exports.Formation = function (globalVariables, classContainer) {
 
             let clickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
-                drawing.manipulator.unset(1, this.manipulator.add);
+                // drawing.manipulator.unset(1, this.manipulator.add);
+                drawing.manipulator.unset(1);
                 main.currentPageDisplayed = "QuizPreview";
                 this.quizDisplayed = classContainer.createClass("QuizVue", target, false, this);
                 this.quizDisplayed.puzzleLines = 3;

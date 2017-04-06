@@ -47,6 +47,20 @@ const enter = (contentArea, label) => {
     contentArea.listeners["blur"]();
 };
 
+const filterFormations = (root) => {        // "faux test" car dépend de la réponse de la base de données
+    let doneIcon = retrieve(root,'[doneIcon]');
+    let inProgressIcon = retrieve(root,'[inProgressIcon]');
+    let unDoneIcon = retrieve(root,'[unDoneIcon]');
+    doneIcon.listeners['click']();
+    doneIcon.listeners['click']();
+
+    inProgressIcon.listeners['click']();
+    inProgressIcon.listeners['click']();
+
+    unDoneIcon.listeners['click']();
+    unDoneIcon.listeners['click']();
+}
+
 let enhance,
     runtime,
     svg,
@@ -71,12 +85,12 @@ describe('Player mode', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
+            // case à cocher pour "Formations en cours"
+            // let toggleFormationsText = retrieve(root, '[toggleFormationsText]');
+            // toggleFormationsText.listeners['click']();
+            // toggleFormationsText.listeners['click']();
 
-            let toggleFormationsText = retrieve(root, '[toggleFormationsText]');
-            toggleFormationsText.listeners['click']();
-            toggleFormationsText.listeners['click']();
-
-            let greekMythFormationCadre = retrieve(root, "[Mythe]");
+            let greekMythFormationCadre = retrieve(root, '[Mythe]');
             greekMythFormationCadre.listeners["click"]();
 
             let firstGame = retrieve(root, "[level0quizz0]");
@@ -177,5 +191,33 @@ describe('Player mode', function () {
 
             done();
         });
-    })
+    });
+
+    it("should finish a quiz with one question only", function (done) {
+        testutils.retrieveDB("./log/playerSpecTest2.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor('content');
+            filterFormations(root);                             // test le filtre des formations publiées pour le collaborateur
+            let formationCadre = retrieve(root,'[debugTest]')
+            formationCadre.handler.parentManip.listeners['click']();
+            let firstGameTitle = retrieve(root, "[titlelevel0quizz0]");
+            assert.equal(firstGameTitle.handler.messageText,'Un test de réponse unique');
+            let firstGame = retrieve(root, "[level0quizz0]");
+            firstGame.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
+            // firstGame.handler.parentManip.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
+
+            let answer;
+            answer = retrieve(root,'[answer0]');
+            const playerAnswers = (index, label) => {
+                answer = retrieve(root, "[answer" + index + "]");
+                assert.equal(answer.text, label);
+                answer.listeners['click']();
+            };
+            playerAnswers(0, 'Une réponse');
+            runtime.listeners['resize']({w:1500, h:1500});
+
+            done();
+        });
+    });
 });

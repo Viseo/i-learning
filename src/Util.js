@@ -1143,7 +1143,7 @@ exports.Util = function (globalVariables) {
 
     class MiniatureGame {
         constructor(game, size) {
-            this.game = game;
+            this.game = game;       // classe GameVue
             this.scoreSize = 13;
             this.width = size;
             this.height = size/2;
@@ -1151,7 +1151,7 @@ exports.Util = function (globalVariables) {
         }
         display(){
             let icon = {
-                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15).mark('titlelevel' + this.game.levelIndex + this.game.id),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
