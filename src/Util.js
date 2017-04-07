@@ -1157,14 +1157,36 @@ exports.Util = function (globalVariables) {
             this.width = size;
             this.height = size/2;
             this.size = size;
+            game.miniature = this;
+            this.iconManipulator = new Manipulator(this).addOrdonator(3);
+        }
+
+        checkIfParentDone(){
+            for (let i in this.game.parentGamesList){
+                let game = this.game.parentFormation.findGameById(this.game.parentGamesList[i].id)
+                if (game.questionsAnswered.length != game.tabQuestions.length){
+                    return false;
+                }
+            }
+            return true;
         }
 
         display(){
+            this.updateProgress();
             let icon = {
                 content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
+            this.border = icon.border;
+            this.content = icon.content;
+            this.underContent = icon.underContent;
+            if (this.game.parentGamesList){
+                let check = this.checkIfParentDone();
+                if (!check){
+                    icon.border.color(myColors.grey, 1, myColors.grey);
+                }
+            }
             this.game.miniatureManipulator.set(0, icon.border);
             this.game.miniatureManipulator.set(2, icon.underContent);
             this.game.miniatureManipulator.set(1, icon.content);
@@ -1177,9 +1199,14 @@ exports.Util = function (globalVariables) {
             // svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
             this.selected = false;
-            if (playerMode) {
-                this.drawProgressIcon(this.game, this.size);
+            if (globalVariables.playerMode) {
+                this.drawIcon();
             }
+        }
+
+        updateProgress(){
+            this.game.progress = this.game.questionsAnswered.length == 0 ? '' :
+                this.game.questionsAnswered.length == this.game.tabQuestions.length ? 'done' : 'inProgress'
         }
 
         showDefaultColor(){
@@ -1277,6 +1304,46 @@ exports.Util = function (globalVariables) {
             (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
         }
 
+        drawIcon() {
+            const circleToggleSize = 12.5;
+            let iconsize = 20,
+                size = 25,
+                iconInfos;
+            if (!this.game.parentGamesList || this.checkIfParentDone()) {
+                switch (this.game.progress) {
+                    case "done":
+                        let doneIcon = {};
+                        doneIcon.border = new svg.Circle(circleToggleSize);
+                        doneIcon.border.color(myColors.green, 0, myColors.none);
+                        doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
+                        this.iconManipulator.set(0, doneIcon.border);
+                        this.iconManipulator.set(1, doneIcon.content);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                    case "inProgress":
+                        let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
+                        inProgressIcon.content.font('arial', 20).color(myColors.white);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                    default:
+                        let undoneIcon = {};
+                        undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
+                        undoneIcon.content = new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white);
+                        this.iconManipulator.set(0, undoneIcon.border);
+                        this.iconManipulator.set(1, undoneIcon.content);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                }
+                this.iconManipulator.move(this.size/2, -this.size/3);
+            }
+            else if (this.game.parentGamesList && !this.checkIfParentDone()){
+                let lock = new Picture('/images/padlock2.png', false, this, '',null);
+                lock.draw(this.size/2,-this.size/3  , this.size/5,this.size/5, this.game.miniatureManipulator, 3);
+            }
+
+
+        }
+
         drawProgressIcon(object, size) {
             let iconsize = 20;
             this.infosManipulator = new Manipulator(this).addOrdonator(4);
@@ -1315,6 +1382,9 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(2, iconInfosdot2);
                     this.infosManipulator.set(3, iconInfosdot3);
                     object.miniatureManipulator.add(this.infosManipulator);
+                    break;
+                default :
+                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
                     break;
             }
         };
