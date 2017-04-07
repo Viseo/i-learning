@@ -81,12 +81,12 @@ describe('Player mode', function () {
     });
 
     it("should finish a quiz with one question only", function (done) {
-        testutils.retrieveDB("./log/playerSpecTest2.json", dbListener, function () {
+        testutils.retrieveDB("./log/playerSpecTest.json", dbListener, function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor('content');
             filterFormations(root);                             // test le filtre des formations publiées pour le collaborateur
-            let formationCadre = retrieve(root,'[debugTest]')
+            let formationCadre = retrieve(root,'[TestPlayerSpec]')
             formationCadre.handler.parentManip.listeners['click']();
             let firstGameTitle = retrieve(root, "[titlelevel0quizz0]");
             assert.equal(firstGameTitle.handler.messageText,'Un test de réponse unique');
@@ -97,16 +97,13 @@ describe('Player mode', function () {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
             runtime.advance();
-            let answer
-            let answerLabelCadre;
-            // answerLabelCadre.listeners['click']();
+            let answer;
             const playerAnswers = (index, label) => {
                 answer = retrieve(root, "[answer" + index + "]");
                 assert.equal(answer.text, testutils.escape(label));
                 answer.listeners['click']();
             };
             playerAnswers(0, 'Une réponse');
-            // answerLabelCadre = retrieve(root,'[answerLabelCadre0]');
             let scoreManipulator = retrieve(root,'[scoreManipulator]');
             let manip = retrieve(root,'[resultManipulator]');
             // let endQuizFinalMessage = scoreManipulator.handler.children["0"].children["0"].children["0"].children["1"].messageText;
@@ -139,13 +136,10 @@ describe('Player mode', function () {
             playerAnswersElements(1, 'Plusieurs réponses');
             explanationText = retrieve(root, '[textExplanation]');
             assert.equal(explanationText.text, testutils.escape('Pas d\'explication'));
-
             let returnButtonToResults = retrieve(root, '[returnButtonToResults]');
             returnButtonToResults.listeners['click']();
-
             let returnButtonToFormation = retrieve(root, '[returnButtonToFormation]');
             returnButtonToFormation.listeners['click']();
-
             let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
             returnButtonToFormationsManager.listeners['click']();
             done();
