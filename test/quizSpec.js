@@ -243,28 +243,76 @@ describe('QuizManager', function(){
             answerLabelCadre7 = retrieve(root, '[answerLabelCadre7]');
             assert(!answerLabelCadre7);
 
-            let questionFromPuzzleBordure1 = retrieve(root, '[questionFromPuzzleBordure1]');
-            questionFromPuzzleBordure1.listeners['click']({
-                pageX: 326, pageY: 156, preventDefault: () => {
-                }
+            done();
+        })
+    });
+
+    it('should save and preview a quiz', function(done){
+        testutils.retrieveDB("./log/dbQuiz1.json", dbListener, function(){
+            svg.screenSize(1134, 735);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
+
+            let game0 = retrieve(root, "[level0quizz0]");
+            game0.handler.parentManip.listeners['dblclick']();
+
+            let questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
+            questionBlockTitle1.listeners['dblclick']();
+            questionBlockTextArea = retrieve(root, '[questionBlockTextArea]');
+            enter(questionBlockTextArea, "La première question ?");
+
+            let answerLabelContent0 = retrieve(root, '[answerLabelContent0]');
+            answerLabelContent0.listeners['dblclick']();
+            let answerLabelContentArea = retrieve(root, '[answerLabelContentArea]');
+            enter(answerLabelContentArea, "La première réponse ?");
+
+            answerLabelContent1 = retrieve(root, '[answerLabelContent1]');
+            answerLabelContent1.listeners['dblclick']();
+            answerLabelContentArea = retrieve(root, '[answerLabelContentArea]');
+            enter(answerLabelContentArea, "La deuxième réponse ?");
+
+            let checkBox0 = retrieve(root, "[checkbox0]");
+            checkBox0.listeners['click']({
+                pageX: 208, pageY: 514
             });
-            let questionRedCross = retrieve(root, '[questionRedCross]');
-            questionRedCross.listeners['click']();
 
-            let emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            for (let i = 0; i < 5; i++) {
-                emptyAnswerAddCadrequestion.listeners['dblclick']();
-                emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
+            let saveButtonQuiz = retrieve(root, "[saveButtonQuiz]");
+            saveButtonQuiz.listeners['click']()
+            for (let image in ImageRuntime.images) {
+                ImageRuntime.imageLoaded(image, 50, 50);
             }
+            runtime.advance();
 
-            let questionLeftChevron = retrieve(root, '[questionLeftChevron]');
-            questionLeftChevron.listeners['click']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            assert(!emptyAnswerAddCadrequestion);
-            let questionRightChevron = retrieve(root, '[questionRightChevron]');
-            questionRightChevron.listeners['click']();
-            emptyAnswerAddCadrequestion = retrieve(root, '[emptyAnswerAddCadrequestion]');
-            assert(emptyAnswerAddCadrequestion);
+            let quizInfoMessage = retrieve(root, "[quizInfoMessage]");
+            assert.equal(quizInfoMessage.text, testutils.escape("Les modifications ont bien été enregistrées"))
+
+            let previewButton = retrieve(root, '[previewButton]');
+            previewButton.listeners['click']();
+
+            runtime.listeners['resize']({w: 1500, h: 1500});
+
+            let returnButtonPreview = retrieve(root, "[returnButtonPreview]");
+            returnButtonPreview.listeners["click"]();
+
+            done();
+        })
+    })
+
+    it('should toggle single/multiple answers', function(done){
+        testutils.retrieveDB("./log/dbQuiz1.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
+
+            let game0 = retrieve(root, "[level0quizz0]");
+            assert.equal(game0.handler.messageText, "Quiz 1");
+            game0.handler.parentManip.listeners['dblclick']();
 
             let toggleButtonCadreMultiple = retrieve(root, '[toggleButtonCadremultiples]');
             let toggleButtonCadreUnique = retrieve(root, '[toggleButtonCadreunique]');
@@ -282,6 +330,22 @@ describe('QuizManager', function(){
                 }
             });
 
+            done();
+        })
+    })
+
+    it('should add an explanation', function(done){
+        testutils.retrieveDB("./log/dbQuiz1.json", dbListener, function(){
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
+
+            let game0 = retrieve(root, "[level0quizz0]");
+            assert.equal(game0.handler.messageText, "Quiz 1");
+            game0.handler.parentManip.listeners['dblclick']();
 
             let explanationCadre0 = retrieve(root, '[explanationSquare0]');
             explanationCadre0.listeners['click']();
@@ -293,6 +357,10 @@ describe('QuizManager', function(){
             enter(explanationContentArea, "Ceci est la première explication");
             textExplanation = retrieve(root, '[textExplanation]');
             assert(textExplanation.text, "Ceci est la première explication");
+
+            //TODO check explanation in preview mode
+
+            done();
         })
     })
 

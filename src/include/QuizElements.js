@@ -125,7 +125,7 @@ exports.QuizElements = function(globalVariables, classContainer){
         }
 
         /**
-         * fonction appelée lorsque l'utilisateur sélectioonne la réponse.
+         * fonction appelée lorsque l'utilisateur sélectionne la réponse.
          * Affiche le message lui indiquant si la réponse est bonne ou pas
          */
         select(vue) {
@@ -527,7 +527,7 @@ exports.QuizElements = function(globalVariables, classContainer){
         displayQuizSaveButton(x, y, w, h) {
             let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
             saveButton.border.mark('saveButtonQuiz');
-            // svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
+            svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
             svg.addEvent(saveButton.content, "click", () => this.saveQuiz());
             this.saveQuizButtonManipulator.move(x, y);
         }
@@ -588,7 +588,9 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.questionCreator.errorMessagePreview = new svg.Text(message)
                 .position(this.buttonWidth, -this.saveQuizButtonManipulator.ordonator.children[0].height / 2 - MARGIN / 2)
                 .font("Arial", 20)
-                .anchor('middle').color(color);
+                .anchor('middle')
+                .color(color)
+                .mark("quizInfoMessage");
             this.previewButtonManipulator.add(this.questionCreator.errorMessagePreview);
             setTimeout(() => {
                 this.previewButtonManipulator.remove(this.questionCreator.errorMessagePreview);
@@ -1682,7 +1684,7 @@ exports.QuizElements = function(globalVariables, classContainer){
 
                 if (typeof this.obj.checkbox === 'undefined') {
                     this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
-                    this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                    this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.obj.checkbox.answerParent = this;
                 }
                 this.manipulator.ordonator.children.forEach((e) => {
