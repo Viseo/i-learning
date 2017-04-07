@@ -1291,7 +1291,7 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         render(x, y, w, h) {
             main.currentPageDisplayed = "Quiz";
-            globalVariables.header.display(this.parentFormation.label + " - " + this.title);
+            globalVariables.header.display(this.parentFormation.label + " : " + this.title);
             drawing.manipulator.set(1, this.manipulator);
             let headerPercentage, questionPercentageWithImage, questionPercentage,
                 answerPercentageWithImage;

@@ -31,6 +31,11 @@ exports.QuizElements = function(globalVariables, classContainer){
         Server = globalVariables.util.Server,
         Picture = globalVariables.util.Picture;
 
+    const
+        SPACE_BETWEEN_TITLE_AND_ANSWER = 100,
+        SPACE_BETWEEN_TWO_ANSWER = 20,
+        NUMBER_ANSWER_BY_LINE = 3;
+
     ///////MODEL/////////////////////////////////////////////////////////
     /**
      * Réponse à un quiz. Cette réponse peut être correcte ou non. Une explication peut etre associée, avec une image ou une vidéo.
@@ -965,6 +970,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             if (!question) {
                 this.label = "";
                 this.imageSrc = "";
+                //todo a voir son impact sinon utiliser le const NUMBER_ANSWER_BY_LINE;
                 this.columns = 4;
                 this.rightAnswers = [];
                 this.tabAnswer = [classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)}), classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)})];
@@ -1099,7 +1105,7 @@ exports.QuizElements = function(globalVariables, classContainer){
 
         displayAnswers(w, h) {
             let findTileDimension = () => {
-                const width = (w - MARGIN * (this.columns - 1)) / this.columns,
+                const width = (w - MARGIN * (NUMBER_ANSWER_BY_LINE)) / (NUMBER_ANSWER_BY_LINE + 1),
                     heightMin = 2.50 * this.fontSize;
                 let height = 0;
                 h = h - 50;
@@ -1115,7 +1121,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         height = tmpHeight;
                     }
                 });
-                return { width: width, height: height };
+                return { width: width, height: height*1.5 };
             };
             let tileDimension = findTileDimension();
             this.manipulator.set(3, this.answersManipulator);
@@ -1123,20 +1129,24 @@ exports.QuizElements = function(globalVariables, classContainer){
             let posx = 0,
                 posy = 0,
                 findTilePosition = (index) => {
-                    if (index % this.columns === 0 && index !== 0) {
-                        posy += (tileDimension.height + MARGIN);
-                        posx = 0;
-
-                    } else if (index !== 0) {
-                        posx += (tileDimension.width + MARGIN);
-                    }
+                    posx = (index%NUMBER_ANSWER_BY_LINE) *(NUMBER_ANSWER_BY_LINE*tileDimension.width)/2;
+                    posy = Math.floor(index/NUMBER_ANSWER_BY_LINE)*(tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
                     return { x: posx, y: posy };
                 };
+
+            let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
+            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY)  * (tileDimension.height + MARGIN);
+
             this.tabAnswer.forEach((answerElement, index) => {
                 let tilePosition = findTilePosition(index);
                 this.answersManipulator.add(answerElement.manipulator);
                 answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
-                answerElement.manipulator.move(tilePosition.x - (this.columns - 1) * (tileDimension.width) / 2 - MARGIN, tilePosition.y + MARGIN);
+
+                answerElement.manipulator
+                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (tileDimension.width) / 2 - MARGIN,
+                        tilePosition.y + MARGIN + SPACE_BETWEEN_TITLE_AND_ANSWER);
+
+
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
@@ -1158,10 +1168,14 @@ exports.QuizElements = function(globalVariables, classContainer){
             });
             this.openPopIn && this.openPopIn();
             this.openPopIn = null;
-            let buttonY = tileDimension.height * (this.lines - 1 / 2) + (this.lines + 1) * MARGIN,
+
+            //todo buttonY a revoir si ya pas d impact et changer par answerY
+            let buttonY = tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
                 buttonH = Math.min(tileDimension.height, 50),
                 buttonW = 0.5 * drawing.width,
                 buttonX = -buttonW / 2;
+
+
             if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                 /* TODO lATER :
                  this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({ x: 0.4 * drawing.width, y: -100, width: 35 })
@@ -1182,8 +1196,9 @@ exports.QuizElements = function(globalVariables, classContainer){
                  displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);*/
             }
             else if (!this.multipleChoice) {
-                this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
-                displayText("Cliquer sur une réponse pour passer à la question suivante", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
+                this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, answerY + SPACE_BETWEEN_TITLE_AND_ANSWER);
+                displayText("Cliquer sur une réponse pour passer à la question suivante",
+                    buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
             }
             else {
                 //affichage d'un bouton "valider"
