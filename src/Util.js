@@ -224,7 +224,7 @@ exports.Util = function (globalVariables) {
          * @returns {*}
          */
         get(layer){
-            return this.ordonator.get(layer);
+            return this.ordonator ? this.ordonator.get(layer) : undefined;
         }
 
         /**
@@ -1151,14 +1151,13 @@ exports.Util = function (globalVariables) {
         }
         display(){
             let icon = {
-                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15).mark('level' + this.game.levelIndex + this.game.id),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
             this.game.miniatureManipulator.set(0, icon.border);
             this.game.miniatureManipulator.set(2, icon.underContent);
             this.game.miniatureManipulator.set(1, icon.content);
-            this.game.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
             //globalVariables.drawing.manipulator.add(this.game.miniatureManipulator);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);

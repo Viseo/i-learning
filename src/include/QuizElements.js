@@ -281,7 +281,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     question = target.parent.parentManip.parentObject;
                 }
                 question.parentQuiz.parentFormation.quizManager.questionCreator.explanation = null;
-                if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
+                    if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
                     this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                     this.quiz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer => {
                         if (answer.popIn) {
@@ -436,6 +436,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             let quizLabel = {};
 
             var quizLabelDisplay = () => {
+                //TODO changer quiz label
                 const text = (this.quizName) ? this.quizName : this.quizNameDefault,
                     color = (this.quizName) ? myColors.black : myColors.grey,
                     bgcolor = myColors.white,
@@ -1610,10 +1611,10 @@ exports.QuizElements = function(globalVariables, classContainer){
 
                     (!this.model.invalidLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
                     (!this.model.invalidLabelInput && text !== "") || displayErrorMessage(this.model.invalidLabelInput);
-                    this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                    this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.border._acceptDrop = true;
                     this.obj.content._acceptDrop = true;
-                    this.border.mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                    this.border.mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this));
 
                     svg.addEvent(this.obj.content, 'dblclick', dblclickEditionAnswer);
                     svg.addEvent(this.border, 'dblclick', dblclickEditionAnswer);
