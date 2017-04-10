@@ -10,7 +10,6 @@
 exports.Formation = function (globalVariables, classContainer) {
     let Vue = classContainer.getClass("Vue");
 
-    let imageController;
     let myFormations;
 
     let
@@ -19,15 +18,13 @@ exports.Formation = function (globalVariables, classContainer) {
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        imageController = globalVariables.imageController,
         Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
         util = globalVariables.util,
         Puzzle = globalVariables.util.Puzzle;
-
-    imageController = ImageController(globalVariables.ImageRuntime);
-    globalVariables.imageController = imageController;
 
     installDnD = globalVariables.gui.installDnD;
 
@@ -1624,6 +1621,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     } else {
                         let subTotal = 0;
                         questionAnswered.validatedAnswers.forEach((e) => {
+                            console.log(e);
                             if (question.tabAnswer[e].model.correct) {
                                 subTotal++;
                             }

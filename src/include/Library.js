@@ -10,18 +10,15 @@ exports.Library = function(globalVariables, classContainer){
     let Vue = classContainer.getClass("Vue");
 
     let
-        imageController,
         drawing = globalVariables.drawing,
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        imageController = globalVariables.imageController,
         Manipulator = globalVariables.util.Manipulator,
         Server = globalVariables.util.Server,
         Picture = globalVariables.util.Picture,
         installDnD = globalVariables.gui.installDnD;
-
-    imageController = ImageController(globalVariables.ImageRuntime);
-    globalVariables.imageController = imageController;
 
     /**
      * classe générique représentant une collection d'objets

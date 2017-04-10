@@ -25,6 +25,7 @@ exports.QuizElements = function(globalVariables, classContainer){
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         util = globalVariables.util,
+        imageController = globalVariables.imageController,
         Manipulator = globalVariables.util.Manipulator,
         Puzzle = globalVariables.util.Puzzle,
         ReturnButton = globalVariables.util.ReturnButton,
@@ -1736,7 +1737,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.border = obj.border;
                 this.content = obj.text;
                 this.image = obj.image;
-            } else if (this.model.video) { // Reponse avec Texte uniquement
+            } else if (this.model.video) { // Reponse avec video uniquement
                 let obj = drawVideo(this.model.label, this.model.video, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, false, true);
                 this.border = obj.border;
                 this.content = obj.content;
@@ -1797,7 +1798,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             } else if (globalVariables.playerMode && !this.model.parentQuestion.parentQuiz.previewMode) {
                 let clickAnswerHandler = () => {
                     this.select();
-                    if (this.model.parentQuestion.multipleChoice && this.selected) {
+                    if (this.model.parentQuestion.multipleChoice && this.model.selected) {
                         this.model.colorBordure = this.border.strokeColor;
                         this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
                         this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
