@@ -756,7 +756,11 @@ exports.Util = function (globalVariables) {
          * @returns {{content, border}} : SVG items for text & border
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
-            var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
+            // var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
+            var content = new svg.Text(label);
+            content.dimension(textWidth,textHeight);
+            content.font(font ? font : 'Arial', textHeight, 0);
+            manipulator.set(layer2, content);
             var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.set(layer1, border);
             return {content: content, border: border};
@@ -800,13 +804,6 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             return {content: content, border: border};
         };
-
-        /*displayCheckBox = function () {
-         var content = "testText";
-         var border = new svg.Rect(20, 20).color(bgColor, 1, rgbCadre).corners(0,0);
-         manipulator.set(0, border);
-         return {content: content, border: border};
-         }*/
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
             let words = content.split(' '),
@@ -1748,10 +1745,10 @@ exports.Util = function (globalVariables) {
      */
     function Bdd() {
         HEADER_SIZE = 0.07;
-        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,50}$/g;
+        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,3000}$/g;
         REGEX_NO_CHARACTER_LIMIT = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,}$/g;
         MAX_CHARACTER_REGEX = 200;
-        REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 50 caractères";
+        REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 3000 caractères";
         MAX_CHARACTER_TITLE = 23;
         MIN_CHARACTER_TITLE = 2;
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;

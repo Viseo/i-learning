@@ -1643,7 +1643,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         var tempObj = displayText(text, w, h, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, 0, 1, w - 2 * checkboxSize);
                         this.border = tempObj.border;
                         this.obj.content = tempObj.content;
-                        this.obj.content.position(0, this.obj.content.y);
+                        this.obj.content.position(0,-MARGIN);
                     }
 
                     (!this.model.invalidLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
@@ -1838,8 +1838,9 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.manipulator.set(2, this.closeButtonManipulator);
             this.panelManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.add(this.panelManipulator);
             this.textManipulator = new Manipulator(this).addOrdonator(1);
+            this.panelManipulator.add(this.textManipulator);
+            this.manipulator.add(this.panelManipulator);
             this.editable = editable;
             if (this.editable) {
                 this.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
@@ -1940,6 +1941,8 @@ exports.QuizElements = function(globalVariables, classContainer){
                 const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN;
                 this.imageX = (-w + imageW) / 2 + MARGIN;
                 this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
+                // this.panelManipulator.move(panelWidth / 2, 0);
+
                 if (this.image) {
                     this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
                     this.manipulator.unset(6);
@@ -2036,10 +2039,23 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
                 this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
                 textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
-                text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
-                text.position(panelWidth / 2, text.boundingRect().height)
+                // text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
+                // text = new svg.Text(textToDisplay).mark('textExplanation');
+                text = new svg.Text(textToDisplay)
+                    .dimension(this.panel.width,0)
+                    .position(panelWidth/2+MARGIN*2,MARGIN*2)
+                    // .position(text.boundingRect().width,text.boundingRect().height)
+                    // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
+                    // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
+                    .font("Arial", 20,0)
+                    // .anchor("left")
                     .mark('textExplanation');
+                this.textManipulator.set(0,text);
+                // text.position(panelWidth / 2, text.boundingRect().height)
+                //     .mark('textExplanation');
                 this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
+                // this.panel.resizeContent(this.panel.width, this.panel.height);
+
             };
 
             if (globalVariables.textToSpeechMode) {
