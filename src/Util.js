@@ -56,6 +56,10 @@ exports.Util = function (globalVariables) {
 
     }
 
+    function getStringWidthByFontSize(stringLength, fontSize){
+        return (fontSize/2 *stringLength);
+    }
+
     /**
      * Crée un Manipulator
      * @class
@@ -1963,6 +1967,7 @@ exports.Util = function (globalVariables) {
 
     return {
         SVGGlobalHandler,
+        getStringWidthByFontSize,
         setGlobalVariables,
         SVGUtil,
         Bdd,

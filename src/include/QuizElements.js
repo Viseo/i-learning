@@ -32,7 +32,8 @@ exports.QuizElements = function(globalVariables, classContainer){
         Picture = globalVariables.util.Picture;
 
     const
-        SPACE_BETWEEN_TITLE_AND_ANSWER = 100,
+        OFFSET_POSITION_Y_QUESTION = -30,
+        SPACE_BETWEEN_TITLE_AND_ANSWER = 100 + OFFSET_POSITION_Y_QUESTION,
         SPACE_BETWEEN_TWO_ANSWER = 20,
         NUMBER_ANSWER_BY_LINE = 3;
 
@@ -948,7 +949,7 @@ exports.QuizElements = function(globalVariables, classContainer){
     class QuestionVue extends Vue{
         constructor(question, quiz){
             super();
-            this.manipulator.addOrdonator(7);
+            this.manipulator.addOrdonator(9);
             this.answersManipulator = new Manipulator(this);
             this.manipulator.add(this.answersManipulator);
             this.resetManipulator = new Manipulator(this).addOrdonator(2);
@@ -1005,6 +1006,8 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.imageLoaded = true;
                 }
             }
+
+
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
@@ -1024,13 +1027,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.content = null;
         }
 
-        render(x, y, w, h) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
-            this.manipulator.flush();
-
+        _manageDisplayTitle(){
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
@@ -1056,9 +1053,19 @@ exports.QuizElements = function(globalVariables, classContainer){
             }
             // Question avec Texte uniquement
             else if (typeof this.label !== "undefined" && !this.imageSrc) {
-                var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, this.width * 0.8);
-                this.border = object.border;
-                this.content = object.content;
+                this.content = autoAdjustText(this.label, this.width * 0.8, this.height, this.fontSize,
+                    this.font, this.manipulator, 3).text.position(0, OFFSET_POSITION_Y_QUESTION);
+                this.border = util.drawHexagon(this.width*3/5, this.height/2, 'H', 0.65)
+                    .position(0, OFFSET_POSITION_Y_QUESTION);
+                let line = new svg.Line(-this.parentQuiz.parentFormation.graphW/2+MARGIN, OFFSET_POSITION_Y_QUESTION,
+                    this.parentQuiz.parentFormation.graphW/2 -MARGIN, OFFSET_POSITION_Y_QUESTION)
+                    .color(myColors.grey, 1, myColors.grey);
+
+                let formation = this.parentQuiz.parentFormation;
+                let titleInLeftCorner = autoAdjustText(formation.label, this.width * 0.8, this.height, this.fontSize*1.5, this.font, this.manipulator, 2).text
+                    .position(-formation.graphW/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, this.fontSize*1.5)+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
+                this.manipulator.set(0, line);
+                this.manipulator.set(1, this.border);
             }
             // Question avec Image uniquement
             else if (this.imageSrc && !this.label) {
@@ -1069,6 +1076,16 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.border = new svg.Rect(this.width, this.height).color(this.bgColor, 1, this.colorBordure);
                 this.manipulator.set(0, this.border);
             }
+        }
+
+        render(x, y, w, h) {
+            this.x = x;
+            this.y = y;
+            this.width = w;
+            this.height = h;
+            this.manipulator.flush();
+
+            this._manageDisplayTitle();
 
             if (globalVariables.playerMode) {
                 if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
@@ -1093,8 +1110,13 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.border.mark('questionFromPuzzleBordure' + this.questionNum);
 
             var fontSize = Math.min(20, this.height * 0.1);
-            this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
-            this.manipulator.set(4, this.questNum);
+            //this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
+
+            //todo a revoir le factor de multiplication de taille d une lettre
+            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize*1.5)
+                .position(-util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN, OFFSET_POSITION_Y_QUESTION);
+
+            this.manipulator.set(6, this.questNum);
             this.manipulator.move(this.x, this.y);
             let globalPoints = this.manipulator.first.globalPoint(-50, -50);
             this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
@@ -1124,7 +1146,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 return { width: width, height: height*1.5 };
             };
             let tileDimension = findTileDimension();
-            this.manipulator.set(3, this.answersManipulator);
+            this.manipulator.set(5, this.answersManipulator);
             this.answersManipulator.move(0, this.height / 2 + (tileDimension.height) / 2);
             let posx = 0,
                 posy = 0,
