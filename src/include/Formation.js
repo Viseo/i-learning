@@ -582,12 +582,12 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.library.display(0, drawing.height * HEADER_SIZE, this.libraryWidth - MARGIN, this.graphCreaHeight);
 
                 if (this.status !== "NotPublished") {
-                    this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                    this.displayFormationPublicationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
-                    this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
+                    this.displayFormationSaveButton(drawing.width / 2 - 2 * this.buttonWidth, drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.saveButtonHeight);
+                    this.displayFormationPublicationButton(drawing.width / 2,  drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.publicationButtonHeight);
+                    this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.saveButtonHeight);
                 } else {
-                    this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                    this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+                    this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth,  drawing.height - 2*this.publicationButtonHeight - MARGIN, this.saveButtonHeight);
+                    this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.publicationButtonHeight);
                 }
                 displayFrame(this.graphCreaWidth, this.graphCreaHeight);
                 this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
