@@ -1184,6 +1184,10 @@ exports.Util = function (globalVariables) {
             this.border = icon.border;
             this.content = icon.content;
             this.underContent = icon.underContent;
+            let video;
+            if (this.video){
+               video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+            }
             if (this.picture){
                 this.picture.draw(-this.size/2, 0, this.size/4, this.size/4, this.game.miniatureManipulator, 3);
             }
