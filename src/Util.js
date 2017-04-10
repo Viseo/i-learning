@@ -1154,11 +1154,14 @@ exports.Util = function (globalVariables) {
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
+            this.picture = game.picture || new Picture('../images/svg-guy.png', false, this, '', null);
             this.width = size;
             this.height = size/2;
             this.size = size;
             game.miniature = this;
             this.iconManipulator = new Manipulator(this).addOrdonator(3);
+            this.game.miniatureManipulator.addOrdonator(4);
+
         }
 
         checkIfParentDone(){
@@ -1174,13 +1177,16 @@ exports.Util = function (globalVariables) {
         display(){
             this.updateProgress();
             let icon = {
-                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                content: autoAdjustText(this.game.title, this.picture ? this.width : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),// new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
             this.border = icon.border;
             this.content = icon.content;
             this.underContent = icon.underContent;
+            if (this.picture){
+                this.picture.draw(-this.size/2, 0, this.size/4, this.size/4, this.game.miniatureManipulator, 3);
+            }
             if (this.game.parentGamesList){
                 let check = this.checkIfParentDone();
                 if (!check){
@@ -1189,7 +1195,7 @@ exports.Util = function (globalVariables) {
             }
             this.game.miniatureManipulator.set(0, icon.border);
             this.game.miniatureManipulator.set(2, icon.underContent);
-            this.game.miniatureManipulator.set(1, icon.content);
+            //this.game.miniatureManipulator.set(1, icon.content);
             this.game.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
             //globalVariables.drawing.manipulator.add(this.game.miniatureManipulator);
             this.redCrossManipulator = new Manipulator(this);
@@ -1338,7 +1344,8 @@ exports.Util = function (globalVariables) {
             }
             else if (this.game.parentGamesList && !this.checkIfParentDone()){
                 let lock = new Picture('/images/padlock2.png', false, this, '',null);
-                lock.draw(this.size/2,-this.size/3  , this.size/5,this.size/5, this.game.miniatureManipulator, 3);
+                lock.draw(this.size/2,-this.size/3  , this.size/5,this.size/5, this.iconManipulator, 1);
+                this.game.miniatureManipulator.add(this.iconManipulator);
             }
 
 

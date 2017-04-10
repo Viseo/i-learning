@@ -179,7 +179,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.manipulator.add(this.saveFormationButtonManipulator);
             this.manipulator.add(this.publicationFormationButtonManipulator);
             this.manipulator.add(this.deactivateFormationButtonManipulator);
-            this.formationLeftManipulator = new Manipulator(this);
+            this.formationLeftManipulator = new Manipulator(this).addOrdonator(3);
             this.manipulator.add(this.formationLeftManipulator);
         }
 
@@ -244,7 +244,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.animation.target = null;
                     target.miniatureManipulator.unset(1);
                     target.miniatureManipulator.unset(2);
-                    target.miniatureManipulator.set(1, target.miniature.content);
+                    target.miniatureManipulator.set(1, target.miniature.content.text);
                     target.miniatureManipulator.set(2,target.miniature.underContent);
                 }
 
@@ -316,9 +316,13 @@ exports.Formation = function (globalVariables, classContainer) {
                     content: new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
                     border: util.drawHexagon(this.graphElementWidth/2, this.graphElementSize*1.5, 'V', 1)
                 }
+                this.picture = this.picture || new util.Picture('../images/svg-guy.png', false, this, '',null);
+                if (this.picture){
+                    this.picture.draw(0, this.graphElementSize/2+MARGIN, this.graphElementSize/2, this.graphElementSize/2, this.formationLeftManipulator, 2);
+                }
 
-                this.formationLeftManipulator.add(icon.border);
-                this.formationLeftManipulator.add(icon.content);
+                this.formationLeftManipulator.set(0,icon.border);
+                this.formationLeftManipulator.set(1, icon.content);
                 this.formationLeftManipulator.move(this.graphElementWidth/3, globalVariables.drawing.height/2 - globalVariables.header.height);
             }
 
