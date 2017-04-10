@@ -1532,13 +1532,16 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.tabQuestions = [];
                 quiz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    let tmp = classContainer.createClass("QuestionVue", it, this);
+                    let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", it, this)
+                        : classContainer.createClass("QuestionVueAdmin", it, this);
                     tmp.parentQuiz = this;
                     this.tabQuestions.push(tmp);
                 });
             } else {
                 this.tabQuestions = [];
-                this.tabQuestions.push(classContainer.createClass("QuestionVue", defaultQuestion, this));
+                let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", defaultQuestion, this)
+                    : classContainer.createClass("QuestionVueAdmin", defaultQuestion, this);
+                this.tabQuestions.push(tmp);
             }
         }
 

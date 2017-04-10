@@ -1029,6 +1029,266 @@ exports.QuizElements = function(globalVariables, classContainer){
         }
 
         _manageDisplayTitle(){
+        }
+
+        render(x, y, w, h) {
+            this.x = x;
+            this.y = y;
+            this.width = w;
+            this.height = h;
+            this.manipulator.flush();
+
+            this._manageDisplayTitle();
+        }
+
+        _genericPostRender(){
+            this.border.mark('questionFromPuzzleBordure' + this.questionNum);
+
+            var fontSize = Math.min(20, this.height * 0.1);
+
+            //todo a revoir le factor de multiplication de taille d une lettre
+            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize*1.5)
+                .position(-util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN, OFFSET_POSITION_Y_QUESTION);
+
+            this.manipulator.set(6, this.questNum);
+            this.manipulator.move(this.x, this.y);
+            let globalPoints = this.manipulator.first.globalPoint(-50, -50);
+            this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
+            if (this.selected) {
+                this.selectedQuestion();
+            }
+        }
+
+        displayAnswers(w, h) {
+            let findTileDimension = () => {
+                const width = (w - MARGIN * (NUMBER_ANSWER_BY_LINE)) / (NUMBER_ANSWER_BY_LINE + 1),
+                    heightMin = 2.50 * this.fontSize;
+                let height = 0;
+                h = h - 50;
+                this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
+                let tmpHeight;
+
+                this.tabAnswer.forEach(answer => {
+                    tmpHeight = (answer.image || answer.video) ? this.tileHeightMax : heightMin;
+                    if (tmpHeight > this.tileHeightMax) {
+                        height = this.tileHeightMax;
+                    }
+                    else if (tmpHeight > height) {
+                        height = tmpHeight;
+                    }
+                });
+                return { width: width, height: height*1.5 };
+            };
+            this.tileDimension = findTileDimension();
+            this.manipulator.set(5, this.answersManipulator);
+            this.answersManipulator.move(0, this.height / 2 + (this.tileDimension.height) / 2);
+        }
+
+        _genericPostDisplayAnswer(){
+            let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
+            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY)  * (this.tileDimension.height + MARGIN);
+
+            let buttonY = this.tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
+                buttonH = Math.min(this.tileDimension.height, 50),
+                buttonW = 0.5 * drawing.width,
+                buttonX = -buttonW / 2;
+
+            if (!this.multipleChoice) {
+                this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, answerY + SPACE_BETWEEN_TITLE_AND_ANSWER);
+                displayText("Cliquer sur une réponse pour passer à la question suivante",
+                    buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
+            }else {
+                //affichage d'un bouton "valider"
+                buttonW = 0.1 * drawing.width;
+                const validateX = 0.08 * drawing.width - buttonW / 2,
+                    validateButton = displayText("Valider", buttonW, buttonH, myColors.green, myColors.yellow, 20, this.font, this.validateManipulator);
+                validateButton.content.mark("validateButtonQuiz");
+                this.validateManipulator.move(validateX + buttonW / 2, buttonY + buttonH / 2);
+
+                if (!this.parentQuiz.previewMode) {
+                    var onClickValidateButton = this.validateAnswers.bind(this);
+                    svg.addEvent(validateButton.border, 'click', onClickValidateButton);
+                    svg.addEvent(validateButton.content, 'click', onClickValidateButton);
+                }
+
+                //Button reset
+                const resetX = -buttonW / 2 - 0.08 * drawing.width,
+                    resetButton = displayText("Réinitialiser", buttonW, buttonH, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
+                resetButton.content.mark("resetButtonQuiz");
+                this.resetManipulator.move(resetX + buttonW / 2, buttonY + buttonH / 2);
+                if (this.selectedAnswers.length !== 0) {
+                    resetButton.border.color(myColors.yellow, 1, myColors.green);
+                }
+                if (!this.parentQuiz.previewMode) {
+                    let reset = () => {
+                        if (this.selectedAnswers.length > 0) {
+                            this.selectedAnswers.forEach((e) => {
+                                e.selected = false;
+                                e.border.color(e.bgColor, 1, e.colorBordure);
+                            });
+                            this.selectedAnswers.splice(0, this.selectedAnswers.length);
+                            resetButton.border.color(myColors.grey, 1, myColors.grey);
+                        }
+                    };
+                    svg.addEvent(resetButton.content, 'click', reset);
+                    svg.addEvent(resetButton.border, 'click', reset);
+                }
+            }
+        }
+
+        _findTilePosition(index){
+            let posx = (index%NUMBER_ANSWER_BY_LINE) *(NUMBER_ANSWER_BY_LINE*this.tileDimension.width)/2;
+            let posy = Math.floor(index/NUMBER_ANSWER_BY_LINE)*(this.tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
+            return { x: posx, y: posy };
+        }
+
+        selectedQuestion() {
+            this.border.color(this.bgColor, 5, SELECTION_COLOR);
+            if (!this.redCrossManipulator) {
+                let redCrossClickHandler = () => {
+                    const quizManager = this.parentQuiz.parentFormation.quizManager,
+                        questionPuzzle = quizManager.questionPuzzle,
+                        questionsArray = questionPuzzle.elementsArray;
+                    let index = questionsArray.indexOf(this);
+                    this.remove();
+                    (classContainer.isInstanceOf("AddEmptyElementVue", questionsArray[index])) && index--; // Cas où on clique sur l'AddEmptyElement (dernier élément)
+                    if (index !== -1) {
+                        quizManager.indexOfEditedQuestion = index;
+                        this.parentQuiz.tabQuestions[index].selected = true;
+                        resetQuestionsIndex(this.parentQuiz);
+                        questionPuzzle && questionPuzzle.indexOfFirstVisibleElement != 0 && questionPuzzle.indexOfFirstVisibleElement--;
+                        questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuiz.tabQuestions);
+                        questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
+                        quizManager.questionClickHandler({ question: this.parentQuiz.tabQuestions[index] });
+                    }
+                    else {
+                        this.parentQuiz.tabQuestions.splice(0, 0, classContainer.createClass("QuestionVue", defaultQuestion, this.parentQuiz));
+                        resetQuestionsIndex(this.parentQuiz);
+                        if (questionPuzzle) {
+                            questionPuzzle.visibleElementsArray[0].length === 6 && questionPuzzle.updateStartPosition('right');
+                            questionPuzzle.fillVisibleElementsArray("leftToRight");
+                        }
+                        quizManager.indexOfEditedQuestion = ++index;
+                        this.parentQuiz.tabQuestions[0].selected = true;
+                        questionPuzzle.display();
+
+                        svg.event(questionsArray[0].border, "click", { question: questionsArray[0] }); // dernier élément du tableau (AddEmptyElement)
+                    }
+                };
+                this.redCrossManipulator = new Manipulator(this);
+                let size = 20;
+                this.redCross || (this.redCross = drawRedCross(-this.questNum.x, this.questNum.y - size / 2, size, this.redCrossManipulator));
+                this.redCross.mark('questionRedCross');
+                svg.addEvent(this.redCross, "click", redCrossClickHandler);
+                this.redCrossManipulator.add(this.redCross);
+                this.manipulator.add(this.redCrossManipulator);
+            }
+            else {
+                this.redCrossManipulator.move(-this.questNum.x, this.questNum.y - this.redCross.size / 2);
+                this.redCrossManipulator.add(this.redCross);
+            }
+        }
+
+        /**
+         * suppression de la question
+         * @returns {boolean}
+         */
+        remove() {
+            let index = this.parentQuiz.tabQuestions.indexOf(this);
+            if (index !== -1) {
+                this.parentQuiz.tabQuestions.splice(index, 1);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        /**
+         * Verifie que la question est correctement formatée
+         */
+        checkValidity() {
+            var validation = true;
+            this.questionType.validationTab.forEach((funcEl) => {
+                var result = funcEl(this);
+                validation = validation && result.isValid;
+            });
+            validation ? this.toggleInvalidQuestionPictogram(false) : this.toggleInvalidQuestionPictogram(true);
+        }
+
+        /**
+         * vérifie si les réponses de l'utilisateur sont correctes
+         */
+        validateAnswers() {
+            // test des valeurs, en gros si selectedAnswers === rigthAnswers
+            var allRight = false;
+            this.validatedAnswers = this.selectedAnswers;
+            this.selectedAnswers = [];
+            if (this.rightAnswers.length !== this.validatedAnswers.length) {
+                allRight = false;
+            } else {
+                var subTotal = 0;
+                this.validatedAnswers.forEach((e) => {
+                    if (e.correct) {
+                        subTotal++;
+                    }
+                });
+                allRight = (subTotal === this.rightAnswers.length);
+            }
+            if (allRight) {
+                this.parentQuiz.score++;
+                console.log("Bonne réponse!\n");
+            } else {
+                var reponseD = "";
+                this.rightAnswers.forEach((e) => {
+                    if (e.label) {
+                        reponseD += e.label + "\n";
+                    }
+                    else if (e.imageSrc) {
+                        var tab = e.imageSrc.split('/');
+                        reponseD += tab[(tab.length - 1)] + "\n";
+                    }
+                });
+                console.log("Mauvaise réponse!\n  Bonnes réponses: " + reponseD);
+            }
+            let indexOfValidatedAnswers = [];
+            this.validatedAnswers.forEach(aSelectedAnswer => {
+                aSelectedAnswer.selected = false;
+                indexOfValidatedAnswers.push(this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex].tabAnswer.indexOf(aSelectedAnswer));
+            });
+            this.parentQuiz.questionsAnswered[this.parentQuiz.currentQuestionIndex] = {
+                question: this.parentQuiz.tabQuestions[this.parentQuiz.currentQuestionIndex],
+                validatedAnswers: indexOfValidatedAnswers
+            };
+            this.parentQuiz.nextQuestion();
+        }
+
+        /**
+         * affiche ou cache le pictogramme indiquant que la question est mal formatée
+         * @param {Boolean} active - la question est elle mal formatée
+         */
+        toggleInvalidQuestionPictogram(active) {
+            let pictoSize = 20;
+            if (active) {
+                this.invalidQuestionPictogram = statusEnum.Edited.icon(pictoSize);
+                this.invalidQuestionPictogramManipulator.set(0, this.invalidQuestionPictogram.circle);
+                this.invalidQuestionPictogramManipulator.set(2, this.invalidQuestionPictogram.dot);
+                this.invalidQuestionPictogramManipulator.set(3, this.invalidQuestionPictogram.exclamation);
+                this.invalidQuestionPictogramManipulator.move(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize);
+            } else {
+                this.invalidQuestionPictogramManipulator.unset(0);
+                this.invalidQuestionPictogramManipulator.unset(2);
+                this.invalidQuestionPictogramManipulator.unset(3);
+            }
+        }
+    }
+
+    class QuestionVueCollab extends QuestionVue {
+        constructor(question, quiz){
+            super(question, quiz);
+        }
+
+        _manageDisplayTitle(){
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
@@ -1080,102 +1340,43 @@ exports.QuizElements = function(globalVariables, classContainer){
         }
 
         render(x, y, w, h) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
-            this.manipulator.flush();
+            super.render(x, y, w, h);
 
-            this._manageDisplayTitle();
-
-            if (globalVariables.playerMode) {
-                if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
-                    let event = () => {
-                        drawings.component.clean();
-                        let tempFinishedQuiz = Object.assign({}, this.parentQuiz);
-                        this.finishedQuiz = classContainer.createClass("QuizVue", tempFinishedQuiz, true);
-                        this.finishedQuiz.currentQuestionIndex = this.questionNum - 1;
-                        this.finishedQuiz.parentFormation.quizDisplayed = this.finishedQuiz;
-                        this.finishedQuiz.run(1, 1, drawing.width, drawing.height);
-                    };
-                    this.border && svg.addEvent(this.border, "click", event);
-                    this.content && svg.addEvent(this.content, "click", event);
-                    this.image && svg.addEvent(this.image, "click", event);
-                }
-            } else if (!this.parentQuiz.previewMode) {
-                this.border && svg.addEvent(this.border, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
-                this.content && svg.addEvent(this.content, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
-                this.image && svg.addEvent(this.image, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
+            if (this.parentQuiz.currentQuestionIndex >= this.parentQuiz.tabQuestions.length) {
+                let event = () => {
+                    drawings.component.clean();
+                    let tempFinishedQuiz = Object.assign({}, this.parentQuiz);
+                    this.finishedQuiz = classContainer.createClass("QuizVue", tempFinishedQuiz, true);
+                    this.finishedQuiz.currentQuestionIndex = this.questionNum - 1;
+                    this.finishedQuiz.parentFormation.quizDisplayed = this.finishedQuiz;
+                    this.finishedQuiz.run(1, 1, drawing.width, drawing.height);
+                };
+                this.border && svg.addEvent(this.border, "click", event);
+                this.content && svg.addEvent(this.content, "click", event);
+                this.image && svg.addEvent(this.image, "click", event);
             }
 
-            this.border.mark('questionFromPuzzleBordure' + this.questionNum);
-
-            var fontSize = Math.min(20, this.height * 0.1);
-            //this.questNum = new svg.Text(this.questionNum).position(-this.width / 2 + MARGIN + (fontSize * (this.questionNum.toString.length) / 2), -this.height / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
-
-            //todo a revoir le factor de multiplication de taille d une lettre
-            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize*1.5)
-                .position(-util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN, OFFSET_POSITION_Y_QUESTION);
-
-            this.manipulator.set(6, this.questNum);
-            this.manipulator.move(this.x, this.y);
-            let globalPoints = this.manipulator.first.globalPoint(-50, -50);
-            this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
-            if (this.selected) {
-                this.selectedQuestion();
-            }
+            super._genericPostRender();
         }
 
         displayAnswers(w, h) {
-            let findTileDimension = () => {
-                const width = (w - MARGIN * (NUMBER_ANSWER_BY_LINE)) / (NUMBER_ANSWER_BY_LINE + 1),
-                    heightMin = 2.50 * this.fontSize;
-                let height = 0;
-                h = h - 50;
-                this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
-                let tmpHeight;
-
-                this.tabAnswer.forEach(answer => {
-                    tmpHeight = (answer.image || answer.video) ? this.tileHeightMax : heightMin;
-                    if (tmpHeight > this.tileHeightMax) {
-                        height = this.tileHeightMax;
-                    }
-                    else if (tmpHeight > height) {
-                        height = tmpHeight;
-                    }
-                });
-                return { width: width, height: height*1.5 };
-            };
-            let tileDimension = findTileDimension();
-            this.manipulator.set(5, this.answersManipulator);
-            this.answersManipulator.move(0, this.height / 2 + (tileDimension.height) / 2);
-            let posx = 0,
-                posy = 0,
-                findTilePosition = (index) => {
-                    posx = (index%NUMBER_ANSWER_BY_LINE) *(NUMBER_ANSWER_BY_LINE*tileDimension.width)/2;
-                    posy = Math.floor(index/NUMBER_ANSWER_BY_LINE)*(tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
-                    return { x: posx, y: posy };
-                };
-
-            let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
-            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY)  * (tileDimension.height + MARGIN);
+            super.displayAnswers(w, h);
 
             this.tabAnswer.forEach((answerElement, index) => {
-                let tilePosition = findTilePosition(index);
+                let tilePosition = this._findTilePosition(index);
                 this.answersManipulator.add(answerElement.manipulator);
-                answerElement.display(-tileDimension.width / 2, -tileDimension.height / 2, tileDimension.width, tileDimension.height);
+                answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
 
                 answerElement.manipulator
-                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (tileDimension.width) / 2 - MARGIN,
+                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
                         tilePosition.y + MARGIN + SPACE_BETWEEN_TITLE_AND_ANSWER);
 
 
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
-                if (!globalVariables.playerMode && this.parentQuiz.previewMode) {
-                    answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
-                } else if (globalVariables.playerMode && this.parentQuiz.previewMode) {
+
+                if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1)
                         answerElement.model.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
                     else {
@@ -1189,15 +1390,9 @@ exports.QuizElements = function(globalVariables, classContainer){
                     }
                 }
             });
+
             this.openPopIn && this.openPopIn();
             this.openPopIn = null;
-
-            //todo buttonY a revoir si ya pas d impact et changer par answerY
-            let buttonY = tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
-                buttonH = Math.min(tileDimension.height, 50),
-                buttonW = 0.5 * drawing.width,
-                buttonX = -buttonW / 2;
-
 
             if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                 /* TODO lATER :
@@ -1217,49 +1412,98 @@ exports.QuizElements = function(globalVariables, classContainer){
                  this.manipulator.add(this.parentQuiz.textToSpeechIcon.manipulator);
                  this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
                  displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);*/
+            } else {
+                super._genericPostDisplayAnswer();
             }
-            else if (!this.multipleChoice) {
-                this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, answerY + SPACE_BETWEEN_TITLE_AND_ANSWER);
-                displayText("Cliquer sur une réponse pour passer à la question suivante",
-                    buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
+        }
+    }
+
+    class QuestionVueAdmin extends QuestionVue {
+        constructor(question, quiz){
+            super(question, quiz);
+        }
+
+        _manageDisplayTitle(){
+            // Question avec Texte ET image
+            if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
+                let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
+                        width: this.image.width,
+                        height: this.image.height
+                    }, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image, this.width * 0.8);
+                this.border = obj.border;
+                this.content = obj.content;
+                this.image = obj.image;
+            }
+            else if (this.video) {//&& this.label !== ""
+                let obj;
+                if (this.parentQuiz.previewMode || globalVariables.playerMode) {
+                    obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+                }
+                else {
+                    obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
+                }
+                this.border = obj.border;
+                this.content = obj.content;
+                this.miniatureVideo = obj.video;
+                obj.video.mark('questionVideoToPlay');
+            }
+            // Question avec Texte uniquement
+            else if (typeof this.label !== "undefined" && !this.imageSrc) {
+                var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, this.width * 0.8);
+                this.border = object.border;
+                this.content = object.content;
+
+                this.manipulator.set(0, this.border);
+            }
+            // Question avec Image uniquement
+            else if (this.imageSrc && !this.label) {
+                this.image = displayImage(this.imageSrc, this.dimImage, this.width, this.height).image;
+                this.manipulator.set(2, this.image);
             }
             else {
-                //affichage d'un bouton "valider"
-                buttonW = 0.1 * drawing.width;
-                const validateX = 0.08 * drawing.width - buttonW / 2,
-                    validateButton = displayText("Valider", buttonW, buttonH, myColors.green, myColors.yellow, 20, this.font, this.validateManipulator);
-                validateButton.content.mark("validateButtonQuiz");
-                this.validateManipulator.move(validateX + buttonW / 2, buttonY + buttonH / 2);
-
-                if (!this.parentQuiz.previewMode) {
-                    var onClickValidateButton = this.validateAnswers.bind(this);
-                    svg.addEvent(validateButton.border, 'click', onClickValidateButton);
-                    svg.addEvent(validateButton.content, 'click', onClickValidateButton);
-                }
-
-                //Button reset
-                const resetX = -buttonW / 2 - 0.08 * drawing.width,
-                    resetButton = displayText("Réinitialiser", buttonW, buttonH, myColors.grey, myColors.grey, 20, this.font, this.resetManipulator);
-                resetButton.content.mark("resetButtonQuiz");
-                this.resetManipulator.move(resetX + buttonW / 2, buttonY + buttonH / 2);
-                if (this.selectedAnswers.length !== 0) {
-                    resetButton.border.color(myColors.yellow, 1, myColors.green);
-                }
-                if (!this.parentQuiz.previewMode) {
-                    let reset = () => {
-                        if (this.selectedAnswers.length > 0) {
-                            this.selectedAnswers.forEach((e) => {
-                                e.selected = false;
-                                e.border.color(e.bgColor, 1, e.colorBordure);
-                            });
-                            this.selectedAnswers.splice(0, this.selectedAnswers.length);
-                            resetButton.border.color(myColors.grey, 1, myColors.grey);
-                        }
-                    };
-                    svg.addEvent(resetButton.content, 'click', reset);
-                    svg.addEvent(resetButton.border, 'click', reset);
-                }
+                this.border = new svg.Rect(this.width, this.height).color(this.bgColor, 1, this.colorBordure);
+                this.manipulator.set(0, this.border);
             }
+        }
+
+        render(x, y, w, h) {
+           super.render(x, y, w, h);
+
+            this._manageDisplayTitle();
+
+            if (!this.parentQuiz.previewMode) {
+                this.border && svg.addEvent(this.border, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
+                this.content && svg.addEvent(this.content, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
+                this.image && svg.addEvent(this.image, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
+            }
+
+            super._genericPostRender();
+        }
+
+        displayAnswers(w, h) {
+            super.displayAnswers(w, h);
+
+            this.tabAnswer.forEach((answerElement, index) => {
+                let tilePosition = super._findTilePosition(index);
+                this.answersManipulator.add(answerElement.manipulator);
+                answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
+
+                answerElement.manipulator
+                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
+                        tilePosition.y + MARGIN + SPACE_BETWEEN_TITLE_AND_ANSWER);
+                
+                let point = answerElement.border.globalPoint(-50, -50);
+                answerElement.video && answerElement.video.miniature.position(point.x, point.y);
+                answerElement.border.mark('answerElement' + index);
+                if (!globalVariables.playerMode && this.parentQuiz.previewMode) {
+                    answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
+                }
+            });
+
+            this.openPopIn && this.openPopIn();
+            this.openPopIn = null;
+
+            super._genericPostDisplayAnswer();
         }
 
         selectedQuestion() {
@@ -2103,6 +2347,8 @@ exports.QuizElements = function(globalVariables, classContainer){
         QuizManagerVue,
         QuestionCreatorVue,
         QuestionVue,
+        QuestionVueCollab,
+        QuestionVueAdmin,
         AddEmptyElementVue,
         AnswerVue,
         PopInVue
