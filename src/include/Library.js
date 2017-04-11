@@ -719,19 +719,7 @@ exports.Library = function(globalVariables, classContainer){
                     target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
-                    var oldElement = {
-                        border: target.parent.parentManip.ordonator.get(0),
-                        content: target.parent.parentManip.ordonator.get(1)
-                    };
-                    target.parent.parentManip.unset(0);
-                    target.parent.parentManip.unset(1);
-                    var newElement = displayImageWithTitle(oldElement.content.messageText, element.src,
-                        element.srcDimension,
-                        oldElement.border.width, oldElement.border.height,
-                        oldElement.border.strokeColor, oldElement.border.fillColor, null, null, target.parent.parentManip
-                    );
-                    oldElement.border.position(newElement.border.x, newElement.border.y);
-                    oldElement.content.position(newElement.content.x, newElement.content.y);
+                    let newElement = displayImage(element.src, element, target.width, target.height);
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
                     switch (true) {
@@ -745,20 +733,19 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case classContainer.isInstanceOf("Answer",target.parent.parentManip.parentObject):
+                        case classContainer.isInstanceOf("AnswerVue",target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
-                            answer.video = null;
+                            answer.model.video = null;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
-                            answer.image = newElement.image;
-                            answer.imageSrc = newElement.image.src;
-                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element => {
+                            answer.model.image = newElement.image;
+                            answer.model.imageSrc = newElement.image.src;
+                            answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element => {
                                 element.obj && element.obj.video && drawings.component.remove(element.obj.video);
                             });
-                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                            answer.parentQuestion.checkValidity();
+                            answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                            answer.model.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.set(0, oldElement.border);
                 }
 
             }

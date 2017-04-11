@@ -11,7 +11,6 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue,
         QuizVue,
         BdVue,
-        AnswerVue,
         QuestionCreator,
         svgr;
 
@@ -26,7 +25,6 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
-        AnswerVue = globalVariables.domain.AnswerVue;
         svgr = globalVariables.runtime;
     };
 
@@ -513,7 +511,7 @@ exports.Util = function (globalVariables) {
              }*/
         };
 
-        displayPen = function (x, y, size, object) {
+        displayPen = function (x, y, size, object, handler) {
             const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
                 square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
                 tipEnd = new svg.Triangle(size / 5, size / 5, "S").color(myColors.white, 1, fontColor).position(0, size / 2),
@@ -536,7 +534,7 @@ exports.Util = function (globalVariables) {
             object.penManipulator.set(3, body);
             object.penManipulator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotate(40);
-            elementsTab.forEach(element => svg.addEvent(element, "click", object.model.penHandler));
+            handler && elementsTab.forEach(element => svg.addEvent(element, "click", handler));
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
@@ -727,15 +725,13 @@ exports.Util = function (globalVariables) {
                 height *= (w / width);
                 width = w;
             }
-            if (!h) {
-                return height;
-            }
             if (height > h) {
                 width *= (h / height);
                 height = h;
             }
             let img = {
-                image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
+                image: new svg.Image(imageSrc).dimension(width, height).position(0, 0),
+                height: height
             };
             img.image.name = name;
             return img;
@@ -1065,10 +1061,7 @@ exports.Util = function (globalVariables) {
             this.parent = parent;
             this.textToDisplay = textToDisplay;
             this.imageRedCrossClickHandler = imageRedCrossClickHandler;
-            if (typeof this.redCrossManipulator === 'undefined') {
-                this.redCrossManipulator = new Manipulator(this.parent);
-                this.redCrossManipulator.addOrdonator(2);
-            }
+            this.redCrossManipulator = new Manipulator(this.parent).addOrdonator(2);
         }
 
         draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth) {
@@ -1102,15 +1095,21 @@ exports.Util = function (globalVariables) {
         }
 
         drawImageRedCross() {
-            this.mouseleaveHandler = () => {
-                this.redCrossManipulator && this.redCrossManipulator.flush();
+            this.mouseleaveHandler = (event) => {
+                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                if(!target || target.id !== "imageRedCross"){
+                    this.redCrossManipulator.flush();
+                }
             };
             this.imageMouseoverHandler = () => {
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
                 redCross.mark('imageRedCross');
-                svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
+                svg.addEvent(redCross, 'click',(event)=>{
+                    this.redCrossManipulator.flush();
+                    this.imageRedCrossClickHandler(event);
+                });
                 this.redCrossManipulator.set(1, redCross);
             };
         }

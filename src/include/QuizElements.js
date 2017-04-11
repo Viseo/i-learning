@@ -1,19 +1,19 @@
 /**
  *
-    Answer,
-    QuizManagerVue,
-    QuestionCreatorVue,
-    QuestionVue,
-    AddEmptyElementVue,
-    AnswerVue,
-    PopInVue,
-    GameVue,
-    QuizVue,
-    Level,
-    BdVue
+ Answer,
+ QuizManagerVue,
+ QuestionCreatorVue,
+ QuestionVue,
+ AddEmptyElementVue,
+ AnswerVue,
+ PopInVue,
+ GameVue,
+ QuizVue,
+ Level,
+ BdVue
  *
  */
-exports.QuizElements = function(globalVariables, classContainer){
+exports.QuizElements = function (globalVariables, classContainer) {
 
     let Vue = classContainer.getClass("Vue");
 
@@ -113,22 +113,22 @@ exports.QuizElements = function(globalVariables, classContainer){
             this._acceptDrop = editable;
             this.editor = editor;
             this.checkInputContentArea = editable ? ((objCont) => {
-                    if (typeof objCont.contentarea.messageText !== "undefined") {
-                        if (objCont.contentarea.messageText.match(REGEX)) {
-                            this.invalidLabelInput = false;
-                            this.label = objCont.contentarea.messageText;
-                            objCont.remove();
-                        } else {
-                            this.invalidLabelInput = objCont.contentarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
-                                ? REGEX_ERROR_NUMBER_CHARACTER
-                                : REGEX_ERROR;
-                            this.label = objCont.contentarea.messageText;
-                            objCont.display(this.invalidLabelInput);
-                        }
+                if (typeof objCont.contentarea.messageText !== "undefined") {
+                    if (objCont.contentarea.messageText.match(REGEX)) {
+                        this.invalidLabelInput = false;
+                        this.label = objCont.contentarea.messageText;
+                        objCont.remove();
                     } else {
-                        this.label = "";
+                        this.invalidLabelInput = objCont.contentarea.messageText.match(REGEX_NO_CHARACTER_LIMIT)
+                            ? REGEX_ERROR_NUMBER_CHARACTER
+                            : REGEX_ERROR;
+                        this.label = objCont.contentarea.messageText;
+                        objCont.display(this.invalidLabelInput);
                     }
-                }) : null;
+                } else {
+                    this.label = "";
+                }
+            }) : null;
         }
 
         /**
@@ -363,7 +363,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                     this.quizManagerManipulator.flush();
                     this.quiz.tabQuestions.pop();
                     this.quiz.tabQuestions.forEach((it) => {
-                        (classContainer.isInstanceOf("AddEmptyElementVue",it.tabAnswer[it.tabAnswer.length - 1])) && it.tabAnswer.pop();
+                        (classContainer.isInstanceOf("AddEmptyElementVue", it.tabAnswer[it.tabAnswer.length - 1])) && it.tabAnswer.pop();
                     });
                     this.previewQuiz = classContainer.createClass("QuizVue", this.quiz, true);
                     this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
@@ -454,7 +454,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 quizLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, w, h / 2, 15, "Arial", this.quizInfoManipulator).text;
                 quizLabel.content.mark("quizLabelContent");
                 this.quizNameHeight = quizLabel.content.boundingRect().height;
-                quizLabel.border = new svg.Rect(width, h*0.7).mark("quizLabelCadre");
+                quizLabel.border = new svg.Rect(width, h * 0.7).mark("quizLabelCadre");
                 this.quizNameValidInput ? quizLabel.border.color(bgcolor, 1, myColors.black) : quizLabel.border.color(bgcolor, 2, myColors.red);
                 quizLabel.border.position(width / 2, h / 2 + quizLabel.border.height / 2);
                 this.quizInfoManipulator.set(0, quizLabel.border);
@@ -470,7 +470,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.quizInfoManipulator.unset(1);
                 let contentareaStyle = {
                     leftpx: globalPointCenter.x,
-                    toppx: globalPointCenter.y +0.2,
+                    toppx: globalPointCenter.y + 0.2,
                     width: 300,
                     height: (this.quizNameHeight + 3) - MARGIN / 2
                 };
@@ -550,7 +550,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.quiz.tabQuestions[this.indexOfEditedQuestion].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             this.quiz.tabQuestions.forEach(question => {
-                (classContainer.isInstanceOf("AddEmptyElementVue", question.tabAnswer[question.tabAnswer.length - 1] )) || question.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this.questionCreator, 'answer'));
+                (classContainer.isInstanceOf("AddEmptyElementVue", question.tabAnswer[question.tabAnswer.length - 1])) || question.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this.questionCreator, 'answer'));
             });
             this.quiz.tabQuestions.push(classContainer.createClass("AddEmptyElementVue", this, 'question'));
 
@@ -659,7 +659,7 @@ exports.QuizElements = function(globalVariables, classContainer){
     /**
      * @class
      */
-    class QuestionCreatorVue extends Vue{
+    class QuestionCreatorVue extends Vue {
         /**
          * Crée une nouvelle question dans un quiz
          * @constructs
@@ -755,7 +755,7 @@ exports.QuizElements = function(globalVariables, classContainer){
         displayQuestionCreator(x, y, w, h) {
             // bloc Question
             this.manipulator.flush();
-            let questionBlock = { rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2) };
+            let questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
             questionBlock.rect.position(0, 0);
             questionBlock.rect.fillOpacity(0.001);
             this.manipulator.set(0, questionBlock.rect);
@@ -947,8 +947,8 @@ exports.QuizElements = function(globalVariables, classContainer){
     /**
      * @class
      */
-    class QuestionVue extends Vue{
-        constructor(question, quiz){
+    class QuestionVue extends Vue {
+        constructor(question, quiz) {
             super();
             this.manipulator.addOrdonator(9);
             this.answersManipulator = new Manipulator(this);
@@ -1028,7 +1028,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.content = null;
         }
 
-        _manageDisplayTitle(){
+        _manageDisplayTitle() {
         }
 
         render(x, y, w, h) {
@@ -1041,14 +1041,14 @@ exports.QuizElements = function(globalVariables, classContainer){
             this._manageDisplayTitle();
         }
 
-        _genericPostRender(){
+        _genericPostRender() {
             this.border.mark('questionFromPuzzleBordure' + this.questionNum);
 
             var fontSize = Math.min(20, this.height * 0.1);
 
             //todo a revoir le factor de multiplication de taille d une lettre
-            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize*1.5)
-                .position(-util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN, OFFSET_POSITION_Y_QUESTION);
+            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize * 1.5)
+                .position(-util.getStringWidthByFontSize(this.label.length / 2, this.fontSize) - MARGIN, OFFSET_POSITION_Y_QUESTION);
 
             this.manipulator.set(6, this.questNum);
             this.manipulator.move(this.x, this.y);
@@ -1077,16 +1077,16 @@ exports.QuizElements = function(globalVariables, classContainer){
                         height = tmpHeight;
                     }
                 });
-                return { width: width, height: height*1.5 };
+                return {width: width, height: height * 1.5};
             };
             this.tileDimension = findTileDimension();
             this.manipulator.set(5, this.answersManipulator);
             this.answersManipulator.move(0, this.height / 2 + (this.tileDimension.height) / 2);
         }
 
-        _genericPostDisplayAnswer(){
+        _genericPostDisplayAnswer() {
             let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
-            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY)  * (this.tileDimension.height + MARGIN);
+            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY) * (this.tileDimension.height + MARGIN);
 
             let buttonY = this.tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
                 buttonH = Math.min(this.tileDimension.height, 50),
@@ -1097,7 +1097,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, answerY + SPACE_BETWEEN_TITLE_AND_ANSWER);
                 displayText("Cliquer sur une réponse pour passer à la question suivante",
                     buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);
-            }else {
+            } else {
                 //affichage d'un bouton "valider"
                 buttonW = 0.1 * drawing.width;
                 const validateX = 0.08 * drawing.width - buttonW / 2,
@@ -1136,10 +1136,10 @@ exports.QuizElements = function(globalVariables, classContainer){
             }
         }
 
-        _findTilePosition(index){
-            let posx = (index%NUMBER_ANSWER_BY_LINE) *(NUMBER_ANSWER_BY_LINE*this.tileDimension.width)/2;
-            let posy = Math.floor(index/NUMBER_ANSWER_BY_LINE)*(this.tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
-            return { x: posx, y: posy };
+        _findTilePosition(index) {
+            let posx = (index % NUMBER_ANSWER_BY_LINE) * (NUMBER_ANSWER_BY_LINE * this.tileDimension.width) / 2;
+            let posy = Math.floor(index / NUMBER_ANSWER_BY_LINE) * (this.tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
+            return {x: posx, y: posy};
         }
 
         selectedQuestion() {
@@ -1159,7 +1159,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         questionPuzzle && questionPuzzle.indexOfFirstVisibleElement != 0 && questionPuzzle.indexOfFirstVisibleElement--;
                         questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuiz.tabQuestions);
                         questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
-                        quizManager.questionClickHandler({ question: this.parentQuiz.tabQuestions[index] });
+                        quizManager.questionClickHandler({question: this.parentQuiz.tabQuestions[index]});
                     }
                     else {
                         this.parentQuiz.tabQuestions.splice(0, 0, classContainer.createClass("QuestionVue", defaultQuestion, this.parentQuiz));
@@ -1172,7 +1172,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         this.parentQuiz.tabQuestions[0].selected = true;
                         questionPuzzle.display();
 
-                        svg.event(questionsArray[0].border, "click", { question: questionsArray[0] }); // dernier élément du tableau (AddEmptyElement)
+                        svg.event(questionsArray[0].border, "click", {question: questionsArray[0]}); // dernier élément du tableau (AddEmptyElement)
                     }
                 };
                 this.redCrossManipulator = new Manipulator(this);
@@ -1284,11 +1284,11 @@ exports.QuizElements = function(globalVariables, classContainer){
     }
 
     class QuestionVueCollab extends QuestionVue {
-        constructor(question, quiz){
+        constructor(question, quiz) {
             super(question, quiz);
         }
 
-        _manageDisplayTitle(){
+        _manageDisplayTitle() {
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
@@ -1316,15 +1316,15 @@ exports.QuizElements = function(globalVariables, classContainer){
             else if (typeof this.label !== "undefined" && !this.imageSrc) {
                 this.content = autoAdjustText(this.label, this.width * 0.8, this.height, this.fontSize,
                     this.font, this.manipulator, 3).text.position(0, OFFSET_POSITION_Y_QUESTION);
-                this.border = util.drawHexagon(this.width*3/5, this.height/2, 'H', 0.65)
+                this.border = util.drawHexagon(this.width * 3 / 5, this.height / 2, 'H', 0.65)
                     .position(0, OFFSET_POSITION_Y_QUESTION);
-                let line = new svg.Line(-this.parentQuiz.parentFormation.graphW/2+MARGIN, OFFSET_POSITION_Y_QUESTION,
-                    this.parentQuiz.parentFormation.graphW/2 -MARGIN, OFFSET_POSITION_Y_QUESTION)
+                let line = new svg.Line(-this.parentQuiz.parentFormation.graphW / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION,
+                    this.parentQuiz.parentFormation.graphW / 2 - MARGIN, OFFSET_POSITION_Y_QUESTION)
                     .color(myColors.grey, 1, myColors.grey);
 
                 let formation = this.parentQuiz.parentFormation;
-                let titleInLeftCorner = autoAdjustText(formation.label, this.width * 0.8, this.height, this.fontSize*1.5, this.font, this.manipulator, 2).text
-                    .position(-formation.graphW/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, this.fontSize*1.5)+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
+                let titleInLeftCorner = autoAdjustText(formation.label, this.width * 0.8, this.height, this.fontSize * 1.5, this.font, this.manipulator, 2).text
+                    .position(-formation.graphW / 2 + MARGIN + util.getStringWidthByFontSize(formation.label.length / 2, this.fontSize * 1.5) + MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
                 this.manipulator.set(0, line);
                 this.manipulator.set(1, this.border);
             }
@@ -1368,7 +1368,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                 answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
 
                 answerElement.manipulator
-                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
+                    .move(tilePosition.x - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
                         tilePosition.y + MARGIN + SPACE_BETWEEN_TITLE_AND_ANSWER);
 
 
@@ -1419,11 +1419,11 @@ exports.QuizElements = function(globalVariables, classContainer){
     }
 
     class QuestionVueAdmin extends QuestionVue {
-        constructor(question, quiz){
+        constructor(question, quiz) {
             super(question, quiz);
         }
 
-        _manageDisplayTitle(){
+        _manageDisplayTitle() {
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
@@ -1467,9 +1467,7 @@ exports.QuizElements = function(globalVariables, classContainer){
         }
 
         render(x, y, w, h) {
-           super.render(x, y, w, h);
-
-            this._manageDisplayTitle();
+            super.render(x, y, w, h);
 
             if (!this.parentQuiz.previewMode) {
                 this.border && svg.addEvent(this.border, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
@@ -1489,9 +1487,9 @@ exports.QuizElements = function(globalVariables, classContainer){
                 answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
 
                 answerElement.manipulator
-                    .move(tilePosition.x  - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
+                    .move(tilePosition.x - (NUMBER_ANSWER_BY_LINE) * (this.tileDimension.width) / 2 - MARGIN,
                         tilePosition.y + MARGIN + SPACE_BETWEEN_TITLE_AND_ANSWER);
-                
+
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
@@ -1523,7 +1521,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         questionPuzzle && questionPuzzle.indexOfFirstVisibleElement != 0 && questionPuzzle.indexOfFirstVisibleElement--;
                         questionPuzzle && questionPuzzle.updateElementsArray(this.parentQuiz.tabQuestions);
                         questionPuzzle && questionPuzzle.fillVisibleElementsArray("leftToRight");
-                        quizManager.questionClickHandler({ question: this.parentQuiz.tabQuestions[index] });
+                        quizManager.questionClickHandler({question: this.parentQuiz.tabQuestions[index]});
                     }
                     else {
                         this.parentQuiz.tabQuestions.splice(0, 0, classContainer.createClass("QuestionVue", defaultQuestion, this.parentQuiz));
@@ -1536,7 +1534,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         this.parentQuiz.tabQuestions[0].selected = true;
                         questionPuzzle.display();
 
-                        svg.event(questionsArray[0].border, "click", { question: questionsArray[0] }); // dernier élément du tableau (AddEmptyElement)
+                        svg.event(questionsArray[0].border, "click", {question: questionsArray[0]}); // dernier élément du tableau (AddEmptyElement)
                     }
                 };
                 this.redCrossManipulator = new Manipulator(this);
@@ -1651,7 +1649,7 @@ exports.QuizElements = function(globalVariables, classContainer){
      * @class
      */
     class AddEmptyElementVue extends Vue {
-        constructor(parent, type){
+        constructor(parent, type) {
             super();
             this.manipulator.addOrdonator(3);
             type && (this.type = type);
@@ -1668,7 +1666,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.parent = parent;
         }
 
-        events(){
+        events() {
             return {
                 "dblclick manipulator": this.dblclickAdd
             }
@@ -1685,7 +1683,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             obj.border.component.setAttribute && obj.border.component.setAttribute('stroke-dasharray', '10, 5');
         }
 
-        dblclickAdd(){
+        dblclickAdd() {
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
@@ -1778,7 +1776,7 @@ exports.QuizElements = function(globalVariables, classContainer){
             this.model.isEditable(editor, editable);
         }
 
-        select(){
+        select() {
             this.model.select(this);
         }
 
@@ -1791,36 +1789,8 @@ exports.QuizElements = function(globalVariables, classContainer){
             let answerEditableDisplay = (x, y, w, h) => {
                 let checkboxSize = h * 0.2;
                 this.obj = {};
-                let redCrossClickHandler = () => {
-                    this.redCrossManipulator.flush();
-                    let index = this.model.parentQuestion.tabAnswer.indexOf(this);
-                    drawing.mousedOverTarget = null;
-                    drawings.component.remove(this.model.parentQuestion.tabAnswer[index].obj.video);
-                    this.model.parentQuestion.tabAnswer.splice(index, 1);
-                    let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    if (this.model.parentQuestion.tabAnswer.length < 3) {
-                        svg.event(this.model.parentQuestion.tabAnswer[this.model.parentQuestion.tabAnswer.length - 1].manipulator.ordonator.children[2], 'dblclick', {});
-                        if (index === 0) {
-                            [this.model.parentQuestion.tabAnswer[0], this.model.parentQuestion.tabAnswer[1]] = [this.model.parentQuestion.tabAnswer[1], this.model.parentQuestion.tabAnswer[0]];
-                        }
-                    }
-                    questionCreator.display();
-                    this.model.parentQuestion.checkValidity();
-                };
-                let mouseleaveHandler = () => {
-                    this.redCrossManipulator.flush();
-                };
-                let mouseoverHandler = () => {
-                    if (typeof this.redCrossManipulator === 'undefined') {
-                        this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
-                        this.manipulator && this.manipulator.add(this.redCrossManipulator);
-                    }
-                    let redCrossSize = 15;
-                    let redCross = drawRedCross(this.width / 2 - redCrossSize, -this.height / 2 + redCrossSize, redCrossSize, this.redCrossManipulator)
-                        .mark('redCross');
-                    svg.addEvent(redCross, 'click', redCrossClickHandler);
-                    this.redCrossManipulator.set(1, redCross);
-                };
+                this.manipulator.flush();
+                this.manipulator.move(x, y);
 
                 let removeErrorMessage = () => {
                     this.model.invalidLabelInput = false;
@@ -1846,23 +1816,17 @@ exports.QuizElements = function(globalVariables, classContainer){
                         color = (this.model.label) ? myColors.black : myColors.grey;
 
                     if (this.model.image) {
-                        this.model.imageLayer = 2;
                         let pictureRedCrossClickHandler = () => {
-                            this.model.imageLayer && this.manipulator.unset(this.model.imageLayer);//image
+                            this.manipulator.unset(2)
                             this.model.image = null;
                             this.model.imageSrc = null;
-                            let puzzle = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle;
-                            let x = -(puzzle.visibleArea.width - this.width) / 2 + this.model.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                            let y = -(puzzle.visibleArea.height - this.height) / 2 + this.model.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                            this.render(x, y, this.width, this.height);
                             this.model.parentQuestion.checkValidity();
                         };
-                        let picture = new Picture(this.model.image.src, true, this.model, text, pictureRedCrossClickHandler);
-                        picture.draw(0, 0, w, h, this.manipulator, w - 2 * checkboxSize);
+                        let picture = new Picture(this.model.image.src, true, this.model, "", pictureRedCrossClickHandler);
+                        picture.draw(0, 0, w * 1 / 3, h * 1 / 3, this.manipulator, 2, 'answerImage' + this.model.parentQuestion.tabAnswer.indexOf(this), w - 2 * checkboxSize);
                         this.border = picture.imageSVG.border;
                         this.obj.image = picture.imageSVG.image;
                         this.obj.content = picture.imageSVG.content;
-                        this.obj.image.mark('answerImage' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
                     } else if (this.model.video) {
                         this.obj && this.obj.video && drawings.component.remove(this.obj.video);
                         let obj = drawVideo(text, this.model.video, w, h, this.model.colorBordure, this.model.bgColor, this.model.fontsize, this.model.font, this.manipulator, true, false, 8);
@@ -1871,101 +1835,82 @@ exports.QuizElements = function(globalVariables, classContainer){
                             this.manipulator.unset(8);
                             this.obj && this.obj.video && drawings.component.remove(this.obj.video);
                             this.video = null;
-                            if (this.model.parentQuestion) {
-                                let puzzle = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle;
-                                let x = -(puzzle.visibleArea.width - this.width) / 2 + this.model.puzzleColumnIndex * (puzzle.elementWidth + MARGIN);
-                                let y = -(puzzle.visibleArea.height - this.height) / 2 + this.model.puzzleRowIndex * (puzzle.elementHeight + MARGIN) + MARGIN;
-                                this.render(x, y, this.width, this.height);
-                                this.model.parentQuestion.checkValidity();
-                            }
+                            this.model.parentQuestion.checkValidity();
                         });
                         this.obj.content = obj.content;
                         this.border = obj.border;
                         this.obj.video = obj.video;
                     }
-                    else {
-                        var tempObj = displayText(text, w, h, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, 0, 1, w - 2 * checkboxSize);
-                        this.border = tempObj.border;
-                        this.obj.content = tempObj.content;
-                        this.obj.content.position(0,-MARGIN);
-                    }
 
-                    (!this.model.invalidLabelInput && text !== "") ? (this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001)) : (this.border.color(myColors.white, 2, myColors.red).fillOpacity(0.001));
-                    (!this.model.invalidLabelInput && text !== "") || displayErrorMessage(this.model.invalidLabelInput);
-                    this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                    var tempObj = new gui.TextArea(0, 0, w, h, text).font(this.model.font, this.model.fontSize);
+                    tempObj.glass._acceptDrop = true;
+                    this.border = tempObj.frame;
+                    this.obj.content = tempObj.text;
+                    this.manipulator.set(0, tempObj.component);
+                    //TODO rajouter les checks
+                    tempObj.onInput((oldMessage, newMessage, valid) => {
+                        this.model.label = newMessage;
+                        if (oldMessage === this.model.labelDefault) this.obj.content.color(myColors.black);
+                    });
+                    tempObj.onClick((textarea) => {
+                        if (textarea.value === this.model.labelDefault) {
+                            textarea.value = "";
+                        }
+                    })
+
+                    this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001).mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this));
+                    this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.border._acceptDrop = true;
                     this.obj.content._acceptDrop = true;
-                    this.border.mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
 
-                    svg.addEvent(this.obj.content, 'dblclick', dblclickEditionAnswer);
-                    svg.addEvent(this.border, 'dblclick', dblclickEditionAnswer);
-                    svg.addEvent(this.border, 'mouseover', mouseoverHandler);
-                    svg.addEvent(this.border, 'mouseout', mouseleaveHandler);
+                    this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
+                    this.manipulator.add(this.redCrossManipulator);
+                    let redCrossClickHandler = () => {
+                        let index = this.model.parentQuestion.tabAnswer.indexOf(this);
+                        drawing.mousedOverTarget = null;
+                        drawings.component.remove(this.model.parentQuestion.tabAnswer[index].obj.video);
+                        this.model.parentQuestion.tabAnswer.splice(index, 1);
+                        let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                        if (this.model.parentQuestion.tabAnswer.length < 3) {
+                            svg.event(this.model.parentQuestion.tabAnswer[this.model.parentQuestion.tabAnswer.length - 1].manipulator.ordonator.children[2], 'dblclick', {});
+                            if (index === 0) {
+                                [this.model.parentQuestion.tabAnswer[0], this.model.parentQuestion.tabAnswer[1]] = [this.model.parentQuestion.tabAnswer[1], this.model.parentQuestion.tabAnswer[0]];
+                            }
+                        }
+                        questionCreator.display();
+                        this.model.parentQuestion.checkValidity();
+                    };
+                    let mouseenterhandler = () => {
+                        let redCrossSize = 15;
+                        let redCross = drawRedCross(this.width / 2 - redCrossSize, -this.height / 2 + redCrossSize, redCrossSize, this.redCrossManipulator)
+                            .mark('redCross');
+                        svg.addEvent(redCross, 'mouseup', (event) => {
+                            this.redCrossManipulator.flush();
+                            redCrossClickHandler(event)
+                        });
+                        this.redCrossManipulator.set(1, redCross);
+                    }
+                    let mouseleavehandler = (event) => {
+                        let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                        if(!target || target.id !== "redCross"){
+                            this.redCrossManipulator.flush();
+                        }
+                    }
+                    this.manipulator.addEvent('mouseenter', mouseenterhandler);
+                    this.manipulator.addEvent('mouseleave', mouseleavehandler);
                 };
-
-                let dblclickEditionAnswer = () => {
-                    let contentarea = {};
-                    contentarea.height = this.obj.content.boundingRect().height;
-                    contentarea.globalPointCenter = this.obj.content.globalPoint(-(w) / 2, -(contentarea.height) / 2);
-                    let contentareaStyle = {
-                        toppx: contentarea.globalPointCenter.y - (contentarea.height / 2) * 2 / 3,
-                        leftpx: contentarea.globalPointCenter.x + (1 / 12) * this.border.width,
-                        height: this.model.image ? contentarea.height : h * 0.5,
-                        width: this.border.width * 5 / 6
-                    };
-                    drawing.notInTextArea = false;
-                    contentarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height).color(null, 0, myColors.black).font("Arial", 20);
-                    (this.model.label === "" || this.model.label === this.model.labelDefault) && contentarea.placeHolder(this.model.labelDefault);
-                    contentarea.message(this.model.label || "")
-                        .mark('answerLabelContentArea')
-                        .width = w;
-                    contentarea.globalPointCenter = this.obj.content.globalPoint(-(contentarea.width) / 2, -(contentarea.height) / 2);
-                    drawings.component.add(contentarea);
-                    contentarea.height = this.obj.content.boundingRect().height;
-                    this.manipulator.unset(1);
-                    contentarea.focus();
-                    //contentarea.setCaretPosition(this.label.length);
-
-                    let onblur = () => {
-                        contentarea.enter();
-                        this.model.label = contentarea.messageText;
-                        drawings.component.remove(contentarea);
-                        drawing.notInTextArea = true;
-                        answerBlockDisplay();
-                        let quizManager = this.model.parentQuestion.parentQuiz.parentFormation.quizManager;
-                        quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
-                    };
-                    let objectToBeCheck = {
-                        contentarea: contentarea,
-                        border: this.border,
-                        onblur: onblur,
-                        remove: removeErrorMessage,
-                        display: displayErrorMessage
-                    };
-                    svg.addEvent(contentarea, 'input', () => {
-                        contentarea.enter();
-                        this.model.checkInputContentArea(objectToBeCheck);
-                    });
-                    svg.addEvent(contentarea, 'blur', onblur);
-                    this.model.checkInputContentArea(objectToBeCheck);
-                };
-
-                this.manipulator.flush();
-                this.manipulator.move(x, y);
                 answerBlockDisplay();
-                this.model.penHandler = () => {
-                    this.popIn = this.popIn || classContainer.createClass("PopInVue", this, true);
+
+                let penHandler = () => {
+                    if (!this.popIn) this.popIn = classContainer.createClass("PopInVue", this, true);
                     let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     questionCreator.explanation = this.popIn;
                 };
-                displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this);
-
-                if (typeof this.obj.checkbox === 'undefined') {
-                    this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
-                    this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
-                    this.obj.checkbox.answerParent = this;
-                }
+                displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this, penHandler);
+                this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
+                this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                this.obj.checkbox.answerParent = this;
                 this.manipulator.ordonator.children.forEach((e) => {
                     e._acceptDrop = true;
                 });
@@ -2196,7 +2141,7 @@ exports.QuizElements = function(globalVariables, classContainer){
                         this.manipulator.flush();
                         this.image = null;
                         this.imageSrc = null;
-                        let questionCreator = this.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                        let questionCreator = this.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                         this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     };
                     let picture = new Picture(this.image, this.editable, this, null, pictureRedCrossClickHandler);
@@ -2286,15 +2231,15 @@ exports.QuizElements = function(globalVariables, classContainer){
                 // text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
                 // text = new svg.Text(textToDisplay).mark('textExplanation');
                 text = new svg.Text(textToDisplay)
-                    .dimension(this.panel.width,0)
-                    .position(panelWidth/2+MARGIN*2,MARGIN*2)
+                    .dimension(this.panel.width, 0)
+                    .position(panelWidth / 2 + MARGIN * 2, MARGIN * 2)
                     // .position(text.boundingRect().width,text.boundingRect().height)
                     // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
                     // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
-                    .font("Arial", 20,0)
+                    .font("Arial", 20, 0)
                     // .anchor("left")
                     .mark('textExplanation');
-                this.textManipulator.set(0,text);
+                this.textManipulator.set(0, text);
                 // text.position(panelWidth / 2, text.boundingRect().height)
                 //     .mark('textExplanation');
                 this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
