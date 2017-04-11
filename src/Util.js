@@ -1666,15 +1666,35 @@ exports.Util = function (globalVariables) {
         }
 
         static sendProgressToServer(quiz) {
-            var data = {
-                indexQuestion: quiz.currentQuestionIndex + 1,
-                questionsAnswered: [],
-                game: quiz.id,
-                version: quiz.parentFormation._id,
-                formation: quiz.parentFormation.formationId
-            };
-            quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
-            return dbListener.httpPostAsync("/user/saveProgress", data)
+            return new Promise((resolve, reject) => {
+                var data = {
+                    indexQuestion: quiz.currentQuestionIndex + 1,
+                    questionsAnswered: [],
+                    game: quiz.id,
+                    version: quiz.parentFormation._id,
+                    formation: quiz.parentFormation.formationId
+                };
+                quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
+                dbListener.httpPostAsync("/user/saveProgress", data)
+                    .then( () => {
+                        if (quiz.currentQuestionIndex !== quiz.tabQuestions.length - 1) {
+                            this.saveLastAction(data)
+                                .then( () => {
+                                    resolve();
+                                })
+                                .catch((err)=>{
+                                reject(err);
+                                })
+                        }
+                        else{
+                            resolve();
+                        }
+                    })
+            });
+        }
+
+        static saveLastAction(object){
+            return dbListener.httpPostAsync('user/saveLastAction', object);
         }
 
         static getUser() {

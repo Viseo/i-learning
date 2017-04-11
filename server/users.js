@@ -86,6 +86,18 @@ const saveProgress = (body, user) => {
     })
 };
 
+const saveLastAction = (body, user) => {
+    return new Promise((resolve,reject) => {
+       let usersCollection = db.get().collection('users');
+       usersCollection.updateOne({'_id': user._id}, {$set: {lastAction: body}}, err =>{
+           if(err){
+               reject(err);
+           }
+           resolve({ack: 'ok'});
+       })
+    });
+};
+
 const getFormationsWithProgress = (userFormationsArray, versions, formations) => {
     let result = [];
     versions.forEach(version => {
@@ -176,3 +188,4 @@ exports.getUserById = getUserById;
 exports.saveProgress = saveProgress;
 exports.getFormationsWithProgress = getFormationsWithProgress;
 exports.getPlayerFormationsWithProgress = getPlayerFormationsWithProgress;
+exports.saveLastAction = saveLastAction;

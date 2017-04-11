@@ -180,6 +180,17 @@ module.exports = function (app, fs) {
             .catch(console.error)
     });
 
+    app.post('/user/saveLastAction', function (req,res) {
+        cookies.verify(cookies.get(req))
+            .then(user => {
+                return users.saveLastAction(req.body, user);
+            })
+            .then(data => {
+                res.send(data);
+            })
+            .catch(console.error);
+    });
+
     app.post('/formations/insert', function (req, res) {
         formations.getFormationsByName(req.body.label)
             .then(data => {
@@ -265,7 +276,7 @@ module.exports = function (app, fs) {
             .then((data) => {
                 for(let i in data.myCollection){
                     if (data.myCollection[i]._id == req.params.id){
-                        result.progress = data.myCollection[i];
+                        result.progress = data.myCollection[i].progress;
                     }
                 }
                 res.send(result);

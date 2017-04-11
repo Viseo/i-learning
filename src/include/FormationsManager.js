@@ -185,7 +185,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 formation.miniature.removeHandler("click");
                 Server.getFormationsProgress(formation._id).then(data => {
                     var tmp = JSON.parse(data);
-                    let games = tmp.progress.progress ? tmp.progress.progress.gamesTab : null;
+                    let games = tmp.progress ? tmp.progress.gamesTab : null;
                     formation.loadFormation(tmp.formation, games);
                     this.formationDisplayed = formation;
                     this.formationDisplayed.display();
