@@ -105,6 +105,7 @@ const callEnterOnElement = (root, nameEnterElement, value) => {
 let runtime,
     svg,
     main,
+    enhance,
     dbListenerModule,
     dbListener;
 
@@ -368,4 +369,25 @@ describe('QuizManager', function(){
         let returnButtonFromBdToFormation = retrieve(root, '[returnButtonFromBdToFormation]');
         returnButtonFromBdToFormation.listeners['click']();
     })
+
+    it('should toggle arrows and quizz', function(done){ /** TODO DMA **/
+        testutils.retrieveDB("./log/dbQuiz1.json", dbListener, function() {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+            let maFormation = retrieve(root, "[maFormation]");
+            maFormation.handler.parentManip.listeners["click"]();
+            let arrowModeButtonCadre = retrieve(root, '[arrowModeButtonCadre]');
+            arrowModeButtonCadre.listeners['click']();
+            let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
+            assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
+            let game0 = retrieve(root, "[level0quizz0]");
+            assert.equal(game0.handler.messageText, "Quiz 1");
+            let game0pos = game0.handler.parent.globalPoint(game0.handler.parentManip.x, game0.handler.parentManip.y);
+            let glass = retrieve(root, '[theGlass]');
+            done();
+        });
+    });
+
+
 })
