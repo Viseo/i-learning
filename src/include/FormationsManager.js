@@ -173,7 +173,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.panel.component.move(((drawing.width - 2 * MARGIN) + MARGIN) / 2, heightAllocatedToPanel / 2);
                 this.clippingManipulator.add(this.panel.component);
                 this.panel.content.children.indexOf(this.formationsManipulator.first) === -1 && this.panel.content.add(this.formationsManipulator.first);
-                this.formationsManipulator.first.mark("test");
+                this.formationsManipulator.first.mark("test");  /** TODO à quoi sert cet id test ? **/
                 this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
                 this.cols = Math.floor((this.panel.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));

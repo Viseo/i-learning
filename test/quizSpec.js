@@ -371,7 +371,7 @@ describe('QuizManager', function(){
     })
 
     it('should toggle arrows and quizz', function(done){ /** TODO DMA **/
-        testutils.retrieveDB("./log/dbQuiz1.json", dbListener, function() {
+        testutils.retrieveDB("./log/dbQuiz2.json", dbListener, function() {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor("content");
@@ -383,8 +383,55 @@ describe('QuizManager', function(){
             assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
             let game0 = retrieve(root, "[level0quizz0]");
             assert.equal(game0.handler.messageText, "Quiz 1");
-            let game0pos = game0.handler.parent.globalPoint(game0.handler.parentManip.x, game0.handler.parentManip.y);
+            let game1 = retrieve(root, "[level1quizz1]");
+            assert.equal(game1.handler.messageText, "Quiz 2");
+            let game2 = retrieve(root, "[level1quizz2]");
+            assert.equal(game2.handler.messageText, "Quiz 3");
+
+            let game0pos = game0.handler.parent.globalPoint(0, 0);
+            let game1pos = game1.handler.parent.globalPoint(0, 0);
+            let game2pos = game2.handler.parent.globalPoint(0, 0);
+            assert(game0.handler.parentManip.listeners);
+            // game0.handler.parentManip.listeners['mousedown']({
+            //     pageX: game0.handler.parentManip.x, pageY: game0.handler.parentManip.y, preventDefault: () => {
+            //     }});
+            // game1.handler.parentManip.listeners['mouseup']({
+            //     pageX: game1.handler.parentManip.x, pageY: game1.handler.parentManip.y, preventDefault: () => {
+            //     }});
             let glass = retrieve(root, '[theGlass]');
+            glass.listeners['mousedown']({
+                pageX: game0pos.x, pageY: game0pos.y, preventDefault: () => {
+                }
+            });
+            glass.listeners['mouseup']({
+                pageX: game1pos.x, pageY: game1pos.y, preventDefault: () => {
+                }
+            });
+            // glass.listeners['mouseup']({
+            //     pageX: game1.handler.parentManip.x, pageY: game1.handler.parentManip.y, preventDefault: () => {
+            //     }
+            // });
+            let arrow01 = retrieve(root, '[quizz0quizz1]');
+            // let arrow02 = retrieve(root, '[quizz0quizz2]');
+            arrow01.listeners['click']();
+            assert.equal(arrow01.fill, 'rgb(25,122,230)');
+            arrow01.listeners['click']();
+            assert.equal(arrow01.fill, 'rgb(0,0,0)');
+            arrow01.listeners['click']();
+            assert.equal(arrow01.fill, 'rgb(25,122,230)');
+            let selectedArrow = retrieve(root, ['selectedArrow']);
+            assert(selectedArrow);
+            arrowModeButtonCadre.listeners['click']();
+            arrowModeArrow = retrieve(root, '[arrowModeArrow]');
+            assert.equal(arrowModeArrow.fill, 'rgb(0,0,0)');
+            let panelBack = retrieve(root, "[panelBack]");
+            panelBack.listeners['click']({
+                pageX: 300, pageY: 300, preventDefault: () => {
+                }
+            });
+            // arrow01 = retrieve(root, '[quizz0quizz1]');
+            // assert.equal(arrow01.fill, 'rgb(0,0,0)');
+            // arrow02.listeners['click']();
             done();
         });
     });
