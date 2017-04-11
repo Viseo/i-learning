@@ -218,6 +218,7 @@ module.exports = function (app, fs) {
             .catch(console.error)
     });
 
+
     app.get('/formations/getAdminFormations', (req, res) => {
         formations.getLastVersions()
             .then((data) => {
@@ -242,6 +243,34 @@ module.exports = function (app, fs) {
             })
             .catch(console.error)
 
+    });
+
+    app.get('/formations/getPlayerProgression/:id', function(req, res){
+        let result = {};
+        formations.getVersionById(req.params.id)
+            .then((data) => {
+                result.formation = data.formation;
+            })
+            .catch(console.error)
+        const
+            user = cookies.verify(cookies.get(req)),
+            lastVersions = formations.getLastVersions(),
+            allFormations = formations.getAllFormations();
+
+        Promise.all([user, allFormations, lastVersions])
+            .then((values) => {
+                const [user, allFormations, versions] = values;
+                return users.getPlayerFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection, id);
+            })
+            .then((data) => {
+                for(let i in data.myCollection){
+                    if (data.myCollection[i]._id == req.params.id){
+                        result.progress = data.myCollection[i];
+                    }
+                }
+                res.send(result);
+            })
+            .catch(console.error)
     });
 
     app.post('/formations/replaceFormation/:id', function (req, res) {

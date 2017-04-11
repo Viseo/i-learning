@@ -150,7 +150,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.publicationButtonHeightRatio = 0.07;
             this.marginRatio = 0.03;
             this.label = formation.label ? formation.label : "";
-            this.status = formation.status ? formation.status : "NotPublished";
+            this.status = formation.progress.status ? formation.progress.status : "NotPublished";
             this.invalidLabelInput = false;
             this.graphCreaWidth = drawing.width * this.graphWidthRatio - MARGIN;
             this.levelHeight = 150;
@@ -358,7 +358,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 //on utilise actuellement pour desectionner
                 this.clickOnPanel = () => {
                     this.selectedArrow = null;
-                    this.displayGraph();
+                    if (!this.animation || !this.animation.status) {
+                        this.displayGraph();
+                    }
                 };
 
                 svg.addEvent(this.panel.back, "click", this.clickOnPanel);
@@ -581,8 +583,8 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.displayFormationPublicationButton(drawing.width / 2, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
                     this.displayFormationDeactivationButton(drawing.width / 2 + 2 * this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
                 } else {
-                    this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.saveButtonHeight);
-                    this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height * 0.87, this.buttonWidth, this.publicationButtonHeight);
+                    this.displayFormationSaveButton(drawing.width / 2 - this.buttonWidth,  drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.saveButtonHeight);
+                    this.displayFormationPublicationButton(drawing.width / 2 + this.buttonWidth, drawing.height - 2*this.publicationButtonHeight - MARGIN, this.buttonWidth, this.publicationButtonHeight);
                 }
                 displayFrame(this.graphCreaWidth, this.graphCreaHeight);
                 this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
@@ -986,7 +988,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * charge la formation
          * @param formation - infos à charger dans la formation
          */
-        loadFormation(formation) {
+        loadFormation(formation, games) {
             this.levelsTab = [];
             this.gamesCounter = formation.gamesCounter;
             this.links = formation.links || formation.link;
@@ -996,6 +998,13 @@ exports.Formation = function (globalVariables, classContainer) {
                     game.tabQuestions && gamesTab.push(classContainer.createClass("QuizVue", game, false, this));
                     game.tabQuestions || gamesTab.push(classContainer.createClass("BdVue", game, this));
                     gamesTab[gamesTab.length - 1].id = game.id;
+                    if(games) {
+                        for (let i = 0; i < games.length; i++) {
+                            if (game.id == games[i].game) {
+                                gamesTab[gamesTab.length - 1].questionsAnswered = games[i].questionsAnswered;
+                            }
+                        }
+                    }
                 });
                 this.levelsTab.push(classContainer.createClass("Level", this, gamesTab, globalVariables.playerMode));
             });

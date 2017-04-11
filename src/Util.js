@@ -1645,6 +1645,10 @@ exports.Util = function (globalVariables) {
             return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
         }
 
+        static getFormationsProgress(id) {
+            return dbListener.httpGetAsync('/formations/getPlayerProgression/' + id);
+        }
+
         static connect(mail, password) {
             return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
         }
