@@ -1406,8 +1406,6 @@ exports.Formation = function (globalVariables, classContainer) {
                 if (this.currentQuestionIndex > 0) {
                     this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
                     this.currentQuestionIndex--;
-                    this.leftChevron.update(this);
-                    this.rightChevron.update(this);
                     this.displayCurrentQuestion();
                 }
             };

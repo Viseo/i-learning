@@ -1020,16 +1020,12 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 });
             }
 
-            this.lines = Math.floor(this.tabAnswer.length / this.columns); //+ 1;
-            if (this.tabAnswer.length % this.columns !== 0) {
-                this.lines += 1;
-            }
+            this.lines = Math.ceil(this.tabAnswer.length / NUMBER_ANSWER_BY_LINE); //+ 1;
             this.border = null;
             this.content = null;
         }
 
-        _manageDisplayTitle() {
-        }
+        manageDisplayTitle() {}
 
         render(x, y, w, h) {
             this.x = x;
@@ -1038,10 +1034,10 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.height = h;
             this.manipulator.flush();
 
-            this._manageDisplayTitle();
+            this.manageDisplayTitle();
         }
 
-        _genericPostRender() {
+        genericPostRender() {
             this.border.mark('questionFromPuzzleBordure' + this.questionNum);
 
             var fontSize = Math.min(20, this.height * 0.1);
@@ -1067,16 +1063,18 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 h = h - 50;
                 this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
                 let tmpHeight;
+                //TODO a corriger pour calculer la place maximum mais actuellement h est faux donc imposible d'afficher correctement
+                height = heightMin;
 
-                this.tabAnswer.forEach(answer => {
-                    tmpHeight = (answer.image || answer.video) ? this.tileHeightMax : heightMin;
-                    if (tmpHeight > this.tileHeightMax) {
-                        height = this.tileHeightMax;
-                    }
-                    else if (tmpHeight > height) {
-                        height = tmpHeight;
-                    }
-                });
+                // this.tabAnswer.forEach(answer => {
+                //     tmpHeight = (answer.model.image || answer.model.video) ? this.tileHeightMax : heightMin;
+                //     if (tmpHeight > this.tileHeightMax) {
+                //         height = this.tileHeightMax;
+                //     }
+                //     else if (tmpHeight > height) {
+                //         height = tmpHeight;
+                //     }
+                // });
                 return {width: width, height: height * 1.5};
             };
             this.tileDimension = findTileDimension();
@@ -1084,7 +1082,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.answersManipulator.move(0, this.height / 2 + (this.tileDimension.height) / 2);
         }
 
-        _genericPostDisplayAnswer() {
+        genericPostDisplayAnswer() {
             let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
             let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY) * (this.tileDimension.height + MARGIN);
 
@@ -1136,7 +1134,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             }
         }
 
-        _findTilePosition(index) {
+        findTilePosition(index) {
             let posx = (index % NUMBER_ANSWER_BY_LINE) * (NUMBER_ANSWER_BY_LINE * this.tileDimension.width) / 2;
             let posy = Math.floor(index / NUMBER_ANSWER_BY_LINE) * (this.tileDimension.height + SPACE_BETWEEN_TWO_ANSWER);
             return {x: posx, y: posy};
@@ -1288,8 +1286,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             super(question, quiz);
         }
 
-        _manageDisplayTitle(){
-
+        manageDisplayTitle(){
             let ratioBorder = {
                 w : 2/5,
                 h : this.fontSize/50,
@@ -1299,7 +1296,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.content = autoAdjustText(this.label, this.width * 0.8, this.height, this.fontSize,
                     this.font, this.manipulator, 4).text.position(0, OFFSET_POSITION_Y_QUESTION);
             }
-
             // Question avec Texte ET image
             if (this.imageSrc) {//&& this.label !== ""
                 let imgObj = this.dimImage || {
@@ -1358,14 +1354,14 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.image && svg.addEvent(this.image, "click", event);
             }
 
-            super._genericPostRender();
+            super.genericPostRender();
         }
 
         displayAnswers(w, h) {
             super.displayAnswers(w, h);
 
             this.tabAnswer.forEach((answerElement, index) => {
-                let tilePosition = this._findTilePosition(index);
+                let tilePosition = this.findTilePosition(index);
                 this.answersManipulator.add(answerElement.manipulator);
                 answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
 
@@ -1415,7 +1411,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                  this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
                  displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);*/
             } else {
-                super._genericPostDisplayAnswer();
+                super.genericPostDisplayAnswer();
             }
         }
     }
@@ -1425,7 +1421,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             super(question, quiz);
         }
 
-        _manageDisplayTitle() {
+        manageDisplayTitle() {
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
@@ -1477,14 +1473,14 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.image && svg.addEvent(this.image, "click", this.parentQuiz.parentFormation.quizManager.questionClickHandler);
             }
 
-            super._genericPostRender();
+            super.genericPostRender();
         }
 
         displayAnswers(w, h) {
             super.displayAnswers(w, h);
 
             this.tabAnswer.forEach((answerElement, index) => {
-                let tilePosition = super._findTilePosition(index);
+                let tilePosition = super.findTilePosition(index);
                 this.answersManipulator.add(answerElement.manipulator);
                 answerElement.display(-this.tileDimension.width / 2, -this.tileDimension.height / 2, this.tileDimension.width, this.tileDimension.height);
 
@@ -1495,7 +1491,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
                 answerElement.border.mark('answerElement' + index);
-                if (!globalVariables.playerMode && this.parentQuiz.previewMode) {
+                if (this.parentQuiz.previewMode) {
                     answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen);
                 }
             });
@@ -1503,7 +1499,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.openPopIn && this.openPopIn();
             this.openPopIn = null;
 
-            super._genericPostDisplayAnswer();
+            super.genericPostDisplayAnswer();
         }
 
         selectedQuestion() {
@@ -1844,7 +1840,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         this.obj.video = obj.video;
                     }
 
-                    var tempObj = new gui.TextArea(0, 0, w, h, text).font(this.model.font, this.model.fontSize);
+                    var tempObj = new gui.TextArea(0, 0, w, h, text).font(this.model.font, this.model.fontSize).anchor("center");
                     tempObj.glass._acceptDrop = true;
                     this.border = tempObj.frame;
                     this.obj.content = tempObj.text;
@@ -1860,7 +1856,11 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         }
                     })
 
-                    this.border.color(myColors.white, 1, myColors.black).fillOpacity(0.001).mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this));
+                    //TODO rechanger pour afficher plus correctement les textarea avec les corners
+                    this.border
+                        .corners(25, 25)
+                        .color(myColors.white, 1, myColors.black).fillOpacity(0.001)
+                        .mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.border._acceptDrop = true;
                     this.obj.content._acceptDrop = true;
