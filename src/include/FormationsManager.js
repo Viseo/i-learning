@@ -107,16 +107,16 @@ exports.formationsManager = function(globalVariables, classContainer){
                     }
                     this.undoneIcon = {};
                     this.undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
-                    this.undoneIcon.content = new svg.Triangle(8,8,'E').color(myColors.none, 3, myColors.white);
+                    this.undoneIcon.content = new svg.Triangle(8,8,'E').color(myColors.none, 3, myColors.white).mark('unDoneIcon'); /** TODO marque du border ou content ? **/
                     this.inProgressIcon = displayTextWithCircle('...',circleToggleSize*2,circleToggleSize*2,myColors.none, myColors.orange,15,'Arial',manip);
-                    this.inProgressIcon.content.font('arial',20).color(myColors.white);
+                    this.inProgressIcon.content.font('arial',20).color(myColors.white).mark('inProgressIcon');
                     this.doneIcon = {};
                     this.doneIcon.border = new svg.Circle(circleToggleSize);
                     this.doneIcon.border.color(myColors.green, 0, myColors.none);
                     this.doneIcon.border.position(-circleToggleSize*2-MARGIN, 0);
                     this.undoneIcon.content.position(-circleToggleSize*4-MARGIN*2, 0);
                     this.undoneIcon.border.position(-circleToggleSize*4-MARGIN*2, 0);
-                    this.doneIcon.content = drawCheck(this.doneIcon.border.x,this.doneIcon.border.y,20).color(myColors.none, 3, myColors.white);
+                    this.doneIcon.content = drawCheck(this.doneIcon.border.x,this.doneIcon.border.y,20).color(myColors.none, 3, myColors.white).mark('doneIcon');
                     manip.move(drawing.width-MARGIN*3,MARGIN + circleToggleSize*2);
                     manip.set(4, this.doneIcon.content);
                     manip.set(3, this.doneIcon.border);

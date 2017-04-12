@@ -11,7 +11,6 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue,
         QuizVue,
         BdVue,
-        AnswerVue,
         QuestionCreator,
         svgr;
 
@@ -26,7 +25,6 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
-        AnswerVue = globalVariables.domain.AnswerVue;
         svgr = globalVariables.runtime;
     };
 
@@ -54,6 +52,10 @@ exports.Util = function (globalVariables) {
                 };
         };
 
+    }
+
+    function getStringWidthByFontSize(stringLength, fontSize){
+        return (fontSize/2 *stringLength);
     }
 
     /**
@@ -509,7 +511,7 @@ exports.Util = function (globalVariables) {
              }*/
         };
 
-        displayPen = function (x, y, size, object) {
+        displayPen = function (x, y, size, object, handler) {
             const fontColor = object.filled ? myColors.darkerGreen : myColors.black,
                 square = new svg.Rect(size, size).color(myColors.white, 1, myColors.black).position(x, y),
                 tipEnd = new svg.Triangle(size / 5, size / 5, "S").color(myColors.white, 1, fontColor).position(0, size / 2),
@@ -532,7 +534,7 @@ exports.Util = function (globalVariables) {
             object.penManipulator.set(3, body);
             object.penManipulator.move(x + size / 8, y - size / 8);
             object.penManipulator.rotate(40);
-            elementsTab.forEach(element => svg.addEvent(element, "click", object.model.penHandler));
+            handler && elementsTab.forEach(element => svg.addEvent(element, "click", handler));
         };
 
         drawExplanationIcon = function (x, y, size, manipulator) {
@@ -723,15 +725,13 @@ exports.Util = function (globalVariables) {
                 height *= (w / width);
                 width = w;
             }
-            if (!h) {
-                return height;
-            }
             if (height > h) {
                 width *= (h / height);
                 height = h;
             }
             let img = {
-                image: new svg.Image(imageSrc).dimension(width, height).position(0, 0), height: height
+                image: new svg.Image(imageSrc).dimension(width, height).position(0, 0),
+                height: height
             };
             img.image.name = name;
             return img;
@@ -752,7 +752,11 @@ exports.Util = function (globalVariables) {
          * @returns {{content, border}} : SVG items for text & border
          */
         displayText = function (label, w, h, rgbCadre, bgColor, textHeight, font, manipulator, layer1 = 0, layer2 = 1, textWidth = w) {
-            var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
+            // var content = autoAdjustText(label, textWidth, h, textHeight, font, manipulator, layer2).text;
+            var content = new svg.Text(label);
+            content.dimension(textWidth,textHeight);
+            content.font(font ? font : 'Arial', textHeight, 0);
+            manipulator.set(layer2, content);
             var border = new svg.Rect(w, h).color(bgColor, 1, rgbCadre).corners(25, 25);
             manipulator.set(layer1, border);
             return {content: content, border: border};
@@ -796,13 +800,6 @@ exports.Util = function (globalVariables) {
             manipulator.set(0, border);
             return {content: content, border: border};
         };
-
-        /*displayCheckBox = function () {
-         var content = "testText";
-         var border = new svg.Rect(20, 20).color(bgColor, 1, rgbCadre).corners(0,0);
-         manipulator.set(0, border);
-         return {content: content, border: border};
-         }*/
 
         autoAdjustText = function (content, wi, h, fontSize = 20, font = 'Arial', manipulator, layer = 1) {
             let words = content.split(' '),
@@ -1064,10 +1061,7 @@ exports.Util = function (globalVariables) {
             this.parent = parent;
             this.textToDisplay = textToDisplay;
             this.imageRedCrossClickHandler = imageRedCrossClickHandler;
-            if (typeof this.redCrossManipulator === 'undefined') {
-                this.redCrossManipulator = new Manipulator(this.parent);
-                this.redCrossManipulator.addOrdonator(2);
-            }
+            this.redCrossManipulator = new Manipulator(this.parent).addOrdonator(2);
         }
 
         draw(x, y, w, h, manipulator = this.parent.manipulator, layer = this.parent.imageLayer, mark = null, textWidth) {
@@ -1101,15 +1095,21 @@ exports.Util = function (globalVariables) {
         }
 
         drawImageRedCross() {
-            this.mouseleaveHandler = () => {
-                this.redCrossManipulator && this.redCrossManipulator.flush();
+            this.mouseleaveHandler = (event) => {
+                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                if(!target || target.id !== "imageRedCross"){
+                    this.redCrossManipulator.flush();
+                }
             };
             this.imageMouseoverHandler = () => {
                 let redCrossSize = 15;
                 let redCross = this.textToDisplay ? drawRedCross(this.imageSVG.image.x + this.imageSVG.image.width / 2 - redCrossSize / 2, this.imageSVG.image.y - this.imageSVG.image.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator)
                     : drawRedCross(this.imageSVG.x + this.imageSVG.width / 2 - redCrossSize / 2, this.imageSVG.y - this.imageSVG.height / 2 + redCrossSize / 2, redCrossSize, this.redCrossManipulator);
                 redCross.mark('imageRedCross');
-                svg.addEvent(redCross, 'click', this.imageRedCrossClickHandler);
+                svg.addEvent(redCross, 'click',(event)=>{
+                    this.redCrossManipulator.flush();
+                    this.imageRedCrossClickHandler(event);
+                });
                 this.redCrossManipulator.set(1, redCross);
             };
         }
@@ -1167,7 +1167,7 @@ exports.Util = function (globalVariables) {
 
     class MiniatureGame {
         constructor(game, size) {
-            this.game = game;
+            this.game = game;       // classe GameVue
             this.scoreSize = 13;
             this.picture = game.picture || new Picture('../images/svg-guy.png', false, this, '', null);
             this.width = size;
@@ -1192,12 +1192,13 @@ exports.Util = function (globalVariables) {
         display(){
             this.updateProgress();
             let icon = {
-                content: autoAdjustText(this.game.title, this.picture ? this.width*0.9 : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),// new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                content: autoAdjustText(this.game.title, this.picture ? this.width*0.9 : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
             this.border = icon.border;
             this.content = icon.content;
+            this.content.text.mark('titlelevel' + this.game.levelIndex + this.game.id);
             this.underContent = icon.underContent;
             let video;
             if (this.video){
@@ -1895,10 +1896,10 @@ exports.Util = function (globalVariables) {
      */
     function Bdd() {
         HEADER_SIZE = 0.07;
-        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,50}$/g;
+        REGEX = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,3000}$/g;
         REGEX_NO_CHARACTER_LIMIT = /^([A-Za-z0-9.éèêâàîïëôûùö ()©,;°?!'"-/\n]){0,}$/g;
         MAX_CHARACTER_REGEX = 200;
-        REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 50 caractères";
+        REGEX_ERROR_NUMBER_CHARACTER = "Ce champ doit être composé de moins de 3000 caractères";
         MAX_CHARACTER_TITLE = 23;
         MIN_CHARACTER_TITLE = 2;
         TITLE_FORMATION_REGEX = /^([A-Za-z0-9.:+#@%éèêâàîïëôûùöÉÈÊÂÀÎÏËÔÛÙÖ'-]){2,50}$/g;
@@ -2115,6 +2116,7 @@ exports.Util = function (globalVariables) {
 
     return {
         SVGGlobalHandler,
+        getStringWidthByFontSize,
         setGlobalVariables,
         SVGUtil,
         Bdd,

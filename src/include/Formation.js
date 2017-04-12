@@ -10,7 +10,6 @@
 exports.Formation = function (globalVariables, classContainer) {
     let Vue = classContainer.getClass("Vue");
 
-    let imageController;
     let myFormations;
 
     let
@@ -19,15 +18,13 @@ exports.Formation = function (globalVariables, classContainer) {
         drawings = globalVariables.drawings,
         svg = globalVariables.svg,
         gui = globalVariables.gui,
+        imageController = globalVariables.imageController,
         Manipulator = globalVariables.util.Manipulator,
         MiniatureFormation = globalVariables.util.MiniatureFormation,
         ReturnButton = globalVariables.util.ReturnButton,
         Server = globalVariables.util.Server,
         util = globalVariables.util,
         Puzzle = globalVariables.util.Puzzle;
-
-    imageController = ImageController(globalVariables.ImageRuntime);
-    globalVariables.imageController = imageController;
 
     installDnD = globalVariables.gui.installDnD;
 
@@ -278,6 +275,7 @@ exports.Formation = function (globalVariables, classContainer) {
 
             let clickQuizHandler = (event, target) => {
                 target = target || drawings.component.background.getTarget(event.pageX, event.pageY).parent.parentManip.parentObject;
+
                 if (globalVariables.playerMode && target.miniature.checkIfParentDone() && (!this.animation || !this.animation.status)){
                     drawing.manipulator.unset(1);
                     main.currentPageDisplayed = "QuizPreview";
@@ -1315,7 +1313,7 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         render(x, y, w, h) {
             main.currentPageDisplayed = "Quiz";
-            globalVariables.header.display(this.parentFormation.label + " - " + this.title);
+            globalVariables.header.display(this.parentFormation.label + " : " + this.title);
             drawing.manipulator.set(1, this.manipulator);
             let headerPercentage, questionPercentageWithImage, questionPercentage,
                 answerPercentageWithImage;
@@ -1433,8 +1431,6 @@ exports.Formation = function (globalVariables, classContainer) {
                 if (this.currentQuestionIndex > 0) {
                     this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
                     this.currentQuestionIndex--;
-                    this.leftChevron.update(this);
-                    this.rightChevron.update(this);
                     this.displayCurrentQuestion();
                 }
             };
@@ -1542,6 +1538,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.resultManipulator && this.manipulator.remove(this.resultManipulator);
             this.resultManipulator = new Manipulator(this);
             this.scoreManipulator = new Manipulator(this).addOrdonator(2);
+            this.scoreManipulator.mark('scoreManipulator');
             this.resultManipulator.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
             this.resultManipulator.add(this.scoreManipulator);
             this.resultManipulator.add(this.puzzle.manipulator);
@@ -1558,13 +1555,16 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.tabQuestions = [];
                 quiz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    let tmp = classContainer.createClass("QuestionVue", it, this);
+                    let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", it, this)
+                        : classContainer.createClass("QuestionVueAdmin", it, this);
                     tmp.parentQuiz = this;
                     this.tabQuestions.push(tmp);
                 });
             } else {
                 this.tabQuestions = [];
-                this.tabQuestions.push(classContainer.createClass("QuestionVue", defaultQuestion, this));
+                let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", defaultQuestion, this)
+                    : classContainer.createClass("QuestionVueAdmin", defaultQuestion, this);
+                this.tabQuestions.push(tmp);
             }
         }
 
@@ -1597,8 +1597,9 @@ exports.Formation = function (globalVariables, classContainer) {
             }
             this.manipulator.add(this.tabQuestions[this.currentQuestionIndex].manipulator);
             this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
-            this.tabQuestions[this.currentQuestionIndex].display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
-                this.questionArea.w, this.questionHeight);
+            this.tabQuestions[this.currentQuestionIndex]
+                .display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
+                this.parentFormation.graphW, this.questionHeight);
             this.rightChevron.update(this);
             this.leftChevron.update(this);
             !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
@@ -1653,6 +1654,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     } else {
                         let subTotal = 0;
                         questionAnswered.validatedAnswers.forEach((e) => {
+                            console.log(e);
                             if (question.tabAnswer[e].model.correct) {
                                 subTotal++;
                             }

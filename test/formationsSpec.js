@@ -101,6 +101,7 @@ const callEnterOnElement = (root, nameEnterElement, value) => {
 let runtime,
     svg,
     main,
+    enhance,
     dbListenerModule,
     dbListener;
 
