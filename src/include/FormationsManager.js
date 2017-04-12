@@ -146,7 +146,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                     height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                 };
-                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize;//drawing.height * this.header.size;
+                this.y = (!globalVariables.playerMode) ? this.addButtonHeight * 1.5 : circleToggleSize  ;//drawing.height * this.header.size;
                 drawing.notInTextArea = true;
                 svg.addGlobalEvent("keydown", (event) => {
                     if (drawing.notInTextArea && hasKeyDownEvent(event)) {
@@ -183,9 +183,10 @@ exports.formationsManager = function(globalVariables, classContainer){
 
             let onClickDisplayFormation = formation => {
                 formation.miniature.removeHandler("click");
-                Server.getVersionById(formation._id).then(data => {
-                    var myFormation = JSON.parse(data).formation;
-                    formation.loadFormation(myFormation);
+                Server.getFormationsProgress(formation._id).then(data => {
+                    var tmp = JSON.parse(data);
+                    let games = tmp.progress ? tmp.progress.gamesTab : null;
+                    formation.loadFormation(tmp.formation, games);
                     this.formationDisplayed = formation;
                     this.formationDisplayed.display();
                 });

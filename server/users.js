@@ -86,7 +86,60 @@ const saveProgress = (body, user) => {
     })
 };
 
+const saveLastAction = (body, user) => {
+    return new Promise((resolve,reject) => {
+       let usersCollection = db.get().collection('users');
+       usersCollection.updateOne({'_id': user._id}, {$set: {lastAction: body}}, err =>{
+           if(err){
+               reject(err);
+           }
+           resolve({ack: 'ok'});
+       })
+    });
+};
+
 const getFormationsWithProgress = (userFormationsArray, versions, formations) => {
+    let result = [];
+    versions.forEach(version => {
+        const progressArray = userFormationsArray && userFormationsArray
+                .find(f => f.formation === version.formationId.toString());
+        let progress = '';
+        let id = null;
+        if (progressArray) {
+            // there is a correlation between the player's progress and a formation
+            progress = function() {
+                for (let x = i = 0; x < version.levelsTab.length; x++) {
+                    const gamesTab = version.levelsTab[x].gamesTab;
+                    for (let y = 0; y < gamesTab.length; y++) {
+                        const game = gamesTab[y];
+                        if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered.length < game.tabQuestions.length) {
+                            id = progressArray.version;
+                            return 'inProgress';
+                        }
+                        i+= 1;
+                    }
+                }
+                id = progressArray.version;
+                return 'done';
+            }();
+            result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+        } else {
+            // check status for a published version
+            if(version.status === "Published") {
+                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+            } else if(version.status && version.status !== "NotPublished") {
+                let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
+                if(myFormation.versions.length > 1) {
+                    version = myFormation.versions[myFormation.versions.length-2];
+                    if(version.status !== "NotPublished") result.push({_id: id ? new ObjectID(id) : version._id, formationId: myFormation._id, label: version.label, status: version.status, progress});
+                }
+            }
+        }
+    });
+    return {myCollection: result};
+};
+
+const getPlayerFormationsWithProgress = (userFormationsArray, versions, formations, id) => {
     let result = [];
     versions.forEach(version => {
         const progressArray = userFormationsArray && userFormationsArray
@@ -102,19 +155,19 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                         const game = gamesTab[y];
                         if (!progressArray.gamesTab[i] || !game.tabQuestions || progressArray.gamesTab[i].questionsAnswered < game.tabQuestions.length) {
                             id = progressArray.version;
-                            return 'inProgress';
+                            return progressArray;
                         }
                         i+= 1;
                     }
                 }
                 id = progressArray.version;
-                return 'done';
+                return progressArray;
             }();
-            result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+            result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progressArray});
         } else {
             // check status for a published version
             if(version.status === "Published") {
-                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress});
+                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progressArray});
             } else if(version.status && version.status !== "NotPublished") {
                 let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
                 if(myFormation.versions.length > 1) {
@@ -125,10 +178,14 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
         }
     });
     return {myCollection: result};
-};
+}
+
+
 
 exports.getUserByEmailAddress = getUserByEmailAddress;
 exports.inscription = inscription;
 exports.getUserById = getUserById;
 exports.saveProgress = saveProgress;
 exports.getFormationsWithProgress = getFormationsWithProgress;
+exports.getPlayerFormationsWithProgress = getPlayerFormationsWithProgress;
+exports.saveLastAction = saveLastAction;

@@ -771,11 +771,15 @@ exports.User = function (globalVariables, classContainer) {
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
                         data.user.admin ? globalVariables.domain.adminGUI() : globalVariables.domain.learningGUI();
+                        let user = data.user;
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
                             globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
                             if (!this.model.correct) {
                                 runtime.setCookie("token=; path=/; max-age=0;");
+                            }
+                            if(user && user.lastAction && user.lastAction.formation){
+                                util.goDirectlyToLastAction(user.lastAction);
                             }
                             globalVariables.formationsManager.display();
                         });

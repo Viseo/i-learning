@@ -111,7 +111,8 @@ module.exports = function (app, fs) {
                 user: {
                     lastName: user.lastName,
                     firstName: user.firstName,
-                    admin: user.admin
+                    admin: user.admin,
+                    lastAction: user.lastAction
                 }
             });
         })
@@ -136,7 +137,8 @@ module.exports = function (app, fs) {
                             user: {
                                 lastName: user.lastName,
                                 firstName: user.firstName,
-                                admin: user.admin
+                                admin: user.admin,
+                                lastAction: user.lastAction
                             }
                         });
                     })
@@ -180,6 +182,17 @@ module.exports = function (app, fs) {
             .catch(console.error)
     });
 
+    app.post('/user/saveLastAction', function (req,res) {
+        cookies.verify(cookies.get(req))
+            .then(user => {
+                return users.saveLastAction(req.body, user);
+            })
+            .then(data => {
+                res.send(data);
+            })
+            .catch(console.error);
+    });
+
     app.post('/formations/insert', function (req, res) {
         formations.getFormationsByName(req.body.label)
             .then(data => {
@@ -218,6 +231,7 @@ module.exports = function (app, fs) {
             .catch(console.error)
     });
 
+
     app.get('/formations/getAdminFormations', (req, res) => {
         formations.getLastVersions()
             .then((data) => {
@@ -242,6 +256,34 @@ module.exports = function (app, fs) {
             })
             .catch(console.error)
 
+    });
+
+    app.get('/formations/getPlayerProgression/:id', function(req, res){
+        let result = {};
+        formations.getVersionById(req.params.id)
+            .then((data) => {
+                result.formation = data.formation;
+            })
+            .catch(console.error)
+        const
+            user = cookies.verify(cookies.get(req)),
+            lastVersions = formations.getLastVersions(),
+            allFormations = formations.getAllFormations();
+
+        Promise.all([user, allFormations, lastVersions])
+            .then((values) => {
+                const [user, allFormations, versions] = values;
+                return users.getPlayerFormationsWithProgress(user.formationsTab, versions.myCollection, allFormations.myCollection, id);
+            })
+            .then((data) => {
+                for(let i in data.myCollection){
+                    if (data.myCollection[i]._id == req.params.id){
+                        result.progress = data.myCollection[i].progress;
+                    }
+                }
+                res.send(result);
+            })
+            .catch(console.error)
     });
 
     app.post('/formations/replaceFormation/:id', function (req, res) {
