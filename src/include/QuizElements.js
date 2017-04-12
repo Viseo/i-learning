@@ -1291,14 +1291,11 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         manageDisplayTitle(){
             let ratioBorder = {
-                w : 2/5,
-                h : this.fontSize/50,
+                w : 0.4,
+                h : 0.3,
                 coeff: 0.65
             };
-            if(this.label){
-                this.content = autoAdjustText(this.label, this.width * 0.8, this.height, this.fontSize,
-                    this.font, this.manipulator, 4).text.position(0, OFFSET_POSITION_Y_QUESTION);
-            }
+
             // Question avec Texte ET image
             if (this.imageSrc) {//&& this.label !== ""
                 let imgObj = this.dimImage || {
@@ -1311,13 +1308,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 }
 
                 var textHeight = size.height * 0.25;
-                this.label && this.content.position(0,  textHeight*2/3);//w*1/6
-
-
                 var newHeight = this.imageSrc && size.height === this.imageSrc.height ? size.height : (size.height - textHeight) * 0.8;
                 var image = displayImage(this.imageSrc, imgObj, newHeight*imgObj.width/imgObj.height, newHeight*0.7).image;//
 
-                ratioBorder.h += image.height*0.0019;
                 //image.position(0, -textHeight + ((this.label) ? 0: textHeight/2 ));
                 image.position(0, OFFSET_POSITION_Y_QUESTION - ((this.label && this.label.length > 0) ? textHeight/2 : 0));
                 this.manipulator.set(2, image);
@@ -1333,14 +1326,21 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 obj.video.mark('questionVideoToPlay');
             }
 
+            if(this.label){
+                this.content = autoAdjustText(this.label, this.width *ratioBorder.w, (this.image ? this.image.height : this.fontSize + MARGIN), this.fontSize,
+                    this.font, this.manipulator, 4).text.position(0, OFFSET_POSITION_Y_QUESTION);
+            }
+            (this.image && this.label && this.content.position(0,  this.fontSize/2));
 
             let formation = this.parentQuiz.parentFormation;
             let line = new svg.Line(-this.width/2+MARGIN, OFFSET_POSITION_Y_QUESTION, this.width/2 -MARGIN, OFFSET_POSITION_Y_QUESTION)
                 .color(myColors.grey, 1, myColors.grey);
-            this.border = util.drawHexagon(this.width*ratioBorder.w, this.height*ratioBorder.h, 'H', ratioBorder.coeff)
+
+            this.border = util.drawHexagon(this.width*ratioBorder.w,
+                (this.image ? this.image.height : 0) + (this.label ? this.fontSize : 0) + MARGIN, 'H', ratioBorder.coeff)
                 .position(0, OFFSET_POSITION_Y_QUESTION);
             //Title in the left corner
-            autoAdjustText(formation.label, this.width * 0.8, this.height, (this.fontSize)*(this.width * 0.8/550), this.font, this.manipulator, 3).text
+            autoAdjustText(formation.label, this.width * 0.8, this.height*ratioBorder.h, this.fontSize, this.font, this.manipulator, 3).text
                 .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, (this.fontSize)*(this.width * 0.8/550))+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
             this.manipulator.set(0, line);
             this.manipulator.set(1, this.border);

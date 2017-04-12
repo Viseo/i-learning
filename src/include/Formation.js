@@ -1599,7 +1599,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
             this.tabQuestions[this.currentQuestionIndex]
                 .display(this.x, this.headerHeight + this.questionHeight / 2 + MARGIN,
-                this.parentFormation.graphW, this.questionHeight);
+                drawing.width, this.questionHeight);
             this.rightChevron.update(this);
             this.leftChevron.update(this);
             !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
