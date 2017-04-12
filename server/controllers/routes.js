@@ -111,7 +111,8 @@ module.exports = function (app, fs) {
                 user: {
                     lastName: user.lastName,
                     firstName: user.firstName,
-                    admin: user.admin
+                    admin: user.admin,
+                    lastAction: user.lastAction
                 }
             });
         })
@@ -136,7 +137,8 @@ module.exports = function (app, fs) {
                             user: {
                                 lastName: user.lastName,
                                 firstName: user.firstName,
-                                admin: user.admin
+                                admin: user.admin,
+                                lastAction: user.lastAction
                             }
                         });
                     })

@@ -155,10 +155,13 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
         }
     };
 
-    let listFormations = function () {
+    let listFormations = function (user) {
         util.Server.getAllFormations().then(data => {
             let myFormations = JSON.parse(data).myCollection;
             globalVariables.formationsManager = new domain.FormationsManagerVue(myFormations);
+            if (user && user.lastAction && user.lastAction.formation){
+                util.goDirectlyToLastAction(user.lastAction);
+            }
             globalVariables.formationsManager.display();
         });
     };
@@ -175,7 +178,7 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
                 data.user.admin ? domain.adminGUI() : domain.learningGUI();
                 util.setGlobalVariables();
                 domain.setGlobalVariables();
-                listFormations();
+                listFormations(data.user);
             } else {
                 domain.learningGUI();
                 util.setGlobalVariables();

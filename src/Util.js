@@ -1141,6 +1141,21 @@ exports.Util = function (globalVariables) {
         return new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey);
     }
 
+    let goDirectlyToLastAction = (lastAction) => {
+        Server.getFormationsProgress(lastAction.version).then(f => {
+            var tmp = JSON.parse(f);
+            let games = tmp.progress ? tmp.progress.gamesTab : null;
+            let formation = globalVariables.formationsManager.formations.find(form => form._id == tmp.formation._id);
+            formation.loadFormation(tmp.formation, games);
+            globalVariables.formationsManager.formationDisplayed = formation;
+            let currentGame = formation.findGameById(lastAction.game);
+            formation.quizDisplayed = currentGame;
+            formation.quizDisplayed.currentQuestionIndex = lastAction.indexQuestion ;
+            formation.quizDisplayed.display(0,0, drawing.width, drawing.height);
+            //formation.quizDisplayed.displayCurrentQuestion();
+        });
+    }
+
     class MiniatureGame {
         constructor(game, size) {
             this.game = game;
@@ -1687,7 +1702,13 @@ exports.Util = function (globalVariables) {
                                 })
                         }
                         else{
-                            resolve();
+                            this.saveLastAction({})
+                                .then( () => {
+                                    resolve();
+                                })
+                                .catch((err)=>{
+                                    reject(err);
+                                })
                         }
                     })
             });
@@ -1997,6 +2018,7 @@ exports.Util = function (globalVariables) {
         Puzzle,
         ReturnButton,
         Server,
-        drawHexagon
+        drawHexagon,
+        goDirectlyToLastAction
     }
 };

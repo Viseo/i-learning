@@ -1489,7 +1489,7 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         displayScore(color) {
             let autoColor;
-            switch (this.score) {
+            switch (this.tabQuestions.length - this.getQuestionsWithBadAnswers()) {
                 case this.tabQuestions.length:
                     str1 = 'Impressionant !';
                     str2 = 'et toutes sont justes !';
@@ -1624,7 +1624,13 @@ exports.Formation = function (globalVariables, classContainer) {
             let questionsWithBadAnswers = [],
                 allRight = false;
             this.questionsAnswered.forEach(questionAnswered => {
-                let question = questionAnswered.question;
+                let question;
+                if(questionAnswered.question){
+                    question = questionAnswered.question;
+                }
+                else{
+                    question = this.tabQuestions[this.questionsAnswered.indexOf(questionAnswered)];
+                }
                 if (question.multipleChoice) {
                     if (question.rightAnswers.length !== questionAnswered.validatedAnswers.length) {
                         questionsWithBadAnswers.push(question);
