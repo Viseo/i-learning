@@ -1115,6 +1115,14 @@ exports.Util = function (globalVariables) {
         }
     }
 
+
+    const hexagonDefaultColors = ()=>{
+        return { fillColor : myColors.lightwhite,
+            strokeWidth : 1,
+            strokeColor : myColors.grey
+        };
+    };
+
     let drawHexagon = (w,h, orientation, ratio)=>{
         let factor = ratio || 1;
         if (orientation == 'V'){
@@ -1138,8 +1146,9 @@ exports.Util = function (globalVariables) {
             ];
         }
 
-        return new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey);
-    }
+        return new svg.Polygon().add(points).color(
+            hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+    };
 
     let goDirectlyToLastAction = (lastAction) => {
         Server.getFormationsProgress(lastAction.version).then(f => {
@@ -1160,19 +1169,53 @@ exports.Util = function (globalVariables) {
         constructor(game, size) {
             this.game = game;
             this.scoreSize = 13;
+            this.picture = game.picture || new Picture('../images/svg-guy.png', false, this, '', null);
             this.width = size;
             this.height = size/2;
             this.size = size;
+            game.miniature = this;
+            this.iconManipulator = new Manipulator(this).addOrdonator(3);
+            this.game.miniatureManipulator.addOrdonator(4);
+
         }
+
+        checkIfParentDone(){
+            for (let i in this.game.parentGamesList){
+                let game = this.game.parentFormation.findGameById(this.game.parentGamesList[i].id)
+                if (game.questionsAnswered.length != game.tabQuestions.length){
+                    return false;
+                }
+            }
+            return true;
+        }
+
         display(){
+            this.updateProgress();
             let icon = {
-                content: new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15).mark('level' + this.game.levelIndex + this.game.id),
+                content: autoAdjustText(this.game.title, this.picture ? this.width : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),// new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
+            this.border = icon.border;
+            this.content = icon.content;
+            this.underContent = icon.underContent;
+            let video;
+            if (this.video){
+               video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
+            }
+            if (this.picture){
+                this.picture.draw(-this.size/2, 0, this.size/4, this.size/4, this.game.miniatureManipulator, 3);
+            }
+            if (this.game.parentGamesList){
+                let check = this.checkIfParentDone();
+                if (!check){
+                    icon.border.color(myColors.grey, 1, myColors.grey);
+                }
+            }
             this.game.miniatureManipulator.set(0, icon.border);
             this.game.miniatureManipulator.set(2, icon.underContent);
-            this.game.miniatureManipulator.set(1, icon.content);
+            //this.game.miniatureManipulator.set(1, icon.content);
+            this.game.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
             //globalVariables.drawing.manipulator.add(this.game.miniatureManipulator);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
@@ -1181,25 +1224,36 @@ exports.Util = function (globalVariables) {
             // svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
             this.selected = false;
-            if (playerMode) {
-                this.drawProgressIcon(this.game, this.size);
+            if (globalVariables.playerMode) {
+                this.drawIcon();
             }
         }
 
+        updateProgress(){
+            this.game.progress = this.game.questionsAnswered.length == 0 ? '' :
+                this.game.questionsAnswered.length == this.game.tabQuestions.length ? 'done' : 'inProgress'
+        }
+
+        showDefaultColor(){
+            this.game.miniatureManipulator.ordonator.children[0]
+                .color(hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+        }
+
         redCrossClickHandler() {
+            let formationVue = this.game.parentFormation;
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             this.removeAllLinks();
-            this.game.parentFormation.miniaturesManipulator.remove(this.game.miniatureManipulator);
+            formationVue.miniaturesManipulator.remove(this.game.miniatureManipulator);
             this.game.miniatureManipulator.unset(0);
             this.game.miniatureManipulator.unset(1);
             this.game.miniatureManipulator.remove(this.redCrossManipulator);
-            var longestLevelCandidates = this.game.parentFormation.findLongestLevel();
-            if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (this.game.parentFormation.levelWidth > this.game.parentFormation.graphCreaWidth)) {
-                this.game.parentFormation.levelWidth -= (this.game.parentFormation.graphElementSize + this.game.parentFormation.minimalMarginBetweenGraphElements);
-                this.game.parentFormation.movePanelContent();
+            var longestLevelCandidates = formationVue.findLongestLevel();
+            if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
+                formationVue.levelWidth -= (formationVue.graphElementSize + formationVue.minimalMarginBetweenGraphElements);
+                formationVue.movePanelContent();
             }
-            this.game.parentFormation.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
-            var levelsTab = this.game.parentFormation.levelsTab;
+            formationVue.levelsTab[this.game.levelIndex].removeGame(this.game.gameIndex);
+            var levelsTab = formationVue.levelsTab;
             if (levelsTab[this.game.levelIndex].gamesTab.length === 0) {
                 levelsTab[this.game.levelIndex].redCrossClickHandler();
             }
@@ -1207,11 +1261,11 @@ exports.Util = function (globalVariables) {
                 levelsTab[levelsTab.length - 1].manipulator.unset(2);
                 levelsTab[levelsTab.length - 1].manipulator.unset(1);
                 levelsTab[levelsTab.length - 1].manipulator.unset(0);
-                this.game.parentFormation.levelsTab.pop();
+                formationVue.levelsTab.pop();
             }
-            this.game.parentFormation.selectedGame.selected = false;
-            this.game.parentFormation.selectedGame = null;
-            this.game.parentFormation.displayGraph();
+            formationVue.selectedGame.selected = false;
+            formationVue.selectedGame = null;
+            formationVue.displayGraph();
         }
 
         removeAllLinks() {
@@ -1229,17 +1283,19 @@ exports.Util = function (globalVariables) {
         }
 
         miniatureClickHandler() {
-            this.game.parentFormation.selectedArrow && this.game.parentFormation.selectedArrow.arrowPath.component.listeners.click();
+            let formationVue = this.game.parentFormation;
+            formationVue.selectedArrow && formationVue.selectedArrow.arrowPath.component.listeners.click();
             if (!this.selected) {
-                if (this.game.parentFormation.selectedGame) {
-                    this.checkAndDrawValidity(this.game.parentFormation.selectedGame);
-                    this.game.parentFormation.selectedGame.selected = false;
-                    !playerMode && this.game.parentFormation.selectedGame.game.miniatureManipulator.remove(this.game.parentFormation.selectedGame.redCrossManipulator);
+                if (formationVue.selectedGame) {
+                    this.checkAndDrawValidity(formationVue.selectedGame);
+                    formationVue.selectedGame.selected = false;
+                    !playerMode && formationVue.selectedGame.removeRedCross();
                 }
             }
             this.selected = !this.selected;
             this.updateSelectionDesign();
         }
+
 
         updateSelectionDesign() {
             if (this.selected) {
@@ -1263,13 +1319,55 @@ exports.Util = function (globalVariables) {
                         })
                     }
                 });
-                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black) : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black)
+                    : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
             };
             let displayWhenNotPublished = () => {
                 gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
             };
 
             (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
+        }
+
+        drawIcon() {
+            const circleToggleSize = 12.5;
+            let iconsize = 20,
+                size = 25,
+                iconInfos;
+            if (!this.game.parentGamesList || this.checkIfParentDone()) {
+                switch (this.game.progress) {
+                    case "done":
+                        let doneIcon = {};
+                        doneIcon.border = new svg.Circle(circleToggleSize);
+                        doneIcon.border.color(myColors.green, 0, myColors.none);
+                        doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
+                        this.iconManipulator.set(0, doneIcon.border);
+                        this.iconManipulator.set(1, doneIcon.content);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                    case "inProgress":
+                        let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
+                        inProgressIcon.content.font('arial', 20).color(myColors.white);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                    default:
+                        let undoneIcon = {};
+                        undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
+                        undoneIcon.content = new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white);
+                        this.iconManipulator.set(0, undoneIcon.border);
+                        this.iconManipulator.set(1, undoneIcon.content);
+                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        break;
+                }
+                this.iconManipulator.move(this.size/2, -this.size/3);
+            }
+            else if (this.game.parentGamesList && !this.checkIfParentDone()){
+                let lock = new Picture('/images/padlock2.png', false, this, '',null);
+                lock.draw(this.size/2,-this.size/3  , this.size/5,this.size/5, this.iconManipulator, 1);
+                this.game.miniatureManipulator.add(this.iconManipulator);
+            }
+
+
         }
 
         drawProgressIcon(object, size) {
@@ -1311,8 +1409,17 @@ exports.Util = function (globalVariables) {
                     this.infosManipulator.set(3, iconInfosdot3);
                     object.miniatureManipulator.add(this.infosManipulator);
                     break;
+                default :
+                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
+                    break;
             }
         };
+
+        removeRedCross(){
+            this.game.miniatureManipulator.remove(this.redCrossManipulator);
+            this.selected = false;
+            this.showDefaultColor();
+        }
     }
 
     class MiniatureFormation {
@@ -1828,6 +1935,7 @@ exports.Util = function (globalVariables) {
             primaryBlue: [0, 0, 255],
             grey: [125, 122, 117],
             lightgrey: [242, 242, 241],
+            lightwhite : [250, 250, 250],
             orange: [230, 122, 25],
             purple: [170, 100, 170],
             green: [155, 222, 17],
