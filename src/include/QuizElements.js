@@ -1976,9 +1976,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         }
                     };
                     if (this.model.explanationPopIn && this.model.explanationPopIn.displayed) this.model.parentQuestion.openPopIn = openPopIn;
-                    this.model.image && svg.addEvent(this.model.image, "click", openPopIn);
-                    this.border && svg.addEvent(this.border, "click", openPopIn);
-                    this.content && svg.addEvent(this.content, "click", openPopIn);
 
                     const pictoSize = 20,
                         explanationIconArray = drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
