@@ -849,6 +849,7 @@ exports.Util = function (globalVariables) {
                 }
             }
             t.message(text.substring(1));
+            t.originalText = content;
 
             let finalHeight = t.boundingRect().height;
             (typeof finalHeight === 'undefined' && t.messageText === '') && (finalHeight = 0);

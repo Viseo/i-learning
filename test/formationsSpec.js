@@ -280,8 +280,8 @@ describe('formationsManager', function () {
                 pageX: 300, pageY: 300, preventDefault: () => {
                 }
             });
-            let game0 = retrieve(root, "[level0quizz0]");
-            assert.equal(game0.handler.messageText, "Quiz 1");
+            let game0 = retrieve(root, "[titlelevel0quizz0]");
+            assert.equal(game0.handler.originalText, "Quiz 1");
 
             //add by dragndrop
             gameQuiz.listeners["mousedown"]({
@@ -294,8 +294,8 @@ describe('formationsManager', function () {
                 }
             });
 
-            let game1 = retrieve(root, "[level0quizz1]");
-            assert.equal(game1.handler.messageText, "Quiz 2");
+            let game1 = retrieve(root, "[titlelevel0quizz1]");
+            assert.equal(game1.handler.originalText, "Quiz 2");
 
             done();
         });
@@ -346,19 +346,19 @@ describe('formationsManager', function () {
             });  // au bouton échap, on déselectionne le quiz en surbrillance
 
             dragQuiz(300, 300);
-            let game1 = retrieve(root, "[level1quizz1]");
+            let game1 = retrieve(root, "[titlelevel1quizz1]");
             assert.equal(game1.handler.parentManip.components[0].messageText, "Quiz\n2");
             let miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 2);
 
             dragQuiz(300, 300);
-            let game2 = retrieve(root, "[level1quizz2]");
+            let game2 = retrieve(root, "[titlelevel1quizz2]");
             assert.equal(game2.handler.parentManip.components[0].messageText, "Quiz\n3");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 3);
 
             dragQuiz(300, 300);
-            let game3 = retrieve(root, "[level1quizz3]");
+            let game3 = retrieve(root, "[titlelevel1quizz3]");
             assert.equal(game3.handler.parentManip.components[0].messageText, "Quiz\n4");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             assert.equal(miniaturesManipulatorLast.children.length, 4);
@@ -499,7 +499,7 @@ describe('formationsManager', function () {
             });
             let gameRedCross = retrieve(root, '[gameRedCross]');
             gameRedCross.listeners['click']();
-            game3 = retrieve(root, "[level1quizz3]");
+            game3 = retrieve(root, "[titlelevel1quizz3]");
             assert(!game3);
             arrow03 = retrieve(root, '[quizz0quizz3]');
             assert(!arrow03);
@@ -509,7 +509,7 @@ describe('formationsManager', function () {
                 pageX: 300, pageY: 500, preventDefault: () => {
                 }
             });
-            let game4 = retrieve(root, "[level2quizz4]");
+            let game4 = retrieve(root, "[titlelevel2quizz4]");
             assert.equal(game4.text, "Quiz 5");
 
             game4.listeners['mousedown']({
@@ -538,11 +538,11 @@ describe('formationsManager', function () {
             });
             gameRedCross = retrieve(root, '[gameRedCross]');
             gameRedCross.listeners['click']();
-            game4 = retrieve(root, "[level1quizz3]");
+            game4 = retrieve(root, "[titlelevel1quizz3]");
             assert(!game4);
 
             dragQuiz(1885, 300);
-            let game5 = retrieve(root, "[level1quizz5]");
+            let game5 = retrieve(root, "[titlelevel1quizz5]");
             assert.equal(game5.text, "Quiz 6");
             miniaturesManipulatorLast = retrieve(root, "[miniaturesManipulatorLast]");
             for (let i = 0; i < 8; i++) {
@@ -550,7 +550,7 @@ describe('formationsManager', function () {
             }
             dragQuiz(1142, 791);
             dragQuiz(1885, 791);
-            let game15 = retrieve(root, "[level3quizz15]");
+            let game15 = retrieve(root, "[titlelevel3quizz15]");
 
             game15.listeners['mousedown']({
                 pageX: 500, pageY: 674, preventDefault: () => {
@@ -584,7 +584,7 @@ describe('formationsManager', function () {
                 pageX: 1142, pageY: 791, preventDefault: () => {
                 }
             });
-            let game16 = retrieve(root, "[level4quizz16]");
+            let game16 = retrieve(root, "[titlelevel4quizz16]");
 
             game16.listeners['mousedown']({
                 pageX: 500, pageY: 791, preventDefault: () => {
@@ -609,7 +609,7 @@ describe('formationsManager', function () {
                 pageX: 500, pageY: 791, preventDefault: () => {
                 }
             });
-            let bd1 = retrieve(root, "[level4bd0]");
+            let bd1 = retrieve(root, "[titlelevel4bd0]");
 
             bd1.listeners['mousedown']({
                 pageX: 500, pageY: 791, preventDefault: () => {
