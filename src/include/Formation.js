@@ -879,7 +879,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
-                        .position(drawing.width / 2, messageY - saveFormationButtonCadre.height * 1.5 - MARGIN)
+                        .position(drawing.width / 2, messageY - saveFormationButtonCadre.height *2 - MARGIN)
                         .font("Arial", 20)
                         .mark("formationErrorMessage")
                         .anchor('middle').color(error ? myColors.red : myColors.green);
@@ -976,7 +976,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.errorMessagePublication = new svg.Text(messagePublication);
                 this.manipulator.set(5, this.errorMessagePublication);
                 const messageY = this.publicationFormationButtonManipulator.first.globalPoint(0, 0).y;
-                this.errorMessagePublication.position(drawing.width / 2, messageY - this.publicationButtonHeight * 1.5 - MARGIN)
+                this.errorMessagePublication.position(drawing.width / 2, messageY - this.publicationButtonHeight * 2 - MARGIN)
                     .font("Arial", 20)
                     .anchor('middle').color(myColors.red)
                     .mark("errorMessagePublication");
