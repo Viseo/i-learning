@@ -1310,13 +1310,17 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 var textHeight = size.height * 0.25;
                 this.label && this.content.position(0,  textHeight*2/3);//w*1/6
 
+
                 var newHeight = this.imageSrc && size.height === this.imageSrc.height ? size.height : (size.height - textHeight) * 0.8;
-                var image = displayImage(this.imageSrc, imgObj, newHeight*imgObj.width/imgObj.height, newHeight).image;//
+                var image = displayImage(this.imageSrc, imgObj, newHeight*imgObj.width/imgObj.height, newHeight*0.7).image;//
 
                 ratioBorder.h += image.height*0.0019;
-                image.position(0, -textHeight + ((this.label) ? 0: textHeight/2 ));
+                //image.position(0, -textHeight + ((this.label) ? 0: textHeight/2 ));
+                image.position(0, OFFSET_POSITION_Y_QUESTION - ((this.label && this.label.length > 0) ? textHeight/2 : 0));
                 this.manipulator.set(2, image);
                 this.image = image;
+
+                (this.content &&  this.content.position(0, MARGIN));
             }
             else if (this.video) {//&& this.label !== ""
                 let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
@@ -1326,13 +1330,15 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 obj.video.mark('questionVideoToPlay');
             }
 
+
             let formation = this.parentQuiz.parentFormation;
             let line = new svg.Line(-this.width/2+MARGIN, OFFSET_POSITION_Y_QUESTION, this.width/2 -MARGIN, OFFSET_POSITION_Y_QUESTION)
                 .color(myColors.grey, 1, myColors.grey);
             this.border = util.drawHexagon(this.width*ratioBorder.w, this.height*ratioBorder.h, 'H', ratioBorder.coeff)
                 .position(0, OFFSET_POSITION_Y_QUESTION);
-            autoAdjustText(formation.label, this.width * 0.8, this.height, this.fontSize*1.5, this.font, this.manipulator, 3).text
-                .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, this.fontSize*1.5)+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
+            //Title in the left corner
+            autoAdjustText(formation.label, this.width * 0.8, this.height, (this.fontSize)*(this.width * 0.8/550), this.font, this.manipulator, 3).text
+                .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, (this.fontSize)*(this.width * 0.8/550))+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
             this.manipulator.set(0, line);
             this.manipulator.set(1, this.border);
         }
