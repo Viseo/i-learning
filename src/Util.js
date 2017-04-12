@@ -1192,7 +1192,7 @@ exports.Util = function (globalVariables) {
         display(){
             this.updateProgress();
             let icon = {
-                content: autoAdjustText(this.game.title, this.picture ? this.width : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),// new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
+                content: autoAdjustText(this.game.title, this.picture ? this.width*0.9 : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),// new svg.Text(this.game.title).dimension(0,0).position(0, 0).font('Arial', 15),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8)
             };
@@ -1441,10 +1441,10 @@ exports.Util = function (globalVariables) {
 
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
             let miniature = {
-                content: new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
+                content: autoAdjustText(this.formation.label, w,h,20,'Arial', this.miniatureManipulator, 1), //new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
                 border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
             };
-            this.miniatureManipulator.set(1, miniature.content);
+            //this.miniatureManipulator.set(1, miniature.content);
             this.miniatureManipulator.set(0, miniature.border);
             miniature.border.mark(this.formation.label);
             let iconSize = this.formation.parent.iconeSize;

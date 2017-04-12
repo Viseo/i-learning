@@ -313,7 +313,7 @@ exports.Formation = function (globalVariables, classContainer) {
 
             let displayFormationLeft = ()=>{
                 let icon = {
-                    content: new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
+                    content: autoAdjustText(this.label, this.graphElementWidth/2, 0, 15, 'Arial', this.formationLeftManipulator, 1), // new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
                     border: util.drawHexagon(this.graphElementWidth/2, this.graphElementSize*1.5, 'V', 1)
                 }
                 this.picture = this.picture || new util.Picture('../images/svg-guy.png', false, this, '',null);
@@ -322,7 +322,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 }
 
                 this.formationLeftManipulator.set(0,icon.border);
-                this.formationLeftManipulator.set(1, icon.content);
+                //this.formationLeftManipulator.set(1, icon.content);
                 this.formationLeftManipulator.move(this.graphElementWidth/3, globalVariables.drawing.height/2 - globalVariables.header.height);
             }
 
