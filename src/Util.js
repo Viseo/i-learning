@@ -1755,8 +1755,7 @@ exports.Util = function (globalVariables) {
                 it.forEach(elem => {
                     let layer = this.orientation === "leftToRight" ? itNumber * this.columns + it.indexOf(elem) + 3 : itNumber * this.rows + it.indexOf(elem) + 3;
                     this.manipulator.set(layer, elem.manipulator); // +2 pour les chevrons + 1 border
-
-                    elem.display(elem.x, elem.y + (globalVariables.playerMode) ? SPACING_Y_INCORRECT_ANSWER*itElem++ :0,
+                    elem.display(elem.x, elem.y + ((globalVariables.playerMode) ? SPACING_Y_INCORRECT_ANSWER*itElem++ :0),
                         elem.width, elem.height);
                 });
                 itNumber++;
