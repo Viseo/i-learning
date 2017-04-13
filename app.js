@@ -5,11 +5,13 @@
 var express = require('express');
 var bodyParser = require("body-parser");
 var path = require('path');
+var session = require('express-session');
 var fs = require('fs');
 var app = express();
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json({limit: '500mb'}));
+app.use(session({secret: 'sEcrEt_iLearning', cookie: {httpOnly: false}, resave: false}));
 
 var routes = require("./server/controllers/routes")(app, fs);
 var db = require('./server/db');

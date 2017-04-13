@@ -162,7 +162,9 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
             if (user && user.lastAction && user.lastAction.formation){
                 util.goDirectlyToLastAction(user.lastAction);
             }
-            globalVariables.formationsManager.display();
+            else{
+                globalVariables.formationsManager.display();
+            }
         });
     };
 

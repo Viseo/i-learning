@@ -105,16 +105,20 @@ module.exports = function (app, fs) {
             res.send({status: 'error'})
         }
         cookies.verify(token).then(user => {
-            res.set('Set-cookie', `token=${token}; path=/; max-age=${60 * 60 * 24 * 30}`);
-            res.send({
-                ack: 'OK',
-                user: {
-                    lastName: user.lastName,
-                    firstName: user.firstName,
-                    admin: user.admin,
-                    lastAction: user.lastAction
-                }
-            });
+            if(req.session.oneTime){
+                res.send({status: 'oneTimeOnly'});
+            }else {
+                res.set('Set-cookie', `token=${token}; path=/; max-age=${60 * 60 * 24 * 30}`);
+                res.send({
+                    ack: 'OK',
+                    user: {
+                        lastName: user.lastName,
+                        firstName: user.firstName,
+                        admin: user.admin,
+                        lastAction: user.lastAction
+                    }
+                });
+            }
         })
             .catch(() => {
                 res.send({status: 'error'});
@@ -131,16 +135,32 @@ module.exports = function (app, fs) {
             if (user && TwinBcrypt.compareSync(req.body.password, user.password)) {
                 cookies.generate(user)
                     .then(data => {
-                        res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30}`);
-                        res.send({
-                            ack: 'OK',
-                            user: {
-                                lastName: user.lastName,
-                                firstName: user.firstName,
-                                admin: user.admin,
-                                lastAction: user.lastAction
-                            }
-                        });
+                        if(req.body.cookie) {
+                            req.session.oneTime = false;
+                            res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30}`);
+                            res.send({
+                                ack: 'OK',
+                                user: {
+                                    lastName: user.lastName,
+                                    firstName: user.firstName,
+                                    admin: user.admin,
+                                    lastAction: user.lastAction
+                                }
+                            });
+                        }
+                        else{
+                            req.session.oneTime = true;
+                            res.set('Set-cookie', `token=${data}; path=/; max-age=${60 * 60 * 24 * 30};`);
+                            res.send({
+                                ack: 'OK',
+                                user: {
+                                    lastName: user.lastName,
+                                    firstName: user.firstName,
+                                    admin: user.admin,
+                                    lastAction: user.lastAction
+                                }
+                            });
+                        }
                     })
                     .catch(err => console.log(err));
             } else {

@@ -1778,8 +1778,8 @@ exports.Util = function (globalVariables) {
             return dbListener.httpGetAsync('/formations/getPlayerProgression/' + id);
         }
 
-        static connect(mail, password) {
-            return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password})
+        static connect(mail, password, cookie) {
+            return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password, cookie: cookie})
         }
 
         static inscription(user) {

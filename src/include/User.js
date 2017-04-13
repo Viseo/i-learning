@@ -766,7 +766,8 @@ exports.User = function (globalVariables, classContainer) {
                     });
                 }, 5000);
             } else {
-                Server.connect(this.mailAddressField.input.textMessage, this.passwordField.input.textMessage).then(data => {
+                Server.connect(this.mailAddressField.input.textMessage, this.passwordField.input.textMessage,
+                this.model.correct).then(data => {
                     data = data && JSON.parse(data);
                     if (data.ack === 'OK') {
                         drawing.username = `${data.user.firstName} ${data.user.lastName}`;
@@ -775,13 +776,14 @@ exports.User = function (globalVariables, classContainer) {
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
                             globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
-                            if (!this.model.correct) {
-                                runtime.setCookie("token=; path=/; max-age=0;");
-                            }
+                            // if (!this.model.correct) {
+                            //     runtime.setCookie("token=; path=/; max-age=0; oneTime=true;");
+                            // }
                             if(user && user.lastAction && user.lastAction.formation){
                                 util.goDirectlyToLastAction(user.lastAction);
+                            }else{
+                                globalVariables.formationsManager.display();
                             }
-                            globalVariables.formationsManager.display();
                         });
                     } else {
                         let message = new svg.Text(CONNECTION_REFUSED_ERROR)
