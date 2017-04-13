@@ -1046,9 +1046,13 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
             var fontSize = Math.min(20, this.height * 0.1);
 
-            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize * 1.5)
-                .position(-util.getStringWidthByFontSize(this.label.length / 2, this.fontSize) - MARGIN
-                    + ((this.image && this.image.width) ? -(this.image.width / 2) - MARGIN : 0), OFFSET_POSITION_Y_QUESTION);
+
+            let posXQuestNum = (this.image && this.image.width) ? (-this.image.width/2) : 0;
+            posXQuestNum = (posXQuestNum == 0) ? -util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN : posXQuestNum-MARGIN;
+
+
+            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize)
+                .position(posXQuestNum, OFFSET_POSITION_Y_QUESTION);
 
             this.manipulator.set(6, this.questNum);
             this.manipulator.move(this.x, this.y);
@@ -1087,8 +1091,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         genericPostDisplayAnswer() {
-            let ajustementAnswerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE == 0) ? 0 : 1;
-            let answerY = (this.tabAnswer.length / NUMBER_ANSWER_BY_LINE + ajustementAnswerY) * (this.tileDimension.height + MARGIN);
+            let answerY =  Math.ceil(this.tabAnswer.length / NUMBER_ANSWER_BY_LINE) * (this.tileDimension.height + MARGIN);
 
             let buttonY = this.tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
                 buttonH = Math.min(this.tileDimension.height, 50),
@@ -1297,6 +1300,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 coeff: 0.65
             };
 
+            let textHeight = 0;
             // Question avec Texte ET image
             if (this.imageSrc) {//&& this.label !== ""
                 let imgObj = this.dimImage || {
@@ -1308,11 +1312,10 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     size.width = size.height = 1;
                 }
 
-                var textHeight = size.height * 0.25;
+                textHeight = size.height * 0.25;
                 var newHeight = this.imageSrc && size.height === this.imageSrc.height ? size.height : (size.height - textHeight) * 0.8;
                 var image = displayImage(this.imageSrc, imgObj, newHeight * imgObj.width / imgObj.height, newHeight * 0.7).image;//
 
-                //image.position(0, -textHeight + ((this.label) ? 0: textHeight/2 ));
                 image.position(0, OFFSET_POSITION_Y_QUESTION - ((this.label && this.label.length > 0) ? textHeight / 2 : 0));
                 this.manipulator.set(2, image);
                 this.image = image;
@@ -1328,10 +1331,10 @@ exports.QuizElements = function (globalVariables, classContainer) {
             }
 
             if(this.label){
+                let imagePos = OFFSET_POSITION_Y_QUESTION + (this.image && (this.label && this.label.length > 0) ? textHeight  : 0);
                 this.content = autoAdjustText(this.label, this.width *ratioBorder.w, (this.image ? this.image.height : this.fontSize + MARGIN), this.fontSize,
-                    this.font, this.manipulator, 4).text.position(0, OFFSET_POSITION_Y_QUESTION);
+                    this.font, this.manipulator, 4).text.position(0, imagePos);
             }
-            (this.image && this.label && this.content.position(0,  this.fontSize/2));
 
             let formation = this.parentQuiz.parentFormation;
             let line = new svg.Line(-this.width / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION, this.width / 2 - MARGIN, OFFSET_POSITION_Y_QUESTION)
@@ -1340,9 +1343,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.border = util.drawHexagon(this.width*ratioBorder.w,
                 (this.image ? this.image.height : 0) + (this.label ? this.fontSize : 0) + MARGIN, 'H', ratioBorder.coeff)
                 .position(0, OFFSET_POSITION_Y_QUESTION);
-            //Title in the left corner
-            autoAdjustText(formation.label, this.width * 0.8, this.height*ratioBorder.h, this.fontSize, this.font, this.manipulator, 3).text
-                .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, (this.fontSize)*(this.width * 0.8/550))+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
+            //Title in the left corner  with limit 15 char
+            autoAdjustText(formation.label, util.getStringWidthByFontSize(15, this.fontSize), this.fontSize, this.fontSize, this.font, this.manipulator, 3).text
+                .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, this.fontSize)+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
             this.manipulator.set(0, line);
             this.manipulator.set(1, this.border);
         }

@@ -26,6 +26,8 @@ exports.Formation = function (globalVariables, classContainer) {
         util = globalVariables.util,
         Puzzle = globalVariables.util.Puzzle;
 
+    const OFFSET_X_DISPLAY_INCORRECT_QUESTION = 100;
+
     installDnD = globalVariables.gui.installDnD;
 
     /**
@@ -1491,7 +1493,8 @@ exports.Formation = function (globalVariables, classContainer) {
 
             this.puzzle.fillVisibleElementsArray("upToDown");
             this.answerHeight = (drawing.height - this.headerHeight - buttonExpHeight) * this.answerPercentage - MARGIN;
-            this.puzzle.display(0, this.questionHeight / 2 + this.answerHeight / 2 + MARGIN, drawing.width - MARGIN, this.answerHeight);
+            this.puzzle.display(0, this.headerHeight + this.questionHeight + MARGIN,
+                drawing.width - MARGIN, this.questionHeight);
             this.puzzle.leftChevron.resize(this.puzzle.chevronSize, this.puzzle.chevronSize);
         }
 
