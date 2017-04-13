@@ -1198,7 +1198,7 @@ exports.Util = function (globalVariables) {
             let icon = {
                 content: autoAdjustText(this.game.title, this.picture ? this.width*0.9 : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0,2*MARGIN),
-                border: drawHexagon(this.width, this.height, 'H', 0.8)
+                border: drawHexagon(this.width, this.height, 'H', 0.8).mark('hexBorder' + this.game.levelIndex + this.game.id)
             };
             this.border = icon.border;
             this.content = icon.content;
