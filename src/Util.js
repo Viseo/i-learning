@@ -1923,12 +1923,9 @@ exports.Util = function (globalVariables) {
             "linesManipulator", "penManipulator", "closeButtonManipulator", "miniaturesManipulator", "toggleFormationsManipulator", "iconManipulator", "infosManipulator", "manip",
             "formationsManipulator", "miniatureObject.infosManipulator", "publicationFormationButtonManipulator", "expButtonManipulator", "arrow",
             "invalidQuestionPictogramManipulator", "explanationIconManipulator", "panelManipulator", "textManipulator", "chevronManipulator", "leftChevronManipulator", "miniatureManipulator",
-            "rightChevronManipulator"];
-        jsonDuplicateList = myParentsList.push("bgColor");
+            "rightChevronManipulator", "bgColor"];
 
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
-        toBeIgnoredData = (key, value) => jsonDuplicateList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
-
 
         myColors = {
             customBlue: [43, 120, 228],
@@ -1969,17 +1966,7 @@ exports.Util = function (globalVariables) {
                         newQuiz.title = "Quiz " + formation.gamesCounter.quizz;
                         formation.levelsTab[level].gamesTab.splice(posX, 0, newQuiz);
                     }
-                },
-                {
-                    label: "Bd",
-                    create: function (formation, level, posX) {
-                        var newBd = new BdVue({}, formation);
-                        newBd.id = "bd" + formation.gamesCounter.bd;
-                        formation.gamesCounter.bd++;
-                        newBd.title = "Bd " + formation.gamesCounter.bd;
-                        formation.levelsTab[level].gamesTab.splice(posX, 0, newBd);
-                    }
-                },
+                }
             ],
             font: "Courier New", fontSize: 20
         };

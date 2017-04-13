@@ -1662,7 +1662,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.invalidLabelInput = false;
             switch (type) {
                 case 'question':
-                    this.label = "Double cliquer pour ajouter une question";
+                    this.label = "Nouvelle question";
                     break;
                 case 'answer':
                     this.label = "Nouvelle réponse";
@@ -1679,11 +1679,12 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         render(x, y, w, h) {
+            let plusSize = 2 * this.fontSize;
             let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
-            let plus = drawPlus(0, 0, 2 * this.fontSize, 2 * this.fontSize);
+            let plus = drawPlus(0, -plusSize/2, plusSize, plusSize);
             this.manipulator.move(x, y);
             this.manipulator.set(2, plus);
-            obj.content.position(0, 2 * this.fontSize + obj.content.boundingRect().height / 2);
+            obj.content.position(0, this.fontSize);
             obj.border.color(myColors.white, 3, myColors.black)
                 .mark('emptyAnswerAddCadre' + this.type);
             obj.border.component.setAttribute && obj.border.component.setAttribute('stroke-dasharray', '10, 5');
