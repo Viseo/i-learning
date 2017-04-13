@@ -288,7 +288,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     question = target.parent.parentManip.parentObject;
                 }
                 question.parentQuiz.parentFormation.quizManager.questionCreator.explanation = null;
-                    if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
+                if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
                     this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                     this.quiz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer => {
                         if (answer.popIn) {
@@ -1028,7 +1028,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.content = null;
         }
 
-        manageDisplayTitle() {}
+        manageDisplayTitle() {
+        }
 
         render(x, y, w, h) {
             this.x = x;
@@ -1045,9 +1046,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
             var fontSize = Math.min(20, this.height * 0.1);
 
-            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize*1.5)
-                .position(-util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN
-                + ((this.image && this.image.width) ? - (this.image.width/2) - MARGIN : 0), OFFSET_POSITION_Y_QUESTION);
+            this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize * 1.5)
+                .position(-util.getStringWidthByFontSize(this.label.length / 2, this.fontSize) - MARGIN
+                    + ((this.image && this.image.width) ? -(this.image.width / 2) - MARGIN : 0), OFFSET_POSITION_Y_QUESTION);
 
             this.manipulator.set(6, this.questNum);
             this.manipulator.move(this.x, this.y);
@@ -1289,7 +1290,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             super(question, quiz);
         }
 
-        manageDisplayTitle(){
+        manageDisplayTitle() {
             let ratioBorder = {
                 w : 0.4,
                 h : 0.3,
@@ -1302,21 +1303,21 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         width: this.image.width,
                         height: this.image.height
                     };
-                let size = {width : this.width, height : this.height};
+                let size = {width: this.width, height: this.height};
                 if ((this.width <= 0) || (this.height <= 0)) {
                     size.width = size.height = 1;
                 }
 
                 var textHeight = size.height * 0.25;
                 var newHeight = this.imageSrc && size.height === this.imageSrc.height ? size.height : (size.height - textHeight) * 0.8;
-                var image = displayImage(this.imageSrc, imgObj, newHeight*imgObj.width/imgObj.height, newHeight*0.7).image;//
+                var image = displayImage(this.imageSrc, imgObj, newHeight * imgObj.width / imgObj.height, newHeight * 0.7).image;//
 
                 //image.position(0, -textHeight + ((this.label) ? 0: textHeight/2 ));
-                image.position(0, OFFSET_POSITION_Y_QUESTION - ((this.label && this.label.length > 0) ? textHeight/2 : 0));
+                image.position(0, OFFSET_POSITION_Y_QUESTION - ((this.label && this.label.length > 0) ? textHeight / 2 : 0));
                 this.manipulator.set(2, image);
                 this.image = image;
 
-                (this.content &&  this.content.position(0, MARGIN));
+                (this.content && this.content.position(0, MARGIN));
             }
             else if (this.video) {//&& this.label !== ""
                 let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
@@ -1333,7 +1334,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             (this.image && this.label && this.content.position(0,  this.fontSize/2));
 
             let formation = this.parentQuiz.parentFormation;
-            let line = new svg.Line(-this.width/2+MARGIN, OFFSET_POSITION_Y_QUESTION, this.width/2 -MARGIN, OFFSET_POSITION_Y_QUESTION)
+            let line = new svg.Line(-this.width / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION, this.width / 2 - MARGIN, OFFSET_POSITION_Y_QUESTION)
                 .color(myColors.grey, 1, myColors.grey);
 
             this.border = util.drawHexagon(this.width*ratioBorder.w,
@@ -1459,8 +1460,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 var object = displayText(this.label, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, 0, 1, this.width * 0.8);
                 this.border = object.border;
                 this.content = object.content;
-
-                this.manipulator.set(0, this.border);
             }
             // Question avec Image uniquement
             else if (this.imageSrc && !this.label) {
@@ -1730,7 +1729,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                             }
                         })
                     });
-                    let newQuestion = classContainer.createClass("QuestionVue", null, quizManager.quiz);
+                    let newQuestion = classContainer.createClass("QuestionVueAdmin", null, quizManager.quiz);
                     newQuestion.selected = true;
                     quizManager.quiz.tabQuestions.push(newQuestion);
                     let AddNewEmptyQuestion = classContainer.createClass("AddEmptyElementVue", quizManager, 'question');
@@ -1857,8 +1856,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.manipulator.set(0, tempObj.component);
                     //TODO rajouter les checks
                     tempObj.onInput((oldMessage, newMessage, valid) => {
-                        this.model.label = newMessage;
                         if (oldMessage === this.model.labelDefault) this.obj.content.color(myColors.black);
+                        if (newMessage !== this.model.labelDefault) this.model.label = newMessage;
                     });
                     tempObj.onClick((textarea) => {
                         if (textarea.value === this.model.labelDefault) {
@@ -1872,6 +1871,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         .color(myColors.white, 1, myColors.black).fillOpacity(0.001)
                         .mark('answerLabelCadre' + this.model.parentQuestion.tabAnswer.indexOf(this));
                     this.obj.content.color(color).mark('answerLabelContent' + this.model.parentQuestion.tabAnswer.indexOf(this));
+                    this.obj.content.parentObject = tempObj;
                     this.border._acceptDrop = true;
                     this.obj.content._acceptDrop = true;
 
@@ -1904,7 +1904,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     }
                     let mouseleavehandler = (event) => {
                         let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                        if(!target || target.id !== "redCross"){
+                        if (!target || target.id !== "redCross") {
                             this.redCrossManipulator.flush();
                         }
                     }
@@ -1922,7 +1922,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
                 displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this, penHandler);
                 this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
-                this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this.model));
+                this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this));
                 this.obj.checkbox.answerParent = this;
 
                 this.manipulator.ordonator.children.forEach((e) => {
@@ -2302,7 +2302,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
         Answer,
         QuizManagerVue,
         QuestionCreatorVue,
-        QuestionVue,
         QuestionVueCollab,
         QuestionVueAdmin,
         AddEmptyElementVue,
