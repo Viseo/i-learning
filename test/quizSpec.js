@@ -66,6 +66,7 @@ const enter = (contentArea, label) => {
 const enterTextarea = (root, id, text) => {
     let answerLabelContent = retrieve(root, `[${id}]`);
     answerLabelContent.handler.parentObject.message(text);
+    answerLabelContent.handler.parentObject.onInputFct(text);
     answerLabelContent = retrieve(root, `[${id}]`)
     assert.equal(answerLabelContent.text, testutils.escape(text));
 }

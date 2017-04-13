@@ -361,6 +361,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.clickOnPanel = () => {
                     this.selectedArrow = null;
                     if (!this.animation || !this.animation.status) {
+                        this.selectedGame && this.selectedGame.miniatureClickHandler();
                         this.displayGraph();
                     }
                 };
@@ -784,9 +785,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 if (this.links[i].childGame === childGame.id && this.links[i].parentGame === parentGame.id)
                     this.links.splice(i, 1);
             }
-            for (let j = childGame.parentGamesList.length-1; i>=0 ; i--){
-                if(childGame.parentGamesList[i].id === parentGame.id){
-                    childGame.parentGamesList.splice(i,1);
+            for (let j = childGame.parentGamesList.length-1; j>=0 ; j--){
+                if(childGame.parentGamesList[j].id === parentGame.id){
+                    childGame.parentGamesList.splice(j,1);
                 }
             }
         };

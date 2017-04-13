@@ -1183,6 +1183,7 @@ exports.Util = function (globalVariables) {
         }
 
         checkIfParentDone(){
+            if(!globalVariables.playerMode){ return true;}
             for (let i in this.game.parentGamesList){
                 let game = this.game.parentFormation.findGameById(this.game.parentGamesList[i].id)
                 if (game.questionsAnswered.length != game.tabQuestions.length){
@@ -1218,14 +1219,11 @@ exports.Util = function (globalVariables) {
             }
             this.game.miniatureManipulator.set(0, icon.border);
             this.game.miniatureManipulator.set(2, icon.underContent);
-            //this.game.miniatureManipulator.set(1, icon.content);
             this.game.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
-            //globalVariables.drawing.manipulator.add(this.game.miniatureManipulator);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
             this.redCrossManipulator.add(this.redCross);
-            // svg.addEvent(this.redCross, 'click', () => this.redCrossClickHandler());
             svg.addEvent(this.redCross, 'mouseup', () => this.redCrossClickHandler());
             this.selected = false;
             if (globalVariables.playerMode) {
