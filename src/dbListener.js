@@ -5,7 +5,7 @@
 function DbListener(isWriting, isMock) {
     this.loadData = callback => {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
+        xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 isWriting && register(JSON.parse(xmlHttp.responseText));
                 this.data = xmlHttp.responseText.split("\n");
@@ -49,14 +49,14 @@ function HttpRequests(isWriting, isMock, listener) {
         return new Promise((resolve) => {
             var request = new XMLHttpRequest();
             request.onreadystatechange = function () {
-                if (request.readyState == 4 && request.status == 200){
+                if (request.readyState == 4 && request.status == 200) {
                     isWriting && register(JSON.parse(request.responseText));
                     resolve(request.responseText);
                 }
             };
             request.open('POST', theUrl, true); // true for asynchronous
             request.setRequestHeader('Content-type', 'application/json');
-            let obj = ignoredData? JSON.stringify(body, ignoredData) : JSON.stringify(body) ;
+            let obj = ignoredData ? JSON.stringify(body, ignoredData) : JSON.stringify(body);
             request.send(obj);
         })
     }
@@ -75,7 +75,7 @@ function HttpRequests(isWriting, isMock, listener) {
                 request.upload.addEventListener("progress", onProgress);
             }
             request.open('POST', theUrl, true); // true for asynchronous
-            request.timeout = 60*1000;
+            request.timeout = 60 * 1000;
             request.send(formData);
         })
     }
@@ -96,15 +96,16 @@ function HttpRequests(isWriting, isMock, listener) {
             callback(listener.data.shift());
             return {then};
         }
+
         return {then}
     }
 
     function httpMockPost(theUrl, body, ignoredData) {
         function then(callback) {
             callback(listener.data.shift());
-            return {then};
+            return {then, catch:then};
         }
-        return {then}
+        return {then, catch:then};
     }
 
     function httpMockPut(theUrl, body, callback, ignoredData) {
@@ -116,10 +117,10 @@ function HttpRequests(isWriting, isMock, listener) {
     let httpPutAsync = isMock ? httpMockPut : httpPut;
 
     return {
-        httpGetRequest:httpGetAsync,
-        httpPostRequest:httpPostAsync,
-        httpPutRequest:httpPutAsync,
-        httpUpload:httpUpload
+        httpGetRequest: httpGetAsync,
+        httpPostRequest: httpPostAsync,
+        httpPutRequest: httpPutAsync,
+        httpUpload: httpUpload
     };
 }
 

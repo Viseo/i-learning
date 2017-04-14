@@ -89,10 +89,9 @@ describe('Player mode', function () {
             let formationCadre = retrieve(root,'[TestPlayerSpec]')
             formationCadre.handler.parentManip.listeners['click']();
             let firstGameTitle = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(firstGameTitle.handler.messageText,'Un test de réponse unique');
+            assert.equal(firstGameTitle.handler.originalText,'Un test de réponse unique');
             let firstGame = retrieve(root, "[level0quizz0]");
             firstGame.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
-            // firstGame.handler.parentManip.listeners['click']({pageX:959, pageY:172, preventDefault:()=>{}});
             for(let image in ImageRuntime.images) {
                 ImageRuntime.imageLoaded(image, 50, 50);
             }
