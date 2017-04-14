@@ -1385,7 +1385,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
                 let point = answerElement.border.globalPoint(-50, -50);
                 answerElement.video && answerElement.video.miniature.position(point.x, point.y);
-                answerElement.border.mark('answerElement' + index);
+                answerElement.border.mark('answerElementCadre' + index);        // id answerElementCadre & Content
+                answerElement.content.mark('answerElementContent' + index);     // différents du coté admin answerLabelCadre & Content
 
                 if (globalVariables.playerMode && this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1)
@@ -1961,8 +1962,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
                 this.manipulator.add(this.border);
             }
-            let index = "answer" + this.model.parentQuestion.tabAnswer.indexOf(this);
-            this.content && this.content.mark(index);
 
             if (this.model.parentQuestion.parentQuiz.previewMode) {
                 if (this.model.explanation && (this.model.explanation.image || this.model.explanation.video || this.model.explanation.label)) {
@@ -1996,7 +1995,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     const pictoSize = 20,
                         explanationIconArray = drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
                     this.manipulator.set(7, this.explanationIconManipulator);
-                    explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));
+                    explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));   // pour afficher l'explication
+                    svg.addEvent(this.border, "click", openPopIn);                                  // on peut cliquer sur le texte
+                    svg.addEvent(this.content, "click", openPopIn);                                 // sur le bord du texte ou l'icône d'explication
                 }
 
             } else if (globalVariables.playerMode && !this.model.parentQuestion.parentQuiz.previewMode) {

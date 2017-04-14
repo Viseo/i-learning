@@ -85,8 +85,8 @@ describe('Player mode', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor('content');
-            filterFormations(root);                             // test le filtre des formations publiées pour le collaborateur
-            let formationCadre = retrieve(root,'[TestPlayerSpec]')
+            filterFormations(root);                                 // test le filtre des formations publiées pour le collaborateur
+            let formationCadre = retrieve(root,'[TestPlayerSpec]')  // mais pas de test pour vérifier que les formations affichées correspondent bien au filtre
             formationCadre.handler.parentManip.listeners['click']();
             let firstGameTitle = retrieve(root, "[titlelevel0quizz0]");
             assert.equal(firstGameTitle.handler.originalText,'Un test de réponse unique');
@@ -98,14 +98,13 @@ describe('Player mode', function () {
             runtime.advance();
             let answer;
             const playerAnswers = (index, label) => {
-                answer = retrieve(root, "[answer" + index + "]");
+                answer = retrieve(root, "[answerElementContent" + index + "]");     // DMA3622 : changement du id "answer" vers answerElementContent
                 assert.equal(answer.text, testutils.escape(label));
                 answer.listeners['click']();
             };
             playerAnswers(0, 'Une réponse');
             let scoreManipulator = retrieve(root,'[scoreManipulator]');
             let manip = retrieve(root,'[resultManipulator]');
-            // let endQuizFinalMessage = scoreManipulator.handler.children["0"].children["0"].children["0"].children["1"].messageText;
             let endQuizFinalMessage = scoreManipulator.children["0"].children["0"].children["0"].children["1"];
             assert.equal(endQuizFinalMessage.text, testutils.escape('Impressionant ! Vous avez répondu à 1 questions, et toutes sont justes !'));
             runtime.listeners['resize']({w:1500, h:1500});
@@ -119,11 +118,16 @@ describe('Player mode', function () {
             let questionLabel = retrieve(root,'[questionFromPuzzleBordure1]');
             let questionLabelText = questionLabel.handler.parentManip.components[2];        // tester si la question affichée correspond bien à "Une question"
             assert.equal(questionLabelText.messageText, 'Une question');                    // nom de la question du quiz d'indice level0quizz0
-            let answerElement;
+            let answerElementContent, answerElementCadre;
             const playerAnswersElements = (index, label) => {
-                answerElement = retrieve(root, "[answerElement" + index + "]");
-                assert.equal(answerElement.parent.children["1"].text, testutils.escape(label));
-                answerElement.listeners['click']();
+                answerElementCadre = retrieve(root, "[answerElementCadre" + index + "]");
+                assert.equal(answerElementCadre.parent.children["1"].text, testutils.escape(label));
+                answerElementContent = retrieve(root, "[answerElementContent" + index + "]");
+                if ((index+1)%2 == 0) {
+                    answerElementContent.listeners['click']();
+                } else {
+                    answerElementCadre.listeners['click']();
+                }
             };
             playerAnswersElements(0, 'Une réponse');
             let explanationIconSquare = retrieve(root, '[explanationIconSquare]');
