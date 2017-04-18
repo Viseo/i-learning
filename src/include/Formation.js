@@ -1658,7 +1658,6 @@ exports.Formation = function (globalVariables, classContainer) {
                     } else {
                         let subTotal = 0;
                         questionAnswered.validatedAnswers.forEach((e) => {
-                            console.log(e);
                             if (question.tabAnswer[e].model.correct) {
                                 subTotal++;
                             }

@@ -1047,8 +1047,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             var fontSize = Math.min(20, this.height * 0.1);
 
 
-            let posXQuestNum = (this.image && this.image.width) ? (-this.image.width/2) : 0;
-            posXQuestNum = (posXQuestNum == 0) ? -util.getStringWidthByFontSize(this.label.length/2, this.fontSize)-MARGIN : posXQuestNum-MARGIN;
+            let posXQuestNum = (this.image && this.image.width) ? (-this.image.width / 2) : 0;
+            posXQuestNum = (posXQuestNum == 0) ? -util.getStringWidthByFontSize(this.label.length / 2, this.fontSize) - MARGIN : posXQuestNum - MARGIN;
 
 
             this.questNum = new svg.Text(this.questionNum).font("Arial", fontSize)
@@ -1091,7 +1091,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         genericPostDisplayAnswer() {
-            let answerY =  Math.ceil(this.tabAnswer.length / NUMBER_ANSWER_BY_LINE) * (this.tileDimension.height + MARGIN);
+            let answerY = Math.ceil(this.tabAnswer.length / NUMBER_ANSWER_BY_LINE) * (this.tileDimension.height + MARGIN);
 
             let buttonY = this.tileDimension.height * (NUMBER_ANSWER_BY_LINE - 1 / 2) + (NUMBER_ANSWER_BY_LINE + 1) * MARGIN,
                 buttonH = Math.min(this.tileDimension.height, 50),
@@ -1295,8 +1295,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         manageDisplayTitle() {
             let ratioBorder = {
-                w : 0.4,
-                h : 0.3,
+                w: 0.4,
+                h: 0.3,
                 coeff: 0.65
             };
 
@@ -1330,9 +1330,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 obj.video.mark('questionVideoToPlay');
             }
 
-            if(this.label){
-                let imagePos = OFFSET_POSITION_Y_QUESTION + (this.image && (this.label && this.label.length > 0) ? textHeight  : 0);
-                this.content = autoAdjustText(this.label, this.width *ratioBorder.w, (this.image ? this.image.height : this.fontSize + MARGIN), this.fontSize,
+            if (this.label) {
+                let imagePos = OFFSET_POSITION_Y_QUESTION + (this.image && (this.label && this.label.length > 0) ? textHeight : 0);
+                this.content = autoAdjustText(this.label, this.width * ratioBorder.w, (this.image ? this.image.height : this.fontSize + MARGIN), this.fontSize,
                     this.font, this.manipulator, 4).text.position(0, imagePos);
             }
 
@@ -1340,12 +1340,12 @@ exports.QuizElements = function (globalVariables, classContainer) {
             let line = new svg.Line(-this.width / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION, this.width / 2 - MARGIN, OFFSET_POSITION_Y_QUESTION)
                 .color(myColors.grey, 1, myColors.grey);
 
-            this.border = util.drawHexagon(this.width*ratioBorder.w,
+            this.border = util.drawHexagon(this.width * ratioBorder.w,
                 (this.image ? this.image.height : 0) + (this.label ? this.fontSize : 0) + MARGIN, 'H', ratioBorder.coeff)
                 .position(0, OFFSET_POSITION_Y_QUESTION);
             //Title in the left corner  with limit 15 char
             autoAdjustText(formation.label, util.getStringWidthByFontSize(15, this.fontSize), this.fontSize, this.fontSize, this.font, this.manipulator, 3).text
-                .position(-this.width/2+MARGIN + util.getStringWidthByFontSize(formation.label.length/2, this.fontSize)+MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
+                .position(-this.width / 2 + MARGIN + util.getStringWidthByFontSize(formation.label.length / 2, this.fontSize) + MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
             this.manipulator.set(0, line);
             this.manipulator.set(1, this.border);
         }
@@ -1685,7 +1685,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         render(x, y, w, h) {
             let plusSize = 2 * this.fontSize;
             let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
-            let plus = drawPlus(0, -plusSize/2, plusSize, plusSize);
+            let plus = drawPlus(0, -plusSize / 2, plusSize, plusSize);
             this.manipulator.move(x, y);
             this.manipulator.set(2, plus);
             obj.content.position(0, this.fontSize);
@@ -1787,17 +1787,14 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.model.isEditable(editor, editable);
         }
 
-        select() {
-            this.model.select(this);
-        }
-
         render(x, y, w, h) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
-
-            let answerEditableDisplay = (x, y, w, h) => {
+            var _savePosAndSize = () => {
+                this.x = x;
+                this.y = y;
+                this.width = w;
+                this.height = h;
+            };
+            var _answerEditableDisplay = (x, y, w, h) => {
                 let checkboxSize = h * 0.2;
                 this.obj = {};
                 this.manipulator.flush();
@@ -1934,100 +1931,101 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     e._acceptDrop = true;
                 });
             };
-
-            if (this.model.editable) {
-                answerEditableDisplay(this.x, this.y, this.width, this.height);
-                return;
-            }
-
-            if (this.model.label && this.model.imageSrc) { // Reponse avec Texte ET image
-                let obj = displayImageWithTitle(this.model.label, this.model.imageSrc, this.model.dimImage, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, this.model.image);
-                this.border = obj.border;
-                this.content = obj.text;
-                this.image = obj.image;
-            } else if (this.model.video) { // Reponse avec video uniquement
-                let obj = drawVideo(this.model.label, this.model.video, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, false, true);
-                this.border = obj.border;
-                this.content = obj.content;
-                this.video.miniature = obj.video;
-            } else if (this.model.label && !this.model.imageSrc) { // Reponse avec Texte uniquement
-                let obj = displayText(this.model.label, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator);
-                this.border = obj.border;
-                this.content = obj.content;
-            } else if (this.model.imageSrc && !this.model.label) { // Reponse avec Image uniquement
-                let obj = displayImageWithBorder(this.model.imageSrc, this.model.dimImage, this.width, this.height, this.manipulator);
-                this.image = obj.image;
-                this.border = obj.border;
-            } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
-                this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
-                this.manipulator.add(this.border);
-            }
-
-            if (this.model.parentQuestion.parentQuiz.previewMode) {
-                if (this.model.explanation && (this.model.explanation.image || this.model.explanation.video || this.model.explanation.label)) {
-                    const openPopIn = () => {
-                        runtime.speechSynthesisCancel();
-                        this.model.parentQuestion.parentQuiz.closePopIn();
-                        let popInParent = this.model.parentQuestion,
-                            popInX = this.model.parentQuestion.parentQuiz.x,
-                            popInY,
-                            popInWidth = this.model.parentQuestion.width,
-                            popInHeight = this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines * 0.8;
-                        this.model.explanationPopIn = this.model.explanationPopIn || classContainer.createClass("PopInVue", this, false);
-                        if (this.model.parentQuestion.image) {
-                            popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithImage / 2 + MARGIN;
-                        } else {
-                            popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithoutImage / 2 + MARGIN;
-                        }
-                        if (globalVariables.textToSpeechMode && this.model.explanationPopIn.label && (!this.model.explanationPopIn.video || !this.model.explanationPopIn.said)) {
-                            setTimeout(() => {
-                                runtime.speechSynthesisSpeak(this.model.explanationPopIn.label)
-                            }, 200);
-                            this.model.explanationPopIn.said = true;
-                            (this.model.explanationPopIn.image || this.model.explanationPopIn.video) && this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
-                        }
-                        else {
-                            this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
-                        }
-                    };
-                    if (this.model.explanationPopIn && this.model.explanationPopIn.displayed) this.model.parentQuestion.openPopIn = openPopIn;
-
-                    const pictoSize = 20,
-                        explanationIconArray = drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
-                    this.manipulator.set(7, this.explanationIconManipulator);
-                    explanationIconArray.forEach(elem => svg.addEvent(elem, "click", openPopIn));   // pour afficher l'explication
-                    svg.addEvent(this.border, "click", openPopIn);                                  // on peut cliquer sur le texte
-                    svg.addEvent(this.content, "click", openPopIn);                                 // sur le bord du texte ou l'icône d'explication
+            var _generateElements = () => {
+                if (this.model.label && this.model.imageSrc) { // Reponse avec Texte ET image
+                    let obj = displayImageWithTitle(this.model.label, this.model.imageSrc, this.model.dimImage, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, this.model.image);
+                    this.border = obj.border;
+                    this.content = obj.text;
+                    this.image = obj.image;
+                } else if (this.model.video) { // Reponse avec video uniquement
+                    let obj = drawVideo(this.model.label, this.model.video, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, false, true);
+                    this.border = obj.border;
+                    this.content = obj.content;
+                    this.video.miniature = obj.video;
+                } else if (this.model.label && !this.model.imageSrc) { // Reponse avec Texte uniquement
+                    let obj = displayText(this.model.label, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator);
+                    this.border = obj.border;
+                    this.content = obj.content;
+                } else if (this.model.imageSrc && !this.model.label) { // Reponse avec Image uniquement
+                    let obj = displayImageWithBorder(this.model.imageSrc, this.model.dimImage, this.width, this.height, this.manipulator);
+                    this.image = obj.image;
+                    this.border = obj.border;
+                } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
+                    this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
+                    this.manipulator.add(this.border);
                 }
 
-            } else if (globalVariables.playerMode && !this.model.parentQuestion.parentQuiz.previewMode) {
-                let clickAnswerHandler = () => {
-                    this.select();
-                    if (this.model.parentQuestion.multipleChoice && this.model.selected) {
-                        this.model.colorBordure = this.border.strokeColor;
-                        this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
-                        this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
-                    } else if (this.model.parentQuestion.multipleChoice) {
-                        this.border.color(this.model.bgColor, 1, this.model.colorBordure);
-                        if (this.model.parentQuestion.selectedAnswers.length === 0) {
-                            this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
-                        }
+                if (this.model.selected) { // image pré-selectionnée
+                    this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
+                }
+                this.manipulator.move(this.x, this.y);
+            };
+            var _drawPopIn = () => {
+                var openPopIn = () => {
+                    runtime.speechSynthesisCancel();
+                    this.model.parentQuestion.parentQuiz.closePopIn();
+                    let popInParent = this.model.parentQuestion,
+                        popInX = this.model.parentQuestion.parentQuiz.x,
+                        popInY,
+                        popInWidth = this.model.parentQuestion.width,
+                        popInHeight = this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines * 0.8;
+                    this.model.explanationPopIn = this.model.explanationPopIn || classContainer.createClass("PopInVue", this, false);
+                    if (this.model.parentQuestion.image) {
+                        popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithImage / 2 + MARGIN;
+                    } else {
+                        popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithoutImage / 2 + MARGIN;
+                    }
+                    if (globalVariables.textToSpeechMode && this.model.explanationPopIn.label && (!this.model.explanationPopIn.video || !this.model.explanationPopIn.said)) {
+                        setTimeout(() => {
+                            runtime.speechSynthesisSpeak(this.model.explanationPopIn.label)
+                        }, 200);
+                        this.model.explanationPopIn.said = true;
+                        (this.model.explanationPopIn.image || this.model.explanationPopIn.video) && this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
+                    }
+                    else {
+                        this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
                     }
                 };
-                this.border && svg.addEvent(this.border, "click", () => {
-                    clickAnswerHandler()
-                });
-                this.content && svg.addEvent(this.content, "click", () => {
-                    clickAnswerHandler()
-                });
-                this.model.image && svg.addEvent(this.model.image, "click", () => {
-                    clickAnswerHandler()
-                });
+                if (this.model.explanationPopIn && this.model.explanationPopIn.displayed) this.model.parentQuestion.openPopIn = openPopIn;
+
+                const pictoSize = 20;
+                drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
+                this.manipulator.set(7, this.explanationIconManipulator);
+                this.explanationIconManipulator.addEvent("click", openPopIn);
+                svg.addEvent(this.border, "click", openPopIn);
+                svg.addEvent(this.content, "click", openPopIn);
             }
-            if (this.model.selected) { // image pré-selectionnée
-                this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
+
+            _savePosAndSize();
+            if (this.model.editable) {
+                _answerEditableDisplay(this.x, this.y, this.width, this.height);
+            }else {
+                _generateElements();
+                if (this.model.parentQuestion.parentQuiz.previewMode) {
+                    !this.model.explanation.empty() && _drawPopIn();
+                    this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
+                    this.voiceIcon.draw(this.border.width/2 - 2*MARGIN, -this.border.height/2 + 2*MARGIN, 16, 16, this.manipulator, 6);
+                    svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
+                        runtime.speechSynthesisSpeak(this.model.label);
+                    });
+                } else if (globalVariables.playerMode) {
+                    this.manipulator.addEvent('click', () => {
+                        this.model.select(this);
+                        if (this.model.parentQuestion.multipleChoice) {
+                            if (this.model.selected) {
+                                this.model.colorBordure = this.border.strokeColor;
+                                this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
+                                this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
+                            } else {
+                                this.border.color(this.model.bgColor, 1, this.model.colorBordure);
+                                if (this.model.parentQuestion.selectedAnswers.length === 0) {
+                                    this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
+                                }
+                            }
+                        }
+                    });
+                }
             }
-            this.manipulator.move(this.x, this.y);
         }
     }
 
@@ -2244,22 +2242,13 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
                 this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
                 textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
-                // text = autoAdjustText(textToDisplay, panelWidth, drawing.height, null, null, this.textManipulator, 0).text;
-                // text = new svg.Text(textToDisplay).mark('textExplanation');
                 text = new svg.Text(textToDisplay)
                     .dimension(this.panel.width, 0)
                     .position(panelWidth / 2 + MARGIN * 2, MARGIN * 2)
-                    // .position(text.boundingRect().width,text.boundingRect().height)
-                    // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
-                    // .position(this.panel.width / 2 - MARGIN - text.boundingRect().width,text.boundingRect().height)
                     .font("Arial", 20, 0)
-                    // .anchor("left")
                     .mark('textExplanation');
                 this.textManipulator.set(0, text);
-                // text.position(panelWidth / 2, text.boundingRect().height)
-                //     .mark('textExplanation');
                 this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
-                // this.panel.resizeContent(this.panel.width, this.panel.height);
 
             };
 
@@ -2282,7 +2271,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
                 drawings.component.add(contentArea);
                 contentArea.focus();
-                //contentArea.setCaretPosition(textToDisplay.length);
                 const onblur = () => {
                     contentArea.enter();
                     this.label = contentArea.messageText;

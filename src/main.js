@@ -83,6 +83,8 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
         if(redirect){
             main.currentPageDisplayed = 'Password';
         }
+        //main.currentPageDisplayed.refresh();
+        //TODO virer switch et mettre fonction refresh dans toutes les classes
         switch (main.currentPageDisplayed) {
             case "ConnexionManager":
                 connexionManager.display();
