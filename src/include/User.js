@@ -45,7 +45,7 @@ exports.User = function (globalVariables, classContainer) {
             super(options);
             var _declareHeader = () => {
                 this.header = new HeaderVue("Inscription");
-            }
+            };
             var _declareManipulators = () => {
                 this.firstNameManipulator = new Manipulator(this).addOrdonator(5);
                 this.firstNameManipulator.imageLayer = 3;
@@ -431,31 +431,43 @@ exports.User = function (globalVariables, classContainer) {
              * @constructs
              */
             super(options);
-            this.header = new HeaderVue("Connexion");
-            this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
-            this.passwordManipulator = new Manipulator(this).addOrdonator(5);
-            this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
-            this.newPasswordManipulator.component.mark("newPasswordManipulator");
-            this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
-            this.cookieManipulator = new Manipulator(this).addOrdonator(5);
-            this.cookieManipulator.component.mark("cookieManipulator");
-            this.inscriptionTextManipulator = new Manipulator(this);
-            this.inscriptionTextManipulator.component.mark("inscriptiontext");
-            this.manipulator
-                .add(this.mailAddressManipulator)
-                .add(this.cookieManipulator)
-                .add(this.inscriptionTextManipulator)
-                .add(this.newPasswordManipulator)
-                .add(this.passwordManipulator)
-                .add(this.connexionButtonManipulator);
-            this.mailAddressManipulator.imageLayer = 3;
-            this.passwordManipulator.imageLayer = 3;
-            this.mailAddressLabel = "Adresse mail :";
-            this.newPasswordLabel = "Mot de passe oublié ?";
-            this.passwordLabel = "Mot de passe :";
-            this.connexionButtonLabel = "Connexion";
-            this.cookieLabel = "Rester connecté";
+
+            var _declareHeader = () => {
+                this.header = new HeaderVue("Connexion");
+            };
+            var _declareManipulators = () => {
+                this.mailAddressManipulator = new Manipulator(this).addOrdonator(5);
+                this.passwordManipulator = new Manipulator(this).addOrdonator(5);
+                this.newPasswordManipulator = new Manipulator(this).addOrdonator(5);
+                this.newPasswordManipulator.component.mark("newPasswordManipulator");
+                this.connexionButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.connexionButtonManipulator.component.mark("connexionButtonManipulator");
+                this.cookieManipulator = new Manipulator(this).addOrdonator(5);
+                this.cookieManipulator.component.mark("cookieManipulator");
+                this.inscriptionTextManipulator = new Manipulator(this);
+                this.inscriptionTextManipulator.component.mark("inscriptiontext");
+                this.manipulator
+                    .add(this.mailAddressManipulator)
+                    .add(this.cookieManipulator)
+                    .add(this.inscriptionTextManipulator)
+                    .add(this.newPasswordManipulator)
+                    .add(this.passwordManipulator)
+                    .add(this.connexionButtonManipulator);
+                this.mailAddressManipulator.imageLayer = 3;
+                this.passwordManipulator.imageLayer = 3;
+            };
+            var _declareDefaultLabels = () =>{
+                this.mailAddressLabel = "Adresse mail :";
+                this.newPasswordLabel = "Mot de passe oublié ?";
+                this.passwordLabel = "Mot de passe :";
+                this.connexionButtonLabel = "Connexion";
+                this.cookieLabel = "Rester connecté";
+            };
+
+            _declareHeader();
+            _declareManipulators();
+            _declareDefaultLabels();
+
             this.tabForm = [];
             /** format requis pour la vérification d'une case à cocher **/
             this.model = {correct: false};
@@ -527,47 +539,118 @@ exports.User = function (globalVariables, classContainer) {
          * affiche la page de connexion
          */
         render() {
-            this.inscriptionTextManipulator.flush();
-            main.currentPageDisplayed = "ConnexionManager";
-            this.header.display("Connexion");
-            globalVariables.drawing.manipulator.set(1, this.manipulator);
-            this.manipulator.move(drawing.width / 2, drawing.height / 2);
-
-            this.focusedField = null;
-            this.mailAddressField = {
-                label: "",
-                title: this.mailAddressLabel,
-                line: -1,
-                errorMessage: "L'adresse email n'est pas valide"
+            var _displayHeader = () => {
+                this.inscriptionTextManipulator.flush();
+                main.currentPageDisplayed = "ConnexionManager";
+                this.header.display("Connexion");
             };
-            this.passwordField = {
-                label: '',
-                labelSecret: '',
-                title: this.passwordLabel,
-                line: 0,
-                secret: true,
-                errorMessage: "La confirmation du mot de passe n'est pas valide"
+            var _settingManipulator = () => {
+                globalVariables.drawing.manipulator.set(1, this.manipulator);
+                this.manipulator.move(drawing.width / 2, drawing.height / 2);
+            };
+            var _displayInputFields = () => {
+                var _displayField = (field, manipulator) => {
+                    this[field].label = field == "mailAddressField" ? "Adresse mail : " : "Mot de passe : ";
+                    let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
+                    let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
+                    svg.removeEvent(fieldTitle.glass, 'click');
+                    fieldTitle.color(TITLE_COLOR);
+                    fieldTitle.font(FONT, FONT_SIZE_TITLE);
+                    fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
+                    fieldArea.color(COLORS);
+                    fieldArea.editColor(EDIT_COLORS);
+                    if (field == "passwordField") {
+                        let regex = /^[ -~]{6,63}$/;
+                        fieldArea.pattern(regex);
+                        fieldArea.type('password');
+                    }
+                    else {
+                        let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        fieldArea.pattern(regexEmail);
+                        let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
+                            fieldArea.message(message);
+                            this.focusedField = this[field];
+                            if (!this.focusedField.input.valid) {
+                                this.focusedField.input.color(ERROR_INPUT);
+                            }
+                            else {
+                                this.focusedField.input.color(COLORS);
+                            }
+                        }
+                        fieldArea.onInput(showEmailEvenIfIncorrect);
+                    }
+                    this.h = 1.5 * fieldArea.height;
+                    this[field].translatorInput = fieldArea.component;
+                    this[field].translatorTitle = fieldTitle.component;
+
+                    fieldArea.component.mark(field);
+                    fieldArea.component.parentObj = fieldArea;
+
+
+                    this[field].input = fieldArea;
+                    this[field].titleText = fieldTitle;
+                    this[field].field = field;
+                    manipulator.set(2, fieldTitle.component);
+                    manipulator.set(1, fieldArea.component);
+
+                    //position
+                    fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
+                    manipulator.move(manipulator.x, this[field].line * drawing.height / MARGIN_DISPOSITION_BUTTON_FACTOR);
+
+                    var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+                    alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+                }
+                var _loadIcon = () => {
+                    this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '', null);
+                    this.mailIcon.draw(-this.mailAddressField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
+                    this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
+                    this.passIcon.draw(-this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator);
+                    this.loadPasswordSelector();
+                };
+
+                this.focusedField = null;
+                this.mailAddressField = {
+                    label: "",
+                    title: this.mailAddressLabel,
+                    line: -1,
+                    errorMessage: "L'adresse email n'est pas valide"
+                };
+                this.passwordField = {
+                    label: '',
+                    labelSecret: '',
+                    title: this.passwordLabel,
+                    line: 0,
+                    secret: true,
+                    errorMessage: "La confirmation du mot de passe n'est pas valide"
+                };
+
+                _displayField("mailAddressField", this.mailAddressManipulator);
+                _displayField('passwordField', this.passwordManipulator);
+                this.addCookieCheckbox(-INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
+                    , 15, this.cookieManipulator);
+                this.addNewPassword(INPUT_WIDTH / 2, this.passwordField.input.y + this.passwordField.input.height
+                    , this.newPasswordManipulator);
+
+                _loadIcon();
+            };
+            var _displayButton = () => {
+                let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
+                button.text.color(myColors.lightgrey, 0, myColors.white);
+                this.connexionButtonManipulator
+                    .set(0, button.component)
+                    .move(0, 2.5 * drawing.height / 10);
+
+                let inscriptionText = new svg.Text(INSCRIPTION_TEXT)
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .color(myColors.greyerBlue)
+                    .font(FONT, FONT_SIZE_TITLE * 2 / 3);
+                this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
             };
 
-            this.displayField("mailAddressField", this.mailAddressManipulator);
-            this.displayField('passwordField', this.passwordManipulator);
-            this.addCookieCheckbox(-INPUT_WIDTH / 4, this.passwordField.input.y + this.passwordField.input.height
-                , 15, this.cookieManipulator);
-            this.addNewPassword(INPUT_WIDTH / 2, this.passwordField.input.y + this.passwordField.input.height
-                , this.newPasswordManipulator);
-            this.loadImage();
-
-            let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
-            button.text.color(myColors.lightgrey, 0, myColors.white);
-            this.connexionButtonManipulator
-                .set(0, button.component)
-                .move(0, 2.5 * drawing.height / 10);
-
-            let inscriptionText = new svg.Text(INSCRIPTION_TEXT)
-                .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                .color(myColors.greyerBlue)
-                .font(FONT, FONT_SIZE_TITLE * 2 / 3);
-            this.inscriptionTextManipulator.add(inscriptionText).move(0, this.connexionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+            _displayHeader();
+            _settingManipulator();
+            _displayInputFields();
+            _displayButton();
         }
 
         /**
@@ -637,17 +720,6 @@ exports.User = function (globalVariables, classContainer) {
         }
 
         /**
-         * affichage des icones des champs
-         */
-        loadImage() {
-            this.mailIcon = new util.Picture('../images/envelope.png', false, this.mailAddressManipulator, '', null);
-            this.mailIcon.draw(-this.mailAddressField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.mailAddressManipulator);
-            this.passIcon = new util.Picture('../images/padlock.png', false, this.passwordManipulator, '', null);
-            this.passIcon.draw(-this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator);
-            this.loadPasswordSelector();
-        }
-
-        /**
          * affichage de l'oeil pour afficher/cacher le mot de passe
          */
         loadPasswordSelector() {
@@ -672,63 +744,6 @@ exports.User = function (globalVariables, classContainer) {
             this.passwordSelectorIcon.hide = new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null);
             this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
             svg.addEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
-        }
-
-        /**
-         * affichage des champs input
-         * @param field
-         * @param manipulator
-         */
-        displayField(field, manipulator) {
-            this[field].label = field == "mailAddressField" ? "Adresse mail : " : "Mot de passe : ";
-            let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
-            let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
-            svg.removeEvent(fieldTitle.glass, 'click');
-            fieldTitle.color(TITLE_COLOR);
-            fieldTitle.font(FONT, FONT_SIZE_TITLE);
-            fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
-            fieldArea.color(COLORS);
-            fieldArea.editColor(EDIT_COLORS);
-            if (field == "passwordField") {
-                let regex = /^[ -~]{6,63}$/;
-                fieldArea.pattern(regex);
-                fieldArea.type('password');
-            }
-            else {
-                let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                fieldArea.pattern(regexEmail);
-                let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
-                    fieldArea.message(message);
-                    this.focusedField = this[field];
-                    if (!this.focusedField.input.valid) {
-                        this.focusedField.input.color(ERROR_INPUT);
-                    }
-                    else {
-                        this.focusedField.input.color(COLORS);
-                    }
-                }
-                fieldArea.onInput(showEmailEvenIfIncorrect);
-            }
-            this.h = 1.5 * fieldArea.height;
-            this[field].translatorInput = fieldArea.component;
-            this[field].translatorTitle = fieldTitle.component;
-
-            fieldArea.component.mark(field);
-            fieldArea.component.parentObj = fieldArea;
-
-
-            this[field].input = fieldArea;
-            this[field].titleText = fieldTitle;
-            this[field].field = field;
-            manipulator.set(2, fieldTitle.component);
-            manipulator.set(1, fieldArea.component);
-
-            //position
-            fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
-            manipulator.move(manipulator.x, this[field].line * drawing.height / MARGIN_DISPOSITION_BUTTON_FACTOR);
-
-            var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
-            alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
         }
 
         /**
@@ -807,24 +822,36 @@ exports.User = function (globalVariables, classContainer) {
     class PasswordVue extends Vue {
         constructor(options) {
             super(options);
-            this.header = new HeaderVue("Password");
-            this.createPasswordManipulator = new Manipulator(this).addOrdonator(4);
-            this.checkPasswordManipulator = new Manipulator(this).addOrdonator(4);
-            this.passwordValidManipulator = new Manipulator(this).addOrdonator(4);
-            this.passwordButtonManipulator = new Manipulator(this).addOrdonator(4);
-            this.passwordButtonManipulator.component.mark("passwordButtonManipulator");
-            this.waitManipulator = new Manipulator(this).addOrdonator(5);
-            this.messageManipulator = new Manipulator(this).addOrdonator(1);
-            this.manipulator
-                .add(this.createPasswordManipulator)
-                .add(this.checkPasswordManipulator)
-                .add(this.passwordValidManipulator)
-                .add(this.passwordButtonManipulator)
-                .add(this.waitManipulator)
-                .add(this.messageManipulator);
-            this.createPasswordLabel = "Nouveau mot de passe :";
-            this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
-            this.passwordButtonLabel = "Réinitialiser le mot de passe";
+
+            var _declareHeader = () => {
+                this.header = new HeaderVue("Password");
+            };
+            var _declareManipulators = () => {
+                this.createPasswordManipulator = new Manipulator(this).addOrdonator(4);
+                this.checkPasswordManipulator = new Manipulator(this).addOrdonator(4);
+                this.passwordValidManipulator = new Manipulator(this).addOrdonator(4);
+                this.passwordButtonManipulator = new Manipulator(this).addOrdonator(4);
+                this.passwordButtonManipulator.component.mark("passwordButtonManipulator");
+                this.waitManipulator = new Manipulator(this).addOrdonator(5);
+                this.messageManipulator = new Manipulator(this).addOrdonator(1);
+                this.manipulator
+                    .add(this.createPasswordManipulator)
+                    .add(this.checkPasswordManipulator)
+                    .add(this.passwordValidManipulator)
+                    .add(this.passwordButtonManipulator)
+                    .add(this.waitManipulator)
+                    .add(this.messageManipulator);
+            };
+            var _declareDefaultLabels = () => {
+                this.createPasswordLabel = "Nouveau mot de passe :";
+                this.checkPasswordLabel = "Confirmer votre nouveau mot de passe :";
+                this.passwordButtonLabel = "Réinitialiser le mot de passe";
+            };
+
+            _declareHeader();
+            _declareManipulators();
+            _declareDefaultLabels();
+
             this.tabForm = [];
             this.ID;
         }
@@ -846,83 +873,90 @@ exports.User = function (globalVariables, classContainer) {
          */
         render(ID) {
             this.ID = ID;
-            main.currentPageDisplayed = "Password";
-            globalVariables.drawing.manipulator.set(1, this.manipulator);
-            this.manipulator.move(drawing.width / 2, drawing.height / 2);
-            if (globalVariables.header) {
-                globalVariables.header.display("Password");
-            } else {
-                let header = classContainer.createClass('HeaderVue');
-                header.display('Password');
-            }
-            let waitText = new svg.Text('Veuillez Patienter...')
-                .dimension(INPUT_WIDTH, INPUT_HEIGHT)
-                .color(myColors.black)
-                .font(FONT, FONT_SIZE_TITLE * 3 / 2);
-            this.waitManipulator.set(4, waitText);
-            let check = Server.checkTimestampPassword({id: ID});
-            check.then(data => {
-                data = JSON.parse(data);
-                if (data.data == 200) {
-                    this.waitManipulator.flush();
-                    this.focusedField = null;
-                    this.createPasswordField = {
-                        label: "",
-                        title: this.createPasswordLabel,
-                        line: -1,
-                    };
-                    this.checkPasswordField = {
-                        label: "",
-                        title: this.checkPasswordLabel,
-                        line: 0,
-                    };
-                    this.displayField("createPasswordField", this.createPasswordManipulator);
-                    this.displayField("checkPasswordField", this.checkPasswordManipulator);
-                    let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.white], this.passwordButtonLabel);
-                    this.passwordButtonManipulator
-                        .set(0, button.component)
-                        .move(this.passwordButtonManipulator.x, 2.5 * drawing.height / 10);
+            var _settingManipulator = () => {
+                globalVariables.drawing.manipulator.set(1, this.manipulator);
+                this.manipulator.move(drawing.width / 2, drawing.height / 2);
+            };
+            var _displayHeader = () => {
+                main.currentPageDisplayed = "Password";
+                if (globalVariables.header) {
+                    globalVariables.header.display("Password");
+                } else {
+                    let header = classContainer.createClass('HeaderVue');
+                    header.display('Password');
                 }
-                else {
-                    this.waitManipulator.set(4, new svg.Text('Le lien de récupération du mot de passe a échoué.\nMerci de bien vouloir renouveler votre demande.')
-                        .font(FONT, FONT_SIZE_TITLE * 3 / 2).mark("tryAgainError"));
+            };
+            var _displayWaitText = () => {
+                let waitText = new svg.Text('Veuillez Patienter...')
+                    .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                    .color(myColors.black)
+                    .font(FONT, FONT_SIZE_TITLE * 3 / 2);
+                this.waitManipulator.set(4, waitText);
+            };
+            var _checkAndDisplay = () => {
+                var _displayField = (field, manipulator) => {
+                    this[field].label = field == "createPasswordField" ? this.createPasswordLabel : this.checkPasswordLabel;
+                    let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
+                    let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
+                    svg.removeEvent(fieldTitle.glass, 'click');
+                    fieldTitle.color(TITLE_COLOR);
+                    fieldTitle.font(FONT, FONT_SIZE_TITLE);
+                    fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
+                    fieldArea.color(COLORS);
+                    fieldArea.editColor(EDIT_COLORS);
+                    this[field].translatorInput = fieldArea.component;
+                    this[field].translatorTitle = fieldTitle.component;
+                    this[field].input = fieldArea;
+                    this[field].titleText = fieldTitle;
+                    this[field].field = field;
+                    fieldArea.component.mark(field);
+                    fieldArea.component.parentObj = fieldArea;
+                    fieldArea.pattern(/^[ -~]{6,63}$/);
+                    fieldArea.onInput((oldMessage, message, valid) => {
+                        this.focusedField = this[field];
+                    });
+                    manipulator.set(3, fieldTitle.component);
+                    manipulator.set(2, fieldArea.component);
+                    fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
+                    manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
+                    var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
+                    alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
                 }
-            });
 
-        }
+                let check = Server.checkTimestampPassword({id: ID});
+                check.then(data => {
+                    data = JSON.parse(data);
+                    if (data.data == 200) {
+                        this.waitManipulator.flush();
+                        this.focusedField = null;
+                        this.createPasswordField = {
+                            label: "",
+                            title: this.createPasswordLabel,
+                            line: -1,
+                        };
+                        this.checkPasswordField = {
+                            label: "",
+                            title: this.checkPasswordLabel,
+                            line: 0,
+                        };
+                        _displayField("createPasswordField", this.createPasswordManipulator);
+                        _displayField("checkPasswordField", this.checkPasswordManipulator);
+                        let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.white], this.passwordButtonLabel);
+                        this.passwordButtonManipulator
+                            .set(0, button.component)
+                            .move(this.passwordButtonManipulator.x, 2.5 * drawing.height / 10);
+                    }
+                    else {
+                        this.waitManipulator.set(4, new svg.Text('Le lien de récupération du mot de passe a échoué.\nMerci de bien vouloir renouveler votre demande.')
+                            .font(FONT, FONT_SIZE_TITLE * 3 / 2).mark("tryAgainError"));
+                    }
+                });
+            };
 
-        /**
-         * affichage des champs input
-         * @param field
-         * @param manipulator
-         */
-        displayField(field, manipulator) {
-            this[field].label = field == "createPasswordField" ? this.createPasswordLabel : this.checkPasswordLabel;
-            let fieldTitle = new gui.TextField(0, 0, INPUT_WIDTH, FONT_SIZE_TITLE, this[field].label);
-            let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, '');
-            svg.removeEvent(fieldTitle.glass, 'click');
-            fieldTitle.color(TITLE_COLOR);
-            fieldTitle.font(FONT, FONT_SIZE_TITLE);
-            fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
-            fieldArea.color(COLORS);
-            fieldArea.editColor(EDIT_COLORS);
-            this[field].translatorInput = fieldArea.component;
-            this[field].translatorTitle = fieldTitle.component;
-            this[field].input = fieldArea;
-            this[field].titleText = fieldTitle;
-            this[field].field = field;
-            fieldArea.component.mark(field);
-            fieldArea.component.parentObj = fieldArea;
-            fieldArea.pattern(/^[ -~]{6,63}$/);
-            fieldArea.onInput((oldMessage, message, valid) => {
-                this.focusedField = this[field];
-            });
-            manipulator.set(3, fieldTitle.component);
-            manipulator.set(2, fieldArea.component);
-            fieldTitle.position(manipulator.x, -1 * (fieldArea.y + fieldArea.height + MARGIN));
-            manipulator.move(manipulator.x, this[field].line * drawing.height / 5);
-            var alreadyExist = this.tabForm.find(formElement => formElement.field === field);
-            alreadyExist ? this.tabForm.splice(this.tabForm.indexOf(alreadyExist), 1, this[field]) : this.tabForm.push(this[field]);
+            _settingManipulator();
+            _displayHeader();
+            _displayWaitText();
+            _checkAndDisplay();
         }
 
         sendNewPasswordButtonHandler() {
@@ -1008,4 +1042,4 @@ exports.User = function (globalVariables, classContainer) {
         ConnexionManagerVue,
         PasswordVue
     }
-}
+};
