@@ -239,16 +239,6 @@ exports.User = function (globalVariables, classContainer) {
                             .draw(-field.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, manipulator);
                     };
                     var _loadPasswordSelector = () => {
-                        this.passwordHidden = true;
-                        this.passwordSelectorIcon = {
-                            view: new util.Picture('../images/view.png', false, this.passwordManipulator, '', null),
-                            hide: new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null)
-                        }
-                        this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
-                        this.passwordSelectorIcon.view.draw(this.passwordConfirmationField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator, 4, 'viewIcon');
-                        svg.addEvent(this.passwordManipulator.viewIcon, 'click', _passwordSelectorHandler);
-                        svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', _passwordSelectorHandler);
-
                         var _passwordSelectorHandler = (event) => {
                             if (this.passwordHidden) {
                                 svg.removeEvent(this.passwordManipulator.viewIcon, 'click', passwordSelectorHandler);
@@ -271,7 +261,17 @@ exports.User = function (globalVariables, classContainer) {
                                 this.passwordConfirmationField.input.type('password');
                             }
                             this.passwordHidden = !this.passwordHidden;
+                        };
+
+                        this.passwordHidden = true;
+                        this.passwordSelectorIcon = {
+                            view: new util.Picture('../images/view.png', false, this.passwordManipulator, '', null),
+                            hide: new util.Picture('../images/hide.png', false, this.passwordManipulator, '', null)
                         }
+                        this.passwordSelectorIcon.view.draw(this.passwordField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordManipulator, 4, 'viewIcon');
+                        this.passwordSelectorIcon.view.draw(this.passwordConfirmationField.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, this.passwordConfirmationManipulator, 4, 'viewIcon');
+                        svg.addEvent(this.passwordManipulator.viewIcon, 'click', _passwordSelectorHandler);
+                        svg.addEvent(this.passwordConfirmationManipulator.viewIcon, 'click', _passwordSelectorHandler);
                     };
 
                     _defineIcon('../images/envelope.png', this.mailAddressManipulator, this.mailAddressField);
