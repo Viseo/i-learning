@@ -109,7 +109,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
          */
         isEditable(editor, editable) {
             this.editable = editable;
-            this.labelDefault = "Double cliquer pour modifier et cocher si bonne réponse.";
+            this.labelDefault = "Cliquer pour modifier et cocher si bonne réponse.";
             this._acceptDrop = editable;
             this.editor = editor;
             this.checkInputContentArea = editable ? ((objCont) => {

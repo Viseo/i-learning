@@ -43,11 +43,6 @@ exports.User = function (globalVariables, classContainer) {
     class InscriptionManagerVue extends Vue {
         constructor(options) {
             super(options);
-            _declareHeader();
-            _declareManipulators();
-            _declareDefaultLabels();
-            _declareValidators();
-
             var _declareHeader = () => {
                 this.header = new HeaderVue("Inscription");
             }
@@ -134,6 +129,11 @@ exports.User = function (globalVariables, classContainer) {
                     }
                 };
             };
+
+            _declareHeader();
+            _declareManipulators();
+            _declareDefaultLabels();
+            _declareValidators();
         }
 
         events() {
@@ -149,31 +149,12 @@ exports.User = function (globalVariables, classContainer) {
         }
 
         render() {
-            _displayHeader();
-            _displayInputFields();
-            _displayButton();
-            _displayConnectionLabel();
-
             var _displayHeader = () => {
                 this.connexionTextManipulator.flush();
                 main.currentPageDisplayed = this;
                 globalVariables.header.display("Inscription");
-            }
+            };
             var _displayInputFields = () => {
-                globalVariables.drawing.manipulator.set(1, this.manipulator);
-                this.manipulator.move(drawing.width / 2, drawing.height / 2);
-                this.focusedField = null;
-                this.lastNameField.checkInput = () => _nameCheckInput("lastNameField");
-                this.firstNameField.checkInput = () => _nameCheckInput("firstNameField");
-                this.passwordField.checkInput = _passwordCheckInput;
-                this.passwordConfirmationField.checkInput = _passwordCheckInput;
-                _displayField("lastNameField", this.lastNameManipulator);
-                _displayField("firstNameField", this.firstNameManipulator);
-                _displayField("mailAddressField", this.mailAddressManipulator);
-                _displayField("passwordField", this.passwordManipulator);
-                _displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
-                _loadImage();
-
                 var _nameCheckInput = (field) => {
                     if (this[field].input.textMessage) {
                         this[field].input.textMessage = this[field].input.textMessage.trim();
@@ -253,13 +234,6 @@ exports.User = function (globalVariables, classContainer) {
                     this.formLabels[field] = this[field].field;
                 };
                 var _loadImage = () => {
-                    _defineIcon('../images/envelope.png', this.mailAddressManipulator, this.mailAddressField);
-                    _defineIcon('../images/padlock.png', this.passwordManipulator, this.passwordField);
-                    _defineIcon('../images/padlock.png', this.passwordConfirmationManipulator, this.passwordConfirmationField);
-                    _defineIcon('../images/user.png', this.firstNameManipulator, this.firstNameField);
-                    _defineIcon('../images/user.png', this.lastNameManipulator, this.lastNameField);
-                    _loadPasswordSelector();
-
                     var _defineIcon = (imgSrc, manipulator, field) =>{
                         new util.Picture(imgSrc, false, manipulator, '', null) //TODO verifier/corriger manipulator
                             .draw(-field.input.width / 2 + ICON_SIZE, 0, ICON_SIZE, ICON_SIZE, manipulator);
@@ -299,9 +273,29 @@ exports.User = function (globalVariables, classContainer) {
                             this.passwordHidden = !this.passwordHidden;
                         }
                     };
-                }
-            }
 
+                    _defineIcon('../images/envelope.png', this.mailAddressManipulator, this.mailAddressField);
+                    _defineIcon('../images/padlock.png', this.passwordManipulator, this.passwordField);
+                    _defineIcon('../images/padlock.png', this.passwordConfirmationManipulator, this.passwordConfirmationField);
+                    _defineIcon('../images/user.png', this.firstNameManipulator, this.firstNameField);
+                    _defineIcon('../images/user.png', this.lastNameManipulator, this.lastNameField);
+                    _loadPasswordSelector();
+                };
+
+                globalVariables.drawing.manipulator.set(1, this.manipulator);
+                this.manipulator.move(drawing.width / 2, drawing.height / 2);
+                this.focusedField = null;
+                this.lastNameField.checkInput = () => _nameCheckInput("lastNameField");
+                this.firstNameField.checkInput = () => _nameCheckInput("firstNameField");
+                this.passwordField.checkInput = () => _passwordCheckInput;
+                this.passwordConfirmationField.checkInput = () => _passwordCheckInput;
+                _displayField("lastNameField", this.lastNameManipulator);
+                _displayField("firstNameField", this.firstNameManipulator);
+                _displayField("mailAddressField", this.mailAddressManipulator);
+                _displayField("passwordField", this.passwordManipulator);
+                _displayField("passwordConfirmationField", this.passwordConfirmationManipulator);
+                _loadImage();
+            };
             var _displayConnectionLabel = () => {
                 let connexionText = new svg.Text(CONNECTION_TEXT)
                     .dimension(INPUT_WIDTH, INPUT_HEIGHT)
@@ -317,15 +311,14 @@ exports.User = function (globalVariables, classContainer) {
                 // saveButton.component.mark('saveButton');
                 this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
             };
+
+            _displayHeader();
+            _displayInputFields();
+            _displayButton();
+            _displayConnectionLabel();
         }
 
         keyDownHandler(event) {
-            if (event.keyCode === 9) { // TAB
-                _goToNextField(event);
-            } else if (event.keyCode === 13) { // Entrée
-                _submitForm(event);
-            }
-
             var _goToNextField = (event) => {
                 event.preventDefault();
                 let index = this.tabForm.indexOf(this.focusedField);
@@ -336,15 +329,42 @@ exports.User = function (globalVariables, classContainer) {
                     svg.event(this.tabForm[index].input.glass, "click");
                     this.focusedField = this.tabForm[index];
                 }
-            }
+            };
             var _submitForm = (event) => {
                 event.preventDefault();
                 this.focusedField.input.hideControl();
                 this.saveButtonHandler();
+            };
+
+            if (event.keyCode === 9) { // TAB
+                _goToNextField(event);
+            } else if (event.keyCode === 13) { // Entrée
+                _submitForm(event);
             }
         };
 
         saveButtonHandler() {
+            var _checkRequiredFields = () => {
+                var emptyAreas = this.tabForm.filter(field => field.input.textMessage === "");
+                emptyAreas.forEach(function (emptyArea) {
+                    emptyArea.input.color(ERROR_INPUT);
+                });
+                if (emptyAreas.length > 0) {
+                    this.errorToDisplay = EMPTY_FIELD_ERROR;
+                }
+                else {
+                    this.saveButtonManipulator.unset(1);
+                }
+                return emptyAreas.length === 0;
+            };
+            var _checkFieldsValidity = () => {
+                return this.lastNameField.checkInput() &&
+                    this.firstNameField.checkInput() &&
+                    this.mailAddressField.checkInput() &&
+                    this.passwordField.checkInput() &&
+                    this.passwordConfirmationField.checkInput();
+            };
+
             if (_checkRequiredFields() && _checkFieldsValidity()) {
                 let tempObject = {
                     lastName: this.lastNameField.input.textMessage,
@@ -389,27 +409,6 @@ exports.User = function (globalVariables, classContainer) {
                     .mark('errorMessage');
                 this.saveButtonManipulator.set(1, message);
             }
-
-            var _checkRequiredFields = () => {
-                var emptyAreas = this.tabForm.filter(field => field.input.textMessage === "");
-                emptyAreas.forEach(function (emptyArea) {
-                    emptyArea.input.color(ERROR_INPUT);
-                });
-                if (emptyAreas.length > 0) {
-                    this.errorToDisplay = EMPTY_FIELD_ERROR;
-                }
-                else {
-                    this.saveButtonManipulator.unset(1);
-                }
-                return emptyAreas.length === 0;
-            };
-            var _checkFieldsValidity = () => {
-                return this.lastNameField.checkInput() &&
-                    this.firstNameField.checkInput() &&
-                    this.mailAddressField.checkInput() &&
-                    this.passwordField.checkInput() &&
-                    this.passwordConfirmationField.checkInput();
-            };
         };
 
         connexionTextHandler() {

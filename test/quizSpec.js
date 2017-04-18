@@ -214,7 +214,7 @@ describe('QuizManager', function () {
                 emptyAnswerAddCadreanswer = retrieve(root, '[emptyAnswerAddCadreanswer]');
                 emptyAnswerAddCadreanswer.handler.parentManip.listeners['dblclick']();
                 let answerLabelContent = retrieve(root, '[answerLabelContent' + index + ']');
-                assert.equal(answerLabelContent.handler.messageText, 'Double cliquer pour modifier et cocher si bonne réponse.');
+                assert.equal(answerLabelContent.handler.messageText, 'Cliquer pour modifier et cocher si bonne réponse.');
             };
 
             for (let i = 1; i < 7; i++) {
