@@ -188,97 +188,320 @@ exports.QuizElements = function (globalVariables, classContainer) {
          */
         constructor(quiz, formation) {
             super();
-            this.quizName = "";
-            this.quizNameDefault = "Ecrire ici le nom du quiz";
-            this.tabQuestions = [defaultQuestion];
-            this.parentFormation = formation;
-            this.quizNameValidInput = true;
-            if (!quiz) {
-                var initialQuizObject = {
-                    title: defaultQuiz.title,
-                    bgColor: myColors.white,
-                    tabQuestions: this.tabQuestions,
-                    puzzleLines: 3,
-                    puzzleRows: 3
+
+            var _declareDefaultSetting = () => {
+                this.quizName = "";
+                this.quizNameDefault = "Ecrire ici le nom du quiz";
+                this.tabQuestions = [defaultQuestion];
+                this.parentFormation = formation;
+                this.quizNameValidInput = true;
+            };
+            var _initDefaultQuizOrLoadQuiz = () => {
+                if (!quiz) {
+                    var initialQuizObject = {
+                        title: defaultQuiz.title,
+                        bgColor: myColors.white,
+                        tabQuestions: this.tabQuestions,
+                        puzzleLines: 3,
+                        puzzleRows: 3
+                    };
+                    this.quiz = classContainer.createClass("QuizVue", initialQuizObject, false, this.parentFormation);
+                    this.indexOfEditedQuestion = 0;
+                    this.quizName = this.quiz.title;
+                } else {
+                    this.loadQuiz(quiz);
+                }
+            };
+            var _declareQuestionCreator = () => {
+                this.questionCreator = classContainer.createClass("QuestionCreatorVue", this,
+                    this.quiz.tabQuestions[this.indexOfEditedQuestion]);
+            };
+            var _declareLibraryMediaTool = () => {
+                this.library = classContainer.createClass('ImagesLibraryVue');
+            };
+            var _declareManipulator = () => {
+                this.quizManagerManipulator = new Manipulator(this);
+                this.questionsPuzzleManipulator = new Manipulator(this).addOrdonator(1);
+                this.quizInfoManipulator = new Manipulator(this).addOrdonator(6);
+                this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
+
+                this.libraryIManipulator = this.library.manipulator;
+
+                this.quizManagerManipulator.add(this.libraryIManipulator);
+                this.quizManagerManipulator.add(this.quizInfoManipulator);
+                this.quizManagerManipulator.add(this.questionsPuzzleManipulator);
+                this.quizManagerManipulator.add(this.questionCreator.manipulator);
+                this.quizManagerManipulator.add(this.previewButtonManipulator);
+                this.quizManagerManipulator.add(this.saveQuizButtonManipulator);
+            };
+            var _declareButton = () => {
+                this.returnButton = new ReturnButton(this, "Retour à la formation");
+            };
+            var _declareQuestionPuzzle = () => {
+                this.questionPuzzle = new Puzzle(1, 6, this.quiz.tabQuestions, "leftToRight", this);
+                this.questionPuzzle.leftChevronHandler = () => {
+                    this.questionPuzzle.updateStartPosition("left");
+                    this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+                    this.questionPuzzle.display();
+                    this.questionPuzzle.checkPuzzleElementsArrayValidity();
                 };
-                this.quiz = classContainer.createClass("QuizVue", initialQuizObject, false, this.parentFormation);
-                this.indexOfEditedQuestion = 0;
-                this.quizName = this.quiz.title;
-            } else {
-                this.loadQuiz(quiz);
-            }
-            this.questionCreator = classContainer.createClass("QuestionCreatorVue", this, this.quiz.tabQuestions[this.indexOfEditedQuestion]);
-            this.library = classContainer.createClass('ImagesLibraryVue');
+                this.questionPuzzle.rightChevronHandler = () => {
+                    this.questionPuzzle.updateStartPosition("right");
+                    this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
+                    this.questionPuzzle.display();
+                    this.questionPuzzle.checkPuzzleElementsArrayValidity();
+                };
+            };
+
+            _declareDefaultSetting();
+            _initDefaultQuizOrLoadQuiz();
+            _declareQuestionCreator();
+            _declareLibraryMediaTool();
+
+            //todo a revoir ya certain code qui semble ne rien faire
             this.quiz.tabQuestions[0].selected = true;
             this.questionCreator.loadQuestion(this.quiz.tabQuestions[0]);
             this.quiz.tabQuestions.push(classContainer.createClass("AddEmptyElementVue", this, 'question'));
-            this.quizManagerManipulator = new Manipulator(this);
-            this.questionsPuzzleManipulator = new Manipulator(this).addOrdonator(1);
-            this.quizInfoManipulator = new Manipulator(this).addOrdonator(6);
-            this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.saveQuizButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.returnButtonManipulator = new Manipulator(this).addOrdonator(1);
-            this.returnButton = new ReturnButton(this, "Retour à la formation");
-            this.libraryIManipulator = this.library.manipulator;
-            this.questionPuzzle = new Puzzle(1, 6, this.quiz.tabQuestions, "leftToRight", this);
-            this.questionPuzzle.leftChevronHandler = () => {
-                this.questionPuzzle.updateStartPosition("left");
-                this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
-                this.questionPuzzle.display();
-                this.questionPuzzle.checkPuzzleElementsArrayValidity();
-            };
-            this.questionPuzzle.rightChevronHandler = () => {
-                this.questionPuzzle.updateStartPosition("right");
-                this.questionPuzzle.fillVisibleElementsArray(this.questionPuzzle.orientation);
-                this.questionPuzzle.display();
-                this.questionPuzzle.checkPuzzleElementsArrayValidity();
-            };
+
+            _declareManipulator();
+            _declareButton();
+            _declareQuestionPuzzle();
         }
 
         render() {
-            drawings.component.clean();
-            let verticalPosition = drawing.height * HEADER_SIZE;
-            this.height = drawing.height - drawing.height * HEADER_SIZE;
-            this.quizManagerManipulator.move(0, verticalPosition);
-            this.quizManagerManipulator.add(this.libraryIManipulator);
-            this.quizManagerManipulator.add(this.quizInfoManipulator);
-            this.quizManagerManipulator.add(this.questionsPuzzleManipulator);
-            this.quizManagerManipulator.add(this.questionCreator.manipulator);
-            this.quizManagerManipulator.add(this.previewButtonManipulator);
-            this.quizManagerManipulator.add(this.saveQuizButtonManipulator);
-            let libraryWidthRatio = 0.15,
-                quizInfoHeightRatio = 0.05,
-                questCreaWidthRatio = 1 - libraryWidthRatio,
-                questionsPuzzleHeightRatio = 0.25,
-                questCreaHeightRatio = 0.57,
-                previewButtonHeightRatio = 0.1,
-                saveButtonHeightRatio = 0.1,
-                marginRatio = 0.02;
-            this.libraryWidth = drawing.width * libraryWidthRatio;
-            this.questCreaWidth = drawing.width * questCreaWidthRatio;
-            this.quizInfoHeight = this.height * quizInfoHeightRatio;
-            this.questionsPuzzleHeight = this.height * questionsPuzzleHeightRatio;
-            this.libraryHeight = this.height * questCreaHeightRatio;
-            this.questCreaHeight = this.height * questCreaHeightRatio;
-            this.saveButtonHeight = this.height * saveButtonHeightRatio;
-            this.previewButtonHeight = this.height * previewButtonHeightRatio;
-            this.buttonWidth = 150;
-            this.globalMargin = {
-                height: marginRatio * this.height * 2,
-                width: marginRatio * drawing.width
-            };
-            this.questionPuzzleCoordinates = {
-                x: this.globalMargin.width / 2,
-                y: (this.quizInfoHeight + this.questionsPuzzleHeight / 2 + this.globalMargin.height / 2),
-                w: (drawing.width - this.globalMargin.width),
-                h: (this.questionsPuzzleHeight - this.globalMargin.height)
-            };
-
-            main.currentPageDisplayed = 'QuizManager';
-            drawing.manipulator.set(1, this.quizManagerManipulator);
-
-            this.questionClickHandler = event => {
+            var _cleanDrawings = () => {
                 drawings.component.clean();
+            };
+            var _settingDimension = () => {
+                let verticalPosition = drawing.height * HEADER_SIZE;
+                this.height = drawing.height - drawing.height * HEADER_SIZE;
+                this.quizManagerManipulator.move(0, verticalPosition);
+
+                let libraryWidthRatio = 0.15,
+                    quizInfoHeightRatio = 0.05,
+                    questCreaWidthRatio = 1 - libraryWidthRatio,
+                    questionsPuzzleHeightRatio = 0.25,
+                    questCreaHeightRatio = 0.57,
+                    previewButtonHeightRatio = 0.1,
+                    saveButtonHeightRatio = 0.1,
+                    marginRatio = 0.02;
+                this.libraryWidth = drawing.width * libraryWidthRatio;
+                this.questCreaWidth = drawing.width * questCreaWidthRatio;
+                this.quizInfoHeight = this.height * quizInfoHeightRatio;
+                this.questionsPuzzleHeight = this.height * questionsPuzzleHeightRatio;
+                this.libraryHeight = this.height * questCreaHeightRatio;
+                this.questCreaHeight = this.height * questCreaHeightRatio;
+                this.saveButtonHeight = this.height * saveButtonHeightRatio;
+                this.previewButtonHeight = this.height * previewButtonHeightRatio;
+                this.buttonWidth = 150;
+                this.globalMargin = {
+                    height: marginRatio * this.height * 2,
+                    width: marginRatio * drawing.width
+                };
+                this.questionPuzzleCoordinates = {
+                    x: this.globalMargin.width / 2,
+                    y: (this.quizInfoHeight + this.questionsPuzzleHeight / 2 + this.globalMargin.height / 2),
+                    w: (drawing.width - this.globalMargin.width),
+                    h: (this.questionsPuzzleHeight - this.globalMargin.height)
+                };
+            };
+            var _settingHeader = () => {
+                main.currentPageDisplayed = 'QuizManager';
+            };
+            var _settingManipulator = () => {
+                drawing.manipulator.set(1, this.quizManagerManipulator);
+            };
+            var _displayQuizHeadInfo = (x, y, w, h) => {
+                this.quizInfoManipulator.add(this.returnButtonManipulator);
+
+                let returnHandler = () => {
+                    drawings.component.clean();
+                    let target = this.returnButton;
+                    target.parent.parentFormation.quizManager.questionCreator.explanation = null;
+                    if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
+                        this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+                        this.quiz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer => {
+                            if (answer.popIn) {
+                                this.questionCreator.manipulator.remove(answer.popIn.manipulator);
+                            }
+                        })
+                    }
+                    target.parent.quizNameValidInput = true;
+                    target.parent.quizManagerManipulator.flush();
+                    target.parent.quizDisplayed = false;
+                    target.parent.parentFormation.publishedButtonActivated = false;
+                    target.parent.parentFormation.display();
+                    [].concat(...target.parent.parentFormation.levelsTab.map(level => level.gamesTab))
+                        .forEach(game => {
+                            game.miniature.selected = false;
+                            game.miniature.updateSelectionDesign();
+                        });
+                    this.returnButton.removeHandler(returnHandler);
+                };
+
+                this.returnButton.display(-2 * MARGIN, 0, 20, 20);
+                this.returnButton.setHandler(returnHandler);
+                let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
+                returnButtonChevron.mark('returnButtonToFormation');
+
+                let quizLabel = {};
+
+                var quizLabelDisplay = () => {
+                    //TODO changer quiz label
+                    const text = (this.quizName) ? this.quizName : this.quizNameDefault,
+                        color = (this.quizName) ? myColors.black : myColors.grey,
+                        bgcolor = myColors.white,
+                        width = 300; // FontSize : 15px / Arial / 50*W  //self.quizLabel.content.component.getBoundingClientRect().width;
+                    let textToDisplay;
+                    if (text.length > MAX_CHARACTER_TITLE) {
+                        textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
+                    }
+                    quizLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, w, h / 2, 15, "Arial", this.quizInfoManipulator).text;
+                    quizLabel.content.mark("quizLabelContent");
+                    this.quizNameHeight = quizLabel.content.boundingRect().height;
+                    quizLabel.border = new svg.Rect(width, h * 0.7).mark("quizLabelCadre");
+                    this.quizNameValidInput ? quizLabel.border.color(bgcolor, 1, myColors.black) : quizLabel.border.color(bgcolor, 2, myColors.red);
+                    quizLabel.border.position(width / 2, h / 2 + quizLabel.border.height / 2);
+                    this.quizInfoManipulator.set(0, quizLabel.border);
+                    quizLabel.content.position(3, h / 2 + quizLabel.border.height * 9 / 12).color(color).anchor("start");
+                    this.quizInfoManipulator.move(x, y);
+                    svg.addEvent(quizLabel.content, "click", clickEditionQuiz);
+                    svg.addEvent(quizLabel.border, "click", clickEditionQuiz);
+                };
+
+                var clickEditionQuiz = () => {
+                    let bounds = quizLabel.content.boundingRect(),
+                        globalPointCenter = quizLabel.content.globalPoint(0, -bounds.height + 3);
+                    this.quizInfoManipulator.unset(1);
+                    let contentareaStyle = {
+                        leftpx: globalPointCenter.x,
+                        toppx: globalPointCenter.y + 0.2,
+                        width: 300,
+                        height: (this.quizNameHeight + 3) - MARGIN / 2
+                    };
+                    drawing.notInTextArea = false;
+                    let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
+                    textarea.color([], 0, myColors.black)
+                        .message(this.quizName)
+                        .font("Arial", 15)
+                        .mark("quizEditionTextArea")
+                        .anchor("start");
+                    (this.quizNameDefault || this.quizName === "") && textarea.placeHolder(this.quizNameDefault);
+                    drawings.component.add(textarea);
+                    //textarea.setCaretPosition(this.quizName.length);
+                    textarea.focus();
+                    textarea.value = this.quizName;
+                    var removeErrorMessage = () => {
+                        this.questionCreator.quizNameValidInput = true;
+                        this.errorMessage && this.quizInfoManipulator.unset(5);
+                        quizLabel.border.color(myColors.white, 1, myColors.black);
+                    };
+                    var displayErrorMessage = () => {
+                        removeErrorMessage();
+                        quizLabel.border.color(myColors.white, 2, myColors.red);
+                        var anchor = 'start';
+                        this.errorMessage = new svg.Text(REGEX_ERROR);
+                        this.errorMessage.mark("quizErrorMessage");
+                        this.quizInfoManipulator.set(5, this.errorMessage);
+                        this.errorMessage.position(quizLabel.border.width + MARGIN, bounds.height + 3 + quizLabel.border.height / 2 + this.errorMessage.boundingRect().height / 2)
+                            .font("Arial", 15).color(myColors.red).anchor(anchor);
+                        //textarea.setCaretPosition(this.quizName.length);
+                        textarea.focus();
+                    };
+                    var onblur = () => {
+                        textarea.enter();
+                        this.quizName = textarea.messageText.trim();
+                        this.quiz.title = textarea.messageText.trim();
+                        drawings.component.remove(textarea);
+                        drawing.notInTextArea = true;
+                        quizLabelDisplay();
+                        globalVariables.header.display(this.parentFormation.label + " - " + this.quiz.title);
+                    };
+                    let objectToBeChecked = {
+                        textarea: textarea,
+                        border: quizLabel.border,
+                        onblur: onblur,
+                        remove: removeErrorMessage,
+                        display: displayErrorMessage
+                    };
+                    var oninput = () => {
+                        textarea.enter();
+                        this.checkInputTextArea(objectToBeChecked);
+                    };
+                    svg.addEvent(textarea, "input", oninput);
+                    svg.addEvent(textarea, "blur", onblur);
+                    this.checkInputTextArea(objectToBeChecked);
+                };
+                quizLabelDisplay();
+            };
+            var _displayPreviewButton = (x, y, w, h) => {
+                let previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, this.previewButtonManipulator);
+                previewButton.border.mark('previewButton');
+                this.previewFunction = () => {
+                    this.toggleButtonHeight = 40;
+                    this.quiz.isValid = true;
+                    let message,
+                        arrayOfUncorrectQuestions = [];
+                    if (this.questionCreator.explanation) {
+                        if (this.questionCreator.explanation.answer.popIn) {
+                            this.questionCreator.manipulator.remove(this.questionCreator.explanation.answer.popIn.manipulator);
+                            this.questionCreator.explanation = null;
+                        }
+                    }
+                    this.quiz.tabQuestions.forEach(question => {
+                        if (!(classContainer.isInstanceOf("AddEmptyElementVue", question))) {
+                            question.questionType.validationTab.forEach((funcEl) => {
+                                var result = funcEl(question);
+                                if (!result.isValid) {
+                                    message = result.message;
+                                    arrayOfUncorrectQuestions.push(question.questionNum - 1);
+                                }
+                                this.quiz.isValid = this.quiz.isValid && result.isValid;
+                            });
+                        }
+                    });
+                    if (!this.quiz.isValid) {
+                        drawings.component.clean();
+                        this.displayMessage(message, myColors.red);
+                    }
+                    this.displayEditedQuestion = () => {
+                        main.currentPageDisplayed = "QuizPreview";
+                        this.quizManagerManipulator.flush();
+                        this.quiz.tabQuestions.pop();
+                        this.quiz.tabQuestions.forEach((it) => {
+                            (classContainer.isInstanceOf("AddEmptyElementVue", it.tabAnswer[it.tabAnswer.length - 1])) && it.tabAnswer.pop();
+                        });
+                        this.previewQuiz = classContainer.createClass("QuizVue", this.quiz, true);
+                        this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
+                        this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
+                    };
+                    if (this.quiz.isValid) {
+                        this.displayEditedQuestion();
+                    }
+                };
+                svg.addEvent(previewButton.border, "click", this.previewFunction);
+                svg.addEvent(previewButton.content, "click", this.previewFunction);
+                this.previewButtonManipulator.move(x, y);
+            };
+            var _displayQuizSaveButton = (x, y, w, h) => {
+                let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
+                saveButton.border.mark('saveButtonQuiz');
+                svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
+                svg.addEvent(saveButton.content, "click", () => this.saveQuiz());
+                this.saveQuizButtonManipulator.move(x, y);
+            }
+            var _displayTitleFormationInHeader = () => {
+                globalVariables.header.display(this.parentFormation.label + " - " + this.quiz.title);
+            };
+
+            _cleanDrawings();
+            _settingDimension();
+            _settingHeader();
+            _settingManipulator();
+            this.questionClickHandler = event => {
+                _cleanDrawings();
                 let question;
                 if (typeof event.pageX == "undefined" || typeof event.pageY == "undefined") {
                     question = event.question;
@@ -289,7 +512,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 }
                 question.parentQuiz.parentFormation.quizManager.questionCreator.explanation = null;
                 if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
-                    this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
+                    this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator
+                        && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
                     this.quiz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer => {
                         if (answer.popIn) {
                             this.questionCreator.manipulator.remove(answer.popIn.manipulator);
@@ -301,7 +525,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     quiz = quizManager.quiz,
                     tabQuestions = quiz.tabQuestions,
                     questionCreator = quizManager.questionCreator;
-                this.indexOfEditedQuestion !== this.quiz.tabQuestions.indexOf(question) && (tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
+                this.indexOfEditedQuestion !== this.quiz.tabQuestions.indexOf(question)
+                    && (tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
+
                 quizManager.indexOfEditedQuestion = tabQuestions.indexOf(question);
                 quizManager.displayQuestionsPuzzle(null, null, null, null, quizManager.questionPuzzle.indexOfFirstVisibleElement);
                 questionCreator.loadQuestion(question);
@@ -309,73 +535,19 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 questionCreator.explanation && questionCreator.manipulator.remove(questionCreator.explanation.manipulator);
             };
 
-            let displayFunctions = () => {
-                this.displayQuizInfo(this.globalMargin.width / 2, this.quizInfoHeight / 2, drawing.width, this.quizInfoHeight);
-                this.displayQuestionsPuzzle(this.questionPuzzleCoordinates.x, this.questionPuzzleCoordinates.y, this.questionPuzzleCoordinates.w, this.questionPuzzleCoordinates.h);
-                this.questionCreator.display(this.library.x + this.libraryWidth, this.library.y,
-                    this.questCreaWidth - this.globalMargin.width, this.questCreaHeight);
-                this.displayPreviewButton(drawing.width / 2 - this.buttonWidth, this.height - this.previewButtonHeight / 2,
-                    this.buttonWidth, this.previewButtonHeight - this.globalMargin.height);
-                this.displayQuizSaveButton(drawing.width / 2 + this.buttonWidth, this.height - this.saveButtonHeight / 2,
-                    this.buttonWidth, this.saveButtonHeight - this.globalMargin.height);
-                drawing.manipulator.unset(0);
-                globalVariables.header.display(this.parentFormation.label + " - " + this.quiz.title);
-            };
-
             this.library.display(this.globalMargin.width / 2, this.quizInfoHeight + this.questionsPuzzleHeight + this.globalMargin.height / 2,
-                this.libraryWidth - this.globalMargin.width / 2, this.libraryHeight, () => {
-                    displayFunctions();
-                });
-        }
-
-        displayPreviewButton(x, y, w, h) {
-            let previewButton = displayText("Aperçu", w, h, myColors.black, myColors.white, 20, null, this.previewButtonManipulator);
-            previewButton.border.mark('previewButton');
-            this.previewFunction = () => {
-                this.toggleButtonHeight = 40;
-                this.quiz.isValid = true;
-                let message,
-                    arrayOfUncorrectQuestions = [];
-                if (this.questionCreator.explanation) {
-                    if (this.questionCreator.explanation.answer.popIn) {
-                        this.questionCreator.manipulator.remove(this.questionCreator.explanation.answer.popIn.manipulator);
-                        this.questionCreator.explanation = null;
-                    }
-                }
-                this.quiz.tabQuestions.forEach(question => {
-                    if (!(classContainer.isInstanceOf("AddEmptyElementVue", question))) {
-                        question.questionType.validationTab.forEach((funcEl) => {
-                            var result = funcEl(question);
-                            if (!result.isValid) {
-                                message = result.message;
-                                arrayOfUncorrectQuestions.push(question.questionNum - 1);
-                            }
-                            this.quiz.isValid = this.quiz.isValid && result.isValid;
-                        });
-                    }
-                });
-                if (!this.quiz.isValid) {
-                    drawings.component.clean();
-                    this.displayMessage(message, myColors.red);
-                }
-                this.displayEditedQuestion = () => {
-                    main.currentPageDisplayed = "QuizPreview";
-                    this.quizManagerManipulator.flush();
-                    this.quiz.tabQuestions.pop();
-                    this.quiz.tabQuestions.forEach((it) => {
-                        (classContainer.isInstanceOf("AddEmptyElementVue", it.tabAnswer[it.tabAnswer.length - 1])) && it.tabAnswer.pop();
-                    });
-                    this.previewQuiz = classContainer.createClass("QuizVue", this.quiz, true);
-                    this.previewQuiz.currentQuestionIndex = this.indexOfEditedQuestion;
-                    this.previewQuiz.run(1, 1, drawing.width, drawing.height);//
-                };
-                if (this.quiz.isValid) {
-                    this.displayEditedQuestion();
-                }
-            };
-            svg.addEvent(previewButton.border, "click", this.previewFunction);
-            svg.addEvent(previewButton.content, "click", this.previewFunction);
-            this.previewButtonManipulator.move(x, y);
+                this.libraryWidth - this.globalMargin.width / 2, this.libraryHeight);
+            _displayQuizHeadInfo(this.globalMargin.width / 2, this.quizInfoHeight / 2, drawing.width, this.quizInfoHeight);
+            this.displayQuestionsPuzzle(this.questionPuzzleCoordinates.x, this.questionPuzzleCoordinates.y,
+                this.questionPuzzleCoordinates.w, this.questionPuzzleCoordinates.h);
+            this.questionCreator.display(this.library.x + this.libraryWidth, this.library.y,
+                this.questCreaWidth - this.globalMargin.width, this.questCreaHeight);
+            _displayPreviewButton(drawing.width / 2 - this.buttonWidth, this.height - this.previewButtonHeight / 2,
+                this.buttonWidth, this.previewButtonHeight - this.globalMargin.height);
+            _displayQuizSaveButton(drawing.width / 2 + this.buttonWidth, this.height - this.saveButtonHeight / 2,
+                this.buttonWidth, this.saveButtonHeight - this.globalMargin.height);
+            drawing.manipulator.unset(0);
+            _displayTitleFormationInHeader();
         }
 
         displayQuestionsPuzzle(x, y, w, h) {
@@ -405,138 +577,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.questionsPuzzleManipulator.add(this.questionPuzzle.manipulator);
             this.questionPuzzle.display(this.coordinatesQuestion.x, this.coordinatesQuestion.y, this.qPuzzleW, this.qPuzzleH, true);
             this.questionPuzzle.checkPuzzleElementsArrayValidity(this.questionPuzzle.elementsArray);
-        }
-
-        displayQuizInfo(x, y, w, h) {
-            this.quizInfoManipulator.add(this.returnButtonManipulator);
-
-            let returnHandler = () => {
-                drawings.component.clean();
-                let target = this.returnButton;
-                target.parent.parentFormation.quizManager.questionCreator.explanation = null;
-                if (this.quiz.tabQuestions[this.indexOfEditedQuestion]) {
-                    this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator && this.quiz.tabQuestions[this.indexOfEditedQuestion].redCrossManipulator.flush();
-                    this.quiz.tabQuestions[this.indexOfEditedQuestion].tabAnswer.forEach(answer => {
-                        if (answer.popIn) {
-                            this.questionCreator.manipulator.remove(answer.popIn.manipulator);
-                        }
-                    })
-                }
-                target.parent.quizNameValidInput = true;
-                target.parent.quizManagerManipulator.flush();
-                target.parent.quizDisplayed = false;
-                target.parent.parentFormation.publishedButtonActivated = false;
-                target.parent.parentFormation.display();
-                [].concat(...target.parent.parentFormation.levelsTab.map(level => level.gamesTab))
-                    .forEach(game => {
-                        game.miniature.selected = false;
-                        game.miniature.updateSelectionDesign();
-                    });
-                this.returnButton.removeHandler(returnHandler);
-            };
-
-            this.returnButton.display(-2 * MARGIN, 0, 20, 20);
-            this.returnButton.setHandler(returnHandler);
-            let returnButtonChevron = this.returnButton.chevronManipulator.ordonator.children[0];
-            returnButtonChevron.mark('returnButtonToFormation');
-
-            let quizLabel = {};
-
-            var quizLabelDisplay = () => {
-                //TODO changer quiz label
-                const text = (this.quizName) ? this.quizName : this.quizNameDefault,
-                    color = (this.quizName) ? myColors.black : myColors.grey,
-                    bgcolor = myColors.white,
-                    width = 300; // FontSize : 15px / Arial / 50*W  //self.quizLabel.content.component.getBoundingClientRect().width;
-                let textToDisplay;
-                if (text.length > MAX_CHARACTER_TITLE) {
-                    textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
-                }
-                quizLabel.content = autoAdjustText(textToDisplay ? textToDisplay : text, w, h / 2, 15, "Arial", this.quizInfoManipulator).text;
-                quizLabel.content.mark("quizLabelContent");
-                this.quizNameHeight = quizLabel.content.boundingRect().height;
-                quizLabel.border = new svg.Rect(width, h * 0.7).mark("quizLabelCadre");
-                this.quizNameValidInput ? quizLabel.border.color(bgcolor, 1, myColors.black) : quizLabel.border.color(bgcolor, 2, myColors.red);
-                quizLabel.border.position(width / 2, h / 2 + quizLabel.border.height / 2);
-                this.quizInfoManipulator.set(0, quizLabel.border);
-                quizLabel.content.position(3, h / 2 + quizLabel.border.height * 9 / 12).color(color).anchor("start");
-                this.quizInfoManipulator.move(x, y);
-                svg.addEvent(quizLabel.content, "click", clickEditionQuiz);
-                svg.addEvent(quizLabel.border, "click", clickEditionQuiz);
-            };
-
-            var clickEditionQuiz = () => {
-                let bounds = quizLabel.content.boundingRect(),
-                    globalPointCenter = quizLabel.content.globalPoint(0, -bounds.height + 3);
-                this.quizInfoManipulator.unset(1);
-                let contentareaStyle = {
-                    leftpx: globalPointCenter.x,
-                    toppx: globalPointCenter.y + 0.2,
-                    width: 300,
-                    height: (this.quizNameHeight + 3) - MARGIN / 2
-                };
-                drawing.notInTextArea = false;
-                let textarea = new svg.TextField(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height);
-                textarea.color([], 0, myColors.black)
-                    .message(this.quizName)
-                    .font("Arial", 15)
-                    .mark("quizEditionTextArea")
-                    .anchor("start");
-                (this.quizNameDefault || this.quizName === "") && textarea.placeHolder(this.quizNameDefault);
-                drawings.component.add(textarea);
-                //textarea.setCaretPosition(this.quizName.length);
-                textarea.focus();
-                textarea.value = this.quizName;
-                var removeErrorMessage = () => {
-                    this.questionCreator.quizNameValidInput = true;
-                    this.errorMessage && this.quizInfoManipulator.unset(5);
-                    quizLabel.border.color(myColors.white, 1, myColors.black);
-                };
-                var displayErrorMessage = () => {
-                    removeErrorMessage();
-                    quizLabel.border.color(myColors.white, 2, myColors.red);
-                    var anchor = 'start';
-                    this.errorMessage = new svg.Text(REGEX_ERROR);
-                    this.errorMessage.mark("quizErrorMessage");
-                    this.quizInfoManipulator.set(5, this.errorMessage);
-                    this.errorMessage.position(quizLabel.border.width + MARGIN, bounds.height + 3 + quizLabel.border.height / 2 + this.errorMessage.boundingRect().height / 2)
-                        .font("Arial", 15).color(myColors.red).anchor(anchor);
-                    //textarea.setCaretPosition(this.quizName.length);
-                    textarea.focus();
-                };
-                var onblur = () => {
-                    textarea.enter();
-                    this.quizName = textarea.messageText.trim();
-                    this.quiz.title = textarea.messageText.trim();
-                    drawings.component.remove(textarea);
-                    drawing.notInTextArea = true;
-                    quizLabelDisplay();
-                    globalVariables.header.display(this.parentFormation.label + " - " + this.quiz.title);
-                };
-                let objectToBeChecked = {
-                    textarea: textarea,
-                    border: quizLabel.border,
-                    onblur: onblur,
-                    remove: removeErrorMessage,
-                    display: displayErrorMessage
-                };
-                var oninput = () => {
-                    textarea.enter();
-                    this.checkInputTextArea(objectToBeChecked);
-                };
-                svg.addEvent(textarea, "input", oninput);
-                svg.addEvent(textarea, "blur", onblur);
-                this.checkInputTextArea(objectToBeChecked);
-            };
-            quizLabelDisplay();
-        }
-
-        displayQuizSaveButton(x, y, w, h) {
-            let saveButton = displayText("Enregistrer", w, h, myColors.black, myColors.white, 20, null, this.saveQuizButtonManipulator);
-            saveButton.border.mark('saveButtonQuiz');
-            svg.addEvent(saveButton.border, "click", () => this.saveQuiz());
-            svg.addEvent(saveButton.content, "click", () => this.saveQuiz());
-            this.saveQuizButtonManipulator.move(x, y);
         }
 
         /**
