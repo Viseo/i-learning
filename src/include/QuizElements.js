@@ -2029,7 +2029,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.manipulator.addOrdonator(7);
                 this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
                 this.manipulator.set(2, this.closeButtonManipulator);
-                this.panelManipulator = new Manipulator(this).addOrdonator(2);
+                this.panelManipulator = new Manipulator(this).addOrdonator(3);
                 this.textManipulator = new Manipulator(this).addOrdonator(1);
                 this.panelManipulator.set(1, this.textManipulator);
                 this.manipulator.add(this.panelManipulator);
@@ -2199,11 +2199,23 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     _displayText();
                 }
             };
+            var _displayVoiceIcon = () => {
+                let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
+                this.voiceIcon.draw(panelWidth/2 - MARGIN, -panelHeight / 2 + MARGIN, 16, 16, this.panelManipulator, 2);
+                svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
+                    runtime.speechSynthesisSpeak(this.label);
+                });
+            }
 
             _initPopIn();
             _drawGreyCross(12);
             _displayImageOrVideo();
             _displayExplanation();
+
+            if(!this.editable){
+                _displayVoiceIcon();
+            }
 
             this.displayed = true;
         }
