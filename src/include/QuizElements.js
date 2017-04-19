@@ -1795,33 +1795,15 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.height = h;
             };
             var _answerEditableDisplay = (x, y, w, h) => {
-                let checkboxSize = h * 0.2;
-                this.obj = {};
-                this.manipulator.flush();
-                this.manipulator.move(x, y);
-
-                let removeErrorMessage = () => {
-                    this.model.invalidLabelInput = false;
-                    this.model.errorMessage && (this.model.editor.parent.hasOwnProperty("questionCreator") ? this.model.editor.parent.questionCreator.manipulator.unset(1) : this.model.editor.parent.parent.questionCreator.manipulator.unset(1));
-                    this.border.color(myColors.white, 1, myColors.black);
-                };
-
-                let displayErrorMessage = (message) => {
-                    removeErrorMessage();
-                    this.border.color(myColors.white, 2, myColors.red);
-                    let quizManager = this.model.parentQuestion.parentQuiz.parentFormation.quizManager,
-                        anchor = 'middle';
-                    this.model.errorMessage = new svg.Text(message);
-                    quizManager.questionCreator.manipulator.set(1, this.model.errorMessage);
-                    this.model.errorMessage.position(0, quizManager.questionCreator.h / 2 - MARGIN / 2)
-                        .font('Arial', 15).color(myColors.red).anchor(anchor)
-                        .mark('answerErrorMessage');
-                    this.model.invalidLabelInput = message;
-                };
-
-                let answerBlockDisplay = () => {
+                let _placeManipulator = () => {
+                    this.manipulator.flush();
+                    this.manipulator.move(x, y);
+                    this.obj = {};
+                }
+                let _displayAnswerBox = () => {
                     let text = (this.model.label) ? this.model.label : this.model.labelDefault,
-                        color = (this.model.label) ? myColors.black : myColors.grey;
+                        color = (this.model.label) ? myColors.black : myColors.grey,
+                        checkboxSize = h * 0.2;
 
                     if (this.model.image) {
                         let pictureRedCrossClickHandler = () => {
@@ -1913,23 +1895,27 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.manipulator.addEvent('mouseenter', mouseenterhandler);
                     this.manipulator.addEvent('mouseleave', mouseleavehandler);
                 };
-                answerBlockDisplay();
+                let _displayPenAndCheckBox = () => {
+                    let penHandler = () => {
+                        if (!this.popIn) this.popIn = classContainer.createClass("PopInVue", this, true);
+                        let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                        this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                        questionCreator.explanation = this.popIn;
+                    };
 
-                let penHandler = () => {
-                    if (!this.popIn) this.popIn = classContainer.createClass("PopInVue", this, true);
-                    let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                    questionCreator.explanation = this.popIn;
-                };
+                    let checkboxSize = h * 0.2;
+                    displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this, penHandler);
+                    this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
+                    this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this));
+                    this.obj.checkbox.answerParent = this;
+                    this.manipulator.ordonator.children.forEach((e) => {
+                        e._acceptDrop = true;
+                    });
+                }
 
-                displayPen(this.width / 2 - checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this, penHandler);
-                this.obj.checkbox = displayCheckbox(-this.width / 2 + checkboxSize, this.height / 2 - checkboxSize, checkboxSize, this).checkbox;
-                this.obj.checkbox.mark('checkbox' + this.model.parentQuestion.tabAnswer.indexOf(this));
-                this.obj.checkbox.answerParent = this;
-
-                this.manipulator.ordonator.children.forEach((e) => {
-                    e._acceptDrop = true;
-                });
+                _placeManipulator();
+                _displayAnswerBox();
+                _displayPenAndCheckBox();
             };
             var _generateElements = () => {
                 if (this.model.label && this.model.imageSrc) { // Reponse avec Texte ET image
@@ -1995,21 +1981,24 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 svg.addEvent(this.border, "click", openPopIn);
                 svg.addEvent(this.content, "click", openPopIn);
             }
+            var _displayVoiceIcon = () => {
+                this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
+                this.voiceIcon.draw(this.border.width / 2 - 2 * MARGIN, -this.border.height / 2 + 2 * MARGIN, 16, 16, this.manipulator, 6);
+                svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
+                    runtime.speechSynthesisSpeak(this.model.label);
+                });
+            }
 
             _savePosAndSize();
             if (this.model.editable) {
                 _answerEditableDisplay(this.x, this.y, this.width, this.height);
-            }else {
+            } else {
                 _generateElements();
                 if (this.model.parentQuestion.parentQuiz.previewMode) {
                     !this.model.explanation.empty() && _drawPopIn();
-                    this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
-                    this.voiceIcon.draw(this.border.width/2 - 2*MARGIN, -this.border.height/2 + 2*MARGIN, 16, 16, this.manipulator, 6);
-                    svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
-                        runtime.speechSynthesisSpeak(this.model.label);
-                    });
+                    _displayVoiceIcon();
                 } else if (globalVariables.playerMode) {
-                    this.manipulator.addEvent('click', () => {
+                    var _chooseAnswer = () => {
                         this.model.select(this);
                         if (this.model.parentQuestion.multipleChoice) {
                             if (this.model.selected) {
@@ -2023,7 +2012,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                                 }
                             }
                         }
-                    });
+                    };
+                    this.manipulator.addEvent('click', _chooseAnswer);
                 }
             }
         }
@@ -2033,77 +2023,58 @@ exports.QuizElements = function (globalVariables, classContainer) {
      * @class
      */
     class PopInVue extends Vue {
-        //TODO changer le constructor pour pouvoir passer un model, au lieu de le définir directement dans la classe
         constructor(answerVue, editable) {
             super();
-            this.manipulator.addOrdonator(7);
-            this.answer = answerVue;
-            this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.set(2, this.closeButtonManipulator);
-            this.panelManipulator = new Manipulator(this).addOrdonator(2);
-            this.textManipulator = new Manipulator(this).addOrdonator(1);
-            this.panelManipulator.add(this.textManipulator);
-            this.manipulator.add(this.panelManipulator);
-            this.editable = editable;
-            if (this.editable) {
-                this.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
-                this.defaultLabel = "Cliquer ici pour ajouter du texte";
+            var _initManipulators = () => {
+                this.manipulator.addOrdonator(7);
+                this.closeButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.manipulator.set(2, this.closeButtonManipulator);
+                this.panelManipulator = new Manipulator(this).addOrdonator(2);
+                this.textManipulator = new Manipulator(this).addOrdonator(1);
+                this.panelManipulator.set(1, this.textManipulator);
+                this.manipulator.add(this.panelManipulator);
+            };
+            var _initExplanations = () => {
+                this.answer = answerVue;
+                this.editable = editable;
+                if (this.editable) {
+                    this.draganddropText = "Glisser-déposer une image ou une vidéo de la bibliothèque ici";
+                    this.defaultLabel = "Cliquer ici pour ajouter du texte";
+                }
+                if (this.answer.model.explanation && this.answer.model.explanation.label) {
+                    this.label = this.answer.model.explanation.label;
+                }
+                if (this.answer.model.explanation && this.answer.model.explanation.image) {
+                    this.image = this.answer.model.explanation.image;
+                }
+                if (this.answer.model.explanation && this.answer.model.explanation.video) {
+                    this.video = this.answer.model.explanation.video;
+                }
+                this.answer.filled = this.image || this.video || this.label;
             }
-            if (this.answer.model.explanation && this.answer.model.explanation.label) {
-                this.label = this.answer.model.explanation.label;
-            }
-            if (this.answer.model.explanation && this.answer.model.explanation.image) {
-                this.image = this.answer.model.explanation.image;
-            }
-            if (this.answer.model.explanation && this.answer.model.explanation.video) {
-                this.video = this.answer.model.explanation.video;
-            }
-            this.answer.filled = this.image || this.video || this.label;
+
+            _initManipulators();
+            _initExplanations();
         }
 
         render(parent, x, y, w, h) {
-            let textToSpeechIcon = this.answer.model.parentQuestion.parentQuiz.textToSpeechIcon;
-            let clickBanned, mouseLeaveHandler;
-            if (textToSpeechIcon) {
-                textToSpeechIcon.removeHandler('click');
-                clickBanned = () => {
-                    textToSpeechIcon.removeHandler('mouseover', clickBanned);
-                };
-                mouseLeaveHandler = () => {
-                    textToSpeechIcon.setHandler('mouseover', clickBanned);
-                    textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
-                };
-                textToSpeechIcon.setHandler('mouseover', clickBanned);
-                textToSpeechIcon.setHandler('mouseout', mouseLeaveHandler);
+            var _initPopIn = () => {
+                const rect = new svg.Rect(w + 2, h) //+2 border
+                    .color(myColors.white, 1, myColors.black);
+                rect._acceptDrop = this.editable;
+                parent.manipulator.add(this.manipulator);
+                this.manipulator.set(0, rect);
+                this.manipulator.move(0, y);
+                this.answer.model.editor && this.answer.model.editor.puzzle && this.answer.model.editor.puzzle.elementsArray.forEach(answerElement => {
+                    answerElement.obj && answerElement.obj.video && drawings.component.remove(answerElement.obj.video);
+                });
+                this.answer.model.parentQuestion.tabAnswer.forEach(answer => {
+                    answer.model.video && drawings.component.remove(answer.model.video.miniature);
+                });
             }
-
-            const rect = new svg.Rect(w + 2, h) //+2 border
-                .color(myColors.white, 1, myColors.black);
-            rect._acceptDrop = this.editable;
-            parent.manipulator.add(this.manipulator);
-            this.manipulator.set(0, rect);
-            this.manipulator.move(0, y);
-            this.answer.model.editor && this.answer.model.editor.puzzle && this.answer.model.editor.puzzle.elementsArray.forEach(answerElement => {
-                answerElement.obj && answerElement.obj.video && drawings.component.remove(answerElement.obj.video);
-            });
-            this.answer.model.parentQuestion.tabAnswer.forEach(answer => {
-                answer.model.video && drawings.component.remove(answer.model.video.miniature);
-            });
-            let crossHandler;
-            const drawGreyCross = (size) => {
-                const
-                    circle = new svg.Circle(size).color(myColors.black, 2, myColors.white),
-                    cross = drawCross(w / 2, -h / 2, size, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
-                circle.mark('circleCloseExplanation');
-                this.closeButtonManipulator.set(0, circle);
-                this.closeButtonManipulator.set(1, cross);
-                crossHandler = () => {
+            var _drawGreyCross = (size) => {
+                var _crossHandler = () => {
                     drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-                    if (textToSpeechIcon) {
-                        textToSpeechIcon.setHandler('click', textToSpeechIcon.clickHandler);
-                        textToSpeechIcon.removeHandler('mouseover', clickBanned);
-                        textToSpeechIcon.removeHandler('mouseout', mouseLeaveHandler);
-                    }
                     this.said = false;
                     runtime.speechSynthesisCancel();
                     this.editable && (parent.explanation = false);
@@ -2117,40 +2088,20 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         });
                     }
                 };
-                svg.addEvent(cross, "click", crossHandler);
-                svg.addEvent(circle, "click", crossHandler);
-                return cross;
+
+                let circle = new svg.Circle(size).color(myColors.black, 2, myColors.white),
+                    cross = drawCross(w / 2, -h / 2, size, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
+                circle.mark('circleCloseExplanation');
+                this.closeButtonManipulator.set(0, circle);
+                this.closeButtonManipulator.set(1, cross);
+                svg.addEvent(cross, "click", _crossHandler);
+                svg.addEvent(circle, "click", _crossHandler);
+                svg.addGlobalEvent("keydown", (event) => {
+                    (event.keyCode === 27) && _crossHandler();
+                });
             };
-            this.cross = drawGreyCross(12);
-
-            drawing.notInTextArea = true;
-            svg.addGlobalEvent("keydown", (event) => {
-                if (drawing.notInTextArea && hasKeyDownEvent(event)) {
-                    event.preventDefault();
-                }
-            });
-            var hasKeyDownEvent = (event) => {
-                if (this.cross && event.keyCode === 27) { // suppr
-                    crossHandler();
-                }
-                return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
-            };
-
-            let panelWidth = (w - 2 * MARGIN) * 0.7,
-                panelHeight = h - 2 * MARGIN;
-            const textW = (w - 2 * MARGIN) * 0.3 - MARGIN;
-
-            const createWithText = () => {
-                const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN;
-                this.imageX = (-w + imageW) / 2 + MARGIN;
-                this.panelManipulator.move((w - panelWidth) / 2 - MARGIN, 0);
-                // this.panelManipulator.move(panelWidth / 2, 0);
-
-                if (this.image) {
-                    this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
-                    this.manipulator.unset(6);
-                    this.imageLayer = 3;
-                    const imageSize = Math.min(imageW, panelHeight);
+            var _displayImageOrVideo = () => {
+                var _displayImage = () => {
                     let pictureRedCrossClickHandler = () => {
                         this.manipulator.flush();
                         this.image = null;
@@ -2158,15 +2109,19 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         let questionCreator = this.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                         this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     };
-                    let picture = new Picture(this.image, this.editable, this, null, pictureRedCrossClickHandler);
-                    this.manipulator.unset(5);
-                    picture.draw(this.imageX, 0, imageSize, imageSize);
+
+                    this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
+                    this.imageLayer = 3;
+                    let picture = new util.Picture(this.image, this.editable, this, null, pictureRedCrossClickHandler);
+                    picture.draw(-contentW, 0, contentW, contentW, this.manipulator);
                     picture.imageSVG.mark('imageExplanation');
                     this.answer.filled = true;
-                } else if (this.video) {
+                };
+                //TODO corriger video
+                var _displayVideo = () => {
                     this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
                     this.manipulator.unset(3);
-                    this.miniature = drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuiz.previewMode, this.answer.parentQuestion.parentQuiz.previewMode, 5);
+                    this.miniature = util.drawVideo("NOT_TO_BE_DISPLAYED", this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuiz.previewMode, this.answer.parentQuestion.parentQuiz.previewMode, 5);
                     this.answer.parentQuestion.parentQuiz.previewMode || this.miniature.video.setRedCrossClickHandler(() => {
                         this.miniature.video.redCrossManipulator.flush();
                         this.manipulator.unset(5);
@@ -2179,114 +2134,77 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     });
                     this.miniature.border.corners(0, 0);
                     this.miniature.video._acceptDrop = true;
-                    this.globalPoints = this.miniature.border.globalPoint(this.imageX - 50, -50);
+                    this.globalPoints = this.miniature.border.globalPoint(0 - 50, -50);
                     this.miniature.video.position(this.globalPoints.x, this.globalPoints.y);
-                    this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(this.imageX, 25);
+                    this.manipulator.ordonator.children[this.manipulator.lastLayerOrdonator()].position(0, 25);
                     this.answer.filled = true;
-                } else if (this.editable) {
-                    autoAdjustText(this.draganddropText, textW, panelHeight, 20, null, this.manipulator, 3).text
-                        .position(this.imageX, 0).color(myColors.grey)
+                };
+                var _displayEditableText = () => {
+                    autoAdjustText(this.draganddropText, contentW, panelHeight, 20, 'Arial', this.manipulator, 3).text
+                        .position(-contentW, 0).color(myColors.grey)
                         ._acceptDrop = this.editable;
                     this.label ? this.answer.filled = true : this.answer.filled = false;
-                } else {
-                    panelWidth = w - 2 * MARGIN;
-                    this.panelManipulator.move(0, 0);
                 }
-            };
-            const createWithoutText = () => {
-                const imageW = (w - 2 * MARGIN) * 0.3 - MARGIN,
-                    imageX = 0;
-                this.panelManipulator.unset(0);
-                this.miniature && drawings.component.remove(this.miniature.video);
+
+                const panelWidth = w - 2 * MARGIN, panelHeight = h - 2 * MARGIN;
+                const contentW = panelWidth * 1 / 3;
                 if (this.image) {
-                    this.manipulator.unset(6);
-                    this.imageLayer = 3;
-                    const imageSize = Math.min(imageW, panelHeight);
-                    this.manipulator.unset(5);
-                    let picture = new Picture(this.image, this.editable, this);
-                    picture.draw(imageX, 0, imageSize, imageSize);
-                    picture.imageSVG.mark('imageExplanation');
-                    this.answer.filled = true;
+                    _displayImage();
                 } else if (this.video) {
-                    this.manipulator.unset(3);
-                    this.miniature = drawVideo('', this.video, w, h, myColors.black, myColors.white, 10, null, this.manipulator, !this.answer.parentQuestion.parentQuiz.previewMode, this.answer.parentQuestion.parentQuiz.previewMode, 5)
-                        .resize(imageW);
-                    this.answer.parentQuestion.parentQuiz.previewMode || this.miniature.video.setRedCrossClickHandler(() => {
-                        this.miniature.video.redCrossManipulator.flush();
-                        this.manipulator.unset(5);
-                        this.video = null;
-                        drawings.component.remove(this.video);
-                        this.manipulator.unset(this.manipulator.lastLayerOrdonator());
-                        let questionCreator = this.answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                        this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
-                        this.answer.parentQuestion.checkValidity();
-                    });
-                    this.miniature.video.width = imageW;
-                    this.answer.filled = true;
+                    _displayVideo();
+                } else if (this.editable) {
+                    _displayEditableText();
+                }
+            };
+            var _displayExplanation = () => {
+                var _definePanel = () => {
+                    let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                    this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white)
+                    this.panel.border.color([], 1, [0, 0, 0]);
+                    this.panel.back.mark('explanationPanel');
+                    this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
+                    this.panelManipulator.set(0, this.panel.component);
+                    this.panelManipulator.move((w - 2 * MARGIN) * 1 / 6, 0);
+                };
+                var _displayText = () => {
+                    let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
+                    this.text = new svg.Text(textToDisplay)
+                        .dimension(this.panel.width, 0)
+                        //.position(panelWidth / 2 + MARGIN * 2, MARGIN * 2)
+                        .font("Arial", 20)
+                        .mark('textExplanation');
+                    this.textManipulator.set(0, this.text);
+                }
+                var _displayTextArea = () => {
+                    let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                    let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
+                    this.text = new gui.TextArea(0, 0, panelWidth, panelHeight, textToDisplay)
+                        .font("Arial", 20)
+                        .anchor("center")
+                        .color(myColors.white, 1, myColors.black);
+                    this.text.text.parentObject = this.text;
+                    this.text.text.mark('textExplanation');
+                    this.textManipulator.set(0, this.text.component);
+
+                    this.text.onInput((oldMessage, message)=>{
+                        this.label = message;
+                        this.display(parent, x, y, w, h);
+                    })
+                }
+
+                _definePanel();
+                if (this.editable) {
+                    _displayTextArea();
+                }else {
+                    _displayText();
                 }
             };
 
-            if (globalVariables.textToSpeechMode) {
-                createWithoutText();
-            } else {
-                createWithText();
-            }
+            _initPopIn();
+            _drawGreyCross(12);
+            _displayImageOrVideo();
+            _displayExplanation();
 
-            let textToDisplay, text;
-
-            let drawTextPanel = () => {
-                this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white);
-                this.panel.border.color([], 1, [0, 0, 0]);
-                this.panel.back.mark('explanationPanel');
-                this.panelManipulator.set(0, this.panel.component);
-                this.panel.content.children.indexOf(this.textManipulator.first) === -1 && this.panel.content.add(this.textManipulator.first);
-                this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
-                textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
-                text = new svg.Text(textToDisplay)
-                    .dimension(this.panel.width, 0)
-                    .position(panelWidth / 2 + MARGIN * 2, MARGIN * 2)
-                    .font("Arial", 20, 0)
-                    .mark('textExplanation');
-                this.textManipulator.set(0, text);
-                this.panel.resizeContent(this.panel.width, text.boundingRect().height + MARGIN);
-
-            };
-
-            if (globalVariables.textToSpeechMode) {
-            } else {
-                drawTextPanel();
-            }
-
-            const clickEdition = () => {
-                let contentArea = {};
-                contentArea.globalPointCenter = this.panel.border.globalPoint(-panelWidth / 2, -panelHeight / 2);
-                drawing.notInTextArea = false;
-                contentArea = new svg.TextArea(contentArea.globalPointCenter.x, contentArea.globalPointCenter.y, panelWidth - MARGIN, panelHeight - MARGIN)
-                    .color(null, 0, myColors.black).font("Arial", 20)
-                    .mark('explanationContentArea');
-                (textToDisplay === "" || textToDisplay === this.defaultLabel) && contentArea.placeHolder(this.labelDefault);
-                contentArea.message(this.label || "");
-                this.textManipulator.unset(0);
-                contentArea.scroll(svg.TextArea.SCROLL);
-                this.panel.vHandle.handle.color(myColors.none, 3, myColors.none);
-                drawings.component.add(contentArea);
-                contentArea.focus();
-                const onblur = () => {
-                    contentArea.enter();
-                    this.label = contentArea.messageText;
-                    drawings.component.remove(contentArea);
-                    drawing.notInTextArea = true;
-                    this.display(parent, x, y, w, h);
-                };
-                svg.addEvent(contentArea, 'blur', onblur);
-                svg.addEvent(contentArea, 'input', () => {
-                    contentArea.enter();
-                });
-            };
-            if (this.editable) {
-                svg.addEvent(text, "click", clickEdition);
-                svg.addEvent(this.panel.back, "click", clickEdition);
-            }
             this.displayed = true;
         }
     }

@@ -809,7 +809,7 @@ exports.Util = function (globalVariables) {
                 w = wi * 0.94,
                 t = new svg.Text('text');
             manipulator.set(layer, t);
-            t.font(font ? font : 'Arial', fontSize);
+            t.font(font, fontSize);
 
             while (words.length > 0) {
                 const word = words.shift();
