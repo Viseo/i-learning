@@ -1129,7 +1129,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         if (this.selectedAnswers.length > 0) {
                             this.selectedAnswers.forEach((e) => {
                                 e.selected = false;
-                                e.border.color(e.bgColor, 1, e.colorBordure);
+                                e.border.color(e.model.bgColor, 1, e.model.colorBordure);
                             });
                             this.selectedAnswers.splice(0, this.selectedAnswers.length);
                             resetButton.border.color(myColors.grey, 1, myColors.grey);
