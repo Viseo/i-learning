@@ -110,7 +110,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 manip.set(3, this.doneIcon.border);
                                 manip.set(5, this.undoneIcon.content);
                                 manip.set(2, this.undoneIcon.border);
-                            }
+                            };
                             var _drawBorderFilter = () => {
                                 this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
                                 !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
@@ -151,7 +151,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
                                 svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
                                 svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
-                            }
+                            };
 
                             _declarePlayerIcons();
                             _setManipulatorIcons();
@@ -160,7 +160,7 @@ exports.formationsManager = function(globalVariables, classContainer){
 
                         _setHeaderManipulatorCollab();
                         _createFilter();
-                    }
+                    };
 
                     _setToggleFilterFormations();
                 } else {
@@ -173,7 +173,7 @@ exports.formationsManager = function(globalVariables, classContainer){
 
                     _setHeaderManipulatorAdmin();
                 }
-            }
+            };
             var _sortFormationsList = () => {
                 const sortAlphabetical = function (array) {
                     return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -181,7 +181,12 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.formations = sortAlphabetical(this.formations);
             };
             var _displayHeader = () => {
-                var _displayHeaderFormations = () => {
+                main.currentPageDisplayed = 'FormationsManager';
+                globalVariables.header.display("Formations");
+            };
+            var _displayPanel = () => {
+                var _setFormations = () => {
+                    let checkLegend, published, exclamationLegend, toPublish, legendItemLength;
                     var _onClickNewFormation = () => {
                         var formation = classContainer.createClass("FormationVue", {}, this);
                         formation.label = this.label;
@@ -210,8 +215,18 @@ exports.formationsManager = function(globalVariables, classContainer){
                     var _formationLabelDisplay = () => {
                         let text = this.label ? this.label : this.labelDefault;
                         let color = this.label ? myColors.black : myColors.grey;
-                        let bgcolor = myColors.white;
                         let formationLabel = {};
+                        var _setFormationLabel = () => {
+                            formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
+                            formationLabel.content.mark('formationManagerLabelContent');
+                            this.labelHeight = formationLabel.content.boundingRect().height;
+                            formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
+                            this.invalidLabelInput ? formationLabel.border.color(myColors.white, 2, myColors.red) : formationLabel.border.color(myColors.white, 1, myColors.black);
+                            formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2 + 3);
+                            this.formationInfoManipulator.set(0, formationLabel.border);
+                            formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 2).color(color).anchor("start");
+                            this.formationInfoManipulator.move(-5, 30);
+                        }
                         var _clickEditionAddFormationLabel = () => {
                             let bounds = formationLabel.border.boundingRect();
                             let globalPointCenter = formationLabel.border.globalPoint(-(bounds.width) / 2, -(bounds.height) / 2);
@@ -291,54 +306,50 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 display: _displayErrorMessage
                             });
                         };
+                        var _setClickEventFormationLabel = () => {
+                            svg.addEvent(formationLabel.content, "click", _clickEditionAddFormationLabel);
+                            svg.addEvent(formationLabel.border, "click", _clickEditionAddFormationLabel);
+                        }
 
                         this.formationLabelWidth = 200;
                         this.formationTitleWidth = 0;
-                        // if (text.length > MAX_CHARACTER_TITLE){
-                        //     textToDisplay = text.substr(0, MAX_CHARACTER_TITLE) + "...";
-                        // }
-                        formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
-                        formationLabel.content.mark('formationManagerLabelContent');
-                        this.labelHeight = formationLabel.content.boundingRect().height;
-                        //this.formationTitleWidth = this.titleSvg.boundingRect().width;
-                        formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
-                        this.invalidLabelInput ? formationLabel.border.color(bgcolor, 2, myColors.red) : formationLabel.border.color(bgcolor, 1, myColors.black);
-                        formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2 + 3);
-                        this.formationInfoManipulator.set(0, formationLabel.border);
-                        formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 2).color(color).anchor("start");
-                        this.formationInfoManipulator.move(-5, 30);
-                        svg.addEvent(formationLabel.content, "click", _clickEditionAddFormationLabel);
-                        svg.addEvent(formationLabel.border, "click", _clickEditionAddFormationLabel);
+                        _setFormationLabel();
+                        _setClickEventFormationLabel();
+                    };
+                    var _setCheckedIcon = () => {
+                        checkLegend = statusEnum.Published.icon(this.iconeSize);
+                        this.checkManipulator.set(2, checkLegend.square);
+                        this.checkManipulator.set(3, checkLegend.check);
+                    };
+                    var _setPublishedMessage = () => {
+                        published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
+                        published.position(25, published.y);
+                    };
+                    var _setEditedIcon = () => {
+                        exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
+                        this.exclamationManipulator.set(0, exclamationLegend.circle);
+                        this.exclamationManipulator.set(2, exclamationLegend.dot);
+                        this.exclamationManipulator.set(3, exclamationLegend.exclamation);
+                    };
+                    var _setToBePublishedMessage = () => {
+                        toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
+                        toPublish.position(25, toPublish.y);
+                        legendItemLength = toPublish.boundingRect().width + exclamationLegend.circle.boundingRect().width + MARGIN;
+                        this.checkManipulator.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
+                        this.exclamationManipulator.move(drawing.width - legendItemLength, 30);
                     };
 
                     this.headerManipulator.move(0, 0);
                     this.manipulator.add(this.formationInfoManipulator);
-
                     _setAddFormationObject();
                     _formationLabelDisplay();
-                    let checkLegend = statusEnum.Published.icon(this.iconeSize);
-                    this.checkManipulator.set(2, checkLegend.square);
-                    this.checkManipulator.set(3, checkLegend.check);
-                    let published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
-                    published.position(25, published.y);
+                    _setCheckedIcon();
+                    _setPublishedMessage();
+                    _setEditedIcon();
+                    _setToBePublishedMessage();
 
-                    let exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
-                    this.exclamationManipulator.set(0, exclamationLegend.circle);
-                    this.exclamationManipulator.set(2, exclamationLegend.dot);
-                    this.exclamationManipulator.set(3, exclamationLegend.exclamation);
-                    let toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
-                    toPublish.position(25, toPublish.y);
-                    let legendItemLength = toPublish.boundingRect().width + exclamationLegend.circle.boundingRect().width + MARGIN;
-                    this.checkManipulator.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
-                    this.exclamationManipulator.move(drawing.width - legendItemLength, 30);
+
                 };
-
-                main.currentPageDisplayed = 'FormationsManager';
-                globalVariables.header.display("Formations");
-                !globalVariables.playerMode && _displayHeaderFormations();
-            };
-            var _displayPanel = () => {
-                // let heightListFormations;
                 var _setDisplayProperties = () => {
                     spaceBetweenElements = {
                         width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
@@ -348,14 +359,15 @@ exports.formationsManager = function(globalVariables, classContainer){
                     drawing.notInTextArea = true;
                 };
                 var _setKeydownEvent = () => {
+                    var _hasKeyDownEvent = (event) => {
+                        return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
+                    };
+
                     svg.addGlobalEvent("keydown", (event) => {
                         if (drawing.notInTextArea && _hasKeyDownEvent(event)) {
                             event.preventDefault();
                         }
                     });
-                    var _hasKeyDownEvent = (event) => {
-                        return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
-                    };
                 };
                 var _definePanel = () => {
                     let heightAllocatedToPanel = drawing.height - (globalVariables.playerMode ?
@@ -381,6 +393,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     this.formationsManipulator.move(MARGIN + (this.tileWidth) / 2, this.tileHeight + spaceBetweenElements.height / 2);
                 };
 
+                !globalVariables.playerMode && _setFormations();
                 _setDisplayProperties();
                 _setKeydownEvent();
                 _definePanel();

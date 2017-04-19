@@ -287,8 +287,8 @@ exports.User = function (globalVariables, classContainer) {
                 this.focusedField = null;
                 this.lastNameField.checkInput = () => _nameCheckInput("lastNameField");
                 this.firstNameField.checkInput = () => _nameCheckInput("firstNameField");
-                this.passwordField.checkInput = () => _passwordCheckInput;
-                this.passwordConfirmationField.checkInput = () => _passwordCheckInput;
+                this.passwordField.checkInput = _passwordCheckInput;
+                this.passwordConfirmationField.checkInput = _passwordCheckInput;
                 _displayField("lastNameField", this.lastNameManipulator);
                 _displayField("firstNameField", this.firstNameManipulator);
                 _displayField("mailAddressField", this.mailAddressManipulator);
