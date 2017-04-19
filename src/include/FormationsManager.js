@@ -183,6 +183,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             var _displayHeader = () => {
                 main.currentPageDisplayed = 'FormationsManager';
                 globalVariables.header.display("Formations");
+                this.headerManipulator.move(0, 0);
             };
             var _displayPanel = () => {
                 var _setFormations = () => {
@@ -226,6 +227,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                             this.formationInfoManipulator.set(0, formationLabel.border);
                             formationLabel.content.position(this.formationTitleWidth + 2 * MARGIN, 2).color(color).anchor("start");
                             this.formationInfoManipulator.move(-5, 30);
+                            this.manipulator.add(this.formationInfoManipulator);
                         }
                         var _clickEditionAddFormationLabel = () => {
                             let bounds = formationLabel.border.boundingRect();
@@ -339,16 +341,12 @@ exports.formationsManager = function(globalVariables, classContainer){
                         this.exclamationManipulator.move(drawing.width - legendItemLength, 30);
                     };
 
-                    this.headerManipulator.move(0, 0);
-                    this.manipulator.add(this.formationInfoManipulator);
                     _setAddFormationObject();
                     _formationLabelDisplay();
                     _setCheckedIcon();
                     _setPublishedMessage();
                     _setEditedIcon();
                     _setToBePublishedMessage();
-
-
                 };
                 var _setDisplayProperties = () => {
                     spaceBetweenElements = {
