@@ -37,7 +37,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.plusDim = this.fontSize * 2;
                 this.iconeSize = this.plusDim / 1.5;
                 this.circleToggleSize = 12.5;
-
             };
             var _declareLabels = () => {
                 this.label = this.label ? this.label : "";
@@ -220,7 +219,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                         var _setFormationLabel = () => {
                             formationLabel.content = autoAdjustText(text, this.formationLabelWidth, 20, 15, "Arial", this.formationInfoManipulator).text;
                             formationLabel.content.mark('formationManagerLabelContent');
-                            this.labelHeight = formationLabel.content.boundingRect().height;
+                            this.labelHeight = (formationLabel.content.boundingRect().height == 0 ) ? 20 : formationLabel.content.boundingRect().height;
                             formationLabel.border = new svg.Rect(this.formationLabelWidth, this.labelHeight + MARGIN);
                             this.invalidLabelInput ? formationLabel.border.color(myColors.white, 2, myColors.red) : formationLabel.border.color(myColors.white, 1, myColors.black);
                             formationLabel.border.position(this.formationTitleWidth + this.formationLabelWidth / 2 + 3 / 2 * MARGIN, -MARGIN / 2 + 3);
