@@ -1661,19 +1661,29 @@ exports.QuizElements = function (globalVariables, classContainer) {
     class AddEmptyElementVue extends Vue {
         constructor(parent, type) {
             super();
-            this.manipulator.addOrdonator(3);
-            type && (this.type = type);
-            this.invalidLabelInput = false;
-            switch (type) {
-                case 'question':
-                    this.label = "Nouvelle question";
-                    break;
-                case 'answer':
-                    this.label = "Nouvelle réponse";
-                    break;
+            var _initVars = () => {
+                this.manipulator.addOrdonator(3);
+                this.invalidLabelInput = false;
+                this.fontSize = 20;
+                this.parent = parent;
             }
-            this.fontSize = 20;
-            this.parent = parent;
+            var _setType = (type) => {
+                this.type = type;
+                switch (type) {
+                    case 'question':
+                        this.label = "Nouvelle question";
+                        break;
+                    case 'answer':
+                        this.label = "Nouvelle réponse";
+                        break;
+                    default:
+                        throw new Error('EmptyElement should have a type');
+                        break;
+                }
+            }
+
+            _initVars();
+            _setType(type);
         }
 
         events() {
@@ -1683,95 +1693,104 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         render(x, y, w, h) {
-            let plusSize = 2 * this.fontSize;
-            let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
-            let plus = drawPlus(0, -plusSize / 2, plusSize, plusSize);
+            var _displayText = () => {
+                let obj = displayText(this.label, w, h, myColors.black, myColors.white, this.fontSize, null, this.manipulator);
+                obj.content.position(0, this.fontSize);
+                obj.border.color(myColors.white, 3, myColors.black)
+                    .mark('emptyAnswerAddCadre' + this.type);
+                obj.border.component.setAttribute('stroke-dasharray', '10, 5');
+            }
+            var _displayPlus = () => {
+                let plusSize = 2 * this.fontSize;
+                let plus = drawPlus(0, -plusSize / 2, plusSize, plusSize);
+                this.manipulator.set(2, plus);
+            }
+
             this.manipulator.move(x, y);
-            this.manipulator.set(2, plus);
-            obj.content.position(0, this.fontSize);
-            obj.border.color(myColors.white, 3, myColors.black)
-                .mark('emptyAnswerAddCadre' + this.type);
-            obj.border.component.setAttribute && obj.border.component.setAttribute('stroke-dasharray', '10, 5');
+            _displayText();
+            _displayPlus();
         }
 
         dblclickAdd() {
+            var _addAnswer = () => {
+                let newAnswer = classContainer.createClass("AnswerVue", {model: new Answer(null, this.parent.linkedQuestion, this)});
+                newAnswer.isEditable(this, true);
+                let questionCreator = this.parent;
+                questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
+                    answer.obj && answer.obj.video && drawings.component.remove(answer.obj.video);
+                });
+                questionCreator.linkedQuestion.tabAnswer.pop();
+                questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
+
+                if (questionCreator.linkedQuestion.tabAnswer.length < questionCreator.MAX_ANSWERS) {
+                    questionCreator.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", questionCreator, this.type));
+                }
+                questionCreator.puzzle.updateElementsArray(questionCreator.linkedQuestion.tabAnswer);
+                questionCreator.puzzle && questionCreator.puzzle.fillVisibleElementsArray("leftToRight");
+                questionCreator.manipulator.add(questionCreator.puzzle.manipulator);
+                questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x,
+                    questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
+                    questionCreator.coordinatesAnswers.h, false);
+                questionCreator.linkedQuestion.checkValidity();
+            };
+            var _addQuestion = () => {
+                drawings.component.clean();
+                let quizManager = this.parent;
+                quizManager.quiz.tabQuestions.pop();
+                (quizManager.quiz.tabQuestions.length > 0) && (quizManager.quiz.tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
+                quizManager.indexOfEditedQuestion = quizManager.quiz.tabQuestions.length;
+                quizManager.quiz.tabQuestions.forEach(question => {
+                    question.redCrossManipulator && question.redCrossManipulator.flush();
+                    question.selected = false
+                    question.tabAnswer.forEach(answer => {
+                        if (answer.popIn) {
+                            quizManager.questionCreator.manipulator.remove(answer.popIn.manipulator.add);
+                            quizManager.questionCreator.explanation = null;
+                        }
+                    })
+                });
+                let newQuestion = classContainer.createClass("QuestionVueAdmin", null, quizManager.quiz);
+                newQuestion.selected = true;
+                quizManager.quiz.tabQuestions.push(newQuestion);
+                let AddNewEmptyQuestion = classContainer.createClass("AddEmptyElementVue", quizManager, 'question');
+                quizManager.quiz.tabQuestions.push(AddNewEmptyQuestion);
+                quizManager.questionPuzzle.visibleElementsArray[0].length === 6 && quizManager.questionPuzzle.updateStartPosition('right');
+                if (quizManager.questionPuzzle.elementsArray.length > quizManager.questionPuzzle.columns) {
+                    quizManager.displayQuestionsPuzzle(quizManager.questionPuzzleCoordinates.x,
+                        quizManager.questionPuzzleCoordinates.y,
+                        quizManager.questionPuzzleCoordinates.w,
+                        quizManager.questionPuzzleCoordinates.h,
+                        quizManager.questionPuzzle.indexOfFirstVisibleElement + 1);
+                } else {
+                    quizManager.displayQuestionsPuzzle(quizManager.questionPuzzleCoordinates.x,
+                        quizManager.questionPuzzleCoordinates.y,
+                        quizManager.questionPuzzleCoordinates.w,
+                        quizManager.questionPuzzleCoordinates.h,
+                        quizManager.questionPuzzle.indexOfFirstVisibleElement);
+                }
+                quizManager.questionCreator.loadQuestion(newQuestion);
+                quizManager.questionCreator.display(quizManager.questionCreator.previousX,
+                    quizManager.questionCreator.previousY,
+                    quizManager.questionCreator.previousW,
+                    quizManager.questionCreator.previousH);
+            };
+
             this.manipulator.flush();
             switch (this.type) {
                 case 'answer':
-                    let newAnswer = classContainer.createClass("AnswerVue", {model: new Answer(null, this.parent.linkedQuestion, this)});
-                    newAnswer.isEditable(this, true);
-                    let questionCreator = this.parent;
-                    questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
-                        answer.obj && answer.obj.video && drawings.component.remove(answer.obj.video);
-                    });
-                    questionCreator.linkedQuestion.tabAnswer.pop();
-                    questionCreator.linkedQuestion.tabAnswer.push(newAnswer);
-
-                    if (questionCreator.linkedQuestion.tabAnswer.length < questionCreator.MAX_ANSWERS) {
-                        questionCreator.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", questionCreator, this.type));
-                    }
-                    questionCreator.puzzle.updateElementsArray(questionCreator.linkedQuestion.tabAnswer);
-                    questionCreator.puzzle && questionCreator.puzzle.fillVisibleElementsArray("leftToRight");
-                    questionCreator.manipulator.add(questionCreator.puzzle.manipulator);
-                    questionCreator.puzzle.display(questionCreator.coordinatesAnswers.x,
-                        questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
-                        questionCreator.coordinatesAnswers.h, false);
-                    questionCreator.linkedQuestion.checkValidity();
+                    _addAnswer();
                     break;
                 case 'question':
-                    drawings.component.clean();
-                    let quizManager = this.parent;
-                    quizManager.quiz.tabQuestions.pop();
-                    (quizManager.quiz.tabQuestions.length > 0) && (quizManager.quiz.tabQuestions[quizManager.indexOfEditedQuestion].selected = false);
-                    quizManager.indexOfEditedQuestion = quizManager.quiz.tabQuestions.length;
-                    quizManager.quiz.tabQuestions.forEach(question => {
-                        question.redCrossManipulator && question.redCrossManipulator.flush();
-                        question.selected = false
-                        question.tabAnswer.forEach(answer => {
-                            if (answer.popIn) {
-                                quizManager.questionCreator.manipulator.remove(answer.popIn.manipulator.add);
-                                quizManager.questionCreator.explanation = null;
-                            }
-                        })
-                    });
-                    let newQuestion = classContainer.createClass("QuestionVueAdmin", null, quizManager.quiz);
-                    newQuestion.selected = true;
-                    quizManager.quiz.tabQuestions.push(newQuestion);
-                    let AddNewEmptyQuestion = classContainer.createClass("AddEmptyElementVue", quizManager, 'question');
-                    quizManager.quiz.tabQuestions.push(AddNewEmptyQuestion);
-                    quizManager.questionPuzzle.visibleElementsArray[0].length === 6 && quizManager.questionPuzzle.updateStartPosition('right');
-                    if (quizManager.questionPuzzle.elementsArray.length > quizManager.questionPuzzle.columns) {
-                        quizManager.displayQuestionsPuzzle(quizManager.questionPuzzleCoordinates.x,
-                            quizManager.questionPuzzleCoordinates.y,
-                            quizManager.questionPuzzleCoordinates.w,
-                            quizManager.questionPuzzleCoordinates.h,
-                            quizManager.questionPuzzle.indexOfFirstVisibleElement + 1);
-                    } else {
-                        quizManager.displayQuestionsPuzzle(quizManager.questionPuzzleCoordinates.x,
-                            quizManager.questionPuzzleCoordinates.y,
-                            quizManager.questionPuzzleCoordinates.w,
-                            quizManager.questionPuzzleCoordinates.h,
-                            quizManager.questionPuzzle.indexOfFirstVisibleElement);
-                    }
-                    quizManager.questionCreator.loadQuestion(newQuestion);
-                    quizManager.questionCreator.display(quizManager.questionCreator.previousX,
-                        quizManager.questionCreator.previousY,
-                        quizManager.questionCreator.previousW,
-                        quizManager.questionCreator.previousH);
+                    _addQuestion();
+                    break;
             }
         }
 
-        /**
-         * supprime le bouton
-         */
         remove() {
-            console.log("Tentative de suppression d'AddEmptyElement");
+            throw new Error("Tentative de suppression d'AddEmptyElement");
         }
     }
 
-    /**
-     * @class
-     */
     class AnswerVue extends Vue {
         constructor(options) {
             super(options);
