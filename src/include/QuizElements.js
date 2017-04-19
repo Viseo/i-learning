@@ -711,241 +711,253 @@ exports.QuizElements = function (globalVariables, classContainer) {
          */
         constructor(parent, question) {
             super();
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this).addOrdonator(2);
+                this.manipulatorQuizInfo = new Manipulator(this);
+                this.questionManipulator = new Manipulator(this).addOrdonator(7);
+                this.toggleButtonManipulator = new Manipulator(this);
+                this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.manipulator.add(this.previewButtonManipulator);
+                this.saveQuizButtonManipulator = new Manipulator(this);
+                this.manipulator.add(this.saveQuizButtonManipulator);
+            };
+            var _declareDimension = () => {
+                this.toggleButtonHeight = 40;
+                this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
+            };
+            var _declarePuzzle = () => {
+                this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
+                this.manipulator.add(this.puzzle.manipulator);
+            };
+
             this.MAX_ANSWERS = 8;
             this.parent = parent;
-            this.manipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulatorQuizInfo = new Manipulator(this);
-            this.questionManipulator = new Manipulator(this).addOrdonator(7);
-            this.toggleButtonManipulator = new Manipulator(this);
-            this.previewButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.add(this.previewButtonManipulator);
-            this.saveQuizButtonManipulator = new Manipulator(this);
-            this.manipulator.add(this.saveQuizButtonManipulator);
+            _declareDimension();
+            _declareManipulator();
             this.labelDefault = "Cliquer deux fois pour ajouter la question";
             this.questionType = myQuestionType.tab;
-            this.toggleButtonHeight = 40;
             this.loadQuestion(question);
-            this.puzzle = new Puzzle(2, 4, this.linkedQuestion.tabAnswer, "leftToRight", this);
-            this.manipulator.add(this.puzzle.manipulator);
-            this.coordinatesAnswers = {x: 0, y: 0, w: 0, h: 0};
+            _declarePuzzle();
         }
 
         render(x, y, w, h) {
-            x && (this.previousX = x);
-            y && (this.previousY = y);
-            w && (this.previousW = w);
-            h && (this.previousH = h);
-            this.manipulator.move(this.previousX, 0);
-            let toggleButtonHeight = 40;
-            this.displayQuestionCreator(this.previousX, this.previousY, this.previousW, this.previousH);
-            let clickedButton = this.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
-            this.displayToggleButton(MARGIN + this.previousX, MARGIN / 2 + this.previousY, this.previousW, toggleButtonHeight - MARGIN, clickedButton);
-        }
+            var _setPreviousPosition = () => {
+                x && (this.previousX = x);
+                y && (this.previousY = y);
+                w && (this.previousW = w);
+                h && (this.previousH = h);
+            };
+            var _displayQuestionCreator = (x, y, w, h) => {
+                // bloc Question
+                this.manipulator.flush();
+                let questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
+                questionBlock.rect.position(0, 0);
+                questionBlock.rect.fillOpacity(0.001);
+                this.manipulator.set(0, questionBlock.rect);
+                this.manipulator.add(this.questionManipulator);
 
-        displayToggleButton(x, y, w, h, clicked) {
-            const size = this.manipulator.ordonator.children[0].height * 0.05;
-            this.manipulator.add(this.toggleButtonManipulator);
-            let toggleButtonWidth = drawing.width / 5;
-            var toggleHandler = (event) => {
-                drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-                const target = drawings.component.background.getTarget(event.pageX, event.pageY),
-                    questionType = target.parent.children[1].messageText;
+                var removeErrorMessage = () => {
+                    this.linkedQuestion.invalidLabelInput = false;
+                    this.errorMessage && this.manipulator.unset(1);
+                    questionBlock.title.border.color(myColors.white, 1, myColors.black);
+                };
 
-                if (questionType === "Réponses multiples") {
-                    this.multipleChoice = true;
-                    this.linkedQuestion.multipleChoice = true;
-                } else {
-                    this.multipleChoice = false;
-                    this.linkedQuestion.multipleChoice = false;
-                }
+                var displayErrorMessage = (message) => {
+                    removeErrorMessage();
+                    questionBlock.title.border.color(myColors.white, 2, myColors.red);
+                    const anchor = 'middle';
+                    this.errorMessage = new svg.Text(message);
+                    this.errorMessage.mark("questionBlockErrorMessage");
+                    this.manipulator.set(1, this.errorMessage);
+                    this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.border.height + this.errorMessage.boundingRect().height + MARGIN)
+                        .font("Arial", 15).color(myColors.red).anchor(anchor);
+                    this.linkedQuestion.invalidLabelInput = message;
+                };
 
-                this.linkedQuestion.questionType = (!this.multipleChoice) ? this.questionType[0] : this.questionType[1];
-                this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.remove(this.errorMessagePreview);
-                this.linkedQuestion.tabAnswer.forEach((answer) => {
-                    answer.correct = false;
-                    if (answer.obj) {
-                        answer.obj.checkbox = displayCheckbox(answer.obj.checkbox.x, answer.obj.checkbox.y, size, answer).checkbox;
-                        answer.obj.checkbox.answerParent = answer;
+                var questionBlockDisplay = () => {
+                    const color = (this.linkedQuestion.label) ? myColors.black : myColors.grey,
+                        text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
+                    if (this.linkedQuestion.image) {
+                        this.image = this.linkedQuestion.image;
+                        this.imageLayer = 2;
+                        let pictureRedCrossClickHandler = () => {
+                            this.imageLayer && this.questionManipulator.unset(this.imageLayer);//image
+                            this.linkedQuestion.image = null;
+                            this.linkedQuestion.imageSrc = null;
+                            this.display();
+                            this.linkedQuestion.checkValidity();
+                            this.parent.questionPuzzle.display();
+                        };
+                        let picture = new Picture(this.image.src, true, this, text, pictureRedCrossClickHandler);
+                        picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
+                        picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
+                        questionBlock.title = picture.imageSVG;
+                    } else if (this.linkedQuestion.video) {
+                        questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, true, false);
+                        questionBlock.title.video.setRedCrossClickHandler(() => {
+                            questionBlock.title.video.redCrossManipulator.flush();
+                            this.questionManipulator.unset(3);
+                            drawings.component.clean();
+                            this.linkedQuestion.video = null;
+                            this.parent.questionPuzzle.elementsArray[this.linkedQuestion.questionNum - 1].video = null;
+                            this.display();
+                            this.linkedQuestion.checkValidity();
+                            this.parent.questionPuzzle.display();
+                        });
+                    } else {
+                        questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
                     }
+                    questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
+                    questionBlock.title.border.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
+                    const fontSize = Math.min(20, this.h * 0.1);
+                    this.questNum = new svg.Text(this.linkedQuestion.questionNum).position(-this.w / 2 + 2 * MARGIN + (fontSize * (this.linkedQuestion.questionNum.toString.length) / 2), -this.h * 0.25 / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
+                    this.questionManipulator.set(4, this.questNum);
+                    questionBlock.title.content.color(color);
+                    questionBlock.title.content._acceptDrop = true;
+                    this.linkedQuestion.invalidLabelInput ? questionBlock.title.border.color(this.linkedQuestion.bgColor, 2, myColors.red)
+                        : questionBlock.title.border.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure);
+                    this.linkedQuestion.invalidLabelInput && displayErrorMessage(this.linkedQuestion.invalidLabelInput);
+                    questionBlock.title.border._acceptDrop = true;
+
+                    this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.border.height / 2 + this.toggleButtonHeight + MARGIN);
+                    this.manipulator.move(x + w / 2, y + h / 2);
+                    const globalPoints = questionBlock.title.border.globalPoint(-50, -50);
+                    questionBlock.title.video && questionBlock.title.video.position(globalPoints.x, globalPoints.y);
+                    svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
+                    svg.addEvent(questionBlock.title.border, "dblclick", dblclickEditionQuestionBlock);
+                };
+
+                var dblclickEditionQuestionBlock = () => {
+                    const globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2),
+                        contentareaStyle = {
+                            height: (this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
+                            toppx: globalPointCenter.y,
+                            leftpx: (globalPointCenter.x + 1 / 12 * this.w),
+                            width: (this.w * 5 / 6)
+                        };
+                    questionBlock.title.content.message("");
+                    drawing.notInTextArea = false;
+                    let textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
+                        .color(myColors.white, 0, myColors.black)
+                        .message(this.linkedQuestion.label)
+                        .mark('questionBlockTextArea')
+                        .font("Arial", 20);
+                    drawings.component.add(textarea);
+                    textarea.focus();
+                    //textarea.setCaretPosition(this.linkedQuestion.label.length);
+
+                    let onblur = () => {
+                        textarea.enter();
+                        this.linkedQuestion.label = textarea.messageText || '';
+                        if (textarea.messageText) {
+                            this.label = textarea.messageText;
+                            this.linkedQuestion.label = textarea.messageText;
+                        }
+                        drawings.component.remove(textarea);
+                        drawing.notInTextArea = true;
+                        questionBlockDisplay();
+                        this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
+                    };
+
+                    let oninput = () => {
+                        textarea.enter();
+                        this.parent.questionCreator.checkInputTextArea({
+                            textarea: textarea,
+                            border: questionBlock.title.border,
+                            onblur: onblur,
+                            remove: removeErrorMessage,
+                            display: displayErrorMessage
+                        });
+                    };
+                    svg.addEvent(textarea, "blur", onblur);
+                    svg.addEvent(textarea, "input", oninput);
+                };
+
+                (typeof x !== "undefined") && (this.x = x);
+                (typeof y !== "undefined") && (this.y = y);
+                (typeof w !== "undefined") && (this.w = w);
+                (typeof h !== "undefined") && (this.h = h);
+                questionBlockDisplay();
+                const height = this.h - this.toggleButtonHeight - questionBlock.title.border.height - 3 * MARGIN;
+                this.coordinatesAnswers = {
+                    x: 0,
+                    y: (this.h - height) / 2 - MARGIN, //this.y + 3 * MARGIN ,
+                    w: this.w - 2 * MARGIN,
+                    h: height
+                };
+                // bloc Answers
+                if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(classContainer.isInstanceOf("AddEmptyElementVue", this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1]))) {
+                    this.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this, 'answer'));
+                }
+                this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
+                this.manipulator.add(this.puzzle.manipulator);
+                this.puzzle && this.puzzle.fillVisibleElementsArray("leftToRight");
+                this.puzzle.leftChevron.mark('answerLeftChevron');
+                this.puzzle.rightChevron.mark('answerRightChevron');
+                this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h, false);
+                if (this.explanation) {
+                    this.explanation.display(this, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
+                }
+            }
+            var _displayToggleButtonResponseType = (x, y, w, h, clicked) => {
+                const size = this.manipulator.ordonator.children[0].height * 0.05;
+                this.manipulator.add(this.toggleButtonManipulator);
+                let toggleButtonWidth = drawing.width / 5;
+                var toggleHandler = (event) => {
+                    drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+                    const target = drawings.component.background.getTarget(event.pageX, event.pageY),
+                        questionType = target.parent.children[1].messageText;
+
+                    if (questionType === "Réponses multiples") {
+                        this.multipleChoice = true;
+                        this.linkedQuestion.multipleChoice = true;
+                    } else {
+                        this.multipleChoice = false;
+                        this.linkedQuestion.multipleChoice = false;
+                    }
+
+                    this.linkedQuestion.questionType = (!this.multipleChoice) ? this.questionType[0] : this.questionType[1];
+                    this.errorMessagePreview && this.errorMessagePreview.parent && this.parent.previewButtonManipulator.remove(this.errorMessagePreview);
+                    this.linkedQuestion.tabAnswer.forEach((answer) => {
+                        answer.correct = false;
+                        if (answer.obj) {
+                            answer.obj.checkbox = displayCheckbox(answer.obj.checkbox.x, answer.obj.checkbox.y, size, answer).checkbox;
+                            answer.obj.checkbox.answerParent = answer;
+                        }
+                    });
+                    this.displayToggleButton(x, y, w, h, questionType);
+                    this.linkedQuestion.checkValidity();
+                };
+                this.manipulator.add(this.toggleButtonManipulator);
+                const length = this.questionType.length,
+                    lengthToUse = (length + 1) * MARGIN + length * toggleButtonWidth,
+                    margin = (w - lengthToUse) / 2;
+                this.x = margin + toggleButtonWidth / 2 + MARGIN;
+                (!this.questionTypeSelectorManipulators) && (this.questionTypeSelectorManipulators = []);
+                this.questionType.forEach((type, index) => {
+                    if (this.questionTypeSelectorManipulators[index]) {
+                        this.toggleButtonManipulator.remove(this.questionTypeSelectorManipulators[index]);
+                    }
+                    this.questionTypeSelectorManipulators[index] = new Manipulator(this).addOrdonator(2);
+                    this.toggleButtonManipulator.add(this.questionTypeSelectorManipulators[index]);
+                    (type.label == clicked) ? (this.questionTypeSelectorManipulators[index].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[index].color = myColors.white);
+                    let toggleButton = displayTextWithoutCorners(type.label, toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[index].color, 20, null, this.questionTypeSelectorManipulators[index]);
+                    toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[index].color), 0, myColors.black);
+                    toggleButton.border.mark('toggleButtonCadre' + type.label.split(" ")[1]);
+                    this.questionTypeSelectorManipulators[index].move(this.x - this.w / 2, h - this.h / 2);
+                    this.x += toggleButtonWidth + MARGIN;
+                    (type.label != clicked) && (svg.addEvent(toggleButton.content, "click", toggleHandler));
+                    (type.label != clicked) && (svg.addEvent(toggleButton.border, "click", toggleHandler));
                 });
-                this.displayToggleButton(x, y, w, h, questionType);
-                this.linkedQuestion.checkValidity();
-            };
-            this.manipulator.add(this.toggleButtonManipulator);
-            const length = this.questionType.length,
-                lengthToUse = (length + 1) * MARGIN + length * toggleButtonWidth,
-                margin = (w - lengthToUse) / 2;
-            this.x = margin + toggleButtonWidth / 2 + MARGIN;
-            (!this.questionTypeSelectorManipulators) && (this.questionTypeSelectorManipulators = []);
-            this.questionType.forEach((type, index) => {
-                if (this.questionTypeSelectorManipulators[index]) {
-                    this.toggleButtonManipulator.remove(this.questionTypeSelectorManipulators[index]);
-                }
-                this.questionTypeSelectorManipulators[index] = new Manipulator(this).addOrdonator(2);
-                this.toggleButtonManipulator.add(this.questionTypeSelectorManipulators[index]);
-                (type.label == clicked) ? (this.questionTypeSelectorManipulators[index].color = SELECTION_COLOR) : (this.questionTypeSelectorManipulators[index].color = myColors.white);
-                let toggleButton = displayTextWithoutCorners(type.label, toggleButtonWidth, h, myColors.black, this.questionTypeSelectorManipulators[index].color, 20, null, this.questionTypeSelectorManipulators[index]);
-                toggleButton.content.color(getComplementary(this.questionTypeSelectorManipulators[index].color), 0, myColors.black);
-                toggleButton.border.mark('toggleButtonCadre' + type.label.split(" ")[1]);
-                this.questionTypeSelectorManipulators[index].move(this.x - this.w / 2, h - this.h / 2);
-                this.x += toggleButtonWidth + MARGIN;
-                (type.label != clicked) && (svg.addEvent(toggleButton.content, "click", toggleHandler));
-                (type.label != clicked) && (svg.addEvent(toggleButton.border, "click", toggleHandler));
-            });
-            this.linkedQuestion.questionType = (this.multipleChoice) ? this.questionType[1] : this.questionType[0];
-        }
-
-        displayQuestionCreator(x, y, w, h) {
-            // bloc Question
-            this.manipulator.flush();
-            let questionBlock = {rect: new svg.Rect(w, h).color(myColors.none, 3, myColors.black).position(w / 2, y + h / 2)};
-            questionBlock.rect.position(0, 0);
-            questionBlock.rect.fillOpacity(0.001);
-            this.manipulator.set(0, questionBlock.rect);
-            this.manipulator.add(this.questionManipulator);
-
-            var removeErrorMessage = () => {
-                this.linkedQuestion.invalidLabelInput = false;
-                this.errorMessage && this.manipulator.unset(1);
-                questionBlock.title.border.color(myColors.white, 1, myColors.black);
+                this.linkedQuestion.questionType = (this.multipleChoice) ? this.questionType[1] : this.questionType[0];
             };
 
-            var displayErrorMessage = (message) => {
-                removeErrorMessage();
-                questionBlock.title.border.color(myColors.white, 2, myColors.red);
-                const anchor = 'middle';
-                this.errorMessage = new svg.Text(message);
-                this.errorMessage.mark("questionBlockErrorMessage");
-                this.manipulator.set(1, this.errorMessage);
-                this.errorMessage.position(0, -this.h / 2 + this.toggleButtonHeight + questionBlock.title.border.height + this.errorMessage.boundingRect().height + MARGIN)
-                    .font("Arial", 15).color(myColors.red).anchor(anchor);
-                this.linkedQuestion.invalidLabelInput = message;
-            };
+            _setPreviousPosition();
+            this.manipulator.move(this.previousX, 0);
 
-            var questionBlockDisplay = () => {
-                const color = (this.linkedQuestion.label) ? myColors.black : myColors.grey,
-                    text = (this.linkedQuestion.label) ? this.linkedQuestion.label : this.labelDefault;
-                if (this.linkedQuestion.image) {
-                    this.image = this.linkedQuestion.image;
-                    this.imageLayer = 2;
-                    let pictureRedCrossClickHandler = () => {
-                        this.imageLayer && this.questionManipulator.unset(this.imageLayer);//image
-                        this.linkedQuestion.image = null;
-                        this.linkedQuestion.imageSrc = null;
-                        this.display();
-                        this.linkedQuestion.checkValidity();
-                        this.parent.questionPuzzle.display();
-                    };
-                    let picture = new Picture(this.image.src, true, this, text, pictureRedCrossClickHandler);
-                    picture.draw(0, 0, this.w - 2 * MARGIN, this.h * 0.25, this.questionManipulator);
-                    picture.imageSVG.image.mark('questionImage' + this.linkedQuestion.questionNum);
-                    questionBlock.title = picture.imageSVG;
-                } else if (this.linkedQuestion.video) {
-                    questionBlock.title = drawVideo(text, this.linkedQuestion.video, this.w - 2 * MARGIN, this.h * 0.25, this.colorBordure, this.bgColor, this.fontSize, this.font, this.questionManipulator, true, false);
-                    questionBlock.title.video.setRedCrossClickHandler(() => {
-                        questionBlock.title.video.redCrossManipulator.flush();
-                        this.questionManipulator.unset(3);
-                        drawings.component.clean();
-                        this.linkedQuestion.video = null;
-                        this.parent.questionPuzzle.elementsArray[this.linkedQuestion.questionNum - 1].video = null;
-                        this.display();
-                        this.linkedQuestion.checkValidity();
-                        this.parent.questionPuzzle.display();
-                    });
-                } else {
-                    questionBlock.title = displayText(text, this.w - 2 * MARGIN, this.h * 0.25, myColors.black, myColors.none, this.linkedQuestion.fontSize, this.linkedQuestion.font, this.questionManipulator);
-                }
-                questionBlock.title.content.mark("questionBlockTitle" + this.linkedQuestion.questionNum);
-                questionBlock.title.border.mark("questionBlockCadre" + this.linkedQuestion.questionNum);
-                const fontSize = Math.min(20, this.h * 0.1);
-                this.questNum = new svg.Text(this.linkedQuestion.questionNum).position(-this.w / 2 + 2 * MARGIN + (fontSize * (this.linkedQuestion.questionNum.toString.length) / 2), -this.h * 0.25 / 2 + (fontSize) / 2 + 2 * MARGIN).font("Arial", fontSize);
-                this.questionManipulator.set(4, this.questNum);
-                questionBlock.title.content.color(color);
-                questionBlock.title.content._acceptDrop = true;
-                this.linkedQuestion.invalidLabelInput ? questionBlock.title.border.color(this.linkedQuestion.bgColor, 2, myColors.red)
-                    : questionBlock.title.border.color(this.linkedQuestion.bgColor, 1, this.linkedQuestion.colorBordure);
-                this.linkedQuestion.invalidLabelInput && displayErrorMessage(this.linkedQuestion.invalidLabelInput);
-                questionBlock.title.border._acceptDrop = true;
-
-                this.questionManipulator.move(0, -this.h / 2 + questionBlock.title.border.height / 2 + this.toggleButtonHeight + MARGIN);
-                this.manipulator.move(x + w / 2, y + h / 2);
-                const globalPoints = questionBlock.title.border.globalPoint(-50, -50);
-                questionBlock.title.video && questionBlock.title.video.position(globalPoints.x, globalPoints.y);
-                svg.addEvent(questionBlock.title.content, "dblclick", dblclickEditionQuestionBlock);
-                svg.addEvent(questionBlock.title.border, "dblclick", dblclickEditionQuestionBlock);
-            };
-
-            var dblclickEditionQuestionBlock = () => {
-                const globalPointCenter = questionBlock.title.content.globalPoint(-(this.w) / 2, -((this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2)) / 2),
-                    contentareaStyle = {
-                        height: (this.linkedQuestion.image || this.linkedQuestion.video) ? questionBlock.title.content.boundingRect().height : ((this.h * .25) / 2),
-                        toppx: globalPointCenter.y,
-                        leftpx: (globalPointCenter.x + 1 / 12 * this.w),
-                        width: (this.w * 5 / 6)
-                    };
-                questionBlock.title.content.message("");
-                drawing.notInTextArea = false;
-                let textarea = new svg.TextArea(contentareaStyle.leftpx, contentareaStyle.toppx, contentareaStyle.width, contentareaStyle.height)
-                    .color(myColors.white, 0, myColors.black)
-                    .message(this.linkedQuestion.label)
-                    .mark('questionBlockTextArea')
-                    .font("Arial", 20);
-                drawings.component.add(textarea);
-                textarea.focus();
-                //textarea.setCaretPosition(this.linkedQuestion.label.length);
-
-                let onblur = () => {
-                    textarea.enter();
-                    this.linkedQuestion.label = textarea.messageText || '';
-                    if (textarea.messageText) {
-                        this.label = textarea.messageText;
-                        this.linkedQuestion.label = textarea.messageText;
-                    }
-                    drawings.component.remove(textarea);
-                    drawing.notInTextArea = true;
-                    questionBlockDisplay();
-                    this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.indexOfFirstVisibleElement);
-                };
-
-                let oninput = () => {
-                    textarea.enter();
-                    this.parent.questionCreator.checkInputTextArea({
-                        textarea: textarea,
-                        border: questionBlock.title.border,
-                        onblur: onblur,
-                        remove: removeErrorMessage,
-                        display: displayErrorMessage
-                    });
-                };
-                svg.addEvent(textarea, "blur", onblur);
-                svg.addEvent(textarea, "input", oninput);
-            };
-
-            (typeof x !== "undefined") && (this.x = x);
-            (typeof y !== "undefined") && (this.y = y);
-            (typeof w !== "undefined") && (this.w = w);
-            (typeof h !== "undefined") && (this.h = h);
-            questionBlockDisplay();
-            const height = this.h - this.toggleButtonHeight - questionBlock.title.border.height - 3 * MARGIN;
-            this.coordinatesAnswers = {
-                x: 0,
-                y: (this.h - height) / 2 - MARGIN, //this.y + 3 * MARGIN ,
-                w: this.w - 2 * MARGIN,
-                h: height
-            };
-            // bloc Answers
-            if (this.linkedQuestion.tabAnswer.length < this.MAX_ANSWERS && !(classContainer.isInstanceOf("AddEmptyElementVue", this.linkedQuestion.tabAnswer[this.linkedQuestion.tabAnswer.length - 1]))) {
-                this.linkedQuestion.tabAnswer.push(classContainer.createClass("AddEmptyElementVue", this, 'answer'));
-            }
-            this.puzzle.updateElementsArray(this.linkedQuestion.tabAnswer);
-            this.manipulator.add(this.puzzle.manipulator);
-            this.puzzle && this.puzzle.fillVisibleElementsArray("leftToRight");
-            this.puzzle.leftChevron.mark('answerLeftChevron');
-            this.puzzle.rightChevron.mark('answerRightChevron');
-            this.puzzle.display(this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h, false);
-            if (this.explanation) {
-                this.explanation.display(this, this.coordinatesAnswers.x, this.coordinatesAnswers.y, this.coordinatesAnswers.w, this.coordinatesAnswers.h);
-            }
+            _displayQuestionCreator(this.previousX, this.previousY, this.previousW, this.previousH);
+            let clickedButton = this.multipleChoice ? myQuestionType.tab[1].label : myQuestionType.tab[0].label;
+            _displayToggleButtonResponseType(MARGIN + this.previousX, MARGIN / 2 + this.previousY, this.previousW, this.toggleButtonHeight - MARGIN, clickedButton);
         }
 
         /**
@@ -993,17 +1005,71 @@ exports.QuizElements = function (globalVariables, classContainer) {
     class QuestionVue extends Vue {
         constructor(question, quiz) {
             super();
-            this.manipulator.addOrdonator(9);
-            this.answersManipulator = new Manipulator(this);
-            this.manipulator.add(this.answersManipulator);
-            this.resetManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.add(this.resetManipulator);
-            this.validateManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.add(this.validateManipulator);
-            this.simpleChoiceMessageManipulator = new Manipulator(this).addOrdonator(2);
-            this.answersManipulator.add(this.simpleChoiceMessageManipulator);
-            this.invalidQuestionPictogramManipulator = new Manipulator(this).addOrdonator(5);
-            this.manipulator.add(this.invalidQuestionPictogramManipulator);
+            var _declareManipulator = () => {
+                this.manipulator.addOrdonator(9);
+                this.answersManipulator = new Manipulator(this);
+                this.manipulator.add(this.answersManipulator);
+                this.resetManipulator = new Manipulator(this).addOrdonator(2);
+                this.answersManipulator.add(this.resetManipulator);
+                this.validateManipulator = new Manipulator(this).addOrdonator(2);
+                this.answersManipulator.add(this.validateManipulator);
+                this.simpleChoiceMessageManipulator = new Manipulator(this).addOrdonator(2);
+                this.answersManipulator.add(this.simpleChoiceMessageManipulator);
+                this.invalidQuestionPictogramManipulator = new Manipulator(this).addOrdonator(5);
+                this.manipulator.add(this.invalidQuestionPictogramManipulator);
+            };
+            var _loadQuestion = () => {
+                if (!question) {
+                    this.label = "";
+                    this.imageSrc = "";
+                    this.rightAnswers = [];
+                    this.tabAnswer = [classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)}),
+                        classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)})];
+                    this.multipleChoice = false;
+                    this.font = "Arial";
+                    this.bgColor = myColors.white;
+                    this.colorBordure = myColors.black;
+                    this.selectedAnswers = [];
+                    this.validatedAnswers = [];
+                } else {
+                    this.label = question.label;
+                    this.imageSrc = question.imageSrc;
+                    this.video = question.video;
+                    this.rightAnswers = [];
+                    this.multipleChoice = question.multipleChoice;
+                    this.selectedAnswers = question.selectedAnswers || [];
+                    this.validatedAnswers = question.validatedAnswers || [];
+
+                    question.colorBordure && (this.colorBordure = question.colorBordure);
+                    question.bgColor && (this.bgColor = question.bgColor);
+                    question.font && (this.font = question.font);
+                    question.fontSize && (this.fontSize = question.fontSize);
+
+                    if (question.imageSrc) {
+                        this.image = imageController.getImage(this.imageSrc, () => {
+                            this.imageLoaded = true;
+                            this.dimImage = {width: this.image.width, height: this.image.height};
+                        });
+                        this.imageLoaded = false;
+                    } else {
+                        this.imageLoaded = true;
+                    }
+                }
+            };
+            var _loadAnswer = () => {
+                this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
+                if (question !== null && question.tabAnswer !== null) {
+                    question.tabAnswer.forEach(it => {
+                        var tmp = classContainer.createClass("AnswerVue", {model: new Answer(it.model, this)});
+                        this.tabAnswer.push(tmp);
+                        if (tmp.model.correct) {
+                            this.rightAnswers.push(tmp);
+                        }
+                    });
+                }
+            };
+
+            _declareManipulator();
 
             this.invalidLabelInput = (question && question.invalidLabelInput !== undefined) ? question.invalidLabelInput : false;
             this.selected = false;
@@ -1012,56 +1078,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.fontSize = 20;
             this.questionNum = question && question.questionNum || this.parentQuiz.tabQuestions.length + 1;
 
-            if (!question) {
-                this.label = "";
-                this.imageSrc = "";
-                //todo a voir son impact sinon utiliser le const NUMBER_ANSWER_BY_LINE;
-                this.columns = 4;
-                this.rightAnswers = [];
-                this.tabAnswer = [classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)}), classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)})];
-                this.multipleChoice = false;
-                this.font = "Arial";
-                this.bgColor = myColors.white;
-                this.colorBordure = myColors.black;
-                this.selectedAnswers = [];
-                this.validatedAnswers = [];
-            } else {
-                this.label = question.label;
-                this.imageSrc = question.imageSrc;
-                this.video = question.video;
-                this.columns = question.columns ? question.columns : 4;
-                this.rightAnswers = [];
-                this.multipleChoice = question.multipleChoice;
-                this.selectedAnswers = question.selectedAnswers || [];
-                this.validatedAnswers = question.validatedAnswers || [];
-
-                question.colorBordure && (this.colorBordure = question.colorBordure);
-                question.bgColor && (this.bgColor = question.bgColor);
-                question.font && (this.font = question.font);
-                question.fontSize && (this.fontSize = question.fontSize);
-
-                if (question.imageSrc) {
-                    this.image = imageController.getImage(this.imageSrc, () => {
-                        this.imageLoaded = true;
-                        this.dimImage = {width: this.image.width, height: this.image.height};
-                    });
-                    this.imageLoaded = false;
-                } else {
-                    this.imageLoaded = true;
-                }
-            }
-
-
-            this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
-            if (question !== null && question.tabAnswer !== null) {
-                question.tabAnswer.forEach(it => {
-                    var tmp = classContainer.createClass("AnswerVue", {model: new Answer(it.model, this)});
-                    this.tabAnswer.push(tmp);
-                    if (tmp.model.correct) {
-                        this.rightAnswers.push(tmp);
-                    }
-                });
-            }
+            _loadQuestion();
+            _loadAnswer();
 
             this.lines = Math.ceil(this.tabAnswer.length / NUMBER_ANSWER_BY_LINE); //+ 1;
             this.border = null;
