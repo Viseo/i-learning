@@ -925,7 +925,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                             answer.obj.checkbox.answerParent = answer;
                         }
                     });
-                    this.displayToggleButton(x, y, w, h, questionType);
+                    _displayToggleButtonResponseType(x, y, w, h, questionType);
                     this.linkedQuestion.checkValidity();
                 };
                 this.manipulator.add(this.toggleButtonManipulator);
