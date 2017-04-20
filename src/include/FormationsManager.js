@@ -403,6 +403,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                         let games = tmp.progress ? tmp.progress.gamesTab : null;
                         formation.loadFormation(tmp.formation, games);
                         this.formationDisplayed = formation;
+                        this.manipulator.flush();
                         this.formationDisplayed.display();
                     });
                 };

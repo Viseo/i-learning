@@ -308,6 +308,7 @@ exports.User = function (globalVariables, classContainer) {
             var _displayButton = () => {
                 let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);
                 saveButton.text.color(myColors.lightgrey, 0, myColors.white);
+                saveButton.activeShadow();
                 // saveButton.component.mark('saveButton');
                 this.saveButtonManipulator.set(0, saveButton.component).move(0, 2.5 * drawing.height / 10);
             };
@@ -496,11 +497,11 @@ exports.User = function (globalVariables, classContainer) {
             fieldTitle.color(TITLE_COLOR);
             fieldTitle.position(0, 0);
             this.model.correct = true;
+            manipulator.move(x, y + MARGIN);
             this.checkBox.checked = drawCheck(this.checkBox.checkbox.x, this.checkBox.checkbox.y, this.checkBox.size);
             this.cookieManipulator.set(3, this.checkBox.checked);
             manipulator.set(1, fieldTitle.component);
             manipulator.set(2, obj.checkbox);
-            manipulator.move(x, y + MARGIN);
         };
 
         /**
@@ -636,6 +637,7 @@ exports.User = function (globalVariables, classContainer) {
             var _displayButton = () => {
                 let button = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.connexionButtonLabel);
                 button.text.color(myColors.lightgrey, 0, myColors.white);
+                button.activeShadow();
                 this.connexionButtonManipulator
                     .set(0, button.component)
                     .move(0, 2.5 * drawing.height / 10);

@@ -8,6 +8,7 @@ exports.Util = function (globalVariables) {
         svg = globalVariables.svg,
         gui = globalVariables.gui,
         playerMode = globalVariables.playerMode,
+        library = globalVariables.library,
         AddEmptyElementVue,
         QuizVue,
         BdVue,
@@ -61,6 +62,87 @@ exports.Util = function (globalVariables) {
     }
 
     /**
+     *
+     * Class pour un paneau dynamique (affichage)
+     */
+    class PopOut {
+        constructor(width, height, classToDisplay, parentManipulator){
+            this.width = width;
+            this.height = height;
+            this.classToDisplay = classToDisplay;
+            this.parentManipulator = parentManipulator;
+            let tmpFlush = parentManipulator.flush;
+            let self = this;
+            parentManipulator.flush = function (handler){
+                let result = tmpFlush.apply(this, arguments);
+                self.hide();
+                return result;
+            }
+        }
+
+        show(){
+            let computeBox = ()=>{
+                if (this.width > drawing.width){
+                    this.width = drawing.width - 20;
+                }
+                if (this.x - this.width/2 < 0){
+                    this.x = this.width/2 + 10;
+                }
+                if (this.x + this.width/2 > drawing.width){
+                    this.x = drawing.width - this.width/2 - 10;
+                }
+            }
+            this.manipulator && this.hide();
+            this.manipulator = new Manipulator(this).addOrdonator(4);
+            //this.manipulator.set(0,this.panel.component);
+            drawings.piste.set(0,this.manipulator.component);
+            let point = {
+                x : this.parentManipulator.first.globalPoint(0, 0).x ,
+                y : this.parentManipulator.first.globalPoint(0, 0).y
+            }
+            this.x = point.x;
+            this.y = point.y;
+            computeBox();
+            this.manipulator.move(point.x, point.y);
+            this.manipulator.set(1, this.classToDisplay.manipulator);
+            this.manipulator.first.opacity(0);
+            this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
+                this.manipulator.first.steppy(5,50).opacity(0,1);
+            });
+            this.manipulator.scalor.scale(0.5);
+            if(this.xAdd != undefined && this.yAdd != undefined){
+                this.manipulator.move(this.x + this.xAdd, this.y + this.yAdd);
+            }
+
+            this.redCrossManipulator = new Manipulator(this);
+            this.redCross = drawRedCross(0,0, 20, this.redCrossManipulator);
+            this.redCross.mark('popupRedcross');
+            this.redCrossManipulator.add(this.redCross);
+            this.manipulator.add(this.redCrossManipulator);
+            this.redCrossManipulator.move(this.width, -this.height);
+            svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+            if (this.cb){
+                this.cb();
+            }
+
+        }
+
+        defineProperty(x, y, callback){
+            this.xAdd = x;
+            this.yAdd = y;
+            this.cb = callback;
+        }
+
+
+        hide(){
+            this.manipulator.flush();
+            this.manipulator = null;
+        }
+    }
+
+
+
+    /**
      * Crée un Manipulator
      * @class
      */
@@ -81,7 +163,7 @@ exports.Util = function (globalVariables) {
             this.translator.parentManip = this;
             this.rotator = rotator || new svg.Rotation(0);
             this.rotator.parentManip = this;
-            this.scalor = scalor || new svg.Scaling(1);
+                this.scalor = scalor || new svg.Scaling(1);
             this.scalor.parentManip = this;
             this.translator.add(this.rotator.add(this.scalor));
             this.last = this.scalor;
@@ -290,7 +372,7 @@ exports.Util = function (globalVariables) {
             this.component.show(anchor);
             this.drawing.manipulator = new Manipulator(this, this.component.background);
             this.drawing.manipulator.addOrdonator(4);
-            this.piste = new Manipulator(this);
+            this.piste = new Manipulator(this).addOrdonator(1);
             this.drawing.manipulator.set(2, this.piste);
             this.component.clean = (survival) => {
                 for (let i = drawings.component.children.length; i >= 0; i--) {
@@ -1180,6 +1262,7 @@ exports.Util = function (globalVariables) {
             game.miniature = this;
             this.iconManipulator = new Manipulator(this).addOrdonator(3);
             this.game.miniatureManipulator.addOrdonator(4);
+            this._acceptDrop = true;
 
         }
 
@@ -1430,11 +1513,36 @@ exports.Util = function (globalVariables) {
     class MiniatureFormation {
         constructor(formation) {
             this.formation = formation;
+            this.manipulator = new Manipulator(this).addOrdonator(3);
             this.miniatureManipulator = new Manipulator(this).addOrdonator(2);
             this.iconManipulator = new Manipulator(this).addOrdonator(4);
+            this._acceptDrop = true;
+            this.popOut =  new PopOut(400,150, new globalVariables.domain.ImagesLibraryVue(), this.miniatureManipulator);
         }
 
         display(x, y, w, h) {
+            let iconSize = this.formation.parent.iconeSize;
+            let addSettingsIcon = () =>{
+                let settingsPic = new Picture('../images/settings.png', false, this, '', null);
+                let settingsIcon = {
+                    border: new svg.Circle(iconSize/2).color(myColors.ultraLightGrey, 0, myColors.none),
+                    content: settingsPic
+                }
+                this.settingsManipulator = new Manipulator(this).addOrdonator(2);
+                this.settingsManipulator.set(0,settingsIcon.border);
+                settingsIcon.content.draw(0,0,iconSize*0.8, iconSize*0.8, this.settingsManipulator, 1);
+                this.miniatureManipulator.add(this.settingsManipulator);
+                this.popOut.defineProperty(0, -h*1.5);
+                this.settingsManipulator.addEvent('click', this.popOut.show.bind(this.popOut));
+            }
+            addSettingsIcon();
+            if (!x && !y && !w && !h){
+               var {lastX: x, lastY: y, lastW: w, lastH: h} = this;
+            }
+            this.lastX = x;
+            this.lastY = y;
+            this.lastW = w;
+            this.lastH = h;
             let points = [
                 [w / 2, -h / 1.5],
                 [0, -h],
@@ -1452,17 +1560,26 @@ exports.Util = function (globalVariables) {
             //this.miniatureManipulator.set(1, miniature.content);
             this.miniatureManipulator.set(0, miniature.border);
             miniature.border.mark(this.formation.label);
-            let iconSize = this.formation.parent.iconeSize;
             if (!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
                 icon.elements.forEach((element, index) => {
                     this.iconManipulator.set(index, element);
                 });
             }
+            this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
             this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             playerMode && this.drawIcon();
+            if (this.picture){
+                this.imageManipulator = new Manipulator(this).addOrdonator(2);
+                this.miniatureManipulator.add(this.imageManipulator);
+                this.image = new Picture(this.picture, true, this, '',()=> {
+                    this.imageManipulator.flush();
+                    this.imageManipulator = null
+                });
+                this.image.draw(0,h/3, w/2, h/2,this.imageManipulator,0);
+            }
 
             let onMouseOverSelect = miniatureManipulator => {
                 miniatureManipulator.get(0).color([130, 180, 255], 3, myColors.black);
@@ -1477,6 +1594,7 @@ exports.Util = function (globalVariables) {
 
         drawIcon() {
             const circleToggleSize = 12.5;
+
             let iconsize = 20,
                 size = 25,
                 iconInfos;
@@ -1919,6 +2037,7 @@ exports.Util = function (globalVariables) {
         ignoredData = (key, value) => myParentsList.some(parent => key === parent) || value instanceof Manipulator ? undefined : value;
 
         myColors = {
+            ultraLightGrey: [184,187,196],
             customBlue: [43, 120, 228],
             darkBlue: [25, 25, 112],
             blue: [25, 122, 230],
@@ -2108,6 +2227,7 @@ exports.Util = function (globalVariables) {
         ReturnButton,
         Server,
         drawHexagon,
-        goDirectlyToLastAction
+        goDirectlyToLastAction,
+        PopOut
     }
 };

@@ -464,12 +464,14 @@ exports.Library = function(globalVariables, classContainer){
                             image.name = item.name;
                             image.imageSVG.srcDimension = { width: item.width, height: item.height };
                             image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
-                            let X = x + libMargin + ((i % maxImagesPerLine) * (libMargin + this.imageWidth));
+                            let X = libMargin + this.imageWidth/2 + ((i % maxImagesPerLine ) * (libMargin + this.imageWidth));
                             this.libraryManipulators[i].move(X, tempY);
 
                         });
                         this.panel.resizeContent(w, tempY += this.imageHeight);
+                        this.imagesLoaded = true;
                         assignImageEvents();
+                        callback();
                     };
                     Server.getImages().then(data => {
                         let myLibraryImage = JSON.parse(data).images;
@@ -683,12 +685,12 @@ exports.Library = function(globalVariables, classContainer){
                     };
                     const tabManager = createTabManager(this);
                     tabManager.addTab("Images", 0, () => {
-                        displayItems();
+                        //displayItems();
                         this.manipulator.set(2, imagesPanel.component);
                     });
                     tabManager.addTab("Vidéos", 1, () => {
                         this.manipulator.set(2, videosPanel.component);
-                        loadVideos();
+                        //loadVideos();
                     });
                     tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
                     tabManager.select(this.selectedTab);
@@ -700,7 +702,6 @@ exports.Library = function(globalVariables, classContainer){
                 displayAddButton();
             };
             display(x, y, w, h);
-            callback();
         }
 
         /**
@@ -710,7 +711,7 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropImage(element, target) {
             let parentObject = target.parent.parentManip.parentObject;
-            if (target && target._acceptDrop) {
+            if (target && (target._acceptDrop || (target.parentManip && parentObject._acceptDrop))) {
                 if (classContainer.isInstanceOf('PopInVue', parentObject)) {
                     let popIn = parentObject;
                     popIn.image = element.src;
@@ -718,9 +719,12 @@ exports.Library = function(globalVariables, classContainer){
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator
                         && popIn.miniature.video.redCrossManipulator.flush();
                     let questionCreator = popIn.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    popIn.display(questionCreator, questionCreator.coordinatesAnswers.x,
-                        questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
-                        questionCreator.coordinatesAnswers.h);
+                    popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                }
+                else if (parentObject instanceof globalVariables.util.MiniatureFormation){
+                    let miniature = target.parentManip.parentObject;
+                    miniature.picture = element.src;
+                    miniature.display();
                 }
                 else {
                     let newElement = displayImage(element.src, element, target.width, target.height);
