@@ -261,13 +261,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                             var _onblur = () => {
                                 contentarea.enter();
                                 this.label = contentarea.messageText.trim();
-                                drawings.component.remove({
-                                    textarea: contentarea,
-                                    border: formationLabel.border,
-                                    onblur: _onblur,
-                                    remove: _removeErrorMessage,
-                                    display: _displayErrorMessage
-                                });
+                                drawings.component.remove(contentarea);
                                 drawing.notInTextArea = true;
                                 _formationLabelDisplay();
                             };
