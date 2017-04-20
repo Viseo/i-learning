@@ -74,7 +74,6 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
         },
         set: function (nouvelleValeur) {
             main.currentPage = nouvelleValeur;
-            console.log('yooooo')
             this.prototype.flushPiste();
         },
         enumerable: true,
