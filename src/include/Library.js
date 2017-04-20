@@ -565,7 +565,6 @@ exports.Library = function(globalVariables, classContainer){
                         let overVideoIconHandler = () => {
                             let redCross = drawRedCross(0, -title.finalHeight / 2, 15, manipulator.redCrossManipulator);
                             redCross.mark('videoRedCross');
-                            svg.addEvent(redCross, 'mouseout', mouseleaveHandler);
                             manipulator.redCrossManipulator.add(redCross);
                             let redCrossClickHandler = () => {
                                 Server.deleteVideo(video);
@@ -583,11 +582,11 @@ exports.Library = function(globalVariables, classContainer){
                             manipulator.redCrossManipulator.flush();
                         };
 
-                        iconVideo.setHandler('mouseover', overVideoIconHandler);
-                        iconVideo.setHandler('mouseout', mouseleaveHandler);
+                        iconVideo.setHandler('mouseenter', overVideoIconHandler);
+                        //iconVideo.setHandler('mouseleave', mouseleaveHandler);
 
-                        svg.addEvent(title.text, 'mouseover', overVideoIconHandler);
-                        svg.addEvent(title.text, 'mouseout', mouseleaveHandler);
+                        svg.addEvent(title.text, 'mouseenter', overVideoIconHandler);
+                        svg.addEvent(title.text, 'mouseleave', mouseleaveHandler);
 
                     };
 
@@ -690,7 +689,7 @@ exports.Library = function(globalVariables, classContainer){
                     });
                     tabManager.addTab("Vidéos", 1, () => {
                         this.manipulator.set(2, videosPanel.component);
-                        //loadVideos();
+                        loadVideos();
                     });
                     tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
                     tabManager.select(this.selectedTab);
