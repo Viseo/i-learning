@@ -78,8 +78,14 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 let self = this;
                 this.image = imageController.getImage(this.imageSrc, function () {
                     self.imageLoaded = true;
-                    self.dimImage = {width: this.width, height: this.height};
+                    self.dimImage = {width: this.width/2, height: this.height };
                 });
+
+               /* this.image = imageController.getImage(this.imageSrc, () => {
+                    this.imageLoaded = true;
+                    this.dimImage = {width: this.image.width, height: this.image.height};
+                });*/
+
                 this.imageLoaded = false;
             } else {
                 this.imageLoaded = true;
@@ -934,7 +940,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             quest.label && (this.label = quest.label);
             this.multipleChoice = quest.multipleChoice;
             quest.tabAnswer.forEach(answer => {
-                if (classContainer.isInstanceOf("AnswerVue", answer)) {
+                if (classContainer.isInstanceOf("AnswerVueAdmin", answer)) {
                     answer.isEditable(this, true);
                 }
                 answer.popIn = classContainer.createClass("PopInVue", answer, true);
@@ -978,7 +984,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 //todo a voir son impact sinon utiliser le const NUMBER_ANSWER_BY_LINE;
                 this.columns = 4;
                 this.rightAnswers = [];
-                this.tabAnswer = [classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)}), classContainer.createClass("AnswerVue", {model: new Answer(null, this, this)})];
+                this.tabAnswer = [classContainer.createClass("AnswerVueAdmin", {model: new Answer(null, this, this)}),
+                    classContainer.createClass("AnswerVueAdmin", {model: new Answer(null, this, this)})];
                 this.multipleChoice = false;
                 this.font = "Arial";
                 this.bgColor = myColors.white;
@@ -1015,7 +1022,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.questionType = (this.multipleChoice) ? myQuestionType.tab[1] : myQuestionType.tab[0];
             if (question !== null && question.tabAnswer !== null) {
                 question.tabAnswer.forEach(it => {
-                    var tmp = classContainer.createClass("AnswerVue", {model: new Answer(it.model, this)});
+                    let nameAnswerClassToInstance = (globalVariables.playerMode) ? "AnswerVueCollab" : "AnswerVueAdmin";
+                    var tmp = classContainer.createClass(nameAnswerClassToInstance, {model: new Answer(it.model, this)});
                     this.tabAnswer.push(tmp);
                     if (tmp.model.correct) {
                         this.rightAnswers.push(tmp);
@@ -1388,13 +1396,13 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 answerElement.border.mark('answerElementCadre' + index);        // id answerElementCadre & Content
                 answerElement.content.mark('answerElementContent' + index);     // différents du coté admin answerLabelCadre & Content
 
-                if (globalVariables.playerMode && this.parentQuiz.previewMode) {
+                if (this.parentQuiz.previewMode) {
                     if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1)
                         answerElement.model.correct ? answerElement.border.color(myColors.greyerBlue, 5, myColors.primaryGreen) : answerElement.border.color(myColors.greyerBlue, 5, myColors.red);
                     else {
                         answerElement.model.correct && answerElement.border.color(myColors.white, 5, myColors.primaryGreen)
                     }
-                } else if (globalVariables.playerMode && !this.parentQuiz.previewMode) {
+                } else{
                     if (this.parentQuiz.questionsAnswered.length < this.questionNum) {
                         answerElement.border.color(myColors.white, 1, answerElement.border.strokeColor);
                     } else if (this.parentQuiz.questionsAnswered[this.questionNum - 1].validatedAnswers.indexOf(index) !== -1) {
@@ -1406,7 +1414,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             this.openPopIn && this.openPopIn();
             this.openPopIn = null;
 
-            if (globalVariables.playerMode && this.parentQuiz.previewMode) {
+            if (this.parentQuiz.previewMode) {
                 /* TODO lATER :
                  this.parentQuiz.textToSpeechIcon = drawTextToSpeechIcon({ x: 0.4 * drawing.width, y: -100, width: 35 })
                  .color(myColors.white, 0.5, SELECTION_COLOR)
@@ -1713,7 +1721,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         dblclickAdd() {
             var _addAnswer = () => {
-                let newAnswer = classContainer.createClass("AnswerVue", {model: new Answer(null, this.parent.linkedQuestion, this)});
+                let newAnswer = classContainer.createClass("AnswerVueAdmin", {model: new Answer(null, this.parent.linkedQuestion, this)});
                 newAnswer.isEditable(this, true);
                 let questionCreator = this.parent;
                 questionCreator.linkedQuestion.tabAnswer.forEach(answer => {
@@ -1799,11 +1807,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         isEditable(editor, editable) {
-            this.linesManipulator = new Manipulator(this).addOrdonator(4);
-            this.manipulator.add(this.linesManipulator);
-            this.penManipulator = new Manipulator(this).addOrdonator(4);
-            this.manipulator.add(this.penManipulator);
-            this.model.isEditable(editor, editable);
         }
 
         render(x, y, w, h) {
@@ -1818,7 +1821,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.manipulator.flush();
                     this.manipulator.move(x, y);
                     this.obj = {};
-                }
+                };
                 let _displayAnswerBox = () => {
                     let text = (this.model.label) ? this.model.label : this.model.labelDefault,
                         color = (this.model.label) ? myColors.black : myColors.grey,
@@ -1826,7 +1829,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
                     if (this.model.image) {
                         let pictureRedCrossClickHandler = () => {
-                            this.manipulator.unset(2)
+                            this.manipulator.unset(2);
                             this.model.image = null;
                             this.model.imageSrc = null;
                             this.model.parentQuestion.checkValidity();
@@ -1866,7 +1869,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         if (textarea.value === this.model.labelDefault) {
                             textarea.value = "";
                         }
-                    })
+                    });
 
                     //TODO rechanger pour afficher plus correctement les textarea avec les corners
                     this.border
@@ -1904,7 +1907,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                             redCrossClickHandler(event)
                         });
                         this.redCrossManipulator.set(1, redCross);
-                    }
+                    };
                     let mouseleavehandler = (event) => {
                         let target = drawings.component.background.getTarget(event.pageX, event.pageY);
                         if (!target || target.id !== "redCross") {
@@ -1937,27 +1940,24 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 _displayPenAndCheckBox();
             };
             var _generateElements = () => {
-                if (this.model.label && this.model.imageSrc) { // Reponse avec Texte ET image
-                    let obj = displayImageWithTitle(this.model.label, this.model.imageSrc, this.model.dimImage, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, this.model.image);
-                    this.border = obj.border;
-                    this.content = obj.text;
-                    this.image = obj.image;
-                } else if (this.model.video) { // Reponse avec video uniquement
-                    let obj = drawVideo(this.model.label, this.model.video, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator, false, true);
-                    this.border = obj.border;
-                    this.content = obj.content;
-                    this.video.miniature = obj.video;
-                } else if (this.model.label && !this.model.imageSrc) { // Reponse avec Texte uniquement
-                    let obj = displayText(this.model.label, this.width, this.height, this.model.colorBordure, this.model.bgColor, this.model.fontSize, this.model.font, this.manipulator);
-                    this.border = obj.border;
-                    this.content = obj.content;
-                } else if (this.model.imageSrc && !this.model.label) { // Reponse avec Image uniquement
-                    let obj = displayImageWithBorder(this.model.imageSrc, this.model.dimImage, this.width, this.height, this.manipulator);
-                    this.image = obj.image;
-                    this.border = obj.border;
-                } else { // Cas pour test uniquement : si rien, n'affiche qu'une border
-                    this.border = new svg.Rect(this.width, this.height).color(this.model.bgColor, 1, myColors.black).corners(25, 25);
-                    this.manipulator.add(this.border);
+
+                this.border = util.drawHexagon(this.width, this.height - MARGIN, null, 0.60);
+                this.manipulator.set(0, this.border);
+
+                var text = autoAdjustText(this.model.label, this.width, null, this.model.fontSize,
+                    this.model.font, this.manipulator, 1).text;
+                this.content = text;
+                this.manipulator.set(1, this.content);
+
+                if(this.model.imageSrc){
+                    var image = displayImage(this.model.imageSrc, this.model.dimImage, this.width, this.height).image;
+                    this.image = image;
+                    this.manipulator.set(2, image);
+                    if(this.model.label){
+                        image.position(-this.width/2 + image.width/2,0);
+                        this.content.position(-this.width/2 + image.width
+                            + util.getStringWidthByFontSize(this.model.label.length / 2 + 1, this.model.fontSize), 0);
+                    }
                 }
 
                 if (this.model.selected) { // image pré-selectionnée
@@ -1999,14 +1999,17 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.explanationIconManipulator.addEvent("click", openPopIn);
                 svg.addEvent(this.border, "click", openPopIn);
                 svg.addEvent(this.content, "click", openPopIn);
-            }
+            };
             var _displayVoiceIcon = () => {
-                this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
-                this.voiceIcon.draw(this.border.width / 2 - 2 * MARGIN, -this.border.height / 2 + 2 * MARGIN, 16, 16, this.manipulator, 6);
-                svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
-                    runtime.speechSynthesisSpeak(this.model.label);
-                });
-            }
+                if(this.model.label && this.model.label.length > 0){
+                    this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
+                    ///this.voiceIcon.draw(this.border.width / 2 - 2 * MARGIN, -this.border.height / 2 + 2 * MARGIN, 16, 16, this.manipulator, 6);
+                    this.voiceIcon.draw(this.width/2, 0, 16, 16, this.manipulator, 6);
+                    svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
+                        runtime.speechSynthesisSpeak(this.model.label);
+                    });
+                }
+            };
 
             _savePosAndSize();
             if (this.model.editable) {
@@ -2014,27 +2017,51 @@ exports.QuizElements = function (globalVariables, classContainer) {
             } else {
                 _generateElements();
                 if (this.model.parentQuestion.parentQuiz.previewMode) {
-                    !this.model.explanation.empty() && _drawPopIn();
+                    this.model.explanation && !this.model.explanation.empty() && _drawPopIn();
                     _displayVoiceIcon();
-                } else if (globalVariables.playerMode) {
-                    var _chooseAnswer = () => {
-                        this.model.select(this);
-                        if (this.model.parentQuestion.multipleChoice) {
-                            if (this.model.selected) {
-                                this.model.colorBordure = this.border.strokeColor;
-                                this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
-                                this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
-                            } else {
-                                this.border.color(this.model.bgColor, 1, this.model.colorBordure);
-                                if (this.model.parentQuestion.selectedAnswers.length === 0) {
-                                    this.model.parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
-                                }
-                            }
-                        }
-                    };
-                    this.manipulator.addEvent('click', _chooseAnswer);
                 }
             }
+        }
+    }
+
+    class AnswerVueCollab extends AnswerVue {
+        constructor(options) {
+            super(options);
+        }
+
+        render(x, y, w, h) {
+            super.render(x, y, w, h);
+            var _chooseAnswer = () => {
+                this.model.select(this);
+                let parentQuestion = this.model.parentQuestion;
+                if (parentQuestion.multipleChoice) {
+                    if (this.model.selected) {
+                        this.model.colorBordure = this.border.strokeColor;
+                        this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
+                        parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
+                    } else {
+                        this.border.color(this.model.bgColor, 1, this.model.colorBordure);
+                        if (parentQuestion.selectedAnswers.length === 0) {
+                            parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
+                        }
+                    }
+                }
+            };
+            this.manipulator.addEvent('click', _chooseAnswer);
+        }
+    }
+
+    class AnswerVueAdmin extends AnswerVue {
+        constructor(options) {
+            super(options);
+        }
+
+        isEditable(editor, editable) {
+            this.linesManipulator = new Manipulator(this).addOrdonator(4);
+             this.manipulator.add(this.linesManipulator);
+             this.penManipulator = new Manipulator(this).addOrdonator(4);
+             this.manipulator.add(this.penManipulator);
+             this.model.isEditable(editor, editable);
         }
     }
 
@@ -2247,7 +2274,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
         QuestionVueCollab,
         QuestionVueAdmin,
         AddEmptyElementVue,
-        AnswerVue,
+        AnswerVueCollab,
+        AnswerVueAdmin,
         PopInVue
     };
-}
+};

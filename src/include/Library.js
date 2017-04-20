@@ -709,23 +709,27 @@ exports.Library = function(globalVariables, classContainer){
          * @param target - object à qui l'image va être ajoutée (i.e question ou réponse)
          */
         dropImage(element, target) {
+            let parentObject = target.parent.parentManip.parentObject;
             if (target && target._acceptDrop) {
-                if (classContainer.isInstanceOf('PopInVue', target.parent.parentManip.parentObject)) {
-                    let popIn = target.parent.parentManip.parentObject;
+                if (classContainer.isInstanceOf('PopInVue', parentObject)) {
+                    let popIn = parentObject;
                     popIn.image = element.src;
                     popIn.video = null;
-                    popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
-                    let questionCreator = target.parent.parentManip.parentObject.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    target.parent.parentManip.parentObject.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                    popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator
+                        && popIn.miniature.video.redCrossManipulator.flush();
+                    let questionCreator = popIn.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+                    popIn.display(questionCreator, questionCreator.coordinatesAnswers.x,
+                        questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w,
+                        questionCreator.coordinatesAnswers.h);
                 }
                 else {
                     let newElement = displayImage(element.src, element, target.width, target.height);
                     newElement.image._acceptDrop = true;
                     newElement.image.name = element.name;
                     switch (true) {
-                        case classContainer.isInstanceOf("QuestionCreatorVue", target.parent.parentManip.parentObject):
+                        case classContainer.isInstanceOf("QuestionCreatorVue", parentObject):
                             drawings.component.clean();
-                            let questionCreator = target.parent.parentManip.parentObject;
+                            let questionCreator = parentObject;
                             questionCreator.linkedQuestion.video = null;
                             questionCreator.linkedQuestion.image = newElement.image;
                             questionCreator.linkedQuestion.imageSrc = newElement.image.src;
@@ -733,8 +737,8 @@ exports.Library = function(globalVariables, classContainer){
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case classContainer.isInstanceOf("AnswerVue",target.parent.parentManip.parentObject):
-                            let answer = target.parent.parentManip.parentObject;
+                        case classContainer.isInstanceOf("AnswerVueAdmin", parentObject):
+                            let answer = parentObject;
                             answer.model.video = null;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
                             answer.model.image = newElement.image;
