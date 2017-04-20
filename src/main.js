@@ -4,7 +4,7 @@ const Domain = require('./Domain').Domain,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
     guiPolyfill = require('../lib/svgguiPoly').guiPolyfill;
 
-let main = function (svg, runtime, dbListener, ImageRuntime,param) {
+function main(svg, runtime, dbListener, ImageRuntime,param) {
 
     let domain, util, gui, drawing, drawings;
 
@@ -16,11 +16,12 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
     gui = svggui(svg, { speed: 5, step: 100 });
     globalVariables.gui = gui;
     //polyfill pour ajouter des fonctionnaolités à svggui
-    guiPolyfill(svg, gui);
+
 
     globalVariables.main = main;
 
     util = Util(globalVariables);
+    guiPolyfill(svg, gui, util);
     globalVariables.util = util;
     util.SVGGlobalHandler();
     util.Bdd();
@@ -61,6 +62,24 @@ let main = function (svg, runtime, dbListener, ImageRuntime,param) {
         }
         return video;
     };
+
+    main.prototype.flushPiste = () => {
+        if (drawings.piste.ordonator){
+            drawings.piste.unset(0);
+        }
+    }
+    Object.defineProperty(main, "currentPageDisplayed", {
+        get: function () {
+            return main.currentPage;
+        },
+        set: function (nouvelleValeur) {
+            main.currentPage = nouvelleValeur;
+            console.log('yooooo')
+            this.prototype.flushPiste();
+        },
+        enumerable: true,
+        configurable: true
+    });
 
     let resizePaper = function (event) {
         drawings.component.clean();
