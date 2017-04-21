@@ -226,6 +226,21 @@ module.exports = function (app, fs) {
             })
     });
 
+    app.post('/formations/userAllEval', function (req, res) {
+    });
+
+    app.post('/formations/userFormationEval/:id', function (req, res) {
+        console.log(req.body);
+        console.log(req.params);
+        let result = {};
+        formations.getFormationById(req.params.id)
+            .then((data) => {
+                result.formation = data.formation;
+            })
+            .catch(console.error)
+        console.log(result);
+    });
+
     app.post('/formations/deactivateFormation', function (req, res) {
         formations.getFormationById(req.body.id)
             .then(data => formations.deactivateFormation(data.formation))

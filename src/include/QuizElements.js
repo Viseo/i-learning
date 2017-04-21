@@ -1495,7 +1495,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                  this.parentQuiz.textToSpeechIcon.color(myColors.white, 0.5, SELECTION_COLOR);
                  }
                  };
-                 this.parentQuiz.textToSpeechIcon.setHandler('click', this.parentQuiz.textToSpeechIcon.clickHandler);
+                 this.parentQuiz.textToSpeechIcon.setMiniatureHandler('click', this.parentQuiz.textToSpeechIcon.clickHandler);
                  this.manipulator.add(this.parentQuiz.textToSpeechIcon.manipulator);
                  this.simpleChoiceMessageManipulator.move(buttonX + buttonW / 2, buttonY + buttonH / 2);
                  displayText("Cliquer sur une réponse pour afficher son explication", buttonW, buttonH, myColors.none, myColors.none, 20, "Arial", this.simpleChoiceMessageManipulator);*/

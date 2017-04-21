@@ -54,7 +54,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.errorMessage = new Manipulator(this).addOrdonator(3);
                 this.message = new Manipulator(this).addOrdonator(3);
                 /* for Player */
-                this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(6);
+                this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(7);
             };
             var _declareFormationsList = () => {
                 this.formations = [];
@@ -85,14 +85,25 @@ exports.formationsManager = function(globalVariables, classContainer){
                         var _createFilter = () => {
                             let manip = this.toggleFormationsManipulator;
                             var _declarePlayerIcons = () => {
+                                let starPointsDefaultIcon = [
+                                        [0, 0],
+                                    [-this.iconeSize/2.3, -this.iconeSize/2.3],
+                                    [this.iconeSize/2.3, -this.iconeSize/2.3],
+                                    [-this.iconeSize/3.5, this.iconeSize/3.5],
+                                    [0,-this.iconeSize/1.1],
+                                    [this.iconeSize/3.5,this.iconeSize/3.5]
+                                ];
+                                this.starIcon = {
+                                    content: new svg.Polygon().add(starPointsDefaultIcon)
+                                        .color(myColors.lighteryellow, 1, myColors.lighteryellow)
+                                        .position(-this.circleToggleSize * 7 - MARGIN * 2, MARGIN / 2)
+                                };
                                 this.undoneIcon = {
                                     border: new svg.Circle(this.circleToggleSize).color(myColors.blue, 0, myColors.none)
                                         .position(-this.circleToggleSize * 4 - MARGIN * 2, 0),
                                     content: new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white)
                                         .position(-this.circleToggleSize * 4 - MARGIN * 2, 0).mark('unDoneIcon')
-
                                 };
-                                /** TODO marque du border ou content ? **/
                                 this.inProgressIcon = displayTextWithCircle('...', this.circleToggleSize * 2,
                                     this.circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', manip);
                                 this.inProgressIcon.content.font('arial', 20).color(myColors.white).mark('inProgressIcon');
@@ -109,6 +120,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 manip.set(3, this.doneIcon.border);
                                 manip.set(5, this.undoneIcon.content);
                                 manip.set(2, this.undoneIcon.border);
+                                manip.set(6, this.starIcon.content);
                             };
                             var _drawBorderFilter = () => {
                                 this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
@@ -143,6 +155,13 @@ exports.formationsManager = function(globalVariables, classContainer){
                                     _displayFormations();
                                     _drawBorderFilter();
                                 };
+                                var _saveFormationsStars = formations => {
+                                    console.log(formations);
+                                    /**
+                                     * TODO récupérer le nombre d'étoiles pour chaque formation et envoyer les notes
+                                     * sur le serveur
+                                     */
+                                }
 
                                 svg.addEvent(this.inProgressIcon.border, 'click', _toggleInProgress);
                                 svg.addEvent(this.inProgressIcon.content, 'click', _toggleInProgress);
@@ -150,6 +169,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
                                 svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
                                 svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
+                                svg.addEvent(this.starIcon.content, 'click', () => _saveFormationsStars(this.formations));
                             };
 
                             _declarePlayerIcons();
@@ -391,7 +411,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
             var _displayFormations = () => {
                 var _onClickDisplayFormation = formation => {
-                    formation.miniature.removeHandler("click");
+                    formation.miniature.removeMiniatureHandler("click");
                     Server.getFormationsProgress(formation._id).then(data => {
                         var tmp = JSON.parse(data);
                         let games = tmp.progress ? tmp.progress.gamesTab : null;
@@ -420,7 +440,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     formation.parent = this;
                     this.formationsManipulator.add(formation.miniature.miniatureManipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-                    formation.miniature.setHandler("click", () => _onClickDisplayFormation(formation));
+                    formation.miniature.setMiniatureHandler("click", () => _onClickDisplayFormation(formation));
                     count++;
                     posx += (this.tileWidth + spaceBetweenElements.width);
                 });
