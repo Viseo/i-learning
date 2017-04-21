@@ -1395,8 +1395,6 @@ exports.Util = function (globalVariables) {
                 lock.draw(this.size / 2, -this.size / 3, this.size / 5, this.size / 5, this.iconManipulator, 1);
                 this.game.miniatureManipulator.add(this.iconManipulator);
             }
-
-
         }
 
         drawProgressIcon(object, size) {

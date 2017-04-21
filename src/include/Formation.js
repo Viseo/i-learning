@@ -26,7 +26,8 @@ exports.Formation = function (globalVariables, classContainer) {
         util = globalVariables.util,
         Puzzle = globalVariables.util.Puzzle;
 
-    const OFFSET_X_DISPLAY_INCORRECT_QUESTION = 100;
+    const OFFSET_X_DISPLAY_INCORRECT_QUESTION = 100,
+        EMOJI_ANSWER_SIZE = 35;
 
     installDnD = globalVariables.gui.installDnD;
 
@@ -1249,7 +1250,7 @@ exports.Formation = function (globalVariables, classContainer) {
      * Quiz
      * @class
      */
-    class  QuizVue extends GameVue{
+    class QuizVue extends GameVue{
         /**
          * construit un quiz
          * @constructs
@@ -1259,17 +1260,48 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         constructor(quiz, previewMode, parentFormation) {
             super(quiz, parentFormation);
+            var _declareManipulator = () => {
+                this.manipulator.add(this.returnButtonManipulator);
+                this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.manipulator.add(this.expButtonManipulator);
+                this.chevronManipulator = new Manipulator(this);
+                this.leftChevronManipulator = new Manipulator(this).addOrdonator(1);
+                this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
+                this.manipulator.add(this.chevronManipulator);
+                this.chevronManipulator.add(this.leftChevronManipulator);
+                this.chevronManipulator.add(this.rightChevronManipulator);
+            };
+            var _declareDimension = () => {
+                this.resultArea = {
+                    x: drawing.width / 2,
+                    y: 220,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.titleArea = {
+                    x: 0,
+                    y: 0,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.questionArea = {
+                    x: 0,
+                    y: 210,
+                    w: drawing.width,
+                    h: 200
+                };
+                this.miniaturePosition = {x: 0, y: 0};
+            };
+            var _declareFontAndColor = () => {
+                quiz.font && (this.font = quiz.font);
+                quiz.fontSize ? (this.fontSize = quiz.fontSize) : (this.fontSize = 20);
+                quiz.colorBordure ? (this.colorBordure = quiz.colorBordure) : (this.colorBordure = myColors.black);
+                quiz.bgColor ? (this.bgColor = quiz.bgColor) : (this.bgColor = myColors.none);
+            };
+
             const returnText = globalVariables.playerMode ? (previewMode ? "Retour aux résultats" : "Retour à la formation") : "Retour à l'édition du jeu";
             this.returnButton = new ReturnButton(this, returnText);
-            this.manipulator.add(this.returnButtonManipulator);
-            this.expButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.manipulator.add(this.expButtonManipulator);
-            this.chevronManipulator = new Manipulator(this);
-            this.leftChevronManipulator = new Manipulator(this).addOrdonator(1);
-            this.rightChevronManipulator = new Manipulator(this).addOrdonator(1);
-            this.manipulator.add(this.chevronManipulator);
-            this.chevronManipulator.add(this.leftChevronManipulator);
-            this.chevronManipulator.add(this.rightChevronManipulator);
+            _declareManipulator();
             this.loadQuestions(quiz);
             this.parentGamesList = quiz.parentGamesList;
             this.levelIndex = quiz.levelIndex || 0;
@@ -1277,30 +1309,14 @@ exports.Formation = function (globalVariables, classContainer) {
             (previewMode) ? (this.previewMode = previewMode) : (this.previewMode = false);
             quiz.puzzleRows ? (this.puzzleRows = quiz.puzzleRows) : (this.puzzleRows = 3);
             quiz.puzzleLines ? (this.puzzleLines = quiz.puzzleLines) : (this.puzzleLines = 3);
-            quiz.font && (this.font = quiz.font);
-            quiz.fontSize ? (this.fontSize = quiz.fontSize) : (this.fontSize = 20);
-            quiz.colorBordure ? (this.colorBordure = quiz.colorBordure) : (this.colorBordure = myColors.black);
-            quiz.bgColor ? (this.bgColor = quiz.bgColor) : (this.bgColor = myColors.none);
-            this.resultArea = {
-                x: drawing.width / 2,
-                y: 220,
-                w: drawing.width,
-                h: 200
-            };
-            this.titleArea = {
-                x: 0,
-                y: 0,
-                w: drawing.width,
-                h: 200
-            };
-            this.questionArea = {
-                x: 0,
-                y: 210,
-                w: drawing.width,
-                h: 200
-            };
-            this.miniaturePosition = {x: 0, y: 0};
+            _declareFontAndColor();
+            _declareDimension();
             this.questionsAnswered = quiz.questionsAnswered ? quiz.questionsAnswered : [];
+            // todo
+            this.questionsAnswered.forEach(answer => {
+                console.log(answer.validatedAnswers);
+            });
+
             this.progress = this.questionsAnswered.length == 0 ? '' :
                 this.questionsAnswered.length == this.tabQuestions.length ? 'Done' : 'inProgress';
             this.score = (quiz.score ? quiz.score : 0);
@@ -1504,8 +1520,45 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param color
          */
         displayScore(color) {
+            var _settingManipulator = () => {
+                this.resultManipulator && this.manipulator.remove(this.resultManipulator);
+                this.resultManipulator = new Manipulator(this);
+                this.scoreManipulator = new Manipulator(this).addOrdonator(3);
+                this.scoreManipulator.mark('scoreManipulator');
+                this.resultManipulator.move(this.titleArea.w / 2 - this.questionArea.w / 2,
+                    this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
+                this.resultManipulator.add(this.scoreManipulator);
+                this.resultManipulator.add(this.puzzle.manipulator);
+                this.manipulator.add(this.resultManipulator);
+            };
+
+            let {finalMessage, autoColor} = this._getResultFinalMessageAndColor();
+            if (color) {
+                autoColor = color;
+            }
+            _settingManipulator();
+            displayText(finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, autoColor,
+                this.fontSize, this.font, this.scoreManipulator);
+            this._displayResultEmoji(-util.getStringWidthByFontSize(finalMessage.length/2, this.fontSize), this.scoreManipulator, 2);
+        }
+
+        _displayResultEmoji(offsetTextX, manipulator, layer){
+            let image = null;
+            let percentBadResponse = this.getQuestionsWithBadAnswers().length/this.tabQuestions.length;
+            if(percentBadResponse == 0.5){
+                image = new util.Picture('/images/emoji/meh.png', false, this, '', null);
+            }else if(percentBadResponse < 0.5){
+                image = new util.Picture('/images/emoji/smile.png', false, this, '', null);
+            }else {
+                image = new util.Picture('/images/emoji/angry.png', false, this, '', null);
+            }
+            image.draw(offsetTextX, 0, EMOJI_ANSWER_SIZE, EMOJI_ANSWER_SIZE, manipulator, layer);
+        };
+
+        _getResultFinalMessageAndColor(){
             let autoColor;
-            switch (this.tabQuestions.length - this.getQuestionsWithBadAnswers()) {
+            var str1, str2;
+            switch (this.tabQuestions.length - this.getQuestionsWithBadAnswers().length) {
                 case this.tabQuestions.length:
                     str1 = 'Impressionant !';
                     str2 = 'et toutes sont justes !';
@@ -1532,22 +1585,9 @@ exports.Formation = function (globalVariables, classContainer) {
                     autoColor = [220, 255, 0];
                     break;
             }
-            var str1, str2;
             let finalMessage = `${str1} Vous avez répondu à ${this.tabQuestions.length} questions, ${str2}`;
-            if (!color) {
-                var usedColor = autoColor;
-            } else {
-                usedColor = color;
-            }
-            this.resultManipulator && this.manipulator.remove(this.resultManipulator);
-            this.resultManipulator = new Manipulator(this);
-            this.scoreManipulator = new Manipulator(this).addOrdonator(2);
-            this.scoreManipulator.mark('scoreManipulator');
-            this.resultManipulator.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.questionHeight / 2 + this.headerHeight / 2 + 2 * MARGIN);
-            this.resultManipulator.add(this.scoreManipulator);
-            this.resultManipulator.add(this.puzzle.manipulator);
-            this.manipulator.add(this.resultManipulator);
-            displayText(finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, usedColor, this.fontSize, this.font, this.scoreManipulator);
+
+            return {finalMessage, autoColor};
         }
 
         /**
@@ -1559,14 +1599,14 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.tabQuestions = [];
                 quiz.tabQuestions.forEach(it => {
                     it.questionType = it.multipleChoice ? myQuestionType.tab[1] : myQuestionType.tab[0];
-                    let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", it, this)
+                    let tmp = (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", it, this)
                         : classContainer.createClass("QuestionVueAdmin", it, this);
                     tmp.parentQuiz = this;
                     this.tabQuestions.push(tmp);
                 });
             } else {
                 this.tabQuestions = [];
-                let tmp =  (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", defaultQuestion, this)
+                let tmp = (globalVariables.playerMode) ? classContainer.createClass("QuestionVueCollab", defaultQuestion, this)
                     : classContainer.createClass("QuestionVueAdmin", defaultQuestion, this);
                 this.tabQuestions.push(tmp);
             }
@@ -1606,8 +1646,20 @@ exports.Formation = function (globalVariables, classContainer) {
                 drawing.width, this.questionHeight);
             this.rightChevron.update(this);
             this.leftChevron.update(this);
-            !this.previewMode && this.tabQuestions[this.currentQuestionIndex].manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
+            !this.previewMode && this.tabQuestions[this.currentQuestionIndex]
+                .manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
             this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.questionArea.w, this.answerHeight);
+            if(this.previewMode && globalVariables.playerMode){
+                let messageResultManip = new Manipulator().addOrdonator(2);
+                let {finalMessage, autoColor} = this._getResultFinalMessageAndColor();
+                displayText(finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, autoColor,
+                    this.fontSize, this.font, messageResultManip);
+                this._displayResultEmoji(-util.getStringWidthByFontSize(finalMessage.length/2, this.fontSize),
+                    messageResultManip, 0);
+
+                messageResultManip.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.headerHeight / 2 + 2 * MARGIN);
+                this.manipulator.add(messageResultManip);
+            };
         }
 
         /**
@@ -1648,10 +1700,10 @@ exports.Formation = function (globalVariables, classContainer) {
                 let question;
                 if(questionAnswered.question){
                     question = questionAnswered.question;
-                }
-                else{
+                } else{
                     question = this.tabQuestions[this.questionsAnswered.indexOf(questionAnswered)];
                 }
+
                 if (question.multipleChoice) {
                     if (question.rightAnswers.length !== questionAnswered.validatedAnswers.length) {
                         questionsWithBadAnswers.push(question);
