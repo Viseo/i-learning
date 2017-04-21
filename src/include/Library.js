@@ -711,49 +711,13 @@ exports.Library = function(globalVariables, classContainer){
          */
         dropImage(element, target) {
             if (target && (target._acceptDrop || (target.parentManip && target.parentManip.parentObject._acceptDrop))) {
-                if (classContainer.isInstanceOf('PopInVue', target.parent.parentManip.parentObject)) {
-                    let popIn = target.parent.parentManip.parentObject;
-                    popIn.image = element.src;
-                    popIn.video = null;
-                    popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator && popIn.miniature.video.redCrossManipulator.flush();
-                    let questionCreator = popIn.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                    popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                let parentObject;
+                if(target.parentManip) {
+                    parentObject = target.parentManip.parentObject;
+                }else{
+                    parentObject = target.parent.parentManip.parentObject;
                 }
-                else if (target.parent.parentManip.parentObject instanceof globalVariables.util.MiniatureFormation){
-                    let miniature = target.parentManip.parentObject;
-                    miniature.picture = element.src;
-                    miniature.display();
-                }
-                else {
-                    let newElement = displayImage(element.src, element, target.width, target.height);
-                    newElement.image._acceptDrop = true;
-                    newElement.image.name = element.name;
-                    switch (true) {
-                        case classContainer.isInstanceOf("QuestionCreatorVue", target.parent.parentManip.parentObject):
-                            drawings.component.clean();
-                            let questionCreator = target.parent.parentManip.parentObject;
-                            questionCreator.linkedQuestion.video = null;
-                            questionCreator.linkedQuestion.image = newElement.image;
-                            questionCreator.linkedQuestion.imageSrc = newElement.image.src;
-                            questionCreator.parent.displayQuestionsPuzzle(null, null, null, null, questionCreator.parent.questionPuzzle.startPosition);
-                            questionCreator.display();
-                            questionCreator.linkedQuestion.checkValidity();
-                            break;
-                        case classContainer.isInstanceOf("AnswerVue",target.parent.parentManip.parentObject):
-                            let answer = target.parent.parentManip.parentObject;
-                            answer.model.video = null;
-                            answer.obj.video && drawings.component.remove(answer.obj.video);
-                            answer.model.image = newElement.image;
-                            answer.model.imageSrc = newElement.image.src;
-                            answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(element => {
-                                element.obj && element.obj.video && drawings.component.remove(element.obj.video);
-                            });
-                            answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                            answer.model.parentQuestion.checkValidity();
-                            break;
-                    }
-                }
-
+                parentObject.dropImage(element);
             }
         }
 
