@@ -1763,7 +1763,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 obj.content.position(0, this.fontSize);
                 obj.border.color(myColors.white, 3, myColors.black)
                     .mark('emptyAnswerAddCadre' + this.type);
-                obj.border.component.setAttribute('stroke-dasharray', '10, 5');
+                obj.border.component.setAttribute && obj.border.component.setAttribute('stroke-dasharray', '10, 5');
             }
             var _displayPlus = () => {
                 let plusSize = 2 * this.fontSize;

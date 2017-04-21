@@ -333,12 +333,7 @@ describe('QuizManager', function () {
             explanationCadre0.listeners['click']();
             let textExplanation = retrieve(root, '[textExplanation]');
             assert(textExplanation.text, 'Cliquer ici pour ajouter du texte');
-            let explanationPanel = retrieve(root, '[explanationPanel]');
-            explanationPanel.listeners['click']();
-            let explanationContentArea = retrieve(root, '[explanationContentArea]');
-            enter(explanationContentArea, "Ceci est la première explication");
-            textExplanation = retrieve(root, '[textExplanation]');
-            assert(textExplanation.text, "Ceci est la première explication");
+            enterTextarea(root, "textExplanation", "Ceci est la première explication");
 
             //TODO check explanation in preview mode
 
