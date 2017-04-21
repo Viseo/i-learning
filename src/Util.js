@@ -141,21 +141,7 @@ exports.Util = function (globalVariables) {
     }
 
 
-
-    /**
-     * Crée un Manipulator
-     * @class
-     */
     class Manipulator {
-
-        /**
-         * Fonction qui crée une instance Manipulator de l'objet sourceObject
-         * @constructor
-         * @param sourceObject - objet auquel est rattaché le Manipulator
-         * @param translator - objet de classe Translation
-         * @param rotator - objet de classe Rotation
-         * @param scalor - objet de classe Scaling
-         */
 
         constructor(sourceObject, translator, rotator, scalor) {
             this.parentObject = sourceObject;
@@ -192,11 +178,6 @@ exports.Util = function (globalVariables) {
             });
         }
 
-        /**
-         * Fonction qui instancie un objet de classe Ordered
-         * @param {number} layerNumber
-         * @returns {Manipulator}
-         */
         globalPoint(...args) {
             return this.translator.globalPoint(args);
         }
@@ -207,7 +188,7 @@ exports.Util = function (globalVariables) {
 
         mark(id) {
             this.id = id;
-            this.component && this.component.mark(id);
+            this.translator.mark(id);
             return this;
         }
 
@@ -228,19 +209,9 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        /**
-         * Fonction qui récupère l'indice du dernier élément de l'Ordenator
-         * @returns {number}
-         */
-
         lastLayerOrdonator() {
             return this.ordonator.children.length - 1;
         }
-
-        /**
-         * Fonction
-         * @returns {Manipulator}
-         */
 
         flush() {
             const clean = (handler) => {
@@ -267,13 +238,6 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        /**
-         * Modifie les positions x et y de l'attribut translator du Manipulator
-         * @param {number} x - Position x
-         * @param {number} y - Position y
-         * @returns {Manipulator}
-         */
-
         move(x, y) {
             this.translator.move(x, y);
             this.x = this.translator.localPoint(0, 0);
@@ -281,52 +245,31 @@ exports.Util = function (globalVariables) {
             return this;
         }
 
-        /**
-         * Attribue un angle à l'attribut rotator du Manipulator
-         * @param angle
-         * @returns {Manipulator}
-         */
-
         rotate(angle) {
             this.rotator.rotate(angle);
             return this;
         }
-
-        /**
-         * ?
-         * @param scaleX
-         * @param scaleY
-         * @returns {Manipulator}
-         */
 
         scale(scaleX, scaleY) {
             this.scalor.scale(scaleX, scaleY);
             return this;
         }
 
-        /**
-         *
-         * @param layer
-         * @returns {*}
-         */
         get(layer) {
             return this.ordonator ? this.ordonator.get(layer) : undefined;
         }
 
-        /**
-         *
-         * @param layer
-         * @param component
-         * @returns {Manipulator}
-         */
-
-        set(layer, component) {
-            if (component instanceof Manipulator) {
-                component = component.first;
+        set(layer, svgObject) {
+            let component;
+            if (svgObject instanceof Manipulator) {
+                component = svgObject.first;
+            }else {
+                component = svgObject;
             }
+
             this.ordonator.set(layer, component);
             this.components.push(component);
-            component.parentManip = this;
+            svgObject.parentManip = this;
             return this;
         }
 
@@ -346,7 +289,7 @@ exports.Util = function (globalVariables) {
             if (this.scalor.children.indexOf(component) === -1) {
                 this.last.add(component);
                 this.components.push(component);
-                component.parentManip = this;
+                svgObject.parentManip = this;
             }
             return this;
         }
@@ -743,7 +686,6 @@ exports.Util = function (globalVariables) {
                                 quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
                             }
                             quiz.display(0, 0, drawing.width, drawing.height);
-                            svg.removeEvent(drawings.glass, "click");
                         };
 
                         const hasKeyDownEvent = function (event) {
@@ -758,7 +700,6 @@ exports.Util = function (globalVariables) {
                             }
                         });
 
-                        svg.addEvent(drawings.glass, "click", crossHandler);
                         svg.addEvent(cross, "click", crossHandler);
                         svg.addEvent(circle, "click", crossHandler);
                         return cross;

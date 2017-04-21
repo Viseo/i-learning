@@ -1388,7 +1388,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 (this.content && this.content.position(0, MARGIN));
             }
             else if (this.video) {//&& this.label !== ""
-                let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, false);
+                let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
 
                 this.content = obj.content;
                 this.miniatureVideo = obj.video;
@@ -1513,7 +1513,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
             }
             else if (this.video) {//&& this.label !== ""
                 let obj;
-                if (this.parentQuiz.previewMode || globalVariables.playerMode) {
+                if (this.parentQuiz.previewMode) {
                     obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
                 }
                 else {
