@@ -1,11 +1,11 @@
 /**
  *
-    LibraryVue,
-    GamesLibraryVue,
-    ImagesLibraryVue
+ LibraryVue,
+ GamesLibraryVue,
+ ImagesLibraryVue
  *
  */
-exports.Library = function(globalVariables, classContainer){
+exports.Library = function (globalVariables, classContainer) {
 
     let Vue = classContainer.getClass("Vue");
 
@@ -25,7 +25,7 @@ exports.Library = function(globalVariables, classContainer){
      * @class
      */
     class LibraryVue extends Vue {
-        constructor(options){
+        constructor(options) {
             super(options);
             this.manipulator = new Manipulator(this).addOrdonator(4);
             this.itemsTab = [];
@@ -77,7 +77,7 @@ exports.Library = function(globalVariables, classContainer){
          * @param lib.fontSize - taille d'écriture
          * @param lib.tab - tableau de jeux à ajouter à la bibliothèque
          */
-        constructor(lib){
+        constructor(lib) {
             super();
             this.title = lib.title;
             this.font = lib.font;
@@ -89,14 +89,14 @@ exports.Library = function(globalVariables, classContainer){
             this.arrowModeManipulator = new Manipulator(this).addOrdonator(3);
         }
 
-        events(){
+        events() {
             return {
-                'keydown' : this.keyDownHandler
+                'keydown': this.keyDownHandler
             }
         }
 
-        keyDownHandler(event){
-            if(event.keyCode === 27) { //ESC
+        keyDownHandler(event) {
+            if (event.keyCode === 27) { //ESC
                 hasKeyDownEvent(event);
                 this.arrowMode && this.toggleArrowMode();
                 if (this.miniatureSelected) {
@@ -219,10 +219,10 @@ exports.Library = function(globalVariables, classContainer){
                                 let parentObject = (target && target.parent && target.parent.parentManip && target.parent.parentManip.parentObject) ? target.parent.parentManip.parentObject : null;
                                 if (parentObject !== what) {
                                     if (classContainer.isInstanceOf("FormationVue", parentObject)) {
-                                        this.formation.dropAction(what.x, what.y,what);
+                                        this.formation.dropAction(what.x, what.y, what);
                                     }
                                 }
-                                return {x:what.x,y:what.y,parent:what.component.parent};
+                                return {x: what.x, y: what.y, parent: what.component.parent};
                             },
                             moved: (what) => {
                                 this.draggedObject = null;
@@ -230,7 +230,7 @@ exports.Library = function(globalVariables, classContainer){
                                 return true;
                             },
                             clicked: (item) => {
-                                if(!this.gameSelected) {
+                                if (!this.gameSelected) {
                                     this.gameSelected = this.draggedObject;
                                     item.flush();
 
@@ -256,7 +256,7 @@ exports.Library = function(globalVariables, classContainer){
                                     this.draggedObject = null;
                                     svg.addEvent(this.formation.panel.back, 'click', clickPanelToAdd);
                                 }
-                                else{
+                                else {
                                     for (let it in this.itemsTab) {
                                         if (this.itemsTab[it].label == this.draggedObject.label) {
                                             this.miniatureSelected = null;
@@ -307,7 +307,7 @@ exports.Library = function(globalVariables, classContainer){
      * @class
      */
     class ImagesLibraryVue extends LibraryVue {
-        constructor(){
+        constructor() {
             super();
             this.imageWidth = 50;
             this.imageHeight = 50;
@@ -316,7 +316,8 @@ exports.Library = function(globalVariables, classContainer){
             this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
         }
 
-        render(x, y, w, h, callback = () => { }) {
+        render(x, y, w, h, callback = () => {
+        }) {
             let display = (x, y, w, h) => {
                 this.libraryDisplay.call(this, x, y, w, h, 0.8, h / 2);
 
@@ -329,7 +330,7 @@ exports.Library = function(globalVariables, classContainer){
                             progressDisplay = (() => {
                                 const width = 0.8 * w,
                                     manipulator = new Manipulator().addOrdonator(4),
-                                    icon = drawUploadIcon({ x: -0.56 * width, y: 5, size: 20 });
+                                    icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
                                 manipulator.set(0, icon);
                                 const rect = new svg.Rect(width - 15, 16).color(myColors.none, 1, myColors.darkerGreen);
                                 manipulator.set(1, rect);
@@ -376,7 +377,9 @@ exports.Library = function(globalVariables, classContainer){
                     }
                 };
 
-                svg.addEvent(drawings.component.glass, 'dragover', (e) => { e.preventDefault() });
+                svg.addEvent(drawings.component.glass, 'dragover', (e) => {
+                    e.preventDefault()
+                });
                 svg.addEvent(drawings.component.glass, 'drop', drop);
 
                 const assignImageEvents = () => {
@@ -462,9 +465,9 @@ exports.Library = function(globalVariables, classContainer){
                             image._acceptDrop = false;
                             image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i]);
                             image.name = item.name;
-                            image.imageSVG.srcDimension = { width: item.width, height: item.height };
+                            image.imageSVG.srcDimension = {width: item.width, height: item.height};
                             image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
-                            let X = libMargin + this.imageWidth/2 + ((i % maxImagesPerLine ) * (libMargin + this.imageWidth));
+                            let X = libMargin + this.imageWidth / 2 + ((i % maxImagesPerLine ) * (libMargin + this.imageWidth));
                             this.libraryManipulators[i].move(X, tempY);
 
                         });
@@ -578,12 +581,15 @@ exports.Library = function(globalVariables, classContainer){
                             svg.addEvent(redCross, 'click', redCrossClickHandler);
                         };
 
-                        let mouseleaveHandler = () => {
-                            manipulator.redCrossManipulator.flush();
+                        let mouseleaveHandler = (event) => {
+                            let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                            if (!target || target.id !== "videoRedCross") {
+                                manipulator.redCrossManipulator.flush();
+                            }
                         };
 
                         iconVideo.setHandler('mouseenter', overVideoIconHandler);
-                        //iconVideo.setHandler('mouseleave', mouseleaveHandler);
+                        iconVideo.setHandler('mouseleave', mouseleaveHandler);
 
                         svg.addEvent(title.text, 'mouseenter', overVideoIconHandler);
                         svg.addEvent(title.text, 'mouseleave', mouseleaveHandler);
@@ -716,11 +722,11 @@ exports.Library = function(globalVariables, classContainer){
                     popIn.image = element.src;
                     popIn.video = null;
                     popIn.miniature && popIn.miniature.video && popIn.miniature.video.redCrossManipulator
-                        && popIn.miniature.video.redCrossManipulator.flush();
+                    && popIn.miniature.video.redCrossManipulator.flush();
                     let questionCreator = popIn.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                     popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
-                else if (parentObject instanceof globalVariables.util.MiniatureFormation){
+                else if (parentObject instanceof globalVariables.util.MiniatureFormation) {
                     let miniature = target.parentManip.parentObject;
                     miniature.picture = element.src;
                     miniature.display();
