@@ -7,7 +7,7 @@ const
     nodemailer = require('nodemailer');
 
 const
-    db = require('./db'),
+    db = require('../db'),
     defaultTimestamp = 10 * 60 * 1000;
 
 function createUUID(size) {

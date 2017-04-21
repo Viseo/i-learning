@@ -13,7 +13,12 @@ app.use(express.static(__dirname));
 app.use(bodyParser.json({limit: '500mb'}));
 app.use(session({secret: 'sEcrEt_iLearning', cookie: {httpOnly: false}, resave: false}));
 
-var routes = require("./server/controllers/routes")(app, fs);
+require('./server/controllers/auth')(app);
+require('./server/controllers/formations')(app);
+require("./server/controllers/logger")(app, fs);
+require('./server/controllers/medias')(app, fs);
+require('./server/controllers/users')(app);
+
 var db = require('./server/db');
 // Connect to Mongo on start
 db.connect('mongodb://localhost:27017/myDatabase', function(err) {

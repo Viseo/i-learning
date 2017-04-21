@@ -1874,30 +1874,16 @@ exports.Util = function (globalVariables) {
         constructor() {
         }
 
-        static getAllFormations() {
-            return (playerMode) ? (dbListener.httpGetAsync('/formations/getPlayerFormations')) : (dbListener.httpGetAsync('/formations/getAdminFormations'));
-        }
-
-        static getFormationsProgress(id) {
-            return dbListener.httpGetAsync('/formations/getPlayerProgression/' + id);
-        }
-
         static connect(mail, password, cookie) {
-            return dbListener.httpPostAsync('/auth/connect/', {mailAddress: mail, password: password, cookie: cookie})
+            return dbListener.httpPostAsync('/auth/connect', {mailAddress: mail, password: password, cookie: cookie})
+        }
+        static checkCookie() {
+            return dbListener.httpGetAsync('/auth/verify')
         }
 
         static inscription(user) {
-            return dbListener.httpPostAsync('/user/inscription/', user)
+            return dbListener.httpPostAsync('/users/inscription', user)
         }
-
-        static checkCookie() {
-            return dbListener.httpGetAsync('/auth/verify/')
-        }
-
-        static getVersionById(id) {
-            return dbListener.httpGetAsync("/formations/getVersionById/" + id)
-        }
-
         static sendProgressToServer(quiz) {
             var data = {
                 indexQuestion: quiz.currentQuestionIndex + 1,
@@ -1907,7 +1893,7 @@ exports.Util = function (globalVariables) {
                 formation: quiz.parentFormation.formationId
             };
             quiz.questionsAnswered.forEach(x => data.questionsAnswered.push({validatedAnswers: x.validatedAnswers}));
-            return dbListener.httpPostAsync("/user/saveProgress", data)
+            return dbListener.httpPostAsync("/users/self/progress", data)
                 .then(() => {
                     if (quiz.currentQuestionIndex !== quiz.tabQuestions.length - 1) {
                         return this.saveLastAction(data);
@@ -1917,67 +1903,60 @@ exports.Util = function (globalVariables) {
                     }
                 });
         }
-
         static saveLastAction(object) {
-            return dbListener.httpPostAsync('user/saveLastAction', object);
+            return dbListener.httpPostAsync('users/self/lastAction', object);
         }
-
         static getUser() {
-            return dbListener.httpGetAsync("/user/getUser")
+            return dbListener.httpGetAsync("/users/self")
+        }
+        static resetPassword(mailAddress) {
+            return dbListener.httpPostAsync('/users/password/reset', mailAddress);
+        }
+        static checkTimestampPassword(id) {
+            return dbListener.httpPostAsync('/users/password/new', id);
+        }
+        static updatePassword(id, password) {
+            return dbListener.httpPostAsync('/users/password/update', {id: id, password: password});
         }
 
+        static getAllFormations() {
+            return dbListener.httpGetAsync('/formations');
+        }
+        static getFormationsProgress(id) {
+            return dbListener.httpGetAsync('/formations/' + id + '/progression');
+        }
+        static getVersionById(id) {
+            return dbListener.httpGetAsync("/formations/" + id)
+        }
         static replaceFormation(id, newFormation, status, ignoredData) {
             newFormation.status = status;
-            return dbListener.httpPostAsync("/formations/replaceFormation/" + id, newFormation, ignoredData)
+            return dbListener.httpPostAsync("/formations/" + id, newFormation, ignoredData)
         }
-
         static insertFormation(newFormation, status, ignoredData) {
             newFormation.status = status;
             return dbListener.httpPostAsync("/formations/insert", newFormation, ignoredData)
         }
-
         static deactivateFormation(id, ignoredData) {
-            return dbListener.httpPostAsync("/formations/deactivateFormation", {id: id}, ignoredData);
+            return dbListener.httpPostAsync("/formations/deactivate", {id: id}, ignoredData);
+        }
+        static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
+            return dbListener.httpPostAsync('/formations/' + id + "/quiz/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
         }
 
         static upload(file, onProgress, onAbort) {
-            return dbListener.httpUpload("/upload", file, onProgress, this.deleteVideo);
+            return dbListener.httpUpload("/medias/upload", file, onProgress, this.deleteVideo);
         }
-
-        static deleteImage(image) {
-            return dbListener.httpPostAsync("/deleteImage", image);
-        }
-
-        static deleteVideo(video) {
-            return dbListener.httpPostAsync("/deleteVideo", video);
-        }
-
-        static deleteAbortedVideos() {
-            return dbListener.httpPostAsync("/deleteAbortedVideos");
-        }
-
-        static replaceQuiz(newQuiz, id, levelIndex, gameIndex, ignoredData) {
-            return dbListener.httpPostAsync('/formations/replaceQuiz/' + id + "/" + levelIndex + "/" + gameIndex, newQuiz, ignoredData);
-        }
-
         static getImages() {
-            return dbListener.httpPostAsync('/getAllImages');
+            return dbListener.httpGetAsync('/medias/images');
         }
-
+        static deleteImage(image) {
+            return dbListener.httpPostAsync("/medias/images/delete", image);
+        }
         static getVideos() {
-            return dbListener.httpPostAsync('/getAllVideos');
+            return dbListener.httpGetAsync('/medias/videos');
         }
-
-        static resetPassword(mailAddress) {
-            return dbListener.httpPostAsync('/resetPWD', mailAddress);
-        }
-
-        static checkTimestampPassword(id) {
-            return dbListener.httpPostAsync('/newPWD', id);
-        }
-
-        static updatePassword(id, password) {
-            return dbListener.httpPostAsync('/updatePWD', {id: id, password: password});
+        static deleteVideo(video) {
+            return dbListener.httpPostAsync("/medias/video/delete", video);
         }
     }
 

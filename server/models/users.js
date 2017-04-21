@@ -6,7 +6,7 @@ const
     ObjectID = require('mongodb').ObjectID;
 
 const
-    db = require('./db'),
+    db = require('../db'),
     formations = require("./formations");
 
 const getUserByEmailAddress = (email) => {

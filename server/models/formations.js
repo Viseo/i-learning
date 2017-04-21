@@ -9,7 +9,7 @@ const
     ObjectID = require('mongodb').ObjectID;
 
 const
-    db = require('./db');
+    db = require('../db');
 
 const compareVersions = (version1, version2, checkStatus = false) => {
     let myVersion1 = Object.assign({}, version1),
