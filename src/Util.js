@@ -91,6 +91,12 @@ exports.Util = function (globalVariables) {
                 if (this.x + this.width/2 > drawing.width){
                     this.x = drawing.width - this.width/2 - 10;
                 }
+                if (this.y - this.height/2 < 0){
+                    this.y = this.height/2 + 10;
+                }
+                if (this.y + this.height/2 > drawing.height){
+                    this.y = drawing.height - this.height/2 - 10;
+                }
             }
             this.manipulator && this.hide();
             this.manipulator = new Manipulator(this).addOrdonator(4);
@@ -101,9 +107,7 @@ exports.Util = function (globalVariables) {
                 y : this.parentManipulator.first.globalPoint(0, 0).y
             }
             this.x = point.x;
-            this.y = point.y;
-            computeBox();
-            this.manipulator.move(point.x, point.y);
+            this.y = point.y - this.height/2;
             this.manipulator.set(1, this.classToDisplay.manipulator);
             this.manipulator.first.opacity(0);
             this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
@@ -111,11 +115,13 @@ exports.Util = function (globalVariables) {
             });
             this.manipulator.scalor.scale(0.5);
             if(this.xAdd != undefined && this.yAdd != undefined){
-                this.manipulator.move(this.x + this.xAdd, this.y + this.yAdd);
+                this.x += this.xAdd;
+                this.y += this.yAdd;
             }
-
+            computeBox();
+            this.manipulator.move(this.x , this.y);
             this.redCrossManipulator = new Manipulator(this);
-            this.redCross = drawRedCross(0,0, 20, this.redCrossManipulator);
+            this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
             this.redCross.mark('popupRedcross');
             this.redCrossManipulator.add(this.redCross);
             this.manipulator.add(this.redCrossManipulator);
@@ -1050,7 +1056,7 @@ exports.Util = function (globalVariables) {
             formation.arrowsManipulator.add(this.arrowPath);
             this.selected = false;
             let arrowClickHandler = () => {
-                //formation.selectedGame && formation.clicAction();//selectedGame.game.miniatureManipulator.ordonator.children[0].component.listeners.mouseup();
+                //formation.selectedGame && formation.clicAction();//selectedGame.miniatureManipulator.ordonator.children[0].component.listeners.mouseup();
                 if (!this.selected) {
                     if (formation.selectedArrow) {
                         formation.selectedArrow.arrowPath.color(myColors.black, 1, myColors.black);
@@ -1196,15 +1202,21 @@ exports.Util = function (globalVariables) {
         constructor(game, size) {
             this.game = game;       // classe GameVue
             this.scoreSize = 13;
-            this.picture = game.picture || new Picture('../images/svg-guy.png', false, this, '', null);
             this.width = size;
             this.height = size / 2;
             this.size = size;
             game.miniature = this;
             this.iconManipulator = new Manipulator(this).addOrdonator(3);
-            this.game.miniatureManipulator.addOrdonator(4);
+            this.miniatureManipulator = new Manipulator(this);
+            this.miniatureManipulator.addOrdonator(4);
             this._acceptDrop = true;
+            this.popOut =  new PopOut(400,150, new globalVariables.domain.ImagesLibraryVue(), this.miniatureManipulator);
 
+        }
+
+        dropImage(element){
+            this.game.picture = element.src;
+            this.display();
         }
 
         checkIfParentDone() {
@@ -1221,9 +1233,29 @@ exports.Util = function (globalVariables) {
         }
 
         display() {
+            let addSettingsIcon = () =>{
+                const iconSize = 20;
+                let settingsPic = new Picture('../images/settings.png', false, this, '', null);
+                let settingsIcon = {
+                    border: new svg.Circle(iconSize/2).color(myColors.ultraLightGrey, 0, myColors.none),
+                    content: settingsPic
+                }
+                this.settingsManipulator = new Manipulator(this).addOrdonator(2);
+                this.settingsManipulator.set(0,settingsIcon.border);
+                settingsIcon.content.draw(0,0,iconSize*0.8, iconSize*0.8, this.settingsManipulator, 1);
+                this.miniatureManipulator.add(this.settingsManipulator);
+                this.popOut.defineProperty(0, -this.height);
+                this.settingsManipulator.addEvent('click', ()=>{
+                    this.popOut.show.call(this.popOut);
+                    this.selected = !this.selected;
+                    this.updateSelectionDesign();
+                });
+                this.settingsManipulator.move(-this.width/2, -this.height/2-iconSize/2);
+            }
+            !globalVariables.playerMode && addSettingsIcon();
             this.updateProgress();
             let icon = {
-                content: autoAdjustText(this.game.title, this.picture ? this.width * 0.9 : this.width, this.height, 15, 'Arial', this.game.miniatureManipulator),
+                content: autoAdjustText(this.game.title, this.picture ? this.width * 0.9 : this.width, this.height, 15, 'Arial', this.miniatureManipulator),
                 underContent: new svg.Text(this.game.questionsAnswered.length + '/' + this.game.tabQuestions.length).position(0, 2 * MARGIN),
                 border: drawHexagon(this.width, this.height, 'H', 0.8).mark('hexBorder' + this.game.levelIndex + this.game.id)
             };
@@ -1235,8 +1267,9 @@ exports.Util = function (globalVariables) {
             if (this.video) {
                 video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
             }
-            if (this.picture) {
-                this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.game.miniatureManipulator, 3);
+            if (this.game.picture) {
+                this.picture = new Picture(this.game.picture, true, this, '',null);
+                this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.miniatureManipulator, 3);
             }
             if (this.game.parentGamesList) {
                 let check = this.checkIfParentDone();
@@ -1244,9 +1277,9 @@ exports.Util = function (globalVariables) {
                     icon.border.color(myColors.grey, 1, myColors.grey);
                 }
             }
-            this.game.miniatureManipulator.set(0, icon.border);
-            this.game.miniatureManipulator.set(2, icon.underContent);
-            this.game.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
+            this.miniatureManipulator.set(0, icon.border);
+            this.miniatureManipulator.set(2, icon.underContent);
+            this.miniatureManipulator.mark('level' + this.game.levelIndex + this.game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
             this.redCross.mark('gameRedCross');
@@ -1256,6 +1289,7 @@ exports.Util = function (globalVariables) {
             if (globalVariables.playerMode) {
                 this.drawIcon();
             }
+            this.game.miniatureManipulator.add(this.miniatureManipulator);
         }
 
         updateProgress() {
@@ -1264,7 +1298,7 @@ exports.Util = function (globalVariables) {
         }
 
         showDefaultColor() {
-            this.game.miniatureManipulator.ordonator.children[0]
+            this.miniatureManipulator.ordonator.children[0]
                 .color(hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
         }
 
@@ -1272,10 +1306,10 @@ exports.Util = function (globalVariables) {
             let formationVue = this.game.parentFormation;
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             this.removeAllLinks();
-            formationVue.miniaturesManipulator.remove(this.game.miniatureManipulator);
-            this.game.miniatureManipulator.unset(0);
-            this.game.miniatureManipulator.unset(1);
-            this.game.miniatureManipulator.remove(this.redCrossManipulator);
+            formationVue.miniaturesManipulator.remove(this.miniatureManipulator);
+            this.miniatureManipulator.unset(0);
+            this.miniatureManipulator.unset(1);
+            this.miniatureManipulator.remove(this.redCrossManipulator);
             var longestLevelCandidates = formationVue.findLongestLevel();
             if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
                 formationVue.levelWidth -= (formationVue.graphElementSize + formationVue.minimalMarginBetweenGraphElements);
@@ -1329,11 +1363,11 @@ exports.Util = function (globalVariables) {
         updateSelectionDesign() {
             if (this.selected) {
                 this.game.parentFormation.selectedGame = this;
-                !playerMode && this.game.miniatureManipulator.add(this.redCrossManipulator);
-                this.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
+                !playerMode && this.miniatureManipulator.add(this.redCrossManipulator);
+                this.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, SELECTION_COLOR);
             } else {
                 this.checkAndDrawValidity(this);
-                !playerMode && this.redCrossManipulator.first.parent && this.game.miniatureManipulator.remove(this.redCrossManipulator);
+                !playerMode && this.redCrossManipulator.first.parent && this.miniatureManipulator.remove(this.redCrossManipulator);
                 this.game.parentFormation.selectedGame = null;
             }
         }
@@ -1348,11 +1382,11 @@ exports.Util = function (globalVariables) {
                         })
                     }
                 });
-                result ? gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black)
-                    : gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 3, myColors.red);
+                result ? gameMiniature.miniatureManipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey)
+                    : gameMiniature.miniatureManipulator.ordonator.children[0].color(myColors.lightwhite, 3, myColors.red);
             };
             let displayWhenNotPublished = () => {
-                gameMiniature.game.miniatureManipulator.ordonator.children[0].color(myColors.white, 1, myColors.black);
+                gameMiniature.miniatureManipulator.ordonator.children[0].color(myColors.lightwhite, 1, myColors.grey);
             };
 
             (gameMiniature.game.parentFormation.publishedButtonActivated) ? displayWhenPublished() : displayWhenNotPublished();
@@ -1372,12 +1406,12 @@ exports.Util = function (globalVariables) {
                         doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
                         this.iconManipulator.set(0, doneIcon.border);
                         this.iconManipulator.set(1, doneIcon.content);
-                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        this.miniatureManipulator.add(this.iconManipulator);
                         break;
                     case "inProgress":
                         let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
                         inProgressIcon.content.font('arial', 20).color(myColors.white);
-                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        this.miniatureManipulator.add(this.iconManipulator);
                         break;
                     default:
                         let undoneIcon = {};
@@ -1385,7 +1419,7 @@ exports.Util = function (globalVariables) {
                         undoneIcon.content = new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white);
                         this.iconManipulator.set(0, undoneIcon.border);
                         this.iconManipulator.set(1, undoneIcon.content);
-                        this.game.miniatureManipulator.add(this.iconManipulator);
+                        this.miniatureManipulator.add(this.iconManipulator);
                         break;
                 }
                 this.iconManipulator.move(this.size / 2, -this.size / 3);
@@ -1393,7 +1427,7 @@ exports.Util = function (globalVariables) {
             else if (this.game.parentGamesList && !this.checkIfParentDone()) {
                 let lock = new Picture('/images/padlock2.png', false, this, '', null);
                 lock.draw(this.size / 2, -this.size / 3, this.size / 5, this.size / 5, this.iconManipulator, 1);
-                this.game.miniatureManipulator.add(this.iconManipulator);
+                this.miniatureManipulator.add(this.iconManipulator);
             }
         }
 
@@ -1402,7 +1436,7 @@ exports.Util = function (globalVariables) {
             this.infosManipulator = new Manipulator(this).addOrdonator(4);
             switch (object.status) {
                 case "notAvailable":
-                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
+                    this.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
                     break;
                 case "done":
                     let check = drawCheck(size / 2, -size / 2, iconsize)
@@ -1437,13 +1471,13 @@ exports.Util = function (globalVariables) {
                     object.miniatureManipulator.add(this.infosManipulator);
                     break;
                 default :
-                    this.game.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
+                    this.miniatureManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
                     break;
             }
         };
 
         removeRedCross() {
-            this.game.miniatureManipulator.remove(this.redCrossManipulator);
+            this.miniatureManipulator.remove(this.redCrossManipulator);
             this.selected = false;
             this.showDefaultColor();
         }
@@ -1459,7 +1493,19 @@ exports.Util = function (globalVariables) {
             this.popOut =  new PopOut(400,150, new globalVariables.domain.ImagesLibraryVue(), this.miniatureManipulator);
         }
 
+        dropImage(element){
+            this.picture = element.src;
+            this.display();
+        }
+
         display(x, y, w, h) {
+            if (!x && !y && !w && !h){
+                var {lastX: x, lastY: y, lastW: w, lastH: h} = this;
+            }
+            this.lastX = x;
+            this.lastY = y;
+            this.lastW = w;
+            this.lastH = h;
             let iconSize = this.formation.parent.iconeSize;
             let addSettingsIcon = () =>{
                 let settingsPic = new Picture('../images/settings.png', false, this, '', null);
@@ -1473,15 +1519,23 @@ exports.Util = function (globalVariables) {
                 this.miniatureManipulator.add(this.settingsManipulator);
                 this.popOut.defineProperty(0, -h*1.5);
                 this.settingsManipulator.addEvent('click', this.popOut.show.bind(this.popOut));
+                this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
+
             }
-            addSettingsIcon();
-            if (!x && !y && !w && !h){
-               var {lastX: x, lastY: y, lastW: w, lastH: h} = this;
+            let drawPicture = () => {
+                this.imageManipulator = new Manipulator(this).addOrdonator(2);
+                this.miniatureManipulator.add(this.imageManipulator);
+                this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
+                    this.imageManipulator.flush();
+                    this.imageManipulator = null
+                });
+                this.image.draw(0,h/3, w/2, h/2,this.imageManipulator,0);
+                svg.addEvent(this.image.imageSVG,"mouseenter",
+                    () => {
+                        this.image.imageMouseoverHandler();
+                        onMouseOverSelect(this.miniatureManipulator)
+                    });
             }
-            this.lastX = x;
-            this.lastY = y;
-            this.lastW = w;
-            this.lastH = h;
             let points = [
                 [w / 2, -h / 1.5],
                 [0, -h],
@@ -1491,6 +1545,7 @@ exports.Util = function (globalVariables) {
                 [w / 2, h / 1.5]
             ];
 
+            !globalVariables.playerMode && addSettingsIcon();
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
             let miniature = {
                 content: autoAdjustText(this.formation.label, w, h, 20, 'Arial', this.miniatureManipulator, 1), //new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
@@ -1505,21 +1560,13 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(index, element);
                 });
             }
-            this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
             this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
             playerMode && this.drawIcon();
             if (this.picture){
-                this.imageManipulator = new Manipulator(this).addOrdonator(2);
-                this.miniatureManipulator.add(this.imageManipulator);
-                this.image = new Picture(this.picture, true, this, '',()=> {
-                    this.imageManipulator.flush();
-                    this.imageManipulator = null
-                });
-                this.image.draw(0,h/3, w/2, h/2,this.imageManipulator,0);
+                drawPicture();
             }
-
             let onMouseOverSelect = miniatureManipulator => {
                 miniatureManipulator.get(0).color([130, 180, 255], 3, myColors.black);
             };

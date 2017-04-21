@@ -746,6 +746,16 @@ exports.QuizElements = function (globalVariables, classContainer) {
             _declarePuzzle();
         }
 
+        dropImage (element) {
+            drawings.component.clean();
+            this.linkedQuestion.video = null;
+            this.linkedQuestion.image = element.component;
+            this.linkedQuestion.imageSrc = element.src;
+            this.parent.displayQuestionsPuzzle(null, null, null, null, this.parent.questionPuzzle.startPosition);
+            this.display();
+            this.linkedQuestion.checkValidity();
+        }
+
         render(x, y, w, h) {
             var _setPreviousPosition = () => {
                 x && (this.previousX = x);
@@ -1504,8 +1514,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             // Question avec Texte ET image
             if (typeof this.label !== "undefined" && this.imageSrc) {//&& this.label !== ""
                 let obj = displayImageWithTitle(this.label, this.imageSrc, this.dimImage || {
-                        width: this.image.width,
-                        height: this.image.height
+                        width: this.width/4,
+                        height: this.height/4
                     }, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, this.image, this.width * 0.8);
                 this.border = obj.border;
                 this.content = obj.content;
@@ -1865,6 +1875,17 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         isEditable(editor, editable) {
         }
+        dropImage(element){
+            this.model.video = null;
+            this.obj.video && drawings.component.remove(this.obj.video);
+            this.model.image = element.component;
+            this.model.imageSrc = element.src;
+            this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.elementsArray.forEach(elem => {
+                elem.obj && elem.obj.video && drawings.component.remove(elem.obj.video);
+            });
+            this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+            this.model.parentQuestion.checkValidity();
+        }
 
         render(x, y, w, h) {
             var _savePosAndSize = () => {
@@ -1891,7 +1912,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                             this.model.imageSrc = null;
                             this.model.parentQuestion.checkValidity();
                         };
-                        let picture = new Picture(this.model.image.src, true, this.model, "", pictureRedCrossClickHandler);
+                        let picture = new Picture(this.model.imageSrc, true, this.model, "", pictureRedCrossClickHandler);
                         picture.draw(0, 0, w * 1 / 3, h * 1 / 3, this.manipulator, 2, 'answerImage' + this.model.parentQuestion.tabAnswer.indexOf(this), w - 2 * checkboxSize);
                         this.border = picture.imageSVG.border;
                         this.obj.image = picture.imageSVG.image;
@@ -2158,6 +2179,14 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
             _initManipulators();
             _initExplanations();
+        }
+
+        dropImage(element){
+            this.image = element.src;
+            this.video = null;
+            this.miniature && this.miniature.video && this.miniature.video.redCrossManipulator && this.miniature.video.redCrossManipulator.flush();
+            let questionCreator = this.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
+            this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
         }
 
         render(parent, x, y, w, h) {
