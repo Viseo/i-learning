@@ -2223,11 +2223,12 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
                 let circle = new svg.Circle(size).color(myColors.black, 2, myColors.white),
                     cross = drawCross(w / 2, -h / 2, size, myColors.lightgrey, myColors.lightgrey, this.closeButtonManipulator);
-                circle.mark('circleCloseExplanation');
                 this.closeButtonManipulator.set(0, circle);
                 this.closeButtonManipulator.set(1, cross);
-                svg.addEvent(cross, "click", _crossHandler);
-                svg.addEvent(circle, "click", _crossHandler);
+                this.closeButtonManipulator.addEvent('click', _crossHandler);
+                this.closeButtonManipulator.mark('closeButtonManipulator');
+                // svg.addEvent(cross, "click", _crossHandler);
+                // svg.addEvent(circle, "click", _crossHandler);
                 svg.addGlobalEvent("keydown", (event) => {
                     (event.keyCode === 27) && _crossHandler();
                 });

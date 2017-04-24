@@ -1213,10 +1213,10 @@ exports.Formation = function (globalVariables, classContainer) {
         constructor(game, parentFormation) {
             super();
             this.id = game.id;
-            this.miniatureManipulator = new Manipulator(this).addOrdonator(4);
             this.parentFormation = parentFormation || game.parentFormation;
             this.title = game.title || '';
             this.miniaturePosition = {x: 0, y: 0};
+            this.miniatureManipulator = new Manipulator(this).addOrdonator(4).mark(this.id);
             this.returnButtonManipulator = new Manipulator(this);
         }
 
@@ -1314,7 +1314,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.questionsAnswered = quiz.questionsAnswered ? quiz.questionsAnswered : [];
             // todo
             this.questionsAnswered.forEach(answer => {
-                console.log(answer.validatedAnswers);
+                // console.log(answer.validatedAnswers);
             });
 
             this.progress = this.questionsAnswered.length == 0 ? '' :
@@ -1438,7 +1438,8 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.tabQuestions[this.currentQuestionIndex] && this.tabQuestions[this.currentQuestionIndex].tabAnswer.forEach(answer => {
                     if (answer.model.explanationPopIn && answer.model.explanationPopIn.displayed) {
                         let said = answer.model.explanationPopIn.said;
-                        answer.model.explanationPopIn.cross.component.listeners["click"]();
+                        // answer.model.explanationPopIn.cross.component.listeners["click"]();
+                        answer.model.explanationPopIn.closeButtonManipulator.listeners['click']();
                         answer.model.explanationPopIn.said = said;
                     }
                 });
