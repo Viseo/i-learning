@@ -1676,7 +1676,7 @@ exports.Util = function (globalVariables) {
                     border: new svg.Circle(iconSize/2).color(myColors.ultraLightGrey, 0, myColors.none),
                     content: settingsPic
                 }
-                this.settingsManipulator = new Manipulator(this).addOrdonator(2);
+                this.settingsManipulator = new Manipulator(this).addOrdonator(2).mark(this.formation.label + 'Setup');  // imageSpec
                 this.settingsManipulator.set(0,settingsIcon.border);
                 settingsIcon.content.draw(0,0,iconSize*0.8, iconSize*0.8, this.settingsManipulator, 1);
                 this.manipulator.add(this.settingsManipulator);
