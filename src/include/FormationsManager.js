@@ -93,11 +93,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                                     [0,-this.iconeSize/1.1],
                                     [this.iconeSize/3.5,this.iconeSize/3.5]
                                 ];
-                                this.starIcon = {
-                                    content: new svg.Polygon().add(starPointsDefaultIcon)
-                                        .color(myColors.lighteryellow, 1, myColors.lighteryellow)
-                                        .position(-this.circleToggleSize * 7 - MARGIN * 2, MARGIN / 2)
-                                };
                                 this.undoneIcon = {
                                     border: new svg.Circle(this.circleToggleSize).color(myColors.blue, 0, myColors.none)
                                         .position(-this.circleToggleSize * 4 - MARGIN * 2, 0),
@@ -120,7 +115,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 manip.set(3, this.doneIcon.border);
                                 manip.set(5, this.undoneIcon.content);
                                 manip.set(2, this.undoneIcon.border);
-                                manip.set(6, this.starIcon.content);
                             };
                             var _drawBorderFilter = () => {
                                 this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
@@ -169,7 +163,6 @@ exports.formationsManager = function(globalVariables, classContainer){
                                 svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
                                 svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
                                 svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
-                                svg.addEvent(this.starIcon.content, 'click', () => _saveFormationsStars(this.formations));
                             };
 
                             _declarePlayerIcons();

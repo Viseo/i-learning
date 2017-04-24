@@ -230,15 +230,16 @@ module.exports = function (app, fs) {
     });
 
     app.post('/formations/userFormationEval/:id', function (req, res) {
-        console.log(req.body);
-        console.log(req.params);
+        let userNote = req.body.starId.split('')[req.body.starId.length - 1];
         let result = {};
-        formations.getFormationById(req.params.id)
-            .then((data) => {
-                result.formation = data.formation;
-            })
-            .catch(console.error)
-        console.log(result);
+        formations.updateNote(req,req.body.versionId, userNote)
+            .then(data =>{
+                if(data.modifiedCount == 1){
+                    res.send({ack: 'OK'})
+                }
+            }).catch(err => {
+                console.log(err);
+        });
     });
 
     app.post('/formations/deactivateFormation', function (req, res) {

@@ -64,19 +64,40 @@ exports.Util = function (globalVariables) {
     /**
      *
      * Class pour un paneau dynamique (affichage)
+     *
      */
     class PopOut {
-        constructor(width, height, classToDisplay, parentManipulator){
+        /**
+         * Build a reusable popUp
+         * @param width of popup
+         * @param height of popup
+         * @param classToDisplay class to display (null if only text)
+         * @param parentManipulator to rattach the popup at the good place
+         * @param isOnlyText boolean to know if we just are building a text popup
+         */
+        constructor(width, height, classToDisplay, parentManipulator, isOnlyText){
             this.width = width;
             this.height = height;
             this.classToDisplay = classToDisplay;
             this.parentManipulator = parentManipulator;
+            this.redCrossManipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this).addOrdonator(4);
             let tmpFlush = parentManipulator.flush;
             let self = this;
+            if (isOnlyText){
+                this.text = new svg.Text('');
+            }
+            this.onlyText = isOnlyText;
             parentManipulator.flush = function (handler){
                 let result = tmpFlush.apply(this, arguments);
                 self.hide();
                 return result;
+            }
+        }
+
+        setText(text){
+            if(this.text){
+                this.text.messageText = text;
             }
         }
 
@@ -99,8 +120,9 @@ exports.Util = function (globalVariables) {
                 }
             }
             this.manipulator && this.hide();
-            this.manipulator = new Manipulator(this).addOrdonator(4);
-            //this.manipulator.set(0,this.panel.component);
+            if (this.panel){
+                this.setPanel();
+            }
             drawings.piste.set(0,this.manipulator.component);
             let point = {
                 x : this.parentManipulator.first.globalPoint(0, 0).x ,
@@ -108,28 +130,33 @@ exports.Util = function (globalVariables) {
             }
             this.x = point.x;
             this.y = point.y - this.height/2;
-            this.manipulator.set(1, this.classToDisplay.manipulator);
-            this.manipulator.first.opacity(0);
-            this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
-                this.manipulator.first.steppy(5,50).opacity(0,1);
-            });
-            this.manipulator.scalor.scale(0.5);
+            if (this.onlyText){
+                this.manipulator.set(1, this.text.dimension(this.width, this.height));
+                //this.manipulator.first.steppy(5,50).opacity(0,1);
+            }
+            else{
+                this.manipulator.set(1, this.classToDisplay.manipulator);
+                this.manipulator.first.opacity(0);
+                this.classToDisplay.render(-this.width,-this.height, 2*this.width, 2*this.height, () => {
+                    this.manipulator.first.steppy(5,50).opacity(0,1);
+                });
+                this.manipulator.scalor.scale(0.5);
+                this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
+                this.redCross.mark('popupRedcross');
+                this.redCrossManipulator.add(this.redCross);
+                svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+                if (this.cb){
+                    this.cb();
+                }
+            }
             if(this.xAdd != undefined && this.yAdd != undefined){
                 this.x += this.xAdd;
                 this.y += this.yAdd;
             }
             computeBox();
             this.manipulator.move(this.x , this.y);
-            this.redCrossManipulator = new Manipulator(this);
-            this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
-            this.redCross.mark('popupRedcross');
-            this.redCrossManipulator.add(this.redCross);
             this.manipulator.add(this.redCrossManipulator);
             this.redCrossManipulator.move(this.width, -this.height);
-            svg.addEvent(this.redCross, 'mouseup', () => this.hide());
-            if (this.cb){
-                this.cb();
-            }
 
         }
 
@@ -142,7 +169,21 @@ exports.Util = function (globalVariables) {
 
         hide(){
             this.manipulator.flush();
-            this.manipulator = null;
+            //this.manipulator = null;
+        }
+        setPanel(w, h, fillColor, strokeColor) {
+            this.panel = true;
+            w = w || this.width;
+            h = h || this.height;
+            this.panelWidth = w;
+            this.panelHeight = h;
+            fillColor = fillColor || myColors.white;
+            strokeColor = strokeColor || myColors.grey;
+            this.manipulator.set(0,new svg.Rect(this.panelWidth,this.panelHeight)
+                .color(fillColor, 1, strokeColor)
+                .corners(5,5)
+                .opacity(0.8)
+                .position(0,-this.panelHeight/4));
         }
     }
 
@@ -1496,17 +1537,26 @@ exports.Util = function (globalVariables) {
 
         dropImage(element){
             this.picture = element.src;
-            this.display();
+            this.drawPicture();
+        }
+        drawPicture() {
+            this.imageManipulator = new Manipulator(this).addOrdonator(2);
+            this.miniatureManipulator.add(this.imageManipulator);
+            this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
+                this.imageManipulator.flush();
+                this.imageManipulator = null
+            });
+            this.image.draw(0,this.height/3, this.width/2, this.height/2,this.imageManipulator,0);
+            svg.addEvent(this.image.imageSVG,"mouseenter",
+                () => {
+                    this.image.imageMouseoverHandler();
+                    onMouseOverSelect(this.miniatureManipulator)
+                });
         }
 
         display(x, y, w, h) {
-            if (!x && !y && !w && !h){
-                var {lastX: x, lastY: y, lastW: w, lastH: h} = this;
-            }
-            this.lastX = x;
-            this.lastY = y;
-            this.lastW = w;
-            this.lastH = h;
+            this.width = w;
+            this.height = h;
             let iconSize = this.formation.parent.iconeSize;
             let addSettingsIcon = () =>{
                 let settingsPic = new Picture('../images/settings.png', false, this, '', null);
@@ -1523,20 +1573,6 @@ exports.Util = function (globalVariables) {
                 this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
 
             }
-            let drawPicture = () => {
-                this.imageManipulator = new Manipulator(this).addOrdonator(2);
-                this.miniatureManipulator.add(this.imageManipulator);
-                this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
-                    this.imageManipulator.flush();
-                    this.imageManipulator = null
-                });
-                this.image.draw(0,h/3, w/2, h/2,this.imageManipulator,0);
-                svg.addEvent(this.image.imageSVG,"mouseenter",
-                    () => {
-                        this.image.imageMouseoverHandler();
-                        onMouseOverSelect(this.miniatureManipulator)
-                    });
-            }
             let points = [
                 [w / 2, -h / 1.5],
                 [0, -h],
@@ -1545,23 +1581,107 @@ exports.Util = function (globalVariables) {
                 [0, h],
                 [w / 2, h / 1.5]
             ];
+            let createStars = () => {
+                let factor = 5;
+                let onStarClick = starObject => {
+                    this.starsManipulator.components.forEach(star => {
+                        star.color(myColors.yellow, 0.2, myColors.yellow);
+                    });
+                    switch (starObject.id) {
+                        case "star1":
+                            starObject.color(myColors.orange, 0.2, myColors.orange);
+                            break;
+                        case "star2":
+                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
+                            starObject.color(myColors.orange, 0.2, myColors.orange);
+                            break;
+                        case "star3":
+                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
+                            starObject.color(myColors.orange, 0.2, myColors.orange);
+                            break;
+                        case "star4":
+                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[2].color(myColors.orange, 0.2, myColors.orange);
+                            starObject.color(myColors.orange, 0.2, myColors.orange);
+                            break;
+                        case "star5":
+                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[2].color(myColors.orange, 0.2, myColors.orange);
+                            this.starsManipulator.components[3].color(myColors.orange, 0.2, myColors.orange);
+                            starObject.color(myColors.orange, 0.2, myColors.orange);
+                            break;
+                    }
+                    Server.updateSingleFormationStars(this.formation.formationId, starObject.id, this.formation._id).then(data => {
+                        console.log(data);
+                    });
+                };
+                let onStarHover = starObject => {
+                    starObject.color(myColors.orange,0.2,myColors.orange);
+                    starMiniatures.pop.setText(starsNoteEnum[starObject.id]);
+                    starMiniatures.pop.show();
+                    let id, i=0;
+                    while(starObject.id != id){
+                        starMiniatures[i].color(myColors.orange,0.2,myColors.orange)
+                        id = starMiniatures[i].id;
+                        i++;
+                    }
+                    onMouseOverSelect(this.miniatureManipulator);
+                }
+                let onStarLeave = starObject =>{
+                    starMiniatures.pop.hide();
+                    starMiniatures.forEach(elem => elem.color(myColors.yellow,0.2,myColors.yellow));
+                }
+                let _duplicateStars = () => {
+                    starMiniatures[1] = starMiniatures[0].duplicate().position(STAR_SPACE, 0).mark("star2");
+                    starMiniatures[2] = starMiniatures[1].duplicate().position(2 * STAR_SPACE, 0).mark("star3");
+                    starMiniatures[3] = starMiniatures[2].duplicate().position(3 * STAR_SPACE, 0).mark("star4");
+                    starMiniatures[4] = starMiniatures[3].duplicate().position(4 * STAR_SPACE, 0).mark("star5");
+                };
+                let starMiniatures = [];
+                starMiniatures[0] = new svg.Polygon().add(starPoints).color(myColors.yellow, 0.2, myColors.yellow).mark("star1"); // Etoile
+
+                starMiniatures.pop = new PopOut(80, 30, null, this.miniatureManipulator, true);
+                starMiniatures.pop.setPanel();
+                starMiniatures.pop.defineProperty(0,-h/2);
+                _duplicateStars();
+                starMiniatures.forEach(
+                    star => {
+                        this.starsManipulator.add(star);
+                        svgr.attr(star.component, 'fill-rule', 'nonzero');
+                        if (playerMode) {
+                            svg.addEvent(star,"click",() => onStarClick(star));
+                            svg.addEvent(star , 'mouseenter', ()=>{onStarHover(star)})
+                            //svg.addEvent(star.border, 'mouseenter', ()=>{onStarHover(star)})
+                            svg.addEvent(star, 'mouseleave', ()=>{onStarLeave(star)})
+                        }
+                    }
+                );
+                this.starsManipulator.scalor.scale(factor);
+                this.starsManipulator.move(-(STAR_SPACE-1) * factor*3, - h / 3);
+                this.notationTextManipulator = new Manipulator(this);
+                let notationText = new svg.Text('Notez cette \n formation :').position(0,-h*0.5).font('Arial', 12, 10);
+                this.notationTextManipulator.add(notationText);
+                this.miniatureManipulator.add(this.notationTextManipulator);
+                this.miniatureManipulator.add(this.starsManipulator);
+            };
             let starPoints = [
-                [0, 0],
-                [-w/starEnum.starBase, -w/starEnum.starBase],
-                [w/starEnum.starBase, -w/starEnum.starBase],
-                [-w/starEnum.bottomStar, w/starEnum.bottomStar],
-                [0, -w/starEnum.topStar],
-                [w/starEnum.bottomStar,w/starEnum.bottomStar]
-            ];
-            let starMiniatures = {
-                first: new svg.Polygon().add(starPoints).color(myColors.lightgrey, 1, myColors.lightyellow).mark("star1") // Etoile
-            };
-            var _duplicateStars = () => {
-                starMiniatures.second = starMiniatures.first.duplicate().position(STAR_SPACE, 0).mark("star2");
-                starMiniatures.third = starMiniatures.first.duplicate().position(2 * STAR_SPACE, 0).mark("star3");
-                starMiniatures.fourth = starMiniatures.first.duplicate().position(3 * STAR_SPACE, 0).mark("star4");
-                starMiniatures.fifth = starMiniatures.first.duplicate().position(4 * STAR_SPACE, 0).mark("star5");
-            };
+                [1.309, 0],
+                [1.6180, 0.9511],
+                [2.6180, 0.9511],
+                [1.8090, 1.5388],
+                [2.118, 2.4899],
+                [1.3090, 1.9021],
+                [0.5, 2.4899],
+                [0.8090, 1.5388],
+                [0, 0.9511],
+                [1, 0.9511]
+            ]
+            if(this.formation.progress = 'done'){
+                createStars();
+            }
 
             !globalVariables.playerMode && addSettingsIcon();
             this.formation.parent.formationsManipulator.add(this.miniatureManipulator);
@@ -1569,53 +1689,9 @@ exports.Util = function (globalVariables) {
                 content: autoAdjustText(this.formation.label, w, h, 20, 'Arial', this.miniatureManipulator, 1), //new svg.Text(this.formation.label).font("Arial", 20).dimension(w, h).position(0, h / 2),
                 border: new svg.Polygon().add(points).color([250, 250, 250], 1, myColors.grey) //Hexagon vertical donc dimensions inversées
             };
-            _duplicateStars();
             this.miniatureManipulator.set(0, miniature.border);
             miniature.border.mark(this.formation.label);
 
-            let onStarClick = starObject => {
-                this.starsManipulator.components.forEach(star => {
-                   star.color(myColors.lightgrey, 1, myColors.lightyellow);
-                });
-                switch (starObject.id) {
-                    case "star1":
-                        starObject.color(myColors.lightyellow, 1, myColors.lightyellow);
-                        break;
-                    case "star2":
-                        this.starsManipulator.components[0].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        starObject.color(myColors.lightyellow, 1, myColors.lightyellow);
-                        break;
-                    case "star3":
-                        this.starsManipulator.components[0].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[1].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        starObject.color(myColors.lightyellow, 1, myColors.lightyellow);
-                        break;
-                    case "star4":
-                        this.starsManipulator.components[0].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[1].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[2].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        starObject.color(myColors.lightyellow, 1, myColors.lightyellow);
-                        break;
-                    case "star5":
-                        this.starsManipulator.components[0].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[1].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[2].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        this.starsManipulator.components[3].color(myColors.lightyellow, 1, myColors.lightyellow);
-                        starObject.color(myColors.lightyellow, 1, myColors.lightyellow);
-                        break;
-                }
-                Server.updateSingleFormationStars(this.formation._id, starObject.id).then(data => {
-                   console.log(data);
-                });
-            };
-            starMiniatures.forEach(
-                star => {
-                    this.starsManipulator.add(star);
-                    if (playerMode) {
-                        svg.addEvent(star,"click",() => onStarClick(star));
-                    }
-                }
-            );
 
             if (!playerMode && statusEnum[this.formation.status]) {
                 let icon = statusEnum[this.formation.status].icon(iconSize);
@@ -1624,7 +1700,6 @@ exports.Util = function (globalVariables) {
                 });
             }
             this.iconManipulator.move(w / 4, -h * 2 / 3 - iconSize / 2);
-            this.starsManipulator.move(-w / 2.5, - h / 3);
             this.miniatureManipulator.move(x, y);
             this.miniatureManipulator.add(this.iconManipulator);
 
@@ -1658,7 +1733,7 @@ exports.Util = function (globalVariables) {
                     this.iconManipulator.set(0, doneIcon.border);
                     this.iconManipulator.set(1, doneIcon.content);
                     this.miniatureManipulator.add(this.iconManipulator);
-                    this.miniatureManipulator.add(this.starsManipulator);
+                    //this.miniatureManipulator.add(this.starsManipulator);
                     break;
                 case "inProgress":
                     let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
@@ -2049,8 +2124,8 @@ exports.Util = function (globalVariables) {
         static updateAllFormationStars() {
             return dbListener.httpPostAsync('/formations/userAllEval/');
         }
-        static updateSingleFormationStars(id, starId) {
-            return dbListener.httpPostAsync('/formations/userFormationEval/' + id, {starId: starId});
+        static updateSingleFormationStars(id, starId, versionId) {
+            return dbListener.httpPostAsync('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});
         }
     }
 
@@ -2078,13 +2153,21 @@ exports.Util = function (globalVariables) {
         REGEX_ERROR_FORMATION = "Veuillez rentrer un nom de formation valide";
         EMPTY_FIELD_ERROR = "Veuillez remplir tous les champs";
         MARGIN = 10;
-        STAR_SPACE = 25;
+        STAR_SPACE = 4;
 
-        starEnum = {
-            starBase : 10,
-            topStar : 5,
-            bottomStar : 15
-        }
+        starsNoteEnum = {
+            'star1' : 'Pas Terrible',
+            'star2': 'Passable',
+            'star3' : 'Correcte',
+            'star4' : 'Bien',
+            'star5' : 'Excellente'
+        };
+
+        // starEnum = {
+        //     starBase : 10,
+        //     topStar : 5,
+        //     bottomStar : 15
+        // }
         myParentsList = ["parent", "parentManipulator", "answersManipulator", "validateManipulator", "parentElement",
             "resetManipulator", "manipulatorQuizInfo", "questionCreatorManipulator",
             "previewButtonManipulator", "saveQuizButtonManipulator", "saveFormationButtonManipulator", "toggleButtonManipulator",
@@ -2120,7 +2203,7 @@ exports.Util = function (globalVariables) {
             black: [0, 0, 0],
             white: [255, 255, 255],
             red: [255, 0, 0],
-            yellow: [255, 255, 0],
+            yellow: [240, 212, 25],
             pink: [255, 20, 147],
             brown: [128, 0, 0],
             primaryGreen: [0, 255, 0],
