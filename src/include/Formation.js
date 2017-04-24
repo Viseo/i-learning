@@ -1354,7 +1354,6 @@ exports.Formation = function (globalVariables, classContainer) {
             this.headerHeight = heightPage * headerPercentage;
             this.questionHeight = heightPage * questionPercentage - MARGIN;
             this.answerHeight = heightPage * this.answerPercentage - MARGIN;
-            this.questionHeightWithoutImage = heightPage * questionPercentage - MARGIN;
             this.answerHeightWithoutImage = heightPage * this.answerPercentage - MARGIN;
             this.questionHeightWithImage = heightPage * questionPercentageWithImage - MARGIN;
             this.answerHeightWithImage = heightPage * answerPercentageWithImage - MARGIN;
@@ -1633,13 +1632,13 @@ exports.Formation = function (globalVariables, classContainer) {
          * affiche la question en cours
          */
         displayCurrentQuestion() {
+            this.questionHeight = this.questionHeightWithImage;
             if (this.tabQuestions[this.currentQuestionIndex].imageSrc) {
-                this.questionHeight = this.questionHeightWithImage;
                 this.answerHeight = this.answerHeightWithImage;
             } else {
-                this.questionHeight = this.questionHeightWithoutImage;
                 this.answerHeight = this.answerHeightWithoutImage;
             }
+
             this.manipulator.add(this.tabQuestions[this.currentQuestionIndex].manipulator);
             this.tabQuestions[this.currentQuestionIndex].manipulator.flush();
             this.tabQuestions[this.currentQuestionIndex]
@@ -1669,7 +1668,9 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         nextQuestion() {
             if (this.currentQuestionIndex !== -1) {
-                this.manipulator.remove(this.tabQuestions[this.currentQuestionIndex].manipulator);
+                let questionVue = this.tabQuestions[this.currentQuestionIndex];
+                this.manipulator.remove(questionVue.manipulator);
+                questionVue.miniatureVideo && drawings.component.clean();
             }
 
             if (this.previewMode) {

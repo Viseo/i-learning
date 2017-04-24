@@ -29,7 +29,7 @@ exports.Util = function (globalVariables) {
         svgr = globalVariables.runtime;
     };
 
-    const SPACING_Y_INCORRECT_ANSWER = 100;
+    const SPACING_Y_INCORRECT_ANSWER = 70;
 
     /**
      * Initialise globalVariables.imageController
@@ -729,6 +729,119 @@ exports.Util = function (globalVariables) {
                 }
             };
         };
+
+        drawSimpleVideo = (label, videoObject, w, h, rgbCadre, bgColor, fontSize, font, manipulator, editable,
+                           controls, layer = 2, textWidth = w) => {
+            if ((w <= 0) || (h <= 0)) {
+                w = 1;
+                h = 1;
+            }
+            const video = new svg.Video(0, 0, w, videoObject.src, controls);
+            drawings.component.add(video);
+
+            let videoTitle = autoAdjustText(videoObject.name, textWidth, h - 50, 10, null, manipulator, manipulator.lastLayerOrdonator());
+            videoTitle.text.position( ((label) ? -video.width/2 : 0 ), h/2 - MARGIN).color(myColors.black);
+
+            if (editable) {
+                let parent = manipulator.parentObject;
+                const position = parent.imageX ? {x: parent.imageX, y: -0} : {x: 0, y: 0},
+                    videoGlass = new svg.Rect(130, 80)
+                        .color(myColors.pink)
+                        .position(position.x, position.y - 25)
+                        .opacity(0.001);
+                manipulator.set(layer, videoGlass);
+                videoGlass.mark('glass' + videoObject.name.split('.')[0]);
+                video._acceptDrop = true;
+                videoGlass._acceptDrop = true;
+                text && (text._acceptDrop = true);
+                video.setRedCrossClickHandler = (handler) => {
+                    video.redCrossClickHandler = handler;
+                };
+                let mouseleaveHandler = () => {
+                    this.redCrossManipulator && this.redCrossManipulator.flush();
+                };
+                let mouseoverHandler = () => {
+                    if (typeof video.redCrossManipulator === 'undefined') {
+                        video.redCrossManipulator = new Manipulator(this);
+                        video.redCrossManipulator.addOrdonator(2);
+                        manipulator.add(video.redCrossManipulator);
+                    }
+                    let redCrossSize = 15;
+                    let redCross = drawRedCross(position.x + 60, position.y - 45, redCrossSize, video.redCrossManipulator);
+                    redCross.mark('videoRedCross');
+                    svg.addEvent(redCross, 'click', video.redCrossClickHandler);
+                    video.redCrossManipulator.set(1, redCross);
+                };
+                svg.addEvent(videoGlass, "mouseover", mouseoverHandler);
+                svg.addEvent(videoGlass, "mouseout", mouseleaveHandler);
+                svg.addEvent(video, "mouseover", mouseoverHandler);
+                svg.addEvent(video, "mouseout", mouseleaveHandler);
+            }
+
+
+            videoTitle.text._acceptDrop = true;
+            if (controls) {
+                video.playFunction = function () {
+                    globalVariables.videoDisplayed = manipulator.parentObject;
+                    runtime.speechSynthesisCancel();
+                    drawings.component.clean(video);
+                    video.position(drawing.width * 0.1, (drawing.height - 9 * 7 / 160 * drawing.width) / 2);
+                    video.dimension(drawing.width * 0.8);
+                    let drawGreyCross = () => {
+                        const
+                            crossSize = 12,
+                            circle = new svg.Circle(crossSize).color(myColors.black, 2, myColors.white),
+                            closeButtonManipulator = new Manipulator(),
+                            cross = drawCross(drawing.width * 0.9 + MARGIN, (drawing.height - 9 * 7 / 160 * drawing.width) / 2 - MARGIN, crossSize, myColors.lightgrey, myColors.lightgrey, closeButtonManipulator);
+                        cross.mark('crossToClose');
+                        closeButtonManipulator.addOrdonator(2);
+                        closeButtonManipulator.set(0, circle);
+                        closeButtonManipulator.set(1, cross);
+                        drawing.manipulator.set(3, closeButtonManipulator);
+                        const crossHandler = () => {
+                            globalVariables.videoDisplayed = null;
+                            drawing.manipulator.unset(3);
+                            drawings.component.clean();
+                            let quiz = manipulator.parentObject.parentQuiz || (manipulator.parentObject.parentQuestion && manipulator.parentObject.parentQuestion.parentQuiz) || manipulator.parentObject.answer.parentQuestion.parentQuiz;
+                            if (quiz.currentQuestionIndex !== -1 && quiz.currentQuestionIndex < quiz.tabQuestions.length) {
+                                quiz.manipulator.remove(quiz.tabQuestions[quiz.currentQuestionIndex].questionManipulator);
+                            }
+                            quiz.display(0, 0, drawing.width, drawing.height);
+                        };
+
+                        const hasKeyDownEvent = function (event) {
+                            if (event.keyCode === 27) {
+                                crossHandler();
+                            }
+                        };
+
+                        svg.addGlobalEvent("keydown", (event) => {
+                            if (drawing.notInTextArea && hasKeyDownEvent(event)) {
+                                event.preventDefault();
+                            }
+                        });
+
+                        svg.addEvent(cross, "click", crossHandler);
+                        svg.addEvent(circle, "click", crossHandler);
+                        return cross;
+                    };
+                    this.cross = drawGreyCross();
+                };
+                video.setPlayHandler(video.playFunction);
+            }
+
+            return {
+                video,
+                resize(width) {
+                    video.dimension(width);
+                    let bounds = video.component.getBoundingClientRect();
+                    video.position(- bounds.width / 2, - (bounds.height / 2 + 50));
+                    videoTitle.text.position(0, bounds.height / 2);
+                    return this;
+                }
+            };
+        };
+
 
         displayImageWithBorder = function (imageSrc, imageObj, w, h, manipulator) {
             let image = displayImage(imageSrc, imageObj, w - 2 * MARGIN, h - 2 * MARGIN, manipulator);//h-2*MARGIN

@@ -36,7 +36,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
         OFFSET_POSITION_Y_QUESTION = -30,
         SPACE_BETWEEN_TITLE_AND_ANSWER = 100 + OFFSET_POSITION_Y_QUESTION,
         SPACE_BETWEEN_TWO_ANSWER = 20,
-        NUMBER_ANSWER_BY_LINE = 3;
+        NUMBER_ANSWER_BY_LINE = 3,
+        COEFF_HEIGHT_TITTLE_QUESTION = 5/8;
 
     ///////MODEL/////////////////////////////////////////////////////////
     /**
@@ -1131,8 +1132,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
             this.manipulator.set(6, this.questNum);
             this.manipulator.move(this.x, this.y);
-            let globalPoints = this.manipulator.first.globalPoint(-50, -50);
-            this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
             if (this.selected) {
                 this.selectedQuestion();
             }
@@ -1369,13 +1368,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
         }
 
         manageDisplayTitle() {
-            let ratioBorder = {
-                w: 0.4,
-                h: 0.3,
-                coeff: 0.65
-            };
 
             let textHeight = 0;
+
             // Question avec Texte ET image
             if (this.imageSrc) {//&& this.label !== ""
                 let imgObj = this.dimImage || {
@@ -1397,32 +1392,43 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
                 (this.content && this.content.position(0, MARGIN));
             }
-            else if (this.video) {//&& this.label !== ""
-                let obj = drawVideo(this.label, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
-
-                this.content = obj.content;
+            else if (this.video) {
+                let obj = drawSimpleVideo(this.label, this.video, this.height, this.height*COEFF_HEIGHT_TITTLE_QUESTION,
+                    this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
                 this.miniatureVideo = obj.video;
                 obj.video.mark('questionVideoToPlay');
             }
 
             if (this.label) {
-                let imagePos = OFFSET_POSITION_Y_QUESTION + (this.image && (this.label && this.label.length > 0) ? textHeight : 0);
-                this.content = autoAdjustText(this.label, this.width * ratioBorder.w, (this.image ? this.image.height : this.fontSize + MARGIN), this.fontSize,
-                    this.font, this.manipulator, 4).text.position(0, imagePos);
+                let imagePosY = OFFSET_POSITION_Y_QUESTION;
+                let imagePosX = 0;
+                if(this.image){
+                    imagePosY += (this.label && this.label.length > 0) ? textHeight : 0;
+                }else if(this.video){
+                    imagePosX += this.miniatureVideo.width/2;
+                }
+
+                this.content = autoAdjustText(this.label, this.width/2, this.height*2/3, this.fontSize,
+                    this.font, this.manipulator, 4).text.position(imagePosX, imagePosY);
             }
 
             let formation = this.parentQuiz.parentFormation;
-            let line = new svg.Line(-this.width / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION, this.width / 2 - MARGIN, OFFSET_POSITION_Y_QUESTION)
-                .color(myColors.grey, 1, myColors.grey);
 
-            this.border = util.drawHexagon(this.width * ratioBorder.w,
-                (this.image ? this.image.height : 0) + (this.label ? this.fontSize : 0) + MARGIN, 'H', ratioBorder.coeff)
+
+            this.border = util.drawHexagon(this.width/2, this.height*COEFF_HEIGHT_TITTLE_QUESTION, 'H', 0.65)
                 .position(0, OFFSET_POSITION_Y_QUESTION);
+            this.manipulator.set(1, this.border);
+
+            let line = new svg.Line(-this.width / 2 + MARGIN, OFFSET_POSITION_Y_QUESTION, this.width / 2 - MARGIN,
+                OFFSET_POSITION_Y_QUESTION).color(myColors.grey, 1, myColors.grey);
+            this.manipulator.set(0, line);
+
+
             //Title in the left corner  with limit 15 char
             autoAdjustText(formation.label, util.getStringWidthByFontSize(15, this.fontSize), this.fontSize, this.fontSize, this.font, this.manipulator, 3).text
                 .position(-this.width / 2 + MARGIN + util.getStringWidthByFontSize(formation.label.length / 2, this.fontSize) + MARGIN, OFFSET_POSITION_Y_QUESTION - MARGIN);
-            this.manipulator.set(0, line);
-            this.manipulator.set(1, this.border);
+
+
         }
 
         render(x, y, w, h) {
@@ -1443,6 +1449,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
             }
 
             super.genericPostRender();
+            let realHeightPollygon = this.height*COEFF_HEIGHT_TITTLE_QUESTION;
+            let point = this.border.globalPoint((this.label) ? -this.height : -this.height/2, 0);
+            this.miniatureVideo && this.miniatureVideo.position(point.x, point.y-realHeightPollygon/2);
         }
 
         displayAnswers(w, h) {
@@ -1561,6 +1570,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             }
 
             super.genericPostRender();
+            let globalPoints = this.manipulator.first.globalPoint(-50, -50);
+            this.miniatureVideo && this.miniatureVideo.position(globalPoints.x, globalPoints.y);
         }
 
         displayAnswers(w, h) {
