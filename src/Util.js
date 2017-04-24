@@ -1550,7 +1550,7 @@ exports.Util = function (globalVariables) {
             svg.addEvent(this.image.imageSVG,"mouseenter",
                 () => {
                     this.image.imageMouseoverHandler();
-                    onMouseOverSelect(this.miniatureManipulator)
+                    this.miniatureManipulator.get(0).color([130, 180, 255], 3, myColors.black);
                 });
         }
 
@@ -1705,7 +1705,7 @@ exports.Util = function (globalVariables) {
 
             playerMode && this.drawIcon();
             if (this.picture){
-                drawPicture();
+                this.drawPicture();
             }
             let onMouseOverSelect = miniatureManipulator => {
                 miniatureManipulator.get(0).color([130, 180, 255], 3, myColors.black);
