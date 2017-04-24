@@ -136,8 +136,7 @@ describe('QuizManager', function () {
             let maFormation = retrieve(root, "[maFormation]");
             maFormation.handler.parentManip.listeners["click"]();
 
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(game0.handler.originalText, "Quiz 1");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['dblclick']();
 
             let quizLabelContent = retrieve(root, '[quizLabelContent]');
@@ -179,8 +178,7 @@ describe('QuizManager', function () {
             let maFormation = retrieve(root, "[maFormation]");
             maFormation.handler.parentManip.listeners["click"]();
 
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(game0.handler.originalText, "Quiz 1");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['dblclick']();
 
             let questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
@@ -245,7 +243,7 @@ describe('QuizManager', function () {
             let maFormation = retrieve(root, "[maFormation]");
             maFormation.handler.parentManip.listeners["click"]();
 
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['dblclick']();
 
             let questionBlockTitle1 = retrieve(root, '[questionBlockTitle1]');
@@ -292,8 +290,7 @@ describe('QuizManager', function () {
             let maFormation = retrieve(root, "[maFormation]");
             maFormation.handler.parentManip.listeners["click"]();
 
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(game0.handler.originalText, "Quiz 1");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['dblclick']();
 
             let toggleButtonCadreMultiple = retrieve(root, '[toggleButtonCadremultiples]');
@@ -325,8 +322,7 @@ describe('QuizManager', function () {
             let maFormation = retrieve(root, "[maFormation]");
             maFormation.handler.parentManip.listeners["click"]();
 
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(game0.handler.originalText, "Quiz 1");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['dblclick']();
 
             let explanationCadre0 = retrieve(root, '[explanationSquare0]');

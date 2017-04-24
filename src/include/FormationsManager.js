@@ -418,7 +418,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                         posx = (this.tileWidth + spaceBetweenElements.width)*evenLine(totalLines)/2;
                     }
                     formation.parent = this;
-                    this.formationsManipulator.add(formation.miniature.miniatureManipulator);
+                    this.formationsManipulator.add(formation.miniature.manipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
                     formation.miniature.setHandler("click", () => _onClickDisplayFormation(formation));
                     count++;
