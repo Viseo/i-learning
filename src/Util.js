@@ -144,10 +144,6 @@ exports.Util = function (globalVariables) {
                 this.redCross = drawRedCross(0,0, 40, this.redCrossManipulator);
                 this.redCross.mark('popupRedcross');
                 this.redCrossManipulator.add(this.redCross);
-                svg.addEvent(this.redCross, 'mouseup', () => this.hide());
-                if (this.cb){
-                    this.cb();
-                }
             }
             if(this.xAdd != undefined && this.yAdd != undefined){
                 this.x += this.xAdd;
@@ -157,7 +153,10 @@ exports.Util = function (globalVariables) {
             this.manipulator.move(this.x , this.y);
             this.manipulator.add(this.redCrossManipulator);
             this.redCrossManipulator.move(this.width, -this.height);
-
+            svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+            if (this.cb){
+                this.cb();
+            }
         }
 
         defineProperty(x, y, callback){
@@ -1276,10 +1275,6 @@ exports.Util = function (globalVariables) {
             }
         }
 
-        setImageRedCrossClickHandler(imageRedCrossClickHandler) {
-            this.imageRedCrossClickHandler = imageRedCrossClickHandler;
-        }
-
         drawImageRedCross() {
             this.mouseleaveHandler = (event) => {
                 let target = drawings.component.background.getTarget(event.pageX, event.pageY);
@@ -1664,6 +1659,7 @@ exports.Util = function (globalVariables) {
                     this.image.imageMouseoverHandler();
                     this.manipulator.get(0).color([130, 180, 255], 3, myColors.black);
                 });
+            this.image.imageSVG.mark(this.formation.label + 'SetupImage');
         }
 
         display(x, y, w, h) {
@@ -1683,7 +1679,6 @@ exports.Util = function (globalVariables) {
                 this.popOut.defineProperty(0, -h*1.5);
                 this.settingsManipulator.addEvent('click', this.popOut.show.bind(this.popOut));
                 this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
-
             }
             let points = [
                 [w / 2, -h / 1.5],
