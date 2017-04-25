@@ -1421,7 +1421,12 @@ exports.Util = function (globalVariables) {
                 video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
             }
             if (this.game.picture) {
-                this.picture = new Picture(this.game.picture, true, this, '',null);
+                this.picture = new Picture(this.game.picture, true, this, '', ()=> {
+                    this.manipulator.unset(3);
+                    // this.manipulator.remove(this.picture.imageSVG);
+                    this.game.picture = null;
+                    // this.display();
+                });
                 this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
             }
             if (this.game.parentGamesList) {
@@ -2208,10 +2213,6 @@ exports.Util = function (globalVariables) {
         }
         static deleteVideo(video) {
             return dbListener.httpPostAsync("/medias/videos/delete", video);
-        }
-
-        static updateAllFormationStars() {
-            return dbListener.httpPostAsync('/formations/userAllEval/');
         }
         static updateSingleFormationStars(id, starId, versionId) {
             return dbListener.httpPostAsync('/formations/userFormationEval/' + id, {starId: starId, versionId: versionId});

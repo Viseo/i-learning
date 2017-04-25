@@ -225,7 +225,6 @@ describe('popOut', function () {
             let firstGameTitle = retrieve(root, '[titlelevel0quizz0]');
             assert.equal(firstGameTitle.handler.originalText,'Quiz 1');
             let firstGame = retrieve(root, '[level0quizz0]');
-            // let firstGame2 = retrieve(root, '[quizz0]');
             let firstGameCoordinates = {
                 x: firstGameTitle.handler.parent.globalPoint(0, 0).x,
                 y: firstGameTitle.handler.parent.globalPoint(0, 0).y
@@ -262,7 +261,7 @@ describe('popOut', function () {
                 }
             });
             quizzSetUpImage.listeners['mouseenter']();
-            // callClickOnElement(root, 'imageRedCross');
+            callClickOnElement(root, 'imageRedCross');
             let popUpRedCross = retrieve(root, '[popupRedcross]');
             popUpRedCross.listeners['mouseup']();
             done();
