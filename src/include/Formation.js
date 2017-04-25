@@ -27,7 +27,7 @@ exports.Formation = function (globalVariables, classContainer) {
         Puzzle = globalVariables.util.Puzzle;
 
     const OFFSET_X_DISPLAY_INCORRECT_QUESTION = 100,
-        EMOJI_ANSWER_SIZE = 35;
+        EMOJI_ANSWER_SIZE = 25;
 
     installDnD = globalVariables.gui.installDnD;
 
@@ -1270,6 +1270,8 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.manipulator.add(this.chevronManipulator);
                 this.chevronManipulator.add(this.leftChevronManipulator);
                 this.chevronManipulator.add(this.rightChevronManipulator);
+                this.messageResultManip = new Manipulator().addOrdonator(2);
+                this.manipulator.add(this.messageResultManip);
             };
             var _declareDimension = () => {
                 this.resultArea = {
@@ -1312,10 +1314,6 @@ exports.Formation = function (globalVariables, classContainer) {
             _declareFontAndColor();
             _declareDimension();
             this.questionsAnswered = quiz.questionsAnswered ? quiz.questionsAnswered : [];
-            // todo
-            this.questionsAnswered.forEach(answer => {
-                // console.log(answer.validatedAnswers);
-            });
 
             this.progress = this.questionsAnswered.length == 0 ? '' :
                 this.questionsAnswered.length == this.tabQuestions.length ? 'Done' : 'inProgress';
@@ -1356,6 +1354,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.answerHeight = heightPage * this.answerPercentage - MARGIN;
             this.answerHeightWithoutImage = heightPage * this.answerPercentage - MARGIN;
             this.questionHeightWithImage = heightPage * questionPercentageWithImage - MARGIN;
+            this.questionHeightWithoutImage = heightPage * questionPercentage - MARGIN;
             this.answerHeightWithImage = heightPage * answerPercentageWithImage - MARGIN;
             this.manipulator.move(this.questionArea.w / 2, this.headerHeight);
             this.returnButton.display(MARGIN - w * 0.5 + this.x, this.headerHeight / 2, 20, 20);
@@ -1650,15 +1649,13 @@ exports.Formation = function (globalVariables, classContainer) {
                 .manipulator.add(this.tabQuestions[this.currentQuestionIndex].answersManipulator);
             this.tabQuestions[this.currentQuestionIndex].displayAnswers(this.questionArea.w, this.answerHeight);
             if(this.previewMode && globalVariables.playerMode){
-                let messageResultManip = new Manipulator().addOrdonator(2);
                 let {finalMessage, autoColor} = this._getResultFinalMessageAndColor();
                 displayText(finalMessage, this.titleArea.w - 2 * MARGIN, this.questionHeight, myColors.black, autoColor,
-                    this.fontSize, this.font, messageResultManip);
+                    this.fontSize, this.font, this.messageResultManip);
                 this._displayResultEmoji(-util.getStringWidthByFontSize(finalMessage.length/2, this.fontSize),
-                    messageResultManip, 0);
+                    this.messageResultManip, 0);
 
-                messageResultManip.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.headerHeight / 2 + 2 * MARGIN);
-                this.manipulator.add(messageResultManip);
+                this.messageResultManip.move(this.titleArea.w / 2 - this.questionArea.w / 2, this.headerHeight / 2 + 2 * MARGIN);
             };
         }
 

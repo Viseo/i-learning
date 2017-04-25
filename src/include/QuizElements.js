@@ -37,7 +37,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
         SPACE_BETWEEN_TITLE_AND_ANSWER = 100 + OFFSET_POSITION_Y_QUESTION,
         SPACE_BETWEEN_TWO_ANSWER = 20,
         NUMBER_ANSWER_BY_LINE = 3,
-        COEFF_HEIGHT_TITTLE_QUESTION = 5/8;
+        COEFF_HEIGHT_TITTLE_QUESTION = 5/9;
 
     ///////MODEL/////////////////////////////////////////////////////////
     /**
