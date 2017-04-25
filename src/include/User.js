@@ -56,7 +56,7 @@ exports.User = function (globalVariables, classContainer) {
                 this.passwordManipulator = new Manipulator(this).addOrdonator(5);
                 this.passwordManipulator.imageLayer = 3;
                 this.passwordConfirmationManipulator = new Manipulator(this).addOrdonator(5);
-                this.passwordConfirmationManipulator.imageLayer = 2;
+                this.passwordConfirmationManipulator.imageLayer = 3;
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
                 this.saveButtonManipulator.component.mark('saveButton');
                 this.connexionTextManipulator = new Manipulator(this);
