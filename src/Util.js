@@ -1679,7 +1679,7 @@ exports.Util = function (globalVariables) {
                 [0, 0.9511],
                 [1, 0.9511]
             ]
-            if(this.formation.progress = 'done'){
+            if(this.formation.progress == 'done' && globalVariables.playerMode){
                 createStars();
             }
 
