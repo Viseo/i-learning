@@ -682,7 +682,8 @@ exports.Util = function (globalVariables) {
                     video.redCrossClickHandler = handler;
                 };
                 let mouseleaveHandler = () => {
-                    this.redCrossManipulator && this.redCrossManipulator.flush();
+                    video.redCrossManipulator && video.redCrossManipulator.flush();
+
                 };
                 let mouseoverHandler = () => {
                     if (typeof video.redCrossManipulator === 'undefined') {
@@ -696,10 +697,10 @@ exports.Util = function (globalVariables) {
                     svg.addEvent(redCross, 'click', video.redCrossClickHandler);
                     video.redCrossManipulator.set(1, redCross);
                 };
-                svg.addEvent(videoGlass, "mouseover", mouseoverHandler);
-                svg.addEvent(videoGlass, "mouseout", mouseleaveHandler);
-                svg.addEvent(video, "mouseover", mouseoverHandler);
-                svg.addEvent(video, "mouseout", mouseleaveHandler);
+                svg.addEvent(videoGlass, "mouseenter", mouseoverHandler);
+                svg.addEvent(videoGlass, "mouseleave", mouseleaveHandler);
+                svg.addEvent(video, "mouseenter", mouseoverHandler);
+                svg.addEvent(video, "mouseleave", mouseleaveHandler);
             }
 
             let videoTitle = autoAdjustText(videoObject.name, textWidth, h - 50, 10, null, manipulator, manipulator.lastLayerOrdonator());
@@ -1423,9 +1424,7 @@ exports.Util = function (globalVariables) {
             if (this.game.picture) {
                 this.picture = new Picture(this.game.picture, true, this, '', ()=> {
                     this.manipulator.unset(3);
-                    // this.manipulator.remove(this.picture.imageSVG);
                     this.game.picture = null;
-                    // this.display();
                 });
                 this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
             }
