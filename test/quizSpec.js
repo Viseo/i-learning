@@ -353,15 +353,15 @@ describe('QuizManager', function () {
             arrowModeButtonCadre.listeners['click']();
             let arrowModeArrow = retrieve(root, '[arrowModeArrow]');
             assert.equal(arrowModeArrow.fill, 'rgb(25,122,230)');
-            let game0 = retrieve(root, "[titlelevel0quizz0]");
-            assert.equal(game0.handler.originalText, "Quiz 1");
-            let game1 = retrieve(root, "[titlelevel1quizz1]");
-            assert.equal(game1.handler.originalText, "Quiz 2");
-            let game2 = retrieve(root, "[titlelevel1quizz2]");
-            assert.equal(game2.handler.originalText, "Quiz 3");
-            let game0pos = game0.handler.parent.globalPoint(0, 0);
-            let game1pos = game1.handler.parent.globalPoint(0, 0);
-            let game2pos = game2.handler.parent.globalPoint(0, 0);
+            let titleGame0 = retrieve(root, "[titlelevel0quizz0]");
+            assert.equal(titleGame0.handler.originalText, "Quiz 1");
+            let titleGame1 = retrieve(root, "[titlelevel1quizz1]");
+            assert.equal(titleGame1.handler.originalText, "Quiz 2");
+            let titleGame2 = retrieve(root, "[titlelevel1quizz2]");
+            assert.equal(titleGame2.handler.originalText, "Quiz 3");
+            let game0pos = titleGame0.handler.parent.globalPoint(0, 0);
+            let game1pos = titleGame1.handler.parent.globalPoint(0, 0);
+            let game2pos = titleGame2.handler.parent.globalPoint(0, 0);
             let glass = retrieve(root, '[theGlass]');
             glass.listeners['mousedown']({                  // on crée les liens entre game0 et 1 et game0 et 2
                 pageX: game0pos.x, pageY: game0pos.y, preventDefault: () => {
@@ -399,20 +399,21 @@ describe('QuizManager', function () {
                 }
             });
             let game0Hexagon = retrieve(root, "[hexBorder0quizz0]");
+            let game0 = retrieve(root, "[quizz0]");
             game0.handler.parentManip.listeners['mousedown']({
-                pageX: game0.handler.parentManip.x, pageY: game0.handler.parentManip.y, preventDefault: () => {
+                pageX: titleGame0.handler.parentManip.x, pageY: titleGame0.handler.parentManip.y, preventDefault: () => {
                 }});
             game0.handler.parentManip.listeners['mouseup']({
-                pageX: game0.handler.parentManip.x, pageY: game0.handler.parentManip.y, preventDefault: () => {
+                pageX: titleGame0.handler.parentManip.x, pageY: titleGame0.handler.parentManip.y, preventDefault: () => {
                 }});
             assert.equal(game0Hexagon.stroke, 'rgb(25,25,112)'); // le jeu game0 est sélectionné
-            game1.handler.parentManip.listeners['mousedown']({
-                pageX: game0.handler.parentManip.x, pageY: game0.handler.parentManip.y, preventDefault: () => {
+            game0.handler.parentManip.listeners['mousedown']({
+                pageX: titleGame0.handler.parentManip.x, pageY: titleGame0.handler.parentManip.y, preventDefault: () => {
                 }});
             game0.handler.parentManip.listeners['mouseup']({
-                pageX: game0.handler.parentManip.x, pageY: game0.handler.parentManip.y, preventDefault: () => {
+                pageX: titleGame0.handler.parentManip.x, pageY: titleGame0.handler.parentManip.y, preventDefault: () => {
                 }});
-            assert.equal(game0Hexagon.stroke, 'rgb(0,0,0)'); // le jeu game0 est désélectionné
+            assert.equal(game0Hexagon.stroke, 'rgb(125,122,117)'); // le jeu game0 est désélectionné
             done();
         });
     });
