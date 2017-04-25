@@ -255,7 +255,7 @@ describe('popOut', function () {
                 pageX: firstGameCoordinates.x, pageY: firstGameCoordinates.y, preventDefault: () => {
                 }
             })
-            let quizzSetUpImage = firstGame.handler.parentManip.components['8'].component;
+            let quizzSetUpImage = firstGame.handler.parentManip.components['7'].component;
             quizzSetUpImage.listeners['mouseenter']();
             quizzSetUpImage.listeners['mouseleave']({
                 pageX: 0, pageY: 0, preventDefault: () => {
