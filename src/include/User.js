@@ -560,25 +560,32 @@ exports.User = function (globalVariables, classContainer) {
                     fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
                     fieldArea.color(COLORS);
                     fieldArea.editColor(EDIT_COLORS);
+                    let showFieldEvenIfIncorrect = (oldMessage, message, valid) => {
+                        fieldArea.message(message);
+                        this.focusedField = this[field];
+                        if (!this.focusedField.input.valid) {
+                            this.focusedField.input.color(ERROR_INPUT);
+                        }
+                        else {
+                            this.focusedField.input.color(COLORS);
+                        }
+                        if(this.focusedField.input.isPassword){
+                            this.focusedField.input.type('password');
+                        }
+                        else{
+                            this.focusedField.input.type('text');
+                        }
+                    }
                     if (field == "passwordField") {
                         let regex = /^[ -~]{6,63}$/;
                         fieldArea.pattern(regex);
+                        fieldArea.onInput(showFieldEvenIfIncorrect);
                         fieldArea.type('password');
                     }
                     else {
                         let regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         fieldArea.pattern(regexEmail);
-                        let showEmailEvenIfIncorrect = (oldMessage, message, valid) => {
-                            fieldArea.message(message);
-                            this.focusedField = this[field];
-                            if (!this.focusedField.input.valid) {
-                                this.focusedField.input.color(ERROR_INPUT);
-                            }
-                            else {
-                                this.focusedField.input.color(COLORS);
-                            }
-                        }
-                        fieldArea.onInput(showEmailEvenIfIncorrect);
+                        fieldArea.onInput(showFieldEvenIfIncorrect);
                     }
                     this.h = 1.5 * fieldArea.height;
                     this[field].translatorInput = fieldArea.component;
