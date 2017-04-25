@@ -1427,7 +1427,7 @@ exports.Util = function (globalVariables) {
                 }
             }
             this.manipulator.set(0, icon.border);
-            this.manipulator.set(2, icon.underContent);
+            globalVariables.playerMode && this.manipulator.set(2, icon.underContent);
             this.manipulator.mark('level' + this.game.levelIndex + this.game.id);
             this.redCrossManipulator = new Manipulator(this);
             this.redCross = drawRedCross(this.size / 2, -this.size / 2, 20, this.redCrossManipulator);
@@ -1456,8 +1456,7 @@ exports.Util = function (globalVariables) {
             drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
             this.removeAllLinks();
             formationVue.miniaturesManipulator.remove(this.manipulator);
-            this.manipulator.unset(0);
-            this.manipulator.unset(1);
+            this.manipulator.flush();
             this.manipulator.remove(this.redCrossManipulator);
             var longestLevelCandidates = formationVue.findLongestLevel();
             if (longestLevelCandidates.length === 1 && (this.game.levelIndex === longestLevelCandidates.index) && (formationVue.levelWidth > formationVue.graphCreaWidth)) {
