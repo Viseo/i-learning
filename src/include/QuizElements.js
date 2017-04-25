@@ -2120,23 +2120,25 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         render(x, y, w, h) {
             super.render(x, y, w, h);
-            var _chooseAnswer = () => {
-                this.model.select(this);
-                let parentQuestion = this.model.parentQuestion;
-                if (parentQuestion.multipleChoice) {
-                    if (this.model.selected) {
-                        this.model.colorBordure = this.border.strokeColor;
-                        this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
-                        parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
-                    } else {
-                        this.border.color(this.model.bgColor, 1, this.model.colorBordure);
-                        if (parentQuestion.selectedAnswers.length === 0) {
-                            parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
+            if (!this.model.editable && !this.model.parentQuestion.parentQuiz.previewMode) {
+                var _chooseAnswer = () => {
+                    this.model.select(this);
+                    let parentQuestion = this.model.parentQuestion;
+                    if (parentQuestion.multipleChoice) {
+                        if (this.model.selected) {
+                            this.model.colorBordure = this.border.strokeColor;
+                            this.border.color(this.model.bgColor, 5, SELECTION_COLOR);
+                            parentQuestion.resetManipulator.ordonator.children[0].color(myColors.yellow, 1, myColors.green);
+                        } else {
+                            this.border.color(this.model.bgColor, 1, this.model.colorBordure);
+                            if (parentQuestion.selectedAnswers.length === 0) {
+                                parentQuestion.resetManipulator.ordonator.children[0].color(myColors.grey, 1, myColors.grey);
+                            }
                         }
                     }
-                }
-            };
-            this.manipulator.addEvent('click', _chooseAnswer);
+                };
+                this.manipulator.addEvent('click', _chooseAnswer);
+            }
         }
     }
 
