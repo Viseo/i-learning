@@ -43,47 +43,51 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param gamesTab - quizs associés à ce niveau
          */
         constructor(formation, gamesTab, playerCheck) {
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this).addOrdonator(4);
+                //croix rouge pour fermer
+                this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
+            };
+            var _addActionForAdmin = () => {
+                if(!playerCheck){
+                    this.manipulator.add( this.redCrossManipulator);
+                    let redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
+                    this.redCrossManipulator.add(redCross);
+
+                    //effacer l objet (ce niveau)
+                    this.redCrossClickHandler = () => {
+                        this.redCrossManipulator.flush();
+                        formation.levelsTab.splice(this.index-1, 1);
+                        this.manipulator.flush();
+                        this.gamesTab.forEach(game => {
+                            game.miniatureManipulator.flush();
+                            for (let j=formation.links.length-1; j>=0; j--){
+                                if (formation.links[j].childGame === game.id || formation.links[j].parentGame === game.id){
+                                    formation.links.splice(j, 1);
+                                }
+                            }
+                        });
+                        for (let i=this.index-1; i<formation.levelsTab.length; i++){
+                            //formation.levelsTab[i].manipulator.flush();
+                            formation.levelsTab[i].index --;
+                            //formation.levelsTab[i].manipulator.flush();
+                        }
+                        formation.displayGraph(formation.graphW, formation.graphH);
+                    };
+                    svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+                }
+            }
+
             this.parentFormation = formation;
-            this.manipulator = new Manipulator(this).addOrdonator(4);
-
-            //croix rouge pour fermer
-            this.redCrossManipulator = new Manipulator(this).addOrdonator(2);
-
+            _declareManipulator();
 
             this.index = (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1]) ? (this.parentFormation.levelsTab[this.parentFormation.levelsTab.length - 1].index + 1) : 1;
             this.gamesTab = gamesTab ? gamesTab : [];
             this.x = this.parentFormation.libraryWidth ? this.parentFormation.libraryWidth : null; // Juste pour être sûr
             this.y = (this.index - 1) * this.parentFormation.levelHeight;
 
-           if(!playerCheck){
-                this.manipulator.add( this.redCrossManipulator);
-                let redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
-                this.redCrossManipulator.add(redCross);
-
-                //effacer l objet (ce niveau)
-                this.redCrossClickHandler = () => {
-                    this.redCrossManipulator.flush();
-                    formation.levelsTab.splice(this.index-1, 1);
-                    this.manipulator.flush();
-                    this.gamesTab.forEach(game => {
-                        game.miniatureManipulator.flush();
-                        for (let j=formation.links.length-1; j>=0; j--){
-                            if (formation.links[j].childGame === game.id || formation.links[j].parentGame === game.id){
-                                formation.links.splice(j, 1);
-                            }
-                        }
-                    });
-                    for (let i=this.index-1; i<formation.levelsTab.length; i++){
-                        //formation.levelsTab[i].manipulator.flush();
-                        formation.levelsTab[i].index --;
-                        //formation.levelsTab[i].manipulator.flush();
-                    }
-                    formation.displayGraph(formation.graphW, formation.graphH);
-                };
-                svg.addEvent(redCross, 'click', this.redCrossClickHandler);
-            }
+            _addActionForAdmin();
         }
-
 
         displayLevel(){
             this.parentFormation.graphManipulator.add(this.manipulator.first);
@@ -101,7 +105,6 @@ exports.Formation = function (globalVariables, classContainer) {
             this.y = (this.index -0.5) * this.parentFormation.levelHeight;
             this.manipulator.move(0, this.y);
         }
-
 
         /**
          * supprime le niveau de la formation parent
@@ -126,6 +129,24 @@ exports.Formation = function (globalVariables, classContainer) {
          */
         constructor(formation, formationsManager) {
             super();
+            var _declareManipulator = () => {
+                this.manipulator.addOrdonator(7);
+
+                this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
+                this.graphManipulator = new Manipulator(this);
+
+                this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
+                this.arrowsManipulator = new Manipulator(this);
+                this.miniaturesManipulator = new Manipulator(this);
+
+                this.graphManipulator.add(this.miniaturesManipulator);
+                this.graphManipulator.add(this.arrowsManipulator);
+                this.clippingManipulator = new Manipulator(this);
+                this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
+            };
+
             this.gamesCounter = {
                 quizz: 0,
                 bd: 0
@@ -135,21 +156,9 @@ exports.Formation = function (globalVariables, classContainer) {
             this.formationId = (formation.formationId || null);
             this.progress = formation.progress;
             this.formationsManager = formationsManager;
-            this.manipulator.addOrdonator(7);
 
-            this.formationInfoManipulator = new Manipulator(this).addOrdonator(3);
-            this.graphManipulator = new Manipulator(this);
+            _declareManipulator();
 
-            this.messageDragDropManipulator = new Manipulator(this).addOrdonator(2);
-            this.arrowsManipulator = new Manipulator(this);
-            this.miniaturesManipulator = new Manipulator(this);
-
-            this.graphManipulator.add(this.miniaturesManipulator);
-            this.graphManipulator.add(this.arrowsManipulator);
-            this.clippingManipulator = new Manipulator(this);
-            this.saveFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.publicationFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
-            this.deactivateFormationButtonManipulator = new Manipulator(this).addOrdonator(2);
             this.library = classContainer.createClass("GamesLibraryVue", myLibraryGames);
             this.library.formation = this;
             this.quizManager = classContainer.createClass("QuizManagerVue", null, this);
@@ -203,7 +212,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.returnButton.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                    let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
+                        : "FormationsManagerVueAdmin";
+                    globalVariables.formationsManager = classContainer.createClass(formationManagerVueInstance, myFormations);
                     globalVariables.formationsManager.display();
                 });
                 this.returnButton.removeHandler(returnHandler);
@@ -803,7 +814,7 @@ exports.Formation = function (globalVariables, classContainer) {
                     this.manipulator.flush();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVueAdmin", myFormations);
                         globalVariables.formationsManager.display();
                     });
                 })
@@ -836,7 +847,7 @@ exports.Formation = function (globalVariables, classContainer) {
                             this.manipulator.flush();
                             Server.getAllFormations().then(data => {
                                 myFormations = JSON.parse(data).myCollection;
-                                globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                                globalVariables.formationsManager = classContainer.createClass("FormationsManagerVueAdmin", myFormations);
                                 globalVariables.formationsManager.display();
                             });
                         } else {
@@ -897,7 +908,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.manipulator.flush();
                 Server.getAllFormations().then(data => {
                     let myFormations = JSON.parse(data).myCollection;
-                    globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                    let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
+                        : "FormationsManagerVueAdmin";
+                    globalVariables.formationsManager = classContainer.createClass(formationManagerVueInstance, myFormations);
                     globalVariables.formationsManager.display();
                 });
             };

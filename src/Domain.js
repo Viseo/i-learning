@@ -235,7 +235,9 @@ exports.Domain = function (globalVariables) {
                     drawings.component.clean();
                     Server.getAllFormations().then(data => {
                         let myFormations = JSON.parse(data).myCollection;
-                        globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                        let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
+                            : "FormationsManagerVueAdmin";
+                        globalVariables.formationsManager = classContainer.createClass(formationManagerVueInstance, myFormations);
                         globalVariables.formationsManager.display();
                     });
                 };

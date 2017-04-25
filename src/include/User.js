@@ -790,7 +790,9 @@ exports.User = function (globalVariables, classContainer) {
                         let user = data.user;
                         Server.getAllFormations().then(data => {
                             let myFormations = JSON.parse(data).myCollection;
-                            globalVariables.formationsManager = classContainer.createClass("FormationsManagerVue", myFormations);
+                            let formationManagerVueInstance = (globalVariables.playerMode) ? "FormationsManagerVueCollab"
+                                : "FormationsManagerVueAdmin";
+                            globalVariables.formationsManager = classContainer.createClass(formationManagerVueInstance, myFormations);
                             // if (!this.model.correct) {
                             //     runtime.setCookie("token=; path=/; max-age=0; oneTime=true;");
                             // }

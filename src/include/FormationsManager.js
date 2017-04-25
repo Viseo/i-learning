@@ -1,9 +1,9 @@
 /**
  *
-    FormationsManagerVue,
+ FormationsManagerVue,
  *
  */
-exports.formationsManager = function(globalVariables, classContainer){
+exports.formationsManager = function (globalVariables, classContainer) {
     let Vue = classContainer.getClass("Vue");
 
     let
@@ -29,7 +29,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             super();
             var _declareConstVar = () => {
                 this.tileHeight = 100;
-                this.tileWidth = this.tileHeight*5/4;
+                this.tileWidth = this.tileHeight * 5 / 4;
                 this.addButtonWidth = 330;
                 this.addButtonHeight = 40;
                 this.addButtonSmall = 30;
@@ -37,6 +37,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                 this.plusDim = this.fontSize * 2;
                 this.iconeSize = this.plusDim / 1.5;
                 this.circleToggleSize = 12.5;
+                this.spaceBetweenElements = {};
             };
             var _declareLabels = () => {
                 this.label = this.label ? this.label : "";
@@ -69,123 +70,16 @@ exports.formationsManager = function(globalVariables, classContainer){
             _declareFormationsList();
         }
 
-        render() {
-            let spaceBetweenElements;
-            var _setDrawingManipulator = () => {
-                this.manipulator.move(0, drawing.height * HEADER_SIZE);
-                drawing.manipulator.set(1, this.manipulator);
-                this.manipulator.add(this.headerManipulator);
-            };
-            var _setPlayerMode = () => {
-                if (globalVariables.playerMode) {
-                    var _setToggleFilterFormations = () => {
-                        var _setHeaderManipulatorCollab = () => {
-                            this.headerManipulator.add(this.toggleFormationsManipulator);
-                        };
-                        var _createFilter = () => {
-                            let manip = this.toggleFormationsManipulator;
-                            var _declarePlayerIcons = () => {
-                                let starPointsDefaultIcon = [
-                                        [0, 0],
-                                    [-this.iconeSize/2.3, -this.iconeSize/2.3],
-                                    [this.iconeSize/2.3, -this.iconeSize/2.3],
-                                    [-this.iconeSize/3.5, this.iconeSize/3.5],
-                                    [0,-this.iconeSize/1.1],
-                                    [this.iconeSize/3.5,this.iconeSize/3.5]
-                                ];
-                                this.undoneIcon = {
-                                    border: new svg.Circle(this.circleToggleSize).color(myColors.blue, 0, myColors.none)
-                                        .position(-this.circleToggleSize * 4 - MARGIN * 2, 0),
-                                    content: new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white)
-                                        .position(-this.circleToggleSize * 4 - MARGIN * 2, 0).mark('unDoneIcon')
-                                };
-                                this.inProgressIcon = displayTextWithCircle('...', this.circleToggleSize * 2,
-                                    this.circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', manip);
-                                this.inProgressIcon.content.font('arial', 20).color(myColors.white).mark('inProgressIcon');
-                                this.doneIcon = {
-                                    border:  new svg.Circle(this.circleToggleSize).color(myColors.green, 0, myColors.none)
-                                        .position(-this.circleToggleSize * 2 - MARGIN, 0)
-                                };
-                                this.doneIcon.content = drawCheck(this.doneIcon.border.x, this.doneIcon.border.y, 20)
-                                    .color(myColors.none, 3, myColors.white).mark('doneIcon');
-                            };
-                            var _setManipulatorIcons = () => {
-                                manip.move(drawing.width - MARGIN * 3, MARGIN + this.circleToggleSize * 2);
-                                manip.set(4, this.doneIcon.content);
-                                manip.set(3, this.doneIcon.border);
-                                manip.set(5, this.undoneIcon.content);
-                                manip.set(2, this.undoneIcon.border);
-                            };
-                            var _drawBorderFilter = () => {
-                                this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
-                                !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
-                                this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
-                                !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
-                                this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
-                                !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
-                            };
-                            var _setIconClickEvent = () => {
-                                var _toggleInProgress = () => {
-                                    this.progressOnly = !this.progressOnly;
-                                    this.doneOnly = false;
-                                    this.undoneOnly = false;
-                                    this.formationsManipulator.flush();
-                                    _displayFormations();
-                                    _drawBorderFilter();
-                                };
-                                var _toggleDone = () => {
-                                    this.doneOnly = !this.doneOnly;
-                                    this.progressOnly = false;
-                                    this.undoneOnly = false;
-                                    this.formationsManipulator.flush();
-                                    _displayFormations();
-                                    _drawBorderFilter();
-                                };
-                                var _toggleUndone = () => {
-                                    this.undoneOnly = !this.undoneOnly;
-                                    this.doneOnly = false;
-                                    this.progressOnly = false;
-                                    this.formationsManipulator.flush();
-                                    _displayFormations();
-                                    _drawBorderFilter();
-                                };
-                                var _saveFormationsStars = formations => {
-                                    console.log(formations);
-                                    /**
-                                     * TODO récupérer le nombre d'étoiles pour chaque formation et envoyer les notes
-                                     * sur le serveur
-                                     */
-                                }
+        _preRender() {
+            this.manipulator.move(0, drawing.height * HEADER_SIZE);
+            drawing.manipulator.set(1, this.manipulator);
+            this.manipulator.add(this.headerManipulator);
+        }
 
-                                svg.addEvent(this.inProgressIcon.border, 'click', _toggleInProgress);
-                                svg.addEvent(this.inProgressIcon.content, 'click', _toggleInProgress);
-                                svg.addEvent(this.doneIcon.border, 'click', _toggleDone);
-                                svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
-                                svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
-                                svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
-                            };
+        render(){
+        }
 
-                            _declarePlayerIcons();
-                            _setManipulatorIcons();
-                            _setIconClickEvent();
-                        };
-
-                        _setHeaderManipulatorCollab();
-                        _createFilter();
-                    };
-
-                    _setToggleFilterFormations();
-                } else {
-                    var _setHeaderManipulatorAdmin = () => {
-                        this.headerManipulator.add(this.addButtonManipulator);
-                        this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
-                        this.headerManipulator.add(this.checkManipulator);
-                        this.headerManipulator.add(this.exclamationManipulator);
-                    }
-
-                    _setHeaderManipulatorAdmin();
-                }
-            };
+        _postRender() {
             var _sortFormationsList = () => {
                 const sortAlphabetical = function (array) {
                     return sort(array, (a, b) => (a.label.toLowerCase() < b.label.toLowerCase()));
@@ -355,7 +249,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     _setToBePublishedMessage();
                 };
                 var _setDisplayProperties = () => {
-                    spaceBetweenElements = {
+                    this.spaceBetweenElements = {
                         width: this.panel ? 0.015 * this.panel.width : 0.015 * drawing.width,
                         height: this.panel ? 0.050 * this.panel.height : 0.050 * drawing.height
                     };
@@ -393,8 +287,8 @@ exports.formationsManager = function(globalVariables, classContainer){
                     /** TODO à quoi sert cet id test ? **/
                     this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
 
-                    this.cols = Math.floor((this.panel.width - 2 * MARGIN) / (this.tileWidth + spaceBetweenElements.width));
-                    this.formationsManipulator.move(MARGIN + (this.tileWidth) / 2, this.tileHeight + spaceBetweenElements.height / 2);
+                    this.cols = Math.floor((this.panel.width - 2 * MARGIN) / (this.tileWidth + this.spaceBetweenElements.width));
+                    this.formationsManipulator.move(MARGIN + (this.tileWidth) / 2, this.tileHeight + this.spaceBetweenElements.height / 2);
                 };
 
                 !globalVariables.playerMode && _setFormations();
@@ -402,51 +296,51 @@ exports.formationsManager = function(globalVariables, classContainer){
                 _setKeydownEvent();
                 _definePanel();
             };
-            var _displayFormations = () => {
-                var _onClickDisplayFormation = formation => {
-                    formation.miniature.removeHandler("click");
-                    Server.getFormationsProgress(formation._id).then(data => {
-                        var tmp = JSON.parse(data);
-                        let games = tmp.progress ? tmp.progress.gamesTab : null;
-                        formation.loadFormation(tmp.formation, games);
-                        this.formationDisplayed = formation;
-                        this.manipulator.flush();
-                        this.formationDisplayed.display();
-                    });
-                };
-                let evenLine = (totalLines) => totalLines%2 === 0 ? 1:0;
-                let posx = 0,
-                    posy = 0,
-                    count = 1,
-                    totalLines = 1;
 
-                this.formations.forEach(formation => {
-                    if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
-                    if (globalVariables.playerMode && this.doneOnly && formation.progress !== 'done') return;
-                    if (globalVariables.playerMode && this.undoneOnly && formation.progress != '') return;
-                    if (count > (this.cols - evenLine(totalLines))) {
-                        count = 1;
-                        totalLines++;
-                        posy += (this.tileHeight*3/2 + spaceBetweenElements.height);
-                        posx = (this.tileWidth + spaceBetweenElements.width)*evenLine(totalLines)/2;
-                    }
-                    formation.parent = this;
-                    this.formationsManipulator.add(formation.miniature.manipulator);
-                    formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-                    formation.miniature.setHandler("click", () => _onClickDisplayFormation(formation));
-                    count++;
-                    posx += (this.tileWidth + spaceBetweenElements.width);
-                });
-                this.panel.resizeContent(this.panel.width, totalLines * (spaceBetweenElements.height + this.tileHeight) + spaceBetweenElements.height + MARGIN);
-            };
-
-            _setDrawingManipulator();
-            _setPlayerMode();
             _sortFormationsList();
             _displayHeader();
             _displayPanel();
-            _displayFormations();
+            this._displayFormations();
         }
+
+        _displayFormations(){
+            var _onClickDisplayFormation = formation => {
+                formation.miniature.removeHandler("click");
+                Server.getFormationsProgress(formation._id).then(data => {
+                    var tmp = JSON.parse(data);
+                    let games = tmp.progress ? tmp.progress.gamesTab : null;
+                    formation.loadFormation(tmp.formation, games);
+                    this.formationDisplayed = formation;
+                    this.manipulator.flush();
+                    this.formationDisplayed.display();
+                });
+            };
+            let evenLine = (totalLines) => totalLines % 2 === 0 ? 1 : 0;
+            let posx = 0,
+                posy = 0,
+                count = 1,
+                totalLines = 1;
+
+            this.formations.forEach(formation => {
+                if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
+                if (globalVariables.playerMode && this.doneOnly && formation.progress !== 'done') return;
+                if (globalVariables.playerMode && this.undoneOnly && formation.progress != '') return;
+                if (count > (this.cols - evenLine(totalLines))) {
+                    count = 1;
+                    totalLines++;
+                    posy += (this.tileHeight * 3 / 2 + this.spaceBetweenElements.height);
+                    posx = (this.tileWidth + this.spaceBetweenElements.width) * evenLine(totalLines) / 2;
+                }
+                formation.parent = this;
+                this.formationsManipulator.add(formation.miniature.manipulator);
+                formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
+                formation.miniature.setHandler("click", () => _onClickDisplayFormation(formation));
+                count++;
+                posx += (this.tileWidth + this.spaceBetweenElements.width);
+            });
+            this.panel.resizeContent(this.panel.width, totalLines * (this.spaceBetweenElements.height + this.tileHeight)
+                + this.spaceBetweenElements.height + MARGIN);
+        };
 
         /**
          * verifie la validité du texte dans l'input
@@ -468,8 +362,124 @@ exports.formationsManager = function(globalVariables, classContainer){
         }
     }
 
+    class FormationsManagerVueCollab extends FormationsManagerVue {
+        constructor(formations) {
+            super(formations);
+        }
+
+        render() {
+            var _setHeaderManipulator = () => {
+                this.headerManipulator.add(this.toggleFormationsManipulator);
+            };
+            var _createFilter = () => {
+                let manip = this.toggleFormationsManipulator;
+                var _declarePlayerIcons = () => {
+                    this.undoneIcon = {
+                        border: new svg.Circle(this.circleToggleSize).color(myColors.blue, 0, myColors.none)
+                            .position(-this.circleToggleSize * 4 - MARGIN * 2, 0),
+                        content: new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white)
+                            .position(-this.circleToggleSize * 4 - MARGIN * 2, 0).mark('unDoneIcon')
+                    };
+                    this.inProgressIcon = displayTextWithCircle('...', this.circleToggleSize * 2,
+                        this.circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', manip);
+                    this.inProgressIcon.content.font('arial', 20).color(myColors.white).mark('inProgressIcon');
+                    this.doneIcon = {
+                        border: new svg.Circle(this.circleToggleSize).color(myColors.green, 0, myColors.none)
+                            .position(-this.circleToggleSize * 2 - MARGIN, 0)
+                    };
+                    this.doneIcon.content = drawCheck(this.doneIcon.border.x, this.doneIcon.border.y, 20)
+                        .color(myColors.none, 3, myColors.white).mark('doneIcon');
+                };
+                var _setManipulatorIcons = () => {
+                    manip.move(drawing.width - MARGIN * 3, MARGIN + this.circleToggleSize * 2);
+                    manip.set(4, this.doneIcon.content);
+                    manip.set(3, this.doneIcon.border);
+                    manip.set(5, this.undoneIcon.content);
+                    manip.set(2, this.undoneIcon.border);
+                };
+                var _drawBorderFilter = () => {
+                    this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
+                    !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
+                    this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
+                    !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                    this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
+                    !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
+                };
+                var _setIconClickEvent = () => {
+                    var _toggleInProgress = () => {
+                        this.progressOnly = !this.progressOnly;
+                        this.doneOnly = false;
+                        this.undoneOnly = false;
+                        this.formationsManipulator.flush();
+                        super._displayFormations();
+                        _drawBorderFilter();
+                    };
+                    var _toggleDone = () => {
+                        this.doneOnly = !this.doneOnly;
+                        this.progressOnly = false;
+                        this.undoneOnly = false;
+                        this.formationsManipulator.flush();
+                        super._displayFormations();
+                        _drawBorderFilter();
+                    };
+                    var _toggleUndone = () => {
+                        this.undoneOnly = !this.undoneOnly;
+                        this.doneOnly = false;
+                        this.progressOnly = false;
+                        this.formationsManipulator.flush();
+                        super._displayFormations();
+                        _drawBorderFilter();
+                    };
+                    var _saveFormationsStars = formations => {
+                        console.log(formations);
+                        /**
+                         * TODO récupérer le nombre d'étoiles pour chaque formation et envoyer les notes
+                         * sur le serveur
+                         */
+                    }
+
+                    svg.addEvent(this.inProgressIcon.border, 'click', _toggleInProgress);
+                    svg.addEvent(this.inProgressIcon.content, 'click', _toggleInProgress);
+                    svg.addEvent(this.doneIcon.border, 'click', _toggleDone);
+                    svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
+                    svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
+                    svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
+                };
+
+                _declarePlayerIcons();
+                _setManipulatorIcons();
+                _setIconClickEvent();
+            };
+
+            super._preRender();
+            _setHeaderManipulator();
+            _createFilter();
+            super._postRender();
+        }
+    }
+
+    class FormationsManagerVueAdmin extends FormationsManagerVue {
+        constructor(formations) {
+            super(formations);
+        }
+
+        render() {
+            var _setHeaderManipulatorAdmin = () => {
+                this.headerManipulator.add(this.addButtonManipulator);
+                this.addButtonManipulator.move(this.plusDim / 2, this.addButtonHeight);
+                this.headerManipulator.add(this.checkManipulator);
+                this.headerManipulator.add(this.exclamationManipulator);
+            };
+
+            super._preRender();
+            _setHeaderManipulatorAdmin();
+            super._postRender();
+        }
+    }
+
     return {
-        FormationsManagerVue
+        FormationsManagerVueCollab,
+        FormationsManagerVueAdmin
     };
 }
 
