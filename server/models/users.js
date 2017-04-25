@@ -8,7 +8,7 @@ const
 const
     db = require('../db'),
     formations = require("./formations");
-    cookies = require('./cookies');
+    cookies = require('../cookies');
 
 const getUserByEmailAddress = (email) => {
     return new Promise((resolve, reject) => {

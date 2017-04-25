@@ -404,7 +404,7 @@ exports.formationsManager = function(globalVariables, classContainer){
             };
             var _displayFormations = () => {
                 var _onClickDisplayFormation = formation => {
-                    formation.miniature.removeMiniatureHandler("click");
+                    formation.miniature.removeHandler("click");
                     Server.getFormationsProgress(formation._id).then(data => {
                         var tmp = JSON.parse(data);
                         let games = tmp.progress ? tmp.progress.gamesTab : null;
@@ -433,7 +433,7 @@ exports.formationsManager = function(globalVariables, classContainer){
                     formation.parent = this;
                     this.formationsManipulator.add(formation.miniature.manipulator);
                     formation.miniature.display(posx, posy, this.tileWidth, this.tileHeight);
-                    formation.miniature.setMiniatureHandler("click", () => _onClickDisplayFormation(formation));
+                    formation.miniature.setHandler("click", () => _onClickDisplayFormation(formation));
                     count++;
                     posx += (this.tileWidth + spaceBetweenElements.width);
                 });

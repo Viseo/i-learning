@@ -1641,7 +1641,6 @@ exports.Util = function (globalVariables) {
         constructor(formation) {
             this.formation = formation;
             this.manipulator = new Manipulator(this).addOrdonator(3);
-            //this.miniatureManipulator = new Manipulator(this).addOrdonator(3);
             this.iconManipulator = new Manipulator(this).addOrdonator(4);
             this.starsManipulator = new Manipulator(this).addOrdonator(5);
             this._acceptDrop = true;
@@ -1778,7 +1777,7 @@ exports.Util = function (globalVariables) {
                 let notationText = new svg.Text('Notez cette \n formation :').position(0,-h*0.5).font('Arial', 12, 10);
                 this.notationTextManipulator.add(notationText);
                 this.manipulator.add(this.notationTextManipulator);
-                this.manipulator.add(this.starsManipulator);
+                this.manipulator.set(2,this.starsManipulator);
             };
             let starPoints = [
                 [1.309, 0],
