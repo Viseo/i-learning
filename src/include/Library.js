@@ -27,39 +27,38 @@ exports.Library = function (globalVariables, classContainer) {
     class LibraryVue extends Vue {
         constructor(options) {
             super(options);
-            this.manipulator = new Manipulator(this).addOrdonator(4);
+            this.manipulator.addOrdonator(4);
             this.itemsTab = [];
             this.libraryManipulators = [];
         }
 
         libraryDisplay(x, y, w, h, ratioPanelHeight, yPanel) {
-            this.manipulator.flush();
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.h = h;
-            let borderSize = 3;
+            var _setDimensions = () => {
+                this.manipulator.flush();
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.manipulator.move(this.x, this.y);
+            }
+            var _displayBorder = () => {
+                let borderSize = 3;
+                this.border = new svg.Rect(w - borderSize, h, this.manipulator)
+                    .color(myColors.white, borderSize, myColors.black)
+                    .position(w / 2, h / 2);
+                this.manipulator.set(0, this.border);
+            }
+            var _displayPanel = () => {
+                this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
+                this.panel.border.color([], 3, [0, 0, 0]);
+                this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
+                this.panel.hHandle.handle.color(myColors.none, 0, myColors.none);
+                this.manipulator.set(2, this.panel.component);
+            }
 
-            this.border = new svg.Rect(w - borderSize, h, this.manipulator)
-                .color(myColors.white, borderSize, myColors.black)
-                .position(w / 2, h / 2);
-            this.manipulator.set(0, this.border);
-            this.manipulator.move(this.x, this.y);
-
-            this.panel = new gui.Panel(w - 4, ratioPanelHeight * h, myColors.white).position(w / 2 + 0.5, yPanel);
-            this.panel.border.color([], 3, [0, 0, 0]);
-            this.manipulator.set(2, this.panel.component);
-            this.panel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
-            this.panel.hHandle.handle.color(myColors.none, 0, myColors.none);
-            drawing.notInTextArea = true;
-            svg.addGlobalEvent("keydown", (event) => {
-                if (drawing.notInTextArea && hasKeyDownEvent(event)) {
-                    event.preventDefault();
-                }
-            });
-            let hasKeyDownEvent = (event) => {
-                return this.panel && this.panel.processKeys && this.panel.processKeys(event.keyCode);
-            };
+            _setDimensions();
+            _displayBorder();
+            _displayPanel();
         }
     }
 
@@ -308,262 +307,237 @@ exports.Library = function (globalVariables, classContainer) {
     class ImagesLibraryVue extends LibraryVue {
         constructor() {
             super();
-            this.imageWidth = 50;
-            this.imageHeight = 50;
-            this.videosManipulators = [];
-            this.videosUploadManipulators = [];
-            this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
+            var _defineImageDimensions = () => {
+                this.imageWidth = 50;
+                this.imageHeight = 50;
+            }
+            var _defineManipulators = () => {
+                this.videosManipulators = [];
+                this.videosUploadManipulators = [];
+                this.addButtonManipulator = new Manipulator(this).addOrdonator(3);
+            }
+
+            _defineImageDimensions();
+            _defineManipulators();
         }
 
-        render(x, y, w, h, callback = () => {
-        }) {
-            let display = (x, y, w, h) => {
-                this.libraryDisplay.call(this, x, y, w, h, 0.8, h / 2);
-
-                const uploadFiles = (files) => {
-                    for (let file of files) {
-                        let progressDisplay;
-                        this.selectedTab = 0;
-                        if (file.type === 'video/mp4') {
-                            this.selectedTab = 1;
-                            progressDisplay = (() => {
-                                const width = 0.8 * w,
-                                    manipulator = new Manipulator().addOrdonator(4),
-                                    icon = drawUploadIcon({x: -0.56 * width, y: 5, size: 20});
-                                manipulator.set(0, icon);
-                                const rect = new svg.Rect(width - 15, 16).color(myColors.none, 1, myColors.darkerGreen);
-                                manipulator.set(1, rect);
-                                manipulator.redCrossManipulator = new Manipulator(this);
-                                manipulator.add(manipulator.redCrossManipulator);
-
-                                let redCross = drawRedCross(width / 2 + MARGIN, 0, 15, manipulator.redCrossManipulator);
-                                manipulator.redCrossManipulator.add(redCross);
-                                let redCrossClickHandler = () => {
-                                    drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
-                                    dbListener.uploadRequest && dbListener.uploadRequest.abort();
-                                    this.videosUploadManipulators.remove(manipulator);
-                                    manipulator.flush();
-                                };
-                                svg.addEvent(redCross, 'click', redCrossClickHandler);
-
-                                this.videosUploadManipulators.push(manipulator);
-                                return (e) => {
-                                    const progwidth = width * e.loaded / e.total;
-                                    const bar = new svg.Rect(progwidth - 15, 14)
-                                        .color(myColors.green)
-                                        .position(-(width - progwidth) / 2, 0);
-                                    const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
-                                    manipulator.set(3, percentage);
-                                    percentage.position(0, percentage.boundingRect().height / 4);
-                                    manipulator.set(2, bar);
-                                    if (e.loaded === e.total) {
-                                        this.videosUploadManipulators.remove(manipulator);
-                                    }
-                                };
-                            })();
-                        }
-                        this.display(x, y, w, h);
-                        Server.upload(file, progressDisplay).then(() => {
-                            this.display(x, y, w, h);
-                        });
+        render(x, y, w, h, callback) {
+            var uploadFiles = (files) => {
+                var _progressDisplayer = () => {
+                    var _displayUploadIcon = manipulator => {
+                        let icon = drawUploadIcon({x: -w / 2, y: 5, size: 20});
+                        manipulator.set(0, icon);
                     }
+                    var _displayRect = manipulator => {
+                        let rect = new svg.Rect(w * 0.7, 16).color(myColors.none, 1, myColors.darkerGreen);
+                        manipulator.set(1, rect);
+                    }
+                    var _displayRedCross = manipulator => {
+                        let redCrossClickHandler = () => {
+                            drawing.mousedOverTarget && (drawing.mousedOverTarget.target = null);
+                            dbListener.uploadRequest && dbListener.uploadRequest.abort();
+                            this.videosUploadManipulators.remove(manipulator);
+                            manipulator.flush();
+                        };
+
+                        manipulator.redCrossManipulator = new Manipulator(this);
+                        let redCross = drawRedCross(w / 2, 0, 15, manipulator.redCrossManipulator);
+                        svg.addEvent(redCross, 'click', redCrossClickHandler);
+                        manipulator.redCrossManipulator.add(redCross);
+                        manipulator.add(manipulator.redCrossManipulator);
+                    }
+
+                    let manipulator = new Manipulator().addOrdonator(4);
+                    _displayUploadIcon(manipulator);
+                    _displayRect(manipulator);
+                    _displayRedCross(manipulator);
+                    this.videosUploadManipulators.push(manipulator);
+
+                    return (e) => {
+                        var _displayProgressBar = manipulator => {
+                            const progwidth = w * e.loaded / e.total;
+                            const bar = new svg.Rect(progwidth - 15, 14)
+                                .color(myColors.green)
+                                .position(-(w - progwidth) / 2, 0);
+                            manipulator.set(2, bar);
+                        }
+                        var _displayPercentage = manipulator => {
+                            const percentage = new svg.Text(Math.round(e.loaded / e.total * 100) + "%");
+                            percentage.position(0, percentage.boundingRect().height / 4);
+                            manipulator.set(3, percentage);
+                        }
+
+                        _displayProgressBar(manipulator);
+                        _displayPercentage(manipulator);
+                        if (e.loaded === e.total) {
+                            this.videosUploadManipulators.remove(manipulator);
+                        }
+                    };
                 };
 
-                const drop = (event) => {
+                for (let file of files) {
+                    let progressDisplay;
+                    this.selectedTab = 0;
+                    if (file.type === 'video/mp4') {
+                        this.selectedTab = 1;
+                        progressDisplay = _progressDisplayer();
+                    }
+                    Server.upload(file, progressDisplay).then(() => {
+                        this.display(x, y, w, h);
+                    });
+                }
+            };
+            var _setDropOnLibrary = () => {
+                var drop = (event) => {
                     event.preventDefault();
                     if (this.border.inside(event.pageX, event.pageY)) {
                         uploadFiles(event.dataTransfer.files)
                     }
                 };
 
-                svg.addEvent(drawings.component.glass, 'dragover', (e) => {
+                svg.addGlobalEvent('dragover', (e) => {
                     e.preventDefault()
                 });
-                svg.addEvent(drawings.component.glass, 'drop', drop);
-
-                const assignImageEvents = () => {
-                    this.libraryManipulators.forEach(libraryManipulator => {
-                        let mouseDownAction = event => {
-                            let draggableImage = (() => {
-                                let imgToCopy = libraryManipulator.ordonator.children[0];
-                                let img = displayImage(imgToCopy.src, imgToCopy.srcDimension, imgToCopy.width, imgToCopy.height, imgToCopy.name).image;
-                                img.mark('imgDraged');
-                                img.manipulator = new Manipulator(this).addOrdonator(2);
-                                img.manipulator.set(0, img);
-                                drawings.piste.add(img.manipulator);
-                                let point = libraryManipulator.ordonator.children[0].globalPoint(libraryManipulator.ordonator.children[0].x, libraryManipulator.ordonator.children[0].y);
-                                img.manipulator.move(point.x, point.y);
-                                img.srcDimension = imgToCopy.srcDimension;
-                                manageDnD(img, img.manipulator);
-                                return img;
-                            })();
-                            let mouseupHandler = event => {
-                                let svgObj = draggableImage.manipulator.ordonator.children.shift();
-                                drawings.piste.remove(draggableImage.manipulator);
-                                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                                this.dropImage(svgObj, target);
-                            };
-                            svg.event(drawings.component.glass, "mousedown", event);
-                            svg.addEvent(draggableImage, 'mouseup', mouseupHandler);
-                        };
-                        svg.addEvent(libraryManipulator.ordonator.children[0], 'mousedown', mouseDownAction);
-                        svg.addEvent(libraryManipulator.ordonator.children[1], 'mousedown', mouseDownAction);
-                    });
-                };
-                const assignVideoEvents = () => {
-                    this.videosManipulators.forEach((videoManipulator, i) => {
-                        let mouseDownAction = event => {
-                            let draggableVideo = (() => {
-                                let draggableManipulator = new Manipulator(this).addOrdonator(2);
-                                let video = drawVideoIcon(0, -10, 20, this);
-                                video.mark('videoDragged');
-                                draggableManipulator.set(0, video);
-                                drawings.piste.add(draggableManipulator);
-                                let videoTitle = autoAdjustText(videoManipulator.ordonator.children[1].fullTitle, 500, 50, 16, null, draggableManipulator, 1);
-                                videoTitle.text.position(videoTitle.finalWidth / 2 + 15, -videoTitle.finalHeight / 4);
-                                videoTitle.text._acceptDrop = true;
-                                let point = videoManipulator.ordonator.children[0].globalPoint(videoManipulator.ordonator.children[0].x, videoManipulator.ordonator.children[0].y);
-                                draggableManipulator.move(point.x, point.y);
-                                video.manageDnD(draggableManipulator);
-                                manageDnD(videoTitle.text, draggableManipulator);
-                                return draggableManipulator;
-                            })();
-                            let mouseupHandler = event => {
-                                drawings.piste.remove(draggableVideo);
-                                let target = drawings.component.background.getTarget(event.pageX, event.pageY);
-                                this.dropVideo(this.videosTab[i], target);
-                            };
-                            svg.event(drawings.component.glass, "mousedown", event);
-                            draggableVideo.ordonator.children[0].parentManip.setHandler('mouseup', mouseupHandler);
-                            svg.addEvent(draggableVideo.ordonator.children[1], 'mouseup', mouseupHandler);
-                        };
-                        videoManipulator.ordonator.children[0].parentManip.setHandler("mousedown", mouseDownAction);
-                        svg.addEvent(videoManipulator.ordonator.children[1], "mousedown", mouseDownAction);
-                    });
-                };
-
-                const displayItems = () => {
-                    let maxImagesPerLine = Math.floor((w - MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
-                        libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1),
-                        tempY = (0.075 * h);
-
-                    const displayImages = () => {
-                        this.itemsTab.forEach((item, i) => {
-                            if (i % maxImagesPerLine === 0 && i !== 0) {
-                                tempY += this.imageHeight + libMargin;
-                            }
-                            this.panel.content.children.indexOf(this.libraryManipulators[i]) === -1 && this.panel.content.add(this.libraryManipulators[i].first);
-                            this.imageLayer = 0;
-                            let imageRedCrossClickHandler = () => {
+                svg.addGlobalEvent('drop', drop);
+            }
+            var _displayTabs = () => {
+                var _loadImages = () => {
+                    var displayImages = () => {
+                        var _displayImage = (item, i) => {
+                            let imageRedCrossClickHandler = (i) => {
                                 this.libraryManipulators[i].flush();
                                 this.itemsTab.splice(i, 1);
                                 Server.deleteImage(item);
                                 this.display(x, y, w, h);
                             };
-                            let image = new Picture(item.imgSrc, true, this, null, imageRedCrossClickHandler);
-                            image._acceptDrop = false;
-                            image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i]);
+                            let image = new Picture(item.imgSrc, true, this, null, () => {
+                                imageRedCrossClickHandler(i)
+                            });
+                            image.draw(0, 0, this.imageWidth, this.imageHeight, this.libraryManipulators[i], 0);
                             image.name = item.name;
                             image.imageSVG.srcDimension = {width: item.width, height: item.height};
                             image.imageSVG.mark('image' + image.src.split('/')[2].split('.')[0]);
-                            let X = libMargin + this.imageWidth / 2 + ((i % maxImagesPerLine ) * (libMargin + this.imageWidth));
-                            this.libraryManipulators[i].move(X, tempY);
+                            return image;
+                        };
+                        var _setImagePos = (i) => {
+                            let maxImagesPerLine = Math.floor((w - 2 * MARGIN) / (this.imageWidth + MARGIN)) || 1, //||1 pour le cas de resize très petit
+                                libMargin = (w - (maxImagesPerLine * this.imageWidth)) / (maxImagesPerLine + 1);
+                            imageX = libMargin + this.imageWidth / 2 + ((i % maxImagesPerLine ) * (libMargin + this.imageWidth));
+                            if (i % maxImagesPerLine === 0 && i !== 0) {
+                                imageY += this.imageHeight + libMargin;
+                            }
+                            this.libraryManipulators[i].move(imageX, imageY);
+                        };
+                        var _assignImageEvents = (image, i) => {
+                            let mouseDownAction = event => {
+                                let mouseupHandler = (event) => {
+                                    drawings.piste.remove(draggableImage.manipulator);
+                                    let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                                    this.dropImage(draggableImage, target);
+                                };
 
+                                let draggableImage = (() => {
+                                    let imgToCopy = image.imageSVG;
+                                    let img = displayImage(imgToCopy.src, imgToCopy.srcDimension, imgToCopy.width, imgToCopy.height, imgToCopy.name).image;
+                                    img.mark('imgDraged');
+                                    img.manipulator = new Manipulator(this).addOrdonator(2);
+                                    img.manipulator.set(0, img);
+                                    drawings.piste.add(img.manipulator);
+                                    let point = imgToCopy.globalPoint(imgToCopy.x, imgToCopy.y);
+                                    img.manipulator.move(point.x, point.y);
+                                    img.srcDimension = imgToCopy.srcDimension;
+                                    manageDnD(img, img.manipulator);
+                                    return img;
+                                })();
+                                svg.event(drawings.component.glass, "mousedown", event);
+                                svg.addEvent(draggableImage, 'mouseup', mouseupHandler);
+                            };
+
+                            svg.addEvent(image.imageSVG, 'mousedown', mouseDownAction);
+                        };
+
+                        let imageX, imageY = MARGIN + this.imageHeight / 2;
+                        this.itemsTab.forEach((item, i) => {
+                            let image = _displayImage(item, i);
+                            _setImagePos(i);
+                            _assignImageEvents(image);
                         });
-                        this.panel.resizeContent(w, tempY += this.imageHeight);
                         this.imagesLoaded = true;
-                        assignImageEvents();
-                        callback();
+                        callback && callback();
                     };
+
+                    this.manipulator.set(2, this.panel.component);
                     Server.getImages().then(data => {
-                        let myLibraryImage = JSON.parse(data).images;
-                        myLibraryImage.forEach((url, i) => {
-                            this.libraryManipulators[i] || (this.libraryManipulators[i] = new Manipulator(this));
-                            this.libraryManipulators[i].ordonator || (this.libraryManipulators[i].addOrdonator(2));
-                            this.itemsTab[i] = imageController.getImage(url.imgSrc, function () {
-                                this.imageLoaded = true; //this != library
+                        var _initLibrary = () => {
+                            let myLibraryImage = JSON.parse(data).images;
+                            myLibraryImage.forEach((url, i) => {
+                                if (!this.libraryManipulators[i]) {
+                                    this.libraryManipulators[i] = new Manipulator(this).addOrdonator(2);
+                                }
+                                this.panel.content.add(this.libraryManipulators[i].first);
+
+                                this.itemsTab[i] = imageController.getImage(url.imgSrc, function () {
+                                    this.imageLoaded = true; //this != library
+                                });
+                                this.itemsTab[i]._id = url._id;
+                                this.itemsTab[i].name = url.name;
+                                this.itemsTab[i].imgSrc = url.imgSrc;
                             });
-                            this.itemsTab[i]._id = url._id;
-                            this.itemsTab[i].name = url.name;
-                            this.itemsTab[i].imgSrc = url.imgSrc;
-                        });
-                    })
-                        .then(() => {
+                        }
+                        var _displayImagesWhenLoaded = () => {
                             let intervalToken = svg.interval(() => {
                                 if (this.itemsTab.every(e => e.imageLoaded)) {
                                     svg.clearInterval(intervalToken);
                                     displayImages();
                                 }
                             }, 100);
-                        });
-                };
-
-                const displayAddButton = () => {
-                    let fileExplorer;
-                    const fileExplorerHandler = () => {
-                        if (!fileExplorer) {
-                            let globalPointCenter = this.border.globalPoint(0, 0);
-                            var fileExplorerStyle = {
-                                leftpx: globalPointCenter.x,
-                                toppx: globalPointCenter.y,
-                                width: this.w / 5,
-                                height: this.w / 5
-                            };
-                            fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
-                            fileExplorer.type("file");
-                            svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
-                            svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
-                            svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
-                            svg.runtime.attr(fileExplorer.component, "hidden", "true");
-                            svg.runtime.attr(fileExplorer.component, "multiple", "true");
-                            drawings.component.add(fileExplorer);
-                            fileExplorer.fileClick = function () {
-                                svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
-                            }
                         }
-                        fileExplorer.fileClick();
-                    };
 
-                    const onChangeFileExplorerHandler = () => {
-                        uploadFiles(fileExplorer.component.files)
-                    };
-
-                    const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
-                        addButtonLabel = "Ajouter image/vidéo",
-                        addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
-                        plus = drawPlus(0, 0, this.w / 7, this.w / 7);
-                    addButton.mark('addImageButton').corners(10, 10);
-                    addButtonText.text.position(0, this.h / 12 - (this.h / 15) / 2 + 3 / 2 * MARGIN);
-
-                    this.addButtonManipulator.set(0, addButton);
-                    this.addButtonManipulator.set(2, plus);
-                    this.manipulator.add(this.addButtonManipulator);
-                    this.addButtonManipulator.move(this.w / 2, 9 * this.h / 10);
-                    svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
-                    svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
-                    svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
+                        _initLibrary();
+                        _displayImagesWhenLoaded();
+                    });
                 };
+                var _loadVideos = () => {
+                    var _createPanel = () => {
+                        this.videosPanel = new gui.Panel(w - 4, 0.8 * h, myColors.white, 2);
+                        this.videosPanel.position(w / 2 + 0.5, h / 2);
+                        this.videosPanel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
+                        this.videosPanel.hHandle.handle.color(myColors.none, 0, myColors.none);
+                        this.manipulator.set(2, this.videosPanel.component);
+                    }
+                    var _sortAlphabetical = function (array) {
+                        return sort(array, (a, b) => (a.name.toUpperCase() < b.name.toUpperCase()));
+                    };
+                    var _displayVideo = (video, manipulator, i) => {
+                        var _assignVideoEvents = (iconVideo, title, manipulator, i) => {
+                            let mouseDownHandler = event => {
+                                let mouseupHandler = event => {
+                                    drawings.piste.remove(draggableManipulator);
+                                    let target = drawings.component.background.getTarget(event.pageX, event.pageY);
+                                    this.dropVideo(this.videosTab[i], target);
+                                };
+                                
+                                let draggableManipulator = new Manipulator(this).addOrdonator(2);
+                                let video = drawVideoIcon(0, -10, 20, this);
+                                video.mark('videoDragged');
+                                draggableManipulator.set(0, video);
+                                drawings.piste.add(draggableManipulator);
+                                let videoTitle = autoAdjustText(title.text.fullTitle, 500, 50, 16, null, draggableManipulator, 1);
+                                videoTitle.text.position(videoTitle.finalWidth / 2 + 15, -videoTitle.finalHeight / 4);
+                                videoTitle.text._acceptDrop = true;
+                                let point = iconVideo.translator.globalPoint(iconVideo.translator.x, iconVideo.translator.y);
+                                draggableManipulator.move(point.x, point.y);
+                                video.manageDnD(draggableManipulator);
+                                manageDnD(videoTitle.text, draggableManipulator);
 
-                const displayTabs = () => {
-                    const
-                        width = w * 0.8,
-                        height = h * 0.06;
+                                svg.event(drawings.component.glass, "mousedown", event);
+                                video.setHandler('mouseup', mouseupHandler);
+                                svg.addEvent(videoTitle.text, 'mouseup', mouseupHandler);
+                            };
 
-                    const videosPanel = new gui.Panel(w - 4, 0.8 * h, myColors.white, 2);
-                    videosPanel.position(w / 2 + 0.5, h / 2);
-                    videosPanel.vHandle.handle.color(myColors.lightgrey, 2, myColors.grey);
-                    videosPanel.hHandle.handle.color(myColors.none, 0, myColors.none);
-
-                    const displayVideo = (video, manipulator) => {
-                        this.video = video;
-                        let iconVideo = drawVideoIcon(0, -10, 20, this);
-                        iconVideo.mark(video.name.split('.')[0]);
-                        manipulator.set(0, iconVideo);
-                        const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
-                        title.text.fullTitle = video.name;
-                        title.text.position(title.finalWidth / 2 + 15, -title.finalHeight / 4);
-                        manipulator.video = video;
-
+                            iconVideo.setHandler("mousedown", mouseDownHandler);
+                            svg.addEvent(title.text, "mousedown", mouseDownHandler);
+                        };
                         let overVideoIconHandler = () => {
                             let redCross = drawRedCross(0, -title.finalHeight / 2, 15, manipulator.redCrossManipulator);
                             redCross.mark('videoRedCross');
@@ -579,7 +553,6 @@ exports.Library = function (globalVariables, classContainer) {
                             };
                             svg.addEvent(redCross, 'click', redCrossClickHandler);
                         };
-
                         let mouseleaveHandler = (event) => {
                             let target = drawings.component.background.getTarget(event.pageX, event.pageY);
                             if (!target || target.id !== "videoRedCross") {
@@ -587,43 +560,46 @@ exports.Library = function (globalVariables, classContainer) {
                             }
                         };
 
+                        let iconVideo = drawVideoIcon(0, -10, 20, this);
+                        iconVideo.mark(video.name.split('.')[0]);
+                        manipulator.set(0, iconVideo);
+                        const title = autoAdjustText(video.name, w - 20, 20, 16, null, manipulator, 1);
+                        title.text.fullTitle = video.name;
+                        title.text.position(title.finalWidth / 2 + 15, -title.finalHeight / 4);
+                        manipulator.video = video;
+                        _assignVideoEvents(iconVideo, title, manipulator, i);
+
                         iconVideo.setHandler('mouseenter', overVideoIconHandler);
                         iconVideo.setHandler('mouseleave', mouseleaveHandler);
-
                         svg.addEvent(title.text, 'mouseenter', overVideoIconHandler);
                         svg.addEvent(title.text, 'mouseleave', mouseleaveHandler);
-
                     };
 
-                    const sortAlphabetical = function (array) {
-                        return sort(array, (a, b) => (a.name.toUpperCase() < b.name.toUpperCase()));
-                    };
-
-                    const loadVideos = () => {
-                        Server.getVideos().then(data => {
-                            this.videosTab = sortAlphabetical(JSON.parse(data));
-                            this.videosTab.forEach((video, i) => {
-                                if (!this.videosManipulators[i]) {
-                                    this.videosManipulators[i] = new Manipulator().addOrdonator(2);
-                                }
-                                videosPanel.content.add(this.videosManipulators[i].first);
-                                this.videosManipulators[i].redCrossManipulator = new Manipulator(this);
-                                this.videosManipulators[i].add(this.videosManipulators[i].redCrossManipulator);
-                                displayVideo(video, this.videosManipulators[i]);
-                                this.videosManipulators[i].move(20, 30 + i * 30);
-                            });
-                            this.videosUploadManipulators.forEach((manipulator, i) => {
-                                videosPanel.content.add(manipulator.first);
-                                manipulator.move(w / 2, 30 + (this.videosManipulators.length + i) * 30)
-                            });
-                            videosPanel.resizeContent(w, (this.videosManipulators.length + this.videosUploadManipulators.length + 1) * 30);
-                            assignVideoEvents();
+                    _createPanel();
+                    Server.getVideos().then(data => {
+                        this.videosTab = _sortAlphabetical(JSON.parse(data));
+                        this.videosTab.forEach((video, i) => {
+                            if (!this.videosManipulators[i]) {
+                                this.videosManipulators[i] = new Manipulator().addOrdonator(2);
+                            }
+                            this.videosPanel.content.add(this.videosManipulators[i].first);
+                            this.videosManipulators[i].redCrossManipulator = new Manipulator(this);
+                            this.videosManipulators[i].add(this.videosManipulators[i].redCrossManipulator);
+                            this.videosManipulators[i].move(20, 30 + i * 30);
+                            _displayVideo(video, this.videosManipulators[i], i);
                         });
-                    };
+                        this.videosUploadManipulators.forEach((manipulator, i) => {
+                            videosPanel.content.add(manipulator.first);
+                            manipulator.move(w / 2, 30 + (this.videosManipulators.length + i) * 30)
+                        });
+                    });
+                }
+                var createTabManager = () => {
+                    const width = w * 0.8, height = h * 0.06;
+                    const tabs = [],
+                        manipulator = new Manipulator().addOrdonator(2);
 
-                    const imagesPanel = this.panel;
-
-                    const createTab = function (text, width, height, fontsize, font, manipulator, setContent) {
+                    const createTab = (text, width, height, fontsize, font, manipulator, setContent) => {
                         let button = displayTextWithoutCorners(text, width, height, myColors.black, myColors.white, fontsize, font, manipulator);
                         button.content.position(0, 5).mark('library' + text);
                         let selected = false;
@@ -654,58 +630,96 @@ exports.Library = function (globalVariables, classContainer) {
                             setClickHandler
                         };
                     };
-
-                    const createTabManager = function (library) {
-                        const tabs = [],
-                            manipulator = new Manipulator().addOrdonator(2);
-
-                        const addTab = function (name, i, setContent) {
-                            const manip = new Manipulator().addOrdonator(2),
-                                tab = createTab(name, width / 2, height, 20, null, manip, setContent);
-                            tabs.push(tab);
-                            tab.setClickHandler(() => select(i));
-                            manip.move(i * (MARGIN + width / 2), 0);
-                            manipulator.set(i, manip);
-                        };
-
-                        const select = function (numTab = 0) {
-                            if (numTab >= tabs.length || numTab < 0) {
-                                numTab = 0;
-                            }
-                            tabs.forEach((tab, index) => {
-                                if (index === numTab) {
-                                    tab.select();
-                                    library.selectedTab = numTab;
-                                } else {
-                                    tab.unselect();
-                                }
-                            });
-                        };
-                        return {
-                            manipulator,
-                            addTab,
-                            select
-                        };
+                    const addTab = (name, i, setContent) => {
+                        const manip = new Manipulator().addOrdonator(2),
+                            tab = createTab(name, width / 2, height, 20, null, manip, setContent);
+                        tabs.push(tab);
+                        tab.setClickHandler(() => select(i));
+                        manip.move(i * (MARGIN + width / 2), 0);
+                        manipulator.set(i, manip);
                     };
-                    const tabManager = createTabManager(this);
-                    tabManager.addTab("Images", 0, () => {
-                        //displayItems();
-                        this.manipulator.set(2, imagesPanel.component);
-                    });
-                    tabManager.addTab("Vidéos", 1, () => {
-                        this.manipulator.set(2, videosPanel.component);
-                        loadVideos();
-                    });
-                    tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
-                    tabManager.select(this.selectedTab);
-                    this.manipulator.set(1, tabManager.manipulator);
-                    assignVideoEvents();
+                    const select = (numTab = 0) => {
+                        if (numTab >= tabs.length || numTab < 0) {
+                            numTab = 0;
+                        }
+                        tabs.forEach((tab, index) => {
+                            if (index === numTab) {
+                                tab.select();
+                                this.selectedTab = numTab;
+                            } else {
+                                tab.unselect();
+                            }
+                        });
+                    };
+
+                    return {
+                        manipulator,
+                        addTab,
+                        select
+                    };
                 };
-                displayTabs();
-                displayItems();
-                displayAddButton();
+
+                this.tabManager = createTabManager();
+                this.tabManager.addTab("Images", 0, () => {
+                    _loadImages();
+                });
+                this.tabManager.addTab("Vidéos", 1, () => {
+                    _loadVideos();
+                });
+                this.tabManager.manipulator.move(w / 4 + MARGIN, h * 0.05);
+                this.tabManager.select(this.selectedTab);
+                this.manipulator.set(1, this.tabManager.manipulator);
             };
-            display(x, y, w, h);
+            var _displayAddButton = () => {
+                let fileExplorer;
+                const fileExplorerHandler = () => {
+                    if (!fileExplorer) {
+                        let globalPointCenter = this.border.globalPoint(0, 0);
+                        var fileExplorerStyle = {
+                            leftpx: globalPointCenter.x,
+                            toppx: globalPointCenter.y,
+                            width: this.w / 5,
+                            height: this.w / 5
+                        };
+                        fileExplorer = new svg.TextField(fileExplorerStyle.leftpx, fileExplorerStyle.toppx, fileExplorerStyle.width, fileExplorerStyle.height);
+                        fileExplorer.type("file");
+                        svg.addEvent(fileExplorer, "change", onChangeFileExplorerHandler);
+                        svg.runtime.attr(fileExplorer.component, "accept", "image/*, video/mp4");
+                        svg.runtime.attr(fileExplorer.component, "id", "fileExplorer");
+                        svg.runtime.attr(fileExplorer.component, "hidden", "true");
+                        svg.runtime.attr(fileExplorer.component, "multiple", "true");
+                        drawings.component.add(fileExplorer);
+                        fileExplorer.fileClick = function () {
+                            svg.runtime.anchor("fileExplorer") && svg.runtime.anchor("fileExplorer").click();
+                        }
+                    }
+                    fileExplorer.fileClick();
+                };
+
+                const onChangeFileExplorerHandler = () => {
+                    uploadFiles(fileExplorer.component.files)
+                };
+
+                const addButton = new svg.Rect(this.w / 6, this.w / 6).color(myColors.white, 2, myColors.black),
+                    addButtonLabel = "Ajouter image/vidéo",
+                    addButtonText = autoAdjustText(addButtonLabel, 2 * this.w / 3, this.h / 15, 20, "Arial", this.addButtonManipulator),
+                    plus = drawPlus(0, 0, this.w / 7, this.w / 7);
+                addButton.mark('addImageButton').corners(10, 10);
+                addButtonText.text.position(0, this.h / 12 - (this.h / 15) / 2 + 3 / 2 * MARGIN);
+
+                this.addButtonManipulator.set(0, addButton);
+                this.addButtonManipulator.set(2, plus);
+                this.manipulator.add(this.addButtonManipulator);
+                this.addButtonManipulator.move(this.w / 2, 9 * this.h / 10);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[0], 'click', fileExplorerHandler);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[1], 'click', fileExplorerHandler);
+                svg.addEvent(this.addButtonManipulator.ordonator.children[2], 'click', fileExplorerHandler);
+            };
+
+            this.libraryDisplay(x, y, w, h, 0.8, h / 2);
+            _setDropOnLibrary();
+            _displayTabs();
+            _displayAddButton();
         }
 
         /**
@@ -716,9 +730,9 @@ exports.Library = function (globalVariables, classContainer) {
         dropImage(element, target) {
             if (target && (target._acceptDrop || (target.parentManip && target.parentManip.parentObject._acceptDrop))) {
                 let parentObject;
-                if(target.parentManip) {
+                if (target.parentManip) {
                     parentObject = target.parentManip.parentObject;
-                }else{
+                } else {
                     parentObject = target.parent.parentManip.parentObject;
                 }
                 parentObject.dropImage(element);

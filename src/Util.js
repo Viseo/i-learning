@@ -2207,7 +2207,7 @@ exports.Util = function (globalVariables) {
             return dbListener.httpGetAsync('/medias/videos');
         }
         static deleteVideo(video) {
-            return dbListener.httpPostAsync("/medias/video/delete", video);
+            return dbListener.httpPostAsync("/medias/videos/delete", video);
         }
 
         static updateAllFormationStars() {

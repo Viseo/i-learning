@@ -3,6 +3,7 @@
  */
 module.exports = function (app, fs) {
     const
+        ObjectID = require('mongodb').ObjectID,
         multer = require('multer'),
         mmm = require('mmmagic'),
         db = require('../db');
