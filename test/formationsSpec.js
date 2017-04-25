@@ -316,8 +316,27 @@ describe('formationsManager', function () {
             assert.equal(headerMessage.text, "Formations");
 
             done();
-        })
-    })
+        });
+    });
+
+    it('should delete a level in a formation', function (done) {
+        testutils.retrieveDB("./log/dbFormation8.json", dbListener, function () {
+            svg.screenSize(1920, 947);
+            main(svg, runtime, dbListener, ImageRuntime);
+            let root = runtime.anchor("content");
+            let maFormation = retrieve(root, "[A-TestO]");
+            maFormation.handler.parentManip.listeners["click"]();
+            maFormation.handler.parentManip.parentObject.formation.levelsTab["1"].redCrossManipulator.components["0"]
+                .component.listeners['click']();  // clic pour supprimer le dernier niveau (2 max)
+            let saveFormationButton = retrieve(root,"[saveFormationButtonCadre]");
+            saveFormationButton.listeners['click']();
+            let backFormationManager = retrieve(root, "[returnButtonToFormationsManager]");
+            backFormationManager.listeners['click']();
+            maFormation.handler.parentManip.listeners["click"]();
+            assert.equal(maFormation.handler.parentManip.parentObject.formation.levelsTab.length,1);
+            done();
+        });
+    });
 
     it.skip('should', function (done) {
         testutils.retrieveDB("", dbListener, function () {

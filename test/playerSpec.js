@@ -104,7 +104,6 @@ describe('Player mode', function () {
             };
             playerAnswers(0, 'Une réponse');
             let scoreManipulator = retrieve(root,'[scoreManipulator]');
-            let manip = retrieve(root,'[resultManipulator]');
             let endQuizFinalMessage = scoreManipulator.children["0"].children["0"].children["0"].children["1"];
             assert.equal(endQuizFinalMessage.text, testutils.escape('Impressionant ! Vous avez répondu à 1 questions, et toutes sont justes !'));
             runtime.listeners['resize']({w:1500, h:1500});
