@@ -1528,7 +1528,7 @@ exports.Util = function (globalVariables) {
         constructor(formation) {
             this.formation = formation;
             this.manipulator = new Manipulator(this).addOrdonator(3);
-            this.miniatureManipulator = new Manipulator(this).addOrdonator(2);
+            this.miniatureManipulator = new Manipulator(this).addOrdonator(3);
             this.iconManipulator = new Manipulator(this).addOrdonator(4);
             this.starsManipulator = new Manipulator(this).addOrdonator(5);
             this._acceptDrop = true;
@@ -1541,7 +1541,7 @@ exports.Util = function (globalVariables) {
         }
         drawPicture() {
             this.imageManipulator = new Manipulator(this).addOrdonator(2);
-            this.miniatureManipulator.add(this.imageManipulator);
+            this.miniatureManipulator.set(2,this.imageManipulator);
             this.image = new Picture(this.picture, globalVariables.playerMode ? false : true, this, '',()=> {
                 this.imageManipulator.flush();
                 this.imageManipulator = null
