@@ -2083,7 +2083,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 if (this.model.explanationPopIn && this.model.explanationPopIn.displayed) this.model.parentQuestion.openPopIn = openPopIn;
 
                 const pictoSize = 20;
-                drawExplanationIcon(this.border.width / 2 - pictoSize, this.border.height / 2 - pictoSize, pictoSize, this.explanationIconManipulator);
+                drawExplanationIcon(-this.border.width / 2, 0, pictoSize, this.explanationIconManipulator);
                 this.manipulator.set(7, this.explanationIconManipulator);
                 this.explanationIconManipulator.addEvent("click", openPopIn);
                 svg.addEvent(this.border, "click", openPopIn);

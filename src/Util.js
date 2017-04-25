@@ -1328,8 +1328,12 @@ exports.Util = function (globalVariables) {
             ];
         }
 
-        return new svg.Polygon().add(points).color(
+        let shape = new svg.Polygon().add(points).color(
             hexagonDefaultColors().fillColor, hexagonDefaultColors().strokeWidth, hexagonDefaultColors().strokeColor);
+        shape.width = w;
+        shape.height = h;
+
+        return shape;
     };
 
     let goDirectlyToLastAction = (lastAction) => {
