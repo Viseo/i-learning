@@ -73,6 +73,19 @@ module.exports = function (app) {
             .catch(console.error)
     });
 
+    app.post('/formations/userFormationEval/:id', function (req, res) {
+        let userNote = req.body.starId.split('')[req.body.starId.length - 1];
+        let result = {};
+        formations.updateNote(req,req.body.versionId, userNote)
+            .then(data =>{
+                if(data.modifiedCount == 1){
+                    res.send({ack: 'OK'})
+                }
+            }).catch(err => {
+            console.log(err);
+        });
+    });
+
     app.get('/formations/:id', (req, res) => {
         formations.getVersionById(req.params.id)
             .then((data) => {
