@@ -343,7 +343,6 @@ describe('QuizManager', function () {
     })
 
     it('should toggle arrows and quizz', function (done) {
-        /** TODO DMA **/
         testutils.retrieveDB("./log/dbQuiz2.json", dbListener, function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);

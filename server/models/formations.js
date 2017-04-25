@@ -6,7 +6,8 @@
  * Functions to manage Formations
  */
 const
-    ObjectID = require('mongodb').ObjectID;
+    ObjectID = require('mongodb').ObjectID,
+    users = require('./users');
 
 const
     db = require('../db');
@@ -171,6 +172,51 @@ const newVersion = (formation, version) => {
     })
 };
 
+const updateNote = (req, versionId, note)=> {
+    return new Promise((resolve, reject) => {
+        users.noteFormation(req, note)
+            .then(userNotation => {
+                getFormationById(req.params.id)
+                    .then((data) => {
+                        let formation = data.formation;
+                        formation.versions.forEach(version => {
+                            if (version._id.toString() == versionId.toString()) {
+                                if (userNotation.newVoter) {
+                                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note)) / (Number(version.noteCounter) + 1)) : Number(note);
+                                    let newCounter = Number(version.noteCounter) ? (Number(version.noteCounter) + 1) : 1;
+                                    let formations = db.get().collection('formations');
+                                    formations.updateOne({
+                                        '_id': new ObjectID(req.params.id),
+                                        'versions._id': new ObjectID(versionId)
+                                    }, {
+                                        $set: {'versions.$.note': newAverage, 'versions.$.noteCounter': newCounter}
+                                    }).then(data => {
+                                        resolve(data);
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
+                                }
+                                else{
+                                    let newAverage = version.note ? (( Number(version.note) * Number(version.noteCounter) + Number(note) - Number(userNotation.lastNote)) / Number(version.noteCounter)) : Number(note);
+                                    let formations = db.get().collection('formations');
+                                    formations.updateOne({
+                                        '_id': new ObjectID(req.params.id),
+                                        'versions._id': new ObjectID(versionId)
+                                    }, {
+                                        $set: {'versions.$.note': newAverage}
+                                    }).then(data => {
+                                        resolve(data);
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
+                                }
+                            }
+                        });
+                    })
+            })
+    })
+}
+
 const replaceQuiz = (indexes, game, formation) => {
     return new Promise((resolve, reject) => {
         let collectionFormations = db.get().collection('formations');
@@ -238,3 +284,4 @@ exports.getAllFormations = getAllFormations;
 exports.newVersion = newVersion;
 exports.replaceQuiz = replaceQuiz;
 exports.getFormationByVersionId = getFormationByVersionId;
+exports.updateNote = updateNote;

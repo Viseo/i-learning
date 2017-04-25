@@ -159,11 +159,10 @@ exports.Library = function (globalVariables, classContainer) {
                                 let targetChild = graph.getTarget(event.pageX, event.pageY);
                                 let booleanInstanceOfCorrect = function (e) {
                                     return e && e.parent && e.parent.parentManip && e.parent.parentManip.parentObject &&
-                                        (classContainer.isInstanceOf('QuizVue', e.parent.parentManip.parentObject) ||
-                                        classContainer.isInstanceOf('BdVue', e.parent.parentManip.parentObject));
+                                        classContainer.isInstanceOf('QuizVue', e.parent.parentManip.parentObject.game)
                                 };
                                 if (booleanInstanceOfCorrect(targetParent) && booleanInstanceOfCorrect(targetChild)) {
-                                    createLink(targetParent.parent.parentManip.parentObject, targetChild.parent.parentManip.parentObject)
+                                    createLink(targetParent.parent.parentManip.parentObject.game, targetChild.parent.parentManip.parentObject.game)
                                 }
                             };
                             svg.addEvent(glass, 'mouseup', mouseUpAction);

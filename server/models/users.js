@@ -8,6 +8,7 @@ const
 const
     db = require('../db'),
     formations = require("./formations");
+    cookies = require('./cookies');
 
 const getUserByEmailAddress = (email) => {
     return new Promise((resolve, reject) => {
@@ -97,6 +98,38 @@ const saveLastAction = (body, user) => {
        })
     });
 };
+
+const noteFormation = (req, note) =>{
+    return new Promise ((resolve, reject) => {
+        cookies.verify(cookies.get(req)).then(user => {
+            let users = db.get().collection('users');
+            users.findOne({mailAddress: user.mailAddress}).then(userDB => {
+                let formation = userDB.formationsTab.find(f => f.formation.toString() == req.params.id.toString());
+                if (formation.note && Number(formation.note) != Number(note)) {
+                    let lastNote = formation.note;
+                    users.updateOne({
+                        'mailAddress': user.mailAddress,
+                        'formationsTab.formation': req.params.id
+                    }, {
+                        $set: {'formationsTab.$.note': Number(note)}
+                    }).then(data => {
+                        resolve({newVoter: false, lastNote: lastNote});
+                    })
+                }
+                else {
+                    users.updateOne({
+                        'mailAddress': user.mailAddress,
+                        'formationsTab.formation': req.params.id
+                    }, {
+                        $set: {'formationsTab.$.note': Number(note)}
+                    }).then(data => {
+                        resolve({newVoter: true});
+                    })
+                }
+            });
+        })
+    })
+}
 
 const getFormationsWithProgress = (userFormationsArray, versions, formations) => {
     let result = [];
@@ -189,3 +222,4 @@ exports.saveProgress = saveProgress;
 exports.getFormationsWithProgress = getFormationsWithProgress;
 exports.getPlayerFormationsWithProgress = getPlayerFormationsWithProgress;
 exports.saveLastAction = saveLastAction;
+exports.noteFormation = noteFormation;
