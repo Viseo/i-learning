@@ -469,7 +469,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 displayFrame(this.graphCreaWidth, this.graphCreaHeight);
                 displayFormationLeft();
                 this.displayGraph(this.graphCreaWidth, this.graphCreaHeight);
-                this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
+                //this.clippingManipulator.move((drawing.width - this.graphCreaWidth) / 2, this.formationsManager.y / 2 - borderSize);
             } else {
                 this.saveButtonHeight = drawing.height * this.saveButtonHeightRatio;
                 this.publicationButtonHeight = drawing.height * this.publicationButtonHeightRatio;
