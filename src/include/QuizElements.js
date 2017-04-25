@@ -1142,8 +1142,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 const width = (w - MARGIN * (NUMBER_ANSWER_BY_LINE)) / (NUMBER_ANSWER_BY_LINE + 1),
                     heightMin = 2.50 * this.fontSize;
                 let height = 0;
-                h = h - 50;
+
                 this.tileHeightMax = Math.floor(h / this.lines) - 2 * MARGIN;
+
                 let tmpHeight;
                 //TODO a corriger pour calculer la place maximum mais actuellement h est faux donc imposible d'afficher correctement
                 height = heightMin;
@@ -1159,7 +1160,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 // });
                 return {width: width, height: height * 1.5};
             };
-            this.tileDimension = findTileDimension();
+           this.tileDimension = findTileDimension();
+
             this.manipulator.set(5, this.answersManipulator);
             this.answersManipulator.move(0, this.height / 2 + (this.tileDimension.height) / 2);
         }
@@ -2012,6 +2014,9 @@ exports.QuizElements = function (globalVariables, classContainer) {
                         let questionCreator = this.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
                         this.popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                         questionCreator.explanation = this.popIn;
+
+
+
                     };
 
                     let checkboxSize = h * 0.2;
@@ -2060,24 +2065,20 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.model.parentQuestion.parentQuiz.closePopIn();
                     let popInParent = this.model.parentQuestion,
                         popInX = this.model.parentQuestion.parentQuiz.x,
-                        popInY,
-                        popInWidth = this.model.parentQuestion.width,
-                        popInHeight = this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines * 0.8;
+                        popInY=MARGIN,
+                        popInWidth = this.model.parentQuestion.width-2*MARGIN,
+                        popInHeight = this.model.parentQuestion.height * this.model.parentQuestion.lines  ;
                     this.model.explanationPopIn = this.model.explanationPopIn || classContainer.createClass("PopInVue", this, false);
-                    if (this.model.parentQuestion.image) {
-                        popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithImage / 2 + MARGIN;
-                    } else {
-                        popInY = (this.model.parentQuestion.tileHeightMax * this.model.parentQuestion.lines + (this.model.parentQuestion.lines - 1) * MARGIN) / 2 + this.model.parentQuestion.parentQuiz.questionHeightWithoutImage / 2 + MARGIN;
-                    }
+
                     if (globalVariables.textToSpeechMode && this.model.explanationPopIn.label && (!this.model.explanationPopIn.video || !this.model.explanationPopIn.said)) {
                         setTimeout(() => {
                             runtime.speechSynthesisSpeak(this.model.explanationPopIn.label)
                         }, 200);
                         this.model.explanationPopIn.said = true;
-                        (this.model.explanationPopIn.image || this.model.explanationPopIn.video) && this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
+                        (this.model.explanationPopIn.image || this.model.explanationPopIn.video) && this.model.explanationPopIn.display(popInParent, popInX, MARGIN, popInWidth, popInHeight);
                     }
                     else {
-                        this.model.explanationPopIn.display(popInParent, popInX, popInY, popInWidth, popInHeight);
+                        this.model.explanationPopIn.display(popInParent, popInX, MARGIN, popInWidth, popInHeight);
                     }
                 };
                 if (this.model.explanationPopIn && this.model.explanationPopIn.displayed) this.model.parentQuestion.openPopIn = openPopIn;
@@ -2204,7 +2205,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
 
         render(parent, x, y, w, h) {
             var _initPopIn = () => {
-                const rect = new svg.Rect(w + 2, h) //+2 border
+                const rect = new svg.Rect(w , h)
                     .color(myColors.white, 1, myColors.black);
                 rect._acceptDrop = this.editable;
                 parent.manipulator.add(this.manipulator);
@@ -2251,17 +2252,21 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     let pictureRedCrossClickHandler = () => {
                         this.manipulator.flush();
                         this.image = null;
+                        this.dimImage = {width: this.image.width, height: this.image.height};
+
                         this.imageSrc = null;
                         let questionCreator = this.answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator;
-                        this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
+                      // this.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                     };
 
+
                     this.miniature && this.miniature.video && drawings.component.remove(this.miniature.video);
-                    this.imageLayer = 3;
                     let picture = new util.Picture(this.image, this.editable, this, null, pictureRedCrossClickHandler);
-                    picture.draw(-contentW, 0, contentW, contentW, this.manipulator);
+                    picture.draw(-w*0.375, 0, h-MARGIN , h-MARGIN, this.manipulator,3);
                     picture.imageSVG.mark('imageExplanation');
                     this.answer.filled = true;
+
+
                 };
                 //TODO corriger video
                 var _displayVideo = () => {
@@ -2286,14 +2291,16 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.answer.filled = true;
                 };
                 var _displayEditableText = () => {
-                    autoAdjustText(this.draganddropText, contentW, panelHeight, 20, 'Arial', this.manipulator, 3).text
-                        .position(-contentW, 0).color(myColors.grey)
+                    autoAdjustText(this.draganddropText,w/6-2*MARGIN, panelHeight, 20, 'Arial', this.manipulator, 3).text
+                        .position(-w*1/3-(2*MARGIN), -h/3+2*MARGIN).color(myColors.grey)
                         ._acceptDrop = this.editable;
                     this.label ? this.answer.filled = true : this.answer.filled = false;
                 }
 
-                const panelWidth = w - 2 * MARGIN, panelHeight = h - 2 * MARGIN;
-                const contentW = panelWidth * 1 / 3;
+                const panelWidth = w - 2 * MARGIN, panelHeight = h-2 * MARGIN;
+
+
+                //const contentW = panelWidth * 1/3;
                 if (this.image) {
                     _displayImage();
                 } else if (this.video) {
@@ -2304,13 +2311,13 @@ exports.QuizElements = function (globalVariables, classContainer) {
             };
             var _displayExplanation = () => {
                 var _definePanel = () => {
-                    let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                    let panelWidth = (w - 2 * MARGIN) * 3/4, panelHeight = h - 2 * MARGIN;
                     this.panel = new gui.Panel(panelWidth, panelHeight, myColors.white)
                     this.panel.border.color([], 1, [0, 0, 0]);
                     this.panel.back.mark('explanationPanel');
                     this.panel.vHandle.handle.color(myColors.lightgrey, 3, myColors.grey);
                     this.panelManipulator.set(0, this.panel.component);
-                    this.panelManipulator.move((w - 2 * MARGIN) * 1 / 6, 0);
+                    this.panelManipulator.move(w*1/8, 0);
                 };
                 var _displayText = () => {
                     let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
@@ -2322,7 +2329,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.textManipulator.set(0, this.text);
                 }
                 var _displayTextArea = () => {
-                    let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                    let panelWidth = (w - 2 * MARGIN) * 3/4, panelHeight = h - 2 * MARGIN;
                     let textToDisplay = this.label ? this.label : (this.defaultLabel ? this.defaultLabel : "");
                     this.text = new gui.TextArea(0, 0, panelWidth, panelHeight, textToDisplay)
                         .font("Arial", 20)
@@ -2346,13 +2353,15 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 }
             };
             var _displayVoiceIcon = () => {
-                let panelWidth = (w - 2 * MARGIN) * 2 / 3, panelHeight = h - 2 * MARGIN;
+                let panelWidth = (w +2*MARGIN ) * 2 / 3, panelHeight = h - 2 * MARGIN;
                 this.voiceIcon = new util.Picture("../images/speaker.png", false, this);
-                this.voiceIcon.draw(panelWidth/2 - MARGIN, -panelHeight / 2 + MARGIN, 16, 16, this.panelManipulator, 2);
+                this.voiceIcon.draw(panelWidth /2 +  2*MARGIN, -panelHeight / 2 + MARGIN, 16, 16, this.panelManipulator,2);
                 svg.addEvent(this.voiceIcon.imageSVG, 'click', () => {
                     runtime.speechSynthesisSpeak(this.label);
                 });
+
             }
+
 
             _initPopIn();
             _drawGreyCross(12);
