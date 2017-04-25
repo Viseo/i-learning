@@ -224,7 +224,7 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     this.quiz.tabQuestions[this.indexOfEditedQuestion]);
             };
             var _declareLibraryMediaTool = () => {
-                this.library = classContainer.createClass('ImagesLibraryVue');
+                this.library = classContainer.createClass('MediaLibraryVue');
             };
             var _declareManipulator = () => {
                 this.quizManagerManipulator = new Manipulator(this);

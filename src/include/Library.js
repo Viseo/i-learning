@@ -2,7 +2,7 @@
  *
  LibraryVue,
  GamesLibraryVue,
- ImagesLibraryVue
+ MediaLibraryVue
  *
  */
 exports.Library = function (globalVariables, classContainer) {
@@ -304,7 +304,7 @@ exports.Library = function (globalVariables, classContainer) {
      * Collection d'images
      * @class
      */
-    class ImagesLibraryVue extends LibraryVue {
+    class MediaLibraryVue extends LibraryVue {
         constructor() {
             super();
             var _defineImageDimensions = () => {
@@ -796,6 +796,6 @@ exports.Library = function (globalVariables, classContainer) {
     return {
         LibraryVue,
         GamesLibraryVue,
-        ImagesLibraryVue
+        MediaLibraryVue
     }
 }

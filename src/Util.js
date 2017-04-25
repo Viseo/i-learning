@@ -1363,7 +1363,7 @@ exports.Util = function (globalVariables) {
             this.manipulator = new Manipulator(this);
             this.manipulator.addOrdonator(4);
             this._acceptDrop = true;
-            this.popOut =  new PopOut(400,150, new globalVariables.domain.ImagesLibraryVue(), this.manipulator);
+            this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
 
         }
 
@@ -1647,7 +1647,7 @@ exports.Util = function (globalVariables) {
             this.iconManipulator = new Manipulator(this).addOrdonator(4);
             this.starsManipulator = new Manipulator(this).addOrdonator(5);
             this._acceptDrop = true;
-            this.popOut =  new PopOut(400,150, new globalVariables.domain.ImagesLibraryVue(), this.manipulator);
+            this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
         }
 
         dropImage(element){
