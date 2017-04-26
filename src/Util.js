@@ -153,7 +153,7 @@ exports.Util = function (globalVariables) {
             this.manipulator.move(this.x , this.y);
             this.manipulator.add(this.redCrossManipulator);
             this.redCrossManipulator.move(this.width, -this.height);
-            svg.addEvent(this.redCross, 'mouseup', () => this.hide());
+            this.redCross && svg.addEvent(this.redCross, 'mouseup', () => this.hide());
             if (this.cb){
                 this.cb();
             }
