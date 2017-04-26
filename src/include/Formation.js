@@ -51,12 +51,10 @@ exports.Formation = function (globalVariables, classContainer) {
             var _addActionForAdmin = () => {
                 if(!playerCheck){
                     this.manipulator.add( this.redCrossManipulator);
-                    let redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
-                    this.redCrossManipulator.add(redCross);
-
+                    this.redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
                     //effacer l objet (ce niveau)
                     this.redCrossClickHandler = () => {
-                        this.redCrossManipulator.flush();
+                        //this.redCrossManipulator.flush();
                         formation.levelsTab.splice(this.index-1, 1);
                         this.manipulator.flush();
                         this.gamesTab.forEach(game => {
@@ -68,13 +66,15 @@ exports.Formation = function (globalVariables, classContainer) {
                             }
                         });
                         for (let i=this.index-1; i<formation.levelsTab.length; i++){
-                            //formation.levelsTab[i].manipulator.flush();
+                            formation.levelsTab[i].manipulator.flush();
                             formation.levelsTab[i].index --;
-                            //formation.levelsTab[i].manipulator.flush();
+                            for (let j of formation.levelsTab[i].gamesTab){
+                                j.levelIndex = formation.levelsTab[i].index;
+                            }
                         }
                         formation.displayGraph(formation.graphW, formation.graphH);
                     };
-                    svg.addEvent(redCross, 'click', this.redCrossClickHandler);
+                    svg.addEvent(this.redCross, 'click', this.redCrossClickHandler);
                 }
             }
 
@@ -90,7 +90,6 @@ exports.Formation = function (globalVariables, classContainer) {
         }
 
         displayLevel(){
-            this.parentFormation.graphManipulator.add(this.manipulator.first);
             let icon = {
                 content: new svg.Text("Niveau " + this.index).dimension(this.parentFormation.graphElementWidth, 0).anchor('left').position(0, -MARGIN),
                 line: new svg.Line(0, 0, this.parentFormation.graphElementWidth/2 , 0)
@@ -103,7 +102,11 @@ exports.Formation = function (globalVariables, classContainer) {
             this.w = this.parentFormation.graphCreaWidth;
             this.h = this.parentFormation.graphCreaHeight;
             this.y = (this.index -0.5) * this.parentFormation.levelHeight;
+            this.parentFormation.graphManipulator.add(this.manipulator.first);
             this.manipulator.move(0, this.y);
+            this.redCrossManipulator.add(this.redCross);
+            this.manipulator.add(this.redCrossManipulator);
+
         }
 
         /**
@@ -432,6 +435,10 @@ exports.Formation = function (globalVariables, classContainer) {
                 let manageMiniature = (tabElement) => {
                     //tabElement.miniatureManipulator.move(tabElement.miniaturePosition.x, tabElement.miniaturePosition.y);
                     let conf = {
+                        drag: (what, x, y) => {
+                              updateAllLinks();
+                              return {x:x, y:y};
+                        },
                         clicked : (what) => {
                             what.parentObject.miniature.miniatureClickHandler();
                         },
@@ -736,17 +743,21 @@ exports.Formation = function (globalVariables, classContainer) {
 
             let dropLocation = getDropLocation(x,y);
             let level = getLevel(dropLocation);
-
+            if (game instanceof GameVue){
+                var lastLevel = game.levelIndex;
+            }
             let column = getColumn(dropLocation, level);
             if (game && !item.addNew) {
                 this.moveGame(game, level, column);
-                game.levelIndex === level || game.miniature.removeAllLinks();
-                if(this.levelsTab[game.levelIndex].gamesTab.length == 0){
-                    this.levelsTab[game.levelIndex].redCrossClickHandler();
+                if(this.levelsTab[lastLevel].gamesTab.length == 0){
+                    this.levelsTab[lastLevel].redCrossClickHandler();
                 }
-                game.levelIndex = level;
+                //game.levelIndex = level;
             } else {
                 this.addNewGame(level, column)
+            }
+            if(lastLevel ==0 || lastLevel){
+                game.levelIndex == lastLevel || game.miniature.removeAllLinks();
             }
             this.displayGraph();
         }
@@ -770,6 +781,7 @@ exports.Formation = function (globalVariables, classContainer) {
         moveGame(game, level, column) {
             this.levelsTab[game.levelIndex].gamesTab.splice(game.gameIndex, 1);
             this.levelsTab[level].gamesTab.splice(column, 0, game);
+            game.levelIndex = level;
             //if (this.levelsTab[game.levelIndex].gamesTab.length === 0 && game.levelIndex == this.levelsTab.length - 1){
             //    this.levelsTab.splice(game.levelIndex, 1);
             //}
