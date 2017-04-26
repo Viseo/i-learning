@@ -82,11 +82,6 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     self.dimImage = {width: this.width/2, height: this.height };
                 });
 
-               /* this.image = imageController.getImage(this.imageSrc, () => {
-                    this.imageLoaded = true;
-                    this.dimImage = {width: this.image.width, height: this.image.height};
-                });*/
-
                 this.imageLoaded = false;
             } else {
                 this.imageLoaded = true;
@@ -146,21 +141,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
             let question = this.parentQuestion,
                 quiz = question.parentQuiz;
             if (!question.multipleChoice) {
-                if (this.correct) {
-                    quiz.score++;
-                    console.log("Bonne réponse!\n");
-                } else {
-                    let reponseD = "";
-                    question.rightAnswers.forEach(function (e) {
-                        if (e.label) {
-                            reponseD += e.label + "\n";
-                        } else if (e.imageSrc) {
-                            let tab = e.imageSrc.split('/');
-                            reponseD += tab[(tab.length - 1)] + "\n";
-                        }
-                    });
-                    console.log("Mauvaise réponse!\n  Bonnes réponses: \n" + reponseD);
-                }
+                this.correct && quiz.score++;
+
                 let selectedAnswer = [quiz.tabQuestions[quiz.currentQuestionIndex].tabAnswer.indexOf(vue)];
                 quiz.questionsAnswered[quiz.currentQuestionIndex] = {
                     index: quiz.questionsAnswered.length,
@@ -2039,10 +2021,8 @@ exports.QuizElements = function (globalVariables, classContainer) {
                 this.border = util.drawHexagon(this.width, this.height - MARGIN, null, 0.60);
                 this.manipulator.set(0, this.border);
 
-                var text = autoAdjustText(this.model.label, this.width, null, this.model.fontSize,
+                this.content = autoAdjustText(this.model.label, this.width, null, this.model.fontSize,
                     this.model.font, this.manipulator, 1).text;
-                this.content = text;
-                this.manipulator.set(1, this.content);
 
                 if(this.model.imageSrc){
                     var image = displayImage(this.model.imageSrc, this.model.dimImage, this.width, this.height).image;

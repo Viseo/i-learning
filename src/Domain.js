@@ -3,6 +3,7 @@ const FFormationsManager = require('./include/FormationsManager').formationsMana
 const FUser = require('./include/User').User;
 const FQuizElements = require('./include/QuizElements').QuizElements;
 const FFormation = require('./include/Formation').Formation;
+const FTool = require('./include/Tool').Tool;
 
 exports.Domain = function (globalVariables) {
 
@@ -253,7 +254,8 @@ exports.Domain = function (globalVariables) {
         FLibrary(globalVariables, classContainer),
         FFormationsManager(globalVariables, classContainer),
         FFormation(globalVariables, classContainer),
-        FUser(globalVariables, classContainer)
+        FUser(globalVariables, classContainer),
+        FTool(globalVariables, classContainer)
     );
 
     /**

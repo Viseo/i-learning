@@ -54,8 +54,6 @@ exports.formationsManager = function (globalVariables, classContainer) {
                 this.clippingManipulator = new Manipulator(this);
                 this.errorMessage = new Manipulator(this).addOrdonator(3);
                 this.message = new Manipulator(this).addOrdonator(3);
-                /* for Player */
-                this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(7);
             };
             var _declareFormationsList = () => {
                 this.formations = [];
@@ -362,6 +360,7 @@ exports.formationsManager = function (globalVariables, classContainer) {
     class FormationsManagerVueCollab extends FormationsManagerVue {
         constructor(formations) {
             super(formations);
+            this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(7);
         }
 
         render() {
@@ -371,12 +370,14 @@ exports.formationsManager = function (globalVariables, classContainer) {
             var _createFilter = () => {
                 let manip = this.toggleFormationsManipulator;
                 var _declarePlayerIcons = () => {
-                    this.undoneIcon = {
-                        border: new svg.Circle(this.circleToggleSize).color(myColors.blue, 0, myColors.none)
-                            .position(-this.circleToggleSize * 4 - MARGIN * 2, 0),
-                        content: new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white)
-                            .position(-this.circleToggleSize * 4 - MARGIN * 2, 0).mark('unDoneIcon')
-                    };
+                    let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
+                        .setBorderLayer(2).setDefaultBorderColor(myColors.blue, 0, myColors.none)
+                        .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
+                        .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
+                    this.undoneIcon = classContainer.createClass("Icon", manip, undoneIconSetting);
+                    this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
+
+
                     this.inProgressIcon = displayTextWithCircle('...', this.circleToggleSize * 2,
                         this.circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', manip);
                     this.inProgressIcon.content.font('arial', 20).color(myColors.white).mark('inProgressIcon');
@@ -391,12 +392,9 @@ exports.formationsManager = function (globalVariables, classContainer) {
                     manip.move(drawing.width - MARGIN * 3, MARGIN + this.circleToggleSize * 2);
                     manip.set(4, this.doneIcon.content);
                     manip.set(3, this.doneIcon.border);
-                    manip.set(5, this.undoneIcon.content);
-                    manip.set(2, this.undoneIcon.border);
                 };
                 var _drawBorderFilter = () => {
-                    this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.darkBlue);
-                    !this.undoneOnly && this.undoneIcon.border.color(myColors.blue, 1, myColors.none);
+                    this.undoneOnly ? this.undoneIcon.showBorderActionColor() : this.undoneIcon.showBorderDefaultColor();
                     this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
                     !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
                     this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
