@@ -27,6 +27,24 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties = {};
         }
 
+        duplicate(){
+            let objClone = JSON.parse(JSON.stringify(this));
+            objClone.__proto__  = this.__proto__;
+
+            return objClone;
+        }
+
+        setTextContent(width, height, label, fontSize, font, color, layer){
+            this.contentProperties.type = "Text";
+            this.contentProperties.width = width;
+            this.contentProperties.height = height;
+            this.contentProperties.label = label;
+            this.contentProperties.fontSize = fontSize;
+            this.contentProperties.font = font;
+            this.contentProperties.color = color;
+            this.contentProperties.layer = layer;
+        }
+
 
         setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor, layer){
             this.contentProperties.type = "Triangle";
@@ -67,6 +85,7 @@ exports.Tool = function (globalVariables, classContainer) {
 
     class Icon {
         constructor(manipulator, iconSetting){
+            this.action = false;
             this.iconSetting = iconSetting;
             let borderProperties = this.iconSetting.borderProperties;
 
@@ -82,6 +101,11 @@ exports.Tool = function (globalVariables, classContainer) {
                     this.content = new svg.Triangle(contentProperties.width, contentProperties.height, contentProperties.direction)
                         .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
                     break;
+                case "Text":
+                    this.content = autoAdjustText(contentProperties.label, contentProperties.width, contentProperties.height,
+                        contentProperties.fontSize, contentProperties.font, manipulator, contentProperties.layer).text;
+                    this.content.color(contentProperties.color);
+                    break;
             }
             manipulator.set(contentProperties.layer, this.content);
         }
@@ -90,6 +114,10 @@ exports.Tool = function (globalVariables, classContainer) {
             this.border.position(x,y);
             this.content.position(x, y);
             return this;
+        }
+
+        showActualBorder(){
+            (this.action) ? this.showBorderActionColor() : this.showBorderDefaultColor();
         }
 
         showBorderActionColor(){
@@ -102,6 +130,11 @@ exports.Tool = function (globalVariables, classContainer) {
             let borderProperties = this.iconSetting.borderProperties.default;
             this.border.color(borderProperties.fillColor, borderProperties.strokeWidth, borderProperties.strokeColor);
             return this;
+        }
+
+        addEvent(eventName, handler){
+            svg.addEvent(this.border, eventName, handler);
+            svg.addEvent(this.content, eventName, handler);
         }
     }
 

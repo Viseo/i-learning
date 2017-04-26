@@ -317,9 +317,9 @@ exports.formationsManager = function (globalVariables, classContainer) {
                 totalLines = 1;
 
             this.formations.forEach(formation => {
-                if (globalVariables.playerMode && this.progressOnly && formation.progress !== 'inProgress') return;
-                if (globalVariables.playerMode && this.doneOnly && formation.progress !== 'done') return;
-                if (globalVariables.playerMode && this.undoneOnly && formation.progress != '') return;
+                if (globalVariables.playerMode && this.inProgressIcon.action && formation.progress !== 'inProgress') return;
+                if (globalVariables.playerMode && this.doneIcon.action && formation.progress !== 'done') return;
+                if (globalVariables.playerMode && this.undoneIcon.action && formation.progress != '') return;
                 if (count > (this.cols - evenLine(totalLines))) {
                     count = 1;
                     totalLines++;
@@ -377,10 +377,13 @@ exports.formationsManager = function (globalVariables, classContainer) {
                     this.undoneIcon = classContainer.createClass("Icon", manip, undoneIconSetting);
                     this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
 
+                    let inProgressIconSetting = undoneIconSetting.duplicate();
+                    inProgressIconSetting.setBorderLayer(0)
+                        .setDefaultBorderColor(myColors.orange, 1, myColors.none).setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
+                        .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
+                    this.inProgressIcon = classContainer.createClass("Icon", manip, inProgressIconSetting);
 
-                    this.inProgressIcon = displayTextWithCircle('...', this.circleToggleSize * 2,
-                        this.circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', manip);
-                    this.inProgressIcon.content.font('arial', 20).color(myColors.white).mark('inProgressIcon');
+
                     this.doneIcon = {
                         border: new svg.Circle(this.circleToggleSize).color(myColors.green, 0, myColors.none)
                             .position(-this.circleToggleSize * 2 - MARGIN, 0)
@@ -394,44 +397,26 @@ exports.formationsManager = function (globalVariables, classContainer) {
                     manip.set(3, this.doneIcon.border);
                 };
                 var _drawBorderFilter = () => {
-                    this.undoneOnly ? this.undoneIcon.showBorderActionColor() : this.undoneIcon.showBorderDefaultColor();
-                    this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue);
-                    !this.doneOnly && this.doneIcon.border.color(myColors.green, 1, myColors.none);
-                    this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.darkBlue);
-                    !this.progressOnly && this.inProgressIcon.border.color(myColors.orange, 1, myColors.none);
+                    this.undoneIcon.showActualBorder();
+                    //this.doneIcon.showActualBorder();
+                    this.doneIcon.action ? this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue)
+                        : this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                    this.inProgressIcon.showActualBorder();
                 };
                 var _setIconClickEvent = () => {
-                    var _toggleInProgress = () => {
-                        this.progressOnly = !this.progressOnly;
-                        this.doneOnly = false;
-                        this.undoneOnly = false;
-                        this.formationsManipulator.flush();
-                        super._displayFormations();
-                        _drawBorderFilter();
-                    };
-                    var _toggleDone = () => {
-                        this.doneOnly = !this.doneOnly;
-                        this.progressOnly = false;
-                        this.undoneOnly = false;
-                        this.formationsManipulator.flush();
-                        super._displayFormations();
-                        _drawBorderFilter();
-                    };
-                    var _toggleUndone = () => {
-                        this.undoneOnly = !this.undoneOnly;
-                        this.doneOnly = false;
-                        this.progressOnly = false;
+                    var _toggleFilter = (iconActionReverse, iconCancelAction1, iconCancelAction2) => {
+                        iconActionReverse.action = !iconActionReverse.action;
+                        iconCancelAction1.action = iconCancelAction2.action = false;
                         this.formationsManipulator.flush();
                         super._displayFormations();
                         _drawBorderFilter();
                     };
 
-                    svg.addEvent(this.inProgressIcon.border, 'click', _toggleInProgress);
-                    svg.addEvent(this.inProgressIcon.content, 'click', _toggleInProgress);
-                    svg.addEvent(this.doneIcon.border, 'click', _toggleDone);
-                    svg.addEvent(this.doneIcon.content, 'click', _toggleDone);
-                    svg.addEvent(this.undoneIcon.border, 'click', _toggleUndone);
-                    svg.addEvent(this.undoneIcon.content, 'click', _toggleUndone);
+                    this.inProgressIcon.addEvent('click', () => { _toggleFilter(this.inProgressIcon, this.undoneIcon, this.doneIcon)});
+                    this.undoneIcon.addEvent('click', () => { _toggleFilter(this.undoneIcon, this.inProgressIcon, this.doneIcon)});
+
+                    svg.addEvent(this.doneIcon.border, 'click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
+                    svg.addEvent(this.doneIcon.content, 'click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
                 };
 
                 _declarePlayerIcons();
