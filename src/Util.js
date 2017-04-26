@@ -1370,7 +1370,7 @@ exports.Util = function (globalVariables) {
 
         dropImage(element){
             this.game.picture = element.src;
-            this.display();
+            this.drawImage();
         }
 
         checkIfParentDone() {
@@ -1384,6 +1384,14 @@ exports.Util = function (globalVariables) {
                 }
             }
             return true;
+        }
+
+        drawImage(){
+            this.picture = new Picture(this.game.picture, true, this, '', ()=> {
+                this.manipulator.unset(3);
+                this.game.picture = null;
+            });
+            this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
         }
 
         display() {
@@ -1422,11 +1430,7 @@ exports.Util = function (globalVariables) {
                 video = drawVideo(this.game.title, this.video, this.width, this.height, this.colorBordure, this.bgColor, this.fontSize, this.font, this.manipulator, false, true);
             }
             if (this.game.picture) {
-                this.picture = new Picture(this.game.picture, true, this, '', ()=> {
-                    this.manipulator.unset(3);
-                    this.game.picture = null;
-                });
-                this.picture.draw(-this.size / 2, 0, this.size / 4, this.size / 4, this.manipulator, 3);
+                this.drawImage();
             }
             if (this.game.parentGamesList) {
                 let check = this.checkIfParentDone();
