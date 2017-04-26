@@ -76,9 +76,6 @@ exports.formationsManager = function (globalVariables, classContainer) {
             this.manipulator.add(this.headerManipulator);
         }
 
-        render(){
-        }
-
         _postRender() {
             var _sortFormationsList = () => {
                 const sortAlphabetical = function (array) {
@@ -430,13 +427,6 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         super._displayFormations();
                         _drawBorderFilter();
                     };
-                    var _saveFormationsStars = formations => {
-                        console.log(formations);
-                        /**
-                         * TODO récupérer le nombre d'étoiles pour chaque formation et envoyer les notes
-                         * sur le serveur
-                         */
-                    }
 
                     svg.addEvent(this.inProgressIcon.border, 'click', _toggleInProgress);
                     svg.addEvent(this.inProgressIcon.content, 'click', _toggleInProgress);

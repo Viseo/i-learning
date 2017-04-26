@@ -414,6 +414,13 @@ describe('QuizManager', function () {
                 pageX: titleGame0.handler.parentManip.x, pageY: titleGame0.handler.parentManip.y, preventDefault: () => {
                 }});
             assert.equal(game0Hexagon.stroke, 'rgb(125,122,117)'); // le jeu game0 est désélectionné
+            let saveFormationButton = retrieve(root,"[saveFormationButtonCadre]");
+            saveFormationButton.listeners['click']();
+            let backFormationManager = retrieve(root, "[returnButtonToFormationsManager]");
+            backFormationManager.listeners['click']();
+            maFormation.handler.parentManip.listeners["click"]();
+            // let redCrossLevel1 = retrieve()
+            callClickOnElement(root, 'redCrossLevel1');
             done();
         });
     });

@@ -52,6 +52,9 @@ exports.Formation = function (globalVariables, classContainer) {
                 if(!playerCheck){
                     this.manipulator.add( this.redCrossManipulator);
                     this.redCross = drawRedCross(0, 0, 20, this.redCrossManipulator);
+                    this.redCross.mark('redCrossLevel'+this.index);      // quizSpec
+                    this.redCrossManipulator.add(this.redCross);
+
                     //effacer l objet (ce niveau)
                     this.redCrossClickHandler = () => {
                         //this.redCrossManipulator.flush();
@@ -104,7 +107,7 @@ exports.Formation = function (globalVariables, classContainer) {
             this.y = (this.index -0.5) * this.parentFormation.levelHeight;
             this.parentFormation.graphManipulator.add(this.manipulator.first);
             this.manipulator.move(0, this.y);
-            this.redCrossManipulator.add(this.redCross);
+            this.redCross && this.redCrossManipulator.add(this.redCross);
             this.manipulator.add(this.redCrossManipulator);
 
         }
