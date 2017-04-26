@@ -1946,11 +1946,12 @@ exports.QuizElements = function (globalVariables, classContainer) {
                     }
 
 
-                    var tempObj = new gui.TextArea(0, 0, w, h, text).font(this.model.font, this.model.fontSize).anchor("center");
+                    var tempObj = new gui.TextArea(0, 0, w, h, text)
                     tempObj.glass._acceptDrop = true;
                     this.border = tempObj.frame;
                     this.obj.content = tempObj.text;
                     this.manipulator.set(0, tempObj.component);
+                    tempObj.font(this.model.font, this.model.fontSize).anchor("center");
                     //TODO rajouter les checks
                     tempObj.onInput((oldMessage, newMessage, valid) => {
                         if (oldMessage === this.model.labelDefault) this.obj.content.color(myColors.black);
