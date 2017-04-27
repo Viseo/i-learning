@@ -5,4 +5,5 @@
 {"ack":"ok"}
 {"ack":"ok"}
 {"ack":"ok"}
-{"myCollection":[{"_id":"58d515a281696c379c16e9ea","formationId":"58d515a281696c379c16e9eb","label":"debugTest","status":"Published","progress":""},{"_id":"58e78668485cad56b066b741","formationId":"58e4eb50c5e3593bb06f8a1c","label":"TestPlayerSpec","status":"Edited","progress":"inProgress"}]}
+{"myCollection":[{"_id":"58d515a281696c379c16e9ea","formationId":"58d515a281696c379c16e9eb","label":"debugTest","status":"Published","progress":""},{"_id":"58e78668485cad56b066b741","formationId":"58e4eb50c5e3593bb06f8a1c","label":"TestPlayerSpec","status":"Edited","progress":"done"}]}
+{"ack":"OK"}

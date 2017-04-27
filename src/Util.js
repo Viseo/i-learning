@@ -1651,7 +1651,7 @@ exports.Util = function (globalVariables) {
             var _declareManipulator = () => {
                 this.manipulator = new Manipulator(this).addOrdonator(3);
                 this.iconManipulator = new Manipulator(this).addOrdonator(4);
-                this.starsManipulator = new Manipulator(this).addOrdonator(5);
+                this.starsManipulator = new Manipulator(this).addOrdonator(5).mark(formation.label + 'StarManip');
             }
 
             _declareManipulator();
@@ -1769,6 +1769,7 @@ exports.Util = function (globalVariables) {
                 starMiniatures[0] = new svg.Polygon().add(starPoints).color(myColors.yellow, 0.2, myColors.yellow).mark("star1"); // Etoile
 
                 starMiniatures.pop = new PopOut(80, 30, null, this.manipulator, true);
+                starMiniatures.pop.manipulator.mark(this.formation.label + 'StarMiniatures');
                 starMiniatures.pop.setPanel();
                 starMiniatures.pop.defineProperty(0,-h/2);
                 _duplicateStars();

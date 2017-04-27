@@ -61,6 +61,45 @@ const filterFormations = (root) => {        // "faux test" car dépend de la ré
     unDoneIcon.listeners['click']();
 }
 
+const declareFormationsStarsFrom = (starManip) => {
+    var starList = {
+        star1 : starManip.children["0"].children["0"].children["1"],
+        star2 : starManip.children["0"].children["0"].children["2"],
+        star3 : starManip.children["0"].children["0"].children["3"],
+        star4 : starManip.children["0"].children["0"].children["4"],
+        star5 : starManip.children["0"].children["0"].children["5"]
+    };
+    return starList;
+    // return
+    // {
+    //     {star1 : starManip.children["0"].children["0"].children["1"],
+    //     star2 : starManip.children["0"].children["0"].children["2"],
+    //     star3:starManip.children["0"].children["0"].children["3"],
+    //     star4:starManip.children["0"].children["0"].children["4"],
+    //     star5:starManip.children["0"].children["0"].children["5"]
+    // };
+}
+
+const testAllStars = (root,starList) => {
+    starList.star5.listeners['mouseenter']();
+    let starMiniatures = retrieve(root,'[TestPlayerSpecStarMiniatures]');
+    let starHoverText = starMiniatures.handler.children["0"].children["0"].children["0"].children["1"];
+    assert.equal(starHoverText.messageText,"Excellente");
+    starList.star5.listeners['mouseleave']();
+    starList.star4.listeners['mouseenter']();
+    assert.equal(starHoverText.messageText,"Bien");
+    starList.star4.listeners['mouseleave']();
+    starList.star3.listeners['mouseenter']();
+    assert.equal(starHoverText.messageText,"Correcte");
+    starList.star3.listeners['mouseleave']();
+    starList.star2.listeners['mouseenter']();
+    assert.equal(starHoverText.messageText,"Passable");
+    starList.star2.listeners['mouseleave']();
+    starList.star1.listeners['mouseenter']();
+    assert.equal(starHoverText.messageText,"Pas Terrible");
+    starList.star1.listeners['mouseleave']();
+}
+
 let enhance,
     runtime,
     svg,
@@ -85,7 +124,7 @@ describe('Player mode', function () {
             svg.screenSize(1920, 947);
             main(svg, runtime, dbListener, ImageRuntime);
             let root = runtime.anchor('content');
-            filterFormations(root);                                 // test le filtre des formations publiées pour le collaborateur
+            // filterFormations(root);                                 // test le filtre des formations publiées pour le collaborateur
             let formationCadre = retrieve(root,'[TestPlayerSpec]')  // mais pas de test pour vérifier que les formations affichées correspondent bien au filtre
             formationCadre.handler.parentManip.listeners['click']();
             let firstGameTitle = retrieve(root, "[titlelevel0quizz0]");
@@ -145,6 +184,15 @@ describe('Player mode', function () {
             returnButtonToFormation.listeners['click']();
             let returnButtonToFormationsManager = retrieve(root, '[returnButtonToFormationsManager]');
             returnButtonToFormationsManager.listeners['click']();
+            let userStarManipulator = retrieve(root,'[TestPlayerSpecStarManip]');
+            let starList = declareFormationsStarsFrom(userStarManipulator);
+            testAllStars(root,starList);
+            starList.star5.listeners['click']();
+            assert.equal(starList.star1.fill, 'rgb(230,122,25)');
+            assert.equal(starList.star2.fill, 'rgb(230,122,25)');
+            assert.equal(starList.star3.fill, 'rgb(230,122,25)');
+            assert.equal(starList.star4.fill, 'rgb(230,122,25)');
+            assert.equal(starList.star5.fill, 'rgb(230,122,25)');
             done();
         });
     });
