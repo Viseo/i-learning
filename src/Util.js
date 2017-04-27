@@ -12,6 +12,7 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue,
         QuizVue,
         BdVue,
+        Icon, IconSetting,
         QuestionCreator,
         svgr;
 
@@ -26,6 +27,8 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
+        Icon = globalVariables.domain.Icon;
+        IconSetting = globalVariables.domain.IconSetting;
         svgr = globalVariables.runtime;
     };
 
@@ -1645,10 +1648,14 @@ exports.Util = function (globalVariables) {
 
     class MiniatureFormation {
         constructor(formation) {
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this).addOrdonator(3);
+                this.iconManipulator = new Manipulator(this).addOrdonator(4);
+                this.starsManipulator = new Manipulator(this).addOrdonator(5);
+            }
+
+            _declareManipulator();
             this.formation = formation;
-            this.manipulator = new Manipulator(this).addOrdonator(3);
-            this.iconManipulator = new Manipulator(this).addOrdonator(4);
-            this.starsManipulator = new Manipulator(this).addOrdonator(5);
             this._acceptDrop = true;
             this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
         }
@@ -1839,34 +1846,24 @@ exports.Util = function (globalVariables) {
 
         drawIcon() {
             const circleToggleSize = 12.5;
+            let iconSetting = new IconSetting().setBorderSize(circleToggleSize);
 
-            let iconsize = 20,
-                size = 25,
-                iconInfos;
             switch (this.formation.progress) {
                 case "done":
-                    let doneIcon = {};
-                    doneIcon.border = new svg.Circle(circleToggleSize);
-                    doneIcon.border.color(myColors.green, 0, myColors.none);
-                    doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
-                    this.iconManipulator.set(0, doneIcon.border);
-                    this.iconManipulator.set(1, doneIcon.content);
-                    this.manipulator.add(this.iconManipulator);
+                    iconSetting.setBorderDefaultColor(myColors.green, 0, myColors.none)
+                        .setPathCheckContent(20, myColors.none, 3, myColors.white);
                     break;
                 case "inProgress":
-                    let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
-                    inProgressIcon.content.font('arial', 20).color(myColors.white);
-                    this.manipulator.add(this.iconManipulator);
+                    iconSetting.setBorderDefaultColor(myColors.orange, 0, myColors.none)
+                        .setTextContent(circleToggleSize * 2, circleToggleSize * 2, "...", 20, "arial", myColors.white);
                     break;
                 default:
-                    let undoneIcon = {};
-                    undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
-                    undoneIcon.content = new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white);
-                    this.iconManipulator.set(0, undoneIcon.border);
-                    this.iconManipulator.set(1, undoneIcon.content);
-                    this.manipulator.add(this.iconManipulator);
+                    iconSetting.setBorderDefaultColor(myColors.blue, 0, myColors.none)
+                        .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white);
                     break;
             }
+            let icon = new Icon(this.iconManipulator, iconSetting);
+            this.manipulator.add(this.iconManipulator);
         }
 
         setHandler(eventname, handler) {

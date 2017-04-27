@@ -13,7 +13,7 @@ exports.Tool = function (globalVariables, classContainer) {
     class IconSetting {
         constructor(borderProperties){
             this.borderProperties = (borderProperties) ? borderProperties :
-                {size:0, layer : 0,
+                {size:0, layer : -1,
                     default: {
                         fillColor: myColors.white,
                         strokeWidth: 1,
@@ -77,7 +77,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setDefaultBorderColor(fillColor, strokeWidth, strokeColor){
+        setBorderDefaultColor(fillColor, strokeWidth, strokeColor){
             this.borderProperties.default.fillColor = fillColor;
             this.borderProperties.default.strokeWidth = strokeWidth;
             this.borderProperties.default.strokeColor = strokeColor;
@@ -131,12 +131,12 @@ exports.Tool = function (globalVariables, classContainer) {
                     for(let i = 1; i < pathToDraw.length; i++){
                         path.line(middlePoint.x + pathToDraw[i].x, middlePoint.y + pathToDraw[i].y);
                     }
-
                     this.content = path;
                     break;
             }
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
-            manipulator.set(borderProperties.layer, this.manipulator);
+            (borderProperties.layer && borderProperties >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
+                : manipulator.add(this.manipulator);
         }
 
         position(x, y){
@@ -161,8 +161,9 @@ exports.Tool = function (globalVariables, classContainer) {
         }
 
         addEvent(eventName, handler){
-            svg.addEvent(this.border, eventName, handler);
-            (this.content) && svg.addEvent(this.content, eventName, handler);
+            this.manipulator.addEvent(eventName, handler);
+            /*svg.addEvent(this.border, eventName, handler);
+            (this.content) && svg.addEvent(this.content, eventName, handler);*/
         }
     }
 

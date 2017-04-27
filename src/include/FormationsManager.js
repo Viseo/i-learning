@@ -366,23 +366,24 @@ exports.formationsManager = function (globalVariables, classContainer) {
             };
             var _declarePlayerIcons = () => {
                 let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
-                    .setBorderLayer(0).setDefaultBorderColor(myColors.blue, 0, myColors.none)
+                    .setBorderLayer(0).setBorderDefaultColor(myColors.blue, 0, myColors.none)
                     .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
                     .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
                 this.undoneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, undoneIconSetting);
                 this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
 
                 let inProgressIconSetting = undoneIconSetting.duplicate();
-                inProgressIconSetting.setDefaultBorderColor(myColors.orange, 1, myColors.none)
+                inProgressIconSetting.setBorderDefaultColor(myColors.orange, 1, myColors.none)
                     .setBorderLayer(1).setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
                     .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
                 this.inProgressIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, inProgressIconSetting);
+                this.inProgressIcon.content.mark('inProgressIcon');
 
                 let doneIconSetting = undoneIconSetting.duplicate();
-                doneIconSetting.setDefaultBorderColor(myColors.green, 0, myColors.none).setBorderActionColor(myColors.green, 1, myColors.darkBlue)
+                doneIconSetting.setBorderDefaultColor(myColors.green, 0, myColors.none).setBorderActionColor(myColors.green, 1, myColors.darkBlue)
                     .setBorderLayer(2).setPathCheckContent(20, myColors.none, 3, myColors.white, 4);
                 this.doneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, doneIconSetting);
-                this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0);
+                this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0).content.mark("doneIcon");
             };
             var _createFilter = () => {
                 var _drawBorderFilter = () => {
@@ -398,7 +399,6 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         super._displayFormations();
                         _drawBorderFilter();
                     };
-
                     this.inProgressIcon.addEvent('click', () => { _toggleFilter(this.inProgressIcon, this.undoneIcon, this.doneIcon)});
                     this.undoneIcon.addEvent('click', () => { _toggleFilter(this.undoneIcon, this.inProgressIcon, this.doneIcon)});
                     this.doneIcon.addEvent('click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
