@@ -25,7 +25,7 @@ exports.Tool = function (globalVariables, classContainer) {
                         strokeColor: myColors.white
                     }
                 };
-            this.contentProperties = {};
+            this.contentProperties = {type : "None"};
         }
 
         duplicate(){
@@ -35,6 +35,10 @@ exports.Tool = function (globalVariables, classContainer) {
             return objClone;
         }
 
+        setBorderLayer(layer){
+            this.borderProperties.layer = layer;
+            return this;
+        }
 
         setPathContent(path, size, fillColor, strokeWidth, strokeColor){
             this.contentProperties.type = "Path";
@@ -114,7 +118,7 @@ exports.Tool = function (globalVariables, classContainer) {
                     break;
                 case "Text":
                     this.content = autoAdjustText(contentProperties.label, contentProperties.width, contentProperties.height,
-                        contentProperties.fontSize, contentProperties.font, manipulator, contentProperties.layer).text;
+                        contentProperties.fontSize, contentProperties.font, this.manipulator).text;
                     this.content.color(contentProperties.color);
                     break;
                 case "Path":
@@ -131,8 +135,8 @@ exports.Tool = function (globalVariables, classContainer) {
                     this.content = path;
                     break;
             }
-            this.manipulator.set(1, this.content);
-            manipulator.add(this.manipulator);
+            (contentProperties.type != "None") && this.manipulator.set(1, this.content);
+            manipulator.set(borderProperties.layer, this.manipulator);
         }
 
         position(x, y){
@@ -158,7 +162,7 @@ exports.Tool = function (globalVariables, classContainer) {
 
         addEvent(eventName, handler){
             svg.addEvent(this.border, eventName, handler);
-            svg.addEvent(this.content, eventName, handler);
+            (this.content) && svg.addEvent(this.content, eventName, handler);
         }
     }
 

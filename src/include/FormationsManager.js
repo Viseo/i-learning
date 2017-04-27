@@ -366,20 +366,21 @@ exports.formationsManager = function (globalVariables, classContainer) {
             };
             var _declarePlayerIcons = () => {
                 let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
-                    .setDefaultBorderColor(myColors.blue, 0, myColors.none).setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
+                    .setBorderLayer(0).setDefaultBorderColor(myColors.blue, 0, myColors.none)
+                    .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
                     .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
                 this.undoneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, undoneIconSetting);
                 this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
 
                 let inProgressIconSetting = undoneIconSetting.duplicate();
                 inProgressIconSetting.setDefaultBorderColor(myColors.orange, 1, myColors.none)
-                    .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
+                    .setBorderLayer(1).setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
                     .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
                 this.inProgressIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, inProgressIconSetting);
 
                 let doneIconSetting = undoneIconSetting.duplicate();
                 doneIconSetting.setDefaultBorderColor(myColors.green, 0, myColors.none).setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                    .setPathCheckContent(20, myColors.none, 3, myColors.white, 4);
+                    .setBorderLayer(2).setPathCheckContent(20, myColors.none, 3, myColors.white, 4);
                 this.doneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, doneIconSetting);
                 this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0);
             };
