@@ -6,7 +6,8 @@ exports.Tool = function (globalVariables, classContainer) {
 
 
     let
-        svg = globalVariables.svg;
+        svg = globalVariables.svg,
+        Manipulator = globalVariables.util.Manipulator;
 
 
     class IconSetting {
@@ -34,7 +35,23 @@ exports.Tool = function (globalVariables, classContainer) {
             return objClone;
         }
 
-        setTextContent(width, height, label, fontSize, font, color, layer){
+
+        setPathContent(path, size, fillColor, strokeWidth, strokeColor){
+            this.contentProperties.type = "Path";
+            this.contentProperties.path = path;
+            this.contentProperties.size = size;
+            this.contentProperties.fillColor = fillColor;
+            this.contentProperties.strokeWidth = strokeWidth;
+            this.contentProperties.strokeColor = strokeColor;
+            return this;
+        }
+
+        setPathCheckContent(size, fillColor, strokeWidth, strokeColor){
+            let path = [{x:-.3* size, y:- .1 * size}, {x: - .1 * size, y: .2 * size}, {x : +.3 * size, y : -.3 * size}];
+            return this.setPathContent(path, size, fillColor, strokeWidth, strokeColor);
+        }
+
+        setTextContent(width, height, label, fontSize, font, color){
             this.contentProperties.type = "Text";
             this.contentProperties.width = width;
             this.contentProperties.height = height;
@@ -42,11 +59,10 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties.fontSize = fontSize;
             this.contentProperties.font = font;
             this.contentProperties.color = color;
-            this.contentProperties.layer = layer;
         }
 
 
-        setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor, layer){
+        setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor){
             this.contentProperties.type = "Triangle";
             this.contentProperties.width = width;
             this.contentProperties.height = height;
@@ -54,7 +70,6 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties.fillColor = fillColor;
             this.contentProperties.strokeWidth = strokeWidth;
             this.contentProperties.strokeColor = strokeColor;
-            this.contentProperties.layer = layer;
             return this;
         }
 
@@ -72,11 +87,6 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setBorderLayer(layer){
-            this.borderProperties.layer = layer;
-            return this;
-        }
-
         setBorderSize(size){
             this.borderProperties.size = size;
             return this;
@@ -87,13 +97,14 @@ exports.Tool = function (globalVariables, classContainer) {
         constructor(manipulator, iconSetting){
             this.action = false;
             this.iconSetting = iconSetting;
+            this.manipulator = new Manipulator(this).addOrdonator(2);
             let borderProperties = this.iconSetting.borderProperties;
 
             this.border = new svg.Circle(borderProperties.size)
                 .color(borderProperties.default.fillColor,
                     borderProperties.default.strokeWidth,
                     borderProperties.default.strokeColor);
-            manipulator.set(borderProperties.layer, this.border);
+            this.manipulator.set(0, this.border);
 
             let contentProperties = this.iconSetting.contentProperties;
             switch (contentProperties.type){
@@ -106,13 +117,26 @@ exports.Tool = function (globalVariables, classContainer) {
                         contentProperties.fontSize, contentProperties.font, manipulator, contentProperties.layer).text;
                     this.content.color(contentProperties.color);
                     break;
+                case "Path":
+                    let middlePoint = {x : this.border.x, y: this.border.y};
+                    let pathToDraw = contentProperties.path;
+
+                    let path = new svg.Path(middlePoint.x, middlePoint.y)
+                        .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor)
+                        .move(middlePoint.x + pathToDraw[0].x, middlePoint.y + pathToDraw[0].y);
+                    for(let i = 1; i < pathToDraw.length; i++){
+                        path.line(middlePoint.x + pathToDraw[i].x, middlePoint.y + pathToDraw[i].y);
+                    }
+
+                    this.content = path;
+                    break;
             }
-            manipulator.set(contentProperties.layer, this.content);
+            this.manipulator.set(1, this.content);
+            manipulator.add(this.manipulator);
         }
 
         position(x, y){
-            this.border.position(x,y);
-            this.content.position(x, y);
+            this.manipulator.move(x,y);
             return this;
         }
 

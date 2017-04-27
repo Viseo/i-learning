@@ -360,47 +360,33 @@ exports.formationsManager = function (globalVariables, classContainer) {
     class FormationsManagerVueCollab extends FormationsManagerVue {
         constructor(formations) {
             super(formations);
-            this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(7);
-        }
-
-        render() {
-            var _setHeaderManipulator = () => {
+            var _settingManipulator = () => {
+                this.toggleFormationsManipulator = new Manipulator(this).addOrdonator(7);
                 this.headerManipulator.add(this.toggleFormationsManipulator);
             };
+            var _declarePlayerIcons = () => {
+                let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
+                    .setDefaultBorderColor(myColors.blue, 0, myColors.none).setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
+                    .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
+                this.undoneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, undoneIconSetting);
+                this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
+
+                let inProgressIconSetting = undoneIconSetting.duplicate();
+                inProgressIconSetting.setDefaultBorderColor(myColors.orange, 1, myColors.none)
+                    .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
+                    .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
+                this.inProgressIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, inProgressIconSetting);
+
+                let doneIconSetting = undoneIconSetting.duplicate();
+                doneIconSetting.setDefaultBorderColor(myColors.green, 0, myColors.none).setBorderActionColor(myColors.green, 1, myColors.darkBlue)
+                    .setPathCheckContent(20, myColors.none, 3, myColors.white, 4);
+                this.doneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, doneIconSetting);
+                this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0);
+            };
             var _createFilter = () => {
-                let manip = this.toggleFormationsManipulator;
-                var _declarePlayerIcons = () => {
-                    let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
-                        .setBorderLayer(2).setDefaultBorderColor(myColors.blue, 0, myColors.none)
-                        .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
-                        .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
-                    this.undoneIcon = classContainer.createClass("Icon", manip, undoneIconSetting);
-                    this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
-
-                    let inProgressIconSetting = undoneIconSetting.duplicate();
-                    inProgressIconSetting.setBorderLayer(0)
-                        .setDefaultBorderColor(myColors.orange, 1, myColors.none).setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                        .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
-                    this.inProgressIcon = classContainer.createClass("Icon", manip, inProgressIconSetting);
-
-
-                    this.doneIcon = {
-                        border: new svg.Circle(this.circleToggleSize).color(myColors.green, 0, myColors.none)
-                            .position(-this.circleToggleSize * 2 - MARGIN, 0)
-                    };
-                    this.doneIcon.content = drawCheck(this.doneIcon.border.x, this.doneIcon.border.y, 20)
-                        .color(myColors.none, 3, myColors.white).mark('doneIcon');
-                };
-                var _setManipulatorIcons = () => {
-                    manip.move(drawing.width - MARGIN * 3, MARGIN + this.circleToggleSize * 2);
-                    manip.set(4, this.doneIcon.content);
-                    manip.set(3, this.doneIcon.border);
-                };
                 var _drawBorderFilter = () => {
                     this.undoneIcon.showActualBorder();
-                    //this.doneIcon.showActualBorder();
-                    this.doneIcon.action ? this.doneIcon.border.color(myColors.green, 1, myColors.darkBlue)
-                        : this.doneIcon.border.color(myColors.green, 1, myColors.none);
+                    this.doneIcon.showActualBorder();
                     this.inProgressIcon.showActualBorder();
                 };
                 var _setIconClickEvent = () => {
@@ -414,19 +400,20 @@ exports.formationsManager = function (globalVariables, classContainer) {
 
                     this.inProgressIcon.addEvent('click', () => { _toggleFilter(this.inProgressIcon, this.undoneIcon, this.doneIcon)});
                     this.undoneIcon.addEvent('click', () => { _toggleFilter(this.undoneIcon, this.inProgressIcon, this.doneIcon)});
-
-                    svg.addEvent(this.doneIcon.border, 'click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
-                    svg.addEvent(this.doneIcon.content, 'click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
+                    this.doneIcon.addEvent('click', () => { _toggleFilter(this.doneIcon, this.undoneIcon, this.inProgressIcon)});
                 };
 
-                _declarePlayerIcons();
-                _setManipulatorIcons();
                 _setIconClickEvent();
             };
 
-            super._preRender();
-            _setHeaderManipulator();
+            _settingManipulator();
+            _declarePlayerIcons();
             _createFilter();
+        }
+
+        render() {
+            super._preRender();
+            this.toggleFormationsManipulator.move(drawing.width - MARGIN * 3, MARGIN + this.circleToggleSize * 2);
             super._postRender();
         }
     }
