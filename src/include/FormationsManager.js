@@ -112,7 +112,6 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         addFormationObject.circle.mark("addFormationButton");
                         addFormationObject.plus.mark("addFormationButton");
 
-
                         svg.addEvent(addFormationObject.circle, "click", _onClickNewFormation);
                         svg.addEvent(addFormationObject.plus, "click", _onClickNewFormation);
                     };
@@ -215,23 +214,17 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         _setFormationLabel();
                         _setClickEventFormationLabel();
                     };
+                    let iconCreator = classContainer.createClass("IconCreator");
+
                     var _setCheckedIcon = () => {
-                        let iconCheckSetting = classContainer.createClass("IconSetting");
-                        iconCheckSetting.setBorderSize(this.iconeSize/2).setBorderLayer(2)
-                            .setBorderDefaultColor(myColors.green, 0, myColors.none)
-                            .setPathCheckContent(this.iconeSize, myColors.none, 5, myColors.white);
-                        checkLegend = classContainer.createClass("Icon", this.checkManipulator, iconCheckSetting);
+                        checkLegend = iconCreator.createDoneIcon(this.checkManipulator, 2);
                     };
                     var _setPublishedMessage = () => {
                         published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
                         published.position(25, published.y);
                     };
                     var _setEditedIcon = () => {
-                        let iconEditedSetting = classContainer.createClass("IconSetting");
-                        iconEditedSetting.setBorderSize(this.iconeSize/2).setBorderLayer(2)
-                            .setBorderDefaultColor(myColors.orange, 0, myColors.none)
-                            .setTextExclamationContent(this.iconeSize/2, 23, "arial", myColors.white);
-                        exclamationLegend = classContainer.createClass("Icon", this.exclamationManipulator, iconEditedSetting);
+                        exclamationLegend = iconCreator.createEditedIcon(this.exclamationManipulator, 2);
                     };
                     var _setToBePublishedMessage = () => {
                         toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");

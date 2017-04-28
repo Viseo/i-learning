@@ -12,7 +12,7 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue,
         QuizVue,
         BdVue,
-        Icon, IconSetting,
+        Icon, IconSetting, IconCreator,
         QuestionCreator,
         svgr;
 
@@ -29,6 +29,7 @@ exports.Util = function (globalVariables) {
         BdVue = globalVariables.domain.BdVue;
         Icon = globalVariables.domain.Icon;
         IconSetting = globalVariables.domain.IconSetting;
+        IconCreator = globalVariables.domain.IconCreator;
         svgr = globalVariables.runtime;
     };
 
@@ -1846,24 +1847,16 @@ exports.Util = function (globalVariables) {
         }
 
         drawIcon() {
-            const circleToggleSize = 12.5;
-            let iconSetting = new IconSetting().setBorderSize(circleToggleSize);
-
+            let iconCreator = new IconCreator();
+            let icon = null;
             switch (this.formation.progress) {
                 case "done":
-                    iconSetting.setBorderDefaultColor(myColors.green, 0, myColors.none)
-                        .setPathCheckContent(20, myColors.none, 3, myColors.white);
-                    break;
+                    icon = iconCreator.createDoneIcon(this.iconManipulator); break;
                 case "inProgress":
-                    iconSetting.setBorderDefaultColor(myColors.orange, 0, myColors.none)
-                        .setTextContent(0,0, circleToggleSize * 2, "...", 20, "arial", myColors.white);
-                    break;
+                    icon = iconCreator.createInProgressIcon(this.iconManipulator); break;
                 default:
-                    iconSetting.setBorderDefaultColor(myColors.blue, 0, myColors.none)
-                        .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white);
-                    break;
+                    icon = iconCreator.createUndoneIcon(this.iconManipulator); break;
             }
-            let icon = new Icon(this.iconManipulator, iconSetting);
             this.manipulator.add(this.iconManipulator);
         }
 

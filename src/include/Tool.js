@@ -38,7 +38,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return objClone;
         }
 
-        setBorderLayer(layer){
+        setBorderLayer(layer = -1){
             this.borderProperties.layer = layer;
             return this;
         }
@@ -53,11 +53,6 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setPathCheckContent(size, fillColor, strokeWidth, strokeColor){
-            let path = [{x:-.3* size, y:- .1 * size}, {x: - .1 * size, y: .2 * size}, {x : +.3 * size, y : -.3 * size}];
-            return this.setPathContent(path, size, fillColor, strokeWidth, strokeColor);
-        }
-
         setTextContent(x, y, size, label, fontSize, font, color){
             this.contentProperties.type = "Text";
             this.contentProperties.size = size;
@@ -67,12 +62,6 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties.color = color;
             this.contentProperties.x = x;
             this.contentProperties.y = y;
-            return this;
-        }
-
-        setTextExclamationContent(size, fontSize, font, color){
-            this.setTextContent(size, "!", fontSize, font, color);
-            this.contentProperties.y = this.borderProperties.size/2;
             return this;
         }
 
@@ -210,6 +199,15 @@ exports.Tool = function (globalVariables, classContainer) {
                 .setBorderDefaultColor(myColors.green, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
                 .setPathContent(_getPathCheckContent(ICON_SIZE*2), ICON_SIZE*2, myColors.none, 3, myColors.white);
+            let icon = new Icon(manipulator, iconSetting);
+            return icon;
+        }
+
+        createEditedIcon(manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.orange, 0, myColors.none)
+                .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
+                .setTextContent(0, ICON_SIZE/2, ICON_SIZE, "!", 23, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
