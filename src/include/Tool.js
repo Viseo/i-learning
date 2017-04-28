@@ -9,6 +9,9 @@ exports.Tool = function (globalVariables, classContainer) {
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator;
 
+    const
+        ICON_SIZE = 12.5;
+
 
     class IconSetting {
         constructor(borderProperties){
@@ -55,16 +58,23 @@ exports.Tool = function (globalVariables, classContainer) {
             return this.setPathContent(path, size, fillColor, strokeWidth, strokeColor);
         }
 
-        setTextContent(width, height, label, fontSize, font, color){
+        setTextContent(x, y, size, label, fontSize, font, color){
             this.contentProperties.type = "Text";
-            this.contentProperties.width = width;
-            this.contentProperties.height = height;
+            this.contentProperties.size = size;
             this.contentProperties.label = label;
             this.contentProperties.fontSize = fontSize;
             this.contentProperties.font = font;
             this.contentProperties.color = color;
+            this.contentProperties.x = x;
+            this.contentProperties.y = y;
+            return this;
         }
 
+        setTextExclamationContent(size, fontSize, font, color){
+            this.setTextContent(size, "!", fontSize, font, color);
+            this.contentProperties.y = this.borderProperties.size/2;
+            return this;
+        }
 
         setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor){
             this.contentProperties.type = "Triangle";
@@ -117,9 +127,9 @@ exports.Tool = function (globalVariables, classContainer) {
                         .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
                     break;
                 case "Text":
-                    this.content = autoAdjustText(contentProperties.label, contentProperties.width, contentProperties.height,
+                    this.content = autoAdjustText(contentProperties.label, contentProperties.size, contentProperties.size,
                         contentProperties.fontSize, contentProperties.font, this.manipulator).text;
-                    this.content.color(contentProperties.color);
+                    this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
                     break;
                 case "Path":
                     let middlePoint = {x : this.border.x, y: this.border.y};
@@ -167,8 +177,47 @@ exports.Tool = function (globalVariables, classContainer) {
         }
     }
 
+    class IconCreator {
+        constructor(){
+
+        }
+
+        createUndoneIcon(manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.blue, 0, myColors.none)
+                .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
+                .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white);
+            let icon = new Icon(manipulator, iconSetting);
+            return icon;
+        }
+
+        createInProgressIcon(manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.orange, 1, myColors.none)
+                .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
+                .setTextContent(0, 0, ICON_SIZE, "...", 20, "Arial", myColors.white);
+            let icon = new Icon(manipulator, iconSetting);
+            return icon;
+        }
+
+        createDoneIcon(manipulator, layer){
+            var _getPathCheckContent = (size) =>{
+                let path = [{x:-.3* size, y:- .1 * size}, {x: - .1 * size, y: .2 * size}, {x : +.3 * size, y : -.3 * size}];
+                return path;
+            };
+
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.green, 0, myColors.none)
+                .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
+                .setPathContent(_getPathCheckContent(ICON_SIZE*2), ICON_SIZE*2, myColors.none, 3, myColors.white);
+            let icon = new Icon(manipulator, iconSetting);
+            return icon;
+        }
+    }
+
     return {
         IconSetting,
-        Icon
+        Icon,
+        IconCreator
     };
 };

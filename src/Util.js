@@ -1856,7 +1856,7 @@ exports.Util = function (globalVariables) {
                     break;
                 case "inProgress":
                     iconSetting.setBorderDefaultColor(myColors.orange, 0, myColors.none)
-                        .setTextContent(circleToggleSize * 2, circleToggleSize * 2, "...", 20, "arial", myColors.white);
+                        .setTextContent(0,0, circleToggleSize * 2, "...", 20, "arial", myColors.white);
                     break;
                 default:
                     iconSetting.setBorderDefaultColor(myColors.blue, 0, myColors.none)

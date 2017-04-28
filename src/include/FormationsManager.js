@@ -111,6 +111,8 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         addFormationObject.circle.position(MARGIN + 200, -12);
                         addFormationObject.circle.mark("addFormationButton");
                         addFormationObject.plus.mark("addFormationButton");
+
+
                         svg.addEvent(addFormationObject.circle, "click", _onClickNewFormation);
                         svg.addEvent(addFormationObject.plus, "click", _onClickNewFormation);
                     };
@@ -214,25 +216,28 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         _setClickEventFormationLabel();
                     };
                     var _setCheckedIcon = () => {
-                        checkLegend = statusEnum.Published.icon(this.iconeSize);
-                        this.checkManipulator.set(2, checkLegend.square);
-                        this.checkManipulator.set(3, checkLegend.check);
+                        let iconCheckSetting = classContainer.createClass("IconSetting");
+                        iconCheckSetting.setBorderSize(this.iconeSize/2).setBorderLayer(2)
+                            .setBorderDefaultColor(myColors.green, 0, myColors.none)
+                            .setPathCheckContent(this.iconeSize, myColors.none, 5, myColors.white);
+                        checkLegend = classContainer.createClass("Icon", this.checkManipulator, iconCheckSetting);
                     };
                     var _setPublishedMessage = () => {
                         published = autoAdjustText("Publié", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.checkManipulator).text.anchor("start");
                         published.position(25, published.y);
                     };
                     var _setEditedIcon = () => {
-                        exclamationLegend = statusEnum.Edited.icon(this.iconeSize);
-                        this.exclamationManipulator.set(0, exclamationLegend.circle);
-                        this.exclamationManipulator.set(2, exclamationLegend.dot);
-                        this.exclamationManipulator.set(3, exclamationLegend.exclamation);
+                        let iconEditedSetting = classContainer.createClass("IconSetting");
+                        iconEditedSetting.setBorderSize(this.iconeSize/2).setBorderLayer(2)
+                            .setBorderDefaultColor(myColors.orange, 0, myColors.none)
+                            .setTextExclamationContent(this.iconeSize/2, 23, "arial", myColors.white);
+                        exclamationLegend = classContainer.createClass("Icon", this.exclamationManipulator, iconEditedSetting);
                     };
                     var _setToBePublishedMessage = () => {
                         toPublish = autoAdjustText("Nouvelle version à publier", this.addButtonWidth, this.addButtonHeight, this.fontSize * 3 / 4, null, this.exclamationManipulator).text.anchor("start");
                         toPublish.position(25, toPublish.y);
-                        legendItemLength = toPublish.boundingRect().width + exclamationLegend.circle.boundingRect().width + MARGIN;
-                        this.checkManipulator.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.square.boundingRect().width - 2 * MARGIN, 30);
+                        legendItemLength = toPublish.boundingRect().width + exclamationLegend.border.boundingRect().width + MARGIN;
+                        this.checkManipulator.move(drawing.width - legendItemLength - published.boundingRect().width - checkLegend.border.boundingRect().width - 2 * MARGIN, 30);
                         this.exclamationManipulator.move(drawing.width - legendItemLength, 30);
                     };
 
@@ -365,24 +370,15 @@ exports.formationsManager = function (globalVariables, classContainer) {
                 this.headerManipulator.add(this.toggleFormationsManipulator);
             };
             var _declarePlayerIcons = () => {
-                let undoneIconSetting = classContainer.createClass("IconSetting").setBorderSize(this.circleToggleSize)
-                    .setBorderLayer(0).setBorderDefaultColor(myColors.blue, 0, myColors.none)
-                    .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
-                    .setTriangleContent(8, 8, 'E', myColors.none, 3, myColors.white, 5);
-                this.undoneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, undoneIconSetting);
+                let iconCreator = classContainer.createClass("IconCreator");
+
+                this.undoneIcon = iconCreator.createUndoneIcon(this.toggleFormationsManipulator, 0);
                 this.undoneIcon.position(-this.circleToggleSize * 4 - MARGIN * 2, 0).content.mark("unDoneIcon");
 
-                let inProgressIconSetting = undoneIconSetting.duplicate();
-                inProgressIconSetting.setBorderDefaultColor(myColors.orange, 1, myColors.none)
-                    .setBorderLayer(1).setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                    .setTextContent(this.circleToggleSize * 2, this.circleToggleSize * 2, "...", 20, "Arial", myColors.white, 1);
-                this.inProgressIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, inProgressIconSetting);
+                this.inProgressIcon = iconCreator.createInProgressIcon(this.toggleFormationsManipulator, 1);
                 this.inProgressIcon.content.mark('inProgressIcon');
 
-                let doneIconSetting = undoneIconSetting.duplicate();
-                doneIconSetting.setBorderDefaultColor(myColors.green, 0, myColors.none).setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                    .setBorderLayer(2).setPathCheckContent(20, myColors.none, 3, myColors.white, 4);
-                this.doneIcon = classContainer.createClass("Icon", this.toggleFormationsManipulator, doneIconSetting);
+                this.doneIcon = iconCreator.createDoneIcon(this.toggleFormationsManipulator, 2);
                 this.doneIcon.position(-this.circleToggleSize * 2 - MARGIN, 0).content.mark("doneIcon");
             };
             var _createFilter = () => {
