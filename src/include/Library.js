@@ -756,12 +756,12 @@ exports.Library = function (globalVariables, classContainer) {
                     popIn.display(questionCreator, questionCreator.coordinatesAnswers.x, questionCreator.coordinatesAnswers.y, questionCreator.coordinatesAnswers.w, questionCreator.coordinatesAnswers.h);
                 }
                 else {
-                    var oldElement = {
-                        border: target.parent.parentManip.ordonator.get(0),
-                        content: target.parent.parentManip.ordonator.get(1)
-                    };
-                    target.parent.parentManip.unset(0);
-                    target.parent.parentManip.unset(1);
+                    // var oldElement = {
+                    //     border: target.parent.parentManip.ordonator.children["0"].children["0"],
+                    //     content: target.parent.parentManip.ordonator.children["0"].children["1"]
+                    // };
+                    // target.parent.parentManip.ordonator.unset(0);
+                    // target.parent.parentManip.ordonator.children["0"].unset(1);
                     switch (true) {
                         case classContainer.isInstanceOf('QuestionCreatorVue', target.parent.parentManip.parentObject):
                             target.parent.parentManip.unset(2);
@@ -774,20 +774,20 @@ exports.Library = function (globalVariables, classContainer) {
                             questionCreator.display();
                             questionCreator.linkedQuestion.checkValidity();
                             break;
-                        case classContainer.isInstanceOf('Answer', target.parent.parentManip.parentObject):
+                        case classContainer.isInstanceOf('AnswerVueAdmin', target.parent.parentManip.parentObject):
                             let answer = target.parent.parentManip.parentObject;
                             answer.obj.video && drawings.component.remove(answer.obj.video);
-                            answer.video = element;
-                            answer.image = null;
-                            answer.imageSrc = null;
-                            answer.parentQuestion.tabAnswer.forEach(otherAnswer => {
+                            answer.model.video = element;
+                            answer.model.image = null;
+                            answer.model.imageSrc = null;
+                            answer.model.parentQuestion.tabAnswer.forEach(otherAnswer => {
                                 otherAnswer.obj && otherAnswer.obj.video && drawings.component.remove(otherAnswer.obj.video);
                             });
-                            answer.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
-                            answer.parentQuestion.checkValidity();
+                            answer.model.parentQuestion.parentQuiz.parentFormation.quizManager.questionCreator.puzzle.display(undefined, undefined, undefined, undefined, false);
+                            answer.model.parentQuestion.checkValidity();
                             break;
                     }
-                    target.parent.parentManip.set(0, oldElement.border);
+                    // target.parent.parentManip.set(0, oldElement);
                 }
             }
         }
