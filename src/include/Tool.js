@@ -8,6 +8,7 @@ exports.Tool = function (globalVariables, classContainer) {
     let
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator;
+        Picture = globalVariables.util.Picture;
 
     const
         ICON_SIZE = 12.5;
@@ -44,10 +45,9 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setPolygonContent(points, size, fillColor, strokeWidth, strokeColor) {
+        setPolygonContent(points, fillColor, strokeWidth, strokeColor) {
             this.contentProperties.type = "Polygon";
             this.contentProperties.points = points;
-            this.contentProperties.size = size;
             this.contentProperties.fillColor = fillColor;
             this.contentProperties.strokeWidth = strokeWidth;
             this.contentProperties.strokeColor = strokeColor;
@@ -61,6 +61,13 @@ exports.Tool = function (globalVariables, classContainer) {
             this.contentProperties.fillColor = fillColor;
             this.contentProperties.strokeWidth = strokeWidth;
             this.contentProperties.strokeColor = strokeColor;
+            return this;
+        }
+
+        setPictureContent(src, size) {
+            this.contentProperties.type = "Picture";
+            this.contentProperties.src = src;
+            this.contentProperties.size = size;
             return this;
         }
 
@@ -112,46 +119,63 @@ exports.Tool = function (globalVariables, classContainer) {
             this.action = false;
             this.iconSetting = iconSetting;
             this.manipulator = new Manipulator(this).addOrdonator(2);
+
             let borderProperties = this.iconSetting.borderProperties;
-
-            this.border = new svg.Circle(borderProperties.size)
-                .color(borderProperties.default.fillColor,
-                    borderProperties.default.strokeWidth,
-                    borderProperties.default.strokeColor);
-            this.manipulator.set(0, this.border);
-
             let contentProperties = this.iconSetting.contentProperties;
-            switch (contentProperties.type) {
-                case "Triangle":
-                    this.content = new svg.Triangle(contentProperties.width, contentProperties.height, contentProperties.direction)
-                        .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
-                    break;
-                case "Text":
-                    this.content = autoAdjustText(contentProperties.label, contentProperties.size, contentProperties.size,
-                        contentProperties.fontSize, contentProperties.font, this.manipulator).text;
-                    this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
-                    break;
-                case "Path":
-                    let middlePoint = {x: this.border.x, y: this.border.y};
-                    let pathToDraw = contentProperties.path;
 
-                    let path = new svg.Path(middlePoint.x, middlePoint.y)
-                        .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor)
-                        .move(middlePoint.x + pathToDraw[0].x, middlePoint.y + pathToDraw[0].y);
-                    for (let i = 1; i < pathToDraw.length; i++) {
-                        path.line(middlePoint.x + pathToDraw[i].x, middlePoint.y + pathToDraw[i].y);
-                    }
-                    this.content = path;
-                    break;
-                case "Polygon":
-                    let polygon = new svg.Polygon().add(contentProperties.points)
-                        .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
-                    this.content = polygon;
-                    break;
-            }
+            var _createBorder = (borderProperties) => {
+                this.border = new svg.Circle(borderProperties.size)
+                    .color(borderProperties.default.fillColor,
+                        borderProperties.default.strokeWidth,
+                        borderProperties.default.strokeColor);
+                this.manipulator.set(0, this.border);
+            };
+            var _createContent = (contentProperties) => {
+                switch (contentProperties.type) {
+                    case "Triangle":
+                        this.content = new svg.Triangle(contentProperties.width, contentProperties.height, contentProperties.direction)
+                            .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
+                        break;
+                    case "Text":
+                        this.content = autoAdjustText(contentProperties.label, contentProperties.size, contentProperties.size,
+                            contentProperties.fontSize, contentProperties.font, this.manipulator).text;
+                        this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
+                        break;
+                    case "Path":
+                        let middlePoint = {x: this.border.x, y: this.border.y};
+                        let pathToDraw = contentProperties.path;
+
+                        let path = new svg.Path(middlePoint.x, middlePoint.y)
+                            .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor)
+                            .move(middlePoint.x + pathToDraw[0].x, middlePoint.y + pathToDraw[0].y);
+                        for (let i = 1; i < pathToDraw.length; i++) {
+                            path.line(middlePoint.x + pathToDraw[i].x, middlePoint.y + pathToDraw[i].y);
+                        }
+                        this.content = path;
+                        break;
+                    case "Polygon":
+                        let polygon = new svg.Polygon().add(contentProperties.points)
+                            .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
+                        this.content = polygon;
+                        break;
+                    case "Picture":
+                        let pic = this.imageSVG = new svg.Image(contentProperties.src)
+                            .dimension(contentProperties.size, contentProperties.size);
+                        this.content = pic;
+                        break;
+                }
+            };
+
+            _createBorder(borderProperties);
+            _createContent(contentProperties);
+
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
             (borderProperties.layer && borderProperties >= 0) ? manipulator.set(borderProperties.layer, this.manipulator)
                 : manipulator.add(this.manipulator);
+        }
+
+        getSize(){
+            return this.iconSetting.borderProperties.size;
         }
 
         position(x, y) {
@@ -245,16 +269,23 @@ exports.Tool = function (globalVariables, classContainer) {
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.black, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), ICON_SIZE * 2, myColors.lightgrey, 1, myColors.none);
+                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.lightgrey, 1, myColors.none);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
         };
+
+        createSettingIcon(manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)
+                .setPictureContent("../images/settings.png", (ICON_SIZE*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
     }
 
     return {
-        IconSetting,
-        Icon,
         IconCreator
     };
 };
