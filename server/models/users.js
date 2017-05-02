@@ -155,11 +155,21 @@ const getFormationsWithProgress = (userFormationsArray, versions, formations) =>
                 id = progressArray.version;
                 return 'done';
             }();
-            result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+            if (version.imageSrc){
+                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress, imageSrc: version.imageSrc});
+            }
+            else{
+                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+            }
         } else {
             // check status for a published version
             if(version.status === "Published") {
-                result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+                if (version.imageSrc){
+                    result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress, imageSrc: version.imageSrc});
+                }
+                else{
+                    result.push({_id: id ? new ObjectID(id) : version._id, formationId: version.formationId, label: version.label, status: version.status, progress: progress});
+                }
             } else if(version.status && version.status !== "NotPublished") {
                 let myFormation = formations.find(formation => formation._id.toString() === version.formationId.toString());
                 if(myFormation.versions.length > 1) {

@@ -1659,11 +1659,15 @@ exports.Util = function (globalVariables) {
             this.formation = formation;
             this._acceptDrop = true;
             this.popOut =  new PopOut(400,150, new globalVariables.domain.MediaLibraryVue(), this.manipulator);
+            if(formation.imageSrc){
+                this.picture = formation.imageSrc;
+            }
         }
 
         dropImage(element){
             this.picture = element.src;
             this.drawPicture();
+            this.formation.saveFormation(null, this.formation.status, false, true);
         }
         drawPicture() {
             this.imageManipulator = new Manipulator(this).addOrdonator(2);
@@ -1673,9 +1677,10 @@ exports.Util = function (globalVariables) {
                 this.imageManipulator = null
             });
             this.image.draw(0,this.height/3, this.width/2, this.height/2,this.imageManipulator,0);
+            this.formation.imageSrc = this.image.src;
             svg.addEvent(this.image.imageSVG,"mouseenter",
                 () => {
-                    this.image.imageMouseoverHandler();
+                    !globalVariables.playerMode && this.image.imageMouseoverHandler();
                     this.manipulator.get(0).color([130, 180, 255], 3, myColors.black);
                 });
             this.image.imageSVG.mark(this.formation.label + 'SetupImage');

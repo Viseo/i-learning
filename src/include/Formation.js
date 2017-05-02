@@ -165,6 +165,10 @@ exports.Formation = function (globalVariables, classContainer) {
 
             _declareManipulator();
 
+            if (formation.imageSrc){
+                this.imageSrc = formation.imageSrc;
+            }
+
             this.library = classContainer.createClass("GamesLibraryVue", myLibraryGames);
             this.library.formation = this;
             this.quizManager = classContainer.createClass("QuizManagerVue", null, this);
@@ -251,7 +255,7 @@ exports.Formation = function (globalVariables, classContainer) {
             let displayLockAnimation = (target) =>{
                 let resetAnimation = (target)=>{
                     clearTimeout(this.animation.timeOutID);
-                    target.miniatureManipulator.scalor.steppy(10, 10).scaleTo(1);
+                    target.miniature.manipulator.scalor.steppy(10, 10).scaleTo(1);
                     for (let parent of target.parentGamesList){
                         let parentGame = this.levelsTab[parent.levelIndex].gamesTab[parent.gameIndex]
                         parentGame.miniature.border.steppy(10,10)
@@ -259,29 +263,29 @@ exports.Formation = function (globalVariables, classContainer) {
                     }
                     this.animation.status = false;
                     this.animation.target = null;
-                    target.miniatureManipulator.unset(1);
-                    target.miniatureManipulator.unset(2);
-                    target.miniatureManipulator.set(1, target.miniature.content.text);
-                    target.miniatureManipulator.set(2,target.miniature.underContent);
+                    target.miniature.manipulator.unset(1);
+                    target.miniature.manipulator.unset(2);
+                    target.miniature.manipulator.set(1, target.miniature.content.text);
+                    target.miniature.manipulator.set(2,target.miniature.underContent);
                 }
 
                 this.animation && this.animation.status && resetAnimation(this.animation.target);
                 this.animation = {}
                 this.animation.status = true;
                 this.animation.target = target;
-                target.miniatureManipulator.scalor.steppy(10, 10).scaleTo(1.25);
-                target.miniatureManipulator.rotator.steppy(10,10).rotate(0,10);
-                target.miniatureManipulator.rotator.steppy(10,10).rotate(10,-10);
-                target.miniatureManipulator.rotator.steppy(10,10).rotate(-10,0);
+                target.miniature.manipulator.scalor.steppy(10, 10).scaleTo(1.25);
+                target.miniature.manipulator.rotator.steppy(10,10).rotate(0,10);
+                target.miniature.manipulator.rotator.steppy(10,10).rotate(10,-10);
+                target.miniature.manipulator.rotator.steppy(10,10).rotate(-10,0);
                 let labelToSave = target.miniature.content;
                 let underContent = target.miniature.underContent;
-                target.miniatureManipulator.unset(1);
-                target.miniatureManipulator.unset(2);
+                target.miniature.manipulator.unset(1);
+                target.miniature.manipulator.unset(2);
                 let text = new svg.Text("Vous devez finir les test\n en rouge \npour débloquer celui ci")
                     .position(0,-this.graphElementSize/4 + MARGIN)
                     .font('Arial', 10)
                     .color(myColors.white);
-                target.miniatureManipulator.set(1, text);
+                target.miniature.manipulator.set(1, text);
                 for (let parent of target.parentGamesList){
                     let parentGame = this.levelsTab[parent.levelIndex].gamesTab[parent.gameIndex]
                     parentGame.miniature.border.steppy(10,10)
@@ -334,8 +338,8 @@ exports.Formation = function (globalVariables, classContainer) {
                     content: autoAdjustText(this.label, this.graphElementWidth/2, 0, 15, 'Arial', this.formationLeftManipulator, 1), // new svg.Text(this.label).dimension(this.graphElementWidth, 0).position(0, 0).font('Arial', 15),
                     border: util.drawHexagon(this.graphElementWidth/2, this.graphElementSize*1.5, 'V', 1)
                 }
-                this.picture = this.picture || new util.Picture('../images/svg-guy.png', false, this, '',null);
-                if (this.picture){
+                if (this.imageSrc){
+                    this.picture = new util.Picture(this.imageSrc, false, this, '',null);
                     this.picture.draw(0, this.graphElementSize/2+MARGIN, this.graphElementSize/2, this.graphElementSize/2, this.formationLeftManipulator, 2);
                 }
 
@@ -883,7 +887,7 @@ exports.Formation = function (globalVariables, classContainer) {
          * @param status - status de la formation (not Published, Edited, Published)
          * @param onlyName - booleen pour indiquer si on veut ne sauvegarder que le nom
          */
-        saveFormation(displayQuizManager, status = "Edited", onlyName = false) {
+        saveFormation(displayQuizManager, status = "Edited", onlyName = false, imageOnly) {
             const
                 messageSave = "Votre travail a bien été enregistré.",
                 messageError = "Vous devez remplir correctement le nom de la formation.",
@@ -903,7 +907,7 @@ exports.Formation = function (globalVariables, classContainer) {
                 this.publicationFormationButtonManipulator.remove(this.errorMessagePublication);
                 if (displayQuizManager && !error) {
                     displayQuizManager();
-                } else {
+                } else if (!imageOnly) {
                     let saveFormationButtonCadre = this.saveFormationButtonManipulator.ordonator.children[0];
                     const messageY = saveFormationButtonCadre.globalPoint(0, 0).y;
                     this.message = new svg.Text(message)
@@ -935,12 +939,30 @@ exports.Formation = function (globalVariables, classContainer) {
                     if (onlyName && this._id) {
                         return {label: this.label};
                     } else {
-                        return {
-                            label: this.label,
-                            gamesCounter: this.gamesCounter,
-                            links: this.links,
-                            levelsTab: this.levelsTab
-                        };
+                        if(this.imageSrc && !imageOnly){
+                            return {
+                                label: this.label,
+                                gamesCounter: this.gamesCounter,
+                                links: this.links,
+                                levelsTab: this.levelsTab,
+                                imageSrc: this.imageSrc
+                            }
+                        }
+                        else if (imageOnly){
+                            return {
+                                label: this.label,
+                                imageSrc: this.imageSrc,
+                                onlyImage: true
+                            }
+                        }
+                        else{
+                            return {
+                                label: this.label,
+                                gamesCounter: this.gamesCounter,
+                                links: this.links,
+                                levelsTab: this.levelsTab
+                            };
+                        }
                     }
                 };
 

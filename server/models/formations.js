@@ -29,6 +29,8 @@ const compareVersions = (version1, version2, checkStatus = false) => {
             delete myVersion2.status;
         }
     }
+    myVersion1.hasOwnProperty('imageSrc') && delete myVersion1.imageSrc;
+    myVersion2.hasOwnProperty('imageSrc') && delete myVersion2.imageSrc;
     return JSON.stringify(myVersion1) === JSON.stringify(myVersion2);
 };
 
@@ -171,6 +173,21 @@ const newVersion = (formation, version) => {
         }
     })
 };
+const updateImage = (formation, version1, version2) => {
+    return new Promise((resolve,reject)=>{
+        let formations = db.get().collection('formations');
+        formations.updateOne({
+            '_id': new ObjectID(formation._id),
+            'versions._id': new ObjectID(version1._id)
+        }, {
+            $set: {'versions.$.imageSrc': version2.imageSrc}
+        }).then(data=>{
+            resolve(data);
+        }).catch(data=>{
+            reject(data);
+        })
+    })
+}
 
 const updateNote = (req, versionId, note)=> {
     return new Promise((resolve, reject) => {
@@ -285,3 +302,4 @@ exports.newVersion = newVersion;
 exports.replaceQuiz = replaceQuiz;
 exports.getFormationByVersionId = getFormationByVersionId;
 exports.updateNote = updateNote;
+exports.updateImage = updateImage;
