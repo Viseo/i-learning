@@ -14,9 +14,10 @@ exports.Tool = function (globalVariables, classContainer) {
 
 
     class IconSetting {
-        constructor(borderProperties){
+        constructor(borderProperties) {
             this.borderProperties = (borderProperties) ? borderProperties :
-                {size:0, layer : -1,
+                {
+                    size: 0, layer: -1,
                     default: {
                         fillColor: myColors.white,
                         strokeWidth: 1,
@@ -28,22 +29,32 @@ exports.Tool = function (globalVariables, classContainer) {
                         strokeColor: myColors.white
                     }
                 };
-            this.contentProperties = {type : "None"};
+            this.contentProperties = {type: "None"};
         }
 
-        duplicate(){
+        duplicate() {
             let objClone = JSON.parse(JSON.stringify(this));
-            objClone.__proto__  = this.__proto__;
+            objClone.__proto__ = this.__proto__;
 
             return objClone;
         }
 
-        setBorderLayer(layer = -1){
+        setBorderLayer(layer = -1) {
             this.borderProperties.layer = layer;
             return this;
         }
 
-        setPathContent(path, size, fillColor, strokeWidth, strokeColor){
+        setPolygonContent(points, size, fillColor, strokeWidth, strokeColor) {
+            this.contentProperties.type = "Polygon";
+            this.contentProperties.points = points;
+            this.contentProperties.size = size;
+            this.contentProperties.fillColor = fillColor;
+            this.contentProperties.strokeWidth = strokeWidth;
+            this.contentProperties.strokeColor = strokeColor;
+            return this;
+        }
+
+        setPathContent(path, size, fillColor, strokeWidth, strokeColor) {
             this.contentProperties.type = "Path";
             this.contentProperties.path = path;
             this.contentProperties.size = size;
@@ -53,7 +64,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setTextContent(x, y, size, label, fontSize, font, color){
+        setTextContent(x, y, size, label, fontSize, font, color) {
             this.contentProperties.type = "Text";
             this.contentProperties.size = size;
             this.contentProperties.label = label;
@@ -65,7 +76,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor){
+        setTriangleContent(width, height, direction, fillColor, strokeWidth, strokeColor) {
             this.contentProperties.type = "Triangle";
             this.contentProperties.width = width;
             this.contentProperties.height = height;
@@ -76,28 +87,28 @@ exports.Tool = function (globalVariables, classContainer) {
             return this;
         }
 
-        setBorderDefaultColor(fillColor, strokeWidth, strokeColor){
+        setBorderDefaultColor(fillColor, strokeWidth, strokeColor) {
             this.borderProperties.default.fillColor = fillColor;
             this.borderProperties.default.strokeWidth = strokeWidth;
             this.borderProperties.default.strokeColor = strokeColor;
             return this;
         }
 
-        setBorderActionColor(fillColor, strokeWidth, strokeColor){
+        setBorderActionColor(fillColor, strokeWidth, strokeColor) {
             this.borderProperties.action.fillColor = fillColor;
             this.borderProperties.action.strokeWidth = strokeWidth;
             this.borderProperties.action.strokeColor = strokeColor;
             return this;
         }
 
-        setBorderSize(size){
+        setBorderSize(size) {
             this.borderProperties.size = size;
             return this;
         }
     }
 
     class Icon {
-        constructor(manipulator, iconSetting){
+        constructor(manipulator, iconSetting) {
             this.action = false;
             this.iconSetting = iconSetting;
             this.manipulator = new Manipulator(this).addOrdonator(2);
@@ -110,7 +121,7 @@ exports.Tool = function (globalVariables, classContainer) {
             this.manipulator.set(0, this.border);
 
             let contentProperties = this.iconSetting.contentProperties;
-            switch (contentProperties.type){
+            switch (contentProperties.type) {
                 case "Triangle":
                     this.content = new svg.Triangle(contentProperties.width, contentProperties.height, contentProperties.direction)
                         .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
@@ -121,16 +132,21 @@ exports.Tool = function (globalVariables, classContainer) {
                     this.content.color(contentProperties.color).position(contentProperties.x, contentProperties.y);
                     break;
                 case "Path":
-                    let middlePoint = {x : this.border.x, y: this.border.y};
+                    let middlePoint = {x: this.border.x, y: this.border.y};
                     let pathToDraw = contentProperties.path;
 
                     let path = new svg.Path(middlePoint.x, middlePoint.y)
                         .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor)
                         .move(middlePoint.x + pathToDraw[0].x, middlePoint.y + pathToDraw[0].y);
-                    for(let i = 1; i < pathToDraw.length; i++){
+                    for (let i = 1; i < pathToDraw.length; i++) {
                         path.line(middlePoint.x + pathToDraw[i].x, middlePoint.y + pathToDraw[i].y);
                     }
                     this.content = path;
+                    break;
+                case "Polygon":
+                    let polygon = new svg.Polygon().add(contentProperties.points)
+                        .color(contentProperties.fillColor, contentProperties.strokeWidth, contentProperties.strokeColor);
+                    this.content = polygon;
                     break;
             }
             (contentProperties.type != "None") && this.manipulator.set(1, this.content);
@@ -138,40 +154,40 @@ exports.Tool = function (globalVariables, classContainer) {
                 : manipulator.add(this.manipulator);
         }
 
-        position(x, y){
-            this.manipulator.move(x,y);
+        position(x, y) {
+            this.manipulator.move(x, y);
             return this;
         }
 
-        showActualBorder(){
+        showActualBorder() {
             (this.action) ? this.showBorderActionColor() : this.showBorderDefaultColor();
         }
 
-        showBorderActionColor(){
+        showBorderActionColor() {
             let borderProperties = this.iconSetting.borderProperties.action;
             this.border.color(borderProperties.fillColor, borderProperties.strokeWidth, borderProperties.strokeColor);
             return this;
         }
 
-        showBorderDefaultColor(){
+        showBorderDefaultColor() {
             let borderProperties = this.iconSetting.borderProperties.default;
             this.border.color(borderProperties.fillColor, borderProperties.strokeWidth, borderProperties.strokeColor);
             return this;
         }
 
-        addEvent(eventName, handler){
+        addEvent(eventName, handler) {
             this.manipulator.addEvent(eventName, handler);
             /*svg.addEvent(this.border, eventName, handler);
-            (this.content) && svg.addEvent(this.content, eventName, handler);*/
+             (this.content) && svg.addEvent(this.content, eventName, handler);*/
         }
     }
 
     class IconCreator {
-        constructor(){
+        constructor() {
 
         }
 
-        createUndoneIcon(manipulator, layer){
+        createUndoneIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.blue, 0, myColors.none)
                 .setBorderActionColor(myColors.blue, 1, myColors.darkBlue)
@@ -180,7 +196,7 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
-        createInProgressIcon(manipulator, layer){
+        createInProgressIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 1, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
@@ -189,28 +205,51 @@ exports.Tool = function (globalVariables, classContainer) {
             return icon;
         }
 
-        createDoneIcon(manipulator, layer){
-            var _getPathCheckContent = (size) =>{
-                let path = [{x:-.3* size, y:- .1 * size}, {x: - .1 * size, y: .2 * size}, {x : +.3 * size, y : -.3 * size}];
+        createDoneIcon(manipulator, layer) {
+            var _getPathCheckContent = (size) => {
+                let path = [{x: -.3 * size, y: -.1 * size}, {x: -.1 * size, y: .2 * size},
+                    {x: +.3 * size, y: -.3 * size}];
                 return path;
             };
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.green, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                .setPathContent(_getPathCheckContent(ICON_SIZE*2), ICON_SIZE*2, myColors.none, 3, myColors.white);
+                .setPathContent(_getPathCheckContent(ICON_SIZE * 2), ICON_SIZE * 2, myColors.none, 3, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
 
-        createEditedIcon(manipulator, layer){
+        createEditedIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.orange, 0, myColors.none)
                 .setBorderActionColor(myColors.orange, 1, myColors.darkBlue)
-                .setTextContent(0, ICON_SIZE/2, ICON_SIZE, "!", 23, "Arial", myColors.white);
+                .setTextContent(0, ICON_SIZE / 2, ICON_SIZE, "!", 23, "Arial", myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }
+
+        createPlusIcon(manipulator, layer) {
+            var _getPathPlus = (size) => {
+                var strokePlus = size / 5;
+                var sizePlus = size*2/3;
+
+                let point = [
+                    [-sizePlus, -strokePlus], [-strokePlus, -strokePlus], [-strokePlus, -sizePlus],
+                    [strokePlus, -sizePlus], [strokePlus, -strokePlus], [sizePlus, -strokePlus],
+                    [sizePlus, +strokePlus], [strokePlus, strokePlus], [strokePlus, sizePlus],
+                    [-strokePlus, sizePlus], [-strokePlus, strokePlus], [-sizePlus,+strokePlus]
+                ];
+                return point;
+            };
+
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.black, 0, myColors.none)
+                .setPolygonContent(_getPathPlus(ICON_SIZE), ICON_SIZE * 2, myColors.lightgrey, 1, myColors.none);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        };
     }
 
     return {
