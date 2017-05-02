@@ -105,15 +105,10 @@ exports.formationsManager = function (globalVariables, classContainer) {
                         }.bind(this));
                     };
                     var _setAddFormationObject = () => {
-                        let addFormationObject = drawPlusWithCircle(MARGIN + 200, -12, this.addButtonSmall, this.addButtonSmall);
-                        this.addButtonManipulator.set(2, addFormationObject.circle);
-                        this.addButtonManipulator.set(3, addFormationObject.plus);
-                        addFormationObject.circle.position(MARGIN + 200, -12);
-                        addFormationObject.circle.mark("addFormationButton");
-                        addFormationObject.plus.mark("addFormationButton");
-
-                        svg.addEvent(addFormationObject.circle, "click", _onClickNewFormation);
-                        svg.addEvent(addFormationObject.plus, "click", _onClickNewFormation);
+                        let iconCreator = classContainer.createClass("IconCreator");
+                        let icon = iconCreator.createPlusIcon(this.addButtonManipulator, 2);
+                        icon.position(MARGIN + 200, -12).content.mark("addFormationButton");
+                        icon.addEvent("click", _onClickNewFormation);
                     };
                     var _formationLabelDisplay = () => {
                         let text = this.label ? this.label : this.labelDefault;
