@@ -2,9 +2,13 @@ const Domain = require('./Domain').Domain,
     Util = require('./Util').Util,
     svggui = require('../lib/svggui').Gui,
     svgPolyfill = require('../lib/svghandlerPoly').svgPolyfill,
-    guiPolyfill = require('../lib/svgguiPoly').guiPolyfill;
+    guiPolyfill = require('../lib/svgguiPoly').guiPolyfill,
+    FModels = require('../Models').Models,
+    presenterFactory = require('../presenters/PresenterFactory').PresenterFactory;
+
 
 function main(svg, runtime, dbListener, ImageRuntime,param) {
+
 
     let domain, util, gui, drawing, drawings;
 
@@ -27,6 +31,8 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
     util.Bdd();
     util.SVGUtil();
 
+
+
     drawings = new util.Drawings(svg.screenSize().width, svg.screenSize().height);
     globalVariables.drawings = drawings;
     drawing = drawings.drawing;
@@ -35,12 +41,21 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
     domain = Domain(globalVariables);
     globalVariables.domain = domain;
 
-    const inscriptionManager = new domain.InscriptionManagerVue();
-    globalVariables.inscriptionManager = inscriptionManager;
-    const connexionManager = new domain.ConnexionManagerVue();
-    globalVariables.connexionManager = connexionManager;
-    const password = new domain.PasswordVue();
-    globalVariables.password = password;
+    // const inscriptionManager = new domain.InscriptionManagerVue();
+    // globalVariables.inscriptionManager = inscriptionManager;
+    // const connexionManager = new domain.ConnexionManagerVue();
+    // globalVariables.connexionManager = connexionManager;
+    // const password = new domain.PasswordVue();
+    // globalVariables.password = password;
+
+
+    let factory = presenterFactory(globalVariables);
+    let models = FModels(globalVariables);
+    let globalFormations = new models.Formations();
+    globalFormations.getFormationsFromBdd().then(() => {
+        let dashboardAdminP = new globalVariables.dashboardAdminP(globalFormations);
+        dashboardAdminP.displayView();
+    })
 
     util.setGlobalVariables();
     domain.setGlobalVariables();
