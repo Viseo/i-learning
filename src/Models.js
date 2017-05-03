@@ -17,6 +17,11 @@ exports.Models = function(globalVariables){
         getFormations() {
             return this._formations;
         }
+        createFormation(label){
+            let newFormation = new Formation({label:label});
+            this._formations.push();
+            return newFormation;
+        }
     }
 
     class Formation{
