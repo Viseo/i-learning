@@ -1,15 +1,13 @@
 /**
  * Created by DMA3622 on 03/05/2017.
  */
-exports.Connection = function (globalVariables) {
+exports.ConnectionV = function (globalVariables) {
     const util = globalVariables.util,
         Manipulator = util.Manipulator,
         svg = globalVariables.svg,
         drawing = globalVariables.drawing,
         gui = globalVariables.gui,
-        INSCRIPTION_TEXT = "Vous venez d'arriver ? Créer un compte",
-        CONNECTION_TEXT = "Vous êtes déjà inscrit ? Se connecter",
-        CONNECTION_REFUSED_ERROR = 'Connexion refusée : \nveuillez entrer une adresse e-mail et un mot de passe valide',
+        IconCreator = globalVariables.domain.IconCreator,
         FONT = 'Arial',
         FONT_SIZE_INPUT = 20,
         FONT_SIZE_TITLE = 25,
@@ -20,13 +18,9 @@ exports.Connection = function (globalVariables) {
         INPUT_WIDTH = 550,
         INPUT_HEIGHT = 30,
         BUTTON_HEIGHT = INPUT_HEIGHT * 5 / 4,
-        TITLE_COLOR = [myColors.white, 0, myColors.white],
-        // BLUE_FIELD_COLOR = [myColors.blue, 0, myColors.blue],
-        ERROR_INPUT = [myColors.white, 2, myColors.red],
-        ICON_SIZE = INPUT_HEIGHT * 2 / 3,
-        MARGIN_DISPOSITION_BUTTON_FACTOR = 8.5;
+        TITLE_COLOR = [myColors.white, 0, myColors.white];
 
-    class Connection {
+    class ConnectionV {
         constructor(presenter) {
             this.presenter = presenter;
             this.manipulator = new Manipulator(this);
@@ -54,22 +48,42 @@ exports.Connection = function (globalVariables) {
             };
             var _displayFields = () => {
                 var _displayField = (field) => {
-                    let fieldManip = new Manipulator(this);
-                    let fieldTitle = new svg.Text(field.title);
-                    let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT);
+                    var _displayIcon = () => {
+                        let icon = IconCreator.createImageIcon(field.iconSrc, fieldManip, 1);
+                        icon.position(-INPUT_WIDTH/2 + icon.getContentSize()/2 + MARGIN, 0);
+                    }
+                    var _displayTitle = () => {
+                        let fieldTitle = new svg.Text(field.title);
+                        fieldTitle
+                            .dimension(INPUT_WIDTH, FONT_SIZE_TITLE)
+                            .font(FONT, FONT_SIZE_TITLE)
+                            .color(TITLE_COLOR)
+                            .anchor("start")
+                            .position(-INPUT_WIDTH / 2, -INPUT_HEIGHT);
+                        fieldManip.add(fieldTitle);
+                    }
+                    var _displayArea = () => {
+                        let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
+                        fieldArea.font(FONT, FONT_SIZE_INPUT)
+                            .color(COLORS)
+                            .editColor(EDIT_COLORS)
+                            .pattern(field.pattern)
+                            .type(field.type)
+                            .anchor("center")
+                        fieldManip.set(0, fieldArea.component);
+                    }
 
-                    fieldTitle.dimension(INPUT_WIDTH, FONT_SIZE_TITLE).color(TITLE_COLOR).font(FONT, FONT_SIZE_TITLE).anchor("start");
-                    fieldArea.font(FONT, FONT_SIZE_INPUT).anchor("center");
-                    fieldArea.color(COLORS);
-                    fieldArea.editColor(EDIT_COLORS);
-
-                    fieldManip.add(fieldTitle).add(fieldArea.component);
-                    let manipHeight = (fieldArea.height + FONT_SIZE_TITLE);
+                    let fieldManip = new Manipulator(this).addOrdonator(2);
+                    let manipHeight = (INPUT_HEIGHT + FONT_SIZE_TITLE);
                     fieldManip.move(0, manipHeight / 2  + field.index * (manipHeight + 2*MARGIN));
-                    fieldTitle.position(-fieldArea.width / 2, -1 * (fieldArea.y + fieldArea.height ));
+
+                    _displayTitle();
+                    _displayArea()
+                    _displayIcon();
 
                     return fieldManip;
                 };
+
                 let fields = this.getFields();
                 this.fieldsManip.move(drawing.width / 2, this.header.height + 2*MARGIN);
                 fields.forEach(field => {
@@ -135,5 +149,5 @@ exports.Connection = function (globalVariables) {
 
         }
     }
-    return Connection;
+    return ConnectionV;
 }

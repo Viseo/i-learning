@@ -179,6 +179,10 @@ exports.Tool = function (globalVariables, classContainer) {
             return this.iconSetting.borderProperties.size;
         }
 
+        getContentSize(){
+            return this.iconSetting.contentProperties.size;
+        }
+
         position(x, y) {
             this.manipulator.move(x, y);
             return this;
@@ -280,6 +284,15 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.ultraLightGrey, 0, myColors.none)
                 .setPictureContent("../images/settings.png", (ICON_SIZE*2)*0.8);
+            let icon = new Icon(manipulator, iconSetting);
+
+            return icon;
+        }
+
+        static createImageIcon(src, manipulator, layer){
+            let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
+                .setBorderDefaultColor(myColors.none, 0, myColors.none)
+                .setPictureContent(src, ICON_SIZE*2);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
