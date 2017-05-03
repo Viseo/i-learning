@@ -7,10 +7,13 @@ exports.DashboardAdminP = function(globalVariables) {
     class DashboardAdminP {
         constructor(formations) {
             this.view = new dashboardView(this);
-            this.formations = formations;
+            this.formations = formations._formations;
         }
         getLabels(){
             return this.formations.getFormations().map(f => f.label);
+        }
+        getFormations(){
+            return this.formations;
         }
         displayView(){
             this.view.display();
