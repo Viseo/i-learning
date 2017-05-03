@@ -61,6 +61,8 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
                 })
             } else {
                 globalVariables.admin = false;
+                let connectionP = new globalVariables.connectionP();
+                connectionP.displayView();
             }
         }
     });
