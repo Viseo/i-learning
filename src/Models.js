@@ -19,7 +19,7 @@ exports.Models = function(globalVariables){
         }
         createFormation(label){
             let newFormation = new Formation({label:label});
-            this._formations.push();
+            this._formations.push(newFormation);
             return newFormation;
         }
     }

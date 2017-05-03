@@ -24,21 +24,31 @@ exports.DashboardAdminP = function(globalVariables) {
         createFormation(label){
             let checkLabel = (label)=>{
                 if (label == 'Ajouter une formation'){
-                    return false;
+                    return {status: false, error: 'Veuillez entrer un titre valide.'};
                 }
-                return label.match(TITLE_FORMATION_REGEX);
+                let filter = (form)=>{
+                    return form.label == label;
+                }
+                let testArray = this.formationsList.filter(filter);
+                if (testArray.length != 0){
+                    return {status: false, error: 'Nom déjà utilisé'}
+                }
+                if (label.length<2){
+                    return {status: false, error:'Attention : Minimum 2 caractères.'}
+                }
+                if (!label.match(TITLE_FORMATION_REGEX)){
+                    return {status: false, error:'Caractère(s) non autorisé(s).'}
+                }
+                return {status: true};
             }
-            if(checkLabel(label)){
+            let check = checkLabel(label);
+            if(check.status){
                 let newFormation = this.formations.createFormation(label);
                 this.updateFormations();
                 this.view.addFormationMiniature(newFormation);
             }
             else{
-                let message = label.length<2 ? 'Attention : Minimum 2 caractères.' : 'Caractère(s) non autorisé(s).';
-                if (label == 'Ajouter une formation'){
-                    message = 'Veuillez entrer un titre valide.'
-                }
-                this.view.displayErrorMessage(message);
+                this.view.displayErrorMessage(check.error);
             }
         }
         updateFormations(){

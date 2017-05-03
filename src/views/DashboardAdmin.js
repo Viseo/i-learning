@@ -9,19 +9,20 @@ const util = globalVariables.util,
     class DashboardAdmin {
         constructor(presenter){
             let createBack = ()=>{
-                this.back = new svg.Rect(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN)
-                    .corners(5,5)
-                    .color(myColors.white, 1, myColors.grey);
-                this.back.position(this.back.width/2 - this.tileWidth/2-MARGIN, this.back.height/2-this.tileHeight - 1.5*MARGIN)
                 this.title = new svg.Text('Formations :').font('Arial', 25).color(myColors.grey);
                 this.titleBack = new svg.Rect(50, 30).color(myColors.white,0,myColors.none);
-                this.miniaturesManipulator.set(0, this.back);
-                this.panel = new gui.Panel(this.back.width, this.back.height, myColors.none)
-                    .position(this.back.width/2 - this.tileWidth/2-MARGIN, this.back.height/2-this.tileHeight - 1.5*MARGIN);
-                this.miniaturesManipulator.set(1, this.panel.component);
+                this.panel = new gui.Panel(drawing.width-2*MARGIN, drawing.height - this.headHeight - this.tileHeight + 2*MARGIN, myColors.none);
+                this.panel.position(this.panel.width/2 +MARGIN ,
+                    this.panel.height/2 + this.headHeight + this.inputSize.height + 2*MARGIN);
+                this.manipulator.add(this.panel.component);
+                this.backRect = new svg.Rect(5000, 5000) //TODO
+                    .position(this.panel.width/2, this.panel.height/2)
+                    .color(myColors.white, 0, myColors.none);
+                this.miniaturesManipulator.add(this.backRect);
+                this.panel.border.color(myColors.none, 1, myColors.grey).corners(5,5);
             }
             this.presenter = presenter;
-            this.manipulator = new Manipulator(this);
+            this.manipulator = new Manipulator(this).addOrdonator(2);
             this.miniaturesManipulator = new Manipulator(this).addOrdonator(2);
             this.header = new globalVariables.domain.HeaderVue();
             this.tileWidth = 120;
@@ -33,7 +34,6 @@ const util = globalVariables.util,
             this.inputSize = {width: 400, height:30};
             this.buttonSize= {width:40, height:30};
             this.manipulator
-                .add(this.miniaturesManipulator)
                 .add(this.addFormationManipulator);
             createBack();
         }
@@ -72,13 +72,13 @@ const util = globalVariables.util,
             }
             addFormationDisplay();
 
-            this.miniaturesManipulator.move(2*MARGIN + this.tileWidth/2,
-                this.headHeight + this.tileHeight + 3*MARGIN);
+            this.miniaturesManipulator.move(2*MARGIN + this.tileWidth/2, this.tileHeight + 3*MARGIN);
             let formations = this.getFormations();
             this.numberFormation = formations.length;
             formations.forEach((formation,i) => {
                 this._displayMiniature(formation, i);
             });
+            this.panel.add(this.miniaturesManipulator.first);
         }
 
         addFormationMiniature(formation){
@@ -126,7 +126,7 @@ const util = globalVariables.util,
             let miniature = createMiniature(formation);
             miniature.manipulator = new Manipulator(this).addOrdonator(3);
             miniature.manipulator.set(0,miniature.border)
-                .add(miniature.content);
+                .set(1,miniature.content);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
             let onMouseOverSelect = manipulator => {
