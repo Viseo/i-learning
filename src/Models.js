@@ -2,24 +2,20 @@ exports.Models = function(globalVariables){
     const util = globalVariables.util;
 
     class Formations{
-        getFormations() {
-            return this._formations;
-        }
-
-        setFormations(value) {
-            this._formations = value;
-        }
-
         constructor(){
             this._formations = [];
         }
 
-        getFormationsFromBdd(){
+        sync(){
             return util.Server.getAllFormations().then(data=>{
                 this._formations = [];
                 let formation = JSON.parse(data).myCollection;
                 formation.forEach(form => this._formations.push(new Formation(form)));
             });
+        }
+
+        getFormations() {
+            return this._formations;
         }
     }
 

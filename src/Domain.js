@@ -154,10 +154,6 @@ exports.Domain = function (globalVariables) {
 
     classContainer = new Factory({Vue});
 
-    /**
-     * header du site
-     * @class
-     */
     class HeaderVue extends Vue {
         constructor(options) {
             super(options);
@@ -168,23 +164,17 @@ exports.Domain = function (globalVariables) {
         }
 
         render(message) {
-            /**
-             * @class
-             */
             const width = drawing.width,
                 height = HEADER_SIZE * drawing.height,
-                manip = this.manipulator,
                 font_size = 20,
                 pos_text_y = height/2 +font_size/4,
                 userManip = this.userManipulator,
                 text = new svg.Text(this.label).position(MARGIN, pos_text_y).font('Arial', font_size).anchor('start').color(myColors.white).mark('homeText'),
                 rect = new svg.Rect(width, height).color(myColors.customBlue, 1, myColors.black).position(width/2, height/2);
-            manip.set(1, text);
-            manip.set(0, rect);
-            drawing.manipulator.set(0, manip);
+            this.manipulator.set(1, text);
+            this.manipulator.set(0, rect);
 
             const displayUser = () => {
-
                 let pos = -MARGIN;
                 const deconnexion = displayText("Déconnexion", width * 0.1, pos_text_y, myColors.white, myColors.none, 20, null, userManip, 4, 5),
                     deconnexionWidth = deconnexion.content.boundingRect().width,
@@ -221,15 +211,15 @@ exports.Domain = function (globalVariables) {
             };
 
             if (message) {
-                const messageText = autoAdjustText(message, width * 0.3, height, 32, 'Arial', manip, 2);
+                const messageText = autoAdjustText(message, width * 0.3, height, 32, 'Arial', this.manipulator, 2);
                 messageText.text.position(width / 2, height / 2 + MARGIN)
                     .color(myColors.white)
                     .mark("headerMessage");
             } else {
-                manip.unset(2);
+                this.manipulator.unset(2);
             }
 
-            manip.add(userManip);
+            this.manipulator.add(userManip);
             if (drawing.username) {
                 displayUser();
                 let returnToListFormation = () => {
@@ -244,6 +234,10 @@ exports.Domain = function (globalVariables) {
                 };
                 svg.addEvent(text, 'click', returnToListFormation);
             }
+        }
+
+        getManipulator(){
+            return this.manipulator;
         }
     }
 

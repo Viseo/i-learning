@@ -8,15 +8,20 @@ const util = globalVariables.util,
         constructor(presenter){
             this.presenter = presenter;
             this.manipulator = new Manipulator(this);
+            this.header = new globalVariables.domain.HeaderVue();
         }
 
         display(){
             drawing.manipulator.add(this.manipulator);
+
+            let headerManipulator = this.header.getManipulator();
+            this.manipulator.add(headerManipulator);
+            this.header.display("Dashboard");
+
             let labels = this.getLabels();
             labels.forEach((label,i) => {
-                this.manipulator.add(new svg.Text(label).position(i*50, 0));
+                _displayMiniature(label);
             })
-            this.manipulator.move(drawing.width/2, drawing.height/2);
         }
 
         getLabels(){
