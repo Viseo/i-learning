@@ -36,13 +36,6 @@ MongoDB
 [Lien][MongoDB Link]
 
 
-
-
-[Visual Studio Link]:https://www.microsoft.com/en-us/download/details.aspx?id=48146
-[Python Link]:https://www.python.org/downloads/
-[MongoDB Link]:https://www.mongodb.com/download-center#community
-[NodeJS Link]:https://nodejs.org/en/download/
-
 ## Tests
 dans un terminal, taper la commande: `npm test`
 
@@ -61,4 +54,15 @@ Admin : Faire une inscription, puis aller dans la BDD modifier l'utilisateur et 
 "admin" : true
 ```
 
+## Utiles
 
+[Lien][PathSVG Link] pour créer des pollygons et récuperer ces points
+
+
+
+
+[Visual Studio Link]:https://www.microsoft.com/en-us/download/details.aspx?id=48146
+[Python Link]:https://www.python.org/downloads/
+[MongoDB Link]:https://www.mongodb.com/download-center#community
+[NodeJS Link]:https://nodejs.org/en/download/
+[PathSVG Link]:http://jxnblk.com/paths/

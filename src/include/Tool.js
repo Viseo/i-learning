@@ -9,6 +9,7 @@ exports.Tool = function (globalVariables, classContainer) {
         svg = globalVariables.svg,
         Manipulator = globalVariables.util.Manipulator;
         Picture = globalVariables.util.Picture;
+        PopOut = globalVariables.util.PopOut;
 
     const
         ICON_SIZE = 12.5;
@@ -269,7 +270,7 @@ exports.Tool = function (globalVariables, classContainer) {
 
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.black, 0, myColors.none)
-                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.lightgrey, 1, myColors.none);
+                .setPolygonContent(_getPathPlus(ICON_SIZE), myColors.white, 1, myColors.none);
             let icon = new Icon(manipulator, iconSetting);
 
             return icon;
@@ -285,7 +286,81 @@ exports.Tool = function (globalVariables, classContainer) {
         }
     }
 
+    function createRating(manipulator, layer){
+        const STAR_SPACE = 4;
+        const defaultColor = {
+            fillColor: myColors.yellow,
+            strokeWidth: 0.2,
+            strokeColor: myColors.yellow
+        };
+
+        const starsNoteEnum = {
+            'star1' : 'Pas Terrible',
+            'star2': 'Passable',
+            'star3' : 'Correcte',
+            'star4' : 'Bien',
+            'star5' : 'Excellente'
+        };
+
+        let star = [];
+        let starPoints = [
+            [1.309, 0], [1.6180, 0.9511], [2.6180, 0.9511], [1.8090, 1.5388], [2.118, 2.4899],
+            [1.3090, 1.9021], [0.5, 2.4899], [0.8090, 1.5388], [0, 0.9511], [1, 0.9511]
+        ];
+
+        var _createDrawStars = () => {
+            star.starsManipulator = new Manipulator(this).addOrdonator(5);
+            for(var i = 0 ; i < 5; i++){
+                star[i] = new svg.Polygon().add(starPoints).position(STAR_SPACE * i, 0)
+                    .color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor)
+                    .mark("star" + (i+1));
+                star.starsManipulator.add(star[i]);
+            }
+        };
+        var _createPopOut = () => {
+            star.pop = new PopOut(80, 30, null, manipulator, true);
+            star.pop.setPanel();
+        };
+
+        _createDrawStars(star);
+        _createPopOut();
+
+        manipulator.set(layer, star.starsManipulator);
+
+        star.scaleStar = function (factor) {
+            this.starsManipulator.scalor.scale(factor);
+            return this;
+        };
+
+        star.popMark = function (label) {
+            this.pop.manipulator.mark(label + 'StarMiniatures');
+            this.starsManipulator.mark(label + 'StarManip');
+            return this;
+        };
+
+        star.showStarDefaultColor = function () {
+            this.forEach(elem => elem.color(defaultColor.fillColor, defaultColor.strokeWidth, defaultColor.strokeColor));
+        };
+
+        star.starPosition = function (x, y) {
+            this.starsManipulator.move(x, y);
+            return this;
+        };
+
+        star.getNoteEnum = function (){
+            return starsNoteEnum;
+        };
+
+        star.popPosition = function (x, y) {
+            this.pop.defineProperty(x, y);
+            return this;
+        };
+
+        return star;
+    }
+
     return {
-        IconCreator
+        IconCreator,
+        createRating
     };
 };
