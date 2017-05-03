@@ -7,8 +7,8 @@ exports.Tool = function (globalVariables, classContainer) {
 
     let
         svg = globalVariables.svg,
-        Manipulator = globalVariables.util.Manipulator;
-        Picture = globalVariables.util.Picture;
+        Manipulator = globalVariables.util.Manipulator,
+        Picture = globalVariables.util.Picture,
         PopOut = globalVariables.util.PopOut;
 
     const
