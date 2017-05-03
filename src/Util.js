@@ -12,7 +12,8 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue,
         QuizVue,
         BdVue,
-        Icon, IconSetting, IconCreator,
+        IconCreator,
+        createRating,
         QuestionCreator,
         svgr;
 
@@ -27,9 +28,8 @@ exports.Util = function (globalVariables) {
         AddEmptyElementVue = globalVariables.domain.AddEmptyElementVue;
         QuizVue = globalVariables.domain.QuizVue;
         BdVue = globalVariables.domain.BdVue;
-        Icon = globalVariables.domain.Icon;
-        IconSetting = globalVariables.domain.IconSetting;
         IconCreator = globalVariables.domain.IconCreator;
+        createRating = globalVariables.domain.createRating;
         svgr = globalVariables.runtime;
     };
 
@@ -1400,24 +1400,16 @@ exports.Util = function (globalVariables) {
 
         display() {
             let addSettingsIcon = () =>{
-                const iconSize = 20;
-                let settingsPic = new Picture('../images/settings.png', false, this, '', null);
-                let settingsIcon = {
-                    border: new svg.Circle(iconSize/2).color(myColors.ultraLightGrey, 0, myColors.none),
-                    content: settingsPic
-                }
-                this.settingsManipulator = new Manipulator(this).addOrdonator(2);
-                this.settingsManipulator.set(0,settingsIcon.border);
-                settingsIcon.content.draw(0,0,iconSize*0.8, iconSize*0.8, this.settingsManipulator, 1);
-                this.manipulator.add(this.settingsManipulator);
+                let iconCreator = new IconCreator();
+                let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
                 this.popOut.defineProperty(0, -this.height);
-                this.settingsManipulator.addEvent('click', ()=>{
+                settingsIcon.addEvent('click', ()=>{
                     this.popOut.show.call(this.popOut);
                     this.selected = !this.selected;
                     this.updateSelectionDesign();
                 });
-                this.settingsManipulator.move(-this.width/2, -this.height/2-iconSize/2);
-            }
+                settingsIcon.position(-this.width/2, -this.height/2- settingsIcon.getSize()/2);
+            };
             !globalVariables.playerMode && addSettingsIcon();
             this.updateProgress();
             let icon = {
@@ -1557,35 +1549,20 @@ exports.Util = function (globalVariables) {
         }
 
         drawIcon() {
-            const circleToggleSize = 12.5;
-            let iconsize = 20,
-                size = 25,
-                iconInfos;
+            let iconCreator = new IconCreator();
             if (!this.game.parentGamesList || this.checkIfParentDone()) {
                 switch (this.game.progress) {
                     case "done":
-                        let doneIcon = {};
-                        doneIcon.border = new svg.Circle(circleToggleSize);
-                        doneIcon.border.color(myColors.green, 0, myColors.none);
-                        doneIcon.content = drawCheck(doneIcon.border.x, doneIcon.border.y, 20).color(myColors.none, 3, myColors.white);
-                        this.iconManipulator.set(0, doneIcon.border);
-                        this.iconManipulator.set(1, doneIcon.content);
-                        this.manipulator.add(this.iconManipulator);
+                        iconCreator.createDoneIcon(this.iconManipulator, 0);
                         break;
                     case "inProgress":
-                        let inProgressIcon = displayTextWithCircle('...', circleToggleSize * 2, circleToggleSize * 2, myColors.none, myColors.orange, 15, 'Arial', this.iconManipulator);
-                        inProgressIcon.content.font('arial', 20).color(myColors.white);
-                        this.manipulator.add(this.iconManipulator);
+                        iconCreator.createInProgressIcon(this.iconManipulator, 0);
                         break;
                     default:
-                        let undoneIcon = {};
-                        undoneIcon.border = new svg.Circle(circleToggleSize).color(myColors.blue, 0, myColors.none);
-                        undoneIcon.content = new svg.Triangle(8, 8, 'E').color(myColors.none, 3, myColors.white);
-                        this.iconManipulator.set(0, undoneIcon.border);
-                        this.iconManipulator.set(1, undoneIcon.content);
-                        this.manipulator.add(this.iconManipulator);
+                        iconCreator.createUndoneIcon(this.iconManipulator, 0);
                         break;
                 }
+                this.manipulator.add(this.iconManipulator);
                 this.iconManipulator.move(this.size / 2, -this.size / 3);
             }
             else if (this.game.parentGamesList && !this.checkIfParentDone()) {
@@ -1594,51 +1571,6 @@ exports.Util = function (globalVariables) {
                 this.manipulator.add(this.iconManipulator);
             }
         }
-
-        drawProgressIcon(object, size) {
-            let iconsize = 20;
-            this.infosManipulator = new Manipulator(this).addOrdonator(4);
-            switch (object.status) {
-                case "notAvailable":
-                    this.manipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
-                    break;
-                case "done":
-                    let check = drawCheck(size / 2, -size / 2, iconsize)
-                        .color(myColors.none, 5, myColors.green);
-                    let rect = new svg.Rect(iconsize, iconsize)
-                        .color(myColors.white, 1, myColors.green)
-                        .position(size / 2, -size / 2);
-                    this.infosManipulator.set(0, rect);
-                    this.infosManipulator.set(1, check);
-                    let resultString = object.tabQuestions.length - object.getQuestionsWithBadAnswers().length + " / " + object.tabQuestions.length;
-                    object.manipulator.add(this.infosManipulator);
-                    let result = autoAdjustText(resultString, size / 2, size / 2, this.scoreSize, "Arial", object.manipulator, 2);
-                    result.text.position(0, size / 2 - MARGIN / 2);
-                    break;
-                case "inProgress":
-                    let circle = new svg.Circle(iconsize / 2)
-                        .color(myColors.white, 1, myColors.orange)
-                        .position(size / 2, -size / 2);
-                    let iconInfosdot1 = new svg.Circle(iconsize / 12)
-                        .color(myColors.orange)
-                        .position(size / 2 - iconsize / 4, -size / 2);
-                    let iconInfosdot2 = new svg.Circle(iconsize / 12)
-                        .color(myColors.orange)
-                        .position(size / 2, -size / 2);
-                    let iconInfosdot3 = new svg.Circle(iconsize / 12)
-                        .color(myColors.orange)
-                        .position(size / 2 + iconsize / 4, -size / 2);
-                    this.infosManipulator.set(0, circle);
-                    this.infosManipulator.set(1, iconInfosdot1);
-                    this.infosManipulator.set(2, iconInfosdot2);
-                    this.infosManipulator.set(3, iconInfosdot3);
-                    object.manipulator.add(this.infosManipulator);
-                    break;
-                default :
-                    this.manipulator.ordonator.children[0].color(myColors.grey, 1, myColors.black);
-                    break;
-            }
-        };
 
         removeRedCross() {
             this.manipulator.remove(this.redCrossManipulator);
@@ -1691,19 +1623,13 @@ exports.Util = function (globalVariables) {
             this.height = h;
             let iconSize = this.formation.parent.iconeSize;
             let addSettingsIcon = () =>{
-                let settingsPic = new Picture('../images/settings.png', false, this, '', null);
-                let settingsIcon = {
-                    border: new svg.Circle(iconSize/2).color(myColors.ultraLightGrey, 0, myColors.none),
-                    content: settingsPic
-                }
-                this.settingsManipulator = new Manipulator(this).addOrdonator(2).mark(this.formation.label + 'Setup');  // imageSpec
-                this.settingsManipulator.set(0,settingsIcon.border);
-                settingsIcon.content.draw(0,0,iconSize*0.8, iconSize*0.8, this.settingsManipulator, 1);
-                this.manipulator.add(this.settingsManipulator);
+                let iconCreator = new IconCreator();
+                let settingsIcon = iconCreator.createSettingIcon(this.manipulator);
                 this.popOut.defineProperty(0, -h*1.5);
-                this.settingsManipulator.addEvent('click', this.popOut.show.bind(this.popOut));
-                this.settingsManipulator.move(-w / 4, -h * 2 / 3 - iconSize / 2);
-            }
+                settingsIcon.addEvent('click', this.popOut.show.bind(this.popOut));
+                settingsIcon.position(-w / 4, -h * 2 / 3 - iconSize / 2);
+                settingsIcon.content.mark(this.formation.label + 'Setup');
+            };
             let points = [
                 [w / 2, -h / 1.5],
                 [0, -h],
@@ -1715,102 +1641,51 @@ exports.Util = function (globalVariables) {
             let createStars = () => {
                 let factor = 5;
                 let onStarClick = starObject => {
-                    this.starsManipulator.components.forEach(star => {
-                        star.color(myColors.yellow, 0.2, myColors.yellow);
-                    });
-                    switch (starObject.id) {
-                        case "star1":
-                            starObject.color(myColors.orange, 0.2, myColors.orange);
-                            break;
-                        case "star2":
-                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
-                            starObject.color(myColors.orange, 0.2, myColors.orange);
-                            break;
-                        case "star3":
-                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
-                            starObject.color(myColors.orange, 0.2, myColors.orange);
-                            break;
-                        case "star4":
-                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[2].color(myColors.orange, 0.2, myColors.orange);
-                            starObject.color(myColors.orange, 0.2, myColors.orange);
-                            break;
-                        case "star5":
-                            this.starsManipulator.components[0].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[1].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[2].color(myColors.orange, 0.2, myColors.orange);
-                            this.starsManipulator.components[3].color(myColors.orange, 0.2, myColors.orange);
-                            starObject.color(myColors.orange, 0.2, myColors.orange);
-                            break;
-                    }
+                    starMiniatures.showStarDefaultColor();
                     Server.updateSingleFormationStars(this.formation.formationId, starObject.id, this.formation._id).then(data => {
                         console.log(data);
                     });
                 };
+
                 let onStarHover = starObject => {
-                    starObject.color(myColors.orange,0.2,myColors.orange);
-                    starMiniatures.pop.setText(starsNoteEnum[starObject.id]);
+                    starMiniatures.pop.setText(starMiniatures.getNoteEnum()[starObject.id]);
                     starMiniatures.pop.show();
-                    let id, i=0;
-                    while(starObject.id != id){
-                        starMiniatures[i].color(myColors.orange,0.2,myColors.orange)
+                    for(var i=0, id; starObject.id != id; i++){
+                        starMiniatures[i].color(myColors.orange,0.2,myColors.orange);
                         id = starMiniatures[i].id;
-                        i++;
                     }
                     onMouseOverSelect(this.manipulator);
-                }
+                };
+
                 let onStarLeave = starObject =>{
                     starMiniatures.pop.hide();
-                    starMiniatures.forEach(elem => elem.color(myColors.yellow,0.2,myColors.yellow));
-                }
-                let _duplicateStars = () => {
-                    starMiniatures[1] = starMiniatures[0].duplicate().position(STAR_SPACE, 0).mark("star2");
-                    starMiniatures[2] = starMiniatures[1].duplicate().position(2 * STAR_SPACE, 0).mark("star3");
-                    starMiniatures[3] = starMiniatures[2].duplicate().position(3 * STAR_SPACE, 0).mark("star4");
-                    starMiniatures[4] = starMiniatures[3].duplicate().position(4 * STAR_SPACE, 0).mark("star5");
+                    starMiniatures.showStarDefaultColor();
                 };
-                let starMiniatures = [];
-                starMiniatures[0] = new svg.Polygon().add(starPoints).color(myColors.yellow, 0.2, myColors.yellow).mark("star1"); // Etoile
 
-                starMiniatures.pop = new PopOut(80, 30, null, this.manipulator, true);
-                starMiniatures.pop.manipulator.mark(this.formation.label + 'StarMiniatures');
-                starMiniatures.pop.setPanel();
-                starMiniatures.pop.defineProperty(0,-h/2);
-                _duplicateStars();
-                starMiniatures.forEach(
-                    star => {
-                        this.starsManipulator.add(star);
-                        svgr.attr(star.component, 'fill-rule', 'nonzero');
-                        if (playerMode) {
-                            svg.addEvent(star,"click",() => onStarClick(star));
-                            svg.addEvent(star , 'mouseenter', ()=>{onStarHover(star)})
-                            //svg.addEvent(star.border, 'mouseenter', ()=>{onStarHover(star)})
-                            svg.addEvent(star, 'mouseleave', ()=>{onStarLeave(star)})
+                let starMiniatures = createRating(this.manipulator, 2);
+                starMiniatures.popMark(this.formation.label).popPosition(0, -h/2);
+
+
+                if (playerMode) {
+                    starMiniatures.forEach(
+                        star => {
+                            svg.addEvent(star, "click", () => onStarClick(star));
+                            svg.addEvent(star, 'mouseenter', () => onStarHover(star));
+                            svg.addEvent(star, 'mouseleave', () => onStarLeave(star));
                         }
-                    }
-                );
-                this.starsManipulator.scalor.scale(factor);
-                this.starsManipulator.move(-(STAR_SPACE-1) * factor*3, - h / 3);
+                    );
+                }
+
+                starMiniatures.scaleStar(factor);
+                starMiniatures.starPosition(-(STAR_SPACE-1) * factor*3, - h / 3);
+
                 this.notationTextManipulator = new Manipulator(this);
                 let notationText = new svg.Text('Notez cette \n formation :').position(0,-h*0.5).font('Arial', 12, 10);
                 this.notationTextManipulator.add(notationText);
                 this.manipulator.add(this.notationTextManipulator);
-                this.manipulator.set(2,this.starsManipulator);
             };
-            let starPoints = [
-                [1.309, 0],
-                [1.6180, 0.9511],
-                [2.6180, 0.9511],
-                [1.8090, 1.5388],
-                [2.118, 2.4899],
-                [1.3090, 1.9021],
-                [0.5, 2.4899],
-                [0.8090, 1.5388],
-                [0, 0.9511],
-                [1, 0.9511]
-            ]
+
+
             if(this.formation.progress == 'done' && globalVariables.playerMode){
                 createStars();
             }
@@ -2244,13 +2119,6 @@ exports.Util = function (globalVariables) {
         MARGIN = 10;
         STAR_SPACE = 4;
 
-        starsNoteEnum = {
-            'star1' : 'Pas Terrible',
-            'star2': 'Passable',
-            'star3' : 'Correcte',
-            'star4' : 'Bien',
-            'star5' : 'Excellente'
-        };
 
         // starEnum = {
         //     starBase : 10,
