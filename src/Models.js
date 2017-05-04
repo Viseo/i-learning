@@ -25,8 +25,19 @@ exports.Models = function(globalVariables){
     }
 
     class Formation{
-        constructor(formation){
-            this.label = formation.label;
+        constructor(formation) {
+            this.links = [];
+            this._id = (formation._id || null);
+            this.formationId = (formation.formationId || null);
+            this.progress = formation.progress;
+            if (formation.imageSrc) {
+                this.imageSrc = formation.imageSrc;
+            }
+            this.labelDefault = "Entrer le nom de la formation";
+            // HEIGHT
+            this.levelsTab = [];
+            this.label = formation.label ? formation.label : "";
+            this.status = formation.progress ? formation.progress.status : formation.status;
         }
     }
 
