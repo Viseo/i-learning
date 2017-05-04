@@ -32,7 +32,7 @@ exports.ConnectionV = function (globalVariables) {
                 this.fieldsManip = new Manipulator(this);
                 this.cookieManipulator = new Manipulator(this);
                 this.cookieManipulator.component.mark("cookieManipulator");
-                this.newPasswordManipulator = new Manipulator(this);
+                this.newPasswordManipulator = new Manipulator(this).addOrdonator(1);
                 this.newPasswordManipulator.component.mark("newPasswordManipulator");
                 this.connectionButtonManipulator = new Manipulator(this);
                 this.registerTextManipulator = new Manipulator(this);
@@ -46,6 +46,10 @@ exports.ConnectionV = function (globalVariables) {
 
             _initV();
             _declareManipulators();
+        }
+
+        flush(){
+            drawing.manipulator.flush();
         }
 
         display() {
@@ -129,14 +133,28 @@ exports.ConnectionV = function (globalVariables) {
                     .move(drawing.width / 2 - INPUT_WIDTH / 2 + CHECKBOX_SIZE / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
             };
             var _displayForgotPWD = () => {
+                var _forgotHandler = () => {
+                    this.forgotPWD().then(()=> {
+                        let forgotttenPassText = new svg.Text('Un mail a été envoyé pour réinitialiser votre mot de passe.')
+                            .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
+                            .color(myColors.greyerBlue)
+                            .font(FONT, FONT_SIZE_TITLE * 2 / 3)
+                            .mark("forgottenPassText");
+                        this.newPasswordManipulator.set(0, forgotttenPassText);
+                        svg.timeout(() => {
+                            this.newPasswordManipulator.set(0, fieldTitle);
+                        }, 5000);
+                    })
+                }
                 let fieldTitle = new svg.Text("Mot de passe oublié ?")
                     .color(myColors.greyerBlue)
                     .dimension(INPUT_WIDTH / 2, INPUT_HEIGHT / 2)
                     .anchor('end')
                     .position(0, 0)
                     .font(FONT, FONT_SIZE_TITLE * 3 / 4);
-                this.newPasswordManipulator.add(fieldTitle)
+                this.newPasswordManipulator.set(0, fieldTitle)
                     .move(drawing.width / 2 + INPUT_WIDTH / 2, this.header.height + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 4);
+                this.newPasswordManipulator.addEvent('click', _forgotHandler);
             };
             var _displayButton = () => {
                 var _displayButton = () => {
@@ -168,7 +186,7 @@ exports.ConnectionV = function (globalVariables) {
                         .color(myColors.greyerBlue)
                         .font(FONT, FONT_SIZE_TITLE * 2 / 3);
                     this.registerTextManipulator.add(registerText).move(drawing.width / 2, this.connectionButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
-                    this.registerTextManipulator.addEvent('click',(event) => this.goToRegister.call(this, event));
+                    this.registerTextManipulator.addEvent('click',() => this.goToRegister.call(this));
                 }
 
                 _displayButton();
@@ -193,6 +211,9 @@ exports.ConnectionV = function (globalVariables) {
         }
         goToRegister(){
             this.presenter.goToRegister();
+        }
+        forgotPWD(){
+            return this.presenter.forgotPWD();
         }
 
         focusField(isPrevious) {

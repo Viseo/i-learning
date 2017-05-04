@@ -9,7 +9,7 @@ exports.ConnectionP = function(globalVariables) {
     const drawing = globalVariables.drawing;
 
     class ConnectionP {
-        constructor() {
+        constructor(formations) {
             var _declareTextFields = () => {
                 this._fields = [
                     {
@@ -38,6 +38,7 @@ exports.ConnectionP = function(globalVariables) {
 
             _declareTextFields();
             this.view = new connectionView(this);
+            this.formations = formations;
         }
         displayView(){
             this.view.display();
@@ -62,9 +63,6 @@ exports.ConnectionP = function(globalVariables) {
             this._stayConnected = !!stay;
         }
 
-        onConnected(handler){
-            this._onConnected = handler;
-        }
         logIn(){
             var _checkInputs = () => {
                 return this._fields.reduce((o, n) => o.valid && n.valid);
@@ -76,7 +74,17 @@ exports.ConnectionP = function(globalVariables) {
                     if(!data) throw 'Connexion refusée';
                     data = JSON.parse(data);
                     if (data.ack === 'OK') {
-                        this._onConnected(data);
+                        drawing.username = `${data.user.firstName} ${data.user.lastName}`;
+                        data.user.admin ? globalVariables.admin = true : globalVariables.admin = false;
+                        return this.formations.sync().then(() => {
+                            let dashboardP;
+                            if(globalVariables.admin){
+                                dashboardP = new globalVariables.dashboardAdminP(this.formations);
+                            }else {
+                                dashboardP = new globalVariables.dashboardCollabP(this.formations);
+                            }
+                            dashboardP.displayView();
+                        })
                     } else {
                         throw 'adresse e-mail ou mot de passe invalide';
                     }
@@ -88,9 +96,12 @@ exports.ConnectionP = function(globalVariables) {
         }
 
         goToRegister(){
-            drawing.manipulator.flush();
-            let registerP = new globalVariables.RegisterP();
+            this.view.flush();
+            let registerP = new globalVariables.RegisterP(this);
             registerP.displayView();
+        }
+        forgotPWD(){
+            return Server.resetPassword({mailAddress: this._fields[0].text});
         }
     }
     return ConnectionP;
