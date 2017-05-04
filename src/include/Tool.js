@@ -224,6 +224,9 @@ exports.Tool = function (globalVariables, classContainer) {
                     return this.createInProgressIcon(manipulator,layer);
                     break;
                 case'NotPublished':
+                    return null;
+                    break;
+                case'Edited':
                     return this.createEditedIcon(manipulator,layer);
                     break;
                 case'Published':

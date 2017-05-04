@@ -151,7 +151,7 @@ exports.DashboardAdmin = function(globalVariables){
             let drawIcon = (formation)=>{
                 let iconCreator = new IconCreator();
                 let icon = iconCreator.createIconByName(formation.status, miniature.manipulator, 2);
-                icon.position(this.tileWidth / 4, -this.tileHeight * 2 / 3 - icon.getSize())
+                icon && icon.position(this.tileWidth / 4, -this.tileHeight * 2 / 3 - icon.getSize())
             }
             let miniature = createMiniature(formation);
             miniature.manipulator = new Manipulator(this).addOrdonator(3);
