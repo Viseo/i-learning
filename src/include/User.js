@@ -59,8 +59,8 @@ exports.User = function (globalVariables, classContainer) {
                 this.passwordConfirmationManipulator.imageLayer = 3;
                 this.saveButtonManipulator = new Manipulator(this).addOrdonator(4);
                 this.saveButtonManipulator.component.mark('saveButton');
-                this.connexionTextManipulator = new Manipulator(this);
-                this.connexionTextManipulator.component.mark('connexionText');
+                this.connectionTextManipulator = new Manipulator(this);
+                this.connectionTextManipulator.component.mark('connexionText');
                 this.manipulator
                     .add(this.firstNameManipulator)
                     .add(this.lastNameManipulator)
@@ -68,7 +68,7 @@ exports.User = function (globalVariables, classContainer) {
                     .add(this.passwordManipulator)
                     .add(this.passwordConfirmationManipulator)
                     .add(this.saveButtonManipulator)
-                    .add(this.connexionTextManipulator);
+                    .add(this.connectionTextManipulator);
             };
             var _declareDefaultLabels = () => {
                 this.lastNameLabel = "Nom :";
@@ -150,7 +150,7 @@ exports.User = function (globalVariables, classContainer) {
 
         render() {
             var _displayHeader = () => {
-                this.connexionTextManipulator.flush();
+                this.connectionTextManipulator.flush();
                 main.currentPageDisplayed = this;
                 globalVariables.header.display("Inscription");
             };
@@ -303,7 +303,7 @@ exports.User = function (globalVariables, classContainer) {
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                     .mark('connexionText');
 
-                this.connexionTextManipulator.add(connexionText).move(0, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.connectionTextManipulator.add(connexionText).move(0, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
             };
             var _displayButton = () => {
                 let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], this.saveButtonLabel);

@@ -22,29 +22,27 @@ exports.RegisterV = function (globalVariables) {
 
     class RegisterV {
         constructor(presenter) {
-            this.presenter = presenter;
-            this.manipulator = new Manipulator(this);
-            this.header = new globalVariables.domain.HeaderVue();
-            this.fieldsManip = new Manipulator(this);
-            this.firstNameManipulator = new Manipulator(this);
-            this.lastNameManipulator = new Manipulator(this);
-            this.mailAddressManipulator = new Manipulator(this);
-            this.passwordManipulator = new Manipulator(this);
-            this.passwordConfirmationManipulator = new Manipulator(this);
-            this.saveButtonManipulator = new Manipulator(this);
-            this.saveButtonManipulator.component.mark('saveButton');
-            this.connexionTextManipulator = new Manipulator(this);
-            this.connexionTextManipulator.component.mark('connexionText');
+            var _initV = () => {
+                this.presenter = presenter;
+                this.inputs = [];
+            }
+            var _declareManipulator = () => {
+                this.manipulator = new Manipulator(this);
+                this.header = new globalVariables.domain.HeaderVue();
+                this.fieldsTextFields = [];
+                this.fieldsManip = new Manipulator(this);
+                this.saveButtonManipulator = new Manipulator(this).addOrdonator(2);
+                this.saveButtonManipulator.component.mark('saveButton');
+                this.connectionTextManipulator = new Manipulator(this);
+                this.connectionTextManipulator.component.mark('connexionText');
+                this.manipulator
+                    .add(this.fieldsManip)
+                    .add(this.saveButtonManipulator)
+                    .add(this.connectionTextManipulator);
+            }
 
-            this.manipulator
-                .add(this.fieldsManip)
-                .add(this.firstNameManipulator)
-                .add(this.lastNameManipulator)
-                .add(this.mailAddressManipulator)
-                .add(this.passwordManipulator)
-                .add(this.passwordConfirmationManipulator)
-                .add(this.saveButtonManipulator)
-                .add(this.connexionTextManipulator);
+            _initV();
+            _declareManipulator();
         }
 
         display() {
@@ -70,6 +68,13 @@ exports.RegisterV = function (globalVariables) {
                         fieldManip.add(fieldTitle);
                     }
                     var _displayArea = () => {
+                        var _onInput = (oldMessage, newMessage, valid) => {
+                            this.setValid(field, valid);
+                            if (valid) this.setFieldText(field, newMessage);
+                        }
+                        var _onClick = () => {
+                            this.selectInput(fieldArea);
+                        }
                         let fieldArea = new gui.TextField(0, 0, INPUT_WIDTH, INPUT_HEIGHT, "");
                         fieldArea.font(FONT, FONT_SIZE_INPUT)
                             .color(COLORS)
@@ -78,6 +83,10 @@ exports.RegisterV = function (globalVariables) {
                             .type(field.type)
                             .anchor("center")
                         fieldManip.set(0, fieldArea.component);
+
+                        fieldArea.onInput(_onInput);
+                        fieldArea.onClick(_onClick);
+                        this.inputs.push(fieldArea);
                     }
 
                     let fieldManip = new Manipulator(this).addOrdonator(2);
@@ -100,12 +109,40 @@ exports.RegisterV = function (globalVariables) {
 
             };
             var _displaySaveButton = () => {
+                var _setClickHandler = () => {
+                    this.registerNewUser().then(() => {
+                        let message = new svg.Text("Votre compte a bien été créé !")
+                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                            .position(0, -MARGIN - BUTTON_HEIGHT)
+                            .color(myColors.green)
+                            .font(FONT, FONT_SIZE_INPUT)
+                            .mark('successMessage');
+                        this.saveButtonManipulator.add(message);
+                        setTimeout(() => {
+                            this.saveButtonManipulator.remove(message);
+                            this.goToConnection();
+                        }, 3000);
+                    }).catch((message) => {
+                        let error = new svg.Text(message)
+                            .dimension(INPUT_WIDTH, INPUT_HEIGHT)
+                            .position(0, -(INPUT_HEIGHT + MARGIN))
+                            .color(myColors.red)
+                            .font(FONT, FONT_SIZE_INPUT)
+                            .mark("msgFieldError");
+                        this.saveButtonManipulator.add(error);
+                        svg.timeout(() => {
+                            this.saveButtonManipulator.remove(error);
+                        }, 5000);
+                    });
+                }
+
                 let saveButton = new gui.Button(INPUT_WIDTH, BUTTON_HEIGHT, [[43, 120, 228], 1, myColors.black], 'Inscription');
                 saveButton.text.color(myColors.lightgrey, 0, myColors.white);
                 saveButton.activeShadow();
                 this.saveButtonManipulator
                     .add(saveButton.component)
                     .move(drawing.width / 2, this.header.height + BUTTON_MARGIN + 2 * MARGIN + (INPUT_HEIGHT + FONT_SIZE_TITLE + 2 * MARGIN) * 5);
+                this.saveButtonManipulator.addEvent('click', _setClickHandler);
             };
             var _displayConnectionLabel = () => {
                 let connexionText = new svg.Text("Vous êtes déjà inscrit ? Se connecter")
@@ -114,7 +151,8 @@ exports.RegisterV = function (globalVariables) {
                     .font(FONT, FONT_SIZE_TITLE * 2 / 3)
                     .mark('connexionText');
 
-                this.connexionTextManipulator.add(connexionText).move(drawing.width / 2, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.connectionTextManipulator.add(connexionText).move(drawing.width / 2, this.saveButtonManipulator.y + BUTTON_HEIGHT + MARGIN);
+                this.connectionTextManipulator.addEvent('click',(event) => this.goToConnection.call(this, event));
             };
 
             drawing.manipulator.add(this.manipulator);
@@ -122,6 +160,7 @@ exports.RegisterV = function (globalVariables) {
             _displayFields();
             _displaySaveButton();
             _displayConnectionLabel();
+            svg.addGlobalEvent('keydown',(event) => this.keyDown.call(this,event));
         }
 
         refresh() {
@@ -130,6 +169,67 @@ exports.RegisterV = function (globalVariables) {
 
         getFields() {
             return this.presenter.getFields();
+        }
+
+        goToConnection(){
+            this.presenter.goToConnection();
+        }
+
+        focusField(isPrevious) {
+            var _previousIndex = (currentIndex) => {
+                if (currentIndex != -1) {
+                    if (currentIndex === 0) {
+                        return (this.inputs.length - 1);
+                    } else {
+                        return currentIndex - 1;
+                    }
+                } else {
+                    return 0;
+                }
+            }
+            var _nextIndex = (currentIndex) => {
+                if (currentIndex != -1) {
+                    if (currentIndex === (this.inputs.length - 1)) {
+                        return 0;
+                    } else {
+                        return currentIndex + 1;
+                    }
+                } else {
+                    return 0;
+                }
+            }
+
+            let currentIndex = this.inputs.indexOf(this.selectedInput);
+            let newIndex = isPrevious ? _previousIndex(currentIndex) : _nextIndex(currentIndex);
+            svg.event(this.inputs[newIndex].glass, 'click');
+            this.selectedInput = this.inputs[newIndex];
+
+        }
+
+        keyDown(event) {
+            if (event.keyCode === 9) { // TAB
+                event.preventDefault();
+                let isPrevious = !!event.shiftKey;
+                this.focusField(isPrevious);
+            } else if (event.keyCode === 13) { // Entrée
+                event.preventDefault();
+                this.registerNewUser();
+            }
+        }
+
+        registerNewUser() {
+            return this.presenter.registerNewUser();
+        }
+
+        selectInput(input) {
+            this.selectedInput = input;
+        }
+
+        setValid(field, valid) {
+            this.presenter.setValid(field, valid);
+        }
+        setFieldText(field, text) {
+            this.presenter.setFieldText(field, text);
         }
     }
 

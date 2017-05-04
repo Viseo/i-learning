@@ -5,7 +5,11 @@
 const RegisterV = require('../views/RegisterV').RegisterV;
 
 exports.RegisterP = function (globalVariables) {
-    const registerView = RegisterV(globalVariables);
+    const registerView = RegisterV(globalVariables),
+        ERROR_INPUT = [myColors.white, 2, myColors.red],
+        runtime = globalVariables.runtime,
+        Server = globalVariables.util.Server,
+        drawing = globalVariables.drawing;
 
     class RegisterP {
         constructor() {
@@ -18,6 +22,7 @@ exports.RegisterP = function (globalVariables) {
                         errorMessage: "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés",
                         index: 0,
                         iconSrc: "../images/user.png",
+                        valid: false,
                         pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g
                     },
                     {
@@ -26,6 +31,7 @@ exports.RegisterP = function (globalVariables) {
                         errorMessage: "Seuls les caractères alphabétiques, le tiret, l'espace et l'apostrophe sont autorisés",
                         index: 1,
                         iconSrc: "../images/user.png",
+                        valid: false,
                         pattern: /^([A-Za-zéèêâàîïëôûùöñüä '-]){0,150}$/g
                     },
                     {
@@ -34,6 +40,7 @@ exports.RegisterP = function (globalVariables) {
                         errorMessage: "L'adresse email n'est pas valide",
                         index: 2,
                         iconSrc: "../images/envelope.png",
+                        valid: false,
                         pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                     },
                     {
@@ -42,6 +49,7 @@ exports.RegisterP = function (globalVariables) {
                         errorMessage: "La confirmation du mot de passe n'est pas valide",
                         index: 3,
                         iconSrc: "../images/padlock.png",
+                        valid: false,
                         pattern: /^[ -~]{6,63}$/
                     },
                     {
@@ -50,6 +58,7 @@ exports.RegisterP = function (globalVariables) {
                         errorMessage: "La confirmation du mot de passe n'est pas valide",
                         index: 4,
                         iconSrc: "../images/padlock.png",
+                        valid: false,
                         pattern: /^[ -~]{6,63}$/
                     }
                 ];
@@ -61,6 +70,54 @@ exports.RegisterP = function (globalVariables) {
 
         getFields() {
             return this._fields;
+        }
+
+        goToConnection() {
+            drawing.manipulator.flush();
+            let connectionP = new globalVariables.ConnectionP();
+            connectionP.displayView();
+        }
+
+        registerNewUser() {
+
+            var _checkInputs = () => {
+                return this._fields.reduce((o, n) => o && n.valid, true);
+            };
+            if (_checkInputs()) {
+
+                let tempObject = {
+                    lastName: this._fields[0].text,
+                    firstName: this._fields[1].text,
+                    mailAddress: this._fields[2].text,
+                    password: runtime.twinBcrypt(this._fields[3].text)
+                };
+                return Server.inscription(tempObject)
+                    .then(data => {
+                        if (!data) throw 'errorDisplay';
+                        let created = JSON.parse(data);
+                        if (created.ack === 'ok') {
+                            return;
+                        } else {
+                            throw "Un utilisateur possède déjà cette adresse mail !";
+                        }
+                    })
+            } else {
+                return Promise.reject("Veuillez remplir tous les champs")
+            }
+        }
+
+        setValid(field, valid) {
+            let index = this._fields.indexOf(field);
+            if (index != -1) {
+                this._fields[index].valid = valid;
+            }
+        }
+
+        setFieldText(field, text) {
+            let index = this._fields.indexOf(field);
+            if (index != -1) {
+                this._fields[index].text = text;
+            }
         }
 
         displayView() {
