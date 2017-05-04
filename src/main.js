@@ -30,6 +30,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
 
     domain = Domain(globalVariables);
     globalVariables.domain = domain;
+    util.setGlobalVariables();
 
     presenterFactory(globalVariables);
     let models = FModels(globalVariables);
@@ -42,6 +43,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
 
     util.Server.checkCookie().then(data => {
         data = data && JSON.parse(data);
+
         if(redirect){
             password.display(param.ID);
             redirect = false;

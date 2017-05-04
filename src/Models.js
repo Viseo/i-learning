@@ -41,6 +41,12 @@ exports.Models = function(globalVariables){
         }
     }
 
+    class User {
+        constructor(user){
+
+        }
+    }
+
     class Game{
 
     }
