@@ -12,7 +12,7 @@ exports.Tool = function (globalVariables, classContainer) {
         PopOut = globalVariables.util.PopOut;
 
     const
-        ICON_SIZE = 12.5;
+        ICON_SIZE = 15;
 
 
     class IconSetting {
@@ -212,6 +212,28 @@ exports.Tool = function (globalVariables, classContainer) {
 
         }
 
+        createIconByName(name, manipulator, layer){
+            switch(name){
+                case'done':
+                    return this.createDoneIcon(manipulator,layer);
+                    break;
+                case'undone':
+                    return this.createUndoneIcon(manipulator,layer);
+                    break;
+                case'inProgress':
+                    return this.createInProgressIcon(manipulator,layer);
+                    break;
+                case'NotPublished':
+                    return this.createEditedIcon(manipulator,layer);
+                    break;
+                case'Published':
+                    return this.createDoneIcon(manipulator,layer);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         createUndoneIcon(manipulator, layer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.blue, 0, myColors.none)
@@ -240,7 +262,7 @@ exports.Tool = function (globalVariables, classContainer) {
             let iconSetting = new IconSetting().setBorderLayer(layer).setBorderSize(ICON_SIZE)
                 .setBorderDefaultColor(myColors.green, 0, myColors.none)
                 .setBorderActionColor(myColors.green, 1, myColors.darkBlue)
-                .setPathContent(_getPathCheckContent(ICON_SIZE * 2), ICON_SIZE * 2, myColors.none, 3, myColors.white);
+                .setPathContent(_getPathCheckContent(ICON_SIZE *1.75), ICON_SIZE * 2, myColors.none, 3, myColors.white);
             let icon = new Icon(manipulator, iconSetting);
             return icon;
         }

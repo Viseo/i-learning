@@ -3,7 +3,8 @@ const util = globalVariables.util,
     Manipulator = util.Manipulator,
     svg = globalVariables.svg,
     gui = globalVariables.gui,
-    drawing = globalVariables.drawing;
+    drawing = globalVariables.drawing,
+    IconCreator = globalVariables.domain.IconCreator;
 
 
     class DashboardAdmin {
@@ -49,6 +50,22 @@ const util = globalVariables.util,
             this.manipulator.add(headerManipulator);
             this.header.display("Dashboard");
 
+            let addIconCaption = ()=>{
+                let captionManipulator = new Manipulator(this);
+                let iconCreator = new IconCreator();
+                let editedIcon = iconCreator.createEditedIcon(captionManipulator);
+                let publishedIcon = iconCreator.createDoneIcon(captionManipulator);
+                let editedCaption = new svg.Text('Editée').font('Arial', 20).anchor('left');
+                let publishedCaption = new svg.Text('Publiée').font('Arial', 20).anchor('left');
+                this.manipulator.add(captionManipulator);
+                captionManipulator.add(editedCaption).add(publishedCaption);
+                editedCaption.position(editedIcon.getSize(), 6.6);
+                publishedIcon.position(editedCaption.x + editedCaption.boundingRect().width + MARGIN + publishedIcon.getSize(), 0);
+                publishedCaption.position(editedCaption.x + editedCaption.boundingRect().width + publishedIcon.getSize()*2 + MARGIN, 6.6);
+                let positionCaption = {x: drawing.width - 4*editedIcon.getSize() - editedCaption.boundingRect().width - publishedCaption.boundingRect().width - 2*MARGIN,
+                y : this.header.height + publishedIcon.getSize() + MARGIN};
+                captionManipulator.move(positionCaption.x, positionCaption.y);
+            }
 
             let addFormationDisplay = ()=>{
                 let addFormationTextArea = new gui.TextField(0,0, this.inputSize.width, this.inputSize.height, 'Ajouter une formation')
@@ -75,6 +92,7 @@ const util = globalVariables.util,
                 svg.addEvent(addButton.component, 'click', this.addFormationHandler.bind(this));
             }
             addFormationDisplay();
+            addIconCaption();
 
             this.miniaturesManipulator.move(2*MARGIN + this.tileWidth/2, this.tileHeight + 3*MARGIN);
             let formations = this.getFormations();
@@ -128,11 +146,17 @@ const util = globalVariables.util,
                 let x = line%2 == 0 ? (i-line*elementPerLine)*(this.tileWidth+this.spaceBetween) : (i-line*elementPerLine)*(this.tileWidth + this.spaceBetween) + this.tileWidth/2 + MARGIN;
                 miniature.manipulator.move(x,y);
             }
+            let drawIcon = (formation)=>{
+                let iconCreator = new IconCreator();
+                let icon = iconCreator.createIconByName(formation.status, miniature.manipulator, 2);
+                icon.position(this.tileWidth / 4, -this.tileHeight * 2 / 3 - icon.getSize())
+            }
             let miniature = createMiniature(formation);
             miniature.manipulator = new Manipulator(this).addOrdonator(3);
             miniature.manipulator.set(0,miniature.border).set(1,miniature.content);
             this.miniaturesManipulator.add(miniature.manipulator);
             placeMiniature(miniature, i);
+            drawIcon(formation);
 
             let onMouseOverSelect = manipulator => {
                 manipulator.get(0).color([130, 180, 255], 3, myColors.black);
