@@ -55,7 +55,7 @@ function main(svg, runtime, dbListener, ImageRuntime,param) {
                     if(globalVariables.admin){
                         dashboardP = new globalVariables.dashboardAdminP(formations);
                     }else {
-                        dashboardP = new globalVariables.dashboardCollabP(formations);
+                        dashboardP = new globalVariables.DashboardCollabP(formations);
                     }
                     dashboardP.displayView();
                 })
